@@ -31,8 +31,6 @@ public class BarobotMain extends Activity {
     // Layout Views
 	private static BarobotMain instance;
     private ListView mConversationView;
-    private EditText mOutEditText;
-    private Button mSendButton;
 
     // Array adapter for the conversation thread
     ArrayAdapter<String> mConversationArrayAdapter;
@@ -42,8 +40,6 @@ public class BarobotMain extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 		instance = this;
-
-        Constant.log("BarobotMain", "+++ ON CREATE +++");
         // Set up the window layout
         setContentView(R.layout.main);
 
@@ -53,6 +49,7 @@ public class BarobotMain extends Activity {
         mConversationView.setAdapter(mConversationArrayAdapter);
 
         // Initialize the compose field with a listener for the return key
+        /*
         mOutEditText = (EditText) findViewById(R.id.edit_text_out);
         mOutEditText.setOnEditorActionListener( new TextView.OnEditorActionListener() {
 	        public boolean onEditorAction(TextView view, int actionId, KeyEvent event) {
@@ -66,26 +63,17 @@ public class BarobotMain extends Activity {
 	            return true;
 	        }
 	    });
- 
-        // Initialize the send button with a listener that for click events
-        mSendButton = (Button) findViewById(R.id.button_send);
-        mSendButton.setOnClickListener(new OnClickListener() {
-            public void onClick(View v) {
-                // Send a message using content of the edit text widget
-                TextView view = (TextView) findViewById(R.id.edit_text_out);
-                String message = view.getText().toString();
-                queue.getInstance().send(message);
-            }
-        });
+	    */
+
 		boolean res = queue.getInstance().connectADB();
 		if(res == false ){
 			Constant.log("Seeeduino ADK", "Unable to start TCP server" );
 			System.exit(-1);
 		}
-		
 		this.runTimer();
     }
 
+    // test okresowego wywo³ywania poleceñ
     private void runTimer() {
 		// TODO Auto-generated method stub
     	TimerTask scanTask;

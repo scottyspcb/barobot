@@ -50,6 +50,7 @@ public class virtualComponents {
 		final DebugWindow dialog = DebugWindow.getInstance();
 
 		if( "LENGTHX".equals(name)){
+			dialog.setText( R.id.dlugosc_x, value );
 			final int val = virtualComponents.toInt( value );
 			dialog.runOnUiThread(new Runnable() {
 				@Override
@@ -67,6 +68,7 @@ public class virtualComponents {
 			});
 		}else if( "LENGTHY".equals(name)){
 			final int val = virtualComponents.toInt( value );
+			dialog.setText( R.id.dlugosc_y, value );
 			dialog.runOnUiThread(new Runnable() {
 				@Override
 				public void run() {
@@ -77,8 +79,10 @@ public class virtualComponents {
 					}
 				}
 			});
+		}else if( "LENGTHZ".equals(name)){
+			dialog.setText( R.id.dlugosc_z, value );
 		}else if("ANALOG0".equals(name) &&  dialog != null ){
-			dialog.setText( R.id.analog0, value );				
+			dialog.setText( R.id.analog0, value );
 		}else if("DISTANCE0".equals(name) &&  dialog != null ){
 			dialog.setText( R.id.dist1, value );				
 		}else if("WEIGHT".equals(name) && dialog != null ){

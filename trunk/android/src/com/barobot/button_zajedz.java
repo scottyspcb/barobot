@@ -56,7 +56,7 @@ public class button_zajedz  implements OnClickListener {
 	          break;
 	      case R.id.nalej16:
 	    	  //virtualComponents.moveToBottle(16);
-	    	  virtualComponents.nalej( 5000 );
+	    	  virtualComponents.nalej( 5000 );	// 5000 to czas - 5 sek
 	          break;
 		}
 	}

@@ -6,9 +6,9 @@
           android:title="@string/secure_connect" />
 
     <item android:id="@+id/debug_mode_window" android:title="@string/debug_mode_window"></item><group android:id="@+id/group1" android:menuCategory="container" android:enabled="true" android:checkableBehavior="all" android:visible="true">
-        <item android:id="@+id/item1" android:checked="true" android:visible="true" android:titleCondensed="test11" android:enabled="true" android:checkable="true" android:title="test1"></item>
-        <item android:id="@+id/item2" android:checked="false" android:visible="true" android:titleCondensed="test22" android:enabled="true" android:checkable="true" android:title="test2"></item>
-        <item android:id="@+id/item3" android:checked="true" android:visible="true" android:titleCondensed="test33" android:enabled="false" android:checkable="false" android:title="test3"></item>
+        <item android:id="@+id/item1" android:checked="true" android:visible="true" android:titleCondensed="edit_drinks" android:enabled="true" android:checkable="true" android:title="Edycja drinków"></item>
+        <item android:id="@+id/item2" android:checked="false" android:visible="true" android:titleCondensed="synchro_drinks" android:enabled="true" android:checkable="true" android:title="Synchronizacja drinków"></item>
+        <item android:id="@+id/about_item" android:checked="true" android:visible="true" android:titleCondensed="about" android:enabled="false" android:checkable="false" android:title="Informacje"></item>
     </group>
     
 </menu>

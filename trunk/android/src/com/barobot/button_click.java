@@ -89,6 +89,55 @@ public class button_click implements OnClickListener{
 		case R.id.fill5000:
 			q.send("FILL 5000");
 			break;
+		case R.id.max_z:
+			q.send("SET Z MAX");
+			break;
+		case R.id.min_z:
+			q.send("SET Z MIN");
+			break;
+
+		case R.id.max_x:
+			q.send("SET X +10000");
+			break;
+		case R.id.max_y:
+			q.send("SET Y +10000");
+			break;
+			
+		case R.id.min_x:
+			q.send("SET X -10000");
+			break;
+		case R.id.min_y:
+			q.send("SET Y -10000");
+			break;	
+			
+
+		case R.id.length_x:
+			// do obecnej pozycji dodaj ró¿nicê do koñca
+			long lengthx	=  virtualComponents.getInt("LENGTHX");
+			long posx		=  virtualComponents.getInt("POSX");	
+			if( lengthx > 0 ){
+				long target = lengthx - posx;
+				q.send("SET X +" + target);
+			}
+			break;	
+		case R.id.length_x2:
+			// od obecnej pozycji odejmij t¹ pozycjê (powinno zajechac do 0)
+			q.send("SET X -" + virtualComponents.getInt("POSY"));
+			break;		
+
+		case R.id.length_y:
+			// do obecnej pozycji dodaj ró¿nicê do koñca
+			long lengthy	=  virtualComponents.getInt("LENGTHY");
+			long posy		=  virtualComponents.getInt("POSY");	
+			if( lengthy > 0 ){
+				long target = lengthy - posy;
+				q.send("SET Y +" + target);
+			}
+			break;	
+		case R.id.length_y2:
+			// od obecnej pozycji odejmij t¹ pozycjê (powinno zajechac do 0)
+			q.send("SET Y -" + virtualComponents.getInt("POSY"));
+			break;					
 	   }
 	}
 }
