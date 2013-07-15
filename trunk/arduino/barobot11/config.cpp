@@ -21,7 +21,7 @@
 // obsluga zrodel wejscia
 #define SERIAL0_BOUND 115200
 #define BT_BOUND 9600
-#define __BT_NAME__ barobot1.0
+#define BT_DEV_NAME "barobot1.0"
 //#define SERIAL0_BOUND 9600
 
 // ycz usyzwac sterownika 2 czy 4 pinowego
@@ -232,6 +232,8 @@ const int PIN49 = 49;
 #define MULTI_ADDR_TIME 10
 #define MULTI_READ_TIME 10
 #define MULTI_READ_COUNT 8
+#define WAGA_READ_COUNT 2
+
 
 // domyslen ustawienie mocy silnika Z
 #define SERVOZ_UP 900
@@ -241,7 +243,7 @@ const int PIN49 = 49;
 //#define SERVOZ_STAYUP 1530
 //#define SERVOZ_DOWN 1400
 
-// domyslen ustawienie mocy silnikow Xy
+// domyslnie ustawienie mocy silnikow Xy
 #if SERVOX4PIN==true
   #define SPEEDX 500
   #define ACCELERX 1350
@@ -262,4 +264,8 @@ const int PIN49 = 49;
 
 // 1 znak rozdielający komendy
 #define SEPARATOR_CHAR '\n'
+
+//  ile losowych losowac
+#define LOS_MAX 20
+
 

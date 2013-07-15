@@ -10,6 +10,34 @@
 byte status = STATE_INIT;      // na pocztku jest w trakcje inicjacji
 // koniec stanu uC
 
+Servo servoZ;
+long margin_x_min = 0;    // odstępstwo od prawdziwej pozycji X
+long margin_y_min = 0;    // odstępstwo od prawdziwej pozycji Y
+boolean lock_system = false;    // czy wykonywać tylko ruch silnikami
+boolean send_ret = true;        // czy wysyłać odpowiedzi po wykonaniu komend
+boolean last_stepper_operation = false; 
+
+String stos = "";
+unsigned int stos_length = 0;
+
+long unsigned acc_x = ACCELERX;
+long unsigned acc_y = ACCELERY;
+
+volatile bool was_interrupt = LOW;    // przerwania połączona spójnikiem OR
+volatile bool int0_value = LOW;
+volatile bool int1_value = LOW;
+volatile bool int2_value = LOW;
+volatile bool int3_value = LOW;
+//volatile bool int4_value = LOW;
+//volatile bool int5_value = LOW;
+
+long int max_x_pos = -1;
+long int max_y_pos = -1;
+
+volatile unsigned long encoder_x = 0;    // pozycja enkodera (nieminusowa, volatile bo uzywana w pezrwaniach)
+volatile unsigned long encoder_y = 0;    // pozycja enkodera (nieminusowa, volatile bo uzywana w pezrwaniach)
+boolean read_waga =false;
+
 // obsluga zrodel wejscia
 Connection * connection;        // Adb connection.
 boolean adb_ready = false;
@@ -23,9 +51,6 @@ boolean Console3Complete = false;   // This will be set to true once we have a f
 NewPing ultrasonic0(PIN_ULTRA0_TRIG, PIN_ULTRA0_ECHO, MAX_DISTANCE);
 NewPing ultrasonic1(PIN_ULTRA1_TRIG, PIN_ULTRA1_ECHO, MAX_DISTANCE);
 
-String stos = "";
-int stos_length = 0;
-
 void setupSerial(){      // uzyte w setup()
   if (DEBUG_OVER_SERIAL){
     Serial.begin(SERIAL0_BOUND);
@@ -38,7 +63,8 @@ void setupSerial(){      // uzyte w setup()
     delay(1000);
     Serial3.print( "AT+PIN0000" );
     delay(1000);
-    Serial3.print( "AT+NAME__BT_NAME__" );
+    String btdn = "AT+NAME" + String(BT_DEV_NAME);
+    Serial3.print( btdn );
   }
 }
 
@@ -54,14 +80,6 @@ AccelStepper stepperY(4, STEPPER_Y_STEP0, STEPPER_Y_STEP1, STEPPER_Y_STEP2, STEP
 AccelStepper stepperY(1, STEPPER_Y_STEP, STEPPER_Y_DIR);// Step, DIR
 #endif
 
-Servo servoZ;
-long margin_x_min = 0;
-long margin_y_min = 0;
-boolean lock_system = false;
-boolean send_ret = true;        // czy wysyłać odpowiedzi po wykonaniu komend
-boolean last_stepper_operation = false;
-
-#define LOS_MAX 20
 
 void setupOutputs(){      // uzyte w setup()
   pinMode( STATUS_LED01, OUTPUT);      // LEDY podświetlenia
@@ -77,7 +95,6 @@ void setupOutputs(){      // uzyte w setup()
   pinMode( IRRX_PIN, INPUT);
   pinMode( IRRY_PIN, INPUT);
   pinMode( IRRZ_PIN, INPUT);
-
 
   pinMode( PIN_MADDR0, OUTPUT);      // adresowanie wyjscia w multiplekserze
   pinMode( PIN_MADDR1, OUTPUT);
@@ -100,9 +117,6 @@ void setupOutputs(){      // uzyte w setup()
   digitalWrite( STATUS_LED09, LOW );
 }
 
-long unsigned acc_x = ACCELERX;
-long unsigned acc_y = ACCELERY;
-
 void setupSteppers(){                  // uzyte w setup()
   stepperX.setAcceleration(ACCELERX);    // lewo prawo
   stepperX.setMaxSpeed(SPEEDX); 
@@ -116,7 +130,6 @@ void setupUltrasonic(){      // uzyte w setup()
 
 void setupADB(){      // uzyte w setup()
   if (USE_ADB ){
-    //    delay(500);
     ADB::init();
     delay(500);
     connection = ADB::addConnection("tcp:ADB_PORT", true, adbEventHandler);  // Open an ADB stream to the phone's shell. Auto-reconnect. Use any unused port number eg:4568
@@ -147,17 +160,6 @@ void setupInts(){      // uzyte w setup()
   attachInterrupt( INT5, on_int5R, CHANGE);    // nasłuchuj zmiany PIN 18 // Enkoder Y
   //  attachInterrupt( INT5, on_int5F, FALLING);    // nasłuchuj zmiany PIN 18// Enkoder Y
 }
-
-volatile bool was_interrupt = LOW;    // przerwania połączona spójnikiem OR
-volatile bool int0_value = LOW;
-volatile bool int1_value = LOW;
-volatile bool int2_value = LOW;
-volatile bool int3_value = LOW;
-//volatile bool int4_value = LOW;
-//volatile bool int5_value = LOW;
-
-volatile unsigned long encoder_x = 0;    // pozycja enkodera (nieminusowa, volatile bo uzywana w pezrwaniach)
-volatile unsigned long encoder_y = 0;    // pozycja enkodera (nieminusowa, volatile bo uzywana w pezrwaniach)
 
 void on_int0R(){  
   int0_value = HIGH;
@@ -218,9 +220,10 @@ void setup(){
   //interrupts();
 }
 
-unsigned long counter20 = 0, counter40 = 0, counter100 = 0, counter1000 = 0;
-unsigned long milis20 = 0,  milis40 = 0, milis100 = 0, milis1000 = 0;
+unsigned long counter100 = 0, counter1000 = 0;
+unsigned long milis40 = 0, milis100 = 0, milis1000 = 0;
 unsigned long mil = 0;
+
 
 void loop(){
   run_steppers();
@@ -232,19 +235,13 @@ void loop(){
     int0_value = LOW;
   }
   mil = millis();
-  if( mil > milis20 + 20 ){      // 50 razy na sek
-    //   in_20ms();
-    //    counter20++;
-    //    milis20 = mil;
-  }
-  if( mil > milis40 + 40 ){      // 25 razy na sek
+  /*
+  if(  mil > milis40 + 40 ){      // 25 razy na sek
     in_40ms();
-    counter40++;
     milis40 = mil;
-  }
-  if( mil > milis100 + 100 ){      // 10 razy na sek
+  }*/
+  if( read_waga && mil > milis100 + 50 ){      // 20 razy na sek
     in_100ms();
-    counter100++;
     milis100 = mil;
   }
   if( mil > milis1000 + 1000 ){      // 1 razy na sek
@@ -254,6 +251,7 @@ void loop(){
   }
   if( stos_length ){// gdy odblokuje sie lock_system to wykonaj nastepne polecenie
     String runcmd = stosPop();
+    send_current_position( false );                   // pewnie przemieszczałem się wiec wyslij do androida gdzie jestem
     parseInput( runcmd );                      // parsuj wejscie
   }
   if (Console0Complete) {
@@ -273,12 +271,12 @@ void loop(){
   }
 }
 
-void in_20ms(){
-}
 void in_40ms(){
-  digitalWrite( STATUS_LED04, counter40%2 );  
+
 }
 void in_100ms(){
+  long unsigned int waga = read_szklanka();
+  send2android("GLASS " + String(waga));
 }
 
 void in_1000ms( ){
@@ -288,18 +286,11 @@ void in_1000ms( ){
     //send2android( String("RET VAL DISTANCE0 ") +srednia );
   }else if(counter100 % 4 == 2){    
     unsigned int ble = analogRead(A0);
-    send2android( String("RET VAL ANALOG0 ") +ble);
+    send2android( String("VAL ANALOG0 ") +ble);
   }else if(counter100 % 4 == 3){
     unsigned int srednia = readDistance1();
-    //    send2android( String("RET VAL DISTANCE1 ") +srednia);
+    //    send2android( String("VAL DISTANCE1 ") +srednia);
   }
-}
-
-unsigned int readDistance0(){
-  return ultrasonic0.ping_median( DIST_REPEAT ); // Do multiple pings (default=5), discard out of range pings and return median in microseconds. 
-}
-unsigned int readDistance1(){
-  return ultrasonic1.ping_median( DIST_REPEAT ); // Do multiple pings (default=5), discard out of range pings and return median in microseconds. 
 }
 
 long decodePosition( int axis, String input, int odetnij ){
@@ -314,23 +305,18 @@ long decodePosition( int axis, String input, int odetnij ){
     }
     if( axis == AXIS_X){
       pos = stepperX.targetPosition() + diff * STEPPER_X_MUL;
-    }
-    else if( axis == AXIS_Y){
+    }else if( axis == AXIS_Y){
       pos = stepperY.targetPosition() + diff * STEPPER_Y_MUL;
-    }
-    else if( axis == AXIS_Z){
+    }else if( axis == AXIS_Z){
       // generalnie niemozliwe
     }
-  }
-  else{                                 // dokladna pozycja 
+  }else{                                 // dokladna pozycja 
     pos = input.toInt();    // pozycja sprzętowa jest oddalona o margin_x_min od pozycji programowej
     if( axis == AXIS_X){
       pos = margin_x_min + pos * STEPPER_X_MUL;
-    }
-    else if( axis == AXIS_Y){
+    }else if( axis == AXIS_Y){
       pos = margin_y_min + pos * STEPPER_Y_MUL;
-    }
-    else if( axis == AXIS_Z){
+    }else if( axis == AXIS_Z){
       pos = pos;
     }    
   }
@@ -377,8 +363,7 @@ void parseInput( String input ){   // zrozum co sie dzieje
       if(pin != 0 ){
         if( input.endsWith("ON") ){
           digitalWrite(pin, HIGH );      
-        }
-        else{
+        } else{
           digitalWrite(pin, LOW );
         }
       }
@@ -416,10 +401,19 @@ void parseInput( String input ){   // zrozum co sie dzieje
     }else if( input.startsWith("SET ACCY") ){      
       long val = decodeInt( input, 9 );    // SET ACCY i spacja
       stepperY.setAcceleration(val);
-
       //    }else if( input.startsWith("SET ACCZ") ){
       //      long val = decodeInt( input, 9 );    // SET ACCZ i spacja
       //      stepperZ.setAcceleration(val);      
+    }else if( input.startsWith("SET Z MAX") ){
+      z_up();
+    }else if( input.startsWith("SET Z MIN") ){
+      z_down();
+
+    }else if( input.startsWith("LIVE WEIGHT ON") ){    // odczytuj wagi co 10ms
+      read_waga = true;
+    }else if( input.startsWith("LIVE WEIGHT OFF") ){
+      read_waga = false;
+
     }else if( input.startsWith("MIX ") ){      // MIX 245
       long czas = decodeInt( input, 4 );        // SET MIX i spacja
       mieszaj(czas);
@@ -431,18 +425,15 @@ void parseInput( String input ){   // zrozum co sie dzieje
     if( input == "GET STATUS" ){
       if( status == STATE_BUSY ){
         send2android("VAL BUSY");
-      }
-      else if( status == STATE_READY ){
+      }else if( status == STATE_READY ){
         send2android("VAL READY");
-      }
-      else if( status == STATE_ERROR ){
+      }else if( status == STATE_ERROR ){
         send2android("VAL ERROR");
-      }
-      else if( status == STATE_INIT ){
+      }else if( status == STATE_INIT ){
         send2android("VAL INIT");
       }
     }else if( input == "GET CARRET" ){      // pozycja karetki x,y
-      ret_current_position();
+      send_current_position( true );
     }else if( input == "GET GLASS" ){       // waga szklanki
       long unsigned int waga = read_szklanka();
       send2android("GLASS " + String(waga));
@@ -461,8 +452,7 @@ void parseInput( String input ){   // zrozum co sie dzieje
       defaultResult = false;  
     }
     defaultResult = false;
-  }
-  else if( input.startsWith("IRR") ){
+  }else if( input.startsWith("IRR") ){
     if( input.startsWith("IRR STOP") ){    // zatrzymaj wszystko, ale zamknij dozownik plynow, zatrzymaj silniki
       defaultResult = false;
       status = STATE_BUSY; 
@@ -471,7 +461,7 @@ void parseInput( String input ){   // zrozum co sie dzieje
   } else if( input == "READY" ){      // odeślij READY
     send_ret = true;
     defaultResult = false;
-    ret_current_position();   
+    send_current_position(true);   
   }else if( input == "NORET" ){
     send_ret = false;
   }else if( input == "PING" ){      // odeslij PONG
@@ -514,6 +504,14 @@ void parseInput( String input ){   // zrozum co sie dzieje
       f=f+2;
     }
     stosPush("READY");
+  }else if( input == "MACHAJZ" ){       // wykonaj 10 ruchów MAX - MIN
+    stosPush("NORET");
+    for(byte f = 0;f<LOS_MAX;){
+      stosPush("SET Z MAX");
+      stosPush("SET Y MIN");
+      f=f+2;
+    }
+    stosPush("READY");
   }else if( input == "LOSUJX" ){       // wykonaj 10 losowych ruchów po X
     stosPush("NORET");
     for(byte f = 0;f<LOS_MAX;){
@@ -539,12 +537,15 @@ void parseInput( String input ){   // zrozum co sie dzieje
   }
 }
 
-void ret_current_position(){ 
+void send_current_position( boolean isReady){ 
     long int posx = (stepperX.currentPosition() +  margin_x_min) /STEPPER_X_MUL;
     long int posy = (stepperY.currentPosition() +  margin_y_min) /STEPPER_Y_MUL;    // to jest pozycja skrajna
     long int posz = 0;
-    String ret ="READY AT " + String(posx) + "," + String(posy)+ "," + String(posz); 
-    send2android(ret);
+    if(isReady){
+      send2android("READY AT " + String(posx) + "," + String(posy)+ "," + String(posz));
+    }else{
+      send2android("POS " + String(posx) + "," + String(posy)+ "," + String(posz));
+    }
 }
 
 //void on_int1R(){  int1_value = HIGH;}   // pin 3      // Krańcowy Z na wcisniecie
@@ -556,9 +557,12 @@ void on_int1F(){
 void z_down(){   // zajedz silnikiem Z na dół
   int1_value = LOW;
   servoZ.attach(STEPPER_Z_PWM);                  // przypisz do pinu, uruchamia PWMa
-  servoZ.write(SERVOZ_UP);                       // jedź troche w górę
+  servoZ.writeMicroseconds(SERVOZ_UP);                       // jedź troche w górę
   delay(100);
-  servoZ.write(SERVOZ_DOWN);       // a potem jedz w dol
+  servoZ.writeMicroseconds(SERVOZ_DOWN);       // a potem jedz w dol
+
+  delay(2000);
+/*
   attachInterrupt( INT1, on_int1F, FALLING);   // nasłuchuj zmiany PIN 3    // Krańcowy Z (dolny) na wcisniecie daje zero
   delay(100);                                  // zjedz kawałek zanim znow podlacze przerwania
   int1_value = LOW;
@@ -566,14 +570,23 @@ void z_down(){   // zajedz silnikiem Z na dół
     //      send2debuger( "irr", "test " + String(aaa) );
     delay(20);
   }
-  servoZ.detach();                             // odetnij sterowanie
   detachInterrupt(INT1);                      // odlacz przerwanie, jestem na dole
+  */
+  servoZ.detach();                             // odetnij sterowanie
 }
+void z_up(){   // zajedz silnikiem Z w górę
+  int1_value = LOW;
+  servoZ.attach(STEPPER_Z_PWM);                // przypisz do pinu, uruchamia PWMa
+  servoZ.writeMicroseconds(SERVOZ_UP);                     // jedź w górę
+  delay(2000);
+  servoZ.detach();                             // odetnij sterowanie
+}
+
 void nalej( long czas ){   // nalej cieczy przez tyle czasu
   int1_value = LOW;
   pinMode(PIN3, INPUT);
   servoZ.attach(STEPPER_Z_PWM);                   // przypisz do pinu, uruchamia PWMa
-  servoZ.write(SERVOZ_UP);            // jedź aż na górę
+  servoZ.writeMicroseconds(SERVOZ_UP);            // jedź aż na górę
   attachInterrupt( INT1, on_int1F, FALLING);    // nasłuchuj zmiany PIN 3    // Krańcowy Z (gorny) na wcisniecie daje zero
   while( int1_value == LOW ){                   // az na górze
     delay(20);                                    // todo zabezpieczenie gdy po 5 sek nadal nie jest na górze
@@ -589,14 +602,14 @@ void nalej( long czas ){   // nalej cieczy przez tyle czasu
 ///  int aaa = 0;
 
   delay( 1000 );
-  /*
+/*
   while(int1_value == LOW){                    // az dotknie krańcówki dolnej
     send2debuger( "irr", "test " + String(aaa) );
     delay(20);
     aaa++;
   }
   detachInterrupt(INT1);
-    */
+ */
   servoZ.detach();                             // odetnij sterowanie
 }
 
@@ -650,8 +663,6 @@ void readSerial3Input( String input ){       // odebralem z BT od androida
     send2debuger( "READ3", input);
   }
 }
-long int max_x_pos = -1;
-long int max_y_pos = -1;
 
 void readAndroidInput( String input ){    // odbierz przez ADB z androida
   if(DEBUG_ADB_INPUT){
@@ -659,6 +670,7 @@ void readAndroidInput( String input ){    // odbierz przez ADB z androida
   }
   parseInput( input );          // parsuj wejscie
 }
+
 boolean irrx_handled = true;
 boolean irrx_max = false;
 boolean irrx_min = false;
@@ -690,7 +702,7 @@ void run_steppers(){    // robione w każdym przebiegu loop
       stepperX.disableOutputs();
       stepperY.disableOutputs();
       if(send_ret){
-        ret_current_position();    // wyslij ze skonczylem
+        send_current_position(true);    // wyslij ze skonczylem
       }
       last_stepper_operation = false;
     }
@@ -814,10 +826,12 @@ String stosPop(){        // pobierz ze stosu
     return ""; 
   }
 }
+
 void stosPush( String in ){       // dodaj do stosu
   stos  = stos + in + String(SEPARATOR_CHAR);
   stos_length++;
 }
+
 void stosClear(){        // pobierz ze stosu
   stos  = "";
   stos_length = 0;
@@ -911,7 +925,18 @@ void serialEvent3(){                       // FUNKCJA WBUDOWANA - zbieraj dane z
 
 // obluga wag
 float read_szklanka(){
-  return read_butelka( 0 );    // kieliszek jest jako waga 0
+  digitalWrite( PIN_MADDR0, 0 );      //   // Ustaw numer na muxach, wystaw adres
+  digitalWrite( PIN_MADDR1, 0 );
+  digitalWrite( PIN_MADDR2, 0 );
+  digitalWrite( PIN_MADDR3, 0 );
+  unsigned long rr = 0;
+  delay(MULTI_ADDR_TIME);
+  unsigned int j=0;
+  unsigned int count = 1<<WAGA_READ_COUNT;
+  for( j=0; j<count ;j++){
+    rr+= analogRead(PIN_WAGA_ANALOG);
+  }
+  return rr >>WAGA_READ_COUNT;
 }
 
 unsigned long read_butelka(byte numer){
@@ -921,7 +946,7 @@ unsigned long read_butelka(byte numer){
   digitalWrite(PIN_MADDR3, bitRead(numer,3) );
   unsigned long rr = 0;
   delay(MULTI_ADDR_TIME);
-  long unsigned int j=0;
+  unsigned int j=0;
   int count = 1<<MULTI_READ_COUNT;
   for( j=0; j<count ;j++){
     rr+= analogRead(PIN_WAGA_ANALOG);
@@ -932,5 +957,12 @@ unsigned long read_butelka(byte numer){
 
 unsigned long int maplong(unsigned long x, unsigned long in_min, unsigned long in_max, unsigned long out_min, unsigned long out_max){
   return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+}
+
+unsigned int readDistance0(){
+  return ultrasonic0.ping_median( DIST_REPEAT ); // Do multiple pings (default=5), discard out of range pings and return median in microseconds. 
+}
+unsigned int readDistance1(){
+  return ultrasonic1.ping_median( DIST_REPEAT ); // Do multiple pings (default=5), discard out of range pings and return median in microseconds. 
 }
 
