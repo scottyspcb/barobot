@@ -4,10 +4,13 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.TabHost;
+import android.widget.ToggleButton;
 import android.widget.TabHost.TabSpec;
 import android.widget.TabWidget;
 import android.widget.TextView;
@@ -19,6 +22,8 @@ public class DebugWindow extends Activity {
 	TextView tvAdcvalue;
 	private static DebugWindow instance;
 	SeekBar sbAdcValue;
+    private ListView mConversationView;
+    ArrayAdapter<String> mConversationArrayAdapter;
 
 	public View getObject(String namespace, String mDrawableName) {
 		int resID = getResources().getIdentifier(mDrawableName, namespace,
@@ -97,9 +102,21 @@ public class DebugWindow extends Activity {
 		button_toggle bt = new button_toggle();
 		button_zajedz bz = new button_zajedz();
 
-		int[] buttons = {R.id.kalibrujx,
+		int[] buttons = {
+				R.id.kalibrujx,
 				R.id.kalibrujy,
 				R.id.kalibrujz,
+				
+				R.id.length_x,
+				R.id.length_x2,
+				R.id.length_y,
+				R.id.length_y2,
+				R.id.max_x,
+				R.id.min_x,		
+				R.id.max_y,
+				R.id.min_y,
+				R.id.max_z,
+				R.id.min_z,			
 				R.id.machajx,
 				R.id.machajy,
 				R.id.machajz,
@@ -116,9 +133,9 @@ public class DebugWindow extends Activity {
 				R.id.set_y_600,
 				R.id.set_y_100,
 				R.id.set_y_10,
-				/*				R.id.set_y_0,
+				R.id.set_y_0,
 				R.id.set_y10,
-				R.id.set_y100,*/
+				R.id.set_y100,
 				R.id.set_y600,
 				R.id.glweight,
 				R.id.bottweight,
@@ -128,57 +145,45 @@ public class DebugWindow extends Activity {
 			xb1.setOnClickListener(bc);			
 		}
 
-		Button xbb1 = (Button) findViewById(R.id.led1);
-		xbb1.setOnClickListener(bt);
-		Button xbb2 = (Button) findViewById(R.id.led2);
-		xbb2.setOnClickListener(bt);
-		Button xbb3 = (Button) findViewById(R.id.led3);
-		xbb3.setOnClickListener(bt);
-		Button xbb4 = (Button) findViewById(R.id.led4);
-		xbb4.setOnClickListener(bt);
-		Button xbb5 = (Button) findViewById(R.id.led5);
-		xbb5.setOnClickListener(bt);
-		Button xbb6 = (Button) findViewById(R.id.led6);
-		xbb6.setOnClickListener(bt);
-		Button xbb7 = (Button) findViewById(R.id.led7);
-		xbb7.setOnClickListener(bt);	
-		Button xbb8 = (Button) findViewById(R.id.led8);
-		xbb8.setOnClickListener(bt);
-		Button xbb9 = (Button) findViewById(R.id.led9);
-		xbb9.setOnClickListener(bt);
-		Button xbb10 = (Button) findViewById(R.id.led10);
-		xbb10.setOnClickListener(bt);
-		
-		
-		Button nalej1 = (Button) findViewById(R.id.nalej1);
-		nalej1.setOnClickListener(bz);
-		Button nalej2 = (Button) findViewById(R.id.nalej2);
-		nalej2.setOnClickListener(bz);
-		Button nalej3 = (Button) findViewById(R.id.nalej3);
-		nalej3.setOnClickListener(bz);
-		Button nalej4 = (Button) findViewById(R.id.nalej4);
-		nalej4.setOnClickListener(bz);
-		Button nalej5 = (Button) findViewById(R.id.nalej5);
-		nalej5.setOnClickListener(bz);
-		Button nalej6 = (Button) findViewById(R.id.nalej6);
-		nalej6.setOnClickListener(bz);
-		Button nalej7 = (Button) findViewById(R.id.nalej7);
-		nalej7.setOnClickListener(bz);
-		Button nalej8 = (Button) findViewById(R.id.nalej8);
-		nalej8.setOnClickListener(bz);
-		Button nalej9 = (Button) findViewById(R.id.nalej9);
-		nalej9.setOnClickListener(bz);
-		Button nalej10 = (Button) findViewById(R.id.nalej10);
-		nalej10.setOnClickListener(bz);
+		int[] togglers = {
+				R.id.wagi_live,
+				R.id.led1,
+				R.id.led2,
+				R.id.led3,
+				R.id.led4,
+				R.id.led5,
+				R.id.led6,
+				R.id.led7,
+				R.id.led8,
+				R.id.led9,
+				R.id.led10};
+		for(int i =0; i<togglers.length;i++){
+			Button xb1 = (Button) findViewById(togglers[i]);
+			xb1.setOnClickListener(bt);			
+		}
 
-		Button nalej11 = (Button) findViewById(R.id.nalej11);
-		nalej11.setOnClickListener(bz);
-		Button nalej12 = (Button) findViewById(R.id.nalej12);
-		nalej12.setOnClickListener(bz);
-		Button nalej13 = (Button) findViewById(R.id.nalej13);
-		nalej13.setOnClickListener(bz);
-		Button nalej14 = (Button) findViewById(R.id.nalej14);
-		nalej14.setOnClickListener(bz);
+		int[] nalejs = {
+				R.id.nalej1,
+				R.id.nalej2,
+				R.id.nalej3,
+				R.id.nalej4,
+				R.id.nalej5,
+				R.id.nalej6,
+				R.id.nalej7,
+				R.id.nalej8,
+				R.id.nalej9,
+				R.id.nalej10,
+				R.id.nalej11,
+				R.id.nalej12,
+				R.id.nalej13,
+				R.id.nalej14,
+				R.id.nalej15,
+				R.id.nalej16};
+		
+		for(int i =0; i<nalejs.length;i++){
+			Button xb1 = (Button) findViewById(nalejs[i]);
+			xb1.setOnClickListener(bz);			
+		}
 
 		int[] wagi = {R.id.waga1,
 				R.id.waga2,
@@ -208,8 +213,40 @@ public class DebugWindow extends Activity {
 		//	waga1.setOnClickListener( list1 );			
 			waga1.setText("init");
 		}
+
+	    // Array adapter for the conversation thread
+	    // String buffer for outgoing messages
+        // Initialize the array adapter for the conversation thread
+        mConversationArrayAdapter = new ArrayAdapter<String>(this, R.layout.message);
+        mConversationView = (ListView) findViewById(R.id.history_list);
+        mConversationView.setAdapter(mConversationArrayAdapter);
 	}
 
+	public void addToList(final String string, final boolean direction ) {
+		final DebugWindow parent = this;
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				if(direction){	// true = na zewnątrz
+					parent.mConversationArrayAdapter.add("<-" +  string.trim() );
+				}else{
+					parent.mConversationArrayAdapter.add("->" +  string.trim() );
+				}
+			}
+		});	
+	}
+
+	public void clearList() {
+		final DebugWindow parent = this;
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				parent.mConversationArrayAdapter.clear();
+			}
+		});	
+	}
+
+	
 	@Override
 	public void onBackPressed() {
 		// super.onBackPressed(); Do not call me!
@@ -234,14 +271,22 @@ public class DebugWindow extends Activity {
 			});
 		}
 	}
+	public void setChecked(final int target, final boolean equals) {
+		// 	if (result != null) {
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				ToggleButton tb			= (ToggleButton) findViewById(target);
+				if (tb != null) {
+					tb.setChecked(equals);
+				}
+			}
+		});
+	}
 
 	public static void showToast(String string) {
 		Toast.makeText(DebugWindow.getInstance(), R.string.not_connected,
 				Toast.LENGTH_SHORT).show();
 	}
 
-	public void setChecked(int dist1, boolean equals) {
-		// TODO Auto-generated method stub
-		
-	}
 }

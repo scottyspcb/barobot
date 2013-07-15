@@ -280,6 +280,10 @@ public class queue extends AbstractServerListener{
 		        }else{
 		        	Constant.log(Constant.TAG, "+ NO_CONN: " + ob);
 		        }
+                DebugWindow dd = DebugWindow.getInstance();
+                if(dd!= null){
+                	dd.addToList(ob, true );
+                }
 			    iter.remove();
 			}
 		} catch (IOException e)	{

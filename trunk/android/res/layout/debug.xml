@@ -14,15 +14,17 @@ android:layout_height="fill_parent">
 			android:id="@android:id/tabs"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content" >		
-			<TextView
-			android:tag="tab0"
-			android:text="Rozkazy"
-			android:background="@android:drawable/btn_star_big_on"
-			android:layout_width="wrap_content"
-			android:layout_height="fill_parent"
-			/>
 
 			<TextView
+			    android:id="@+id/tab_head1"
+			    android:layout_width="wrap_content"
+			    android:layout_height="fill_parent"
+			    android:background="@android:drawable/btn_star_big_on"
+			    android:tag="tab0"
+			    android:text="Rozkazy" />
+
+			<TextView
+			    android:id="@+id/tab_head2"
 			    android:layout_width="wrap_content"
 			    android:layout_height="fill_parent"
 			    android:background="@android:drawable/btn_star_big_on"
@@ -30,6 +32,7 @@ android:layout_height="fill_parent">
 			    android:text="Kalibracja" />
 
 			<TextView
+			    android:id="@+id/tab_head3"
 			    android:layout_width="wrap_content"
 			    android:layout_height="fill_parent"
 			    android:background="@android:drawable/btn_star_big_on"
@@ -387,21 +390,6 @@ android:layout_height="fill_parent">
 			            android:progress="300"
 			            android:visibility="visible" />
 			    </RelativeLayout>
-			</RelativeLayout>
-
-			<RelativeLayout
-			    android:id="@+id/tab3"
-			    android:layout_width="match_parent"
-			    android:layout_height="match_parent" >
-
-    <ListView
-        android:id="@+id/in2"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:stackFromBottom="true"
-        android:transcriptMode="alwaysScroll" />
-
 			</RelativeLayout>
 
 			<RelativeLayout
@@ -932,7 +920,7 @@ android:layout_height="fill_parent">
 			        android:textStyle="bold" />
 
 			    <ToggleButton
-			        android:id="@+id/toggleButton1"
+			        android:id="@+id/wagi_live"
 			        android:layout_width="wrap_content"
 			        android:layout_height="wrap_content"
 			        android:layout_alignLeft="@+id/dlugosc_z"
@@ -958,6 +946,28 @@ android:layout_height="fill_parent">
 			        android:layout_alignBottom="@+id/glweight"
 			        android:layout_toRightOf="@+id/glweight"
 			        android:text="Czytaj butelki raz" />
+
+			    <AnalogClock
+			        android:id="@+id/analogClock1"
+			        android:layout_width="wrap_content"
+			        android:layout_height="wrap_content"
+			        android:layout_alignParentRight="true"
+			        android:layout_below="@+id/set_y600" />
+
+			</RelativeLayout>
+
+			<RelativeLayout
+			    android:id="@+id/tab3"
+			    android:layout_width="match_parent"
+			    android:layout_height="match_parent" >
+
+    <ListView
+        android:id="@+id/history_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:stackFromBottom="true"
+        android:transcriptMode="alwaysScroll" />
 
 			</RelativeLayout>
 
