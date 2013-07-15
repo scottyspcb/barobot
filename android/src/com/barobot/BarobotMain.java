@@ -9,17 +9,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,11 +23,7 @@ import android.widget.Toast;
 public class BarobotMain extends Activity {
     // Layout Views
 	private static BarobotMain instance;
-    private ListView mConversationView;
 
-    // Array adapter for the conversation thread
-    ArrayAdapter<String> mConversationArrayAdapter;
-    // String buffer for outgoing messages
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -43,10 +32,8 @@ public class BarobotMain extends Activity {
         // Set up the window layout
         setContentView(R.layout.main);
 
-        // Initialize the array adapter for the conversation thread
-        mConversationArrayAdapter = new ArrayAdapter<String>(this, R.layout.message);
-        mConversationView = (ListView) findViewById(R.id.in);
-        mConversationView.setAdapter(mConversationArrayAdapter);
+        virtualComponents.init( this );
+        
 
         // Initialize the compose field with a listener for the return key
         /*
@@ -73,7 +60,7 @@ public class BarobotMain extends Activity {
 		this.runTimer();
     }
 
-    // test okresowego wywo³ywania poleceñ
+    // test okresowego wywoï¿½ywania poleceï¿½
     private void runTimer() {
 		// TODO Auto-generated method stub
     	TimerTask scanTask;
@@ -103,7 +90,7 @@ public class BarobotMain extends Activity {
         switch (item.getItemId()) {
         case R.id.secure_connect_scan:
              if( queue.getInstance().checkBT() == false ){
-                Toast.makeText(this, "Bluetooth jest niedostêpny", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Bluetooth jest niedostï¿½pny", Toast.LENGTH_LONG).show();
                 finish();
             }
             // Launch the DeviceListActivity to see devices and do scan
@@ -153,7 +140,10 @@ public class BarobotMain extends Activity {
             case Constant.MESSAGE_STATE_CHANGE:
                 switch (msg.arg1) {
                 case Constant.STATE_CONNECTED:
-                    mConversationArrayAdapter.clear();
+                    DebugWindow dd = DebugWindow.getInstance();
+                    if(dd!= null){
+                    	dd.clearList();
+                    }
                     break;
                 case Constant.STATE_CONNECTING:
                     break;
@@ -165,7 +155,10 @@ public class BarobotMain extends Activity {
             case Constant.MESSAGE_WRITE:
                 byte[] writeBuf = (byte[]) msg.obj;                // construct a string from the buffer
                 String writeMessage = new String(writeBuf);
-                mConversationArrayAdapter.add("Me:  " + writeMessage);
+                DebugWindow dd = DebugWindow.getInstance();
+                if(dd!= null){
+                	dd.addToList(writeMessage, true );
+                }
                 break;
             }
         }
@@ -230,16 +223,7 @@ public class BarobotMain extends Activity {
         Constant.log(Constant.TAG, "-- ON STOP --");
     }
 */
-	public void addToList3(final String string) {
-		final BarobotMain parent = this;
-		runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				parent.mConversationArrayAdapter.add("robot:  " + string );
-			}
-		});
-			
-	}
+	
 	
 	
 }

@@ -9,33 +9,32 @@ public class input_parser {
 	/*
 //	DebugWindow.getInstance().setText( R.id.inputArea, in.replace("\n", "|") );
 	*/
-	static BarobotMain bb6 = null;
 	public static String separator = "\n";
 
 	public static void readInput( final String in ){
 		if(null == in){
 			return;
 		}
-		if( input_parser.bb6 == null ){
-			input_parser.bb6 = BarobotMain.getInstance();			
-		}
+		DebugWindow	bb6 = DebugWindow.getInstance();		
+
 		synchronized (input_parser.class) {
 			input_parser.buffer = input_parser.buffer + in;
+			
 			//Log.i(Constant.TAG, "input [" + input_parser.buffer+"]" );
 			int end = input_parser.buffer.indexOf(separator);
 			if( end!=-1){
-				while( end != -1 ){		// podziel to na kawa³ki
-			//		Log.i(Constant.TAG, "input [" + input_parser.buffer+"] d³:" +input_parser.buffer.length() );
+				while( end != -1 ){		// podziel to na kawaï¿½ki
+			//		Log.i(Constant.TAG, "input [" + input_parser.buffer+"] dï¿½:" +input_parser.buffer.length() );
 					String command		= input_parser.buffer.substring(0, end);
 					input_parser.buffer = input_parser.buffer.substring(end+1);
 					command				= command.trim();
 				//	Log.i(Constant.TAG, "zostalo [" + input_parser.buffer +"]");
 					if(! "".equals(command)){
+		                if(bb6!= null){
+		                	bb6.addToList(command, false );
+		                }
+						//bb6.addToList(command + " /// " + input_parser.buffer );
 						showInput(command);
-						if(bb6 !=null){
-							bb6.addToList3( command );
-							//bb6.addToList(command + " /// " + input_parser.buffer );
-						}
 					}
 					end					= input_parser.buffer.indexOf(separator);
 				//	Log.i(Constant.TAG, "[" + command +"/"+ input_parser.buffer+"]");
@@ -66,12 +65,12 @@ public class input_parser {
 	private static void parseInput(String fromArduino) {
 		Log.i(Constant.TAG, "parse:[" + fromArduino +"]");
 
-		if( fromArduino.startsWith("RET VAL ANALOG0")){
-			String fromArduino2 = fromArduino.replace("RET VAL ANALOG0 ", "");			
+		if( fromArduino.startsWith("VAL ANALOG0")){
+			String fromArduino2 = fromArduino.replace("VAL ANALOG0 ", "");			
 			virtualComponents.set( "ANALOG0",fromArduino2);
 
-		}else if( fromArduino.startsWith("RET VAL DISTANCE0")){
-			String fromArduino2 = fromArduino.replace("RET VAL DISTANCE0 ", "");
+		}else if( fromArduino.startsWith("VAL DISTANCE0")){
+			String fromArduino2 = fromArduino.replace("VAL DISTANCE0 ", "");
 			virtualComponents.set( "DISTANCE0",fromArduino2);
 
 		}else if(fromArduino.startsWith("IRR ")){	
@@ -95,7 +94,7 @@ public class input_parser {
 
 		}else if(fromArduino.startsWith("RET SET LED")){	
 			String fromArduino2 = fromArduino.replace("RET SET LED", "");
-			String[] tokens = fromArduino2.split(" ");		// numer i wartoœæ
+			String[] tokens = fromArduino2.split(" ");		// numer i wartoï¿½ï¿½
 			virtualComponents.set( "LED" + tokens[0],  tokens[1] );		//  ON lub OFF		
 
 		}else if(fromArduino.startsWith("READY AT")){	

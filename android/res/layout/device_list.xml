@@ -24,6 +24,7 @@
                 android:layout_width="514dp"
                 android:layout_height="match_parent"
                 android:stackFromBottom="true" >
+
             </ListView>
         </LinearLayout>
 
@@ -34,28 +35,98 @@
             android:orientation="vertical" >
 
             <CheckBox
-                android:id="@+id/checkBox4"
-                android:layout_width="wrap_content"
+                android:id="@+id/conf_auto_bt"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Włącz obsługę BlueTooth" />
 
             <CheckBox
-                android:id="@+id/checkBox1"
+                android:id="@+id/conf_bt_reconnect"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Automatycznie łącz ostatni BlueTooth" />
 
             <CheckBox
-                android:id="@+id/checkBox2"
+                android:id="@+id/conf_auto_adb"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Włącz serwer ADB" />
 
             <CheckBox
-                android:id="@+id/checkBox3"
+                android:id="@+id/conf_fast_refresh"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Szybkie odświerzanie" />
+
+            <TextView
+                android:id="@+id/textView1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Prędkość X"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <EditText
+                android:id="@+id/conf_speed_x"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="number"
+                android:text="500" >
+
+                <requestFocus />
+            </EditText>
+
+            <TextView
+                android:id="@+id/TextView01"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Przyśpieszenie X"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <EditText
+                android:id="@+id/conf_acc_x"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="number"
+                android:text="1350" />
+
+            <TextView
+                android:id="@+id/TextView03"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Prędkość Y"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <EditText
+                android:id="@+id/conf_speed_y"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="number"
+                android:text="800" />
+
+            <TextView
+                android:id="@+id/TextView02"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Przyśpieszenie Y"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <EditText
+                android:id="@+id/conf_acc_x"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="number"
+                android:text="600" />
+
+            <Button
+                android:id="@+id/save_arduino"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Zapisz w Robocie" />
+
         </LinearLayout>
 
     </LinearLayout>

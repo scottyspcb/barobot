@@ -7,7 +7,9 @@ import android.util.Log;
 
 public class Constant {
     // Debugging
-    public static final String TAG = "BluetoothChat";
+    public static final String TAG = "BarobotBT";
+    public static final String SETTINGS_TAG = "BAROBOT";
+
     public static final boolean D = true;
 
     // Message types sent from the BluetoothChatService Handler
@@ -27,7 +29,7 @@ public class Constant {
     public static final int REQUEST_ENABLE_BT = 3;
     
     // Debugging
-    public static final String TAG2 = "BluetoothChatService";
+    public static final String TAG2 = "BarobotBTService";
 
     // Name for the SDP record when creating server socket
     public static final String NAME_SECURE = "BluetoothChatSecure";
