@@ -9,7 +9,7 @@ public class button_toggle implements OnClickListener{
 	public void onClick(View v) {
   	  	ToggleButton tb			= (ToggleButton) v;
   	  	boolean isChecked		= tb.isChecked();
-  	  	tb.setChecked(!isChecked);		//anuluj zmian�, zr�b to dopiero po otrzymaniu potwierdzenia
+  	  	tb.setChecked(!isChecked);		//anuluj zmian, zrb to dopiero po otrzymaniu potwierdzenia
   	  	queue q = queue.getInstance();
 
 		switch (v.getId()) {

@@ -23,8 +23,8 @@ public class input_parser {
 			//Log.i(Constant.TAG, "input [" + input_parser.buffer+"]" );
 			int end = input_parser.buffer.indexOf(separator);
 			if( end!=-1){
-				while( end != -1 ){		// podziel to na kawa�ki
-			//		Log.i(Constant.TAG, "input [" + input_parser.buffer+"] d�:" +input_parser.buffer.length() );
+				while( end != -1 ){		// podziel to na kawalki
+			//		Log.i(Constant.TAG, "input [" + input_parser.buffer+"] dł:" +input_parser.buffer.length() );
 					String command		= input_parser.buffer.substring(0, end);
 					input_parser.buffer = input_parser.buffer.substring(end+1);
 					command				= command.trim();
@@ -43,7 +43,7 @@ public class input_parser {
         }
 	}
 	private static void showInput( final String in ){
-		queue.getInstance().send("ANDROID " + in );
+		//queue.getInstance().send("ANDROID " + in );
 		/*
 		dialog.runOnUiThread(new Runnable() {
 			@Override
@@ -83,6 +83,10 @@ public class input_parser {
 		}else if(fromArduino.startsWith("LENGTHY")){	
 			String fromArduino2 = fromArduino.replace("LENGTHY ", "");
 			virtualComponents.set( "LENGTHY",fromArduino2);
+
+		}else if(fromArduino.startsWith("LENGTHZ")){
+			String fromArduino2 = fromArduino.replace("LENGTHZ ", "");
+			virtualComponents.set( "LENGTHZ",fromArduino2);
 			
 		}else if(fromArduino.startsWith("GLASS")){	
 			String fromArduino2 = fromArduino.replace("GLASS ", "");
@@ -92,14 +96,29 @@ public class input_parser {
 			String fromArduino2 = fromArduino.replace("WEIGHT ", "");
 			virtualComponents.set( "WEIGHT",fromArduino2);
 
+		}else if(fromArduino.startsWith("RET LIVE WEIGHT")){	
+			String fromArduino2 = fromArduino.replace("RET LIVE WEIGHT ", "");
+			final DebugWindow dialog = DebugWindow.getInstance();
+			if(dialog!=null){
+				dialog.setChecked( R.id.wagi_live, "ON".equals(fromArduino2) );
+			}
 		}else if(fromArduino.startsWith("RET SET LED")){	
 			String fromArduino2 = fromArduino.replace("RET SET LED", "");
-			String[] tokens = fromArduino2.split(" ");		// numer i warto��
-			virtualComponents.set( "LED" + tokens[0],  tokens[1] );		//  ON lub OFF		
+			String[] tokens = fromArduino2.split(" ");		// numer i wartosc
+			virtualComponents.set( "LED" + tokens[0],  tokens[1] );		//  ON lub OFF
+
+		}else if(fromArduino.startsWith("POS AT")){	
+			String fromArduino2 = fromArduino.replace("READY AT ", "");
+			String[] tokens = fromArduino2.split(",");
+	
+			virtualComponents.set( "POSX",tokens[0]);
+			virtualComponents.set( "POSY",tokens[1]);
+			virtualComponents.set( "POSZ",tokens[2]);
 
 		}else if(fromArduino.startsWith("READY AT")){	
 			String fromArduino2 = fromArduino.replace("READY AT ", "");
 			String[] tokens = fromArduino2.split(",");
+			virtualComponents.is_ready = true;
 	
 			virtualComponents.set( "POSX",tokens[0]);
 			virtualComponents.set( "POSY",tokens[1]);

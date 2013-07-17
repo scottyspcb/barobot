@@ -48,7 +48,7 @@ public class queue extends AbstractServerListener{
 		try{
 			server = new Server(adb_port); //Use the same port number used in ADK Main Board firmware
 			if(server.isRunning()){
-				Constant.log("Seeeduino ADK", "Server already running");	
+				Constant.log(Constant.TAG, "Server already running");	
 			}
 			server.start();
 			server.addListener( this );
@@ -117,12 +117,21 @@ public class queue extends AbstractServerListener{
 		Constant.log(Constant.TAG, "setupBT()");
         // Initialize the BluetoothChatService to perform bluetooth connections
         try {
-			mChatService = new BluetoothChatService(  queue.getInstance().mHandler);
+			mChatService = new BluetoothChatService( queue.getInstance().mHandler);
+			autoconnect();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			Constant.log(Constant.TAG, "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
 		}
 	}
+
+    private void autoconnect() {
+    	String bt_id = virtualComponents.get( "LAST_BT_DEVICE", "");
+	    Constant.log(Constant.TAG, "ostati BT "+ bt_id);
+	    if(bt_id!= null && !"".equals(bt_id) ){
+	    	queue.connectBTDeviceId(bt_id);
+	    }
+    }
 
     public boolean checkBT() {
         // Get local Bluetooth adapter
@@ -135,14 +144,16 @@ public class queue extends AbstractServerListener{
         return true;
     }
 
-    public static void connectBTDevice(Intent data) {
-        // Get the device MAC address
-        String address = data.getExtras().getString(Constant.EXTRA_DEVICE_ADDRESS);
-        // Get the BluetoothDevice object
+    public static void connectBTDeviceId(String address) {
+        // Get the BluetoothDevice object    	
+        Constant.log(Constant.TAG, "zapisuje BT "+ address);
         BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
         // Attempt to connect to the device
         mChatService.connect(device);
-    }
+    	// remember device ID
+        virtualComponents.set( "LAST_BT_DEVICE",address);
+    } 
+    
 	public static int startBt() {
         Constant.log(Constant.TAG, "++ ON START ++");
 
@@ -287,7 +298,7 @@ public class queue extends AbstractServerListener{
 			    iter.remove();
 			}
 		} catch (IOException e)	{
-			Constant.log("Seeeduino ADK", "problem sending TCP message");
+			Constant.log(Constant.TAG, "problem sending TCP message");
 		}
 	}
 	public static void stop() {
