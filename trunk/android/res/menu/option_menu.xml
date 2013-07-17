@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 
+
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/secure_connect_scan"
           android:icon="@android:drawable/ic_menu_search"
           android:title="@string/secure_connect" />
 
     <item android:id="@+id/debug_mode_window" android:title="@string/debug_mode_window"></item><group android:id="@+id/group1" android:menuCategory="container" android:enabled="true" android:checkableBehavior="all" android:visible="true">
-        <item android:id="@+id/item1" android:checked="true" android:visible="true" android:titleCondensed="edit_drinks" android:enabled="true" android:checkable="true" android:title="Edycja drinków"></item>
-        <item android:id="@+id/item2" android:checked="false" android:visible="true" android:titleCondensed="synchro_drinks" android:enabled="true" android:checkable="true" android:title="Synchronizacja drinków"></item>
-        <item android:id="@+id/about_item" android:checked="true" android:visible="true" android:titleCondensed="about" android:enabled="false" android:checkable="false" android:title="Informacje"></item>
+        <item android:id="@+id/item1" android:checked="true" android:visible="true" android:titleCondensed="Edycja drinków" android:enabled="true" android:checkable="true" android:title="Edycja drinków"></item>
+        <item android:id="@+id/item2" android:checked="false" android:visible="true" android:titleCondensed="Synchronizacja drinków" android:enabled="true" android:checkable="true" android:title="Synchronizacja drinków"></item>
+        <item android:id="@+id/about_item" android:checked="true" android:visible="true" android:titleCondensed="Informacje" android:enabled="false" android:checkable="false" android:title="Informacje"></item>
     </group>
     
 </menu>

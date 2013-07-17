@@ -258,17 +258,24 @@ public class DebugWindow extends Activity {
 	// Any update to UI can not be carried out in a non UI thread like the one
 	// used
 	// for Server. Hence runOnUIThread is used.
-	public void setText(final int target, final String result) {
+	public void setText(final int target, final String result, boolean now ) {
 		if (result != null) {
-			runOnUiThread(new Runnable() {
-				@Override
-				public void run() {
-					TextView text_field = (TextView) findViewById(target);
-					if (text_field != null) {
-						text_field.setText(result);
-					}
+			if(now){
+				TextView text_field = (TextView) findViewById(target);
+				if (text_field != null) {
+					text_field.setText(result);
 				}
-			});
+			}else{
+				runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						TextView text_field = (TextView) findViewById(target);
+						if (text_field != null) {
+							text_field.setText(result);
+						}
+					}
+				});
+			}
 		}
 	}
 	public void setChecked(final int target, final boolean equals) {

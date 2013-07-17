@@ -4,7 +4,6 @@ package com.barobot;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 
 
 import android.bluetooth.BluetoothAdapter;
@@ -179,7 +178,7 @@ public class BluetoothChatService {
         // Send a failure message back to the Activity
         Message msg = mHandler.obtainMessage(Constant.MESSAGE_TOAST);
         Bundle bundle = new Bundle();
-        bundle.putString(Constant.TOAST, "Nie da³o siê po³¹czyæ");
+        bundle.putString(Constant.TOAST, "Nie daÅ‚o siÄ™ poÅ‚Ä…czyÄ‡");
         msg.setData(bundle);
         mHandler.sendMessage(msg);
 
@@ -326,7 +325,7 @@ public class BluetoothChatService {
         public void write(byte[] buffer) {
             try {
                 mmOutStream.write(buffer);
-                String str = new String(buffer, "UTF-8");
+            //    String str = new String(buffer, "UTF-8");
            //     Log.i(Constant.TAG, "buffer write " + str );
                 
                 // Share the sent message back to the UI Activity

@@ -112,7 +112,7 @@ public class button_click implements OnClickListener{
 			
 
 		case R.id.length_x:
-			// do obecnej pozycji dodaj r�nic� do ko�ca
+			// do obecnej pozycji dodaj różnicę do końca
 			long lengthx	=  virtualComponents.getInt("LENGTHX", 1600);
 			long posx		=  virtualComponents.getInt("POSX", 55);	
 			if( lengthx > 0 ){
@@ -121,12 +121,12 @@ public class button_click implements OnClickListener{
 			}
 			break;	
 		case R.id.length_x2:
-			// od obecnej pozycji odejmij t� pozycj� (powinno zajechac do 0)
+			// od obecnej pozycji odejmij tą pozycję (powinno zajechac do 0)
 			q.send("SET X -" + virtualComponents.getInt("POSY", 0 ));
 			break;		
 
 		case R.id.length_y:
-			// do obecnej pozycji dodaj r�nic� do ko�ca
+			// do obecnej pozycji dodaj różnicę do konkońca
 			long lengthy	=  virtualComponents.getInt("LENGTHY", 600 );
 			long posy		=  virtualComponents.getInt("POSY", 0 );	
 			if( lengthy > 0 ){
@@ -135,7 +135,7 @@ public class button_click implements OnClickListener{
 			}
 			break;	
 		case R.id.length_y2:
-			// od obecnej pozycji odejmij t� pozycj� (powinno zajechac do 0)
+			// od obecnej pozycji odejmij tą pozycję (powinno zajechac do 0)
 			q.send("SET Y -" + virtualComponents.getInt("POSY", 0 ));
 			break;					
 	   }

@@ -24,16 +24,13 @@ public class BarobotMain extends Activity {
     // Layout Views
 	private static BarobotMain instance;
 
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 		instance = this;
         // Set up the window layout
         setContentView(R.layout.main);
-
         virtualComponents.init( this );
-        
 
         // Initialize the compose field with a listener for the return key
         /*
@@ -51,16 +48,18 @@ public class BarobotMain extends Activity {
 	        }
 	    });
 	    */
-
-		boolean res = queue.getInstance().connectADB();
-		if(res == false ){
-			Constant.log("Seeeduino ADK", "Unable to start TCP server" );
-			System.exit(-1);
-		}
+        boolean autoadb = true;
+        if(autoadb){
+			boolean res = queue.getInstance().connectADB();
+			if(res == false ){
+				Constant.log(Constant.TAG, "Unable to start TCP server" );
+				System.exit(-1);
+			}
+        }
 		this.runTimer();
     }
 
-    // test okresowego wywo�ywania polece�
+    // test okresowego wywoływania poleceń
     private void runTimer() {
 		// TODO Auto-generated method stub
     	TimerTask scanTask;
@@ -70,18 +69,19 @@ public class BarobotMain extends Activity {
     	    public void run() {
     	            handler.post(new Runnable() {
 	                    public void run() {
-	                    	Constant.log("RUNNABLE", "TICK" );
+	                    	Constant.log(Constant.TAG, "TICK" );
 	                    }
     	           });
     	    }};
-    	t.schedule(scanTask, 300, 5000);
+
+         t.schedule(scanTask, 300, 5000);
 	}
 
 	@Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.option_menu, menu);
-        return true;
+	    MenuInflater inflater = getMenuInflater();
+	    inflater.inflate(R.menu.option_menu, menu);
+	    return true;
     }
 
     @Override
@@ -90,7 +90,7 @@ public class BarobotMain extends Activity {
         switch (item.getItemId()) {
         case R.id.secure_connect_scan:
              if( queue.getInstance().checkBT() == false ){
-                Toast.makeText(this, "Bluetooth jest niedost�pny", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Bluetooth jest niedostępny", Toast.LENGTH_LONG).show();
                 finish();
             }
             // Launch the DeviceListActivity to see devices and do scan
@@ -119,7 +119,6 @@ public class BarobotMain extends Activity {
 	        }
         }
     }
-
     @Override
     public synchronized void onResume() {
         super.onResume();
@@ -166,7 +165,7 @@ public class BarobotMain extends Activity {
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         Constant.log(Constant.TAG, "onActivityResult " + resultCode);
-        switch (requestCode) {
+        switch (requestCode){
         case Constant.REQUEST_BEBUG_WINDOW:
         	Constant.log(Constant.TAG, "REQUEST_BEBUG_WINDOW");
             break;
@@ -175,7 +174,9 @@ public class BarobotMain extends Activity {
         	Constant.log(Constant.TAG, "REQUEST_CONNECT_DEVICE_SECURE");
             // When DeviceListActivity returns with a device to connect
             if (resultCode == Activity.RESULT_OK) {
-            	queue.connectBTDevice(data);
+                // Get the device MAC address
+                String address = data.getExtras().getString(Constant.EXTRA_DEVICE_ADDRESS);
+                queue.connectBTDeviceId(address);
             }
             break;
 

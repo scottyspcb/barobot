@@ -13,7 +13,7 @@ public class interval {
 	public interval(){
 		this.rrr= new Runnable() {
 		    public void run() {
-		    	Constant.log("RUNNABLE", "TICK" );
+	//	    	Constant.log("RUNNABLE", "TICK" );
 		   }
 		};
 	}
@@ -30,7 +30,7 @@ public class interval {
 		    }};
 
 		if( coile > 0 ){
-			t.schedule(scanTask, zaile, coile);		// task, za ile pierwsze, co ile nastêpne
+			t.schedule(scanTask, zaile, coile);		// task, za ile pierwsze, co ile nastÄ™pne
 		}else{
 			t.schedule(scanTask, zaile);		// task, za ile pierwsze
 		}
