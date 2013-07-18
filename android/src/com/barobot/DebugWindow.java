@@ -41,6 +41,8 @@ public class DebugWindow extends Activity {
 		return instance;
 	}
 
+	public TabHost tabHost;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		instance = this;
@@ -53,7 +55,7 @@ public class DebugWindow extends Activity {
 		// Set result CANCELED in case the user backs out
 		setResult(Activity.RESULT_CANCELED);
 
-		TabHost tabHost = (TabHost) findViewById(android.R.id.tabhost);
+		tabHost = (TabHost) findViewById(android.R.id.tabhost);
 		tabHost.setup();
 		final TabWidget tabWidget = tabHost.getTabWidget();
 		final FrameLayout tabContent = tabHost.getTabContentView();
@@ -94,19 +96,17 @@ public class DebugWindow extends Activity {
 			Constant.log(Constant.TAG,"TAB:"+ tabSpec.getTag());
 			tabHost.addTab(tabSpec);
 		}
-		tabHost.setCurrentTab(0);
+		//tabHost.setCurrentTab(0);
+		tabHost.setCurrentTabByTag("tab1");
 		tabHost.bringToFront();
 		tabHost.setEnabled(true);
-		
-		button_click bc = new button_click();
-		button_toggle bt = new button_toggle();
-		button_zajedz bz = new button_zajedz();
 
+
+		button_click bc = new button_click();
 		int[] buttons = {
 				R.id.kalibrujx,
 				R.id.kalibrujy,
 				R.id.kalibrujz,
-				
 				R.id.length_x,
 				R.id.length_x2,
 				R.id.length_y,
@@ -139,12 +139,19 @@ public class DebugWindow extends Activity {
 				R.id.set_y600,
 				R.id.glweight,
 				R.id.bottweight,
+				R.id.set_bottle,
 				R.id.fill5000};
 		for(int i =0; i<buttons.length;i++){
-			Button xb1 = (Button) findViewById(buttons[i]);
-			xb1.setOnClickListener(bc);			
+			View w = findViewById(buttons[i]);
+			String classname = w.getClass().getName();
+			Constant.log(Constant.TAG,"findViewById buttons: "+ classname + " / " + i );
+			if( "android.widget.Button".equals( classname )){
+				Button xb1 = (Button) findViewById(buttons[i]);	
+				xb1.setOnClickListener(bc);			
+			}			
 		}
 
+		button_toggle bt = new button_toggle();
 		int[] togglers = {
 				R.id.wagi_live,
 				R.id.led1,
@@ -158,10 +165,16 @@ public class DebugWindow extends Activity {
 				R.id.led9,
 				R.id.led10};
 		for(int i =0; i<togglers.length;i++){
-			Button xb1 = (Button) findViewById(togglers[i]);
-			xb1.setOnClickListener(bt);			
+			View w = findViewById(togglers[i]);
+			String classname = w.getClass().getName();
+			Constant.log(Constant.TAG,"findViewById togglers: "+ classname + " / " + i );
+			if( "android.widget.ToggleButton".equals( classname )){
+				Button xb3 = (ToggleButton) findViewById(togglers[i]);	
+				xb3.setOnClickListener(bt);			
+			}	
 		}
 
+		button_zajedz bz = new button_zajedz();
 		int[] nalejs = {
 				R.id.nalej1,
 				R.id.nalej2,
@@ -179,10 +192,14 @@ public class DebugWindow extends Activity {
 				R.id.nalej14,
 				R.id.nalej15,
 				R.id.nalej16};
-		
 		for(int i =0; i<nalejs.length;i++){
-			Button xb1 = (Button) findViewById(nalejs[i]);
-			xb1.setOnClickListener(bz);			
+			View w = findViewById(nalejs[i]);
+			String classname = w.getClass().getName();
+			Constant.log(Constant.TAG,"findViewById nalejs: "+ classname + " / " + i );
+			if( "android.widget.Button".equals( classname )){
+				Button xb1 = (Button) findViewById(nalejs[i]);	
+				xb1.setOnClickListener(bz);			
+			}
 		}
 
 		int[] wagi = {R.id.waga1,
@@ -211,7 +228,7 @@ public class DebugWindow extends Activity {
 		for(int i =0; i<wagi.length;i++){
 			TextView waga1 = (TextView) findViewById(wagi[i]);
 		//	waga1.setOnClickListener( list1 );			
-			waga1.setText("init");
+			waga1.setText("");
 		}
 
 	    // Array adapter for the conversation thread

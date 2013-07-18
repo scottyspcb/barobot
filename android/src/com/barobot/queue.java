@@ -115,6 +115,7 @@ public class queue extends AbstractServerListener{
 
 	public void setupBT(BarobotMain barobotMain) {
 		Constant.log(Constant.TAG, "setupBT()");
+
         // Initialize the BluetoothChatService to perform bluetooth connections
         try {
 			mChatService = new BluetoothChatService( queue.getInstance().mHandler);

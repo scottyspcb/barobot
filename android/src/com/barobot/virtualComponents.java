@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class virtualComponents {
 	public static Activity application;
@@ -64,8 +65,8 @@ public class virtualComponents {
 	}
 
 	public static void moveToBottle(int i) {
-		int x = b_pos_x[i];
-		int y = b_pos_y[i];
+		long x	=  virtualComponents.getInt("BOTTLE_X_" + i, b_pos_x[i]);
+		long y	=  virtualComponents.getInt("BOTTLE_Y_" + i, b_pos_y[i]);
 		queue q = queue.getInstance();
 		q.send("SET X " + x);
 		q.send("SET Y " + y);
@@ -84,12 +85,7 @@ public class virtualComponents {
 					SeekBar progresx = (SeekBar) dialog.findViewById(R.id.analog_x);
 					if(progresx!=null){
 						progresx.setMax(val);
-					}
-					ProgressBar progresx2 = (ProgressBar) dialog.findViewById(R.id.position_x2);
-					if(progresx2!=null){
-						progresx2.setMax(val);
-						Constant.log(Constant.TAG,"LENGTHX:"+ val);
-					}					
+					}				
 				}
 			});
 		}else if( "LENGTHY".equals(name)){
@@ -148,12 +144,7 @@ public class virtualComponents {
 					SeekBar progresx = (SeekBar) application.findViewById(R.id.analog_x);
 					if(progresx!=null){
 						progresx.setProgress(val);
-					}
-					ProgressBar progresx2 = (ProgressBar) application.findViewById(R.id.position_x2);
-					if(progresx2!=null){
-						progresx.setProgress(val);
-						Constant.log(Constant.TAG,"setProgress X:"+ val);
-					}					
+					}				
 				}
 			});
 		}else if("POSY".equals(name) &&  dialog != null ){
@@ -230,6 +221,15 @@ public class virtualComponents {
 		q.send("FILL 5000");
 	}
 
+	// zapisz ze tutaj jest butelka o danym numerze
+	public static void hereIsBottle(int i) {
+		String posx		=  virtualComponents.get("POSX", "0" );	
+		String posy		=  virtualComponents.get("POSY", "0" );
+		Constant.log(Constant.TAG,"zapisuje pozycje:"+ i + " " +posx+ " " + posy );
+		virtualComponents.set("BOTTLE_X_" + i, posx );
+		virtualComponents.set("BOTTLE_Y_" + i, posy );
+		Toast.makeText(application, "Zapisano jako butelka " + (i+1), Toast.LENGTH_LONG).show();
+	}
 }
 
 /* Nazwy komponent�w
