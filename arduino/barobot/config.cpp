@@ -10,7 +10,7 @@
 #define DEBUG_ADB2ANDROID false
 
 // czy Android jest na koncu USB
-#define USE_ADB false
+#define USE_ADB true
 #define ADB_PORT 14568
 
 #define DEBUG_SERIAL_INPUT false
@@ -209,9 +209,6 @@ const int PIN49 = 49;
 #define STEPPER_X_MUL  1
 #define STEPPER_Y_MUL  1
 
-// PIN dla diody statusu
-#define STATUS_LED_PIN 12
-
 // PINy dla wyjść podświetlenia
 #define STATUS_LED01 PIN13
 #define STATUS_LED02 PIN23
@@ -238,7 +235,7 @@ const int PIN49 = 49;
 // domyslen ustawienie mocy silnika Z
 #define SERVOZ_UP 900
 #define SERVOZ_STAYUP 900
-#define SERVOZ_DOWN 3000
+#define SERVOZ_DOWN 2500
 //#define SERVOZ_UP 2290
 //#define SERVOZ_STAYUP 1530
 //#define SERVOZ_DOWN 1400
@@ -248,10 +245,12 @@ const int PIN49 = 49;
   #define SPEEDX 500
   #define ACCELERX 1350
   #define XLENGTH 1700
+  #define YLENGTH 600
 #else
   #define SPEEDX 2000
   #define ACCELERX 2000
   #define XLENGTH 1900
+  #define YLENGTH 1600
 #endif
 
 #define SPEEDY 800
@@ -267,5 +266,6 @@ const int PIN49 = 49;
 
 //  ile losowych losowac
 #define LOS_MAX 20
-
+#define STEPPERX_READY_DISABLE true
+#define STEPPERY_READY_DISABLE true
 

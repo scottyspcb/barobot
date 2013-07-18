@@ -1,7 +1,7 @@
-// numer 10
+
 #include <AccelStepper.h>
 #include "config.cpp";
-#include <NewPing.h>
+//#include <NewPing.h>
 #include <SPI.h>
 #include <Adb.h>
 #include <Servo.h>
@@ -9,16 +9,6 @@
 // stan uC
 byte status = STATE_INIT;      // na pocztku jest w trakcje inicjacji
 // koniec stanu uC
-
-Servo servoZ;
-long margin_x_min = 0;    // odstępstwo od prawdziwej pozycji X
-long margin_y_min = 0;    // odstępstwo od prawdziwej pozycji Y
-boolean lock_system = false;    // czy wykonywać tylko ruch silnikami
-boolean send_ret = true;        // czy wysyłać odpowiedzi po wykonaniu komend
-boolean last_stepper_operation = false; 
-
-String stos = "";
-unsigned int stos_length = 0;
 
 long unsigned acc_x = ACCELERX;
 long unsigned acc_y = ACCELERY;
@@ -30,9 +20,6 @@ volatile bool int2_value = LOW;
 volatile bool int3_value = LOW;
 //volatile bool int4_value = LOW;
 //volatile bool int5_value = LOW;
-
-long int max_x_pos = -1;
-long int max_y_pos = -1;
 
 volatile unsigned long encoder_x = 0;    // pozycja enkodera (nieminusowa, volatile bo uzywana w pezrwaniach)
 volatile unsigned long encoder_y = 0;    // pozycja enkodera (nieminusowa, volatile bo uzywana w pezrwaniach)
@@ -48,8 +35,8 @@ boolean Console3Complete = false;   // This will be set to true once we have a f
 // koniec obsluga zrodel wejscia
 
 // http://code.google.com/p/arduino-new-ping/wiki/Using_NewPing_Syntax
-NewPing ultrasonic0(PIN_ULTRA0_TRIG, PIN_ULTRA0_ECHO, MAX_DISTANCE);
-NewPing ultrasonic1(PIN_ULTRA1_TRIG, PIN_ULTRA1_ECHO, MAX_DISTANCE);
+//NewPing ultrasonic0(PIN_ULTRA0_TRIG, PIN_ULTRA0_ECHO, MAX_DISTANCE);
+//NewPing ultrasonic1(PIN_ULTRA1_TRIG, PIN_ULTRA1_ECHO, MAX_DISTANCE);
 
 void setupSerial(){      // uzyte w setup()
   if (DEBUG_OVER_SERIAL){
@@ -65,6 +52,8 @@ void setupSerial(){      // uzyte w setup()
     delay(1000);
     String btdn = "AT+NAME" + String(BT_DEV_NAME);
     Serial3.print( btdn );
+    delay(1000);
+    Serial3.println( "" );    // reset jesli nie idzie do bufora...
   }
 }
 
@@ -104,8 +93,6 @@ void setupOutputs(){      // uzyte w setup()
 //  pinMode( STEPPER_Z_ENABLE, OUTPUT);
   pinMode( STEPPER_Z_PWM, OUTPUT);
 
-  pinMode( STATUS_LED_PIN, OUTPUT);           // zapal diode statusu (w trakcje inicjacji)
-  digitalWrite( STATUS_LED_PIN, HIGH );
   digitalWrite( STATUS_LED01, LOW );    // zgas ledy na początku
   digitalWrite( STATUS_LED02, LOW );
   digitalWrite( STATUS_LED03, LOW );
@@ -161,47 +148,23 @@ void setupInts(){      // uzyte w setup()
   //  attachInterrupt( INT5, on_int5F, FALLING);    // nasłuchuj zmiany PIN 18// Enkoder Y
 }
 
-void on_int0R(){  
-  int0_value = HIGH;
-  was_interrupt = HIGH;
-}    // pin 2
-void on_int0F(){  
-  int0_value = HIGH;
-  was_interrupt = HIGH;
-}    // pin 2
-void on_int2R(){  
-  int2_value = HIGH;
-  was_interrupt = HIGH;
-}    // pin 21       // Krańcowy Y rise
-void on_int2F(){  
-  int2_value = HIGH;
-  was_interrupt = HIGH;
-}    // pin 21       // Krańcowy Y fall
-void on_int3R(){  
-  int3_value = HIGH;
-  was_interrupt = HIGH;
-}    // pin 20       // Krańcowy X rise
-void on_int3F(){  
-  int3_value = HIGH;
-  was_interrupt = HIGH;
-}    // pin 20       // Krańcowy X fall
-void on_int4R(){  
-  encoder_x++;
-}          // pin 19       // Enkoder X
+void on_int0R(){    int0_value = HIGH;  was_interrupt = HIGH;}    // pin 2
+void on_int0F(){    int0_value = HIGH;  was_interrupt = HIGH;}    // pin 2
+void on_int2R(){    int2_value = HIGH;  was_interrupt = HIGH;}    // pin 21       // Krańcowy Y rise
+void on_int2F(){    int2_value = HIGH;  was_interrupt = HIGH;}    // pin 21       // Krańcowy Y fall
+void on_int3R(){    int3_value = HIGH;  was_interrupt = HIGH;}    // pin 20       // Krańcowy X rise
+void on_int3F(){    int3_value = HIGH;  was_interrupt = HIGH;}    // pin 20       // Krańcowy X fall
+void on_int4R(){    encoder_x++;}          // pin 19       // Enkoder X
 //void on_int4F(){  }    // pin 19                       // Enkoder X
-void on_int5R(){  
-  encoder_y++;
-}          // pin 18       // Enkoder Y
+void on_int5R(){    encoder_y++;}          // pin 18       // Enkoder Y
 //void on_int5F(){  }    // pin 18                       // Enkoder Y
 // Koniec Ustawienia Przerwań
 
 void afterSetup(){ 
-  digitalWrite( STATUS_LED_PIN, 0 );      // koniec inicjacji
   send2debuger("INIT", "START ready");
-
   //NewPing::timer_ms(20, in_20ms);   // Create a Timer2 interrupt that calls func
   //NewPing::timer_ms(40, in_40ms);   // Create a Timer2 interrupt that calls func
-  // NewPing::timer_ms(100, in_100ms);   // Create a Timer2 interrupt that calls func
+  //NewPing::timer_ms(100, in_100ms);   // Create a Timer2 interrupt that calls func
   //NewPing::timer_ms(1000, in_1000ms);   // Create a Timer2 interrupt that calls func
 }
 
@@ -220,9 +183,34 @@ void setup(){
   //interrupts();
 }
 
+Servo servoZ;
+long int margin_x = 0;          // odstępstwo od technicznej pozycji X
+long int margin_y = 0;          // odstępstwo od technicznej pozycji Y
+long int dlugosc_x = 0;
+long int dlugosc_y = 0;
+int dlugosc_z = 100;
+boolean lock_system = false;    // czy wykonywać tylko ruch silnikami
+boolean send_ret = true;        // czy wysyłać odpowiedzi po wykonaniu komend
+boolean last_stepper_operation = false; 
+boolean irr_handled_x = true;
+boolean irr_min_x = false;          //czy jestem na dole?
+boolean irr_max_x = false;
+boolean irr_handled_y = true;
+boolean irr_min_y = false;          //czy jestem na dole?
+boolean irr_max_y = false;
+boolean irr_min_z = false;          //czy jestem na dole?
+boolean irr_max_z = false;
+boolean irr_x  = HIGH;              // czy dotykam przerwania
+boolean irr_y  = HIGH;              // czy dotykam przerwania
+
+unsigned long last_max_x = XLENGTH;
+unsigned long last_max_y = YLENGTH;
+
 unsigned long counter100 = 0, counter1000 = 0;
 unsigned long milis40 = 0, milis100 = 0, milis1000 = 0;
 unsigned long mil = 0;
+String stos = "";
+unsigned int stos_length = 0;
 
 
 void loop(){
@@ -244,11 +232,12 @@ void loop(){
     in_100ms();
     milis100 = mil;
   }
+  /*
   if( mil > milis1000 + 1000 ){      // 1 razy na sek
     in_1000ms();
     counter1000++;
     milis1000 = mil;
-  }
+  }*/
   if( stos_length ){// gdy odblokuje sie lock_system to wykonaj nastepne polecenie
     String runcmd = stosPop();
     send_current_position( false );                   // pewnie przemieszczałem się wiec wyslij do androida gdzie jestem
@@ -271,9 +260,6 @@ void loop(){
   }
 }
 
-void in_40ms(){
-
-}
 void in_100ms(){
   long unsigned int waga = read_szklanka();
   send2android("GLASS " + String(waga));
@@ -304,24 +290,27 @@ long decodePosition( int axis, String input, int odetnij ){
       diff = - diff;                                 // -
     }
     if( axis == AXIS_X){
-      pos = stepperX.targetPosition() + diff * STEPPER_X_MUL;
+      pos = target_posx() + diff;
+//      send2debuger( "decodePosition X", "target(" + String(target_posx()) + ") T(" + String(stepperX.currentPosition()) + ") diff:" + String(diff)+ ") L(" + String(pos)+")");
     }else if( axis == AXIS_Y){
-      pos = stepperY.targetPosition() + diff * STEPPER_Y_MUL;
+      pos = target_posy() + diff;
     }else if( axis == AXIS_Z){
       // generalnie niemozliwe
     }
   }else{                                 // dokladna pozycja 
-    pos = input.toInt();    // pozycja sprzętowa jest oddalona o margin_x_min od pozycji programowej
+    pos = input.toInt();    // pozycja sprzętowa jest oddalona o margin_x od pozycji programowej
+    /*
     if( axis == AXIS_X){
-      pos = margin_x_min + pos * STEPPER_X_MUL;
+      pos = margin_x + pos * STEPPER_X_MUL;
     }else if( axis == AXIS_Y){
-      pos = margin_y_min + pos * STEPPER_Y_MUL;
+      pos = margin_y + pos * STEPPER_Y_MUL;
     }else if( axis == AXIS_Z){
       pos = pos;
-    }    
+    } */   
   }
   return pos;
 }
+
 long decodeInt(String input, int odetnij ){
   long pos = 0;
   if(odetnij>0){
@@ -339,26 +328,16 @@ void parseInput( String input ){   // zrozum co sie dzieje
   if ( input.startsWith("SET") ) {      // tutaj niektore beda synchroniczne inne asynchroniczne wiec czasem zwracaj RET, a czasem dopiero po zakonczeniu
     if( input.startsWith("SET LED") ){    // zapal LEDa o numerze 1-9
       unsigned int pin = input.substring(7).toInt();      // "SET LED4 ON" na "4 ON"
-      if( pin == 1 ){          
-        pin = STATUS_LED01;
-      }else if( pin == 2 ){    
-        pin = STATUS_LED02;
-      }else if( pin == 3 ){    
-        pin = STATUS_LED03;
-      }else if( pin == 4 ){    
-        pin = STATUS_LED04;
-      }else if( pin == 5 ){    
-        pin = STATUS_LED05;
-      }else if( pin == 6 ){    
-        pin = STATUS_LED06;
-      }else if( pin == 7 ){    
-        pin = STATUS_LED07;
-      }else if( pin == 8 ){    
-        pin = STATUS_LED08;
-      }else if( pin == 9 ){    
-        pin = STATUS_LED09;
-      }else{
-        pin = 0;
+      if( pin == 1 ){                  pin = STATUS_LED01;
+      }else if( pin == 2 ){            pin = STATUS_LED02;
+      }else if( pin == 3 ){            pin = STATUS_LED03;
+      }else if( pin == 4 ){            pin = STATUS_LED04;
+      }else if( pin == 5 ){            pin = STATUS_LED05;
+      }else if( pin == 6 ){            pin = STATUS_LED06;
+      }else if( pin == 7 ){            pin = STATUS_LED07;
+      }else if( pin == 8 ){            pin = STATUS_LED08;
+      }else if( pin == 9 ){            pin = STATUS_LED09;
+      }else{                    pin = 0;
       }
       if(pin != 0 ){
         if( input.endsWith("ON") ){
@@ -370,16 +349,12 @@ void parseInput( String input ){   // zrozum co sie dzieje
     }else if( input.startsWith("SET X") ){
       long pos = decodePosition( AXIS_X, input, 6 );
       last_stepper_operation = true;
-      lock_system = true;
-      encoder_x = 0;
-      stepperX.moveTo(pos);
+      posx(pos);
       defaultResult = false;
     } else if( input.startsWith("SET Y") ){
       long pos = decodePosition( AXIS_Y, input, 6 );
-      lock_system = true;
-      encoder_y = 0;
       last_stepper_operation = true;
-      stepperY.moveTo(pos);
+      posy(pos);
       defaultResult = false;
     }else if( input.startsWith("SET SPEEDX") ){
       long val = decodeInt( input, 11 );  // 10 znakow i spacja
@@ -406,21 +381,22 @@ void parseInput( String input ){   // zrozum co sie dzieje
       //      stepperZ.setAcceleration(val);      
     }else if( input.startsWith("SET Z MAX") ){
       z_up();
+      defaultResult = false;      
     }else if( input.startsWith("SET Z MIN") ){
       z_down();
-
-    }else if( input.startsWith("LIVE WEIGHT ON") ){    // odczytuj wagi co 10ms
-      read_waga = true;
-    }else if( input.startsWith("LIVE WEIGHT OFF") ){
-      read_waga = false;
-
-    }else if( input.startsWith("MIX ") ){      // MIX 245
-      long czas = decodeInt( input, 4 );        // SET MIX i spacja
-      mieszaj(czas);
+      defaultResult = false;
     }else{
       send2android("NO COMMAND" );
-      defaultResult = false;  
+      defaultResult = false;
     }
+  }else if( input.startsWith("MIX ") ){       // MIX 245
+    long czas = decodeInt( input, 4 );        // SET MIX i spacja
+    mieszaj(czas);
+    defaultResult = false;
+  }else if( input.startsWith("LIVE WEIGHT ON") ){      // RET LIVE WEIGHT ON
+    read_waga = true;
+  }else if( input.startsWith("LIVE WEIGHT OFF") ){    // RET LIVE WEIGHT OFF
+    read_waga = false;
   }else if( input.startsWith("GET")) {
     if( input == "GET STATUS" ){
       if( status == STATE_BUSY ){
@@ -464,6 +440,12 @@ void parseInput( String input ){   // zrozum co sie dzieje
     send_current_position(true);   
   }else if( input == "NORET" ){
     send_ret = false;
+
+  }else if( input.startsWith("ENABLEX") ){
+    stepperX.enableOutputs();
+  }else if( input.startsWith("DISABLEX") ){
+    stepperX.disableOutputs();        
+
   }else if( input == "PING" ){      // odeslij PONG
     send2android("PONG");
     defaultResult = false;
@@ -537,15 +519,53 @@ void parseInput( String input ){   // zrozum co sie dzieje
   }
 }
 
-void send_current_position( boolean isReady){ 
-    long int posx = (stepperX.currentPosition() +  margin_x_min) /STEPPER_X_MUL;
-    long int posy = (stepperY.currentPosition() +  margin_y_min) /STEPPER_Y_MUL;    // to jest pozycja skrajna
-    long int posz = 0;
-    if(isReady){
-      send2android("READY AT " + String(posx) + "," + String(posy)+ "," + String(posz));
-    }else{
-      send2android("POS " + String(posx) + "," + String(posy)+ "," + String(posz));
-    }
+// newPos = pozucja logiczna (zamieniana jest na tecniczną wewnątrz)
+void posx( long newPos ){
+  send2debuger("osX","jade do:L(" + String(newPos)+") czyli T(" + String(newPos * STEPPER_X_MUL + margin_x)+ "). margines: " + String(margin_x));
+  if(STEPPERX_READY_DISABLE){
+    stepperX.enableOutputs();
+  }
+  lock_system = true;
+  encoder_x = 0;
+  stepperX.moveTo( newPos * STEPPER_X_MUL + margin_x );
+}
+void posy( long newPos ){
+  send2debuger("osY","jade do:L(" + String(newPos)+") czyli: T(" + String(newPos * STEPPER_Y_MUL + margin_x)+ "). margines: " + String(margin_y));
+  if(STEPPERY_READY_DISABLE){
+    stepperY.enableOutputs();
+  }
+  lock_system = true;
+  encoder_x = 0;
+  stepperY.moveTo( newPos * STEPPER_Y_MUL + margin_y );
+}
+
+long int posx(){
+   return (stepperX.currentPosition() - margin_x) /STEPPER_X_MUL;
+}
+long int posy(){
+   return (stepperY.currentPosition() - margin_y) /STEPPER_Y_MUL;
+}
+long int target_posx(){
+   return (stepperX.targetPosition() - margin_x) /STEPPER_X_MUL;
+}
+long int target_posy(){
+   return (stepperY.targetPosition() - margin_y) /STEPPER_Y_MUL;
+}
+
+long int posz(){
+  if(irr_min_z){
+   return 0;
+  }else{
+   return dlugosc_z;
+  }
+}
+
+void send_current_position( boolean isReady ){ 
+  if(isReady){
+    send2android("READY AT " + String(posx()) + "," + String(posy())+ "," + String(posz()));
+  }else{
+    send2android("POS " + String(posx()) + "," + String(posy())+ "," + String(posz()));
+  }
 }
 
 //void on_int1R(){  int1_value = HIGH;}   // pin 3      // Krańcowy Z na wcisniecie
@@ -557,10 +577,9 @@ void on_int1F(){
 void z_down(){   // zajedz silnikiem Z na dół
   int1_value = LOW;
   servoZ.attach(STEPPER_Z_PWM);                  // przypisz do pinu, uruchamia PWMa
-  servoZ.writeMicroseconds(SERVOZ_UP);                       // jedź troche w górę
+  servoZ.writeMicroseconds(SERVOZ_UP);                       // jedź troche w gore
   delay(100);
   servoZ.writeMicroseconds(SERVOZ_DOWN);       // a potem jedz w dol
-
   delay(2000);
 /*
   attachInterrupt( INT1, on_int1F, FALLING);   // nasłuchuj zmiany PIN 3    // Krańcowy Z (dolny) na wcisniecie daje zero
@@ -573,34 +592,61 @@ void z_down(){   // zajedz silnikiem Z na dół
   detachInterrupt(INT1);                      // odlacz przerwanie, jestem na dole
   */
   servoZ.detach();                             // odetnij sterowanie
+  send2android("LENGTHZ "+ dlugosc_z );
+  irr_max_z = false;
+  irr_max_z = true;
+  send_current_position(false);
 }
-void z_up(){   // zajedz silnikiem Z w górę
+void z_up(){   // zajedz silnikiem Z w gore
   int1_value = LOW;
   servoZ.attach(STEPPER_Z_PWM);                // przypisz do pinu, uruchamia PWMa
-  servoZ.writeMicroseconds(SERVOZ_UP);                     // jedź w górę
-  delay(2000);
+  attachInterrupt( INT1, on_int1F, FALLING);    // nasłuchuj zmiany PIN 3    // Krańcowy Z (gorny) na wcisniecie daje zero
+  servoZ.writeMicroseconds(SERVOZ_UP);         // jedź w gore
+  int i =0;
+  while( int1_value == HIGH ){                   // az na górze
+    send2debuger( "fill", "czekam na gore" );
+    delay(20);                                    // todo zabezpieczenie gdy po 5 sek nadal nie jest na górze
+    i++;
+    if(i>1000){    // bez przesady
+      break;
+    }
+  }
   servoZ.detach();                             // odetnij sterowanie
+  irr_max_z = true;
+  irr_max_z = false;
+  send_current_position(false);
 }
+
+
 
 void nalej( long czas ){   // nalej cieczy przez tyle czasu
   int1_value = LOW;
   pinMode(PIN3, INPUT);
   servoZ.attach(STEPPER_Z_PWM);                   // przypisz do pinu, uruchamia PWMa
-  servoZ.writeMicroseconds(SERVOZ_UP);            // jedź aż na górę
+  servoZ.writeMicroseconds(SERVOZ_UP);            // jedź aż na gore
   attachInterrupt( INT1, on_int1F, FALLING);    // nasłuchuj zmiany PIN 3    // Krańcowy Z (gorny) na wcisniecie daje zero
-  while( int1_value == LOW ){                   // az na górze
+  int i =0;
+  while( int1_value == HIGH ){                   // az na górze
+    send2debuger( "fill", "czekam na gore" );
     delay(20);                                    // todo zabezpieczenie gdy po 5 sek nadal nie jest na górze
+    i++;
+    if(i>1000){    // bez przesady
+      break;
+    }
   }
   detachInterrupt(INT1);
-  servoZ.write(SERVOZ_STAYUP);     // trzymaj na górze w tą mocą
+  servoZ.writeMicroseconds(SERVOZ_STAYUP);     // trzymaj na górze z tą mocą
+  irr_max_z = false;
+  irr_max_z = true;
+  send_current_position(false);  
   send2debuger( "fill", "czekam " + String(czas) );
   delay(czas);                                 // trzymaj na górze tyle czasu 
-  servoZ.write(SERVOZ_DOWN);       // a potem jedz w dol
+  servoZ.writeMicroseconds(SERVOZ_DOWN);       // a potem jedz w dol
+  send2debuger( "fill", "w dół" );
 //  attachInterrupt( INT1, on_int1F, FALLING);   // nasłuchuj zmiany PIN 3    // Krańcowy Z (dolny) na wcisniecie daje zero
 //  delay(100);                                  // zjedz kawałek zanim znow podlacze przerwania
 //  int1_value = LOW;
 ///  int aaa = 0;
-
   delay( 1000 );
 /*
   while(int1_value == LOW){                    // az dotknie krańcówki dolnej
@@ -611,6 +657,7 @@ void nalej( long czas ){   // nalej cieczy przez tyle czasu
   detachInterrupt(INT1);
  */
   servoZ.detach();                             // odetnij sterowanie
+  send_current_position(true);
 }
 
 void mieszaj2( long czas ){
@@ -647,6 +694,212 @@ void mieszaj( long czas ){   // mieszaj tyle czasu
   // wyjedz mieszadełkiem
 }
 
+void run_steppers(){    // robione w każdym przebiegu loop
+  long int dist_x = stepperX.distanceToGo();
+  long int dist_y = stepperY.distanceToGo();
+
+  if( dist_x == 0 && dist_y == 0 ){    //  zajechalem 
+    lock_system = false;
+    if( last_stepper_operation ){    // byla komenda
+//      stepperX.moveTo(stepperX.currentPosition());    // stop X
+      stepperX.stopNow();
+//      stepperY.moveTo(stepperY.currentPosition());    // stop Y
+      stepperY.stopNow();
+      if(STEPPERX_READY_DISABLE){
+        stepperX.disableOutputs();
+      }
+      if(STEPPERY_READY_DISABLE){
+        stepperY.disableOutputs();
+      } 
+      if(send_ret){
+        send_current_position(true);    // wyslij ze skonczylem
+      }
+      send2debuger("steppers","koniec X:" + String(stepperX.distanceToGo()) + " Y:" + String(stepperY.distanceToGo()) + String(" margines_x ") + String(margin_x) );
+      last_stepper_operation = false;
+    }
+  }else{
+    irr_x  = digitalRead( IRRX_PIN );
+    if( irr_x == LOW && dist_x != 0 ){
+      if( irr_min_x && dist_x < 0 ){    // stoje na dole a mam jechac w dół
+//        stepperX.moveTo(stepperX.currentPosition());    // stop X
+        stepperX.stopNow();
+        if(STEPPERX_READY_DISABLE){
+          stepperX.disableOutputs();
+        }
+        send2debuger("osX MIN","jestem na dole i nie jade w dol roznica:" + String(dist_x)+" / R(" + String(stepperX.distanceToGo())+ ") / " + String(margin_x));
+        delay(100);
+        dist_x = 0;
+      }
+      if( irr_max_x && dist_x > 0 ){    // stoje na górze a mam jechac w góre
+  //      stepperX.moveTo(stepperX.currentPosition());    // stop X
+        stepperX.stopNow();
+        if(STEPPERX_READY_DISABLE){
+          stepperX.disableOutputs();
+        }
+        send2debuger("osX MAX","jestem na górze i nie jade w gore roznica:" + String(dist_x)+" / R(" + String(stepperX.distanceToGo())+ ") / " + String(margin_x));
+        dist_x = 0;
+      }
+    }
+    if( irr_x == LOW && !irr_handled_x) {      // wciśnięte = bylo przerwanie X i jeszcze nie jest obsluzone
+      if( dist_x < 0 ){                       // jechalem w dół
+        stepperX.moveTo(stepperX.currentPosition());               // tu jest 0, reset adresowania
+        margin_x = stepperX.currentPosition();                      // to jest pozycja skrajna
+        if(STEPPERX_READY_DISABLE){
+          stepperX.disableOutputs();
+        }
+        irr_min_x = true;      // to jest minimum
+        dlugosc_x = last_max_x;
+        send2debuger("osX MIN", "dlugosc:" + String(dlugosc_x)+ " margines: " + String(margin_x)+ " jade: " + String(stepperX.distanceToGo()));
+
+        send2android("LENGTHX " +  String(dlugosc_x) );
+      }else if( dist_x > 0 ){             // jechalem w gore
+  //      stepperX.moveTo(stepperX.currentPosition());    // stop X
+        stepperX.stopNow();
+        if(STEPPERX_READY_DISABLE){
+          stepperX.disableOutputs();
+        }
+        last_max_x = posx();   // to jest pozycja skrajna
+        irr_max_x = true;
+        dlugosc_x = last_max_x;
+        send2debuger("osX MAX", "dlugosc:" + String(dlugosc_x)+ " margines: " + String(margin_x));
+        send2android("LENGTHX " +  String(dlugosc_x) );
+      }else{
+        send2debuger("osX", "dist_x :" + String(dist_x)+ " margines: " + String(margin_x) +  " distanceToGo: " + String(stepperX.distanceToGo()));
+      }
+      irr_handled_x = true;
+    }else if(dist_x != 0){
+      stepperX.run();
+    }
+
+    if(irr_x == HIGH && irr_handled_x ){    // czyli koniec obslugi stanu LOW
+      send2debuger("osX","puszczam IRR X");
+      irr_handled_x  = false;
+      irr_min_x  = false;
+      irr_max_x  = false;
+    }
+
+// -------------oś Y--------------------
+
+    irr_y  = digitalRead( IRRY_PIN );
+    if( irr_y == LOW && dist_y != 0 ){
+      if( irr_min_y && dist_y < 0 ){    // stoje na dole a mam jechac w dół
+  //      stepperY.moveTo(stepperY.currentPosition());    // stop Y
+        stepperY.stopNow();
+        if(STEPPERY_READY_DISABLE){
+          stepperY.disableOutputs();
+        }
+        send2debuger("osY MIN","jestem na dole i nie jade w dol roznica:" + String(dist_y)+" / R(" + String(stepperY.distanceToGo())+ ") / " + String(margin_y));
+        delay(100);
+        dist_y = 0;
+      }
+      if( irr_max_y && dist_y > 0 ){    // stoje na górze a mam jechac w góre
+  //      stepperY.moveTo(stepperY.currentPosition());    // stop Y
+        stepperY.stopNow();
+        if(STEPPERY_READY_DISABLE){
+          stepperY.disableOutputs();
+        }
+        send2debuger("osY MAX","jestem na górze i nie jade w gore roznica:" + String(dist_y)+" / R(" + String(stepperY.distanceToGo())+ ") / " + String(margin_y));
+        dist_y = 0;
+      }
+    }
+    if( irr_y == LOW && !irr_handled_y) {      // wciśnięte = bylo przerwanie Y i jeszcze nie jest obsluzone
+      if( dist_y < 0 ){                       // jechalem w dół
+        stepperY.moveTo(stepperY.currentPosition());               // tu jest 0, reset adresowania
+        margin_y = stepperY.currentPosition();                      // to jest pozycja skrajna
+        if(STEPPERY_READY_DISABLE){
+          stepperY.disableOutputs();
+        }
+        irr_min_y = true;      // to jest minimum
+        dlugosc_y = last_max_y;
+        send2debuger("osY MIN", "dlugosc:" + String(dlugosc_y)+ " margines: " + String(margin_y)+ " jade: " + String(stepperY.distanceToGo()));
+
+        send2android("LENGTHY " +  String(dlugosc_y) );
+      }else if( dist_y > 0 ){             // jechalem w gore
+  //      stepperY.moveTo(stepperY.currentPosition());    // stop Y
+        stepperX.stopNow();
+        if(STEPPERY_READY_DISABLE){
+          stepperY.disableOutputs();
+        }
+        last_max_y = posy();   // to jest pozycja skrajna
+        irr_max_y = true;
+        dlugosc_y = last_max_y;
+        send2debuger("osY MAX", "dlugosc:" + String(dlugosc_y)+ " margines: " + String(margin_y));
+        send2android("LENGTHY " +  String(dlugosc_y) );
+      }else{
+        send2debuger("osY", "dist_y :" + String(dist_y)+ " margines: " + String(margin_y) +  " distanceToGo: " + String(stepperY.distanceToGo()));
+      }
+      irr_handled_y = true;
+    }else if(dist_y != 0){
+      stepperY.run();
+    }
+    if(irr_y == HIGH && irr_handled_y ){    // czyli koniec obslugi stanu LOW
+      send2debuger("osY","puszczam IRR X");
+      irr_handled_y  = false;
+      irr_min_y  = false;
+      irr_max_y  = false;
+    }
+  }
+}
+
+void irr_zrozum(){
+ irr_y  = digitalRead( IRRY_PIN );
+ irr_x  = digitalRead( IRRX_PIN );
+}
+
+
+
+// obluga wag
+float read_szklanka(){
+  digitalWrite( PIN_MADDR0, 0 );      //   // Ustaw numer na muxach, wystaw adres
+  digitalWrite( PIN_MADDR1, 0 );
+  digitalWrite( PIN_MADDR2, 0 );
+  digitalWrite( PIN_MADDR3, 0 );
+  unsigned long rr = 0;
+  delay(MULTI_ADDR_TIME);
+  unsigned int j=0;
+  unsigned int count = 1<<WAGA_READ_COUNT;
+  for( j=0; j<count ;j++){
+    rr+= analogRead(PIN_WAGA_ANALOG);
+  }
+  return rr >>WAGA_READ_COUNT;
+}
+
+unsigned long read_butelka(byte numer){
+  digitalWrite(PIN_MADDR0, bitRead(numer,0) );      //   // Ustaw numer na muxach, wystaw adres
+  digitalWrite(PIN_MADDR1, bitRead(numer,1) );
+  digitalWrite(PIN_MADDR2, bitRead(numer,2) );
+  digitalWrite(PIN_MADDR3, bitRead(numer,3) );
+  unsigned long rr = 0;
+  delay(MULTI_ADDR_TIME);
+  unsigned int j=0;
+  int count = 1<<MULTI_READ_COUNT;
+  for( j=0; j<count ;j++){
+    rr+= analogRead(PIN_WAGA_ANALOG);
+  }
+  delay(MULTI_READ_TIME);
+  return rr >>MULTI_READ_COUNT;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 void readSerial0Input( String input ){      // odbierz wejscie z serial0
   parseInput( input );                      // parsuj wejscie
   if(DEBUG_SERIAL_INPUT){
@@ -655,211 +908,27 @@ void readSerial0Input( String input ){      // odbierz wejscie z serial0
   send2android(input);
 }
 
-void readSerial3Input( String input ){       // odebralem z BT od androida
-  if( USE_BT ){ 
-    parseInput( input );          // parsuj wejscie
-  }
-  if(DEBUG_BT_INPUT){
-    send2debuger( "READ3", input);
-  }
-}
-
-void readAndroidInput( String input ){    // odbierz przez ADB z androida
-  if(DEBUG_ADB_INPUT){
-    send2debuger("READ_ADB",input);  
-  }
-  parseInput( input );          // parsuj wejscie
-}
-
-boolean irrx_handled = true;
-boolean irrx_max = false;
-boolean irrx_min = false;
-boolean irry_handled = true;
-int dlugoscx = 0;
-int dlugoscy = 0;
-int lastx_min = 0;
-int lastx_max = 1;
-int lasty_min = 0;
-int lasty_max = 1;
-
-int irry_min = 0;
-int irry_max = 1;
-
-boolean irrx  = HIGH;
-boolean irry  = HIGH;
-
-void run_steppers(){    // robione w każdym przebiegu loop
-  long int distx = stepperX.distanceToGo();
-  long int disty = stepperY.distanceToGo();
-
-  if( distx == 0 && disty == 0 ){    //  zajechalem 
-    lock_system = false;
-    if( last_stepper_operation ){    // byla komenda
-      stepperX.run();
-      stepperY.run();
-      stepperX.stop();
-      stepperY.stop();
-      stepperX.disableOutputs();
-      stepperY.disableOutputs();
-      if(send_ret){
-        send_current_position(true);    // wyslij ze skonczylem
-      }
-      last_stepper_operation = false;
-    }
-  }
-  else{
-    irrx  = digitalRead( IRRX_PIN );
-    if( irrx == LOW ){
-      if( irrx_min && distx < 0 ){    // stoje na dole a mam jechac w dół
-        stepperX.stop();
-        stepperX.disableOutputs();
-        send2debuger("irrx-","nigdzie nie jade: " + String(distx));
-      }
-      if( irrx_max && distx > 0 ){    // stoje na górze a mam jechac w góre
-        stepperX.stop();
-        stepperX.disableOutputs();
-        send2debuger("irrx+","nigdzie nie jade: " + String(distx));
-      }
-    }
-    if( irrx == LOW && !irrx_handled) {      // bylo przerwanie X
-      if( distx < 0 ){           // jechalem w dół
-        stepperX.setCurrentPosition(10);            // tu jest 0, reset adresowania
-        lastx_min = stepperX.currentPosition();    // to jest pozycja skrajna
-        stepperX.stop();
-        stepperX.disableOutputs();
-        irrx_min = true;
-        dlugoscx = lastx_max - lastx_min;
-        send2debuger("irrx MIN", String(lastx_min)+ " dlugosc:" + String(dlugoscx));
-        send2android("LENGTHX " +  String(dlugoscx) );
-      }else{
-        max_x_pos = stepperX.currentPosition();    // to jest pozycja skrajna
-        irrx_max = true;
-        lastx_max = max_x_pos;
-        dlugoscx = lastx_max - lastx_min;
-        send2debuger("irrx MAX",String(max_x_pos)+ " dlugosc:" + String(dlugoscx) );
-        send2android("LENGTHX " +  String(dlugoscx) );
-        stepperX.setAcceleration(100000);
-        stepperX.moveTo(max_x_pos);
-        stepperX.stop();
-        stepperX.setAcceleration(acc_x);        
-        stepperX.disableOutputs();
-      }
-      irrx_handled = true;
-    }else if(distx != 0){
-      stepperX.run();
-    }
-
-    if(irrx == HIGH && irrx_handled ){    // czyli koniec obslugi stanu LOW
-      send2debuger("irrx","HIGH-----------");
-      irrx_handled  = false;
-      irrx_min  = false;
-      irrx_max  = false;
-    }
-
-    irry  = digitalRead( IRRY_PIN );
-    if( irry == LOW ){
-      if( irry_min && disty < 0 ){    // stoje na dole a mam jechac w dół
-        stepperY.stop();
-        stepperY.disableOutputs();
-        send2debuger("irry-","nigdzie nie jade: " + String(disty));
-      }
-      if( irry_max && disty > 0 ){    // stoje na górze a mam jechac w góre
-        stepperY.stop();
-        stepperY.disableOutputs();
-        send2debuger("irry+","nigdzie nie jade: " + String(disty));
-      }
-    }
-    if( irry == LOW && !irry_handled) {      // bylo przerwanie X
-      if( disty < 0 ){           // jechalem w dół
-        stepperY.setCurrentPosition(10);            // tu jest 0, reset adresowania
-        lasty_min = stepperY.currentPosition();    // to jest pozycja skrajna
-        stepperY.stop();
-        stepperY.disableOutputs();
-        irry_min = true;
-        dlugoscy = lasty_max - lasty_min;
-        send2debuger("irry MIN", String(lasty_min)+ " dlugosc:" + String(dlugoscy));
-        send2android("LENGTHY " +  String(dlugoscy) );
-      }else{
-        max_y_pos = stepperY.currentPosition();    // to jest pozycja skrajna
-        irry_max = true;
-        lasty_max = max_y_pos;
-        dlugoscy = lasty_max - lasty_min;
-        send2debuger("irry MAX", String(max_y_pos)+ " dlugosc:" + String(dlugoscy) );
-        send2android("LENGTHY " +  String(dlugoscy) );
-        stepperY.setAcceleration(100000);
-        stepperY.moveTo(max_y_pos);
-        stepperY.stop();
-        stepperY.setAcceleration(acc_y);        
-        stepperY.disableOutputs();
-      }
-      send2android("IRRY");
-      irry_handled = true;
-    }else if(disty != 0){
-      stepperY.run();
-    }
-    if(irry == HIGH && irry_handled ){   // czyli koniec obslugi stanu LOW
-      send2debuger("irry","HIGH-----------");
-      irry_handled  = false;
-      irry_min  = false;
-      irry_max  = false;
+void serialEvent3(){                       // FUNKCJA WBUDOWANA - zbieraj dane z serial0 i serial3 i skadaj w komendy
+  if( USE_BT || DEBUG_OVER_BT ){
+    while (Serial3.available() && !Console3Complete){   // odczytuj gdy istnieja dane i poprzednie zostaly odczytane
+      char inChar = (char)Serial3.read(); 
+      serial3Buffer += String(inChar);
+      if (inChar == SEPARATOR_CHAR || inChar == 13 ) {
+        Console3Complete = true;
+      }  
     }
   }
 }
 
-// BILBIOTEKI i obsługi EVENTow
-String stosPop(){        // pobierz ze stosu
-  // delimiter to nowa linia: SEPARATOR_CHAR
-  int c          = stos.indexOf( SEPARATOR_CHAR );
-  if(c >0 ){
-    String res     = stos.substring(0,c);
-    stos           = stos.substring(c+1);
-    stos_length--;
-    return res;
-  }
-  else if(stos_length){
-    send2debuger( "NOENTER", stos );
-    stos_length = 0;
-    return stos;  
-  }
-  else{
-    stos_length = 0;
-    return ""; 
-  }
+long int maplong(unsigned long x, unsigned long in_min, unsigned long in_max, unsigned long out_min, unsigned long out_max){
+  return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
 
-void stosPush( String in ){       // dodaj do stosu
-  stos  = stos + in + String(SEPARATOR_CHAR);
-  stos_length++;
+unsigned int readDistance0(){
+  return 0;//ultrasonic0.ping_median( DIST_REPEAT ); // Do multiple pings (default=5), discard out of range pings and return median in microseconds. 
 }
-
-void stosClear(){        // pobierz ze stosu
-  stos  = "";
-  stos_length = 0;
-}
-
-void send2android( String output ){      // wyslij string do androida
-  String output2 = output + SEPARATOR_CHAR;
-  unsigned int len = output2.length();  // długosc komunikatu
-  if( USE_ADB && adb_ready ){
-    char *cstr = new char[output.length() + 1];
-    strcpy(cstr, output.c_str());
-    cstr[output.length()] = '\0';
-    connection->writeString( cstr );
-    delete [] cstr;
-    if(DEBUG_ADB2ANDROID){
-      send2debuger( "2ANDROID ADBSEND", output );
-    }
-  }
-  if( USE_BT ){
-    if(DEBUG_OUTPUT2ANDROID){
-      send2debuger( "2ANDROID BTSEND", output );
-    }
-    Serial3.print( output2 );    // nie println bo juz dodaj separator
-  }else if(DEBUG_OUTPUT2ANDROID){
-    if( !adb_ready || !USE_ADB ){
-      send2debuger( "2ANDROID NOSEND", output );
-    }
-  }
+unsigned int readDistance1(){
+  return 0;//ultrasonic1.ping_median( DIST_REPEAT ); // Do multiple pings (default=5), discard out of range pings and return median in microseconds. 
 }
 // Event handler for the shell connection. 
 // This event handler is called whenever data is sent from Android Device to Seeeduino ADK.
@@ -911,58 +980,73 @@ void serialEvent(){                       // FUNKCJA WBUDOWANA - zbieraj dane z 
   }
 }
 
-void serialEvent3(){                       // FUNKCJA WBUDOWANA - zbieraj dane z serial0 i serial3 i skadaj w komendy
-  if( USE_BT || DEBUG_OVER_BT ){
-    while (Serial3.available() && !Console3Complete){   // odczytuj gdy istnieja dane i poprzednie zostaly odczytane
-      char inChar = (char)Serial3.read(); 
-      serial3Buffer += String(inChar);
-      if (inChar == SEPARATOR_CHAR || inChar == 13 ) {
-        Console3Complete = true;
-      }  
+// BILBIOTEKI i obsługi EVENTow
+String stosPop(){        // pobierz ze stosu
+  // delimiter to nowa linia: SEPARATOR_CHAR
+  int c            = stos.indexOf( SEPARATOR_CHAR );
+  if(c >0 ){
+    String res     = stos.substring(0,c);
+    stos           = stos.substring(c+1);
+    stos_length--;
+    return res;
+  }else if(stos_length){
+    send2debuger( "NOENTER", stos );
+    stos_length = 0;
+    return stos;  
+  }else{
+    stos_length = 0;
+    return ""; 
+  }
+}
+
+void stosPush( String in ){       // dodaj do stosu
+  stos  = stos + in + String(SEPARATOR_CHAR);
+  stos_length++;
+}
+
+void stosClear(){        // pobierz ze stosu
+  stos  = "";
+  stos_length = 0;
+}
+
+void send2android( String output ){      // wyslij string do androida
+  String output2 = output + SEPARATOR_CHAR;
+  unsigned int len = output2.length();  // długosc komunikatu
+  if( USE_ADB && adb_ready ){
+    char *cstr = new char[output.length() + 1];
+    strcpy(cstr, output.c_str());
+    cstr[output.length()] = '\0';
+    connection->writeString( cstr );
+    delete [] cstr;
+    if(DEBUG_ADB2ANDROID){
+      send2debuger( "2ANDROID ADBSEND", output );
+    }
+  }
+  if( USE_BT ){
+    if(DEBUG_OUTPUT2ANDROID){
+      send2debuger( "2ANDROID BTSEND", output );
+    }
+    Serial3.print( output2 );    // nie println bo juz dodaj separator
+  }else if(DEBUG_OUTPUT2ANDROID){
+    if( !adb_ready || !USE_ADB ){
+      send2debuger( "2ANDROID NOSEND", output );
     }
   }
 }
-
-// obluga wag
-float read_szklanka(){
-  digitalWrite( PIN_MADDR0, 0 );      //   // Ustaw numer na muxach, wystaw adres
-  digitalWrite( PIN_MADDR1, 0 );
-  digitalWrite( PIN_MADDR2, 0 );
-  digitalWrite( PIN_MADDR3, 0 );
-  unsigned long rr = 0;
-  delay(MULTI_ADDR_TIME);
-  unsigned int j=0;
-  unsigned int count = 1<<WAGA_READ_COUNT;
-  for( j=0; j<count ;j++){
-    rr+= analogRead(PIN_WAGA_ANALOG);
+void readSerial3Input( String input ){       // odebralem z BT od androida
+  if( USE_BT ){ 
+    parseInput( input );          // parsuj wejscie
   }
-  return rr >>WAGA_READ_COUNT;
-}
-
-unsigned long read_butelka(byte numer){
-  digitalWrite(PIN_MADDR0, bitRead(numer,0) );      //   // Ustaw numer na muxach, wystaw adres
-  digitalWrite(PIN_MADDR1, bitRead(numer,1) );
-  digitalWrite(PIN_MADDR2, bitRead(numer,2) );
-  digitalWrite(PIN_MADDR3, bitRead(numer,3) );
-  unsigned long rr = 0;
-  delay(MULTI_ADDR_TIME);
-  unsigned int j=0;
-  int count = 1<<MULTI_READ_COUNT;
-  for( j=0; j<count ;j++){
-    rr+= analogRead(PIN_WAGA_ANALOG);
+  if(DEBUG_BT_INPUT){
+    send2debuger( "READ3", input);
   }
-  delay(MULTI_READ_TIME);
-  return rr >>MULTI_READ_COUNT;
 }
 
-unsigned long int maplong(unsigned long x, unsigned long in_min, unsigned long in_max, unsigned long out_min, unsigned long out_max){
-  return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+void readAndroidInput( String input ){    // odbierz przez ADB z androida
+  if(DEBUG_ADB_INPUT){
+    send2debuger("READ_ADB",input);  
+  }
+  parseInput( input );          // parsuj wejscie
 }
 
-unsigned int readDistance0(){
-  return ultrasonic0.ping_median( DIST_REPEAT ); // Do multiple pings (default=5), discard out of range pings and return median in microseconds. 
-}
-unsigned int readDistance1(){
-  return ultrasonic1.ping_median( DIST_REPEAT ); // Do multiple pings (default=5), discard out of range pings and return median in microseconds. 
-}
 
