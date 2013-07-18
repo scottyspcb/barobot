@@ -2,6 +2,7 @@ package com.barobot;
 
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.Toast;
 public class button_click implements OnClickListener{
 	@Override
 	public void onClick(View v) {
@@ -88,6 +89,17 @@ public class button_click implements OnClickListener{
 			break;
 		case R.id.fill5000:
 			q.send("FILL 5000");
+			break;
+		case R.id.set_bottle:
+			// przełącz okno na listę butelek, 
+			// zablokuj przyciski i po naciśnięciu ustaw w tym miejscu butelkę
+			DebugWindow bb = DebugWindow.getInstance();
+			if(bb!=null){
+				Toast.makeText(bb, "Wybierz butelkę do zapisania pozycji", Toast.LENGTH_LONG).show();
+				bb.tabHost.setCurrentTabByTag("tab0");
+				bb.tabHost.bringToFront();
+				bb.tabHost.setEnabled(true);
+			}
 			break;
 		case R.id.max_z:
 			q.send("SET Z MAX");
