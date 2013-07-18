@@ -667,19 +667,19 @@ android:layout_height="fill_parent">
 			        android:text="MAX Z" />
 
 			    <Button
-			        android:id="@+id/max_y"
-			        android:layout_width="70dp"
-			        android:layout_height="wrap_content"
-			        android:layout_alignBaseline="@+id/kalibrujy"
-			        android:layout_toRightOf="@+id/kalibrujy"
-			        android:text="MAX Y" />
-
-			    <Button
 			        android:id="@+id/min_y"
 			        android:layout_width="70dp"
 			        android:layout_height="wrap_content"
 			        android:layout_alignBaseline="@+id/kalibrujy"
-			        android:layout_toRightOf="@+id/max_y"
+			        android:layout_toRightOf="@+id/kalibrujy"
+			        android:text="MIN Y" />
+
+			    <Button
+			        android:id="@+id/max_y"
+			        android:layout_width="70dp"
+			        android:layout_height="wrap_content"
+			        android:layout_alignBaseline="@+id/kalibrujy"
+			        android:layout_toRightOf="@+id/min_y"
 			        android:text="MAX Y" />
 
 			    <Button
@@ -695,7 +695,7 @@ android:layout_height="fill_parent">
 			        android:layout_width="wrap_content"
 			        android:layout_height="wrap_content"
 			        android:layout_alignBaseline="@+id/min_y"
-			        android:layout_toRightOf="@+id/min_y"
+			        android:layout_toRightOf="@+id/max_y"
 			        android:text="MACHAJY" />
 
 			    <Button
@@ -812,7 +812,7 @@ android:layout_height="fill_parent">
 			        android:id="@+id/position_y"
 			        android:layout_width="120dp"
 			        android:layout_height="wrap_content"
-			        android:layout_alignParentLeft="true"
+			        android:layout_alignParentLeft="false"
 			        android:layout_below="@+id/position_x"
 			        android:layout_margin="5dp"
 			        android:ellipsize="end"
@@ -959,7 +959,6 @@ android:layout_height="fill_parent">
 			        android:text="ToggleButton"
 			        android:textOff="Tutaj jest butelka..."
 			        android:textOn="Tutaj jest butelka..." />
-
 			</RelativeLayout>
 
 			<RelativeLayout

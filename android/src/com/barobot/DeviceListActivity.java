@@ -57,7 +57,6 @@ public class DeviceListActivity extends Activity {
         IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
         this.registerReceiver(mReceiver, filter);
 
-        
         // Initialize the button to perform device discovery
         Button scanButton = (Button) findViewById(R.id.button_scan);
         scanButton.setOnClickListener(new OnClickListener() {
@@ -71,12 +70,13 @@ public class DeviceListActivity extends Activity {
         filter = new IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
         this.registerReceiver(mReceiver, filter);
 
-        if(mBtAdapter == null){
-        	return;
-        }
         // Get the local Bluetooth adapter
         mBtAdapter = BluetoothAdapter.getDefaultAdapter();
 
+        if(mBtAdapter == null){
+        	Constant.log(Constant.TAG, "nie ma adaptera");
+        	return;
+        }
         // Get a set of currently paired devices
         Set<BluetoothDevice> pairedDevices = mBtAdapter.getBondedDevices();
 
@@ -95,6 +95,7 @@ public class DeviceListActivity extends Activity {
         Button save_arduino = (Button) findViewById(R.id.save_arduino);
         save_arduino.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
+            	
             	EditText speedx = (EditText) findViewById(R.id.conf_speed_x);
             	EditText accx = (EditText) findViewById(R.id.conf_acc_x);
             	EditText speedy = (EditText) findViewById(R.id.conf_speed_y);

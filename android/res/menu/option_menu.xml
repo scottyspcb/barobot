@@ -6,10 +6,11 @@
           android:icon="@android:drawable/ic_menu_search"
           android:title="@string/secure_connect" />
 
-    <item android:id="@+id/debug_mode_window" android:title="@string/debug_mode_window"></item><group android:id="@+id/group1" android:menuCategory="container" android:enabled="true" android:checkableBehavior="all" android:visible="true">
-        <item android:id="@+id/item1" android:checked="true" android:visible="true" android:titleCondensed="Edycja drinków" android:enabled="true" android:checkable="true" android:title="Edycja drinków"></item>
-        <item android:id="@+id/item2" android:checked="false" android:visible="true" android:titleCondensed="Synchronizacja drinków" android:enabled="true" android:checkable="true" android:title="Synchronizacja drinków"></item>
-        <item android:id="@+id/about_item" android:checked="true" android:visible="true" android:titleCondensed="Informacje" android:enabled="false" android:checkable="false" android:title="Informacje"></item>
-    </group>
-    
+   		<item android:id="@+id/debug_mode_window" android:title="@string/debug_mode_window"></item>
+   		<item android:id="@+id/bt_stop" android:titleCondensed="BT stop" android:title="bt_stop"></item>
+   		<item android:id="@+id/bt_autoconn" android:titleCondensed="bt_autoconn" android:title="bt_autoconn"></item>
+   		
+   		<group android:id="@+id/group1" android:menuCategory="container" android:enabled="true" android:checkableBehavior="all" android:visible="true">
+        <item android:id="@+id/about_item" android:checked="true" android:visible="true" android:titleCondensed="Informacje" android:enabled="true" android:checkable="false" android:title="Informacje"></item>
+    </group>    
 </menu>

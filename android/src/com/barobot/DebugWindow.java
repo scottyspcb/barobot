@@ -139,8 +139,9 @@ public class DebugWindow extends Activity {
 				R.id.set_y600,
 				R.id.glweight,
 				R.id.bottweight,
-				R.id.set_bottle,
-				R.id.fill5000};
+				R.id.fill5000,
+				R.id.set_bottle
+				};
 		for(int i =0; i<buttons.length;i++){
 			View w = findViewById(buttons[i]);
 			String classname = w.getClass().getName();
@@ -148,7 +149,11 @@ public class DebugWindow extends Activity {
 			if( "android.widget.Button".equals( classname )){
 				Button xb1 = (Button) findViewById(buttons[i]);	
 				xb1.setOnClickListener(bc);			
-			}			
+			}
+			if( "android.widget.ToggleButton".equals( classname )){
+				Button xb1 = (Button) findViewById(buttons[i]);	
+				xb1.setOnClickListener(bc);			
+			}
 		}
 
 		button_toggle bt = new button_toggle();
@@ -163,7 +168,8 @@ public class DebugWindow extends Activity {
 				R.id.led7,
 				R.id.led8,
 				R.id.led9,
-				R.id.led10};
+				R.id.led10
+		};
 		for(int i =0; i<togglers.length;i++){
 			View w = findViewById(togglers[i]);
 			String classname = w.getClass().getName();
@@ -227,8 +233,11 @@ public class DebugWindow extends Activity {
 		};*/
 		for(int i =0; i<wagi.length;i++){
 			TextView waga1 = (TextView) findViewById(wagi[i]);
+			long x	=  virtualComponents.getBottlePosX( i );
+			long y	=  virtualComponents.getBottlePosY( i );
+			String pos = "" + x +"/"+ y;
 		//	waga1.setOnClickListener( list1 );			
-			waga1.setText("");
+			waga1.setText(pos);
 		}
 
 	    // Array adapter for the conversation thread
@@ -238,7 +247,34 @@ public class DebugWindow extends Activity {
         mConversationView = (ListView) findViewById(R.id.history_list);
         mConversationView.setAdapter(mConversationArrayAdapter);
 	}
+	public void refreshPos() {
+		Constant.log(Constant.TAG,"reload pozycje na stronie glownej");
+		int[] wagi = {R.id.waga1,
+				R.id.waga2,
+				R.id.waga3,
+				R.id.waga4,
+				R.id.waga5,
+				R.id.waga6,
+				R.id.waga7,
+				R.id.waga8,
+				R.id.waga9,
+				R.id.waga10,
+				R.id.waga11,
+				R.id.waga12,
+				R.id.waga13,
+				R.id.waga14,
+				R.id.waga15,
+				R.id.waga16};
 
+		for(int i =0; i<wagi.length;i++){
+			TextView waga1 = (TextView) findViewById(wagi[i]);
+			long x	=  virtualComponents.getBottlePosX( i );
+			long y	=  virtualComponents.getBottlePosY( i );
+			String pos = "" + x +"/"+ y;			
+			waga1.setText(pos);
+		}
+	}
+	
 	public void addToList(final String string, final boolean direction ) {
 		final DebugWindow parent = this;
 		runOnUiThread(new Runnable() {

@@ -9,73 +9,94 @@ public class button_click implements OnClickListener{
 		queue q = queue.getInstance();
 		switch (v.getId()) {
 		case R.id.set_x_1000:
+			q.send("SET Z MIN");
 			q.send("SET X -1000");
 			break;
 		case R.id.set_x_100:
+			q.send("SET Z MIN");
 			q.send("SET X -100");
 			break;
 		case R.id.set_x_10:
+			q.send("SET Z MIN");
 			q.send("SET X -10");
 			break;
 		case R.id.set_x_1:
+			q.send("SET Z MIN");
 			q.send("SET X 0");
 			break;
 		case R.id.set_x10:
+			q.send("SET Z MIN");
 			q.send("SET X +10");
 			break;
 		case R.id.set_x100:
+			q.send("SET Z MIN");			
 			q.send("SET X +100");
 			break;
 		case R.id.set_x1000:
+			q.send("SET Z MIN");
 			q.send("SET X +1000");
 			break;
   
 		case R.id.set_y_600:
+			q.send("SET Z MIN");
 			q.send("SET Y -600");
 			break;
 		case R.id.set_y_100:
+			q.send("SET Z MIN");
 			q.send("SET Y -100");
 			break;
 		case R.id.set_y_10:
+			q.send("SET Z MIN");
 			q.send("SET Y -10");
 			break;
 		case R.id.set_y_0:
+			q.send("SET Z MIN");
 			q.send("SET Y 0");
 			break;
 		case R.id.set_y10:
+			q.send("SET Z MIN");
 			q.send("SET Y +10");
 			break;
 		case R.id.set_y100:
+			q.send("SET Z MIN");
 			q.send("SET Y +100");
 			break;
 		case R.id.set_y600:
+			q.send("SET Z MIN");
 			q.send("SET Y +600");
 			break;          
-	          
-	          
 
 		case R.id.kalibrujx:
+			q.send("SET Z MIN");
+			q.send("SET Y 200");
 			q.send("KALIBRUJX");
 			break;
 		case R.id.kalibrujy:
+			q.send("SET Z MIN");			
 			q.send("KALIBRUJY");
 			break;
 		case R.id.kalibrujz:
 			q.send("KALIBRUJZ");
 			break;
 		case R.id.machajx:
+			q.send("SET Z MIN");
+			q.send("SET Y 200");
 			q.send("MACHAJX");
 			break;
 		case R.id.machajy:
+			q.send("SET Z MIN");
 			q.send("MACHAJY");
 			break;
 		case R.id.machajz:
 			q.send("MACHAJZ");
 			break;
 		case R.id.losujx:
+			q.send("SET Z MIN");
+			q.send("SET Y 200");
 			q.send("LOSUJX");
 			break;
 		case R.id.losujy:
+			q.send("SET Z MIN");
 			q.send("LOSUJY");
 			break;
 		case R.id.losujz:
@@ -93,12 +114,19 @@ public class button_click implements OnClickListener{
 		case R.id.set_bottle:
 			// przełącz okno na listę butelek, 
 			// zablokuj przyciski i po naciśnięciu ustaw w tym miejscu butelkę
+			Constant.log(Constant.TAG,"wybierz butelkę...");
+			
 			DebugWindow bb = DebugWindow.getInstance();
 			if(bb!=null){
-				Toast.makeText(bb, "Wybierz butelkę do zapisania pozycji", Toast.LENGTH_LONG).show();
+				String posx		=  virtualComponents.get("POSX", "0" );	
+				String posy		=  virtualComponents.get("POSY", "0" );
+				Constant.log(Constant.TAG,"wybierz butelkę3...");
+				Toast.makeText(bb, "Wybierz butelkę do zapisania pozycji " + posx + "/" + posy, Toast.LENGTH_LONG).show();
 				bb.tabHost.setCurrentTabByTag("tab0");
 				bb.tabHost.bringToFront();
 				bb.tabHost.setEnabled(true);
+			}else{
+				Constant.log(Constant.TAG,"BRAK DebugWindow 345");
 			}
 			break;
 		case R.id.max_z:
@@ -109,21 +137,26 @@ public class button_click implements OnClickListener{
 			break;
 
 		case R.id.max_x:
+			q.send("SET Z MIN");			
 			q.send("SET X +10000");
 			break;
 		case R.id.max_y:
+			q.send("SET Z MIN");
 			q.send("SET Y +10000");
 			break;
 			
 		case R.id.min_x:
+			q.send("SET Z MIN");
 			q.send("SET X -10000");
 			break;
 		case R.id.min_y:
+			q.send("SET Z MIN");
 			q.send("SET Y -10000");
 			break;	
 			
 
 		case R.id.length_x:
+			q.send("SET Z MIN");
 			// do obecnej pozycji dodaj różnicę do końca
 			long lengthx	=  virtualComponents.getInt("LENGTHX", 1600);
 			long posx		=  virtualComponents.getInt("POSX", 55);	
@@ -133,11 +166,13 @@ public class button_click implements OnClickListener{
 			}
 			break;	
 		case R.id.length_x2:
+			q.send("SET Z MIN");
 			// od obecnej pozycji odejmij tą pozycję (powinno zajechac do 0)
 			q.send("SET X -" + virtualComponents.getInt("POSY", 0 ));
 			break;		
 
 		case R.id.length_y:
+			q.send("SET Z MIN");
 			// do obecnej pozycji dodaj różnicę do konkońca
 			long lengthy	=  virtualComponents.getInt("LENGTHY", 600 );
 			long posy		=  virtualComponents.getInt("POSY", 0 );	
@@ -147,6 +182,7 @@ public class button_click implements OnClickListener{
 			}
 			break;	
 		case R.id.length_y2:
+			q.send("SET Z MIN");
 			// od obecnej pozycji odejmij tą pozycję (powinno zajechac do 0)
 			q.send("SET Y -" + virtualComponents.getInt("POSY", 0 ));
 			break;					

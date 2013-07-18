@@ -21,7 +21,24 @@ public class virtualComponents {
 	private static int[] b_pos_x = {207,207, 394,394,581,581,768,768, 955,955,1142,1142,1329,1329,1516,1516};
 	private static int[] b_pos_y = {90, 550, 90, 550, 90, 550, 90, 550, 90, 550, 90, 550, 90, 550, 90, 550};
 
-	private static String[] persistant = {"LENGTHX","LENGTHY","LENGTHZ","LAST_BT_DEVICE"};
+	private static String[] persistant = {"LENGTHX","LENGTHY","LENGTHZ","LAST_BT_DEVICE",
+		"BOTTLE_X_0","BOTTLE_Y_0",
+		"BOTTLE_X_1","BOTTLE_Y_1",
+		"BOTTLE_X_2","BOTTLE_Y_2",
+		"BOTTLE_X_3","BOTTLE_Y_3",
+		"BOTTLE_X_4","BOTTLE_Y_4",
+		"BOTTLE_X_5","BOTTLE_Y_5",
+		"BOTTLE_X_6","BOTTLE_Y_6",
+		"BOTTLE_X_7","BOTTLE_Y_7",
+		"BOTTLE_X_8","BOTTLE_Y_8",
+		"BOTTLE_X_9","BOTTLE_Y_9",
+		"BOTTLE_X_10","BOTTLE_Y_10",
+		"BOTTLE_X_11","BOTTLE_Y_11",
+		"BOTTLE_X_12","BOTTLE_Y_12",
+		"BOTTLE_X_13","BOTTLE_Y_13",
+		"BOTTLE_X_14","BOTTLE_Y_14",
+		"BOTTLE_X_15","BOTTLE_Y_15",
+	};
 
 	public static void init( Activity app ){
 		application		= app;
@@ -63,13 +80,22 @@ public class virtualComponents {
 		}
 		return res;
 	}
-
+	
+	public static long getBottlePosX( int i ) {
+		return virtualComponents.getInt("BOTTLE_X_" + i, b_pos_x[i]);
+	}
+	public static long getBottlePosY( int i ) {
+		return virtualComponents.getInt("BOTTLE_Y_" + i, b_pos_y[i]);
+	}
 	public static void moveToBottle(int i) {
-		long x	=  virtualComponents.getInt("BOTTLE_X_" + i, b_pos_x[i]);
-		long y	=  virtualComponents.getInt("BOTTLE_Y_" + i, b_pos_y[i]);
 		queue q = queue.getInstance();
+		q.send("SET Z MIN");
+		q.send("SET Y 200");
+		long x  =  getBottlePosX( i );
+		long y  =  getBottlePosY( i );
 		q.send("SET X " + x);
 		q.send("SET Y " + y);
+		// q.onready( cośtam );
 	}
 
 	private static void update(String name, String value) {
@@ -107,7 +133,6 @@ public class virtualComponents {
 			final String[] tokens = value.split(",");
 	    	Constant.log("RUNNABLE", "waga: "+value );
 	    	Constant.log("RUNNABLE", "waga: "+tokens.length );
-			
 	    	if(tokens.length == 16){
 				application.runOnUiThread(new Runnable() {
 					@Override
@@ -172,8 +197,6 @@ public class virtualComponents {
 			dialog.setText( R.id.analog0, value, false );
 		}else if("DISTANCE0".equals(name) &&  dialog != null ){
 			dialog.setText( R.id.dist1, value, false );				
-		
-			
 		}else if("LED1".equals(name) &&  dialog != null ){
 			dialog.setChecked( R.id.led1, "ON".equals(value) );
 		}else if("LED2".equals(name) &&  dialog != null ){
@@ -195,8 +218,6 @@ public class virtualComponents {
 		}else if("LED10".equals(name) &&  dialog != null ){
 			dialog.setChecked( R.id.led10, "ON".equals(value) );
 
-			
-			
 		}else if("DISTANCE0".equals(name) &&  dialog != null ){
 
 			dialog.setText( R.id.dist1, value, false );
@@ -218,7 +239,7 @@ public class virtualComponents {
 	}
 	public static void nalej(int i) {
 		queue q = queue.getInstance();
-		q.send("FILL 5000");
+		q.send("FILL 4000");
 	}
 
 	// zapisz ze tutaj jest butelka o danym numerze
@@ -226,9 +247,20 @@ public class virtualComponents {
 		String posx		=  virtualComponents.get("POSX", "0" );	
 		String posy		=  virtualComponents.get("POSY", "0" );
 		Constant.log(Constant.TAG,"zapisuje pozycje:"+ i + " " +posx+ " " + posy );
+		
 		virtualComponents.set("BOTTLE_X_" + i, posx );
 		virtualComponents.set("BOTTLE_Y_" + i, posy );
-		Toast.makeText(application, "Zapisano jako butelka " + (i+1), Toast.LENGTH_LONG).show();
+
+		Toast.makeText(application, "Zapisano ["+posx+"/"+posy+"] jako butelka " + (i+1), Toast.LENGTH_LONG).show();
+		DebugWindow bb			= DebugWindow.getInstance();
+		if(bb!=null){
+			bb.refreshPos();
+			/*
+			bb.tabHost.setCurrentTabByTag("tab1");
+			bb.tabHost.bringToFront();
+			bb.tabHost.setEnabled(true);
+			*/
+		}
 	}
 }
 

@@ -18,12 +18,13 @@ import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.widget.SeekBar;
 import android.widget.Toast;
 
 public class queue extends AbstractServerListener{
 	//private static Queue<String> input = new LinkedList<String>();
 	private static queue instance = null;
-	private static int adb_port = 14568;
+	private static int adb_port = 4567;
 	private Queue<String> output = new LinkedList<String>();
 	private Server server = null;
     // Local Bluetooth adapter
@@ -125,8 +126,10 @@ public class queue extends AbstractServerListener{
 			Constant.log(Constant.TAG, "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
 		}
 	}
-
-    private void autoconnect() {
+    public void bt_disconnect() {
+    	mChatService.stop();
+    }
+    public void autoconnect() {
     	String bt_id = virtualComponents.get( "LAST_BT_DEVICE", "");
 	    Constant.log(Constant.TAG, "ostati BT "+ bt_id);
 	    if(bt_id!= null && !"".equals(bt_id) ){
@@ -233,9 +236,14 @@ public class queue extends AbstractServerListener{
 	}
 
 	public void onClientDisconnect(Server server, Client client){
-		Context bb = getContext();
+		final DebugWindow bb = DebugWindow.getInstance();		
 		if(bb!=null){
-			Toast.makeText(bb, "ADB onClientDisconnect", Toast.LENGTH_LONG).show();
+			bb.runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					Toast.makeText(bb, "ADB onClientDisconnect", Toast.LENGTH_LONG).show();
+				}
+			});
 		}
 		this.adb_connected = false;
 		Constant.log(Constant.TAG, "+ onClientDisconnect");
@@ -273,7 +281,6 @@ public class queue extends AbstractServerListener{
 		return 1;
 	}
 	private void saveInHistory( String command ){
-
 	}
 	private void saveOutHistory( String command ){
 	}

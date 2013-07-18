@@ -87,6 +87,8 @@ public class BarobotMain extends Activity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         Intent serverIntent = null;
+        Constant.log(Constant.TAG, "onOptionsItemSelected " + item.getItemId());
+        
         switch (item.getItemId()) {
         case R.id.secure_connect_scan:
              if( queue.getInstance().checkBT() == false ){
@@ -102,7 +104,21 @@ public class BarobotMain extends Activity {
             serverIntent = new Intent(this, DebugWindow.class);
             startActivityForResult(serverIntent, Constant.REQUEST_BEBUG_WINDOW);
 	        return true;
-	    }
+
+	    case R.id.bt_autoconn:
+	    	queue q2 = queue.getInstance();
+	    	if( q2.checkBT() != false ){
+	    		q2.autoconnect();
+	    	}
+	        return true;
+
+	    case R.id.bt_stop:
+	    	queue q = queue.getInstance();
+	    	if( q.checkBT() != false ){
+	    		q.bt_disconnect();
+	    	}
+	        return true;
+	    }        
 
         return false;
     }
@@ -224,7 +240,4 @@ public class BarobotMain extends Activity {
         Constant.log(Constant.TAG, "-- ON STOP --");
     }
 */
-	
-	
-	
 }
