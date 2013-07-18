@@ -107,10 +107,10 @@ public class input_parser {
 			String[] tokens = fromArduino2.split(" ");		// numer i wartosc
 			virtualComponents.set( "LED" + tokens[0],  tokens[1] );		//  ON lub OFF
 
-		}else if(fromArduino.startsWith("POS AT")){	
-			String fromArduino2 = fromArduino.replace("READY AT ", "");
+		}else if(fromArduino.startsWith("POS")){	
+			String fromArduino2 = fromArduino.replace("POS ", "");
 			String[] tokens = fromArduino2.split(",");
-	
+
 			virtualComponents.set( "POSX",tokens[0]);
 			virtualComponents.set( "POSY",tokens[1]);
 			virtualComponents.set( "POSZ",tokens[2]);
@@ -126,7 +126,7 @@ public class input_parser {
 
 		}else if(fromArduino.equals("PONG")){
 
-		}else if(fromArduino.equals("PING")){
+		}else if(fromArduino.startsWith("PING")){
 //			toSend.add("PONG");
 		}
 	}
