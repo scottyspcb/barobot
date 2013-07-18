@@ -7,11 +7,10 @@
 // czy debugowac przez Serial0
 #define DEBUG_OVER_SERIAL true
 
-#define DEBUG_ADB2ANDROID false
+#define DEBUG_ADB2ANDROID true
 
 // czy Android jest na koncu USB
-#define USE_ADB true
-#define ADB_PORT 14568
+#define USE_ADB false
 
 #define DEBUG_SERIAL_INPUT false
 #define DEBUG_BT_INPUT true
@@ -229,21 +228,22 @@ const int PIN49 = 49;
 #define MULTI_ADDR_TIME 10
 #define MULTI_READ_TIME 10
 #define MULTI_READ_COUNT 8
-#define WAGA_READ_COUNT 2
+#define WAGA_READ_COUNT 4
 
 
 // domyslen ustawienie mocy silnika Z
 #define SERVOZ_UP 900
 #define SERVOZ_STAYUP 900
-#define SERVOZ_DOWN 2500
+#define SERVOZ_DOWN 2100
+#define SERVOZ_PAC 1000
 //#define SERVOZ_UP 2290
 //#define SERVOZ_STAYUP 1530
 //#define SERVOZ_DOWN 1400
 
 // domyslnie ustawienie mocy silnikow Xy
 #if SERVOX4PIN==true
-  #define SPEEDX 500
-  #define ACCELERX 1350
+  #define SPEEDX 400
+  #define ACCELERX 1050
   #define XLENGTH 1700
   #define YLENGTH 600
 #else
@@ -269,3 +269,7 @@ const int PIN49 = 49;
 #define STEPPERX_READY_DISABLE true
 #define STEPPERY_READY_DISABLE true
 
+#define STEPPERX_ADD_X_LOW 3
+#define STEPPERX_ADD_X_HIGH 3
+#define STEPPERX_ADD_Y_LOW 3
+#define STEPPERX_ADD_Y_HIGH 3

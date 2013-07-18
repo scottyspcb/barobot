@@ -54,11 +54,11 @@ volatile int int4c = 0;
 volatile int int5c = 0;
 
 void on_int0C(){  int0c = 1;int0f_state = !int0f_state; read0 = digitalRead(INT0);}    // pin 2
-void on_int1C(){  int1c = 1;int1f_state = !int1f_state; read1 = digitalRead(INT0);}    // pin 21       // Krańcowy Y
-void on_int2C(){  int2c = 1;int2f_state = !int2f_state; read2 = digitalRead(INT0);}    // pin 21       // Krańcowy Y
-void on_int3C(){  int3c = 1;int3f_state = !int3f_state; read3 = digitalRead(INT0);}          // pin 20       // Krańcowy X
-void on_int4C(){  int4c = 1;int4f_state = !int4f_state; read4 = digitalRead(INT0);}          // pin 19       // Enkoder X
-void on_int5C(){  int5c = 1;int4f_state = !int4f_state; read5 = digitalRead(INT0);}          // pin 18       // Enkoder Y
+void on_int1C(){  int1c = 1;int1f_state = !int1f_state; read1 = digitalRead(INT1);}    // pin 21       // Krańcowy Y
+void on_int2C(){  int2c = 1;int2f_state = !int2f_state; read2 = digitalRead(INT2);}    // pin 21       // Krańcowy Y
+void on_int3C(){  int3c = 1;int3f_state = !int3f_state; read3 = digitalRead(INT3);}          // pin 20       // Krańcowy X
+void on_int4C(){  int4c = 1;int4f_state = !int4f_state; read4 = digitalRead(INT4);}          // pin 19       // Enkoder X
+void on_int5C(){  int5c = 1;int4f_state = !int4f_state; read5 = digitalRead(INT5);}          // pin 18       // Enkoder Y
 
 void setup() { 
   Serial.begin(115200);
@@ -74,14 +74,14 @@ void setup() {
      
  // attachInterrupt( INT2, on_int2R, RISING );    // nasłuchuj zmiany PIN 21   // Krańcowy Y
 //  attachInterrupt( INT2, on_int2C, CHANGE );    // nasłuchuj zmiany PIN 21   // Krańcowy Y
-  attachInterrupt( INT2, on_int2F, FALLING);    // nasłuchuj zmiany PIN 21   // Krańcowy Y
+//  attachInterrupt( INT2, on_int2F, FALLING);    // nasłuchuj zmiany PIN 21   // Krańcowy Y
   
 //  attachInterrupt( INT3, on_int3R, RISING );    // nasłuchuj zmiany PIN 20   // Krańcowy X
 //  attachInterrupt( INT3, on_int3C, CHANGE );    // nasłuchuj zmiany PIN 20   // Krańcowy X
 //1  attachInterrupt( INT3, on_int3F, FALLING);    // nasłuchuj zmiany PIN 20  // Krańcowy X
 
- //1 attachInterrupt( INT4, on_int4R, RISING );    // nasłuchuj zmiany PIN 19  // Enkoder X
-//  attachInterrupt( INT4, on_int4C, CHANGE );    // nasłuchuj zmiany PIN 19  // Enkoder X
+ // attachInterrupt( INT4, on_int4R, RISING );    // nasłuchuj zmiany PIN 19  // Enkoder X
+  attachInterrupt( INT4, on_int4C, CHANGE );    // nasłuchuj zmiany PIN 19  // Enkoder X
  // attachInterrupt( INT4, on_int4F, FALLING);    // nasłuchuj zmiany PIN 19 // Enkoder X
 
 //1  attachInterrupt( INT5, on_int5R, RISING );    // nasłuchuj zmiany PIN 18 // Enkoder Y
