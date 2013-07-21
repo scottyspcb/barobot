@@ -10,8 +10,9 @@
 byte status = STATE_INIT;      // na pocztku jest w trakcje inicjacji
 // koniec stanu uC
 
-long unsigned acc_x = ACCELERX;
-long unsigned acc_y = ACCELERY;
+unsigned int acc_x = ACCELERX;
+unsigned int acc_y = ACCELERY;
+unsigned int waga_zero = 10;        // przy tej wadze uznaje ze nic nie stoi na wadze
 
 volatile bool was_interrupt = LOW;    // przerwania połączona spójnikiem OR
 volatile bool int0_value = LOW;
@@ -57,6 +58,7 @@ void setupSerial(){      // uzyte w setup()
     Serial3.print( btdn );
     delay(1000);
     Serial3.println( "" );    // reset jesli nie idzie do bufora...
+    Serial3.println( "PING" );    // reset jesli nie idzie do bufora...
   }
 }
 
@@ -136,10 +138,10 @@ void setupADB(){      // uzyte w setup()
 }
 // Ustawienia Przerwań
 void setupInts(){      // uzyte w setup()
-  pinMode(INT5, INPUT); 
+//  pinMode(INT5, INPUT); 
   //pinMode(INT4, INPUT);
 
-  digitalWrite(INT5, HIGH); //turn pullup resistor on
+//  digitalWrite(INT5, HIGH); //turn pullup resistor on
   //    digitalWrite(INT4, HIGH); //turn pullup resistor on
 
   //  attachInterrupt( INT0, on_int0R, RISING);    // nasłuchuj zmiany PIN 2
@@ -151,10 +153,10 @@ void setupInts(){      // uzyte w setup()
   //  attachInterrupt( INT3, on_int3R, RISING);     // nasłuchuj zmiany PIN 20   // Krańcowy X
   //  attachInterrupt( INT3, on_int3F, FALLING);    // nasłuchuj zmiany PIN 20  // Krańcowy X
 
-  attachInterrupt( INT4, on_int4R, CHANGE);    // nasłuchuj zmiany PIN 19  // Enkoder X
+//  attachInterrupt( INT4, on_int4R, CHANGE);    // nasłuchuj zmiany PIN 19  // Enkoder X
   //  attachInterrupt( INT4, on_int4F, FALLING);    // nasłuchuj zmiany PIN 19 // Enkoder X
 
-  attachInterrupt( INT5, on_int5R, CHANGE);    // nasłuchuj zmiany PIN 18 // Enkoder Y
+//  attachInterrupt( INT5, on_int5R, CHANGE);    // nasłuchuj zmiany PIN 18 // Enkoder Y
   //  attachInterrupt( INT5, on_int5F, FALLING);    // nasłuchuj zmiany PIN 18// Enkoder Y
 }
 
@@ -215,14 +217,13 @@ boolean irr_max_z = false;
 boolean irr_x  = HIGH;              // czy dotykam przerwania
 boolean irr_y  = HIGH;              // czy dotykam przerwania
 
-unsigned long last_max_x = XLENGTH;
-unsigned long last_max_y = YLENGTH;
+unsigned int last_max_x = XLENGTH;
+unsigned int last_max_y = YLENGTH;
 unsigned long counter100 = 0, counter1000 = 0;
 unsigned long milis40 = 0, milis100 = 0, milis1000 = 0;
 unsigned long mil = 0;
 String stos = "";
 unsigned int stos_length = 0;
-
 
 void loop(){
   run_steppers();
@@ -349,7 +350,7 @@ void parseInput( String input ){   // zrozum co sie dzieje
       }else if( pin == 7 ){            pin = STATUS_LED07;
       }else if( pin == 8 ){            pin = STATUS_LED08;
       }else if( pin == 9 ){            pin = STATUS_LED09;
-      }else{                    pin = 0;
+      }else{                           pin = 0;
       }
       if(pin != 0 ){
         if( input.endsWith("ON") ){
@@ -411,7 +412,8 @@ void parseInput( String input ){   // zrozum co sie dzieje
     }
   }else if( input.startsWith("MIX ") ){       // MIX 245
     long czas = decodeInt( input, 4 );        // SET MIX i spacja
-    mieszaj(czas);
+    mieszadlo_enable(czas);
+    mieszadlo_disable();
     defaultResult = false;
   }else if( input.startsWith("LIVE WEIGHT ON") ){      // RET LIVE WEIGHT ON
     read_waga = true;
@@ -474,9 +476,13 @@ void parseInput( String input ){   // zrozum co sie dzieje
   }else if( input == "PONG" ){     // nic, to byla odpowiedz na moje PING
     defaultResult = false;
   }else if( input.startsWith("FILL ") ){
-    long ilosc = decodeInt( input, 5 );  // FILL i spacja
-    nalej( ilosc );    
+    unsigned long ilosc = decodeInt( input, 5 );  // FILL i spacja
+    nalej( ilosc );
   }else if( input == "KALIBRUJX" ){
+    // kaliberacja wagi razem z kalubracją X
+    waga_zero = read_szklanka();    // TODO - wydzielić
+    send2android("GLASS " + String(waga_zero));
+
     stosPush("NORET");
     stosPush("SET X " + String( - XLENGTH));
     stosPush("SET X " + String( XLENGTH ));
@@ -490,6 +496,10 @@ void parseInput( String input ){   // zrozum co sie dzieje
     stosPush("READY");
   }else if( input == "KALIBRUJZ" ){  
     z_down();
+  }else if( input == "KALIBRUJ WAGA" ){       // wykonaj 10 losowych ruchów po X    
+    waga_zero = read_szklanka();
+    send2android("GLASS " + String(waga_zero));
+    defaultResult = false;
   }else if( input == "MACHAJX" ){       // wykonaj 10 ruchów 300 - 1000
     stosPush("NORET");
     for(byte f = 0;f<10;){
@@ -514,6 +524,7 @@ void parseInput( String input ){   // zrozum co sie dzieje
       f=f+2;
     }
     stosPush("READY");
+
   }else if( input == "LOSUJX" ){       // wykonaj 10 losowych ruchów po X
     stosPush("NORET");
     for(byte f = 0;f<LOS_MAX;){
@@ -596,20 +607,9 @@ void on_int1F(){
 // attachInterrupt( INT1, on_int1R, FALLING);   // nasłuchuj zmiany PIN 3    // Krańcowy Z na puszczenie
 
 void z_down(){   // zajedz silnikiem Z na dół
-/*  int1_value = LOW;
-  attachInterrupt( INT1, on_int1F, FALLING);   // nasłuchuj zmiany PIN 3    // Krańcowy Z (dolny) na wcisniecie daje zero
-  delay(100);                                  // zjedz kawałek zanim znow podlacze przerwania
-  int1_value = LOW;
-  while(int1_value == LOW){                    // az dotknie krańcówki dolnej
-    //      send2debuger( "irr", "test " + String(aaa) );
-    delay(20);
-  }
-  detachInterrupt(INT1);                      // odlacz przerwanie, jestem na dole
-  */
-
   servoZ.attach(STEPPER_Z_PWM);                  // przypisz do pinu, uruchamia PWMa  
   send2debuger( "fill", "w dół" );  
-  servoZ.writeMicroseconds(SERVOZ_DOWN);             // na doł
+  servoZ.writeMicroseconds(SERVOZ_DOWN);         // na doł
   delay(1000);
 
   servoZ.detach();                             // odetnij sterowanie
@@ -618,20 +618,44 @@ void z_down(){   // zajedz silnikiem Z na dół
   irr_min_z = true;
   send_current_position(false);
 }
-void z_up(){   // zajedz silnikiem Z w gore
- /* int1_value = LOW;
-  servoZ.attach(STEPPER_Z_PWM);                // przypisz do pinu, uruchamia PWMa
-  attachInterrupt( INT1, on_int1F, FALLING);    // nasłuchuj zmiany PIN 3    // Krańcowy Z (gorny) na wcisniecie daje zero
-  servoZ.writeMicroseconds(SERVOZ_UP);         // jedź w gore
-  int i =0;
-  while( int1_value == HIGH ){                   // az na górze
-    send2debuger( "fill", "czekam na gore" );
-    delay(20);                                    // todo zabezpieczenie gdy po 5 sek nadal nie jest na górze
-    i++;
-    if(i>1000){    // bez przesady
-      break;
+
+byte wait4glass(){
+  long unsigned waga = read_szklanka();
+  send2android("GLASS " + String(waga));
+  if( waga < waga_zero + WAGA_MIN_DIFF ){          // rozni się o mniej niż WAGA_MIN_DIFF
+    unsigned int repeat = 0;
+    while( repeat < WAGA_REPEAT_CONUT && (waga < waga_zero + WAGA_MIN_DIFF) ){          // powtarzaj WAGA_REPEAT_CONUT razy
+      digitalWrite( STATUS_LED04, HIGH );        // zapal ze chce szklankę
+      delay(400);
+      digitalWrite( STATUS_LED04, LOW );         // zgaś
+      delay(300);
+      waga = read_szklanka();
+      send2android("GLASS " + String(waga));
     }
-  }*/
+    //jak juz jest ok to i tak poczekaj sekundę na usunięcie ręki wkłądającej szklankę
+    delay(2000);
+    
+    if(waga < waga_zero + WAGA_MIN_DIFF ){      //nadal jest za mało
+      send2android("NOGLASS");
+      return 0;
+    }
+  }
+  return 1;
+}
+
+void z_up(){   // zajedz silnikiem Z w gore
+  if(NEED_WEIGHT_UP){
+    byte res = wait4glass();
+    if(res == 0){    // nie ma szklanki i nie będzie
+      return;
+    }
+  }
+  if(STEPPERX_READY_DISABLE){        // trzymaj X i Y jak jade do góry
+    stepperX.enableOutputs();
+  }
+  if(STEPPERY_READY_DISABLE){        // trzymaj X i Y jak jade do góry
+    stepperY.enableOutputs();
+  }
   servoZ.attach(STEPPER_Z_PWM);                // przypisz do pinu, uruchamia PWMa
   send2debuger( "fill", "w gore1" );
   servoZ.writeMicroseconds(SERVOZ_UP);             // na doł
@@ -639,15 +663,27 @@ void z_up(){   // zajedz silnikiem Z w gore
   servoZ.detach();                             // odetnij sterowanie
   irr_max_z = true;
   irr_min_z = false;
+  if(STEPPERX_READY_DISABLE){
+     stepperX.disableOutputs();
+  }
+  if(STEPPERY_READY_DISABLE){
+    stepperY.disableOutputs();
+  }
   send_current_position(false);
 }
 
-void nalej( long czas ){   // nalej cieczy przez tyle czasu
+void nalej( unsigned long czas ){   // nalej cieczy przez tyle czasu
+  if(NEED_WEIGHT_NALEJ){
+    byte res = wait4glass();
+    if(res == 0){    // nie ma szklanki i nie będzie
+      return;
+    }
+  }
   send2debuger( "fill", "w gore1" );
-  if(STEPPERX_READY_DISABLE){
+  if(STEPPERX_READY_DISABLE){        // trzymaj X i Y jak jade do góry
     stepperX.enableOutputs();
   }
-  if(STEPPERY_READY_DISABLE){
+  if(STEPPERY_READY_DISABLE){        // trzymaj X i Y jak jade do góry
     stepperY.enableOutputs();
   }
   servoZ.attach(STEPPER_Z_PWM);                // przypisz do pinu, uruchamia PWMa 
@@ -662,14 +698,15 @@ void nalej( long czas ){   // nalej cieczy przez tyle czasu
   send2debuger( "fill", "w dol1" );
   servoZ.writeMicroseconds(SERVOZ_DOWN);             // na doł
   delay(800);
-  
+
+  delay(SERVOZ_PAC_TIME_WAIT);  
   send2debuger( "fill", "w gore2" );
-  servoZ.writeMicroseconds(SERVOZ_PAC);              // do góry
-  delay(200);
+  servoZ.writeMicroseconds(SERVOZ_PAC_POS);              // do góry
+  delay(SERVOZ_PAC_TIME_UP);
 
   send2debuger( "fill", "w dół2" );  
   servoZ.writeMicroseconds(SERVOZ_DOWN);             // na doł
-  delay(800);
+  delay(SERVOZ_PAC_TIME_DOWN);
 
   servoZ.detach();                             // odetnij sterowanie
   if(STEPPERX_READY_DISABLE){
@@ -681,79 +718,32 @@ void nalej( long czas ){   // nalej cieczy przez tyle czasu
   irr_min_z = true;
   irr_max_z = false;
   send_current_position(true);
-
-/*
-  int1_value = LOW;
-  pinMode(PIN3, INPUT);
-  servoZ.attach(STEPPER_Z_PWM);                   // przypisz do pinu, uruchamia PWMa
-  servoZ.writeMicroseconds(SERVOZ_UP);            // jedź aż na gore
-  attachInterrupt( INT1, on_int1F, FALLING);    // nasłuchuj zmiany PIN 3    // Krańcowy Z (gorny) na wcisniecie daje zero
-  int i =0;
-  while( int1_value == HIGH ){                   // az na górze
-    send2debuger( "fill", "czekam na gore" );
-    delay(20);                                    // todo zabezpieczenie gdy po 5 sek nadal nie jest na górze
-    i++;
-    if(i>1000){    // bez przesady
-      break;
-    }
-  }
-  detachInterrupt(INT1);
-  servoZ.writeMicroseconds(SERVOZ_STAYUP);     // trzymaj na górze z tą mocą
-  irr_min_z = false;
-  irr_max_z = true;
-  send_current_position(false);  
-  send2debuger( "fill", "czekam " + String(czas) );
-  delay(czas);                                 // trzymaj na górze tyle czasu 
-  servoZ.writeMicroseconds(SERVOZ_DOWN);       // a potem jedz w dol
-  send2debuger( "fill", "w dół" );
-//  attachInterrupt( INT1, on_int1F, FALLING);   // nasłuchuj zmiany PIN 3    // Krańcowy Z (dolny) na wcisniecie daje zero
-//  delay(100);                                  // zjedz kawałek zanim znow podlacze przerwania
-//  int1_value = LOW;
-///  int aaa = 0;
-  delay( 1000 );
-  */
-/*
-  while(int1_value == LOW){                    // az dotknie krańcówki dolnej
-    send2debuger( "irr", "test " + String(aaa) );
-    delay(20);
-    aaa++;
-  }
-  detachInterrupt(INT1);
- */
-
 }
 
-void mieszaj2( long czas ){
-  servoZ.attach(STEPPER_Z_PWM);  // attaches the servo on pin  to the servo object 
-  servoZ.writeMicroseconds(SERVOZ_UP);
-  delay(200);
-  int1_value = 0;
-  int licznik = 0;
-  while( int1_value != 2 && licznik < 200){                   // az na górze  
-    Serial.println("gora");
-    licznik++;
-    delay(20);
-  }
-  servoZ.writeMicroseconds(SERVOZ_STAYUP);  // trzymaj
-  Serial.println("czekam");
-  delay(5000);
-  servoZ.writeMicroseconds(SERVOZ_DOWN);  // dół
-  int1_value = 0;
-  Serial.println("dol");
-  licznik = 0;
-  while( int1_value != 2 && licznik < 200){                   // az na górze  
-    Serial.println("dol++");
-    licznik++;
-    delay(20);
-  }
-  servoZ.detach();
-}
-
-void mieszaj( long czas ){   // mieszaj tyle czasu
+void mieszadlo_enable( long czas ){   // mieszaj tyle czasu
   // zjedź karetką
+  if(STEPPERX_READY_DISABLE){        // trzymaj X i Y jak jade do góry
+    stepperX.enableOutputs();
+  }
+  if(STEPPERY_READY_DISABLE){        // trzymaj X i Y jak jade do góry
+    stepperY.enableOutputs();
+  }
   // zajedź mieszadełkiem
   // mieszaj
   delay(czas);
+  // wyjedz mieszadełkiem
+}
+
+void mieszadlo_disable(){   // mieszaj tyle czasu
+  // zjedź karetką
+  if(STEPPERX_READY_DISABLE){        // trzymaj X i Y jak jade do góry
+    stepperX.enableOutputs();
+  }
+  if(STEPPERY_READY_DISABLE){        // trzymaj X i Y jak jade do góry
+    stepperY.enableOutputs();
+  }
+  // zajedź mieszadełkiem
+  // mieszaj
   // wyjedz mieszadełkiem
 }
 
@@ -919,7 +909,6 @@ unsigned int read_szklanka(){
   return rr >>WAGA_READ_COUNT;
 }
 
-
 unsigned long read_butelka(byte numer){
   digitalWrite(PIN_MADDR0, bitRead(numer,0) );      //   // Ustaw numer na muxach, wystaw adres
   digitalWrite(PIN_MADDR1, bitRead(numer,1) );
@@ -928,7 +917,7 @@ unsigned long read_butelka(byte numer){
   unsigned long rr = 0;
   delay(MULTI_ADDR_TIME);
   unsigned int j=0;
-  int count = 1<<MULTI_READ_COUNT;
+  unsigned int count = 1<<MULTI_READ_COUNT;
   for( j=0; j<count ;j++){
     rr+= analogRead(PIN_WAGA_ANALOG);
   }
@@ -1107,4 +1096,69 @@ void readAndroidInput( String input ){    // odbierz przez ADB z androida
   parseInput( input );          // parsuj wejscie
 }
 
+
+
+
+/*
+  int1_value = LOW;
+  pinMode(PIN3, INPUT);
+  servoZ.attach(STEPPER_Z_PWM);                   // przypisz do pinu, uruchamia PWMa
+  servoZ.writeMicroseconds(SERVOZ_UP);            // jedź aż na gore
+  attachInterrupt( INT1, on_int1F, FALLING);    // nasłuchuj zmiany PIN 3    // Krańcowy Z (gorny) na wcisniecie daje zero
+  int i =0;
+  while( int1_value == HIGH ){                   // az na górze
+    send2debuger( "fill", "czekam na gore" );
+    delay(20);                                    // todo zabezpieczenie gdy po 5 sek nadal nie jest na górze
+    i++;
+    if(i>1000){    // bez przesady
+      break;
+    }
+  }
+  detachInterrupt(INT1);
+  servoZ.writeMicroseconds(SERVOZ_STAYUP);     // trzymaj na górze z tą mocą
+  irr_min_z = false;
+  irr_max_z = true;
+  send_current_position(false);  
+  send2debuger( "fill", "czekam " + String(czas) );
+  delay(czas);                                 // trzymaj na górze tyle czasu 
+  servoZ.writeMicroseconds(SERVOZ_DOWN);       // a potem jedz w dol
+  send2debuger( "fill", "w dół" );
+//  attachInterrupt( INT1, on_int1F, FALLING);   // nasłuchuj zmiany PIN 3    // Krańcowy Z (dolny) na wcisniecie daje zero
+//  delay(100);                                  // zjedz kawałek zanim znow podlacze przerwania
+//  int1_value = LOW;
+///  int aaa = 0;
+  delay( 1000 );
+  */
+/*
+  while(int1_value == LOW){                    // az dotknie krańcówki dolnej
+    send2debuger( "irr", "test " + String(aaa) );
+    delay(20);
+    aaa++;
+  }
+  detachInterrupt(INT1);
+ */
+
+
+/*  int1_value = LOW;
+  attachInterrupt( INT1, on_int1F, FALLING);   // nasłuchuj zmiany PIN 3    // Krańcowy Z (dolny) na wcisniecie daje zero
+  delay(100);                                  // zjedz kawałek zanim znow podlacze przerwania
+  int1_value = LOW;
+  while(int1_value == LOW){                    // az dotknie krańcówki dolnej
+    //      send2debuger( "irr", "test " + String(aaa) );
+    delay(20);
+  }
+  detachInterrupt(INT1);                      // odlacz przerwanie, jestem na dole
+  int1_value = LOW;
+  servoZ.attach(STEPPER_Z_PWM);                // przypisz do pinu, uruchamia PWMa
+  attachInterrupt( INT1, on_int1F, FALLING);    // nasłuchuj zmiany PIN 3    // Krańcowy Z (gorny) na wcisniecie daje zero
+  servoZ.writeMicroseconds(SERVOZ_UP);         // jedź w gore
+  int i =0;
+  while( int1_value == HIGH ){                   // az na górze
+    send2debuger( "fill", "czekam na gore" );
+    delay(20);                                    // todo zabezpieczenie gdy po 5 sek nadal nie jest na górze
+    i++;
+    if(i>1000){    // bez przesady
+      break;
+    }
+  }*/
 

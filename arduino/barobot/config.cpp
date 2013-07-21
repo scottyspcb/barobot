@@ -235,7 +235,12 @@ const int PIN49 = 49;
 #define SERVOZ_UP 900
 #define SERVOZ_STAYUP 900
 #define SERVOZ_DOWN 2100
-#define SERVOZ_PAC 1000
+#define SERVOZ_PAC_POS 1000
+
+#define SERVOZ_PAC_TIME_WAIT 900    // tyle czekaj po zjechaniu na dół
+#define SERVOZ_PAC_TIME_UP 400      // tyle jedz na gore
+#define SERVOZ_PAC_TIME_DOWN 800    // tyle jedz na dół
+
 //#define SERVOZ_UP 2290
 //#define SERVOZ_STAYUP 1530
 //#define SERVOZ_DOWN 1400
@@ -273,3 +278,11 @@ const int PIN49 = 49;
 #define STEPPERX_ADD_X_HIGH 3
 #define STEPPERX_ADD_Y_LOW 3
 #define STEPPERX_ADD_Y_HIGH 3
+
+#define WAGA_REPEAT_CONUT 5
+#define WAGA_MIN_DIFF 20
+#define NEED_WEIGHT_UP true
+#define NEED_WEIGHT_NALEJ true
+
+
+
