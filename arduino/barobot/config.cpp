@@ -281,8 +281,6 @@ const int PIN49 = 49;
 
 #define WAGA_REPEAT_CONUT 5
 #define WAGA_MIN_DIFF 20
-#define NEED_WEIGHT_UP true
-#define NEED_WEIGHT_NALEJ true
-
-
+#define NEED_WEIGHT_UP false
+#define NEED_WEIGHT_NALEJ false
 

@@ -2,7 +2,8 @@
 
 const int stepsPerRevolution = 500;
 //Stepper myStepper(stepsPerRevolution, 3,4,5,6);
-Stepper myStepper(stepsPerRevolution, 28,29,30,31);
+//Stepper myStepper(stepsPerRevolution, 28,29,30,31);
+Stepper myStepper(stepsPerRevolution, 8,9,10,11);
 
 void setup() {
   // set the speed at 60 rpm:
@@ -21,4 +22,3 @@ void loop() {
   myStepper.step(-stepsPerRevolution);
   delay(100);
 }
-
