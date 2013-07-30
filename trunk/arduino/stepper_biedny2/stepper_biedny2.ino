@@ -4,8 +4,8 @@
 //AccelStepper stepper(28,29,30,31); // Defaults to AccelStepper::FULL4WIRE (4 pins) on 2, 3, 4, 5
 //AccelStepper stepper(4, 28,29,30,31 );
 
-AccelStepper stepper(4, 46,47,48,49 );
-//AccelStepper stepper(4, 40,41,42,43 );
+//AccelStepper stepper(4, 46,47,48,49 );
+AccelStepper stepper(4, 40,41,42,43 );
 //AccelStepper stepper(1, 46,47 );
 
 void setup(){   
@@ -22,3 +22,4 @@ void loop(){
     }
     stepper.run();
 }
+
