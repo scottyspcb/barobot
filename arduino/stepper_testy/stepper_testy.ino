@@ -111,3 +111,17 @@ void serialEvent(){                       // FUNKCJA WBUDOWANA - zbieraj dane z 
   }
 }
 
+
+// użycie:
+
+/*
+
+MAXSPEED,ACCELERATION,TARGET,PULSEWIDTH,MICROSTEPPING
+400,2500,500,20,1
+
+300,2500,500,20,1
+
+
+
+*/
+
