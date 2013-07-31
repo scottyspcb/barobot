@@ -7,7 +7,7 @@
 //AccelStepper stepper(4, 46,47,48,49 );
 //AccelStepper stepper(4, 40,41,42,43 );
 AccelStepper stepper(8, 8,9,10,11);
-//AccelStepper stepper(1, 46,47 );
+//AccelStepper stepper(1, 2, 3 );
 
 String serial0Buffer = "";
 boolean Console0Complete = false;   // This will be set to true once we have a full string
@@ -25,10 +25,10 @@ void loop(){
     if (stepper.distanceToGo() == 0){
       delay(2000);
       if( dir ){
-        Serial.println("UP"); 
+        Serial.println("UP -" + String(target*2)); 
         stepper.move(-target*2); 
       }else{
-        Serial.println("DOWN");  
+        Serial.println("DOWN " + String(target*2));
         stepper.move(target*2);
       }
       dir = !dir;
@@ -74,23 +74,21 @@ void setValue(byte pos, String value ){
   }else if( pos == 2 ){         // TARGET
     Serial.println("moveTo: " + String(val) );
     target = val;
-  }else if( pos == 3 ){         // PULSEWIDTH
-    stepper.setMinPulseWidth(val);
-    Serial.println("setMinPulseWidth: " + String(val) );
-  }else if( pos == 4 ){         // MICROSTEPPING
+  }else if( pos == 3 ){         // MICROSTEPPING
+    stepper.setInterface(val);
     if(val == 0 ){
-       stepper.setInterface(AccelStepper::FULL4WIRE);
        Serial.println("microstepping OFF"); 
-    }else{
-       stepper.setInterface(AccelStepper::HALF4WIRE);
-       Serial.println("microstepping ON"); 
+    }else if( val == 1 ){
+       Serial.println("microstepping DRIVER"); 
+    }else if( val == 2 ){
+       Serial.println("microstepping FULL2WIRE"); 
+    }else if( val == 4 ){
+       Serial.println("microstepping FULL4WIRE"); 
+    }else if( val == 8 ){
+       Serial.println("microstepping HALF4WIRE"); 
     }
   }
 }
-
-
-
-
 
 long decodeInt(String input, int odetnij ){
   long pos = 0;
@@ -111,16 +109,27 @@ void serialEvent(){                       // FUNKCJA WBUDOWANA - zbieraj dane z 
   }
 }
 
-
 // użycie:
-
 /*
 
 MAXSPEED,ACCELERATION,TARGET,PULSEWIDTH,MICROSTEPPING
-400,2500,500,20,1
 
-300,2500,500,20,1
+Dla dużego:
+500,2500,500,8
+500,2500,500,8
 
+
+dla easydrivera:
+500,2500,500,1
+500,2500,500,2
+
+1000,2500,2000
+
+
+DRIVER    = 1, ///< Stepper Driver, 2 driver pins required
+FULL2WIRE = 2, ///< 2 wire stepper, 2 motor pins required
+FULL4WIRE = 4, ///< 4 wire full stepper, 4 motor pins required
+HALF4WIRE = 8  ///< 4 wire half stepper, 4 motor pins required
 
 
 */
