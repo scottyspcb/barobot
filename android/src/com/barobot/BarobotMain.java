@@ -27,8 +27,7 @@ public class BarobotMain extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-		instance = this;
-        // Set up the window layout
+		instance = this;	        // Set up the window layout
         setContentView(R.layout.main);
         virtualComponents.init( this );
 
