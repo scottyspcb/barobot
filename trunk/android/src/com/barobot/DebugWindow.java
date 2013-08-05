@@ -197,7 +197,7 @@ public class DebugWindow extends Activity {
 				R.id.nalej13,
 				R.id.nalej14,
 				R.id.nalej15,
-				R.id.nalej16};
+				R.id.nalej_tutaj};
 		for(int i =0; i<nalejs.length;i++){
 			View w = findViewById(nalejs[i]);
 			String classname = w.getClass().getName();

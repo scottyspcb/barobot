@@ -129,11 +129,20 @@ android:layout_height="fill_parent">
 			                android:id="@+id/nalej16"
 			                android:layout_width="wrap_content"
 			                android:layout_height="wrap_content"
-			                android:background="#990000"
 			                android:maxWidth="128dp"
 			                android:minHeight="148dip"
 			                android:minWidth="100dp"
-			                android:text="Nalej" />
+			                android:text="16" />
+
+			            <Button
+			                android:id="@+id/nalej18"
+			                android:layout_width="wrap_content"
+			                android:layout_height="wrap_content"
+			                android:maxWidth="128dp"
+			                android:minHeight="148dip"
+			                android:minWidth="100dp"
+			                android:text="18" />
+
 			        </LinearLayout>
 
 			        <LinearLayout
@@ -222,6 +231,17 @@ android:layout_height="fill_parent">
 			                android:minWidth="100dp"
 			                android:text="1323ml"
 			                android:textAppearance="?android:attr/textAppearanceLarge" />
+
+			            <TextView
+			                android:id="@+id/waga17"
+			                android:layout_width="wrap_content"
+			                android:layout_height="wrap_content"
+			                android:lines="1"
+			                android:linksClickable="false"
+			                android:minWidth="100dp"
+			                android:text="1323ml"
+			                android:textAppearance="?android:attr/textAppearanceLarge" />
+
 			        </LinearLayout>
 
 			        <LinearLayout
@@ -229,7 +249,8 @@ android:layout_height="fill_parent">
 			            android:layout_width="wrap_content"
 			            android:layout_height="wrap_content"
 			            android:layout_above="@+id/wagi_przod"
-			            android:layout_alignParentLeft="true" >
+			            android:layout_alignParentLeft="true"
+			            android:layout_alignParentRight="true" >
 
 			            <Button
 			                android:id="@+id/nalej1"
@@ -284,7 +305,15 @@ android:layout_height="fill_parent">
 			                android:minHeight="148dip"
 			                android:minWidth="100dp"
 			                android:text="11" />
-
+			            
+			            <Button
+			                android:id="@+id/nalej13"
+			                android:layout_width="wrap_content"
+			                android:layout_height="wrap_content"
+			                android:maxWidth="128dp"
+			                android:minHeight="148dip"
+			                android:minWidth="100dp"
+			                android:text="13" />
 			            <Button
 			                android:id="@+id/nalej15"
 			                android:layout_width="wrap_content"
@@ -295,13 +324,14 @@ android:layout_height="fill_parent">
 			                android:text="15" />
 
 			            <Button
-			                android:id="@+id/nalej13"
+			                android:id="@+id/nalej17"
 			                android:layout_width="wrap_content"
 			                android:layout_height="wrap_content"
 			                android:maxWidth="128dp"
 			                android:minHeight="148dip"
 			                android:minWidth="100dp"
-			                android:text="13" />
+			                android:text="17" />
+
 			        </LinearLayout>
 
 			        <LinearLayout
@@ -391,7 +421,32 @@ android:layout_height="fill_parent">
 			                android:minWidth="100dp"
 			                android:text="1323ml"
 			                android:textAppearance="?android:attr/textAppearanceLarge" />
+
+			            <TextView
+			                android:id="@+id/waga18"
+			                android:layout_width="wrap_content"
+			                android:layout_height="wrap_content"
+			                android:lines="1"
+			                android:linksClickable="false"
+			                android:minWidth="100dp"
+			                android:text="1323ml"
+			                android:textAppearance="?android:attr/textAppearanceLarge" />
+
 			        </LinearLayout>
+
+			        <Button
+			            android:id="@+id/nalej_tutaj"
+			            android:layout_width="wrap_content"
+			            android:layout_height="50dp"
+			            android:layout_alignParentLeft="true"
+			            android:layout_alignParentRight="true"
+			            android:layout_centerVertical="true"
+			            android:background="#990000"
+			            android:maxWidth="128dp"
+			            android:minHeight="50dp"
+			            android:minWidth="100dp"
+			            android:text="Nalej" />
+
 			    </RelativeLayout>
 			</RelativeLayout>
 
