@@ -16,7 +16,6 @@ public class input_parser {
 			return;
 		}
 		DebugWindow	bb6 = DebugWindow.getInstance();		
-
 		synchronized (input_parser.class) {
 			input_parser.buffer = input_parser.buffer + in;
 			
