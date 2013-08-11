@@ -25,6 +25,7 @@ public class Constant {
 
     // Intent request codes
     public static final int REQUEST_BEBUG_WINDOW = 32;
+    public static final int RESULT_SETTINGS = 32;
     public static final int REQUEST_CONNECT_DEVICE_SECURE = 1;
     public static final int REQUEST_ENABLE_BT = 3;
     

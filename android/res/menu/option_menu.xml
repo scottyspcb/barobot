@@ -1,16 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:id="@+id/main_feature"
+          android:icon="@android:drawable/ic_menu_revert"
+          android:title="@string/back_to_main_feature"
+          android:enabled="true"
+          android:checkable="false"
+           />
+
     <item android:id="@+id/secure_connect_scan"
           android:icon="@android:drawable/ic_menu_search"
           android:title="@string/secure_connect" />
 
-   		<item android:id="@+id/debug_mode_window" android:title="@string/debug_mode_window"></item>
-   		<item android:id="@+id/bt_stop" android:titleCondensed="BT stop" android:title="bt_stop"></item>
-   		<item android:id="@+id/bt_autoconn" android:titleCondensed="bt_autoconn" android:title="bt_autoconn"></item>
-   		
-   		<group android:id="@+id/group1" android:menuCategory="container" android:enabled="true" android:checkableBehavior="all" android:visible="true">
-        <item android:id="@+id/about_item" android:checked="true" android:visible="true" android:titleCondensed="Informacje" android:enabled="true" android:checkable="false" android:title="Informacje"></item>
-    </group>    
+   		<item android:id="@+id/debug_mode_window" android:title="@string/debug_mode_window"
+   		     android:icon="@android:drawable/ic_menu_preferences"
+
+   		    ></item>
+        <item android:id="@+id/about_item" android:checked="true" android:visible="true" android:titleCondensed="Informacje" android:enabled="true" android:checkable="false" android:title="Informacje"  android:icon="@android:drawable/ic_menu_info_details"></item>
+        <item
+        android:id="@+id/menu_settings"
+        ic_menu_preferences=""
+        android:orderInCategory="100"
+        android:showAsAction="never"
+        android:title="@string/menu_settings"
+        android:icon="@android:drawable/ic_menu_preferences"/>
+
+   		<group android:id="@+id/group1" android:menuCategory="container" android:enabled="true" android:checkableBehavior="all" android:visible="true">        
+        </group>    
 </menu>

@@ -134,15 +134,6 @@ android:layout_height="fill_parent">
 			                android:minWidth="100dp"
 			                android:text="16" />
 
-			            <Button
-			                android:id="@+id/nalej18"
-			                android:layout_width="wrap_content"
-			                android:layout_height="wrap_content"
-			                android:maxWidth="128dp"
-			                android:minHeight="148dip"
-			                android:minWidth="100dp"
-			                android:text="18" />
-
 			        </LinearLayout>
 
 			        <LinearLayout
@@ -232,16 +223,6 @@ android:layout_height="fill_parent">
 			                android:text="1323ml"
 			                android:textAppearance="?android:attr/textAppearanceLarge" />
 
-			            <TextView
-			                android:id="@+id/waga17"
-			                android:layout_width="wrap_content"
-			                android:layout_height="wrap_content"
-			                android:lines="1"
-			                android:linksClickable="false"
-			                android:minWidth="100dp"
-			                android:text="1323ml"
-			                android:textAppearance="?android:attr/textAppearanceLarge" />
-
 			        </LinearLayout>
 
 			        <LinearLayout
@@ -322,15 +303,6 @@ android:layout_height="fill_parent">
 			                android:minHeight="148dip"
 			                android:minWidth="100dp"
 			                android:text="15" />
-
-			            <Button
-			                android:id="@+id/nalej17"
-			                android:layout_width="wrap_content"
-			                android:layout_height="wrap_content"
-			                android:maxWidth="128dp"
-			                android:minHeight="148dip"
-			                android:minWidth="100dp"
-			                android:text="17" />
 
 			        </LinearLayout>
 
@@ -414,16 +386,6 @@ android:layout_height="fill_parent">
 
 			            <TextView
 			                android:id="@+id/waga16"
-			                android:layout_width="wrap_content"
-			                android:layout_height="wrap_content"
-			                android:lines="1"
-			                android:linksClickable="false"
-			                android:minWidth="100dp"
-			                android:text="1323ml"
-			                android:textAppearance="?android:attr/textAppearanceLarge" />
-
-			            <TextView
-			                android:id="@+id/waga18"
 			                android:layout_width="wrap_content"
 			                android:layout_height="wrap_content"
 			                android:lines="1"
