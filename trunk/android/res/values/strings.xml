@@ -22,10 +22,13 @@
     <string name="title_paired_devices">Paired Devices</string>
 	<string name="title_other_devices">Other Available Devices</string>
     <string name="button_scan">Scan for devices</string>
-    
     <string name="buttonLED">LED Off</string>
     <string name="tvText">0</string>
-  
+    <string name="menu_settings">Ustawienia</string>
+    
+    
+    <string name="back_to_main_feature">Rób Drinki</string>
+
     <!-- Options Menu -->
-    <string name="secure_connect">Connect a device - Secure</string>
+    <string name="secure_connect">Connect to Barobot</string>
 </resources>

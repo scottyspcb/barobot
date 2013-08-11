@@ -16,6 +16,10 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.RingtonePreference;
 import android.text.TextUtils;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.EditText;
 
 import java.util.List;
 
@@ -88,7 +92,9 @@ public class MainSettingsActivity extends PreferenceActivity {
 	public boolean onIsMultiPane() {
 		return isXLargeTablet(this) && !isSimplePreferences(this);
 	}
-
+	public void setDefault() {
+		PreferenceManager.setDefaultValues(this, R.xml.pref_general, false);
+	}
 	/**
 	 * Helper method to determine if the device has an extra-large screen. For
 	 * example, 10" tablets are extra-large.
@@ -118,7 +124,24 @@ public class MainSettingsActivity extends PreferenceActivity {
 			loadHeadersFromResource(R.xml.pref_headers, target);
 		}
 	}
-
+/*
+    // wysłąnie configa do robota
+    Button save_arduino = (Button) findViewById(R.id.save_arduino);
+    save_arduino.setOnClickListener(new OnClickListener() {
+        public void onClick(View v) {
+        	
+        	EditText speedx = (EditText) findViewById(R.id.conf_speed_x);
+        	EditText accx = (EditText) findViewById(R.id.conf_acc_x);
+        	EditText speedy = (EditText) findViewById(R.id.conf_speed_y);
+        	EditText accy = (EditText) findViewById(R.id.conf_acc_x);
+        	queue q= queue.getInstance();
+        	q.send("SET SPEEDX " + speedx.getText());
+        	q.send("SET ACCX " + accx.getText());
+        	q.send("SET SPEEDY " + speedy.getText());
+        	q.send("SET ACCY " + accy.getText());
+        }
+    }); */
+	
 	/**
 	 * A preference value change listener that updates the preference's summary
 	 * to reflect its new value.

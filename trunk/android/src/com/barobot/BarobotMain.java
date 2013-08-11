@@ -103,20 +103,18 @@ public class BarobotMain extends Activity {
             serverIntent = new Intent(this, DebugWindow.class);
             startActivityForResult(serverIntent, Constant.REQUEST_BEBUG_WINDOW);
 	        return true;
-
+/*
 	    case R.id.bt_autoconn:
 	    	queue q2 = queue.getInstance();
 	    	if( q2.checkBT() != false ){
 	    		q2.autoconnect();
 	    	}
 	        return true;
-
-	    case R.id.bt_stop:
-	    	queue q = queue.getInstance();
-	    	if( q.checkBT() != false ){
-	    		q.bt_disconnect();
-	    	}
-	        return true;
+*/
+       case R.id.menu_settings:
+            Intent i = new Intent(this, MainSettingsActivity.class);
+            startActivityForResult(i, Constant.RESULT_SETTINGS);
+            break;
 	    }        
 
         return false;
