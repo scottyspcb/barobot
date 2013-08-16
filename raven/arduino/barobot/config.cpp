@@ -7,11 +7,10 @@
 // czy debugowac przez Serial0
 #define DEBUG_OVER_SERIAL true
 
-#define DEBUG_ADB2ANDROID false
+#define DEBUG_ADB2ANDROID true
 
 // czy Android jest na koncu USB
 #define USE_ADB false
-#define ADB_PORT 14568
 
 #define DEBUG_SERIAL_INPUT false
 #define DEBUG_BT_INPUT true
@@ -73,8 +72,8 @@ const int PIN48 = 48;
 const int PIN49 = 49;
 
 // INDEX pinów zeby sie nie pomylić
-// 0  TX0
-// 1  RX0
+// 0  TX0     I/O    SERIAL0
+// 1  RX0     I/O    SERIAL0
 // 2  PWM     IN     INT0    // WOLNY INT
 // 3  PWM     IN     INT1    // IRRZ_PIN Krańcowy Z
 // 4  PWM     OUT    STEPPER_Z_PWM
@@ -87,21 +86,21 @@ const int PIN49 = 49;
 // 11  PWM    OUT    STATUS_LED09
 // 12  PWM    OUT    STATUS_LED_PIN
 // 13  PWM    OUT    STATUS_LED01
-// 14  TX3    I/O    BT
-// 15  RX3    I/O    BT
+// 14  TX3    I/O    serial3 BT
+// 15  RX3    I/O    serial3 BT
 // 16  TX2 
 // 17  RX2
-// 18  TX1        INT5    // Enkoder Y
-// 19  RX1        INT4    // Enkoder X
-// 20  i2c?       INT3    IRRX_PIN // Krańcowy X
-// 21  i2c?       INT2    IRRY_PIN // Krańcowy Y
-// 22              ultrasonic 0 ECHOPIN 
+// 18  TX1    IN    INT5    // Enkoder Y
+// 19  RX1    IN    INT4    // Enkoder X
+// 20  i2c?   IN    INT3    IRRX_PIN // Krańcowy X
+// 21  i2c?   IN    INT2    IRRY_PIN // Krańcowy Y
+// 22         IN   ultrasonic 0 ECHOPIN 
 // 23         OUT  STATUS_LED02
-// 24              ultrasonic 0 TRIGPIN
+// 24         IN   ultrasonic 0 TRIGPIN
 // 25  
-// 26             ultrasonic 1 ECHOPIN  
+// 26         IN   ultrasonic 1 ECHOPIN  
 // 27  
-// 28            ultrasonic 1 TRIGPIN  
+// 28         IN   ultrasonic 1 TRIGPIN  
 // 29  
 // 30  
 // 30  PIN_MADDR0  (multiplexer)
@@ -124,12 +123,14 @@ const int PIN49 = 49;
 // 37  
 // 38  
 // 39  
-// 40  lk        stepper Y Step // STEPPER_Y_STEP0 
+// 40          stepper Y Step // STEPPER_Y_STEP0 
 // 41          stepper Y DIR  // STEPPER_Y_STEP1 
 // 42                         // STEPPER_Y_STEP2 
 // 43                         // STEPPER_Y_STEP3 
-// 44
-// 45
+
+// 44          enable_pin_x   // STEPPER_X_ENABLE
+// 45          enable_pin_Y   // STEPPER_Y_ENABLE
+
 // 46          stepper X Step / STEPPER_X_STEP0 
 // 47          stepper X DIR  / STEPPER_X_STEP1
 // 48          stepper X      / STEPPER_X_STEP2
@@ -171,7 +172,6 @@ const int PIN49 = 49;
 // powtarzaj 5 razy odczyt
 #define DIST_REPEAT 5
 
-
 // mozliwe stany uC (mikrokontrolera)
 #define STATE_INIT 2
 #define STATE_READY 4
@@ -195,6 +195,10 @@ const int PIN49 = 49;
 #define STEPPER_X_STEP2 PIN48
 #define STEPPER_X_STEP3 PIN49
 
+#define STEPPER_X_ENABLE PIN44
+#define STEPPER_Y_ENABLE PIN45
+//#define STEPPER_Z_ENABLE PIN30
+
 #define STEPPER_Y_STEP PIN40
 #define STEPPER_Y_DIR PIN41
 #define STEPPER_Y_STEP0 PIN40
@@ -202,15 +206,11 @@ const int PIN49 = 49;
 #define STEPPER_Y_STEP2 PIN42
 #define STEPPER_Y_STEP3 PIN43
 
-//#define STEPPER_Z_ENABLE PIN30
 #define STEPPER_Z_PWM PIN4
 
 // Mnoznik pozycji progamowej na sprzetowa
 #define STEPPER_X_MUL  1
 #define STEPPER_Y_MUL  1
-
-// PIN dla diody statusu
-#define STATUS_LED_PIN 12
 
 // PINy dla wyjść podświetlenia
 #define STATUS_LED01 PIN13
@@ -229,29 +229,49 @@ const int PIN49 = 49;
 #define PIN_MADDR2 PIN34
 #define PIN_MADDR3 PIN36
 
+// tyle czekaj na ustawienie się adresu na multiplekserze
 #define MULTI_ADDR_TIME 10
+// czas pomiedzy czytaniem kolejnej butelki
 #define MULTI_READ_TIME 10
+// ile razy czytać jedną butelkę (jako potęga liczby 2)
 #define MULTI_READ_COUNT 8
-#define WAGA_READ_COUNT 2
+// ile razy czytać jedną ciezar szklanki (jako potęga liczby 2)
+#define WAGA_READ_COUNT 4
 
 
 // domyslen ustawienie mocy silnika Z
-#define SERVOZ_UP 900
-#define SERVOZ_STAYUP 900
-#define SERVOZ_DOWN 3000
-//#define SERVOZ_UP 2290
-//#define SERVOZ_STAYUP 1530
-//#define SERVOZ_DOWN 1400
+// pozycja jechania do góry i czas jechania
+#define SERVOZ_UP_POS 900
+#define SERVOZ_UP_TIME 800
+
+// pozycja trzymająca i mnożnik trzymania
+#define SERVOZ_STAYUP_POS 900
+#define SERVOZ_STAYUP_TIME 256
+
+// pozycja jechania w dół i czas jechania
+#define SERVOZ_DOWN_POS 2100
+#define SERVOZ_DOWN_TIME 800
+
+// czy robić PAC po nalaniu?
+#define SERVOZ_PAC_ENABLED true
+
+// pozycja do której zajechac robiąc PAC
+#define SERVOZ_PAC_POS 1000
+#define SERVOZ_PAC_TIME_WAIT 900    // po zjechaniu na dół tyle czekaj przed zrobieniem PAC
+#define SERVOZ_PAC_TIME_UP 400      // tyle jedz na gore
+#define SERVOZ_PAC_TIME_DOWN 700    // tyle jedz na dół
 
 // domyslnie ustawienie mocy silnikow Xy
 #if SERVOX4PIN==true
-  #define SPEEDX 500
-  #define ACCELERX 1350
+  #define SPEEDX 400
+  #define ACCELERX 1050
   #define XLENGTH 1700
+  #define YLENGTH 600
 #else
   #define SPEEDX 2000
   #define ACCELERX 2000
   #define XLENGTH 1900
+  #define YLENGTH 1600
 #endif
 
 #define SPEEDY 800
@@ -262,10 +282,33 @@ const int PIN49 = 49;
 #define DIR_DOWN 2
 #define DIR_STOP 0
 
-// 1 znak rozdielający komendy
-#define SEPARATOR_CHAR '\n'
+
+
+// czy wylączaj stepper X gdy zajechal za miejsce?
+#define STEPPERX_READY_DISABLE true
+// czy wylączaj stepper Y gdy zajechal za miejsce?
+#define STEPPERY_READY_DISABLE true
+
+/*
+#define STEPPERX_ADD_X_LOW 3
+#define STEPPERX_ADD_X_HIGH 3
+#define STEPPERX_ADD_Y_LOW 3
+#define STEPPERX_ADD_Y_HIGH 3
+*/
+
+#define WAGA_REPEAT_COUNT 5
+// ile czekac pomiedzy odczytami tej samej wagi
+#define WAGA_MIN_DIFF 20
+// czy wymagam szklanki do zajechania do góry?
+#define NEED_WEIGHT_UP false
+// czy wymagam szklanki do nalania?
+#define NEED_WEIGHT_NALEJ false
+
+
+// INNE
 
 //  ile losowych losowac
 #define LOS_MAX 20
-
+// 1 znak rozdielający komendy
+#define SEPARATOR_CHAR '\n'
 

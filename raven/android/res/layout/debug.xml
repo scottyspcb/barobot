@@ -66,66 +66,74 @@ android:layout_height="fill_parent">
 			                android:id="@+id/nalej2"
 			                android:layout_width="wrap_content"
 			                android:layout_height="wrap_content"
+			                android:maxWidth="128dp"
 			                android:minHeight="148dip"
-			                android:minWidth="128dp"
+			                android:minWidth="100dp"
 			                android:text="2" />
 
 			            <Button
 			                android:id="@+id/nalej4"
 			                android:layout_width="wrap_content"
 			                android:layout_height="wrap_content"
+			                android:maxWidth="128dp"
 			                android:minHeight="148dip"
-			                android:minWidth="128dp"
+			                android:minWidth="100dp"
 			                android:text="4" />
 
 			            <Button
 			                android:id="@+id/nalej6"
 			                android:layout_width="wrap_content"
 			                android:layout_height="wrap_content"
+			                android:maxWidth="128dp"
 			                android:minHeight="148dip"
-			                android:minWidth="128dp"
+			                android:minWidth="100dp"
 			                android:text="6" />
 
 			            <Button
 			                android:id="@+id/nalej8"
 			                android:layout_width="wrap_content"
 			                android:layout_height="wrap_content"
+			                android:maxWidth="128dp"
 			                android:minHeight="148dip"
-			                android:minWidth="128dp"
+			                android:minWidth="100dp"
 			                android:text="8" />
 
 			            <Button
 			                android:id="@+id/nalej10"
 			                android:layout_width="wrap_content"
 			                android:layout_height="wrap_content"
+			                android:maxWidth="128dp"
 			                android:minHeight="148dip"
-			                android:minWidth="128dp"
+			                android:minWidth="100dp"
 			                android:text="10" />
 
 			            <Button
 			                android:id="@+id/nalej12"
 			                android:layout_width="wrap_content"
 			                android:layout_height="wrap_content"
+			                android:maxWidth="128dp"
 			                android:minHeight="148dip"
-			                android:minWidth="128dp"
+			                android:minWidth="100dp"
 			                android:text="12" />
 
 			            <Button
 			                android:id="@+id/nalej14"
 			                android:layout_width="wrap_content"
 			                android:layout_height="wrap_content"
+			                android:maxWidth="128dp"
 			                android:minHeight="148dip"
-			                android:minWidth="128dp"
+			                android:minWidth="100dp"
 			                android:text="14" />
 
 			            <Button
 			                android:id="@+id/nalej16"
 			                android:layout_width="wrap_content"
 			                android:layout_height="wrap_content"
-			                android:background="#990000"
+			                android:maxWidth="128dp"
 			                android:minHeight="148dip"
-			                android:minWidth="128dp"
-			                android:text="Nalej" />
+			                android:minWidth="100dp"
+			                android:text="16" />
+
 			        </LinearLayout>
 
 			        <LinearLayout
@@ -141,7 +149,7 @@ android:layout_height="fill_parent">
 			                android:layout_height="wrap_content"
 			                android:lines="1"
 			                android:linksClickable="false"
-			                android:minWidth="128dp"
+			                android:minWidth="100dp"
 			                android:text="1323ml"
 			                android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -151,7 +159,7 @@ android:layout_height="fill_parent">
 			                android:layout_height="wrap_content"
 			                android:lines="1"
 			                android:linksClickable="false"
-			                android:minWidth="128dp"
+			                android:minWidth="100dp"
 			                android:text="1323ml"
 			                android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -161,7 +169,7 @@ android:layout_height="fill_parent">
 			                android:layout_height="wrap_content"
 			                android:lines="1"
 			                android:linksClickable="false"
-			                android:minWidth="128dp"
+			                android:minWidth="100dp"
 			                android:text="1323ml"
 			                android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -171,7 +179,7 @@ android:layout_height="fill_parent">
 			                android:layout_height="wrap_content"
 			                android:lines="1"
 			                android:linksClickable="false"
-			                android:minWidth="128dp"
+			                android:minWidth="100dp"
 			                android:text="1323ml"
 			                android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -181,7 +189,7 @@ android:layout_height="fill_parent">
 			                android:layout_height="wrap_content"
 			                android:lines="1"
 			                android:linksClickable="false"
-			                android:minWidth="128dp"
+			                android:minWidth="100dp"
 			                android:text="1323ml"
 			                android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -191,7 +199,7 @@ android:layout_height="fill_parent">
 			                android:layout_height="wrap_content"
 			                android:lines="1"
 			                android:linksClickable="false"
-			                android:minWidth="128dp"
+			                android:minWidth="100dp"
 			                android:text="1323ml"
 			                android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -201,7 +209,7 @@ android:layout_height="fill_parent">
 			                android:layout_height="wrap_content"
 			                android:lines="1"
 			                android:linksClickable="false"
-			                android:minWidth="128dp"
+			                android:minWidth="100dp"
 			                android:text="1323ml"
 			                android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -211,9 +219,10 @@ android:layout_height="fill_parent">
 			                android:layout_height="wrap_content"
 			                android:lines="1"
 			                android:linksClickable="false"
-			                android:minWidth="128dp"
+			                android:minWidth="100dp"
 			                android:text="1323ml"
 			                android:textAppearance="?android:attr/textAppearanceLarge" />
+
 			        </LinearLayout>
 
 			        <LinearLayout
@@ -221,71 +230,80 @@ android:layout_height="fill_parent">
 			            android:layout_width="wrap_content"
 			            android:layout_height="wrap_content"
 			            android:layout_above="@+id/wagi_przod"
-			            android:layout_alignParentLeft="true" >
+			            android:layout_alignParentLeft="true"
+			            android:layout_alignParentRight="true" >
 
 			            <Button
 			                android:id="@+id/nalej1"
 			                android:layout_width="wrap_content"
 			                android:layout_height="wrap_content"
+			                android:maxWidth="128dp"
 			                android:minHeight="148dip"
-			                android:minWidth="128dp"
+			                android:minWidth="100dp"
 			                android:text="1 (start)" />
 
 			            <Button
 			                android:id="@+id/nalej3"
 			                android:layout_width="wrap_content"
 			                android:layout_height="wrap_content"
+			                android:maxWidth="128dp"
 			                android:minHeight="148dip"
-			                android:minWidth="128dp"
+			                android:minWidth="100dp"
 			                android:text="3" />
 
 			            <Button
 			                android:id="@+id/nalej5"
 			                android:layout_width="wrap_content"
 			                android:layout_height="wrap_content"
+			                android:maxWidth="128dp"
 			                android:minHeight="148dip"
-			                android:minWidth="128dp"
+			                android:minWidth="100dp"
 			                android:text="5" />
 
 			            <Button
 			                android:id="@+id/nalej7"
 			                android:layout_width="wrap_content"
 			                android:layout_height="wrap_content"
+			                android:maxWidth="128dp"
 			                android:minHeight="148dip"
-			                android:minWidth="128dp"
+			                android:minWidth="100dp"
 			                android:text="7" />
 
 			            <Button
 			                android:id="@+id/nalej9"
 			                android:layout_width="wrap_content"
 			                android:layout_height="wrap_content"
+			                android:maxWidth="128dp"
 			                android:minHeight="148dip"
-			                android:minWidth="128dp"
+			                android:minWidth="100dp"
 			                android:text="9" />
 
 			            <Button
 			                android:id="@+id/nalej11"
 			                android:layout_width="wrap_content"
 			                android:layout_height="wrap_content"
+			                android:maxWidth="128dp"
 			                android:minHeight="148dip"
-			                android:minWidth="128dp"
+			                android:minWidth="100dp"
 			                android:text="11" />
-
-			            <Button
-			                android:id="@+id/nalej15"
-			                android:layout_width="wrap_content"
-			                android:layout_height="wrap_content"
-			                android:minHeight="148dip"
-			                android:minWidth="128dp"
-			                android:text="15" />
-
+			            
 			            <Button
 			                android:id="@+id/nalej13"
 			                android:layout_width="wrap_content"
 			                android:layout_height="wrap_content"
+			                android:maxWidth="128dp"
 			                android:minHeight="148dip"
-			                android:minWidth="128dp"
+			                android:minWidth="100dp"
 			                android:text="13" />
+			            <Button
+			                android:id="@+id/nalej15"
+			                android:layout_width="wrap_content"
+			                android:layout_height="wrap_content"
+			                android:maxWidth="128dp"
+			                android:minHeight="148dip"
+			                android:minWidth="100dp"
+			                android:text="15" />
+
 			        </LinearLayout>
 
 			        <LinearLayout
@@ -302,7 +320,7 @@ android:layout_height="fill_parent">
 			                android:layout_height="wrap_content"
 			                android:lines="1"
 			                android:linksClickable="false"
-			                android:minWidth="128dp"
+			                android:minWidth="100dp"
 			                android:text="1323ml"
 			                android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -312,7 +330,7 @@ android:layout_height="fill_parent">
 			                android:layout_height="wrap_content"
 			                android:lines="1"
 			                android:linksClickable="false"
-			                android:minWidth="128dp"
+			                android:minWidth="100dp"
 			                android:text="1323ml"
 			                android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -322,7 +340,7 @@ android:layout_height="fill_parent">
 			                android:layout_height="wrap_content"
 			                android:lines="1"
 			                android:linksClickable="false"
-			                android:minWidth="128dp"
+			                android:minWidth="100dp"
 			                android:text="1323ml"
 			                android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -332,7 +350,7 @@ android:layout_height="fill_parent">
 			                android:layout_height="wrap_content"
 			                android:lines="1"
 			                android:linksClickable="false"
-			                android:minWidth="128dp"
+			                android:minWidth="100dp"
 			                android:text="1323ml"
 			                android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -342,7 +360,7 @@ android:layout_height="fill_parent">
 			                android:layout_height="wrap_content"
 			                android:lines="1"
 			                android:linksClickable="false"
-			                android:minWidth="128dp"
+			                android:minWidth="100dp"
 			                android:text="1323ml"
 			                android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -352,7 +370,7 @@ android:layout_height="fill_parent">
 			                android:layout_height="wrap_content"
 			                android:lines="1"
 			                android:linksClickable="false"
-			                android:minWidth="128dp"
+			                android:minWidth="100dp"
 			                android:text="1323ml"
 			                android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -362,7 +380,7 @@ android:layout_height="fill_parent">
 			                android:layout_height="wrap_content"
 			                android:lines="1"
 			                android:linksClickable="false"
-			                android:minWidth="128dp"
+			                android:minWidth="100dp"
 			                android:text="1323ml"
 			                android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -372,23 +390,25 @@ android:layout_height="fill_parent">
 			                android:layout_height="wrap_content"
 			                android:lines="1"
 			                android:linksClickable="false"
-			                android:minWidth="128dp"
+			                android:minWidth="100dp"
 			                android:text="1323ml"
 			                android:textAppearance="?android:attr/textAppearanceLarge" />
+
 			        </LinearLayout>
 
-			        <ProgressBar
-			            android:id="@+id/position_x2"
-			            style="?android:attr/progressBarStyleHorizontal"
+			        <Button
+			            android:id="@+id/nalej_tutaj"
 			            android:layout_width="wrap_content"
-			            android:layout_height="wrap_content"
+			            android:layout_height="50dp"
 			            android:layout_alignParentLeft="true"
 			            android:layout_alignParentRight="true"
 			            android:layout_centerVertical="true"
-			            android:indeterminate="false"
-			            android:max="1600"
-			            android:progress="300"
-			            android:visibility="visible" />
+			            android:background="#990000"
+			            android:maxWidth="128dp"
+			            android:minHeight="50dp"
+			            android:minWidth="100dp"
+			            android:text="Nalej" />
+
 			    </RelativeLayout>
 			</RelativeLayout>
 
@@ -664,19 +684,19 @@ android:layout_height="fill_parent">
 			        android:text="MAX Z" />
 
 			    <Button
-			        android:id="@+id/max_y"
-			        android:layout_width="70dp"
-			        android:layout_height="wrap_content"
-			        android:layout_alignBaseline="@+id/kalibrujy"
-			        android:layout_toRightOf="@+id/kalibrujy"
-			        android:text="MAX Y" />
-
-			    <Button
 			        android:id="@+id/min_y"
 			        android:layout_width="70dp"
 			        android:layout_height="wrap_content"
 			        android:layout_alignBaseline="@+id/kalibrujy"
-			        android:layout_toRightOf="@+id/max_y"
+			        android:layout_toRightOf="@+id/kalibrujy"
+			        android:text="MIN Y" />
+
+			    <Button
+			        android:id="@+id/max_y"
+			        android:layout_width="70dp"
+			        android:layout_height="wrap_content"
+			        android:layout_alignBaseline="@+id/kalibrujy"
+			        android:layout_toRightOf="@+id/min_y"
 			        android:text="MAX Y" />
 
 			    <Button
@@ -692,7 +712,7 @@ android:layout_height="fill_parent">
 			        android:layout_width="wrap_content"
 			        android:layout_height="wrap_content"
 			        android:layout_alignBaseline="@+id/min_y"
-			        android:layout_toRightOf="@+id/min_y"
+			        android:layout_toRightOf="@+id/max_y"
 			        android:text="MACHAJY" />
 
 			    <Button
@@ -809,7 +829,7 @@ android:layout_height="fill_parent">
 			        android:id="@+id/position_y"
 			        android:layout_width="120dp"
 			        android:layout_height="wrap_content"
-			        android:layout_alignParentLeft="true"
+			        android:layout_alignParentLeft="false"
 			        android:layout_below="@+id/position_x"
 			        android:layout_margin="5dp"
 			        android:ellipsize="end"
@@ -947,13 +967,15 @@ android:layout_height="fill_parent">
 			        android:layout_toRightOf="@+id/glweight"
 			        android:text="Czytaj butelki raz" />
 
-			    <AnalogClock
-			        android:id="@+id/analogClock1"
+			    <ToggleButton
+			        android:id="@+id/set_bottle"
 			        android:layout_width="wrap_content"
 			        android:layout_height="wrap_content"
-			        android:layout_alignParentRight="true"
-			        android:layout_below="@+id/set_y600" />
-
+			        android:layout_alignTop="@+id/bottweight"
+			        android:layout_toRightOf="@+id/bottweight"
+			        android:text="ToggleButton"
+			        android:textOff="Tutaj jest butelka..."
+			        android:textOn="Tutaj jest butelka..." />
 			</RelativeLayout>
 
 			<RelativeLayout

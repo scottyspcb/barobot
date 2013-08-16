@@ -1,12 +1,16 @@
 package com.barobot;
 
 import android.app.Activity;
+import android.graphics.Point;
 import android.os.Bundle;
+import android.view.Display;
 import android.view.View;
 import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.LinearLayout.LayoutParams;
 import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.TabHost;
@@ -41,6 +45,8 @@ public class DebugWindow extends Activity {
 		return instance;
 	}
 
+	public TabHost tabHost;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		instance = this;
@@ -53,7 +59,7 @@ public class DebugWindow extends Activity {
 		// Set result CANCELED in case the user backs out
 		setResult(Activity.RESULT_CANCELED);
 
-		TabHost tabHost = (TabHost) findViewById(android.R.id.tabhost);
+		tabHost = (TabHost) findViewById(android.R.id.tabhost);
 		tabHost.setup();
 		final TabWidget tabWidget = tabHost.getTabWidget();
 		final FrameLayout tabContent = tabHost.getTabContentView();
@@ -94,19 +100,17 @@ public class DebugWindow extends Activity {
 			Constant.log(Constant.TAG,"TAB:"+ tabSpec.getTag());
 			tabHost.addTab(tabSpec);
 		}
-		tabHost.setCurrentTab(0);
+		//tabHost.setCurrentTab(0);
+		tabHost.setCurrentTabByTag("tab1");
 		tabHost.bringToFront();
 		tabHost.setEnabled(true);
-		
-		button_click bc = new button_click();
-		button_toggle bt = new button_toggle();
-		button_zajedz bz = new button_zajedz();
 
+
+		button_click bc = new button_click();
 		int[] buttons = {
 				R.id.kalibrujx,
 				R.id.kalibrujy,
 				R.id.kalibrujz,
-				
 				R.id.length_x,
 				R.id.length_x2,
 				R.id.length_y,
@@ -139,12 +143,24 @@ public class DebugWindow extends Activity {
 				R.id.set_y600,
 				R.id.glweight,
 				R.id.bottweight,
-				R.id.fill5000};
+				R.id.fill5000,
+				R.id.set_bottle
+				};
 		for(int i =0; i<buttons.length;i++){
-			Button xb1 = (Button) findViewById(buttons[i]);
-			xb1.setOnClickListener(bc);			
+			View w = findViewById(buttons[i]);
+			String classname = w.getClass().getName();
+			Constant.log(Constant.TAG,"findViewById buttons: "+ classname + " / " + i );
+			if( "android.widget.Button".equals( classname )){
+				Button xb1 = (Button) findViewById(buttons[i]);	
+				xb1.setOnClickListener(bc);			
+			}
+			if( "android.widget.ToggleButton".equals( classname )){
+				Button xb1 = (Button) findViewById(buttons[i]);	
+				xb1.setOnClickListener(bc);			
+			}
 		}
 
+		button_toggle bt = new button_toggle();
 		int[] togglers = {
 				R.id.wagi_live,
 				R.id.led1,
@@ -156,12 +172,22 @@ public class DebugWindow extends Activity {
 				R.id.led7,
 				R.id.led8,
 				R.id.led9,
-				R.id.led10};
+				R.id.led10
+		};
 		for(int i =0; i<togglers.length;i++){
-			Button xb1 = (Button) findViewById(togglers[i]);
-			xb1.setOnClickListener(bt);			
+			View w = findViewById(togglers[i]);
+			String classname = w.getClass().getName();
+			Constant.log(Constant.TAG,"findViewById togglers: "+ classname + " / " + i );
+			if( "android.widget.ToggleButton".equals( classname )){
+				Button xb3 = (ToggleButton) findViewById(togglers[i]);	
+				xb3.setOnClickListener(bt);			
+			}	
 		}
 
+		Point size = this.getScreenSize();
+
+		
+		button_zajedz bz = new button_zajedz();
 		int[] nalejs = {
 				R.id.nalej1,
 				R.id.nalej2,
@@ -178,12 +204,26 @@ public class DebugWindow extends Activity {
 				R.id.nalej13,
 				R.id.nalej14,
 				R.id.nalej15,
-				R.id.nalej16};
+				R.id.nalej16
+				};
 		
+		int button_width = (size.x) / nalejs.length * 2;
+
 		for(int i =0; i<nalejs.length;i++){
-			Button xb1 = (Button) findViewById(nalejs[i]);
-			xb1.setOnClickListener(bz);			
+			View w = findViewById(nalejs[i]);
+			String classname = w.getClass().getName();
+			Constant.log(Constant.TAG,"findViewById nalejs: "+ classname + " / " + i );
+			if( "android.widget.Button".equals( classname )){
+				Button xb1 = (Button) findViewById(nalejs[i]);	
+				xb1.setOnClickListener(bz);
+				LinearLayout.LayoutParams params = (LayoutParams) xb1.getLayoutParams();	// powiększ
+				params.width = button_width;
+				xb1.setLayoutParams(params);
+
+			}
 		}
+		Button xb1 = (Button) findViewById(R.id.nalej_tutaj);	
+		xb1.setOnClickListener(bz);		
 
 		int[] wagi = {R.id.waga1,
 				R.id.waga2,
@@ -200,7 +240,8 @@ public class DebugWindow extends Activity {
 				R.id.waga13,
 				R.id.waga14,
 				R.id.waga15,
-				R.id.waga16};
+				R.id.waga16
+				};
 /*
 		OnClickListener list1 = new OnClickListener() {
 		    @Override
@@ -208,10 +249,18 @@ public class DebugWindow extends Activity {
 		    	 queue.getInstance().send("GET WEIGHT");
 		    }
 		};*/
+
 		for(int i =0; i<wagi.length;i++){
 			TextView waga1 = (TextView) findViewById(wagi[i]);
-		//	waga1.setOnClickListener( list1 );			
-			waga1.setText("init");
+			long x		=  virtualComponents.getBottlePosX( i );
+			long y		=  virtualComponents.getBottlePosY( i );
+			String pos = "" + x +"/"+ y;
+		//	waga1.setOnClickListener( list1 );	
+
+			LinearLayout.LayoutParams params = (LayoutParams) waga1.getLayoutParams();
+			params.width = button_width;
+			waga1.setLayoutParams(params);
+			waga1.setText(pos);
 		}
 
 	    // Array adapter for the conversation thread
@@ -221,7 +270,45 @@ public class DebugWindow extends Activity {
         mConversationView = (ListView) findViewById(R.id.history_list);
         mConversationView.setAdapter(mConversationArrayAdapter);
 	}
+	public void refreshPos() {
+		return;
+		/*
+		Constant.log(Constant.TAG,"reload pozycje na stronie glownej");
+		int[] wagi = {R.id.waga1,
+				R.id.waga2,
+				R.id.waga3,
+				R.id.waga4,
+				R.id.waga5,
+				R.id.waga6,
+				R.id.waga7,
+				R.id.waga8,
+				R.id.waga9,
+				R.id.waga10,
+				R.id.waga11,
+				R.id.waga12,
+				R.id.waga13,
+				R.id.waga14,
+				R.id.waga15,
+				R.id.waga16};
 
+		for(int i =0; i<wagi.length;i++){
+			TextView waga1 = (TextView) findViewById(wagi[i]);
+			long x	=  virtualComponents.getBottlePosX( i );
+			long y	=  virtualComponents.getBottlePosY( i );
+			String pos = "" + x +"/"+ y;			
+			waga1.setText(pos);
+		}*/
+	}
+	public Point getScreenSize( ) {
+		Display display = getWindowManager().getDefaultDisplay();
+		//display.getRotation()
+		Point size = new Point();
+		display.getSize(size);
+		return size;
+		
+	}
+	
+	
 	public void addToList(final String string, final boolean direction ) {
 		final DebugWindow parent = this;
 		runOnUiThread(new Runnable() {
@@ -258,17 +345,24 @@ public class DebugWindow extends Activity {
 	// Any update to UI can not be carried out in a non UI thread like the one
 	// used
 	// for Server. Hence runOnUIThread is used.
-	public void setText(final int target, final String result) {
+	public void setText(final int target, final String result, boolean now ) {
 		if (result != null) {
-			runOnUiThread(new Runnable() {
-				@Override
-				public void run() {
-					TextView text_field = (TextView) findViewById(target);
-					if (text_field != null) {
-						text_field.setText(result);
-					}
+			if(now){
+				TextView text_field = (TextView) findViewById(target);
+				if (text_field != null) {
+					text_field.setText(result);
 				}
-			});
+			}else{
+				runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						TextView text_field = (TextView) findViewById(target);
+						if (text_field != null) {
+							text_field.setText(result);
+						}
+					}
+				});
+			}
 		}
 	}
 	public void setChecked(final int target, final boolean equals) {

@@ -18,12 +18,13 @@ import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.widget.SeekBar;
 import android.widget.Toast;
 
 public class queue extends AbstractServerListener{
 	//private static Queue<String> input = new LinkedList<String>();
 	private static queue instance = null;
-	private static int adb_port = 14568;
+	private static int adb_port = 4567;
 	private Queue<String> output = new LinkedList<String>();
 	private Server server = null;
     // Local Bluetooth adapter
@@ -48,7 +49,7 @@ public class queue extends AbstractServerListener{
 		try{
 			server = new Server(adb_port); //Use the same port number used in ADK Main Board firmware
 			if(server.isRunning()){
-				Constant.log("Seeeduino ADK", "Server already running");	
+				Constant.log(Constant.TAG, "Server already running");	
 			}
 			server.start();
 			server.addListener( this );
@@ -115,14 +116,26 @@ public class queue extends AbstractServerListener{
 
 	public void setupBT(BarobotMain barobotMain) {
 		Constant.log(Constant.TAG, "setupBT()");
+
         // Initialize the BluetoothChatService to perform bluetooth connections
         try {
-			mChatService = new BluetoothChatService(  queue.getInstance().mHandler);
+			mChatService = new BluetoothChatService( queue.getInstance().mHandler);
+			autoconnect();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			Constant.log(Constant.TAG, "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
 		}
 	}
+    public void bt_disconnect() {
+    	mChatService.stop();
+    }
+    public void autoconnect() {
+    	String bt_id = virtualComponents.get( "LAST_BT_DEVICE", "");
+	    Constant.log(Constant.TAG, "ostati BT "+ bt_id);
+	    if(bt_id!= null && !"".equals(bt_id) ){
+	    	queue.connectBTDeviceId(bt_id);
+	    }
+    }
 
     public boolean checkBT() {
         // Get local Bluetooth adapter
@@ -135,14 +148,16 @@ public class queue extends AbstractServerListener{
         return true;
     }
 
-    public static void connectBTDevice(Intent data) {
-        // Get the device MAC address
-        String address = data.getExtras().getString(Constant.EXTRA_DEVICE_ADDRESS);
-        // Get the BluetoothDevice object
+    public static void connectBTDeviceId(String address) {
+        // Get the BluetoothDevice object    	
+        Constant.log(Constant.TAG, "zapisuje BT "+ address);
         BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
         // Attempt to connect to the device
         mChatService.connect(device);
-    }
+    	// remember device ID
+        virtualComponents.set( "LAST_BT_DEVICE",address);
+    } 
+    
 	public static int startBt() {
         Constant.log(Constant.TAG, "++ ON START ++");
 
@@ -221,9 +236,14 @@ public class queue extends AbstractServerListener{
 	}
 
 	public void onClientDisconnect(Server server, Client client){
-		Context bb = getContext();
+		final DebugWindow bb = DebugWindow.getInstance();		
 		if(bb!=null){
-			Toast.makeText(bb, "ADB onClientDisconnect", Toast.LENGTH_LONG).show();
+			bb.runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					Toast.makeText(bb, "ADB onClientDisconnect", Toast.LENGTH_LONG).show();
+				}
+			});
 		}
 		this.adb_connected = false;
 		Constant.log(Constant.TAG, "+ onClientDisconnect");
@@ -261,7 +281,6 @@ public class queue extends AbstractServerListener{
 		return 1;
 	}
 	private void saveInHistory( String command ){
-
 	}
 	private void saveOutHistory( String command ){
 	}
@@ -287,7 +306,7 @@ public class queue extends AbstractServerListener{
 			    iter.remove();
 			}
 		} catch (IOException e)	{
-			Constant.log("Seeeduino ADK", "problem sending TCP message");
+			Constant.log(Constant.TAG, "problem sending TCP message");
 		}
 	}
 	public static void stop() {

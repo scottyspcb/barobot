@@ -8,10 +8,10 @@ http://blog.zakkemble.co.uk/getting-bluetooth-modules-talking-to-each-other/
 */
 
 void setup(){
-    Serial.begin(9600,SERIAL_8N1); //pc
+    Serial.begin(115200,SERIAL_8N1); //pc
 //    Serial3.begin(19200,SERIAL_8N1); //BT
-    Serial3.begin(57600,SERIAL_8N1); //BT
-//    Serial2.begin(9600,SERIAL_8N1); //BT
+ //   Serial3.begin(57600,SERIAL_8N1); //BT
+   Serial3.begin(9600,SERIAL_8N1); //BT
 
     Serial.println("Hello???");
     delay(1000);
@@ -20,8 +20,8 @@ void setup(){
     Serial3.print("AT+STATE?");    
     delay(1000);
     Serial3.print( "AT+PIN1234" );
-//    delay(1000);
-//    Serial3.print( "AT+NAMEPAD1.0" );
+    delay(1000);
+    Serial3.print( "AT+NAMEPAD1.1" );
 
 }
 //  String input;
@@ -36,8 +36,8 @@ void loop(){
       char in = Serial.read();
       if(in == nl || in == rl ){
 //        Serial.println(stringOne);
-        Serial3.print(stringOne);
-        Serial2.print(stringOne);
+        Serial3.println(stringOne);
+  //      Serial2.print(stringOne);
         stringOne = String("");
       }else{
         stringOne = stringOne + in;

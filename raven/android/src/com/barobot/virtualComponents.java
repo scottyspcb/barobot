@@ -9,18 +9,36 @@ import android.content.SharedPreferences;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class virtualComponents {
 	public static Activity application;
 	private static SharedPreferences myPrefs;
 	private static SharedPreferences.Editor config_editor;			// config systemu android
 	private static Map<String, String> hashmap = new HashMap<String, String>();
-
-	// pozycje butelek, s¹ aktualizowane w trakcie
+	public static boolean is_ready = false;
+	// pozycje butelek, sa aktualizowane w trakcie
 	private static int[] b_pos_x = {207,207, 394,394,581,581,768,768, 955,955,1142,1142,1329,1329,1516,1516};
 	private static int[] b_pos_y = {90, 550, 90, 550, 90, 550, 90, 550, 90, 550, 90, 550, 90, 550, 90, 550};
 
-	private static String[] persistant = {"LENGTHX","LENGTHY","LENGTHZ",""};
+	private static String[] persistant = {"LENGTHX","LENGTHY","LENGTHZ","LAST_BT_DEVICE",
+		"BOTTLE_X_0","BOTTLE_Y_0",
+		"BOTTLE_X_1","BOTTLE_Y_1",
+		"BOTTLE_X_2","BOTTLE_Y_2",
+		"BOTTLE_X_3","BOTTLE_Y_3",
+		"BOTTLE_X_4","BOTTLE_Y_4",
+		"BOTTLE_X_5","BOTTLE_Y_5",
+		"BOTTLE_X_6","BOTTLE_Y_6",
+		"BOTTLE_X_7","BOTTLE_Y_7",
+		"BOTTLE_X_8","BOTTLE_Y_8",
+		"BOTTLE_X_9","BOTTLE_Y_9",
+		"BOTTLE_X_10","BOTTLE_Y_10",
+		"BOTTLE_X_11","BOTTLE_Y_11",
+		"BOTTLE_X_12","BOTTLE_Y_12",
+		"BOTTLE_X_13","BOTTLE_Y_13",
+		"BOTTLE_X_14","BOTTLE_Y_14",
+		"BOTTLE_X_15","BOTTLE_Y_15",
+	};
 
 	public static void init( Activity app ){
 		application		= app;
@@ -46,7 +64,7 @@ public class virtualComponents {
 		hashmap.put(name, value );
 		virtualComponents.update( name, value );
 
-		int remember = Arrays.asList(persistant).indexOf(name);			// czy zapisac w configu t¹ wartoœæ?
+		int remember = Arrays.asList(persistant).indexOf(name);			// czy zapisac w configu tÄ… wartosc?
 		if(remember > -1){
 			config_editor.putString(name, value);
 			config_editor.commit();
@@ -62,13 +80,22 @@ public class virtualComponents {
 		}
 		return res;
 	}
-
+	
+	public static long getBottlePosX( int i ) {
+		return virtualComponents.getInt("BOTTLE_X_" + i, b_pos_x[i]);
+	}
+	public static long getBottlePosY( int i ) {
+		return virtualComponents.getInt("BOTTLE_Y_" + i, b_pos_y[i]);
+	}
 	public static void moveToBottle(int i) {
-		int x = b_pos_x[i];
-		int y = b_pos_y[i];
 		queue q = queue.getInstance();
+		q.send("SET Z MIN");
+		q.send("SET Y 200");
+		long x  =  getBottlePosX( i );
+		long y  =  getBottlePosY( i );
 		q.send("SET X " + x);
 		q.send("SET Y " + y);
+		// q.onready( coÅ›tam );
 	}
 
 	private static void update(String name, String value) {
@@ -76,7 +103,7 @@ public class virtualComponents {
 		final DebugWindow dialog = DebugWindow.getInstance();
 
 		if( "LENGTHX".equals(name)){
-			dialog.setText( R.id.dlugosc_x, value );
+			dialog.setText( R.id.dlugosc_x, value, false );
 			final int val = virtualComponents.toInt( value );
 			application.runOnUiThread(new Runnable() {
 				@Override
@@ -84,17 +111,12 @@ public class virtualComponents {
 					SeekBar progresx = (SeekBar) dialog.findViewById(R.id.analog_x);
 					if(progresx!=null){
 						progresx.setMax(val);
-					}
-					ProgressBar progresx2 = (ProgressBar) dialog.findViewById(R.id.position_x2);
-					if(progresx2!=null){
-						progresx2.setMax(val);
-						Constant.log(Constant.TAG,"LENGTHX:"+ val);
-					}					
+					}				
 				}
 			});
 		}else if( "LENGTHY".equals(name)){
 			final int val = virtualComponents.toInt( value );
-			dialog.setText( R.id.dlugosc_y, value );
+			dialog.setText( R.id.dlugosc_y, value, false );
 			application.runOnUiThread(new Runnable() {
 				@Override
 				public void run() {
@@ -106,40 +128,40 @@ public class virtualComponents {
 				}
 			});
 		}else if("LENGTHZ".equals(name)){
-			dialog.setText( R.id.dlugosc_z, value );
-		}else if("ANALOG0".equals(name) &&  dialog != null ){
-			dialog.setText( R.id.analog0, value );
-		}else if("DISTANCE0".equals(name) &&  dialog != null ){
-			dialog.setText( R.id.dist1, value );				
+			dialog.setText( R.id.dlugosc_z, value, false );
 		}else if("WEIGHT".equals(name) && dialog != null ){
 			final String[] tokens = value.split(",");
-			application.runOnUiThread(new Runnable() {
-				@Override
-				public void run() {
-					((TextView)application.findViewById(R.id.waga1)).setText( tokens[0]);
-					((TextView)application.findViewById(R.id.waga2)).setText( tokens[1]);
-					((TextView)application.findViewById(R.id.waga3)).setText( tokens[2]);
-					((TextView)application.findViewById(R.id.waga4)).setText( tokens[3]);
-					((TextView)application.findViewById(R.id.waga5)).setText( tokens[4]);
-					((TextView)application.findViewById(R.id.waga6)).setText( tokens[5]);
-					((TextView)application.findViewById(R.id.waga7)).setText( tokens[6]);
-					((TextView)application.findViewById(R.id.waga8)).setText( tokens[7]);
-					((TextView)application.findViewById(R.id.waga9)).setText( tokens[8]);
-					((TextView)application.findViewById(R.id.waga10)).setText( tokens[9]);
-					((TextView)application.findViewById(R.id.waga11)).setText( tokens[10]);
-					((TextView)application.findViewById(R.id.waga12)).setText( tokens[11]);
-					((TextView)application.findViewById(R.id.waga13)).setText( tokens[12]);
-					((TextView)application.findViewById(R.id.waga14)).setText( tokens[13]);
-					((TextView)application.findViewById(R.id.waga15)).setText( tokens[14]);
-					((TextView)application.findViewById(R.id.waga16)).setText( tokens[15]);					
-				}
-			});
+	    	Constant.log("RUNNABLE", "waga: "+value );
+	    	Constant.log("RUNNABLE", "waga: "+tokens.length );
+	    	if(tokens.length == 16){
+				application.runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						dialog.setText( R.id.waga1, tokens[0], false );
+						dialog.setText( R.id.waga2, tokens[1], false );
+						dialog.setText( R.id.waga3, tokens[2], false );
+						dialog.setText( R.id.waga4, tokens[3], false );
+						dialog.setText( R.id.waga5, tokens[4], false );
+						dialog.setText( R.id.waga6, tokens[5], false );
+						dialog.setText( R.id.waga7, tokens[6], false );
+						dialog.setText( R.id.waga8, tokens[7], false );
+						dialog.setText( R.id.waga9, tokens[8], false );
+						dialog.setText( R.id.waga10, tokens[9], false );
+						dialog.setText( R.id.waga11, tokens[10], false );
+						dialog.setText( R.id.waga12, tokens[11], false );
+						dialog.setText( R.id.waga13, tokens[12], false );
+						dialog.setText( R.id.waga14, tokens[13], false );
+						dialog.setText( R.id.waga15, tokens[14], false );
+						dialog.setText( R.id.waga16, tokens[15], false );
+					}
+				});
+	    	}
 
 		}else if("GLASS".equals(name) &&  dialog != null ){
-			dialog.setText( R.id.dist1, value );				
+			dialog.setText( R.id.dist1, value, false );				
 
 		}else if("POSX".equals(name) &&  dialog != null ){
-			dialog.setText( R.id.position_x, value );
+			dialog.setText( R.id.position_x, value, false );
 			final int val = virtualComponents.toInt( value );
 			application.runOnUiThread(new Runnable() {
 				@Override
@@ -147,16 +169,11 @@ public class virtualComponents {
 					SeekBar progresx = (SeekBar) application.findViewById(R.id.analog_x);
 					if(progresx!=null){
 						progresx.setProgress(val);
-					}
-					ProgressBar progresx2 = (ProgressBar) application.findViewById(R.id.position_x2);
-					if(progresx2!=null){
-						progresx.setProgress(val);
-						Constant.log(Constant.TAG,"setProgress X:"+ val);
-					}					
+					}				
 				}
 			});
 		}else if("POSY".equals(name) &&  dialog != null ){
-			dialog.setText( R.id.position_y, value );
+			dialog.setText( R.id.position_y, value, false );
 			final int val = virtualComponents.toInt( value );
 			application.runOnUiThread(new Runnable() {
 				@Override
@@ -169,38 +186,85 @@ public class virtualComponents {
 			});
 
 		}else if("POSZ".equals(name) &&  dialog != null ){
-			dialog.setText( R.id.position_z, value );
+			dialog.setText( R.id.position_z, value, false );
 
-		}else if("LED1".equals(name) &&  dialog != null ){
-			dialog.setChecked( R.id.dist1, "ON".equals(value) );
 			
+			
+			
+			
+			
+		}else if("ANALOG0".equals(name) &&  dialog != null ){
+			dialog.setText( R.id.analog0, value, false );
+		}else if("DISTANCE0".equals(name) &&  dialog != null ){
+			dialog.setText( R.id.dist1, value, false );				
+		}else if("LED1".equals(name) &&  dialog != null ){
+			dialog.setChecked( R.id.led1, "ON".equals(value) );
+		}else if("LED2".equals(name) &&  dialog != null ){
+			dialog.setChecked( R.id.led2, "ON".equals(value) );
+		}else if("LED3".equals(name) &&  dialog != null ){
+			dialog.setChecked( R.id.led3, "ON".equals(value) );
+		}else if("LED4".equals(name) &&  dialog != null ){
+			dialog.setChecked( R.id.led4, "ON".equals(value) );
+		}else if("LED5".equals(name) &&  dialog != null ){
+			dialog.setChecked( R.id.led5, "ON".equals(value) );
+		}else if("LED6".equals(name) &&  dialog != null ){
+			dialog.setChecked( R.id.led6, "ON".equals(value) );
+		}else if("LED7".equals(name) &&  dialog != null ){
+			dialog.setChecked( R.id.led7, "ON".equals(value) );
+		}else if("LED8".equals(name) &&  dialog != null ){
+			dialog.setChecked( R.id.led8, "ON".equals(value) );
+		}else if("LED9".equals(name) &&  dialog != null ){
+			dialog.setChecked( R.id.led9, "ON".equals(value) );
+		}else if("LED10".equals(name) &&  dialog != null ){
+			dialog.setChecked( R.id.led10, "ON".equals(value) );
+
 		}else if("DISTANCE0".equals(name) &&  dialog != null ){
 
-			dialog.setText( R.id.dist1, value );
+			dialog.setText( R.id.dist1, value, false );
 		}else if("DISTANCE0".equals(name) &&  dialog != null ){
-			dialog.setText( R.id.dist1, value );
+			dialog.setText( R.id.dist1, value, false );
 		}else if("DISTANCE0".equals(name) &&  dialog != null ){
-			dialog.setText( R.id.dist1, value );
+			dialog.setText( R.id.dist1, value, false );
 		}else if("DISTANCE0".equals(name) &&  dialog != null ){
-			dialog.setText( R.id.dist1, value );
+			dialog.setText( R.id.dist1, value, false );
 		}else if("DISTANCE0".equals(name) &&  dialog != null ){
-			dialog.setText( R.id.dist1, value );
+			dialog.setText( R.id.dist1, value, false );
 		}else if("DISTANCE0".equals(name) &&  dialog != null ){
-			dialog.setText( R.id.dist1, value );
+			dialog.setText( R.id.dist1, value, false );
 		}else if("DISTANCE0".equals(name) &&  dialog != null ){
-			dialog.setText( R.id.dist1, value );
+			dialog.setText( R.id.dist1, value, false );
 		}else if("DISTANCE0".equals(name) &&  dialog != null ){
-			dialog.setText( R.id.dist1, value );
+			dialog.setText( R.id.dist1, value, false );
 		}
 	}
 	public static void nalej(int i) {
 		queue q = queue.getInstance();
-		q.send("FILL 5000");
+		q.send("FILL 4000");
 	}
 
+	// zapisz ze tutaj jest butelka o danym numerze
+	public static void hereIsBottle(int i) {
+		String posx		=  virtualComponents.get("POSX", "0" );	
+		String posy		=  virtualComponents.get("POSY", "0" );
+		Constant.log(Constant.TAG,"zapisuje pozycje:"+ i + " " +posx+ " " + posy );
+		
+		virtualComponents.set("BOTTLE_X_" + i, posx );
+		virtualComponents.set("BOTTLE_Y_" + i, posy );
+
+		Toast.makeText(application, "Zapisano ["+posx+"/"+posy+"] jako butelka " + (i+1), Toast.LENGTH_LONG).show();
+		DebugWindow bb			= DebugWindow.getInstance();
+		if(bb!=null){
+			bb.refreshPos();
+			/*
+			bb.tabHost.setCurrentTabByTag("tab1");
+			bb.tabHost.bringToFront();
+			bb.tabHost.setEnabled(true);
+			*/
+		}
+	}
 }
 
-/* Nazwy komponentów
+/* Nazwy komponentï¿½w
  * DISTANCE0
  * DISTANCE1
  * 
