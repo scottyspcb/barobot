@@ -1,19 +1,19 @@
 package com.barobot;
 
-import java.util.Timer;
-import java.util.TimerTask;
+
+import java.util.ArrayList;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -54,26 +54,34 @@ public class BarobotMain extends Activity {
 				Constant.log(Constant.TAG, "Unable to start TCP server" );
 				System.exit(-1);
 			}
-        }
+        }       
 		this.runTimer();
     }
-
-    // test okresowego wywoływania poleceń
+ 
+    private ArrayList<interval> inters = new ArrayList<interval>();
+    
     private void runTimer() {
-		// TODO Auto-generated method stub
-    	TimerTask scanTask;
-    	final Handler handler = new Handler();
-    	Timer t = new Timer();
-    	scanTask = new TimerTask() {
-    	    public void run() {
-    	            handler.post(new Runnable() {
-	                    public void run() {
-	                    	Constant.log(Constant.TAG, "TICK" );
-	                    }
-    	           });
-    	    }};
-
-         t.schedule(scanTask, 300, 5000);
+//    	interval inn = new interval();
+//   	inn.run(1000,5000);
+//    	this.inters.add(inn);
+    	interval inn = new interval(new Runnable() {
+    		private int count = 0;
+		    public void run() {
+		    	queue q = queue.getInstance();
+		        if( q.allowAutoconnect()){
+		        	count++;
+		        	if(count > 2){		// po 10 sek
+		        		Constant.log("RUNNABLE", "3 try autoconnect" );
+		        		q.autoconnect();
+		        	}
+			    }else{
+			    	count = 0;
+		        }
+		   }
+		});
+    	inn.run(1000,5000);
+    	inn.pause();
+    	this.inters.add(inn);
 	}
 
 	@Override
@@ -135,47 +143,14 @@ public class BarobotMain extends Activity {
     @Override
     public synchronized void onResume() {
         super.onResume();
-        queue.resume();
+        queue.getInstance().resume();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        queue.stop();
+        queue.getInstance().stop();
     }
-
-    // The Handler that gets information back from the BluetoothChatService
-    public final Handler mHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-            case Constant.MESSAGE_STATE_CHANGE:
-                switch (msg.arg1) {
-                case Constant.STATE_CONNECTED:
-                    DebugWindow dd = DebugWindow.getInstance();
-                    if(dd!= null){
-                    	dd.clearList();
-                    }
-                    break;
-                case Constant.STATE_CONNECTING:
-                    break;
-                case Constant.STATE_LISTEN:
-                case Constant.STATE_NONE:
-                    break;
-                }
-                break;
-            case Constant.MESSAGE_WRITE:
-                byte[] writeBuf = (byte[]) msg.obj;                // construct a string from the buffer
-                String writeMessage = new String(writeBuf);
-                DebugWindow dd = DebugWindow.getInstance();
-                if(dd!= null){
-                	dd.addToList(writeMessage, true );
-                }
-                break;
-            }
-        }
-    };
-
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         Constant.log(Constant.TAG, "onActivityResult " + resultCode);
         switch (requestCode){

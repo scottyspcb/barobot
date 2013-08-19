@@ -64,7 +64,9 @@ public class input_parser {
 	private static void parseInput(String fromArduino) {
 		Log.i(Constant.TAG, "parse:[" + fromArduino +"]");
 
-		if( fromArduino.startsWith("VAL ANALOG0")){
+		if(fromArduino.startsWith("ERROR")){	
+			input_parser.handleError( fromArduino );			// analizuj błędy
+		}else if( fromArduino.startsWith("VAL ANALOG0")){
 			String fromArduino2 = fromArduino.replace("VAL ANALOG0 ", "");			
 			virtualComponents.set( "ANALOG0",fromArduino2);
 
@@ -128,8 +130,18 @@ public class input_parser {
 		}else if(fromArduino.startsWith("PING")){
 //			toSend.add("PONG");
 		}
+		if(fromArduino.startsWith("RET ")){						// na końcu bo to może odblokować wysyłanie i spowodować zapętlenie	
+			queue.getInstance().read_ret( fromArduino );		// zapisuj zwrotki
+		}
 	}
 	
+	private static void handleError(String fromArduino) {
+	
+		
+		
+		
+	}
+
 	// UpdateData Asynchronously sends the value received from ADK Main Board. 
 	// This is triggered by onReceive()
 	public static class UpdateData extends AsyncTask<String, Integer, String> {

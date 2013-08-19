@@ -13,9 +13,12 @@ public class interval {
 	public interval(){
 		this.rrr= new Runnable() {
 		    public void run() {
-	//	    	Constant.log("RUNNABLE", "TICK" );
+		    	Constant.log("RUNNABLE", "TICK 5" );
 		   }
 		};
+	}
+	public interval( Runnable r){
+		this.rrr= r;
 	}
 
 	public void run( long zaile ){
@@ -23,12 +26,10 @@ public class interval {
 	}
 	public void run( long zaile, long coile ){
 		final Handler handler = new Handler();
-
 		scanTask = new TimerTask() {
 		    public void run() {
 		            handler.post(rrr);
 		    }};
-
 		if( coile > 0 ){
 			t.schedule(scanTask, zaile, coile);		// task, za ile pierwsze, co ile następne
 		}else{
@@ -37,5 +38,7 @@ public class interval {
 	}
 	public void cancel(){
 		scanTask.cancel();	
+	}
+	public void pause() { 
 	}
 }

@@ -21,6 +21,14 @@ public class virtualComponents {
 	private static int[] b_pos_x = {207,207, 394,394,581,581,768,768, 955,955,1142,1142,1329,1329,1516,1516};
 	private static int[] b_pos_y = {90, 550, 90, 550, 90, 550, 90, 550, 90, 550, 90, 550, 90, 550, 90, 550};
 
+	public static int mnoznikx = 10;
+	public static int mnozniky = 10;
+	public static int neutral_pos_y = 200;
+	public static boolean need_glass_fill = true;
+	public static boolean need_glass_up = true;
+	public static int weigh_min_diff = 20;
+	public static boolean pac_enabled = true;
+
 	private static String[] persistant = {"LENGTHX","LENGTHY","LENGTHZ","LAST_BT_DEVICE",
 		"BOTTLE_X_0","BOTTLE_Y_0",
 		"BOTTLE_X_1","BOTTLE_Y_1",
@@ -39,13 +47,11 @@ public class virtualComponents {
 		"BOTTLE_X_14","BOTTLE_Y_14",
 		"BOTTLE_X_15","BOTTLE_Y_15",
 	};
-
 	public static void init( Activity app ){
 		application		= app;
 		myPrefs			= application.getSharedPreferences(Constant.SETTINGS_TAG, Context.MODE_PRIVATE);
 		config_editor	= myPrefs.edit();
 	}
-	
 	public static String get( String name, String def ){
 		String ret = hashmap.get(name);
 		if( ret == null ){ 
@@ -90,7 +96,7 @@ public class virtualComponents {
 	public static void moveToBottle(int i) {
 		queue q = queue.getInstance();
 		q.send("SET Z MIN");
-		q.send("SET Y 200");
+		q.send("SET Y " + virtualComponents.getInt("NEUTRAL_POS_Y", virtualComponents.neutral_pos_y ) );
 		long x  =  getBottlePosX( i );
 		long y  =  getBottlePosY( i );
 		q.send("SET X " + x);
@@ -184,15 +190,8 @@ public class virtualComponents {
 					}					
 				}
 			});
-
 		}else if("POSZ".equals(name) &&  dialog != null ){
-			dialog.setText( R.id.position_z, value, false );
-
-			
-			
-			
-			
-			
+			dialog.setText( R.id.position_z, value, false );	
 		}else if("ANALOG0".equals(name) &&  dialog != null ){
 			dialog.setText( R.id.analog0, value, false );
 		}else if("DISTANCE0".equals(name) &&  dialog != null ){
@@ -217,9 +216,7 @@ public class virtualComponents {
 			dialog.setChecked( R.id.led9, "ON".equals(value) );
 		}else if("LED10".equals(name) &&  dialog != null ){
 			dialog.setChecked( R.id.led10, "ON".equals(value) );
-
 		}else if("DISTANCE0".equals(name) &&  dialog != null ){
-
 			dialog.setText( R.id.dist1, value, false );
 		}else if("DISTANCE0".equals(name) &&  dialog != null ){
 			dialog.setText( R.id.dist1, value, false );
@@ -239,7 +236,23 @@ public class virtualComponents {
 	}
 	public static void nalej(int i) {
 		queue q = queue.getInstance();
-		q.send("FILL 4000");
+		if(virtualComponents.need_glass_up){
+			q.add("WAIT GLASS " + virtualComponents.weigh_min_diff, true);
+		}
+		q.add("ENABLEX", true);
+		q.add("ENABLEY", true);
+		q.add("ENABLEZ", true);
+		q.add("SET Z MAX", true);
+		q.add("STAYZ " + i , true);
+		q.add("SET Z MIN", true);
+		if(virtualComponents.pac_enabled){
+			q.add("PACPAC", true);
+		}
+		q.add("DISABLEX", true);
+	    q.add("DISABLEY", true);
+	    q.add("DISABLEZ", true);
+	    q.add("GET CARRET", true);
+	    q.send();
 	}
 
 	// zapisz ze tutaj jest butelka o danym numerze

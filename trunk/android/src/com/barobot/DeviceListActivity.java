@@ -1,6 +1,4 @@
-
 package com.barobot;
-
 import java.util.Set;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
@@ -40,6 +38,7 @@ public class DeviceListActivity extends Activity {
         // Setup the window
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.device_list);
+        queue.getInstance().stop_autoconnect = true;
 
         // Set result CANCELED in case the user backs out
         setResult(Activity.RESULT_CANCELED);
@@ -101,9 +100,6 @@ public class DeviceListActivity extends Activity {
         setProgressBarIndeterminateVisibility(true);
         setTitle(R.string.scanning);
 
-        // Turn on sub-title for new devices
-    //    findViewById(R.id.title_new_devices).setVisibility(View.VISIBLE);
-
         // If we're already discovering, stop it
         if (mBtAdapter.isDiscovering()) {
             mBtAdapter.cancelDiscovery();
@@ -115,13 +111,13 @@ public class DeviceListActivity extends Activity {
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
-        // Make sure we're not doing discovery anymore
+        super.onDestroy();        // Make sure we're not doing discovery anymore
         if (mBtAdapter != null) {
             mBtAdapter.cancelDiscovery();
         }
         // Unregister broadcast listeners
         this.unregisterReceiver(mReceiver);
+        queue.getInstance().stop_autoconnect = false;
     }
 
     // The on-click listener for all devices in the ListViews
@@ -163,6 +159,8 @@ public class DeviceListActivity extends Activity {
             } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
                 setProgressBarIndeterminateVisibility(false);
                 setTitle(R.string.select_device);
+                Button scanButton = (Button) findViewById(R.id.button_scan);
+                scanButton.setVisibility(View.VISIBLE);
                 if (mDevicesArrayAdapter.getCount() == 0) {
                     String noDevices = getResources().getText(R.string.none_found).toString();
                     mDevicesArrayAdapter.add(noDevices);

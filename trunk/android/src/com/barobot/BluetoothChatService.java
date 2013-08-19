@@ -9,6 +9,10 @@ import java.io.OutputStream;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -29,14 +33,16 @@ public class BluetoothChatService {
     private ConnectedThread mConnectedThread;
     private int mState;
     private static boolean hasInstance = false;
-
+    public boolean is_connected = false;
+	public String bt_connected_device = null;
     /**
      * Constructor. Prepares a new BluetoothChat session.
      * @param context  The UI Activity Context
      * @param handler  A Handler to send messages back to the UI Activity
+     * @param barobotMain 
      * @throws Exception 
      */
-    public BluetoothChatService(Handler handler) throws Exception {
+    public BluetoothChatService(Handler handler, BarobotMain barobotMain) throws Exception {
     	if(hasInstance){
     		throw new Exception("duplikat bluetooth");
     	}
@@ -44,7 +50,28 @@ public class BluetoothChatService {
         mState = Constant.STATE_NONE;
         mHandler = handler;
         hasInstance = true;
+
+      //  IntentFilter f1 = new IntentFilter(BluetoothDevice.ACTION_ACL_DISCONNECT_REQUESTED);
+       // IntentFilter f2 = new IntentFilter(BluetoothDevice.ACTION_ACL_DISCONNECTED);
+      //  barobotMain.registerReceiver(this.btEvents, f1);
+      //  barobotMain.registerReceiver(this.btEvents, f2);
     }
+
+    // The BroadcastReceiver that listens for discovered devices and
+    // changes the title when discovery is finished
+    public final BroadcastReceiver btEvents = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (BluetoothDevice.ACTION_ACL_DISCONNECTED.equals(action)) {
+            	Constant.log(Constant.TAG,"ACTION_ACL_DISCONNECTED");
+                is_connected						= false;
+            } else if (BluetoothDevice.ACTION_ACL_DISCONNECT_REQUESTED.equals(action)) {
+            	Constant.log(Constant.TAG,"ACTION_ACL_DISCONNECT_REQUESTED");
+                is_connected						= false;
+            }
+        }
+    };
 
     /**
      * Set the current state of the chat connection
@@ -197,6 +224,9 @@ public class BluetoothChatService {
         msg.setData(bundle);
         mHandler.sendMessage(msg);
 
+        bt_connected_device			= null;
+        is_connected				= false;
+
         // Start the service over to restart listening mode
         BluetoothChatService.this.start();
     }
@@ -343,4 +373,28 @@ public class BluetoothChatService {
             }
         }
     }
+
+	public void connectBTDeviceId(String address) {    	
+        // Get the BluetoothDevice object    	
+        Constant.log(Constant.TAG, "zapisuje BT "+ address);
+        BluetoothDevice device = mAdapter.getRemoteDevice(address);
+        // Attempt to connect to the device
+        this.connect(device);
+    	// remember device ID
+        virtualComponents.set( "LAST_BT_DEVICE",address);
+	}
+
+	public int initBt() {
+        Constant.log(Constant.TAG, "++ ON START ++");
+        // If BT is not on, request that it be enabled.
+        // setupChat() will then be called during onActivityResult
+        if(mAdapter==null){
+        	return 12;
+        }
+        if (mAdapter.isEnabled()) {
+            return 1;
+        }else{
+        	return 12;
+        }
+	}
 }

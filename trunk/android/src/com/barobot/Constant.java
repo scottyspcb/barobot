@@ -61,10 +61,6 @@ public class Constant {
 		if(Constant.D) {
 			Log.w(tag22,string,e);
 		}		
-	}
-	
-
-
-    
+	}    
 }
 
