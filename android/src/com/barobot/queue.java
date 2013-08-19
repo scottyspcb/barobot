@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.Queue;
 
 import org.microbridge.server.AbstractServerListener;
 import org.microbridge.server.Client;
@@ -14,29 +13,26 @@ import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
-import android.widget.SeekBar;
 import android.widget.Toast;
 
 public class queue extends AbstractServerListener{
-	//private static Queue<String> input = new LinkedList<String>();
 	private static queue instance = null;
 	private static int adb_port = 4567;
-	private Queue<String> output = new LinkedList<String>();
-	private Server server = null;
-    // Local Bluetooth adapter
-    private static BluetoothAdapter mBluetoothAdapter = null;
-	public static String bt_connected_device = null;
+	private LinkedList<rpc_message> output2 = new LinkedList<rpc_message>();
+	private rpc_message wait_for = null;
 
-    // Member object for the chat services
-    private static BluetoothChatService mChatService = null;
-	private boolean bt_exists;
+	//	private ArrayList <message> output3 = new ArrayList <message>();
+	//private static Queue<String> input = new LinkedList<String>();
+	
+	public boolean stop_autoconnect = false;
+	private Server server = null;
+    private static BluetoothAdapter mBluetoothAdapter = null;    // Local Bluetooth adapter
+    private static BluetoothChatService mChatService = null;    // Member object for the chat services
 
 	public boolean adb_connected = false;
-	public boolean bt_connected = false;
 	public static queue getInstance(){
 		if( instance == null){
 			instance = new queue();
@@ -72,12 +68,15 @@ public class queue extends AbstractServerListener{
     public final Handler mHandler = new Handler() {
         @Override
         public synchronized void handleMessage(Message msg) {
-        	//BarobotMain.getInstance().mHandler.handleMessage(msg);
             switch (msg.what) {
             	case Constant.MESSAGE_STATE_CHANGE:
             		Constant.log(Constant.TAG, "MESSAGE_STATE_CHANGE: " + msg.arg1);
 	                switch (msg.arg1) {
 	                case Constant.STATE_CONNECTED:
+	                    DebugWindow dd = DebugWindow.getInstance();
+	                    if(dd!= null){
+	                    	dd.clearList();
+	                    }        	
 	                    break;
 	                case Constant.STATE_CONNECTING:
 	                    break;
@@ -87,6 +86,12 @@ public class queue extends AbstractServerListener{
 	                }
 	                break;
             case Constant.MESSAGE_WRITE:
+                byte[] writeBuf = (byte[]) msg.obj;
+                String writeMessage = new String(writeBuf);
+                DebugWindow dd = DebugWindow.getInstance();
+                if(dd!= null){
+                	dd.addToList(writeMessage, true );
+                }
                 break;
             case Constant.MESSAGE_READ:
                 byte[] readBuf = (byte[]) msg.obj;
@@ -94,16 +99,14 @@ public class queue extends AbstractServerListener{
                 String readMessage = new String(readBuf, 0, msg.arg1);
                 //Log.i(Constant.TAG, "buffer read " + readMessage );
 				input_parser.readInput(readMessage);
-				saveInHistory(readMessage);
                 break;
             case Constant.MESSAGE_DEVICE_NAME:
                 // save the connected device's name
-            	queue.bt_connected_device = msg.getData().getString(Constant.DEVICE_NAME);
-            	queue.getInstance().bt_exists = true;
-            	queue.getInstance().bt_connected = true;
+            	mChatService.bt_connected_device = msg.getData().getString(Constant.DEVICE_NAME);
+            	mChatService.is_connected		= true;
             	Activity act1 = getView();
             	Toast.makeText( act1.getApplicationContext(), "Connected to "
-                               + queue.bt_connected_device, Toast.LENGTH_SHORT).show();
+                               + mChatService.bt_connected_device, Toast.LENGTH_SHORT).show();
                 break;
             case Constant.MESSAGE_TOAST:
             	Activity act2 = getView();
@@ -116,13 +119,13 @@ public class queue extends AbstractServerListener{
 
 	public void setupBT(BarobotMain barobotMain) {
 		Constant.log(Constant.TAG, "setupBT()");
-
         // Initialize the BluetoothChatService to perform bluetooth connections
         try {
-			mChatService = new BluetoothChatService( queue.getInstance().mHandler);
-			autoconnect();
+			mChatService = new BluetoothChatService( this.mHandler, barobotMain);
+			if(this.allowAutoconnect()){
+				autoconnect();
+			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			Constant.log(Constant.TAG, "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
 		}
 	}
@@ -136,44 +139,27 @@ public class queue extends AbstractServerListener{
 	    	queue.connectBTDeviceId(bt_id);
 	    }
     }
-
     public boolean checkBT() {
         // Get local Bluetooth adapter
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         // If the adapter is null, then Bluetooth is not supported
         if (mBluetoothAdapter == null) {
-        	bt_exists = false;
-            return false;
+			mChatService.is_connected		= false;
+			clear();
+			return false;
         }    	   	
         return true;
     }
 
     public static void connectBTDeviceId(String address) {
-        // Get the BluetoothDevice object    	
-        Constant.log(Constant.TAG, "zapisuje BT "+ address);
-        BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
-        // Attempt to connect to the device
-        mChatService.connect(device);
-    	// remember device ID
-        virtualComponents.set( "LAST_BT_DEVICE",address);
+    	mChatService.connectBTDeviceId(address);
     } 
     
 	public static int startBt() {
-        Constant.log(Constant.TAG, "++ ON START ++");
-
-        // If BT is not on, request that it be enabled.
-        // setupChat() will then be called during onActivityResult
-        if(mBluetoothAdapter==null){
-        	return 12;
-        }
-        if (mBluetoothAdapter.isEnabled()) {
-        	if (mChatService == null){ 
-        		return 34;
-        	}
-        }else{
-        	return 12;
-        }
-        return 1;
+      	if (queue.mChatService == null){ 
+    		return 34;
+    	}
+		return queue.mChatService.initBt();
 	}
 
 
@@ -181,7 +167,7 @@ public class queue extends AbstractServerListener{
 
 
 	public boolean isBT(){
-		return bt_connected;
+		return mChatService.is_connected;
 	}
 	public boolean isAdb(){
 		return adb_connected;
@@ -192,11 +178,8 @@ public class queue extends AbstractServerListener{
 		if( data.length > 0 ){	
 			try {
 				String in = new String(data, "UTF-8");
-				
 				Log.i(Constant.TAG, "ADB input [" + in +"]" );
-
 				input_parser.readInput(in);	
-				saveInHistory(in);
 			} catch (UnsupportedEncodingException e) {
 				Constant.log(Constant.TAG, "+ onReceive UnsupportedEncodingException ",e );
 			}
@@ -223,6 +206,7 @@ public class queue extends AbstractServerListener{
 
 	public void onServerStopped(Server server){
 		this.adb_connected = false;
+		clear();
 		Constant.log(Constant.TAG, "+ onServerStopped");
 		Context bb = getContext();
 		if(bb!=null){
@@ -246,76 +230,100 @@ public class queue extends AbstractServerListener{
 			});
 		}
 		this.adb_connected = false;
+		clear();
 		Constant.log(Constant.TAG, "+ onClientDisconnect");
 	}
 // koniec serwera ADB
-	
-	/*
- 	if(mChatService==null || mChatService.getState() != Constant.STATE_CONNECTED){
-		Toast.makeText(BarobotMain.getInstance(), R.string.not_connected, Toast.LENGTH_SHORT).show();
-//  		return 0;
-	}else{
-        // Check that there's actually something to send
-        if (message.length() > 0) {
-            // Get the message bytes and tell the BluetoothChatService to write
-            byte[] send = message.getBytes();
-            mChatService.write(send);
- //           return 1;
-        }
-	}
-	*/
-	public int send( String message ){
-		if( message != null && message!= ""){
-			output.add(message + input_parser.separator );
-			saveOutHistory(message);
-			/*
-			int id = R.id.editText1;
-			if(message!=null){
-				DebugWindow dd = DebugWindow.getInstance();
-				if(dd!=null){
-					dd.setText( id, message );
-				}
-			}*/
-			exec();
+	public void add( String message, boolean wait ){
+		if( message == null || message== ""){
+			return;
 		}
-		return 1;
+		rpc_message m = new rpc_message( message, wait );
+		output2.add( m );
 	}
-	private void saveInHistory( String command ){
+
+	public void send(){
+		exec();
 	}
-	private void saveOutHistory( String command ){
+	public void send( String message ){
+		this.add(message, false);
+		exec();
 	}
-	private void exec(){
-		Iterator<String> iter = output.iterator();
+
+	public void read_ret(String message) {	// czy moze to jest zwrotka
+		if( this.wait_for != null){
+			if(this.wait_for.isRet(message)){
+				this.wait_for = null;
+				exec();		// wyslij wszystko co jest dalej
+			}
+		}
+	}
+	private synchronized void exec(){
 		try	{
-			while (iter.hasNext()) {
-				String ob = iter.next();
-				if( this.adb_connected){
-					Constant.log(Constant.TAG, "+ trysend ADB: " + ob);
-					server.send(ob);		
-				}else if(mChatService!=null && mChatService.getState() == Constant.STATE_CONNECTED ) {
-		            // Get the message bytes and tell the BluetoothChatService to write
-		        	byte[] send = ob.getBytes();
-		        	mChatService.write(send);
-		        }else{
-		        	Constant.log(Constant.TAG, "+ NO_CONN: " + ob);
-		        }
-                DebugWindow dd = DebugWindow.getInstance();
-                if(dd!= null){
-                	dd.addToList(ob, true );
+			if(this.wait_for != null){
+				return;		// jestem w trakcie oczekiwania
+			}
+			while (!output2.isEmpty()) {
+				rpc_message m = output2.pop();
+				this.passString(m.command);
+				if(m.wait_for_ready){		// czekam na zwrotkę tej komendy zanim wykonam coś dalej
+					m.send_timestamp	= System.nanoTime();
+                	this.wait_for		= m;
+                	return;					// przerwij do czasu otrzymania zwrotki
+                }else{
+                	this.wait_for = null;
                 }
-			    iter.remove();
 			}
 		} catch (IOException e)	{
 			Constant.log(Constant.TAG, "problem sending TCP message");
 		}
 	}
-	public static void stop() {
+
+	/*
+	//	Iterator<message> iter2 = output2.iterator();
+
+	while (iter2.hasNext()) {
+		message ob = iter2.next();
+		this.passString(ob.command);
+        if(ob.wait_for_ready){		// czekam na zwrotkę tej komendy zanim wykonam coś dalej
+        	this.wait_for = ob;
+        }else{
+        	this.wait_for = null;
+        }
+	    iter2.remove();
+	}*/
+
+	public void passString( String command ) throws IOException {
+		if( this.adb_connected){
+//			Constant.log(Constant.TAG, "+ trysend ADB: " + command);
+			server.send(command + input_parser.separator);		
+		}else if(mChatService!=null && mChatService.getState() == Constant.STATE_CONNECTED ) {
+//			Constant.log(Constant.TAG, "BT SEND:["+ command +"]");
+			String command2 = command + input_parser.separator;
+        	byte[] send = command2.getBytes();
+        	mChatService.write(send);
+        }else{
+        	Constant.log(Constant.TAG, "+ NO_CONN: " + command);
+        }
+		/*
+        DebugWindow dd = DebugWindow.getInstance();
+        if(dd!= null){
+        	dd.addToList(command, true );
+        }*/
+	}
+
+	public void clear() {
+		this.output2.clear();
+		this.wait_for = null;
+	}
+	public void stop() {
+		this.clear();
         if (mChatService != null){ 
         	mChatService.stop();
         }
         Constant.log(Constant.TAG, "--- ON DESTROY ---");
 	}
-	public static void resume() {
+	public void resume() {
         Constant.log(Constant.TAG, "+ ON RESUME +");
         // Performing this check in onResume() covers the case in which BT was
         // not enabled during onStart(), so we were paused to enable it...
@@ -328,4 +336,38 @@ public class queue extends AbstractServerListener{
             }
         }
 	}
+	public boolean allowAutoconnect() {
+		if( this.isBT()){
+		//	Constant.log(Constant.TAG, "nie autoconnect bo juz połączony");
+			return false;
+		}
+		if( this.isAdb() ){
+		//	Constant.log(Constant.TAG, "nie autoconnect bo ADB");
+			return false;
+		}
+		if (mChatService == null) {
+			Constant.log(Constant.TAG, "nie autoconnect bo NULL");
+			return false;
+		}
+		if (stop_autoconnect == true ) {
+			Constant.log(Constant.TAG, "nie autoconnect bo STOP");
+			return false;
+		}
+		return true;
+	}
 }
+
+/*
+	if(mChatService==null || mChatService.getState() != Constant.STATE_CONNECTED){
+	Toast.makeText(BarobotMain.getInstance(), R.string.not_connected, Toast.LENGTH_SHORT).show();
+//		return 0;
+}else{
+    // Check that there's actually something to send
+    if (message.length() > 0) {
+        // Get the message bytes and tell the BluetoothChatService to write
+        byte[] send = message.getBytes();
+        mChatService.write(send);
+//           return 1;
+    }
+}
+*/

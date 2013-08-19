@@ -27,7 +27,7 @@ public class DebugWindow extends Activity {
 	private static DebugWindow instance;
 	SeekBar sbAdcValue;
     private ListView mConversationView;
-    ArrayAdapter<String> mConversationArrayAdapter;
+    private ArrayAdapter<String> mConversationArrayAdapter;
 
 	public View getObject(String namespace, String mDrawableName) {
 		int resID = getResources().getIdentifier(mDrawableName, namespace,
@@ -144,7 +144,8 @@ public class DebugWindow extends Activity {
 				R.id.glweight,
 				R.id.bottweight,
 				R.id.fill5000,
-				R.id.set_bottle
+				R.id.set_bottle,
+				R.id.set_neutral_y
 				};
 		for(int i =0; i<buttons.length;i++){
 			View w = findViewById(buttons[i]);
@@ -183,10 +184,8 @@ public class DebugWindow extends Activity {
 				xb3.setOnClickListener(bt);			
 			}	
 		}
-
 		Point size = this.getScreenSize();
 
-		
 		button_zajedz bz = new button_zajedz();
 		int[] nalejs = {
 				R.id.nalej1,
