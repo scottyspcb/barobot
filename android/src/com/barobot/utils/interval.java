@@ -1,7 +1,9 @@
-package com.barobot;
+package com.barobot.utils;
 
 import java.util.Timer;
 import java.util.TimerTask;
+
+import com.barobot.Constant;
 
 import android.os.Handler;
 
@@ -10,13 +12,6 @@ public class interval {
 	private static Timer t = new Timer();
 	private Runnable rrr=null;
 
-	public interval(){
-		this.rrr= new Runnable() {
-		    public void run() {
-		    	Constant.log("RUNNABLE", "TICK 5" );
-		   }
-		};
-	}
 	public interval( Runnable r){
 		this.rrr= r;
 	}

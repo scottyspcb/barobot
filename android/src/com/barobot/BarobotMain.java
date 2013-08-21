@@ -3,6 +3,8 @@ package com.barobot;
 
 import java.util.ArrayList;
 
+import com.barobot.utils.interval;
+
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -71,7 +73,7 @@ public class BarobotMain extends Activity {
 		        if( q.allowAutoconnect()){
 		        	count++;
 		        	if(count > 2){		// po 10 sek
-		        		Constant.log("RUNNABLE", "3 try autoconnect" );
+		//        		Constant.log("RUNNABLE", "3 try autoconnect" );
 		        		q.autoconnect();
 		        	}
 			    }else{
@@ -94,8 +96,6 @@ public class BarobotMain extends Activity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         Intent serverIntent = null;
-        Constant.log(Constant.TAG, "onOptionsItemSelected " + item.getItemId());
-        
         switch (item.getItemId()) {
         case R.id.secure_connect_scan:
              if( queue.getInstance().checkBT() == false ){
@@ -106,6 +106,16 @@ public class BarobotMain extends Activity {
             serverIntent = new Intent(this, DeviceListActivity.class);
             startActivityForResult(serverIntent, Constant.REQUEST_CONNECT_DEVICE_SECURE);
             return true;
+
+        case R.id.update_drinks:
+            serverIntent = new Intent(this, UpdateActivity.class);
+            startActivityForResult(serverIntent, UpdateActivity.INTENT_NAME );
+	        return true;
+
+        case R.id.about_item:
+            serverIntent = new Intent(this, AboutActivity.class);
+            startActivityForResult(serverIntent, AboutActivity.INTENT_NAME );
+	        return true;   
 
 	    case R.id.debug_mode_window:
             serverIntent = new Intent(this, DebugWindow.class);
@@ -154,16 +164,20 @@ public class BarobotMain extends Activity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         Constant.log(Constant.TAG, "onActivityResult " + resultCode);
         switch (requestCode){
-        case Constant.REQUEST_BEBUG_WINDOW:
-        	Constant.log(Constant.TAG, "REQUEST_BEBUG_WINDOW");
+        case UpdateActivity.INTENT_NAME:
+        	Constant.log(Constant.TAG, "END OF UpdateActivity");
             break;
-
+        case AboutActivity.INTENT_NAME:
+        	Constant.log(Constant.TAG, "END OF AboutActivity");
+            break;
+        case Constant.REQUEST_BEBUG_WINDOW:
+        	Constant.log(Constant.TAG, "END OF BEBUG_WINDOW");
+            break;
         case Constant.REQUEST_CONNECT_DEVICE_SECURE:
         	Constant.log(Constant.TAG, "REQUEST_CONNECT_DEVICE_SECURE");
             // When DeviceListActivity returns with a device to connect
             if (resultCode == Activity.RESULT_OK) {
-                // Get the device MAC address
-                String address = data.getExtras().getString(Constant.EXTRA_DEVICE_ADDRESS);
+                String address = data.getExtras().getString(Constant.EXTRA_DEVICE_ADDRESS);           // Get the device MAC address
                 queue.connectBTDeviceId(address);
             }
             break;
