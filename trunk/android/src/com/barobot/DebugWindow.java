@@ -105,7 +105,6 @@ public class DebugWindow extends Activity {
 		tabHost.bringToFront();
 		tabHost.setEnabled(true);
 
-
 		button_click bc = new button_click();
 		int[] buttons = {
 				R.id.kalibrujx,

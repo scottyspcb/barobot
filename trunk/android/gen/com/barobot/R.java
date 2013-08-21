@@ -18,12 +18,20 @@ public final class R {
     }
     public static final class dimen {
         public static final int WielkoscInputa=0x7f050000;
+        /** 
+         Customize dimensions originally defined in res/values/dimens.xml (such as
+         screen margins) for sw720dp devices (e.g. 10" tablets) in landscape here.
+    
+         */
+        public static final int activity_horizontal_margin=0x7f050001;
+        public static final int activity_vertical_margin=0x7f050002;
     }
     public static final class drawable {
         public static final int app_icon=0x7f020000;
     }
     public static final class id {
-        public static final int about_item=0x7f090072;
+        public static final int about_item=0x7f090074;
+        public static final int action_settings=0x7f090075;
         public static final int analog0=0x7f09003c;
         public static final int analog_x=0x7f090007;
         public static final int analog_y=0x7f090008;
@@ -36,7 +44,6 @@ public final class R {
         public static final int dlugosc_z=0x7f09002b;
         public static final int fill5000=0x7f090037;
         public static final int glweight=0x7f09003f;
-        public static final int group1=0x7f090074;
         public static final int history_list=0x7f09006a;
         public static final int kalibrujx=0x7f090023;
         public static final int kalibrujy=0x7f090029;
@@ -121,6 +128,7 @@ public final class R {
         public static final int textView1045=0x7f09006e;
         public static final int title_left_text=0x7f090000;
         public static final int title_right_text=0x7f090001;
+        public static final int update_drinks=0x7f090072;
         public static final int waga1=0x7f09004e;
         public static final int waga10=0x7f090064;
         public static final int waga11=0x7f090053;
@@ -142,17 +150,23 @@ public final class R {
         public static final int wagi_tyl=0x7f09005f;
     }
     public static final class layout {
-        public static final int custom_title=0x7f030000;
-        public static final int debug=0x7f030001;
-        public static final int device_list=0x7f030002;
-        public static final int device_name=0x7f030003;
-        public static final int main=0x7f030004;
-        public static final int message=0x7f030005;
+        public static final int activity_about=0x7f030000;
+        public static final int activity_update=0x7f030001;
+        public static final int custom_title=0x7f030002;
+        public static final int debug=0x7f030003;
+        public static final int device_list=0x7f030004;
+        public static final int device_name=0x7f030005;
+        public static final int main=0x7f030006;
+        public static final int message=0x7f030007;
     }
     public static final class menu {
-        public static final int option_menu=0x7f080000;
+        public static final int about=0x7f080000;
+        public static final int option_menu=0x7f080001;
+        public static final int update=0x7f080002;
     }
     public static final class string {
+        public static final int about_info=0x7f060018;
+        public static final int action_settings=0x7f060016;
         public static final int app_name=0x7f060000;
         public static final int back_to_main_feature=0x7f060013;
         public static final int bt_not_enabled_leaving=0x7f060005;
@@ -160,42 +174,45 @@ public final class R {
         public static final int button_scan=0x7f06000f;
         public static final int debug_mode_window=0x7f060002;
         public static final int debug_window=0x7f060001;
+        public static final int hello_world=0x7f060017;
         public static final int menu_settings=0x7f060012;
         public static final int none_found=0x7f06000c;
         public static final int none_paired=0x7f06000b;
         public static final int not_connected=0x7f060004;
-        public static final int pref_default_display_name=0x7f06001a;
-        public static final int pref_description_social_recommendations=0x7f060018;
+        public static final int pref_default_display_name=0x7f06001f;
+        public static final int pref_description_social_recommendations=0x7f06001d;
         /**  Example settings for Data & Sync 
          */
-        public static final int pref_header_data_sync=0x7f06001c;
+        public static final int pref_header_data_sync=0x7f060021;
         /**  Strings related to Settings 
  Example General settings 
          */
-        public static final int pref_header_general=0x7f060016;
+        public static final int pref_header_general=0x7f06001b;
         /**  Example settings for Notifications 
          */
-        public static final int pref_header_notifications=0x7f06001f;
-        public static final int pref_ringtone_silent=0x7f060022;
-        public static final int pref_title_add_friends_to_messages=0x7f06001b;
-        public static final int pref_title_display_name=0x7f060019;
-        public static final int pref_title_new_message_notifications=0x7f060020;
-        public static final int pref_title_ringtone=0x7f060021;
-        public static final int pref_title_social_recommendations=0x7f060017;
-        public static final int pref_title_sync_frequency=0x7f06001d;
-        public static final int pref_title_system_sync_settings=0x7f06001e;
-        public static final int pref_title_vibrate=0x7f060023;
-        /**   DeviceListActivity 
+        public static final int pref_header_notifications=0x7f060024;
+        public static final int pref_ringtone_silent=0x7f060027;
+        public static final int pref_title_add_friends_to_messages=0x7f060020;
+        public static final int pref_title_display_name=0x7f06001e;
+        public static final int pref_title_new_message_notifications=0x7f060025;
+        public static final int pref_title_ringtone=0x7f060026;
+        public static final int pref_title_social_recommendations=0x7f06001c;
+        public static final int pref_title_sync_frequency=0x7f060022;
+        public static final int pref_title_system_sync_settings=0x7f060023;
+        public static final int pref_title_vibrate=0x7f060028;
+        /**  DeviceListActivity 
          */
         public static final int scanning=0x7f060009;
         /**  Options Menu 
          */
         public static final int secure_connect=0x7f060014;
         public static final int select_device=0x7f06000a;
-        /**   BluetoothChat 
+        /**  BluetoothChat 
          */
         public static final int send=0x7f060003;
-        public static final int title_activity_main_settings=0x7f060015;
+        public static final int title_activity_about=0x7f060019;
+        public static final int title_activity_main_settings=0x7f06001a;
+        public static final int title_activity_update=0x7f060015;
         public static final int title_connected_to=0x7f060007;
         public static final int title_connecting=0x7f060006;
         public static final int title_not_connected=0x7f060008;

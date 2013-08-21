@@ -46,6 +46,14 @@
             android:name="com.barobot.MainSettingsActivity"
             android:label="@string/title_activity_main_settings" >
         </activity>
+        <activity
+            android:name="com.barobot.UpdateActivity"
+            android:label="@string/title_activity_update" >
+        </activity>
+        <activity
+            android:name="com.barobot.AboutActivity"
+            android:label="@string/title_activity_about" >
+        </activity>
     </application>
 
 </manifest>

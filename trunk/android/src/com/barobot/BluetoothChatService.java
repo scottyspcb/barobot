@@ -78,9 +78,8 @@ public class BluetoothChatService {
      * @param state  An integer defining the current connection state
      */
     private synchronized void setState(int state) {
-        if (Constant.D) Log.d(Constant.TAG2, "setState() " + mState + " -> " + state);
+        //if (Constant.D) Log.d(Constant.TAG2, "setState() " + mState + " -> " + state);
         mState = state;
-
         // Give the new state to the Handler so the UI Activity can update
         mHandler.obtainMessage(Constant.MESSAGE_STATE_CHANGE, state, -1).sendToTarget();
     }
@@ -95,7 +94,7 @@ public class BluetoothChatService {
      * Start the chat service. Specifically start AcceptThread to begin a
      * session in listening (server) mode. Called by the Activity onResume() */
     public synchronized void start() {
-        if (Constant.D) Log.d(Constant.TAG2, "start");
+      //  if (Constant.D) Log.d(Constant.TAG2, "start");
 
         // Cancel any thread attempting to make a connection
         if (mConnectThread != null) {mConnectThread.cancel(); mConnectThread = null;}
@@ -111,17 +110,13 @@ public class BluetoothChatService {
      * @param secure Socket Security type - Secure (true) , Insecure (false)
      */
     public synchronized void connect(BluetoothDevice device) {
-        if (Constant.D) Log.d(Constant.TAG2, "connect to: " + device);
-
-        // Cancel any thread attempting to make a connection
-        if (mState == Constant.STATE_CONNECTING) {
+        if (mState == Constant.STATE_CONNECTING) {        // Cancel any thread attempting to make a connection
             if (mConnectThread != null) {mConnectThread.cancel(); mConnectThread = null;}
         }
         // Cancel any thread currently running a connection
         if (mConnectedThread != null) {mConnectedThread.cancel(); mConnectedThread = null;}
 
-        // Start the thread to connect with the given device
-        mConnectThread = new ConnectThread(device);
+        mConnectThread = new ConnectThread(device);        // Start the thread to connect with the given device
         mConnectThread.start();
         setState(Constant.STATE_CONNECTING);
     }
@@ -134,7 +129,7 @@ public class BluetoothChatService {
     public synchronized void connected(BluetoothSocket socket, BluetoothDevice
             device, final String socketType) {
         if (Constant.D) Log.d(Constant.TAG2, "connected, Socket Type:" + socketType);
-
+        
         // Cancel the thread that completed the connection
         if (mConnectThread != null) {mConnectThread.cancel(); mConnectThread = null;}
 
@@ -153,6 +148,7 @@ public class BluetoothChatService {
         mHandler.sendMessage(msg);
 
         setState(Constant.STATE_CONNECTED);
+        virtualComponents.set( "LAST_BT_DEVICE",device.getAddress());    	// remember device ID
     }
 
     /**
@@ -256,7 +252,6 @@ public class BluetoothChatService {
         }
 
         public void run() {
-            Log.i(Constant.TAG2, "BEGIN mConnectThread SocketType:" + mSocketType);
             setName("ConnectThread" + mSocketType);
 
             // Always cancel discovery because it will slow down a connection
@@ -375,13 +370,8 @@ public class BluetoothChatService {
     }
 
 	public void connectBTDeviceId(String address) {    	
-        // Get the BluetoothDevice object    	
-        Constant.log(Constant.TAG, "zapisuje BT "+ address);
-        BluetoothDevice device = mAdapter.getRemoteDevice(address);
-        // Attempt to connect to the device
-        this.connect(device);
-    	// remember device ID
-        virtualComponents.set( "LAST_BT_DEVICE",address);
+        BluetoothDevice device = mAdapter.getRemoteDevice(address);        // Get the BluetoothDevice object    	
+        this.connect(device);		//Attempt to connect to the device
 	}
 
 	public int initBt() {

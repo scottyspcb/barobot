@@ -70,7 +70,6 @@ public class queue extends AbstractServerListener{
         public synchronized void handleMessage(Message msg) {
             switch (msg.what) {
             	case Constant.MESSAGE_STATE_CHANGE:
-            		Constant.log(Constant.TAG, "MESSAGE_STATE_CHANGE: " + msg.arg1);
 	                switch (msg.arg1) {
 	                case Constant.STATE_CONNECTED:
 	                    DebugWindow dd = DebugWindow.getInstance();
@@ -78,11 +77,9 @@ public class queue extends AbstractServerListener{
 	                    	dd.clearList();
 	                    }        	
 	                    break;
-	                case Constant.STATE_CONNECTING:
-	                    break;
-	                case Constant.STATE_LISTEN:
-	                case Constant.STATE_NONE:
-	                    break;
+	            //    case Constant.STATE_CONNECTING:
+	            //    case Constant.STATE_LISTEN:
+	            //    case Constant.STATE_NONE:
 	                }
 	                break;
             case Constant.MESSAGE_WRITE:
