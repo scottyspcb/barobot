@@ -29,9 +29,7 @@ void loop() {
 
   delay(2000);
 
-    /*
-
-
+   /*
 
   for(keep = 0; keep < 100; keep += 1)  // goes from 0 degrees to 180 degrees 
   {                                  // in steps of 1 degree 

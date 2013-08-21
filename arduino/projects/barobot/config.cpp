@@ -13,19 +13,19 @@
 #define USE_ADB false
 
 #define DEBUG_SERIAL_INPUT false
-#define DEBUG_BT_INPUT true
+#define DEBUG_BT_INPUT false
 #define DEBUG_ADB_INPUT true
 #define DEBUG_OUTPUT2ANDROID true
 
 // obsluga zrodel wejscia
 #define SERIAL0_BOUND 115200
 #define BT_BOUND 9600
-#define BT_DEV_NAME "barobot1.0"
+#define BT_DEV_NAME "barobotB"
 //#define SERIAL0_BOUND 9600
 
 // ycz usyzwac sterownika 2 czy 4 pinowego
-#define SERVOX4PIN true
-#define SERVOY4PIN true
+#define SERVOX4PIN false
+#define SERVOY4PIN false
 
 // Brakujace opisy dla pinów
 const int PIN8 = 8;
@@ -222,6 +222,9 @@ const int PIN49 = 49;
 #define STATUS_LED07 PIN9
 #define STATUS_LED08 PIN10
 #define STATUS_LED09 PIN11
+// ktory to LED od szklanyki (jeden z powyzszych)
+#define STATUS_GLASS_LED PIN5
+
 
 // PINy dla adresu multipleksera
 #define PIN_MADDR0 PIN30
@@ -252,8 +255,6 @@ const int PIN49 = 49;
 #define SERVOZ_DOWN_POS 2100
 #define SERVOZ_DOWN_TIME 800
 
-// czy robić PAC po nalaniu?
-#define SERVOZ_PAC_ENABLED true
 
 // pozycja do której zajechac robiąc PAC
 #define SERVOZ_PAC_POS 1000
@@ -266,23 +267,27 @@ const int PIN49 = 49;
   #define SPEEDX 400
   #define ACCELERX 1050
   #define XLENGTH 1700
-  #define YLENGTH 600
 #else
-  #define SPEEDX 2000
-  #define ACCELERX 2000
-  #define XLENGTH 1900
-  #define YLENGTH 1600
+  #define SPEEDX 4000
+  #define ACCELERX 9000
+  #define XLENGTH 12700
 #endif
 
-#define SPEEDY 800
-#define ACCELERY 600
+// domyslnie ustawienie mocy silnikow Xy
+#if SERVOY4PIN==true
+  #define YLENGTH 600
+  #define SPEEDY 800
+  #define ACCELERY 1050
+#else
+  #define SPEEDY 4000
+  #define ACCELERY 3000
+  #define YLENGTH 10000  
+#endif
 
 // kierunki dla serva Z
 #define DIR_UP 1
 #define DIR_DOWN 2
 #define DIR_STOP 0
-
-
 
 // czy wylączaj stepper X gdy zajechal za miejsce?
 #define STEPPERX_READY_DISABLE true
@@ -296,17 +301,11 @@ const int PIN49 = 49;
 #define STEPPERX_ADD_Y_HIGH 3
 */
 
+// ile razy odczytać wage zanim stwierdze ze nie ma szklanki
 #define WAGA_REPEAT_COUNT 5
-// ile czekac pomiedzy odczytami tej samej wagi
-#define WAGA_MIN_DIFF 20
-// czy wymagam szklanki do zajechania do góry?
-#define NEED_WEIGHT_UP false
-// czy wymagam szklanki do nalania?
-#define NEED_WEIGHT_NALEJ false
-
+// minimalna waga szklanki
 
 // INNE
-
 //  ile losowych losowac
 #define LOS_MAX 20
 // 1 znak rozdielający komendy
