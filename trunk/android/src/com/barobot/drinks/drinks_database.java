@@ -11,6 +11,7 @@ import java.net.URLConnection;
 
 import com.barobot.BarobotMain;
 import com.barobot.Constant;
+import com.barobot.R;
 import com.barobot.UpdateActivity;
 import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
@@ -47,6 +48,7 @@ public class drinks_database {
 		});
 	}
 	protected void parseJson(String source) {
+		updateActivity.setText(	R.id.update_message, source);		
 		JsonObject jsonObject = JsonObject.readFrom( source );
 		this.parseJsonObject(jsonObject, 0 );
 	}
@@ -56,7 +58,6 @@ public class drinks_database {
 		for( Member member : in ) {
 			String name		= member.getName();
 			JsonValue value = member.getValue();
-
 			if(value.isObject()){
 				Constant.log("Json " + (level+1), "isObject: "+name);
 				this.parseJsonObject(value.asObject(), level+1);
@@ -96,8 +97,8 @@ public class drinks_database {
               File dir = new File (root.getAbsolutePath() + "/Content2/"); 
               if(dir.exists()==false) {
                       dir.mkdirs();
-                 }
-             try {
+              }
+              try {
                     URL url = new URL(urlLink);
                     Log.i("FILE_NAME", "File name is "+fileName);
                     Log.i("FILE_URLLINK", "File URL is "+url);
@@ -156,12 +157,11 @@ public class drinks_database {
         	  File root = android.os.Environment.getExternalStorageDirectory();    
 
         	  Log.i("FILE_NAME", "root getAbsolutePath is "+root.getAbsolutePath());
-        	  
               File dir = new File (root.getAbsolutePath() + "/Content2/"); 
               if(dir.exists()==false) {
                       dir.mkdirs();
                  }
-             try {
+              try {
                     URL url = new URL(urlLink);
                     Log.i("FILE_NAME", "File name is "+fileName);
                     Log.i("FILE_URLLINK", "File URL is "+url);
@@ -194,15 +194,12 @@ public class drinks_database {
         dx.start();      
     }
 	protected void publishProgress(int i) {
-		
-		
 	}
 
 	public void setActivity(UpdateActivity updateActivity) {
 		this.updateActivity = updateActivity;
 	}
 	public void stop() {
-		
 	}
 }
 

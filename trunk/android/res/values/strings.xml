@@ -4,11 +4,10 @@
     <string name="app_name">A-Barobot</string>
     <string name="debug_window">Opcje serwisowe</string>
     <string name="debug_mode_window">Tryb serwisowy</string>
-
+    <string name="do_update">Pobierz aktualizacje drinków</string>
 
     
     <!-- BluetoothChat -->
-    <string name="send">Send</string>
     <string name="not_connected">You are not connected to a device</string>
     <string name="bt_not_enabled_leaving">Bluetooth was not enabled. Leaving Bluetooth Chat.</string>
     <string name="title_connecting">connecting...</string>
@@ -16,14 +15,13 @@
     <string name="title_not_connected">not connected</string>
 
     <!-- DeviceListActivity -->
-    <string name="scanning">scanning for devices...</string>
+    <string name="scanning">Szukanie urządzeń</string>
     <string name="select_device">select a device to connect</string>
     <string name="none_paired">No devices have been paired</string>
     <string name="none_found">No devices found</string>
     <string name="title_paired_devices">Paired Devices</string>
     <string name="title_other_devices">Other Available Devices</string>
-    <string name="button_scan">Scan for devices</string>
-    <string name="buttonLED">LED Off</string>
+    <string name="button_scan">Szukanie urządzeń w pobliżu</string>
     <string name="tvText">0</string>
     <string name="menu_settings">Ustawienia</string>
     <string name="back_to_main_feature">Rób Drinki</string>
