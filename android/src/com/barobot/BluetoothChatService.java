@@ -4,6 +4,8 @@ package com.barobot;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 
 import android.bluetooth.BluetoothAdapter;
@@ -51,10 +53,10 @@ public class BluetoothChatService {
         mHandler = handler;
         hasInstance = true;
 
-      //  IntentFilter f1 = new IntentFilter(BluetoothDevice.ACTION_ACL_DISCONNECT_REQUESTED);
-       // IntentFilter f2 = new IntentFilter(BluetoothDevice.ACTION_ACL_DISCONNECTED);
-      //  barobotMain.registerReceiver(this.btEvents, f1);
-      //  barobotMain.registerReceiver(this.btEvents, f2);
+        IntentFilter f1 = new IntentFilter(BluetoothDevice.ACTION_ACL_DISCONNECT_REQUESTED);
+        IntentFilter f2 = new IntentFilter(BluetoothDevice.ACTION_ACL_DISCONNECTED);
+        barobotMain.registerReceiver(this.btEvents, f1);
+        barobotMain.registerReceiver(this.btEvents, f2);
     }
 
     // The BroadcastReceiver that listens for discovered devices and
@@ -244,18 +246,29 @@ public class BluetoothChatService {
 
             // Get a BluetoothSocket for a connection with the given BluetoothDevice
             try {
-               tmp = device.createRfcommSocketToServiceRecord(Constant.MY_UUID_SECURE);
-            } catch (IOException e) {
-                Constant.log(Constant.TAG2, "Socket Type: " + mSocketType + "create() failed", e);
-            }
+               //tmp = device.createRfcommSocketToServiceRecord(Constant.MY_UUID_SECURE);
+               Method m = device.getClass().getMethod("createRfcommSocket", new Class[] {int.class});
+               tmp = (BluetoothSocket) m.invoke(device, 1);
+               
+         //   } catch (IOException e) {
+          //      Constant.log(Constant.TAG2, "Socket Type: " + mSocketType + "create() failed", e);
+            } catch (NoSuchMethodException e) {
+				e.printStackTrace();
+			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			} catch (InvocationTargetException e) {
+				e.printStackTrace();
+			}
             mmSocket = tmp;
         }
 
         public void run() {
             setName("ConnectThread" + mSocketType);
-
-            // Always cancel discovery because it will slow down a connection
-            mAdapter.cancelDiscovery();
+            if(mAdapter.isDiscovering()){            // Always cancel discovery because it will slow down a connection
+            	mAdapter.cancelDiscovery();
+            }
 
             // Make a connection to the BluetoothSocket
             try {
@@ -328,21 +341,16 @@ public class BluetoothChatService {
             while (true) {
                 try {
                     byte[] buffer = new byte[1024];
-                    // Read from the InputStream
-                    int bytes = mmInStream.read(buffer);        
-                    // Send the obtained bytes to the UI Activity
-                    mHandler.obtainMessage(Constant.MESSAGE_READ, bytes, -1, buffer)
-                            .sendToTarget();
+                    int bytes = mmInStream.read(buffer);
+                    mHandler.obtainMessage(Constant.MESSAGE_READ, bytes, -1, buffer) .sendToTarget();   // Send the obtained bytes to the UI Activity
                 } catch (IOException e) {
                     Constant.log(Constant.TAG, "disconnected", e);
                     connectionLost();
-                    // Start the service over to restart listening mode
-                    BluetoothChatService.this.start();
+                    BluetoothChatService.this.start();    // Start the service over to restart listening mode
                     break;
                 }
             }
         }
-
         /**
          * Write to the connected OutStream.
          * @param buffer  The bytes to write

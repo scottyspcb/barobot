@@ -29,6 +29,7 @@ import android.widget.AdapterView.OnItemClickListener;
 public class DeviceListActivity extends Activity {
     // Member fields
     private BluetoothAdapter mBtAdapter;
+	public static final int INTENT_NAME = 8;
     private ArrayAdapter<String> mDevicesArrayAdapter;
 
     @Override
@@ -113,10 +114,11 @@ public class DeviceListActivity extends Activity {
     protected void onDestroy() {
         super.onDestroy();        // Make sure we're not doing discovery anymore
         if (mBtAdapter != null) {
-            mBtAdapter.cancelDiscovery();
+            if(mBtAdapter.isDiscovering()){            // Always cancel discovery because it will slow down a connection
+            	mBtAdapter.cancelDiscovery();
+            }
         }
-        // Unregister broadcast listeners
-        this.unregisterReceiver(mReceiver);
+        this.unregisterReceiver(mReceiver);        // Unregister broadcast listeners
         queue.getInstance().stop_autoconnect = false;
     }
 

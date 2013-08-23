@@ -41,6 +41,7 @@ public class MainSettingsActivity extends PreferenceActivity {
 	 * as a master/detail two-pane view on tablets. When true, a single pane is
 	 * shown on tablets.
 	 */
+	public static final int INTENT_NAME = 9;
 	private static final boolean ALWAYS_SIMPLE_PREFS = false;
 
 	@Override

@@ -13,13 +13,13 @@
           android:icon="@android:drawable/ic_menu_search"
           android:title="@string/secure_connect" />
 
+		<item android:id="@+id/update_drinks" android:checked="true" android:visible="true" android:titleCondensed="Update Bazy Drinków" android:enabled="true" android:checkable="false" android:title="Update Bazy Drinków"  android:icon="@android:drawable/ic_menu_rotate"></item>
+
    		<item android:id="@+id/debug_mode_window" android:title="@string/debug_mode_window"
    		     android:icon="@android:drawable/ic_menu_preferences"></item>
-
-		<item android:id="@+id/update_drinks" android:checked="true" android:visible="true" android:titleCondensed="Update Bazy Drinków" android:enabled="true" android:checkable="false" android:title="Update Bazy Drinków"  android:icon="@android:drawable/ic_menu_rotate"></item>
-        <item android:id="@+id/menu_settings"
+		
+		<item android:id="@+id/menu_settings"
         ic_menu_preferences=""
-        android:orderInCategory="100"
         android:showAsAction="never"
         android:title="@string/menu_settings"
         android:icon="@android:drawable/ic_menu_preferences"/>

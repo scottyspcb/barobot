@@ -12,6 +12,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class virtualComponents {
+	public static final int WITHGLASS = 111;
+	public static final int WITHOUTGLASS = 222;
+	
+	
 	public static Activity application;
 	private static SharedPreferences myPrefs;
 	private static SharedPreferences.Editor config_editor;			// config systemu android
@@ -21,11 +25,13 @@ public class virtualComponents {
 	private static int[] b_pos_x = {207,207, 394,394,581,581,768,768, 955,955,1142,1142,1329,1329,1516,1516};
 	private static int[] b_pos_y = {90, 550, 90, 550, 90, 550, 90, 550, 90, 550, 90, 550, 90, 550, 90, 550};
 
+	
+	// todo - porządek z tymi wartościami 
 	public static int mnoznikx = 10;
 	public static int mnozniky = 10;
-	public static int neutral_pos_y = 200;
-	public static boolean need_glass_fill = true;
-	public static boolean need_glass_up = true;
+//	public static int neutral_pos_y = 200;
+	public static boolean need_glass_fill = false;
+	public static boolean need_glass_up = false;
 	public static int weigh_min_diff = 20;
 	public static boolean pac_enabled = true;
 
@@ -74,7 +80,7 @@ public class virtualComponents {
 		if(remember > -1){
 			config_editor.putString(name, value);
 			config_editor.commit();
-		}		
+		}
 	}
 	public static int toInt( String input ){
 		input = input.replaceAll( "[^\\d]", "" );
@@ -95,19 +101,19 @@ public class virtualComponents {
 	}
 	public static void moveToBottle(int i) {
 		queue q = queue.getInstance();
-		q.send("SET Z MIN");
-		q.send("SET Y " + virtualComponents.getInt("NEUTRAL_POS_Y", virtualComponents.neutral_pos_y ) );
+		q.add("SET Z MIN", true);
+		q.add("SET Y " + virtualComponents.get("NEUTRAL_POS_Y", "0" ), true );
 		long x  =  getBottlePosX( i );
 		long y  =  getBottlePosY( i );
-		q.send("SET X " + x);
-		q.send("SET Y " + y);
-		// q.onready( cośtam );
+		q.add("SET X " + x, true);
+		q.add("SET Y " + y, true);
+		q.add("WAIT READY", true);
+		q.send();
 	}
 
 	private static void update(String name, String value) {
 		// TODO Auto-generated method stub
 		final DebugWindow dialog = DebugWindow.getInstance();
-
 		if( "LENGTHX".equals(name)){
 			dialog.setText( R.id.dlugosc_x, value, false );
 			final int val = virtualComponents.toInt( value );
@@ -243,7 +249,8 @@ public class virtualComponents {
 		q.add("ENABLEY", true);
 		q.add("ENABLEZ", true);
 		q.add("SET Z MAX", true);
-		q.add("STAYZ " + i , true);
+		q.add("WAIT TIME " + i, true);
+		
 		q.add("SET Z MIN", true);
 		if(virtualComponents.pac_enabled){
 			q.add("PACPAC", true);
@@ -274,6 +281,9 @@ public class virtualComponents {
 			bb.tabHost.setEnabled(true);
 			*/
 		}
+	}
+	public static boolean hasGlass() {
+		return false;
 	}
 }
 

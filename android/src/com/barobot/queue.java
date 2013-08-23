@@ -9,6 +9,9 @@ import org.microbridge.server.AbstractServerListener;
 import org.microbridge.server.Client;
 import org.microbridge.server.Server;
 
+import com.barobot.utils.History_item;
+import com.barobot.utils.rpc_message;
+
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -82,6 +85,7 @@ public class queue extends AbstractServerListener{
 	            //    case Constant.STATE_NONE:
 	                }
 	                break;
+	                /*
             case Constant.MESSAGE_WRITE:
                 byte[] writeBuf = (byte[]) msg.obj;
                 String writeMessage = new String(writeBuf);
@@ -89,7 +93,7 @@ public class queue extends AbstractServerListener{
                 if(dd!= null){
                 	dd.addToList(writeMessage, true );
                 }
-                break;
+                break;*/
             case Constant.MESSAGE_READ:
                 byte[] readBuf = (byte[]) msg.obj;
                 // construct a string from the valid bytes in the buffer
@@ -129,11 +133,17 @@ public class queue extends AbstractServerListener{
     public void bt_disconnect() {
     	mChatService.stop();
     }
+    public void unlock() {
+    	if(wait_for!=null){
+    		Constant.log("+unlock", "czekalem na [" + wait_for.command+"] w kolejce: " +output2.size() );
+    		wait_for = null;
+    		this.exec();
+    	}
+    }
     public void autoconnect() {
     	String bt_id = virtualComponents.get( "LAST_BT_DEVICE", "");
-	    Constant.log(Constant.TAG, "ostati BT "+ bt_id);
 	    if(bt_id!= null && !"".equals(bt_id) ){
-	    	queue.connectBTDeviceId(bt_id);
+	    	mChatService.connectBTDeviceId(bt_id);
 	    }
     }
     public boolean checkBT() {
@@ -151,17 +161,13 @@ public class queue extends AbstractServerListener{
     public static void connectBTDeviceId(String address) {
     	mChatService.connectBTDeviceId(address);
     } 
-    
+
 	public static int startBt() {
       	if (queue.mChatService == null){ 
     		return 34;
     	}
 		return queue.mChatService.initBt();
 	}
-
-
-
-
 
 	public boolean isBT(){
 		return mChatService.is_connected;
@@ -235,7 +241,7 @@ public class queue extends AbstractServerListener{
 		if( message == null || message== ""){
 			return;
 		}
-		rpc_message m = new rpc_message( message, wait );
+		rpc_message m = new rpc_message( message, true, wait );
 		output2.add( m );
 	}
 
@@ -247,22 +253,63 @@ public class queue extends AbstractServerListener{
 		exec();
 	}
 
-	public void read_ret(String message) {	// czy moze to jest zwrotka
+	public boolean read_ret(String retm) {	// czy moze to jest zwrotka
+		boolean is_ret = false;
 		if( this.wait_for != null){
-			if(this.wait_for.isRet(message)){
+			//Constant.log("isRet?", "["+message+"][" +  this.wait_for.command+"]");
+			is_ret = true;
+			if(this.wait_for.isRet(retm)){
+		        DebugWindow dd = DebugWindow.getInstance();
+		  //      is_ret	= addRetToList(this.wait_for.getCommand(), retm);
 				this.wait_for = null;
-				exec();		// wyslij wszystko co jest dalej
+				if(output2.isEmpty()){
+		            if(dd!= null){
+		            	dd.addToList( "--------------------------------------------------", true );
+		            }
+				}else{
+					exec();		// wyslij wszystko co jest dalej
+				}
 			}
 		}
+		return is_ret;
 	}
-	private synchronized void exec(){
-		try	{
-			if(this.wait_for != null){
-				return;		// jestem w trakcie oczekiwania
+	/*
+	public boolean addRetToList( final String last, final String ret ) {
+		final DebugWindow dd = DebugWindow.getInstance();
+		if(dd!=null){
+			int count = dd.mConversationArrayAdapter.getCount();
+			for(int i =count-1; i>=0;i--){
+				History_item hi = dd.mConversationArrayAdapter.getItem(i);
+			//	Constant.log("+addRetToList", last + "/" + ret + "/" + i +"/"+ hi.getCommand() );
+				if( hi.direction && hi.getCommand().equals(last)){
+					hi.setRet(ret);
+		//			Constant.log("+addRetToList","ustawiam " + i + " na " + hi.toString() );
+					dd.runOnUiThread(new Runnable() {
+						@Override
+						public void run() {
+							dd.mConversationArrayAdapter.notifyDataSetChanged();
+						}
+					});
+					return true;
+				}			
 			}
+		}
+		return false;
+	}
+*/
+	private synchronized void exec(){
+        DebugWindow dd = DebugWindow.getInstance();
+		if(this.wait_for != null){
+			return;		// jestem w trakcie oczekiwania
+		}
+		try	{
+			boolean wasEmpty = output2.isEmpty();
 			while (!output2.isEmpty()) {
 				rpc_message m = output2.pop();
 				this.passString(m.command);
+		        if(dd!= null){
+		        	dd.addToList( m );
+		        }
 				if(m.wait_for_ready){		// czekam na zwrotkę tej komendy zanim wykonam coś dalej
 					m.send_timestamp	= System.nanoTime();
                 	this.wait_for		= m;
@@ -270,6 +317,11 @@ public class queue extends AbstractServerListener{
                 }else{
                 	this.wait_for = null;
                 }
+			}
+			if(!wasEmpty){
+	            if(dd!= null){
+	            	dd.addToList( "--------------------------------------------------", true );
+	            }
 			}
 		} catch (IOException e)	{
 			Constant.log(Constant.TAG, "problem sending TCP message");
@@ -302,11 +354,6 @@ public class queue extends AbstractServerListener{
         }else{
         	Constant.log(Constant.TAG, "+ NO_CONN: " + command);
         }
-		/*
-        DebugWindow dd = DebugWindow.getInstance();
-        if(dd!= null){
-        	dd.addToList(command, true );
-        }*/
 	}
 
 	public void clear() {
@@ -353,18 +400,3 @@ public class queue extends AbstractServerListener{
 		return true;
 	}
 }
-
-/*
-	if(mChatService==null || mChatService.getState() != Constant.STATE_CONNECTED){
-	Toast.makeText(BarobotMain.getInstance(), R.string.not_connected, Toast.LENGTH_SHORT).show();
-//		return 0;
-}else{
-    // Check that there's actually something to send
-    if (message.length() > 0) {
-        // Get the message bytes and tell the BluetoothChatService to write
-        byte[] send = message.getBytes();
-        mChatService.write(send);
-//           return 1;
-    }
-}
-*/

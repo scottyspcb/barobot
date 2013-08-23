@@ -24,10 +24,7 @@ public class Constant {
     public static final String TOAST = "toast";
 
     // Intent request codes
-    public static final int REQUEST_BEBUG_WINDOW = 32;
-    public static final int RESULT_SETTINGS = 32;
-    public static final int REQUEST_CONNECT_DEVICE_SECURE = 1;
-    public static final int REQUEST_ENABLE_BT = 3;
+    public static final int REQUEST_ENABLE_BT = 103;
     
     // Debugging
     public static final String TAG2 = "BarobotBTService";

@@ -19,9 +19,6 @@ import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
-/**
- * This is the main Activity that displays the current chat session.
- */
 public class BarobotMain extends Activity {
     // Layout Views
 	private static BarobotMain instance;
@@ -59,9 +56,8 @@ public class BarobotMain extends Activity {
         }       
 		this.runTimer();
     }
- 
-    private ArrayList<interval> inters = new ArrayList<interval>();
-    
+
+    private ArrayList<interval> inters = new ArrayList<interval>();    
     private void runTimer() {
 //    	interval inn = new interval();
 //   	inn.run(1000,5000);
@@ -104,7 +100,7 @@ public class BarobotMain extends Activity {
             }
             // Launch the DeviceListActivity to see devices and do scan
             serverIntent = new Intent(this, DeviceListActivity.class);
-            startActivityForResult(serverIntent, Constant.REQUEST_CONNECT_DEVICE_SECURE);
+            startActivityForResult(serverIntent, DeviceListActivity.INTENT_NAME);
             return true;
 
         case R.id.update_drinks:
@@ -119,19 +115,12 @@ public class BarobotMain extends Activity {
 
 	    case R.id.debug_mode_window:
             serverIntent = new Intent(this, DebugWindow.class);
-            startActivityForResult(serverIntent, Constant.REQUEST_BEBUG_WINDOW);
+            startActivityForResult(serverIntent, DebugWindow.INTENT_NAME);
 	        return true;
-/*
-	    case R.id.bt_autoconn:
-	    	queue q2 = queue.getInstance();
-	    	if( q2.checkBT() != false ){
-	    		q2.autoconnect();
-	    	}
-	        return true;
-*/
+
        case R.id.menu_settings:
-            Intent i = new Intent(this, MainSettingsActivity.class);
-            startActivityForResult(i, Constant.RESULT_SETTINGS);
+    	   serverIntent = new Intent(this, MainSettingsActivity.class);
+            startActivityForResult(serverIntent, MainSettingsActivity.INTENT_NAME);
             break;
 	    }        
 
@@ -170,10 +159,13 @@ public class BarobotMain extends Activity {
         case AboutActivity.INTENT_NAME:
         	Constant.log(Constant.TAG, "END OF AboutActivity");
             break;
-        case Constant.REQUEST_BEBUG_WINDOW:
+        case DebugWindow.INTENT_NAME:
         	Constant.log(Constant.TAG, "END OF BEBUG_WINDOW");
             break;
-        case Constant.REQUEST_CONNECT_DEVICE_SECURE:
+        case MainSettingsActivity.INTENT_NAME:
+        	Constant.log(Constant.TAG, "END OF SETTINGS");
+            break;
+        case DeviceListActivity.INTENT_NAME:
         	Constant.log(Constant.TAG, "REQUEST_CONNECT_DEVICE_SECURE");
             // When DeviceListActivity returns with a device to connect
             if (resultCode == Activity.RESULT_OK) {

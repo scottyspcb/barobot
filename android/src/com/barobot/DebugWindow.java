@@ -1,5 +1,7 @@
 package com.barobot;
 
+import com.barobot.utils.History_item;
+import com.barobot.utils.rpc_message;
 import android.app.Activity;
 import android.graphics.Point;
 import android.os.Bundle;
@@ -22,12 +24,13 @@ import android.widget.Toast;
 import android.widget.TabHost.TabContentFactory;
 
 public class DebugWindow extends Activity {
-
 	TextView tvAdcvalue;
+	public TabHost tabHost;
+	public static final int INTENT_NAME = 7;	
 	private static DebugWindow instance;
 	SeekBar sbAdcValue;
     private ListView mConversationView;
-    private ArrayAdapter<String> mConversationArrayAdapter;
+    public ArrayAdapter<History_item> mConversationArrayAdapter;
 
 	public View getObject(String namespace, String mDrawableName) {
 		int resID = getResources().getIdentifier(mDrawableName, namespace,
@@ -44,8 +47,6 @@ public class DebugWindow extends Activity {
 	public static DebugWindow getInstance() {
 		return instance;
 	}
-
-	public TabHost tabHost;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -69,8 +70,7 @@ public class DebugWindow extends Activity {
 
 		TextView[] originalTextViews = new TextView[tabWidget.getTabCount()];
 		for (int index = 0; index < tabWidget.getTabCount(); index++) {
-			originalTextViews[index] = (TextView) tabWidget
-					.getChildTabViewAt(index);
+			originalTextViews[index] = (TextView) tabWidget.getChildTabViewAt(index);
 		}
 		tabWidget.removeAllViews();
 		// Ensure that all tab content childs are not visible at startup.
@@ -105,7 +105,7 @@ public class DebugWindow extends Activity {
 		tabHost.bringToFront();
 		tabHost.setEnabled(true);
 
-		button_click bc = new button_click();
+		button_click bc = new button_click( this );
 		int[] buttons = {
 				R.id.kalibrujx,
 				R.id.kalibrujy,
@@ -125,7 +125,6 @@ public class DebugWindow extends Activity {
 				R.id.machajz,
 				R.id.losujx,
 				R.id.losujy,
-				R.id.losujz,
 				R.id.set_x1000,
 				R.id.set_x100,
 				R.id.set_x10,
@@ -144,12 +143,15 @@ public class DebugWindow extends Activity {
 				R.id.bottweight,
 				R.id.fill5000,
 				R.id.set_bottle,
-				R.id.set_neutral_y
+				R.id.set_neutral_y,
+				R.id.goToNeutralY,
+				R.id.unlock,
+				R.id.clear_history
 				};
 		for(int i =0; i<buttons.length;i++){
 			View w = findViewById(buttons[i]);
 			String classname = w.getClass().getName();
-			Constant.log(Constant.TAG,"findViewById buttons: "+ classname + " / " + i );
+//			Constant.log(Constant.TAG,"findViewById buttons: "+ classname + " / " + i );
 			if( "android.widget.Button".equals( classname )){
 				Button xb1 = (Button) findViewById(buttons[i]);	
 				xb1.setOnClickListener(bc);			
@@ -177,7 +179,7 @@ public class DebugWindow extends Activity {
 		for(int i =0; i<togglers.length;i++){
 			View w = findViewById(togglers[i]);
 			String classname = w.getClass().getName();
-			Constant.log(Constant.TAG,"findViewById togglers: "+ classname + " / " + i );
+	//		Constant.log(Constant.TAG,"findViewById togglers: "+ classname + " / " + i );
 			if( "android.widget.ToggleButton".equals( classname )){
 				Button xb3 = (ToggleButton) findViewById(togglers[i]);	
 				xb3.setOnClickListener(bt);			
@@ -210,7 +212,7 @@ public class DebugWindow extends Activity {
 		for(int i =0; i<nalejs.length;i++){
 			View w = findViewById(nalejs[i]);
 			String classname = w.getClass().getName();
-			Constant.log(Constant.TAG,"findViewById nalejs: "+ classname + " / " + i );
+		//	Constant.log(Constant.TAG,"findViewById nalejs: "+ classname + " / " + i );
 			if( "android.widget.Button".equals( classname )){
 				Button xb1 = (Button) findViewById(nalejs[i]);	
 				xb1.setOnClickListener(bz);
@@ -264,13 +266,11 @@ public class DebugWindow extends Activity {
 	    // Array adapter for the conversation thread
 	    // String buffer for outgoing messages
         // Initialize the array adapter for the conversation thread
-        mConversationArrayAdapter = new ArrayAdapter<String>(this, R.layout.message);
+        mConversationArrayAdapter = new ArrayAdapter<History_item>(this, R.layout.message);
         mConversationView = (ListView) findViewById(R.id.history_list);
         mConversationView.setAdapter(mConversationArrayAdapter);
 	}
 	public void refreshPos() {
-		return;
-		/*
 		Constant.log(Constant.TAG,"reload pozycje na stronie glownej");
 		int[] wagi = {R.id.waga1,
 				R.id.waga2,
@@ -295,7 +295,7 @@ public class DebugWindow extends Activity {
 			long y	=  virtualComponents.getBottlePosY( i );
 			String pos = "" + x +"/"+ y;			
 			waga1.setText(pos);
-		}*/
+		}
 	}
 	public Point getScreenSize( ) {
 		Display display = getWindowManager().getDefaultDisplay();
@@ -303,20 +303,22 @@ public class DebugWindow extends Activity {
 		Point size = new Point();
 		display.getSize(size);
 		return size;
-		
 	}
-	
-	
+	public void addToList(final rpc_message m) {
+		final DebugWindow parent = this;
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				parent.mConversationArrayAdapter.add( m );
+			}
+		});		
+	}
 	public void addToList(final String string, final boolean direction ) {
 		final DebugWindow parent = this;
 		runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				if(direction){	// true = na zewnątrz
-					parent.mConversationArrayAdapter.add("<-" +  string.trim() );
-				}else{
-					parent.mConversationArrayAdapter.add("->" +  string.trim() );
-				}
+				parent.mConversationArrayAdapter.add( new History_item( string.trim(), direction) );
 			}
 		});	
 	}
@@ -330,8 +332,6 @@ public class DebugWindow extends Activity {
 			}
 		});	
 	}
-
-	
 	@Override
 	public void onBackPressed() {
 		// super.onBackPressed(); Do not call me!
