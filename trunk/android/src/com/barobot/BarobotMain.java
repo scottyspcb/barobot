@@ -3,6 +3,7 @@ package com.barobot;
 
 import java.util.ArrayList;
 
+import com.barobot.utils.CameraManager;
 import com.barobot.utils.interval;
 
 import android.app.Activity;
@@ -22,6 +23,7 @@ import android.widget.Toast;
 public class BarobotMain extends Activity {
     // Layout Views
 	private static BarobotMain instance;
+	public CameraManager cm;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -55,6 +57,10 @@ public class BarobotMain extends Activity {
 			}
         }       
 		this.runTimer();
+
+		cm = new CameraManager( this );
+		cm.findCameras();
+		
     }
 
     private ArrayList<interval> inters = new ArrayList<interval>();    
@@ -139,15 +145,30 @@ public class BarobotMain extends Activity {
 	        }
         }
     }
+
+	@Override
+	protected void onPause() {
+		Constant.log("MAINWINDOW", "onPause");
+		cm.onPause();
+		super.onPause();
+	}
     @Override
     public synchronized void onResume() {
+    	Constant.log("MAINWINDOW", "onResume");
         super.onResume();
+		if(cm!=null){
+			cm.onResume();
+		}
         queue.getInstance().resume();
     }
 
+
+    
     @Override
     public void onDestroy() {
+    	Constant.log("MAINWINDOW", "onDestroy");
         super.onDestroy();
+        cm.onDestroy();
         queue.getInstance().stop();
     }
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -205,17 +226,4 @@ public class BarobotMain extends Activity {
 	public static BarobotMain getInstance(){
 		return instance;
 	}
-	/*
-    @Override
-    public synchronized void onPause() {
-        super.onPause();
-        Constant.log(Constant.TAG, "- ON PAUSE -");
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        Constant.log(Constant.TAG, "-- ON STOP --");
-    }
-*/
 }

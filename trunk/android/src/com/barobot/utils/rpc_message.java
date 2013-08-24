@@ -44,4 +44,23 @@ public class rpc_message extends History_item{
 		}
 		return false;
 	}
+	public String toString(){
+		String prefix = "";
+		if(this.direction){
+			prefix = "<-- ";
+		}else{
+			prefix = "--> ";
+		}
+		if(ret!=null){
+			return prefix + command +"\t\t\t\t" + ret;
+		}else if(this.wait_for_ready){
+			return prefix + command +"\t\t\t\t *";
+		}else{
+			return prefix + command;
+		} 
+	}
+	
+	
+	
+	
 }

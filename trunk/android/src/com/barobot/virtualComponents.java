@@ -35,7 +35,9 @@ public class virtualComponents {
 	public static int weigh_min_diff = 20;
 	public static boolean pac_enabled = true;
 
-	private static String[] persistant = {"LENGTHX","LENGTHY","LENGTHZ","LAST_BT_DEVICE",
+	private static String[] persistant = {
+		"LENGTHX","LENGTHY","LENGTHZ","LAST_BT_DEVICE",
+		"NEUTRAL_POS_Y",
 		"BOTTLE_X_0","BOTTLE_Y_0",
 		"BOTTLE_X_1","BOTTLE_Y_1",
 		"BOTTLE_X_2","BOTTLE_Y_2",
@@ -101,14 +103,19 @@ public class virtualComponents {
 	}
 	public static void moveToBottle(int i) {
 		queue q = queue.getInstance();
-		q.add("SET Z MIN", true);
+		moveZDown();
 		q.add("SET Y " + virtualComponents.get("NEUTRAL_POS_Y", "0" ), true );
 		long x  =  getBottlePosX( i );
 		long y  =  getBottlePosY( i );
 		q.add("SET X " + x, true);
 		q.add("SET Y " + y, true);
-		q.add("WAIT READY", true);
 		q.send();
+	}
+	public static void moveZDown() {
+		queue q = queue.getInstance();
+		q.add("ENABLEZ", true);
+		q.add("SET Z MIN", true );
+	    q.add("DISABLEZ", true);	
 	}
 
 	private static void update(String name, String value) {
