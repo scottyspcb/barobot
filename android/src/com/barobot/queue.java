@@ -66,7 +66,6 @@ public class queue extends AbstractServerListener{
 		return BarobotMain.getInstance();
 	//	return DebugWindow.getInstance();
 	}
-
     // The Handler that gets information back from the BluetoothChatService
     public final Handler mHandler = new Handler() {
         @Override
@@ -75,6 +74,7 @@ public class queue extends AbstractServerListener{
             	case Constant.MESSAGE_STATE_CHANGE:
 	                switch (msg.arg1) {
 	                case Constant.STATE_CONNECTED:
+	                	queue.getInstance().clear();
 	                    DebugWindow dd = DebugWindow.getInstance();
 	                    if(dd!= null){
 	                    	dd.clearList();
@@ -152,7 +152,7 @@ public class queue extends AbstractServerListener{
         // If the adapter is null, then Bluetooth is not supported
         if (mBluetoothAdapter == null) {
 			mChatService.is_connected		= false;
-			clear();
+			this.clear();
 			return false;
         }    	   	
         return true;
@@ -219,6 +219,7 @@ public class queue extends AbstractServerListener{
 
 	public void onClientConnect(Server server, Client client){
 		this.adb_connected = true;
+		this.clear();
 		Constant.log(Constant.TAG, "+ onClientConnect");
 	}
 
@@ -246,6 +247,7 @@ public class queue extends AbstractServerListener{
 	}
 
 	public void send(){
+		BarobotMain.getInstance().cm.doPhoto();
 		exec();
 	}
 	public void send( String message ){

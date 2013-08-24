@@ -604,29 +604,38 @@ android:layout_height="fill_parent">
 			        android:textOn="Tutaj jest butelka..." />
 
 			    <Button
+			        android:id="@+id/smile"
+			        android:layout_width="wrap_content"
+			        android:layout_height="wrap_content"
+			        android:layout_alignBaseline="@+id/unlock"
+			        android:layout_toRightOf="@+id/unlock"
+			        android:text="smile" />
+
+			    <Button
 			        android:id="@+id/set_neutral_y"
 			        android:layout_width="wrap_content"
 			        android:layout_height="wrap_content"
-			        android:layout_alignBaseline="@+id/bottweight"
-			        android:layout_alignLeft="@+id/length_y"
+			        android:layout_alignLeft="@+id/main_waga"
+			        android:layout_below="@+id/glweight"
 			        android:text="Tu jest neutralny Y" />
+
+			    <Button
+			        android:id="@+id/goToNeutralY"
+			        android:layout_width="wrap_content"
+			        android:layout_height="wrap_content"
+			        android:layout_alignBaseline="@+id/set_neutral_y"
+			        android:layout_alignBottom="@+id/set_neutral_y"
+			        android:layout_toRightOf="@+id/set_neutral_y"
+			        android:text="Idź do neutral Y" />
 
 			    <Button
 			        android:id="@+id/unlock"
 			        android:layout_width="wrap_content"
 			        android:layout_height="wrap_content"
-			        android:layout_alignBaseline="@+id/kalibrujz"
-			        android:layout_toRightOf="@+id/fill5000"
+			        android:layout_alignBaseline="@+id/goToNeutralY"
+			        android:layout_alignBottom="@+id/goToNeutralY"
+			        android:layout_toLeftOf="@+id/max_y"
 			        android:text="Odblokuj" />
-			    
-			    <Button
-			        android:id="@+id/goToNeutralY"
-			        android:layout_width="wrap_content"
-			        android:layout_height="wrap_content"
-			        android:layout_alignBaseline="@+id/kalibrujz"
-			        android:layout_toRightOf="@+id/unlock"
-			        android:text="Idź do neutral Y" />
-			    
 			    
 			</RelativeLayout>
 
@@ -984,11 +993,10 @@ android:layout_height="fill_parent">
 			            android:layout_alignParentLeft="true"
 			            android:layout_alignParentRight="true"
 			            android:layout_centerVertical="true"
-			            android:background="#990000"
 			            android:maxWidth="128dp"
 			            android:minHeight="50dp"
 			            android:minWidth="100dp"
-			            android:text="Nalej" />
+			            android:text="Nalej tutaj" />
 			    </RelativeLayout>
 			</RelativeLayout>
 

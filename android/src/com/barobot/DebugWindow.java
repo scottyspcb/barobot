@@ -146,6 +146,7 @@ public class DebugWindow extends Activity {
 				R.id.set_neutral_y,
 				R.id.goToNeutralY,
 				R.id.unlock,
+				R.id.smile,
 				R.id.clear_history
 				};
 		for(int i =0; i<buttons.length;i++){
