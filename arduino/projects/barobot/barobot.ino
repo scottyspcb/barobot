@@ -56,6 +56,7 @@ void setupSerial(){      // uzyte w setup()
     delay(1000);
     Serial3.println( "" );    // reset jesli nie idzie do bufora...
     Serial3.println( "PING" );    // reset jesli nie idzie do bufora...
+    Serial3.print( "\n" + String(SEPARATOR_CHAR) );
   }
 }
 
@@ -132,6 +133,11 @@ void setupSteppers(){                  // uzyte w setup()
 
   stepperY.setAcceleration(ACCELERY);    // wgląb
   stepperY.setMaxSpeed(SPEEDY);
+  
+  
+  // zjedz na dół stepperem Z
+  
+  
 }
 
 void setupUltrasonic(){      // uzyte w setup()
@@ -390,21 +396,36 @@ void parseInput( String input ){   // zrozum co sie dzieje
     }else if( input.startsWith("SET ACCY") ){      
       acc_y = decodeInt( input, 9 );    // SET ACCY i spacja
       stepperY.setAcceleration(acc_y);
-   }else if( input.equals("SET Z MAX") ){
-      if(irr_max_z == true){
-        send_current_position(true);
-      }else{
-        z_up();
-        send_current_position(true);
-      } 
-    }else if( input.equals("SET Z MIN") ){
-      if(irr_min_z == true){
-        send_current_position(true);
-      }else{
-        z_down();      
+
+    }else if( input.equals("SET Z MAX") ){
+       if(!irr_max_z){
+          int up_pos = SERVOZ_UP_POS;
+          servoZ.writeMicroseconds(up_pos);             // na doł
+          delay(SERVOZ_UP_TIME);
+          irr_max_z = true;
+          irr_min_z = false;
+       } 
+       send_current_position(true);
+     }else if( input.startsWith("SET Z MIN") ){
+       if(!irr_min_z){
+          int down_pos = SERVOZ_DOWN_POS;
+          servoZ.writeMicroseconds(down_pos);         // na doł
+          delay(SERVOZ_DOWN_TIME);
+          irr_max_z = false;
+          irr_min_z = true;
+       }
+       send2android("LENGTHZ "+ String(dlugosc_z) );
+       send_current_position(true);
+     }else if( input.equals("SET Z ") ){
+      int msec = decodeInt( input, 6 );    // 10 znakow i spacja
+      send2debuger( "msec", "w gore1" );
+      for(int keep = 0; keep < 1000; keep += 1)  {
+        servoZ.writeMicroseconds(msec);
+        delay(100);
       }
+
     }else{
-      send2android("NO COMMAND" );
+      send2android("NO COMMAND [" + input +"]");
       defaultResult = false;
     }
   }else if( input.equals( "WAIT READY") ){      // tylko zwróc zwrotkę
@@ -433,8 +454,7 @@ void parseInput( String input ){   // zrozum co sie dzieje
         send2android("VAL SPEEDX " + String(max_speed_y) + ","+ String(acc_x) );
         send2android("VAL SPEEDY " + String(max_speed_x) + ","+ String(acc_y) );
     }else if( input.equals( "GET VERSION" )){
-      send2android( "VAL VERSION " + String(version));    
-
+      send2android( "VAL VERSION " + String(version));
     }else if( input.equals( "GET CARRET" )){      // pozycja karetki x,y
       send_current_position( false );
     }else if( input == "GET GLASS" ){       // waga szklanki
@@ -451,7 +471,7 @@ void parseInput( String input ){   // zrozum co sie dzieje
       }
       send2android( "WEIGHT " +res);    
     }else{
-      send2android("NO COMMAND" );
+      send2android("NO COMMAND [" + input +"]");
     }
     defaultResult = false;
   }else if( input.startsWith("IRR") ){
@@ -500,13 +520,6 @@ void parseInput( String input ){   // zrozum co sie dzieje
     irr_min_y  = true;
     irr_max_y  = false;
     send_current_position(false);
-  }else if( input.startsWith("STAYZ") ){
-    unsigned long int stayz = decodeInt( input, 6 );    // 5 znakow i spacja
-    for(int keep = 0; keep < (stayz>>8); keep += 1)  {
-      servoZ.writeMicroseconds(SERVOZ_STAYUP_POS);
-      delay(SERVOZ_STAYUP_TIME);
-    }
-    send_current_position(false);
   }else if( input.equals ("KALIBRUJ WAGA" )){       // wykonaj 10 losowych ruchów po X    
     waga_zero = read_szklanka();
     send2android("GLASS " + String(waga_zero));
@@ -515,55 +528,7 @@ void parseInput( String input ){   // zrozum co sie dzieje
   }else if( input.equals( "PING2ANDROID") ){      // nic nie rob
     defaultResult = false;
     
-    
-    
-    
-    
-    
-    
-    
-  }else if( input.equals( "MACHAJX") ){       // wykonaj 10 ruchów 300 - 1000
-    stosPush("NORET");
-    for(byte f = 0;f<10;){
-      stosPush("SET X " + String( XLENGTH / 3 ) );
-      stosPush("SET X " + String( XLENGTH / 3 * 2) );
-      f=f+2;
-    }
-    stosPush("READY" );
 
-  }else if( input.equals( "MACHAJY") ){       // wykonaj 10 ruchów 300 - 1000
-    stosPush("NORET");
-    for(byte f = 0;f<LOS_MAX;){
-      stosPush("SET Y 50");
-      stosPush("SET Y 400");
-      f=f+2;
-    }
-    stosPush("READY");
-  }else if( input.equals( "MACHAJZ") ){       // wykonaj 10 ruchów MAX - MIN
-    stosPush("NORET");
-    for(byte f = 0;f<LOS_MAX;){
-      stosPush("SET Z MAX");
-      stosPush("SET Y MIN");
-      f=f+2;
-    }
-    stosPush("READY");
-
-  }else if( input.equals( "LOSUJX" )){       // wykonaj 10 losowych ruchów po X
-    stosPush("NORET");
-    for(byte f = 0;f<LOS_MAX;){
-      stosPush("SET X " + String(random(0,XLENGTH/100 / 2) * 100));// zawsze po przeciwnych stronach
-      stosPush("SET X " + String(random(XLENGTH/100 / 2,XLENGTH/100) * 100));
-      f=f+2;
-    }
-    stosPush("READY");
-  }else if( input.equals("LOSUJY" )){       // wykonaj 10 losowych ruchów po X
-    stosPush("NORET");
-    for(byte f = 0;f<LOS_MAX;){
-      stosPush("SET Y " + String(random(0,3) * 100));// zawsze po przeciwnych stronach
-      stosPush("SET Y " + String(random(3,6) * 100));
-      f=f+2;
-    }
-    stosPush("READY");
   }else if( input.equals("KALIBRUJX") ){
     // kaliberacja wagi razem z kalubracją X
     waga_zero = read_szklanka();    // TODO - wydzielić
@@ -579,18 +544,8 @@ void parseInput( String input ){   // zrozum co sie dzieje
     stosPush("SET Y " + String( YLENGTH ));
     stosPush("SET Y 0");
     stosPush("READY");
-  }else if( input.equals( "KALIBRUJZ" )){  
-    servoZ.attach(STEPPER_Z_PWM);                  // przypisz do pinu, uruchamia PWMa  
-    z_down();
-    servoZ.detach();                             // odetnij sterowanie
-    
-    
-    
-    
-    
-    
   }else{
-    send2android("NO COMMAND" );
+    send2android("NO COMMAND [" + input +"]");
     defaultResult = false;  
   }
   if(defaultResult && send_ret ){
@@ -600,13 +555,13 @@ void parseInput( String input ){   // zrozum co sie dzieje
 
 // newPos = pozucja logiczna (zamieniana jest na tecniczną wewnątrz)
 void posx( long newPos ){
-  send2debuger("osX","jade do:L(" + String(newPos)+") czyli T(" + String(newPos * STEPPER_X_MUL + margin_x)+ "). margines: " + String(margin_x));
+//  send2debuger("osX","jade do:L(" + String(newPos)+") czyli T(" + String(newPos * STEPPER_X_MUL + margin_x)+ "). margines: " + String(margin_x));
   lock_system = true;
   encoder_diff_x = 0;
   stepperX.moveTo( newPos * STEPPER_X_MUL + margin_x );
 }
 void posy( long newPos ){
-  send2debuger("osY","jade do:L(" + String(newPos)+") czyli: T(" + String(newPos * STEPPER_Y_MUL + margin_x)+ "). margines: " + String(margin_y));
+//  send2debuger("osY","jade do:L(" + String(newPos)+") czyli: T(" + String(newPos * STEPPER_Y_MUL + margin_x)+ "). margines: " + String(margin_y));
   lock_system = true;
   encoder_diff_y = 0;
   stepperY.moveTo( newPos * STEPPER_Y_MUL + margin_y );
@@ -635,9 +590,9 @@ long int posz(){
 
 void send_current_position( boolean isReady ){ 
   if(isReady){
-    send2android("READY AT " + String(posx()) + "," + String(posy())+ "," + String(posz()));
+    send2android("RET READY AT " + String(posx()) + "," + String(posy())+ "," + String(posz()));
   }else{
-    send2android("POS " + String(posx()) + "," + String(posy())+ "," + String(posz()));
+    send2android("RET POS " + String(posx()) + "," + String(posy())+ "," + String(posz()));
   }
 //  send2android("ENCODERS [" + String(encoder_diff_x) + "/" + String(encoder_x)+ "] [" + String(encoder_diff_y)+ "/" + String(encoder_y));
 }
@@ -647,17 +602,6 @@ void on_int1F(){
   int1_value = HIGH;
 }   // pin 3    // Krańcowy Z na puszczenie
 // attachInterrupt( INT1, on_int1R, FALLING);   // nasłuchuj zmiany PIN 3    // Krańcowy Z na puszczenie
-
-void z_down(){   // zajedz silnikiem Z na dół
-  send2debuger( "fill", "w dol" );  
-  servoZ.writeMicroseconds(SERVOZ_DOWN_POS);         // na doł
-  delay(SERVOZ_DOWN_TIME);
-  send2android("LENGTHZ "+ dlugosc_z );
-  irr_max_z = false;
-  irr_min_z = true;
-  send_current_position(false);
-}
-
 
 byte wait4glass( int min_diff ){
   long unsigned waga = read_szklanka();
@@ -679,15 +623,6 @@ byte wait4glass( int min_diff ){
     }
   }
   return 1;
-}
-
-void z_up(){   // zajedz silnikiem Z w gore
-  send2debuger( "fill", "w gore1" );
-  servoZ.writeMicroseconds(SERVOZ_UP_POS);             // na doł
-  delay(SERVOZ_UP_TIME);
-  irr_max_z = true;
-  irr_min_z = false;
-  send_current_position(false);
 }
 
 void mieszadlo_enable( long czas ){   // mieszaj tyle czasu
@@ -796,7 +731,7 @@ void run_steppers(){    // robione w każdym przebiegu loop
       stepperY.run();
     }
     if(irr_y == HIGH && irr_handled_y ){    // czyli koniec obslugi stanu LOW
-      send2debuger("osY","puszczam IRR X");
+      send2debuger("osY","puszczam IRR Y");
       irr_handled_y  = false;
       irr_min_y  = false;
       irr_max_y  = false;
@@ -1076,5 +1011,71 @@ void readAndroidInput( String input ){    // odbierz przez ADB z androida
     if(i>1000){    // bez przesady
       break;
     }
-  }*/
+  }
+  
+  
+  
+//  ile losowych losowac
+#define LOS_MAX 20
+  
+  
+  }else if( input.equals( "LOSUJX" )){       // wykonaj 10 losowych ruchów po X
+    stosPush("NORET");
+    for(byte f = 0;f<LOS_MAX;){
+      stosPush("SET X " + String(random(0,XLENGTH/100 / 2) * 100));// zawsze po przeciwnych stronach
+      stosPush("SET X " + String(random(XLENGTH/100 / 2,XLENGTH/100) * 100));
+      f=f+2;
+    }
+    stosPush("READY");
+  }else if( input.equals("LOSUJY" )){       // wykonaj 10 losowych ruchów po X
+    stosPush("NORET");
+    for(byte f = 0;f<LOS_MAX;){
+      stosPush("SET Y " + String(random(0,3) * 100));// zawsze po przeciwnych stronach
+      stosPush("SET Y " + String(random(3,6) * 100));
+      f=f+2;
+    }
+    stosPush("READY");
+  
+  }else if( input.equals( "MACHAJX") ){       // wykonaj 10 ruchów 300 - 1000
+    stosPush("NORET");
+    for(byte f = 0;f<10;){
+      stosPush("SET X " + String( XLENGTH / 3 ) );
+      stosPush("SET X " + String( XLENGTH / 3 * 2) );
+      f=f+2;
+    }
+    stosPush("READY" );
+
+  }else if( input.equals( "MACHAJY") ){       // wykonaj 10 ruchów 300 - 1000
+    stosPush("NORET");
+    for(byte f = 0;f<LOS_MAX;){
+      stosPush("SET Y 50");
+      stosPush("SET Y 400");
+      f=f+2;
+    }
+    stosPush("READY");
+  }else if( input.equals( "MACHAJZ") ){       // wykonaj 10 ruchów MAX - MIN
+    stosPush("NORET");
+    for(byte f = 0;f<LOS_MAX;){
+      stosPush("SET Z MAX");
+      stosPush("SET Y MIN");
+      f=f+2;
+    }
+    stosPush("READY");
+
+
+// pozycja trzymająca i mnożnik trzymania
+#define SERVOZ_STAYUP_TIME 256
+
+#define SERVOZ_STAYUP_POS 2020
+  }else if( input.startsWith("STAYZ") ){
+    unsigned long int stayz = decodeInt( input, 6 );    // 5 znakow i spacja
+    for(int keep = 0; keep < (stayz>>8); keep += 1)  {
+      servoZ.writeMicroseconds(SERVOZ_STAYUP_POS);
+      delay(SERVOZ_STAYUP_TIME);
+    }
+    send_current_position(false);
+  
+  
+  */
+
 
