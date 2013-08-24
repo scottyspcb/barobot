@@ -244,23 +244,18 @@ const int PIN49 = 49;
 
 // domyslen ustawienie mocy silnika Z
 // pozycja jechania do góry i czas jechania
-#define SERVOZ_UP_POS 900
-#define SERVOZ_UP_TIME 800
-
-// pozycja trzymająca i mnożnik trzymania
-#define SERVOZ_STAYUP_POS 900
-#define SERVOZ_STAYUP_TIME 256
+#define SERVOZ_UP_POS 2020
+#define SERVOZ_UP_TIME 700
 
 // pozycja jechania w dół i czas jechania
-#define SERVOZ_DOWN_POS 2100
-#define SERVOZ_DOWN_TIME 800
-
+#define SERVOZ_DOWN_POS 900
+#define SERVOZ_DOWN_TIME 600
 
 // pozycja do której zajechac robiąc PAC
-#define SERVOZ_PAC_POS 1000
-#define SERVOZ_PAC_TIME_WAIT 900    // po zjechaniu na dół tyle czekaj przed zrobieniem PAC
-#define SERVOZ_PAC_TIME_UP 400      // tyle jedz na gore
-#define SERVOZ_PAC_TIME_DOWN 700    // tyle jedz na dół
+#define SERVOZ_PAC_POS 1900
+#define SERVOZ_PAC_TIME_WAIT 400    // po zjechaniu na dół tyle czekaj przed zrobieniem PAC
+#define SERVOZ_PAC_TIME_UP 300      // czasu tyle jedz na gore
+#define SERVOZ_PAC_TIME_DOWN 400    // czasu tyle jedz na dół
 
 // domyslnie ustawienie mocy silnikow Xy
 #if SERVOX4PIN==true
@@ -306,8 +301,7 @@ const int PIN49 = 49;
 // minimalna waga szklanki
 
 // INNE
-//  ile losowych losowac
-#define LOS_MAX 20
+
 // 1 znak rozdielający komendy
 #define SEPARATOR_CHAR '\n'
 
