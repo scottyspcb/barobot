@@ -636,6 +636,16 @@ android:layout_height="fill_parent">
 			        android:layout_alignBottom="@+id/goToNeutralY"
 			        android:layout_toLeftOf="@+id/max_y"
 			        android:text="Odblokuj" />
+
+			    <ToggleButton
+			        android:id="@+id/auto_fill"
+			        android:layout_width="wrap_content"
+			        android:layout_height="wrap_content"
+			        android:layout_alignBottom="@+id/set_bottle"
+			        android:layout_toRightOf="@+id/losujy"
+			        android:text="ToggleButton"
+			        android:textOff="Nie nalewaj od razu"
+			        android:textOn="Nalewaj od razu" />
 			    
 			</RelativeLayout>
 

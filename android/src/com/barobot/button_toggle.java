@@ -83,13 +83,20 @@ public class button_toggle implements OnClickListener{
 	    			q.send("SET LED10 OFF");	    			
 	    		}
 	    	  	break;
+			case R.id.auto_fill:
+				if(isChecked){
+					virtualComponents.set("AUTOFILL", "1" );
+				}else{
+					virtualComponents.set("AUTOFILL", "0" );
+				}
+				break;
 			case R.id.wagi_live:
 	    		if(isChecked){
 	    			q.send("LIVE WEIGHT ON");
 	    		}else{
 	    			q.send("LIVE WEIGHT OFF");	    			
 	    		}
-	    	  	break;	
+	    	  	break;
 		}
 	}	
 }

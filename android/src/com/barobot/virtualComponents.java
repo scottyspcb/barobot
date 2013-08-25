@@ -102,14 +102,45 @@ public class virtualComponents {
 		return virtualComponents.getInt("BOTTLE_Y_" + i, b_pos_y[i]);
 	}
 	public static void moveToBottle(int i) {
+		String autofill = virtualComponents.get("AUTOFILL", "0" );
 		queue q = queue.getInstance();
-		moveZDown();
-		q.add("SET Y " + virtualComponents.get("NEUTRAL_POS_Y", "0" ), true );
-		long x  =  getBottlePosX( i );
-		long y  =  getBottlePosY( i );
-		q.add("SET X " + x, true);
-		q.add("SET Y " + y, true);
-		q.send();
+		if( autofill== "1"){
+			moveZDown();
+			q.add("SET Y " + virtualComponents.get("NEUTRAL_POS_Y", "0" ), true );
+			long x  =  getBottlePosX( i );
+			long y  =  getBottlePosY( i );
+			q.add("SET X " + x, true);
+			q.add("SET Y " + y, true);
+
+			q.add("ENABLEX", true);
+			q.add("ENABLEY", true);
+			q.add("ENABLEZ", true);
+
+			if(virtualComponents.need_glass_up){
+				q.add("WAIT GLASS " + virtualComponents.weigh_min_diff, true);
+			}
+			q.add("SET Z MAX", true);
+			q.add("WAIT TIME " + i, true);
+			
+			q.add("SET Z MIN", true);
+			if(virtualComponents.pac_enabled){
+				q.add("PACPAC", true);
+			}
+			q.add("DISABLEX", true);
+		    q.add("DISABLEY", true);
+		    q.add("DISABLEZ", true);
+		    q.add("GET CARRET", true);
+		    q.send();
+
+		}else{
+			moveZDown();
+			q.add("SET Y " + virtualComponents.get("NEUTRAL_POS_Y", "0" ), true );
+			long x  =  getBottlePosX( i );
+			long y  =  getBottlePosY( i );
+			q.add("SET X " + x, true);
+			q.add("SET Y " + y, true);
+			q.send();
+		}
 	}
 	public static void moveZDown() {
 		queue q = queue.getInstance();
@@ -119,7 +150,6 @@ public class virtualComponents {
 	}
 
 	private static void update(String name, String value) {
-		// TODO Auto-generated method stub
 		final DebugWindow dialog = DebugWindow.getInstance();
 		if( "LENGTHX".equals(name)){
 			dialog.setText( R.id.dlugosc_x, value, false );
