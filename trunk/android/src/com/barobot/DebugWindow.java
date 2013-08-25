@@ -166,6 +166,7 @@ public class DebugWindow extends Activity {
 		button_toggle bt = new button_toggle();
 		int[] togglers = {
 				R.id.wagi_live,
+				R.id.auto_fill,
 				R.id.led1,
 				R.id.led2,
 				R.id.led3,
