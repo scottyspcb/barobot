@@ -3,7 +3,6 @@ package com.barobot.utils;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import com.barobot.Constant;
 
 import android.os.Handler;
 

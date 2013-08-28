@@ -1,4 +1,7 @@
 package com.barobot;
+import com.barobot.hardware.virtualComponents;
+import com.barobot.utils.queue;
+
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ToggleButton;

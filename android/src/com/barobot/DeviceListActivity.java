@@ -1,5 +1,9 @@
 package com.barobot;
 import java.util.Set;
+
+import com.barobot.utils.Constant;
+import com.barobot.utils.queue;
+
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;

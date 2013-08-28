@@ -2,6 +2,10 @@ package com.barobot;
 
 import java.util.Random;
 
+import com.barobot.hardware.virtualComponents;
+import com.barobot.utils.Constant;
+import com.barobot.utils.queue;
+
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Toast;
