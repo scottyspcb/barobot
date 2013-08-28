@@ -8,15 +8,12 @@ import android.util.Log;
 import android.webkit.WebView;
 import android.widget.Toast;
 
-import com.collector.model.RemoteData;
-import com.collector.model.RunnableWithData;
-import com.eclipsesource.json.ParseException;
-
-public class WebAppInterface {
+public class AJS {
 	Context mContext;
+
 	public static Map<String, String> ready2send = new HashMap<String, String>();
 	 WebView webview;
-	    WebAppInterface(Context c, WebView w) {
+	    AJS(Context c, WebView w) {
 	        mContext = c;
 	        webview = w;
 	    }
@@ -38,11 +35,7 @@ public class WebAppInterface {
 	    }
 	    /*
 	    public void loadUrl(final String url, final String data, final String onready, final String onerror ){
-	    	final WebAppInterface appi = this;
-	    	
-	    	
-	    	
-	    	
+	    	final AJS appi = this;
 		    RemoteData.doDownload(url, new RunnableWithData() {
 		    	@Override
 				public void run() {
@@ -60,53 +53,36 @@ public class WebAppInterface {
 			});
 	    }*/
 	    public void loadMore(final String url, final String data, final String onready, final String onerror ){
-	    	final WebAppInterface appi = this;
-	    	
-	    	if(url == "z1"){
-	    		RemoteData.doLoad(url, new RunnableWithData() {
-				    @Override
-					public void run() {
-						long start = System.nanoTime();
-						String key = "item_"+ start +"/"+ready2send.size();
-				    	try {
-					//		DataParser.parseJson( this.data );
-							saveReady(key, this.data);
-							appi.runJs( onready, key );
-						} catch (ParseException e) {
-							e.printStackTrace();
-							appi.runJs( onerror, key );
-						}
-					}
-				});
-	    	}else{
-		    	RemoteData rd = new RemoteData("element_get");
-		    	rd.query("page", data);
-		    	rd.query("element_type", "exhibit");
+	    	final AJS appi = this;
+	    	/*
+	    	RemoteData rd = new RemoteData("element_get");
+	    	rd.query("page", data);
+	    	rd.query("element_type", "exhibit");
 
-		    	rd.load( new RunnableWithData() {
-				    @Override
-					public void run() {
-						long start = System.nanoTime();
-						String key = "item_"+ start +"/"+ready2send.size();
-				    	try {
-					//		DataParser.parseJson( this.data );
-							saveReady(key, this.data);
-							appi.runJs( onready, key );
-						} catch (ParseException e) {
-							e.printStackTrace();
-					    	String msg = e.getMessage();
-					    	appi.runJs( onerror, msg, key );
-						}
+	    	rd.load( new RunnableWithData() {
+			    @Override
+				public void run() {
+					long start = System.nanoTime();
+					String key = "item_"+ start +"/"+ready2send.size();
+			    	try {
+				//		DataParser.parseJson( this.data );
+						saveReady(key, this.data);
+						appi.runJs( onready, key );
+					} catch (ParseException e) {
+						e.printStackTrace();
+				    	String msg = e.getMessage();
+				    	appi.runJs( onerror, msg, key );
 					}
-				}, new RunnableWithData() {
-				    @Override
-					public void run() {
-						// blad - wyslij komunikat
-				    	String msg = this.error.getMessage();
-				    	appi.runJs( onerror, msg, "" );
-					}
-				});
-	    	}
+				}
+			}, new RunnableWithData() {
+			    @Override
+				public void run() {
+					// blad - wyslij komunikat
+			    	String msg = this.error.getMessage();
+			    	appi.runJs( onerror, msg, "" );
+				}
+			});
+	    	*/
 	    }
 	    public void onLoad() {
 	    //	this.runJs( "putIn", "#main_title","jeah!" );
@@ -128,7 +104,7 @@ public class WebAppInterface {
 	    
 	    
 		private void runJs(final String method, final String... args) {
-	    	final WebAppInterface appi = this;
+	    	final AJS appi = this;
 	    	appi.webview.post(new Runnable() {
 	            @Override
 	            public void run() { 
