@@ -4,10 +4,16 @@ import com.barobot.hardware.rpc_message;
 import com.barobot.hardware.virtualComponents;
 import com.barobot.utils.Constant;
 import com.barobot.utils.History_item;
+import com.barobot.utils.queue;
+
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.view.Display;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.ArrayAdapter;
@@ -381,8 +387,29 @@ public class DebugWindow extends Activity {
 	}
 
 	public static void showToast(String string) {
-		Toast.makeText(DebugWindow.getInstance(), R.string.not_connected,
-				Toast.LENGTH_SHORT).show();
+		Toast.makeText(DebugWindow.getInstance(), R.string.not_connected,Toast.LENGTH_SHORT).show();
 	}
+	
+	@Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+	    MenuInflater inflater = getMenuInflater();
+	    inflater.inflate(R.menu.debug_menu, menu);
+	    return true;
+    }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Intent serverIntent = null;
+        switch (item.getItemId()) {
+        case R.id.main_feature:
+    		setResult(Activity.RESULT_CANCELED);
+	        return true;
+
+       case R.id.processing_window:
+    	    serverIntent = new Intent(this, WebActivity.class);
+            startActivityForResult(serverIntent, WebActivity.INTENT_NAME);
+            break;
+	    }
+        return false;
+    }
 }

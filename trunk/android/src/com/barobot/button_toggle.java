@@ -13,8 +13,8 @@ public class button_toggle implements OnClickListener{
   	  	ToggleButton tb			= (ToggleButton) v;
   	  	boolean isChecked		= tb.isChecked();
   	  	tb.setChecked(!isChecked);		//anuluj zmian, zrb to dopiero po otrzymaniu potwierdzenia
+  	  	
   	  	queue q = queue.getInstance();
-
 		switch (v.getId()) {
 	    	case R.id.led1:
 	    		if(isChecked){
@@ -83,10 +83,11 @@ public class button_toggle implements OnClickListener{
 	    		if(isChecked){
 	    			q.send("SET LED10 ON");
 	    		}else{
-	    			q.send("SET LED10 OFF");	    			
+	    			q.send("SET LED10 OFF");
 	    		}
 	    	  	break;
 			case R.id.auto_fill:
+		  	  	tb.setChecked(isChecked);		//tutaj jednak zmieniaj 
 				if(isChecked){
 					virtualComponents.set("AUTOFILL", "1" );
 				}else{
@@ -101,5 +102,5 @@ public class button_toggle implements OnClickListener{
 	    		}
 	    	  	break;
 		}
-	}	
+	}
 }

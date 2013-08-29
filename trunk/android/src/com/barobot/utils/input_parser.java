@@ -111,16 +111,17 @@ public class input_parser {
 		}else if(fromArduino.startsWith("PING")){
 //			toSend.add("PONG");
 		}
+		if( fromArduino.equals("RET REBOOT") ){		//  właśnie uruchomiłem arduino
+			queue q			= queue.getInstance();
+			q.clear();
+		}
 		DebugWindow	bb6 = DebugWindow.getInstance();
         if( !is_ret && bb6!= null){
         	bb6.addToList(fromArduino, false );
         }
 	}
 	
-	private static void handleError(String fromArduino) {
-
-		
-		
+	private static void handleError(String fromArduino) {	
 	}
 	
 	/*

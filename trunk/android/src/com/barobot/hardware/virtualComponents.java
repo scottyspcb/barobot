@@ -20,8 +20,7 @@ import android.widget.Toast;
 public class virtualComponents {
 	public static final int WITHGLASS = 111;
 	public static final int WITHOUTGLASS = 222;
-	
-	
+
 	public static Activity application;
 	private static SharedPreferences myPrefs;
 	private static SharedPreferences.Editor config_editor;			// config systemu android
@@ -30,7 +29,6 @@ public class virtualComponents {
 	// pozycje butelek, sa aktualizowane w trakcie
 	private static int[] b_pos_x = {207,207, 394,394,581,581,768,768, 955,955,1142,1142,1329,1329,1516,1516};
 	private static int[] b_pos_y = {90, 550, 90, 550, 90, 550, 90, 550, 90, 550, 90, 550, 90, 550, 90, 550};
-
 	
 	// todo - porządek z tymi wartościami 
 	public static int mnoznikx = 10;
@@ -41,6 +39,15 @@ public class virtualComponents {
 	public static int weigh_min_diff = 20;
 	public static boolean pac_enabled = true;
 
+	 //config
+
+	private static final int SERVOZ_DOWN_POS = 900;
+	private static final int SERVOZ_PAC_TIME_DOWN = 1000;
+	private static final int SERVOZ_PAC_TIME_UP = 800;
+	private static final int SERVOZ_PAC_POS = 1900;
+	private static final int SERVOZ_PAC_TIME_WAIT = 400;
+
+	
 	private static String[] persistant = {
 		"LENGTHX","LENGTHY","LENGTHZ","LAST_BT_DEVICE",
 		"NEUTRAL_POS_Y",
@@ -100,53 +107,79 @@ public class virtualComponents {
 		}
 		return res;
 	}
-	
 	public static long getBottlePosX( int i ) {
 		return virtualComponents.getInt("BOTTLE_X_" + i, b_pos_x[i]);
 	}
 	public static long getBottlePosY( int i ) {
 		return virtualComponents.getInt("BOTTLE_Y_" + i, b_pos_y[i]);
 	}
-	public static void moveToBottle(int i) {
-		String autofill = virtualComponents.get("AUTOFILL", "0" );
+	public static void nalej(int time) {
 		queue q = queue.getInstance();
-		if( autofill== "1"){
-			moveZDown();
-			q.add("SET Y " + virtualComponents.get("NEUTRAL_POS_Y", "0" ), true );
-			long x  =  getBottlePosX( i );
-			long y  =  getBottlePosY( i );
-			q.add("SET X " + x, true);
-			q.add("SET Y " + y, true);
+		if(virtualComponents.need_glass_up){
+			q.add("WAIT GLASS " + virtualComponents.weigh_min_diff, true);
+		}
+		q.add("ENABLEX", true);
+		q.add("ENABLEY", true);
+		q.add("ENABLEZ", true);
+		q.add("SET Z MAX", true);
+		q.add("WAIT TIME " + time, true);		
+		q.add("SET Z MIN", true);
+		if(virtualComponents.pac_enabled){
+			q.add("WAIT TIME " + virtualComponents.SERVOZ_PAC_TIME_WAIT, true);	
+			q.add("SET Z " + virtualComponents.SERVOZ_PAC_POS, true);	
+			q.add("WAIT TIME " + virtualComponents.SERVOZ_PAC_TIME_UP, true);	
+			q.add("SET Z " + virtualComponents.SERVOZ_DOWN_POS, true);
+			q.add("WAIT TIME " + virtualComponents.SERVOZ_PAC_TIME_DOWN, true);	
+			q.add("SET Z MIN", true);
+		}
+		q.add("DISABLEX", true);
+	    q.add("DISABLEY", true);
+	    q.add("DISABLEZ", true);
+	    q.add("GET CARRET", true);
+	    q.send();
+	}
+	
+	public static void moveToBottle(int num ) {
+		int time		= 2000;
 
+		queue q			= queue.getInstance();
+		String autofill = virtualComponents.get("AUTOFILL", "0" );
+		long x 			= getBottlePosX( num );
+		long y  		= getBottlePosY( num );		
+		String posx		= virtualComponents.get("POSX", "0" );		// czy ja juz jestem na tej pozycji?	
+		String posy		= virtualComponents.get("POSY", "0" );
+
+		moveZDown();
+
+		if(Long.parseLong(posx) != x || Long.parseLong(posy) != y ){		// musze jechac
+			q.add("SET Y " + virtualComponents.get("NEUTRAL_POS_Y", "0" ), true );
+			q.add("SET X " + x, true);
+			q.add("SET Y " + y, true);			
+		}
+		if( autofill== "1"){
 			q.add("ENABLEX", true);
 			q.add("ENABLEY", true);
 			q.add("ENABLEZ", true);
-
 			if(virtualComponents.need_glass_up){
 				q.add("WAIT GLASS " + virtualComponents.weigh_min_diff, true);
 			}
 			q.add("SET Z MAX", true);
-			q.add("WAIT TIME " + i, true);
-			
+			q.add("WAIT TIME " + time, true);			
 			q.add("SET Z MIN", true);
 			if(virtualComponents.pac_enabled){
-				q.add("PACPAC", true);
+				q.add("WAIT TIME " + virtualComponents.SERVOZ_PAC_TIME_WAIT, true);	
+				q.add("SET Z " + virtualComponents.SERVOZ_PAC_POS, true);	
+				q.add("WAIT TIME " + virtualComponents.SERVOZ_PAC_TIME_UP, true);	
+				q.add("SET Z " + virtualComponents.SERVOZ_DOWN_POS, true);
+				q.add("WAIT TIME " + virtualComponents.SERVOZ_PAC_TIME_DOWN, true);	
+				q.add("SET Z MIN", true);
 			}
 			q.add("DISABLEX", true);
 		    q.add("DISABLEY", true);
 		    q.add("DISABLEZ", true);
-		    q.add("GET CARRET", true);
-		    q.send();
-
-		}else{
-			moveZDown();
-			q.add("SET Y " + virtualComponents.get("NEUTRAL_POS_Y", "0" ), true );
-			long x  =  getBottlePosX( i );
-			long y  =  getBottlePosY( i );
-			q.add("SET X " + x, true);
-			q.add("SET Y " + y, true);
-			q.send();
 		}
+		q.add("GET CARRET", true);
+		q.send();
 	}
 	public static void moveZDown() {
 		queue q = queue.getInstance();
@@ -159,29 +192,8 @@ public class virtualComponents {
 		final DebugWindow dialog = DebugWindow.getInstance();
 		if( "LENGTHX".equals(name)){
 			dialog.setText( R.id.dlugosc_x, value, false );
-			final int val = virtualComponents.toInt( value );
-			application.runOnUiThread(new Runnable() {
-				@Override
-				public void run() {
-					SeekBar progresx = (SeekBar) dialog.findViewById(R.id.analog_x);
-					if(progresx!=null){
-						progresx.setMax(val);
-					}				
-				}
-			});
 		}else if( "LENGTHY".equals(name)){
-			final int val = virtualComponents.toInt( value );
 			dialog.setText( R.id.dlugosc_y, value, false );
-			application.runOnUiThread(new Runnable() {
-				@Override
-				public void run() {
-					SeekBar progresy = (SeekBar) application.findViewById(R.id.analog_y);
-					if(progresy!=null){
-						progresy.setMax(val);
-						Constant.log(Constant.TAG,"setMaxy:"+ val);
-					}
-				}
-			});
 		}else if("LENGTHZ".equals(name)){
 			dialog.setText( R.id.dlugosc_z, value, false );
 		}else if("WEIGHT".equals(name) && dialog != null ){
@@ -217,28 +229,8 @@ public class virtualComponents {
 
 		}else if("POSX".equals(name) &&  dialog != null ){
 			dialog.setText( R.id.position_x, value, false );
-			final int val = virtualComponents.toInt( value );
-			application.runOnUiThread(new Runnable() {
-				@Override
-				public void run() {
-					SeekBar progresx = (SeekBar) application.findViewById(R.id.analog_x);
-					if(progresx!=null){
-						progresx.setProgress(val);
-					}				
-				}
-			});
 		}else if("POSY".equals(name) &&  dialog != null ){
 			dialog.setText( R.id.position_y, value, false );
-			final int val = virtualComponents.toInt( value );
-			application.runOnUiThread(new Runnable() {
-				@Override
-				public void run() {
-					SeekBar progresx = (SeekBar) application.findViewById(R.id.analog_y);
-					if(progresx!=null){
-						progresx.setProgress(val);
-					}					
-				}
-			});
 		}else if("POSZ".equals(name) &&  dialog != null ){
 			dialog.setText( R.id.position_z, value, false );	
 		}else if("ANALOG0".equals(name) &&  dialog != null ){
@@ -283,28 +275,6 @@ public class virtualComponents {
 			dialog.setText( R.id.dist1, value, false );
 		}
 	}
-	public static void nalej(int i) {
-		queue q = queue.getInstance();
-		if(virtualComponents.need_glass_up){
-			q.add("WAIT GLASS " + virtualComponents.weigh_min_diff, true);
-		}
-		q.add("ENABLEX", true);
-		q.add("ENABLEY", true);
-		q.add("ENABLEZ", true);
-		q.add("SET Z MAX", true);
-		q.add("WAIT TIME " + i, true);
-		
-		q.add("SET Z MIN", true);
-		if(virtualComponents.pac_enabled){
-			q.add("PACPAC", true);
-		}
-		q.add("DISABLEX", true);
-	    q.add("DISABLEY", true);
-	    q.add("DISABLEZ", true);
-	    q.add("GET CARRET", true);
-	    q.send();
-	}
-
 	// zapisz ze tutaj jest butelka o danym numerze
 	public static void hereIsBottle(int i) {
 		String posx		=  virtualComponents.get("POSX", "0" );	

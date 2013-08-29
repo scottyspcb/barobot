@@ -31,13 +31,18 @@ public class CameraManager {
 		}
 	}
 	public void findCameras() {		// do we have a camera?
-	    if (!bm.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)) {
+		boolean aa = bm.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA);
+		if(!aa) {
 	    	Toast.makeText(bm, "No camera on this device", Toast.LENGTH_LONG).show();
 	    } else {
 	    	Log.d("+front_cameraId", "+" + front_cameraId);
 
 			if (front_cameraId >= -1) {
-				front_camera = Camera.open(front_cameraId);
+				try {
+					front_camera = Camera.open(front_cameraId);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 			Log.d("+findCameras", "+bb " + back_cameraId);
 

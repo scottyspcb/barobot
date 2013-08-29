@@ -61,7 +61,7 @@ public class BluetoothChatService {
         barobotMain.registerReceiver(this.btEvents, f1);
         barobotMain.registerReceiver(this.btEvents, f2);
     }
-
+    
     // The BroadcastReceiver that listens for discovered devices and
     // changes the title when discovery is finished
     public final BroadcastReceiver btEvents = new BroadcastReceiver() {
@@ -171,7 +171,15 @@ public class BluetoothChatService {
         }
         setState(Constant.STATE_NONE);
     }
-
+	public void destroy() {
+    	this.stop();
+		if (mConnectThread != null) {
+			mConnectThread.cancel();
+			mConnectThread = null;
+		}
+		BarobotMain.getInstance().unregisterReceiver(this.btEvents);
+	}
+ 
     /**
      * Write to the ConnectedThread in an unsynchronized manner
      * @param out The bytes to write

@@ -365,13 +365,14 @@ public class queue extends AbstractServerListener{
 		this.output2.clear();
 		this.wait_for = null;
 	}
-	public void stop() {
+	public void destroy() {
 		this.clear();
         if (mChatService != null){ 
-        	mChatService.stop();
+        	mChatService.destroy();
         }
         Constant.log(Constant.TAG, "--- ON DESTROY ---");
 	}
+
 	public void resume() {
         Constant.log(Constant.TAG, "+ ON RESUME +");
         // Performing this check in onResume() covers the case in which BT was

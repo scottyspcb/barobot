@@ -42,7 +42,7 @@ public class rpc_message extends History_item{
 					ret = message;
 					return true;
 				}
-			}			
+			}
 		}
 		return false;
 	}
