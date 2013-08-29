@@ -13,7 +13,7 @@ public class AJS {
 
 	public static Map<String, String> ready2send = new HashMap<String, String>();
 	 WebView webview;
-	    AJS(Context c, WebView w) {
+	    public AJS(Context c, WebView w) {
 	        mContext = c;
 	        webview = w;
 	    }

@@ -2,6 +2,7 @@ package com.barobot;
 
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import com.barobot.hardware.virtualComponents;
 import com.barobot.utils.CameraManager;
@@ -164,15 +165,17 @@ public class BarobotMain extends Activity {
 		}
         queue.getInstance().resume();
     }
-
-
     
     @Override
     public void onDestroy() {
     	Constant.log("MAINWINDOW", "onDestroy");
-        super.onDestroy();
+    	Iterator<interval> it = this.inters.iterator();
+    	while(it.hasNext()){
+    		it.next().cancel();
+    	}
         cm.onDestroy();
-        queue.getInstance().stop();
+        queue.getInstance().destroy();
+        super.onDestroy();
     }
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         Constant.log(Constant.TAG, "onActivityResult " + resultCode);

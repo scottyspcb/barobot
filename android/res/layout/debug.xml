@@ -50,17 +50,6 @@ android:layout_height="fill_parent">
 			    android:id="@+id/tab2"
 			    android:layout_width="match_parent"
 			    android:layout_height="match_parent" >
-
-			    <SeekBar
-			        android:id="@+id/analog_x"
-			        android:layout_width="fill_parent"
-			        android:layout_height="wrap_content"
-			        android:layout_above="@+id/analog_y"
-			        android:layout_alignParentLeft="true"
-			        android:max="1600"
-			        android:progress="0"
-			        android:visibility="visible" />
-
 			    <Button
 			        android:id="@+id/set_x_100"
 			        style="android:buttonStyle"
@@ -156,16 +145,6 @@ android:layout_height="fill_parent">
 			        android:text="+1000" />
 
 			    <ToggleButton
-			        android:id="@+id/led1"
-			        android:layout_width="wrap_content"
-			        android:layout_height="wrap_content"
-			        android:layout_above="@+id/analog_y"
-			        android:layout_alignLeft="@+id/position_x"
-			        android:layout_marginBottom="25dp"
-			        android:textOff="1 OFF"
-			        android:textOn="1 ON" />
-
-			    <ToggleButton
 			        android:id="@+id/led2"
 			        android:layout_width="wrap_content"
 			        android:layout_height="wrap_content"
@@ -246,15 +225,6 @@ android:layout_height="fill_parent">
 			        android:layout_toRightOf="@+id/led9"
 			        android:textOff="10 OFF"
 			        android:textOn="10 ON" />
-
-			    <SeekBar
-			        android:id="@+id/analog_y"
-			        android:layout_width="match_parent"
-			        android:layout_height="wrap_content"
-			        android:layout_alignParentBottom="true"
-			        android:layout_alignParentLeft="true"
-			        android:max="600"
-			        android:progress="0" />
 
 			    <Button
 			        android:id="@+id/min_x"
@@ -646,6 +616,15 @@ android:layout_height="fill_parent">
 			        android:text="ToggleButton"
 			        android:textOff="Nie nalewaj od razu"
 			        android:textOn="Nalewaj od razu" />
+
+			    <ToggleButton
+			        android:id="@+id/led1"
+			        android:layout_width="wrap_content"
+			        android:layout_height="wrap_content"
+			        android:layout_alignLeft="@+id/set_neutral_y"
+			        android:layout_alignParentBottom="true"
+			        android:textOff="1 OFF"
+			        android:textOn="1 ON" />
 			    
 			</RelativeLayout>
 

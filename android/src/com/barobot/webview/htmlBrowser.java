@@ -13,13 +13,15 @@ import org.apache.velocity.exception.MethodInvocationException;
 import org.apache.velocity.exception.ParseErrorException;
 import org.apache.velocity.exception.ResourceNotFoundException;
 
+import com.barobot.WebActivity;
+
 import android.content.Context;
 import android.webkit.WebViewClient;
 
 public class htmlBrowser {
-	private MainActivity m	=null;
+	private WebActivity m	=null;
 
-	public htmlBrowser(MainActivity mainActivity) {
+	public htmlBrowser(WebActivity mainActivity) {
 		// TODO Auto-generated constructor stub
 		this.m=mainActivity;
 	}
@@ -32,7 +34,6 @@ public class htmlBrowser {
 	//	String aa = htmlBrowser.readRawTextFile(this.m, R.raw.main_page);
 		//String tplcc = this.fetchTpl();
 		//String tplcc = this.fetchTpl5();
-		
 		VelocityContext context = new VelocityContext();
 		/*
         ArrayList<String> list = new ArrayList<String>();
@@ -41,14 +42,11 @@ public class htmlBrowser {
         list.add("ArrayList element 3");
         list.add("ArrayList element 4");
   //      context.put("elements", list);
-   
-
 		Vector<String> v = new Vector<String>();
 		v.addElement("Hello");
 		v.addElement("There");
 		v.addElement("fkfkty");
 	//	context.put("elements2", v.iterator() );
-
 		Vector<Element> v2 = new Vector<Element>();
 		v2.addElement( new Element(1,"exhibit","50/26755023_m.jpg") );
 		v2.addElement( new Element(2,"exhibit","84/37284_m.jpg") );
@@ -64,10 +62,12 @@ public class htmlBrowser {
 		context.put("elements", v2.iterator() );
 */
 		
-		String tplcc = this.fetchTplVel("scroll_view", context );
+		this.m.webview.loadUrl("http://google.pl");
+		
+	//	String tplcc = this.fetchTplVel("scroll_view", context );
 	//	String tplcc = this.fetchTplVel("main_page_test", context );
 	//	Log.d("+HTML",tplcc);
-		this.m.webview.loadDataWithBaseURL("file:///android_asset/", tplcc, "text/html", "UTF-8", null );
+////		this.m.webview.loadDataWithBaseURL("file:///android_asset/", tplcc, "text/html", "UTF-8", null );
 	}
 
 	private void VelocityInit(){
@@ -78,7 +78,7 @@ public class htmlBrowser {
 		Velocity.setProperty("packageName", "com.collector.main");
 		Velocity.init();
 	}
-	
+
 	private String fetchTplVel( String resource, VelocityContext context ){
 		VelocityInit();
 		try{
