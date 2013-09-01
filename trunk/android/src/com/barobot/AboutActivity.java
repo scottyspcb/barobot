@@ -2,8 +2,6 @@ package com.barobot;
 
 import android.os.Bundle;
 import android.app.Activity;
-import android.view.Menu;
-
 public class AboutActivity extends Activity {
 
 	public static final int INTENT_NAME = 6;

@@ -8,7 +8,7 @@ import com.barobot.hardware.virtualComponents;
 import com.barobot.utils.CameraManager;
 import com.barobot.utils.Constant;
 import com.barobot.utils.interval;
-import com.barobot.utils.queue;
+import com.barobot.utils.Arduino;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
@@ -45,7 +45,7 @@ public class BarobotMain extends Activity {
 		            if (actionId == EditorInfo.IME_NULL && event.getAction() == KeyEvent.ACTION_UP) {
 		            	Constant.log(Constant.TAG, "END onEditorAction+++");
 		                String message = view.getText().toString();
-		                queue.getInstance().send(message);
+		                Arduino.getInstance().send(message);
 		            }
 		            Constant.log(Constant.TAG, "END onEditorAction");
 	            return true;
@@ -54,7 +54,7 @@ public class BarobotMain extends Activity {
 	    */
         boolean autoadb = true;
         if(autoadb){
-			boolean res = queue.getInstance().connectADB();
+			boolean res = Arduino.getInstance().connectADB();
 			if(res == false ){
 				Constant.log(Constant.TAG, "Unable to start TCP server" );
 				System.exit(-1);
@@ -75,12 +75,12 @@ public class BarobotMain extends Activity {
     	interval inn = new interval(new Runnable() {
     		private int count = 0;
 		    public void run() {
-		    	queue q = queue.getInstance();
-		        if( q.allowAutoconnect()){
+		    	Arduino ar = Arduino.getInstance();
+		        if( ar.allowAutoconnect()){
 		        	count++;
 		        	if(count > 2){		// po 10 sek
 		//        		Constant.log("RUNNABLE", "3 try autoconnect" );
-		        		q.autoconnect();
+		        		ar.autoconnect();
 		        	}
 			    }else{
 			    	count = 0;
@@ -104,7 +104,7 @@ public class BarobotMain extends Activity {
         Intent serverIntent = null;
         switch (item.getItemId()) {
         case R.id.secure_connect_scan:
-             if( queue.getInstance().checkBT() == false ){
+             if( Arduino.getInstance().checkBT() == false ){
                 Toast.makeText(this, "Bluetooth jest niedostępny", Toast.LENGTH_LONG).show();
                 finish();
             }
@@ -139,10 +139,10 @@ public class BarobotMain extends Activity {
     @Override
     public void onStart() {
         super.onStart();
-        if( queue.getInstance().checkBT() != false ){
-	        int res = queue.startBt();
+        if( Arduino.getInstance().checkBT() != false ){
+	        int res = Arduino.startBt();
 	        if( res == 34){		// jesli jest wlaczony
-	        	 queue.getInstance().setupBT( this);
+	        	 Arduino.getInstance().setupBT( this);
 	        }else if( res == 12){	// jesli wymaga wlaczenia to wroci do onActivityResult
 	            Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
 	            startActivityForResult(enableIntent, Constant.REQUEST_ENABLE_BT);
@@ -163,7 +163,7 @@ public class BarobotMain extends Activity {
 		if(cm!=null){
 			cm.onResume();
 		}
-        queue.getInstance().resume();
+        Arduino.getInstance().resume();
     }
     
     @Override
@@ -174,7 +174,7 @@ public class BarobotMain extends Activity {
     		it.next().cancel();
     	}
         cm.onDestroy();
-        queue.getInstance().destroy();
+        Arduino.getInstance().destroy();
         super.onDestroy();
     }
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -197,7 +197,7 @@ public class BarobotMain extends Activity {
             // When DeviceListActivity returns with a device to connect
             if (resultCode == Activity.RESULT_OK) {
                 String address = data.getExtras().getString(Constant.EXTRA_DEVICE_ADDRESS);           // Get the device MAC address
-                queue.connectBTDeviceId(address);
+                Arduino.connectBTDeviceId(address);
             }
             break;
 
@@ -206,7 +206,7 @@ public class BarobotMain extends Activity {
             // When the request to enable Bluetooth returns
             if (resultCode == Activity.RESULT_OK) {
                 // Bluetooth is now enabled, so set up session
-                queue.getInstance().setupBT( this);
+                Arduino.getInstance().setupBT( this);
             } else {
                 // User did not enable Bluetooth or an error occurred
                 Constant.log(Constant.TAG, "BT not enabled");

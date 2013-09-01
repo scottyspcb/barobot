@@ -2,7 +2,7 @@ package com.barobot;
 import java.util.Set;
 
 import com.barobot.utils.Constant;
-import com.barobot.utils.queue;
+import com.barobot.utils.Arduino;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
@@ -43,7 +43,7 @@ public class DeviceListActivity extends Activity {
         // Setup the window
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.device_list);
-        queue.getInstance().stop_autoconnect = true;
+        Arduino.getInstance().stop_autoconnect = true;
 
         // Set result CANCELED in case the user backs out
         setResult(Activity.RESULT_CANCELED);
@@ -123,7 +123,7 @@ public class DeviceListActivity extends Activity {
             }
         }
         this.unregisterReceiver(mReceiver);        // Unregister broadcast listeners
-        queue.getInstance().stop_autoconnect = false;
+        Arduino.getInstance().stop_autoconnect = false;
     }
 
     // The on-click listener for all devices in the ListViews

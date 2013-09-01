@@ -39,7 +39,7 @@ public class input_parser {
 			}
         }
 	}
-	
+
 	private static void parseInput(String fromArduino) {
 		//Log.i(Constant.TAG, "parse:[" + fromArduino +"]");
 		boolean is_ret = false;
@@ -63,7 +63,25 @@ public class input_parser {
 				virtualComponents.set( "POSX",tokens[0]);
 				virtualComponents.set( "POSY",tokens[1]);
 				virtualComponents.set( "POSZ",tokens[2]);
-	
+
+				long lx	=  virtualComponents.getInt("LENGTHX", 600 );
+				long ly	=  virtualComponents.getInt("LENGTHY", 600 );
+				long lz	=  virtualComponents.getInt("LENGTHZ", 600 );
+				
+				long posx = Long.parseLong(tokens[0]);
+				long posy = Long.parseLong(tokens[1]);
+				long posz = Long.parseLong(tokens[2]);
+
+				if( posx > lx){		// Pozycja wieksza niz długosc? Zwieksz długosc
+					virtualComponents.set( "LENGTHX", "" + posx);
+				}
+				if( posy > ly){		// Pozycja wieksza niz długosc? Zwieksz długosc
+					virtualComponents.set( "LENGTHY", "" + posy);
+				}
+				if( posz > lz){		// Pozycja wieksza niz długosc? Zwieksz długosc
+					virtualComponents.set( "LENGTHZ", "" + posz);
+				}
+
 			}else if(fromArduino.startsWith("RET READY AT")){	
 				String fromArduino2 = fromArduino.replace("RET READY AT ", "");
 				String[] tokens = fromArduino2.split(",");
@@ -73,7 +91,7 @@ public class input_parser {
 				virtualComponents.set( "POSY",tokens[1]);
 				virtualComponents.set( "POSZ",tokens[2]);
 			}			
-			is_ret = queue.getInstance().read_ret( fromArduino );		// zapisuj zwrotki
+			is_ret = Arduino.getInstance().read_ret( fromArduino );		// zapisuj zwrotki
 		}else if(fromArduino.startsWith("ERROR")){	
 			input_parser.handleError( fromArduino );			// analizuj błędy
 
@@ -100,8 +118,13 @@ public class input_parser {
 			
 		}else if(fromArduino.startsWith("GLASS")){	
 			String fromArduino2 = fromArduino.replace("GLASS ", "");
-			virtualComponents.set( "GLASS",fromArduino2);
-
+			virtualComponents.set( "GLASS_WEIGHT", fromArduino2);
+			
+			int noglass_weight = virtualComponents.getInt( "NOGLASS_WEIGHT", 0 );
+			int e = Integer.parseInt(fromArduino2);
+			if( e < noglass_weight ){		// jesli jest lżej od tego ile powinno byc
+				virtualComponents.set( "NOGLASS_WEIGHT", fromArduino2);	
+			}
 		}else if(fromArduino.startsWith("WEIGHT")){	
 			String fromArduino2 = fromArduino.replace("WEIGHT ", "");
 			virtualComponents.set( "WEIGHT",fromArduino2);
@@ -112,7 +135,7 @@ public class input_parser {
 //			toSend.add("PONG");
 		}
 		if( fromArduino.equals("RET REBOOT") ){		//  właśnie uruchomiłem arduino
-			queue q			= queue.getInstance();
+			Arduino q			= Arduino.getInstance();
 			q.clear();
 		}
 		DebugWindow	bb6 = DebugWindow.getInstance();

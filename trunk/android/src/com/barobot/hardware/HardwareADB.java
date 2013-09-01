@@ -7,7 +7,7 @@ import org.microbridge.server.AbstractServerListener;
 import org.microbridge.server.Server;
 
 import com.barobot.utils.Constant;
-import com.barobot.utils.queue;
+import com.barobot.utils.Arduino;
 
 import android.content.Context;
 import android.widget.Toast;
@@ -26,7 +26,7 @@ public class HardwareADB extends AbstractServerListener {
 			server.start();
 			server.addListener( this );
 			Constant.log(Constant.TAG, "+ ADB Server start");
-			Context bb = queue.getInstance().getContext();
+			Context bb = Arduino.getInstance().getContext();
 			if(bb!=null){
 				Toast.makeText(bb, "ADB Server start", Toast.LENGTH_LONG).show();
 			}

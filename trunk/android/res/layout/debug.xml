@@ -625,7 +625,26 @@ android:layout_height="fill_parent">
 			        android:layout_alignParentBottom="true"
 			        android:textOff="1 OFF"
 			        android:textOn="1 ON" />
-			    
+
+			    <ToggleButton
+			        android:id="@+id/need_glass"
+			        android:layout_width="wrap_content"
+			        android:layout_height="wrap_content"
+			        android:layout_alignBottom="@+id/auto_fill"
+			        android:layout_toRightOf="@+id/auto_fill"
+			        android:text="ToggleButton"
+			        android:textOn="Wymagaj szklanki" 
+			        android:textOff="Nie wymagaj szklanki" />
+
+			    <Button
+			        android:id="@+id/pacpac"
+			        android:layout_width="wrap_content"
+			        android:layout_height="wrap_content"
+			        android:layout_alignBaseline="@+id/smile"
+			        android:layout_alignBottom="@+id/smile"
+			        android:layout_toRightOf="@+id/led7"
+			        android:text="Pacnij" />
+
 			</RelativeLayout>
 
 			<RelativeLayout
