@@ -1,6 +1,5 @@
 package com.barobot.drinks;
 
-
 public abstract class RunnableWithData implements Runnable{
 	protected String data="";
 	protected Exception error;

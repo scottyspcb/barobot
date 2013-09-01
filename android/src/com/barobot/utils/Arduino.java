@@ -11,6 +11,7 @@ import org.microbridge.server.Server;
 
 import com.barobot.BarobotMain;
 import com.barobot.DebugWindow;
+import com.barobot.hardware.ArduinoQueue;
 import com.barobot.hardware.BluetoothChatService;
 import com.barobot.hardware.rpc_message;
 import com.barobot.hardware.virtualComponents;
@@ -24,13 +25,14 @@ import android.os.Message;
 import android.util.Log;
 import android.widget.Toast;
 
-public class queue extends AbstractServerListener{
-	private static queue instance = null;
+public class Arduino extends AbstractServerListener{
+	private static Arduino instance = null;
 	private static int adb_port = 4567;
+
 	private LinkedList<rpc_message> output2 = new LinkedList<rpc_message>();
 	private rpc_message wait_for = null;
 
-	//	private ArrayList <message> output3 = new ArrayList <message>();
+	//private ArrayList <message> output3 = new ArrayList <message>();
 	//private static Queue<String> input = new LinkedList<String>();
 	
 	public boolean stop_autoconnect = false;
@@ -39,9 +41,9 @@ public class queue extends AbstractServerListener{
     private static BluetoothChatService mChatService = null;    // Member object for the chat services
 
 	public boolean adb_connected = false;
-	public static queue getInstance(){
+	public static Arduino getInstance(){
 		if( instance == null){
-			instance = new queue();
+			instance = new Arduino();
 		}
 		return instance;
 	}
@@ -77,7 +79,7 @@ public class queue extends AbstractServerListener{
             	case Constant.MESSAGE_STATE_CHANGE:
 	                switch (msg.arg1) {
 	                case Constant.STATE_CONNECTED:
-	                	queue.getInstance().clear();
+	                	Arduino.getInstance().clear();
 	                    DebugWindow dd = DebugWindow.getInstance();
 	                    if(dd!= null){
 	                    	dd.clearList();
@@ -121,6 +123,47 @@ public class queue extends AbstractServerListener{
         }
     };
 
+	public void destroy() {
+		this.clear();
+        if (mChatService != null){ 
+        	mChatService.destroy();
+        }
+        Constant.log(Constant.TAG, "--- ON DESTROY ---");
+	}
+	public void resume() {
+        Constant.log(Constant.TAG, "+ ON RESUME +");
+        // Performing this check in onResume() covers the case in which BT was
+        // not enabled during onStart(), so we were paused to enable it...
+        // onResume() will be called when ACTION_REQUEST_ENABLE activity returns.
+        if (mChatService != null) {
+            // Only if the state is STATE_NONE, do we know that we haven't started already
+            if (mChatService.getState() == Constant.STATE_NONE) {
+              // Start the Bluetooth chat services
+              mChatService.start();
+            }
+         }
+	}
+	public boolean allowAutoconnect() {
+		if( this.isBT()){
+		//	Constant.log(Constant.TAG, "nie autoconnect bo juz połączony");
+			return false;
+		}
+		if( this.isAdb() ){
+		//	Constant.log(Constant.TAG, "nie autoconnect bo ADB");
+			return false;
+		}
+		if (mChatService == null) {
+			Constant.log(Constant.TAG, "nie autoconnect bo NULL");
+			return false;
+		}
+		if (stop_autoconnect == true ) {
+			Constant.log(Constant.TAG, "nie autoconnect bo STOP");
+			return false;
+		}
+		return true;
+	}
+
+
 	public void setupBT(BarobotMain barobotMain) {
 		Constant.log(Constant.TAG, "setupBT()");
         // Initialize the BluetoothChatService to perform bluetooth connections
@@ -135,13 +178,6 @@ public class queue extends AbstractServerListener{
 	}
     public void bt_disconnect() {
     	mChatService.stop();
-    }
-    public void unlock() {
-    	if(wait_for!=null){
-    		Constant.log("+unlock", "czekalem na [" + wait_for.command+"] w kolejce: " +output2.size() );
-    		wait_for = null;
-    		this.exec();
-    	}
     }
     public void autoconnect() {
     	String bt_id = virtualComponents.get( "LAST_BT_DEVICE", "");
@@ -166,10 +202,10 @@ public class queue extends AbstractServerListener{
     } 
 
 	public static int startBt() {
-      	if (queue.mChatService == null){ 
+      	if (Arduino.mChatService == null){ 
     		return 34;
     	}
-		return queue.mChatService.initBt();
+		return Arduino.mChatService.initBt();
 	}
 
 	public boolean isBT(){
@@ -241,20 +277,21 @@ public class queue extends AbstractServerListener{
 		Constant.log(Constant.TAG, "+ onClientDisconnect");
 	}
 // koniec serwera ADB
-	public void add( String message, boolean wait ){
-		if( message == null || message== ""){
-			return;
-		}
-		rpc_message m = new rpc_message( message, true, wait );
+	
+	public void send( String message ){
+		rpc_message m = new rpc_message( message, true, false );
 		output2.add( m );
-	}
-
-	public void send(){
-		BarobotMain.getInstance().cm.doPhoto();
 		exec();
 	}
-	public void send( String message ){
-		this.add(message, false);
+
+	public void sendFirst(ArduinoQueue q2) {
+		this.output2.addAll( 0, q2.output);		// dodja na począku, reszte przesun dalej
+		exec();		
+	}
+
+	public void send(ArduinoQueue q) {
+		this.output2.addAll(q.output);
+		BarobotMain.getInstance().cm.doPhoto();
 		exec();
 	}
 
@@ -265,7 +302,6 @@ public class queue extends AbstractServerListener{
 			is_ret = true;
 			if(this.wait_for.isRet(retm)){
 		        DebugWindow dd = DebugWindow.getInstance();
-		  //      is_ret	= addRetToList(this.wait_for.getCommand(), retm);
 				this.wait_for = null;
 				if(output2.isEmpty()){
 		            if(dd!= null){
@@ -278,47 +314,29 @@ public class queue extends AbstractServerListener{
 		}
 		return is_ret;
 	}
-	/*
-	public boolean addRetToList( final String last, final String ret ) {
-		final DebugWindow dd = DebugWindow.getInstance();
-		if(dd!=null){
-			int count = dd.mConversationArrayAdapter.getCount();
-			for(int i =count-1; i>=0;i--){
-				History_item hi = dd.mConversationArrayAdapter.getItem(i);
-			//	Constant.log("+addRetToList", last + "/" + ret + "/" + i +"/"+ hi.getCommand() );
-				if( hi.direction && hi.getCommand().equals(last)){
-					hi.setRet(ret);
-		//			Constant.log("+addRetToList","ustawiam " + i + " na " + hi.toString() );
-					dd.runOnUiThread(new Runnable() {
-						@Override
-						public void run() {
-							dd.mConversationArrayAdapter.notifyDataSetChanged();
-						}
-					});
-					return true;
-				}			
-			}
-		}
-		return false;
-	}
-*/
+	
 	private synchronized void exec(){
-        DebugWindow dd = DebugWindow.getInstance();
 		if(this.wait_for != null){
 			return;		// jestem w trakcie oczekiwania
 		}
+        DebugWindow dd = DebugWindow.getInstance();
 		try	{
 			boolean wasEmpty = output2.isEmpty();
 			while (!output2.isEmpty()) {
 				rpc_message m = output2.pop();
-				this.passString(m.command);
+
+				if( m.command == null){
+					m.start( this );
+				}else{
+					this.passString(m.command);
+				}
 		        if(dd!= null){
 		        	dd.addToList( m );
 		        }
-				if(m.wait_for_ready){		// czekam na zwrotkę tej komendy zanim wykonam coś dalej
+				if(m.isBlocing()){		// czekam na zwrotkę tej komendy zanim wykonam coś dalej
 					m.send_timestamp	= System.nanoTime();
                 	this.wait_for		= m;
-                	return;					// przerwij do czasu otrzymania zwrotki
+                	return;					// przerwij do czasu otrzymania zwrotki lub odblokowania
                 }else{
                 	this.wait_for = null;
                 }
@@ -332,22 +350,7 @@ public class queue extends AbstractServerListener{
 			Constant.log(Constant.TAG, "problem sending TCP message");
 		}
 	}
-
-	/*
-	//	Iterator<message> iter2 = output2.iterator();
-
-	while (iter2.hasNext()) {
-		message ob = iter2.next();
-		this.passString(ob.command);
-        if(ob.wait_for_ready){		// czekam na zwrotkę tej komendy zanim wykonam coś dalej
-        	this.wait_for = ob;
-        }else{
-        	this.wait_for = null;
-        }
-	    iter2.remove();
-	}*/
-
-	public void passString( String command ) throws IOException {
+	private void passString( String command ) throws IOException {
 		if( this.adb_connected){
 //			Constant.log(Constant.TAG, "+ trysend ADB: " + command);
 			server.send(command + input_parser.separator);		
@@ -360,49 +363,47 @@ public class queue extends AbstractServerListener{
         	Constant.log(Constant.TAG, "+ NO_CONN: " + command);
         }
 	}
-
-	public void clear() {
+    public void unlock() {
+    	if(wait_for!=null){
+    		Constant.log("+unlock", "czekalem na [" + wait_for.command+"] w kolejce: " +output2.size() );
+    		this.wait_for = null;
+    		this.exec();
+    	}
+    }
+	public void unlock(rpc_message m) {
+		if( this.wait_for != null && this.wait_for.equals(m)){
+			this.wait_for = null;
+			this.exec();
+		}
+	}
+    public void clear() {
 		this.output2.clear();
 		this.wait_for = null;
 	}
-	public void destroy() {
-		this.clear();
-        if (mChatService != null){ 
-        	mChatService.destroy();
-        }
-        Constant.log(Constant.TAG, "--- ON DESTROY ---");
-	}
 
-	public void resume() {
-        Constant.log(Constant.TAG, "+ ON RESUME +");
-        // Performing this check in onResume() covers the case in which BT was
-        // not enabled during onStart(), so we were paused to enable it...
-        // onResume() will be called when ACTION_REQUEST_ENABLE activity returns.
-        if (mChatService != null) {
-            // Only if the state is STATE_NONE, do we know that we haven't started already
-            if (mChatService.getState() == Constant.STATE_NONE) {
-              // Start the Bluetooth chat services
-              mChatService.start();
-            }
-        }
-	}
-	public boolean allowAutoconnect() {
-		if( this.isBT()){
-		//	Constant.log(Constant.TAG, "nie autoconnect bo juz połączony");
-			return false;
-		}
-		if( this.isAdb() ){
-		//	Constant.log(Constant.TAG, "nie autoconnect bo ADB");
-			return false;
-		}
-		if (mChatService == null) {
-			Constant.log(Constant.TAG, "nie autoconnect bo NULL");
-			return false;
-		}
-		if (stop_autoconnect == true ) {
-			Constant.log(Constant.TAG, "nie autoconnect bo STOP");
-			return false;
-		}
-		return true;
-	}
 }
+
+/*
+public boolean addRetToList( final String last, final String ret ) {
+	final DebugWindow dd = DebugWindow.getInstance();
+	if(dd!=null){
+		int count = dd.mConversationArrayAdapter.getCount();
+		for(int i =count-1; i>=0;i--){
+			History_item hi = dd.mConversationArrayAdapter.getItem(i);
+		//	Constant.log("+addRetToList", last + "/" + ret + "/" + i +"/"+ hi.getCommand() );
+			if( hi.direction && hi.getCommand().equals(last)){
+				hi.setRet(ret);
+	//			Constant.log("+addRetToList","ustawiam " + i + " na " + hi.toString() );
+				dd.runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						dd.mConversationArrayAdapter.notifyDataSetChanged();
+					}
+				});
+				return true;
+			}			
+		}
+	}
+	return false;
+}
+*/

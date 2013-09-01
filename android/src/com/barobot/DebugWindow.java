@@ -4,7 +4,6 @@ import com.barobot.hardware.rpc_message;
 import com.barobot.hardware.virtualComponents;
 import com.barobot.utils.Constant;
 import com.barobot.utils.History_item;
-import com.barobot.utils.queue;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -155,6 +154,7 @@ public class DebugWindow extends Activity {
 				R.id.goToNeutralY,
 				R.id.unlock,
 				R.id.smile,
+				R.id.pacpac,
 				R.id.clear_history
 				};
 		for(int i =0; i<buttons.length;i++){
@@ -174,6 +174,7 @@ public class DebugWindow extends Activity {
 		button_toggle bt = new button_toggle();
 		int[] togglers = {
 				R.id.wagi_live,
+				R.id.need_glass,
 				R.id.auto_fill,
 				R.id.led1,
 				R.id.led2,
@@ -189,7 +190,6 @@ public class DebugWindow extends Activity {
 		for(int i =0; i<togglers.length;i++){
 			View w = findViewById(togglers[i]);
 			String classname = w.getClass().getName();
-	//		Constant.log(Constant.TAG,"findViewById togglers: "+ classname + " / " + i );
 			if( "android.widget.ToggleButton".equals( classname )){
 				Button xb3 = (ToggleButton) findViewById(togglers[i]);	
 				xb3.setOnClickListener(bt);			
@@ -222,7 +222,6 @@ public class DebugWindow extends Activity {
 		for(int i =0; i<nalejs.length;i++){
 			View w = findViewById(nalejs[i]);
 			String classname = w.getClass().getName();
-		//	Constant.log(Constant.TAG,"findViewById nalejs: "+ classname + " / " + i );
 			if( "android.widget.Button".equals( classname )){
 				Button xb1 = (Button) findViewById(nalejs[i]);	
 				xb1.setOnClickListener(bz);
@@ -256,7 +255,7 @@ public class DebugWindow extends Activity {
 		OnClickListener list1 = new OnClickListener() {
 		    @Override
 		    public void onClick(View v) {
-		    	 queue.getInstance().send("GET WEIGHT");
+		    	 Arduino.getInstance().send("GET WEIGHT");
 		    }
 		};*/
 
