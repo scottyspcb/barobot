@@ -36,7 +36,8 @@ void loop(){
       char ser_char = Serial.read();
       if(ser_char == nl || ser_char == rl ){
 //        Serial.print(stringOne);
-        Serial3.println(stringOne);
+        Serial3.print(stringOne);
+        Serial.println(stringOne);
 //        Serial2.println(stringOne);
         stringOne = String("");
       }else{
@@ -46,19 +47,7 @@ void loop(){
     if (Serial3.available() >0){
       char ser3_char = Serial3.read();
       Serial.print(ser3_char);
-   }
-  mil = millis();     
-  if( mil > milis40 + czestotliwosc ){
-    unsigned int rand = random(1,1000);
-    Serial3.println( "RET "+ String(rand) );
-    milis40 = mil;
-//    Serial.print( "f=" );
-//    Serial.print(czestotliwosc );
-//    Serial.println( " / " );
-//    Serial.print( rand );
-    czestotliwosc = analogRead(A0) * 4;  // 0 - 1000  
-  }
-  
+   }  
 }
 
 /*
