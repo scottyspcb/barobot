@@ -19,7 +19,8 @@
 
 // obsluga zrodel wejscia
 #define SERIAL0_BOUND 115200
-#define BT_BOUND 9600
+//#define BT_BOUND 9600
+#define BT_BOUND 115200
 #define BT_DEV_NAME "barobotB"
 //#define SERIAL0_BOUND 9600
 
@@ -223,8 +224,7 @@ const int PIN49 = 49;
 #define STATUS_LED08 PIN10
 #define STATUS_LED09 PIN11
 // ktory to LED od szklanyki (jeden z powyzszych)
-#define STATUS_GLASS_LED PIN5
-
+#define STATUS_GLASS_LED STATUS_LED05
 
 // PINy dla adresu multipleksera
 #define PIN_MADDR0 PIN30
@@ -244,7 +244,7 @@ const int PIN49 = 49;
 
 // domyslen ustawienie mocy silnika Z
 // pozycja jechania do góry i czas jechania
-#define SERVOZ_UP_POS 2020
+#define SERVOZ_UP_POS 2200
 #define SERVOZ_UP_TIME 700
 
 // pozycja jechania w dół i czas jechania
@@ -252,10 +252,10 @@ const int PIN49 = 49;
 #define SERVOZ_DOWN_TIME 600
 
 // pozycja do której zajechac robiąc PAC
-#define SERVOZ_PAC_POS 1900
-#define SERVOZ_PAC_TIME_WAIT 400    // po zjechaniu na dół tyle czekaj przed zrobieniem PAC
-#define SERVOZ_PAC_TIME_UP 300      // czasu tyle jedz na gore
-#define SERVOZ_PAC_TIME_DOWN 400    // czasu tyle jedz na dół
+//#define SERVOZ_PAC_POS 1900
+//#define SERVOZ_PAC_TIME_WAIT 400    // po zjechaniu na dół tyle czekaj przed zrobieniem PAC
+//#define SERVOZ_PAC_TIME_UP 300      // czasu tyle jedz na gore
+//#define SERVOZ_PAC_TIME_DOWN 400    // czasu tyle jedz na dół
 
 // domyslnie ustawienie mocy silnikow Xy
 #if SERVOX4PIN==true

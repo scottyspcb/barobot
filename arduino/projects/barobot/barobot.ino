@@ -8,7 +8,7 @@
 // stan uC
 byte status = STATE_INIT;      // na pocztku jest w trakcje inicjacji
 // koniec stanu uC
-unsigned int waga_zero = 10;        // przy tej wadze uznaje ze nic nie stoi na wadze
+unsigned int waga_zero = 0;        // przy tej wadze uznaje ze nic nie stoi na wadze
 byte version = 1;
 
 volatile bool was_interrupt = LOW;    // przerwania połączona spójnikiem OR
@@ -46,18 +46,34 @@ void setupSerial(){      // uzyte w setup()
   }
   if( DEBUG_OVER_BT || USE_BT ){
     Serial3.begin( BT_BOUND, SERIAL_8N1 ); //BT
-    delay(1000);
     Serial3.print( "AT" );
-    delay(1000);
-    Serial3.print( "AT+PIN0000" );
-    delay(1000);
-    String btdn = "AT+NAME" + String(BT_DEV_NAME);
-    Serial3.print( btdn );
-    delay(1000);
-    Serial3.println( "" );    // reset jesli nie idzie do bufora...
-    Serial3.println( "PING" );    // reset jesli nie idzie do bufora...
-    Serial3.print( "\n" + String(SEPARATOR_CHAR) );
+    delay(1100);
+    String ret = getFromBT();
+//    send2debuger( "BTIN", ret );
+    if( ret.equals( "OK") ){              // jestem w trybie komend AT chipu BT
+      Serial3.print( "AT+PIN0000" );
+      delay(1100);
+      ret = getFromBT(); 
+      Serial3.print( "AT+NAME" + String(BT_DEV_NAME) );
+      delay(1100);
+      ret = getFromBT();
+    }
+    Serial3.print( "" + String(SEPARATOR_CHAR) );
+    Serial3.print( "PING" + String(SEPARATOR_CHAR) );
+    Serial3.print( String(SEPARATOR_CHAR) );
+
+    ret = getFromBT();    // wyczysc wejscie
+    send2debuger( "BTIN", ret );
+    serial3Buffer = "";
+    serial0Buffer = "";
   }
+}
+
+String getFromBT(){
+    serialEvent3();
+    String ret  = serial3Buffer;
+    serial3Buffer = "";    
+    return ret;
 }
 
 #if SERVOX4PIN==true
@@ -133,10 +149,7 @@ void setupSteppers(){                  // uzyte w setup()
 
   stepperY.setAcceleration(ACCELERY);    // wgląb
   stepperY.setMaxSpeed(SPEEDY);
-  
-  
-  // zjedz na dół stepperem Z
-  
+  // zjedz na dół stepperem Z  
   
 }
 
@@ -211,6 +224,7 @@ void setup(){
   afterSetup();
   status= STATE_READY;      // po wykonaniu operacji jest w stanie gotowym
   send2debuger("INIT", "Koniec init");
+  send2android( "RET REBOOT" );
   //interrupts();
 }
 
@@ -244,9 +258,11 @@ unsigned int last_max_y = YLENGTH;
 unsigned long counter100 = 0, counter1000 = 0;
 unsigned long milis40 = 0, milis100 = 0, milis1000 = 0;
 unsigned long mil = 0;
-String stos = "";
-unsigned int stos_length = 0;
+//String stos = "";
+//unsigned int stos_length = 0;
 boolean is_connected = false;
+
+unsigned int servo_last = 123;
 
 void loop(){
   run_steppers();
@@ -272,11 +288,12 @@ void loop(){
     counter1000++;
     milis1000 = mil;
   }
+  /*
   if( stos_length ){// gdy odblokuje sie lock_system to wykonaj nastepne polecenie
     String runcmd = stosPop();
     send_current_position( false );                   // pewnie przemieszczałem się wiec wyslij do androida gdzie jestem
     parseInput( runcmd );                      // parsuj wejscie
-  }
+  }*/
   if (Console0Complete) {
     readSerial0Input( serial0Buffer );          // parsuj wejscie
     Console0Complete = false;
@@ -301,7 +318,7 @@ void in_100ms(){
 }
 
 void in_3000ms(){
-  //  digitalWrite( STATUS_LED03, counter1000%2 );
+ //  digitalWrite( STATUS_LED03, counter1000%2 );
 //  send2android( "PING2ANDROID" );
   if(counter100 % 4 == 1){
     unsigned int srednia = readDistance0();
@@ -400,15 +417,17 @@ void parseInput( String input ){   // zrozum co sie dzieje
     }else if( input.equals("SET Z MAX") ){
        if(!irr_max_z){
           int up_pos = SERVOZ_UP_POS;
+          servo_last = up_pos;
           servoZ.writeMicroseconds(up_pos);             // na doł
           delay(SERVOZ_UP_TIME);
           irr_max_z = true;
           irr_min_z = false;
-       } 
+       }
        send_current_position(true);
-     }else if( input.startsWith("SET Z MIN") ){
+     }else if( input.equals("SET Z MIN") ){
        if(!irr_min_z){
           int down_pos = SERVOZ_DOWN_POS;
+          servo_last = down_pos;
           servoZ.writeMicroseconds(down_pos);         // na doł
           delay(SERVOZ_DOWN_TIME);
           irr_max_z = false;
@@ -416,23 +435,16 @@ void parseInput( String input ){   // zrozum co sie dzieje
        }
        send2android("LENGTHZ "+ String(dlugosc_z) );
        send_current_position(true);
-     }else if( input.equals("SET Z ") ){
+     }else if( input.startsWith("SET Z ") ){
       int msec = decodeInt( input, 6 );    // 10 znakow i spacja
       send2debuger( "msec", "w gore1" );
-      for(int keep = 0; keep < 1000; keep += 1)  {
-        servoZ.writeMicroseconds(msec);
-        delay(100);
-      }
-
+      servo_last = msec;
+      servoZ.writeMicroseconds(msec);
     }else{
-      send2android("NO COMMAND [" + input +"]");
+      send2android("ARDUINO NO COMMAND [" + input +"]");
       defaultResult = false;
     }
   }else if( input.equals( "WAIT READY") ){      // tylko zwróc zwrotkę
- 
-  }else if( input.startsWith( "WAIT TIME ") ){      // odczekaj i jedz dalej RET WAIT TIME
-    long wait = decodeInt( input, 10 );        // WAIT TIME i spacja
-    delay(wait); 
 
   }else if( input.startsWith("WAIT GLASS ") ){
     long min_diff = decodeInt( input, 11 );        // WAIT GLASS i spacja
@@ -442,9 +454,21 @@ void parseInput( String input ){   // zrozum co sie dzieje
       defaultResult = false;
     }
   }else if( input.startsWith("MIX ") ){       // MIX 245
-    long czas = decodeInt( input, 4 );        // SET MIX i spacja
+    long czas = decodeInt( input, 4 );        // MIX i spacja
     mieszadlo_enable(czas);
     defaultResult = false;
+
+  }else if( input.equals("LIVE ANALOG") ){      // LIVE ANALOG 3 ON
+    long numer = decodeInt( input, 12 );
+        
+    String res     = stos.substring(0,c);
+    stos           = stos.substring(c+1);
+
+      LIVE ANALOG1 - 10
+  
+  
+
+
   }else if( input.equals("LIVE WEIGHT ON") ){      // RET LIVE WEIGHT ON
     read_waga = true;
   }else if( input.equals("LIVE WEIGHT OFF") ){    // RET LIVE WEIGHT OFF
@@ -471,9 +495,10 @@ void parseInput( String input ){   // zrozum co sie dzieje
       }
       send2android( "WEIGHT " +res);    
     }else{
-      send2android("NO COMMAND [" + input +"]");
+      send2android("ARDUINO NO COMMAND [" + input +"]");
     }
     defaultResult = false;
+/*
   }else if( input.startsWith("IRR") ){
     if( input.startsWith("IRR STOP") ){    // zatrzymaj wszystko, ale zamknij dozownik plynow, zatrzymaj silniki
       defaultResult = false;
@@ -486,6 +511,7 @@ void parseInput( String input ){   // zrozum co sie dzieje
     send_current_position(true);
   }else if( input == "NORET" ){
     send_ret = false;
+    */
   }else if( input.equals("ENABLEX") ){
     stepperX.enableOutputs();
   }else if( input.equals("DISABLEX") ){
@@ -502,33 +528,17 @@ void parseInput( String input ){   // zrozum co sie dzieje
     servoZ.attach(STEPPER_Z_PWM);                  // przypisz do pinu, uruchamia PWMa 
   }else if( input.equals("DISABLEZ") ){
     servoZ.detach();                               // odetnij sterowanie
-  }else if( input.equals("PING2ARDUINO") ){      // odeslij PONG
+  }else if( input.equals("PING2ARDUINO") ){        // odeslij PONG
     send2android("PONG");
     defaultResult = false;
   }else if( input.startsWith("ANDROID ") ){    // zwrotka, nic nie rób
     defaultResult = false;
   }else if( input.equals( "PONG" )){           // nic, to byla odpowiedz na moje PING
     defaultResult = false;
-  }else if( input.startsWith("PACPAC") ){
-    delay(SERVOZ_PAC_TIME_WAIT);
-    send2debuger( "fill", "pac pac gora" );
-    servoZ.writeMicroseconds(SERVOZ_PAC_POS);              // do góry
-    delay(SERVOZ_PAC_TIME_UP);
-    send2debuger( "fill", "pac pac dol" );
-    servoZ.writeMicroseconds(SERVOZ_DOWN_POS);             // na doł
-    delay(SERVOZ_PAC_TIME_DOWN);
-    irr_min_y  = true;
-    irr_max_y  = false;
-    send_current_position(false);
-  }else if( input.equals ("KALIBRUJ WAGA" )){       // wykonaj 10 losowych ruchów po X    
-    waga_zero = read_szklanka();
-    send2android("GLASS " + String(waga_zero));
-    defaultResult = false;
-
   }else if( input.equals( "PING2ANDROID") ){      // nic nie rob
     defaultResult = false;
     
-
+/*
   }else if( input.equals("KALIBRUJX") ){
     // kaliberacja wagi razem z kalubracją X
     waga_zero = read_szklanka();    // TODO - wydzielić
@@ -544,8 +554,9 @@ void parseInput( String input ){   // zrozum co sie dzieje
     stosPush("SET Y " + String( YLENGTH ));
     stosPush("SET Y 0");
     stosPush("READY");
+*/  
   }else{
-    send2android("NO COMMAND [" + input +"]");
+    send2android("ARDUINO NO COMMAND [" + input +"]");
     defaultResult = false;  
   }
   if(defaultResult && send_ret ){
@@ -738,12 +749,6 @@ void run_steppers(){    // robione w każdym przebiegu loop
     }
   }
 }
-
-void irr_zrozum(){
- irr_y  = digitalRead( IRRY_PIN );
- irr_x  = digitalRead( IRRX_PIN );
-}
-
 // obluga wag
 unsigned int read_szklanka(){
   digitalWrite( PIN_MADDR0, 0 );      //   // Ustaw numer na muxach, wystaw adres
@@ -794,7 +799,7 @@ void serialEvent3(){                       // FUNKCJA WBUDOWANA - zbieraj dane z
       serial3Buffer += String(inChar);
       if (inChar == SEPARATOR_CHAR || inChar == 13 ) {
         Console3Complete = true;
-      }  
+      }
     }
   }
 }
@@ -860,6 +865,7 @@ void serialEvent(){                       // FUNKCJA WBUDOWANA - zbieraj dane z 
 }
 
 // BILBIOTEKI i obsługi EVENTow
+/*
 String stosPop(){        // pobierz ze stosu
   // delimiter to nowa linia: SEPARATOR_CHAR
   int c            = stos.indexOf( SEPARATOR_CHAR );
@@ -886,7 +892,7 @@ void stosClear(){        // pobierz ze stosu
   stos  = "";
   stos_length = 0;
 }
-
+*/
 int send2adb( String output){      // wyslij string do androida
     int res = -2;
     byte cnt = 0;
@@ -1074,8 +1080,34 @@ void readAndroidInput( String input ){    // odbierz przez ADB z androida
       delay(SERVOZ_STAYUP_TIME);
     }
     send_current_position(false);
+
+
+      for(int keep = 0; keep < 1000; keep += 1)  {
+        servoZ.writeMicroseconds(msec);
+        delay(100);
+      }
   
-  
-  */
+  }else if( input.startsWith("PACPAC") ){
+    delay(SERVOZ_PAC_TIME_WAIT);
+    send2debuger( "fill", "pac pac gora" );
+    servo_last = SERVOZ_PAC_POS;
+    servoZ.writeMicroseconds(SERVOZ_PAC_POS);              // do góry
+    delay(SERVOZ_PAC_TIME_UP);
+    send2debuger( "fill", "pac pac dol" );
+    servo_last = SERVOZ_DOWN_POS;
+    servoZ.writeMicroseconds(SERVOZ_DOWN_POS);             // na doł
+    delay(SERVOZ_PAC_TIME_DOWN);
+    irr_min_y  = true;
+    irr_max_y  = false;
+    send_current_position(false);
+
+ 
+  }else if( input.startsWith( "WAIT TIME ") ){      // odczekaj i jedz dalej RET WAIT TIME
+    long wait = decodeInt( input, 10 );        // WAIT TIME i spacja
+    delay(wait); 
+
+
+
+    */
 
 
