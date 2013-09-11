@@ -21,7 +21,7 @@
 #define SERIAL0_BOUND 115200
 //#define BT_BOUND 9600
 #define BT_BOUND 115200
-#define BT_DEV_NAME "barobotB"
+#define BT_DEV_NAME "barobotA"
 //#define SERIAL0_BOUND 9600
 
 // ycz usyzwac sterownika 2 czy 4 pinowego
@@ -155,6 +155,13 @@ const int PIN49 = 49;
 // A13  
 // A14  
 // A15  
+
+
+
+// udawane analogi
+// A20 distance 0
+// A21 distance 1
+
 
 // PINY dla wag
 #define PIN_WAGA_ANALOG A2
