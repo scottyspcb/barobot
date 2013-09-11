@@ -4,6 +4,7 @@
 #include <SPI.h>
 #include <Adb.h>
 #include <Servo.h>
+#include <Wire.h>
 
 // stan uC
 byte status = STATE_INIT;      // na pocztku jest w trakcje inicjacji
@@ -34,6 +35,15 @@ String serial3Buffer = "";
 boolean Console0Complete = false;   // This will be set to true once we have a full string
 boolean Console3Complete = false;   // This will be set to true once we have a full string
 // koniec obsluga zrodel wejscia
+
+
+bool analog_reading = false;
+int analog_num = -1;
+unsigned int analog_speed = 0;
+unsigned int analog_repeat = 0;	
+unsigned int analog_pos = 0;
+unsigned long analog_sum = 0;
+
 
 // http://code.google.com/p/arduino-new-ping/wiki/Using_NewPing_Syntax
 NewPing ultrasonic0(PIN_ULTRA0_TRIG, PIN_ULTRA0_ECHO, MAX_DISTANCE);
@@ -194,8 +204,8 @@ void on_int0R(){    int0_value = HIGH;  was_interrupt = HIGH;}    // pin 2
 void on_int0F(){    int0_value = HIGH;  was_interrupt = HIGH;}    // pin 2
 void on_int2R(){    int2_value = HIGH;  was_interrupt = HIGH;}    // pin 21       // Krańcowy Y rise
 void on_int2F(){    int2_value = HIGH;  was_interrupt = HIGH;}    // pin 21       // Krańcowy Y fall
-void on_int3R(){    int3_value = HIGH;  was_interrupt = HIGH;}    // pin 20       // Krańcowy X rise
-void on_int3F(){    int3_value = HIGH;  was_interrupt = HIGH;}    // pin 20       // Krańcowy X fall
+//void on_int3R(){    int3_value = HIGH;  was_interrupt = HIGH;}    // pin 20       // Krańcowy X rise
+//void on_int3F(){    int3_value = HIGH;  was_interrupt = HIGH;}    // pin 20       // Krańcowy X fall
 void on_int4R(){    encoder_x++;   encoder_diff_x++;digitalWrite( STATUS_LED01, encoder_x%2);} 
 // pin 19       // Enkoder X
 //void on_int4F(){  }    // pin 19                       // Enkoder X
@@ -255,8 +265,8 @@ unsigned int max_speed_y = SPEEDY;
 
 unsigned int last_max_x = XLENGTH;
 unsigned int last_max_y = YLENGTH;
-unsigned long counter100 = 0, counter1000 = 0;
-unsigned long milis40 = 0, milis100 = 0, milis1000 = 0;
+unsigned long counter100 = 0;
+unsigned long milis40 = 0, milis100 = 0, milis1000 = 0,milisAnalog = 0;
 unsigned long mil = 0;
 //String stos = "";
 //unsigned int stos_length = 0;
@@ -264,52 +274,72 @@ boolean is_connected = false;
 
 unsigned int servo_last = 123;
 
+
+
 void loop(){
-  run_steppers();
-  if(lock_system){    // jade silnikiem, nie rob nic wiecej
-    return;
-  }
-  if( int0_value == HIGH ){
-    send2android( "INT 0" );
-    int0_value = LOW;
-  }
-  mil = millis();
-  /*
-  if(  mil > milis40 + 40 ){      // 25 razy na sek
-    in_40ms();
-    milis40 = mil;
-  }*/
-  if( read_waga && mil > milis100 + 50 ){      // 20 razy na sek
-    in_100ms();
-    milis100 = mil;
-  }
-  if( mil > milis1000 + 3000 ){      // 1 razy na sek
-    in_3000ms();
-    counter1000++;
-    milis1000 = mil;
-  }
-  /*
-  if( stos_length ){// gdy odblokuje sie lock_system to wykonaj nastepne polecenie
-    String runcmd = stosPop();
-    send_current_position( false );                   // pewnie przemieszczałem się wiec wyslij do androida gdzie jestem
-    parseInput( runcmd );                      // parsuj wejscie
-  }*/
-  if (Console0Complete) {
-    readSerial0Input( serial0Buffer );          // parsuj wejscie
-    Console0Complete = false;
-    serial0Buffer = "";
-  }
-  if( USE_BT || DEBUG_OVER_BT ){
-    if (Console3Complete) {
-      readSerial3Input( serial3Buffer );          // parsuj wejscie
-      is_connected      = true;
-      Console3Complete = false;
-      serial3Buffer = "";
-    }
-  }
-  if( USE_ADB ){
-    ADB::poll();      // Poll the ADB subsystem.
-  }
+	run_steppers();
+
+	if(lock_system){    // jade silnikiem, nie rob nic wiecej
+		return;
+	}
+	if( int0_value == HIGH ){
+		send2android( "INT 0" );
+		int0_value = LOW;
+	}
+	mil = millis();
+	/*
+		if(  mil > milis40 + 40 ){      // 25 razy na sek
+		in_40ms();
+		milis40 = mil;
+	}*/
+	if( read_waga && mil > milis100 + 50 ){      // 20 razy na sek
+		in_100ms();
+		milis100 = mil;
+	}
+
+	if( analog_reading && analog_num >= 0 && analog_num < 22 && mil > milisAnalog + analog_speed ){
+		milisAnalog = mil;
+		if( analog_pos == analog_repeat ){			// wyślij
+			send2android("ANALOG" + String(analog_num) + " " + String(analog_sum/analog_repeat));			
+			analog_pos = 0;
+			analog_sum = 0;
+		}
+		analog_pos++;
+		if( analog_num == 20 ){
+			analog_sum	+= ultrasonic0.ping_median( 1 ); // Do multiple pings (default=5), discard out of range pings and return median in microseconds. 
+		}else if( analog_num == 21 ){
+			analog_sum	+= ultrasonic1.ping_median( 1 ); // Do multiple pings (default=5), discard out of range pings and return median in microseconds. 	
+		}else{
+			analog_sum		+= analogRead(analog_num);
+		}
+	}
+
+	if( mil > milis1000 + 3000 ){      // 1 razy na sek
+		in_3000ms();
+		milis1000 = mil;
+	}
+	/*
+	if( stos_length ){// gdy odblokuje sie lock_system to wykonaj nastepne polecenie
+	String runcmd = stosPop();
+	send_current_position( false );                   // pewnie przemieszczałem się wiec wyslij do androida gdzie jestem
+	parseInput( runcmd );                      // parsuj wejscie
+	}*/
+	if (Console0Complete) {
+		readSerial0Input( serial0Buffer );          // parsuj wejscie
+		Console0Complete = false;
+		serial0Buffer = "";
+	}
+	if( USE_BT || DEBUG_OVER_BT ){
+		if (Console3Complete) {
+			readSerial3Input( serial3Buffer );          // parsuj wejscie
+			is_connected      = true;
+			Console3Complete = false;
+			serial3Buffer = "";
+		}
+	}
+	if( USE_ADB ){
+		ADB::poll();      // Poll the ADB subsystem.
+	}
 }
 
 void in_100ms(){
@@ -318,8 +348,7 @@ void in_100ms(){
 }
 
 void in_3000ms(){
- //  digitalWrite( STATUS_LED03, counter1000%2 );
-//  send2android( "PING2ANDROID" );
+ //  send2android( "PING2ANDROID" );
   if(counter100 % 4 == 1){
     unsigned int srednia = readDistance0();
     //send2android( String("RET VAL DISTANCE0 ") +srednia );
@@ -366,202 +395,179 @@ long decodeInt(String input, int odetnij ){
 }
 
 void parseInput( String input ){   // zrozum co sie dzieje
-  input.trim();
-  send2debuger( "COMMAND", input );
-  bool defaultResult = true;
+	input.trim();
+	send2debuger( "COMMAND", input );
+	bool defaultResult = true;
 
-  if ( input.startsWith("SET") ) {      // tutaj niektore beda synchroniczne inne asynchroniczne wiec czasem zwracaj RET, a czasem dopiero po zakonczeniu
-    if( input.startsWith("SET LED") ){    // zapal LEDa o numerze 1-9
-      unsigned int pin = input.substring(7).toInt();      // "SET LED4 ON" na "4 ON"
-      if( pin == 1 ){                  pin = STATUS_LED01;
-      }else if( pin == 2 ){            pin = STATUS_LED02;
-      }else if( pin == 3 ){            pin = STATUS_LED03;
-      }else if( pin == 4 ){            pin = STATUS_LED04;
-      }else if( pin == 5 ){            pin = STATUS_LED05;
-      }else if( pin == 6 ){            pin = STATUS_LED06;
-      }else if( pin == 7 ){            pin = STATUS_LED07;
-      }else if( pin == 8 ){            pin = STATUS_LED08;
-      }else if( pin == 9 ){            pin = STATUS_LED09;
-      }else{                           pin = 0;
-      }
-      if(pin != 0 ){
-        if( input.endsWith("ON") ){
-          digitalWrite(pin, HIGH );      
-        } else{
-          digitalWrite(pin, LOW );
-        }
-      }
-    }else if( input.startsWith("SET X") ){
-      long pos = decodePosition( AXIS_X, input, 6 );
-      last_stepper_operation = true;
-      posx(pos);
-      defaultResult = false;
-    } else if( input.startsWith("SET Y") ){
-      long pos = decodePosition( AXIS_Y, input, 6 );
-      last_stepper_operation = true;
-      posy(pos);
-      defaultResult = false;
-    }else if( input.startsWith("SET SPEEDX") ){
-      max_speed_x = decodeInt( input, 11 );    // 10 znakow i spacja
-      stepperX.setMaxSpeed(max_speed_x);    // lewo prawo
-    }else if( input.startsWith("SET SPEEDY") ){
-      max_speed_y = decodeInt( input, 11 );
-      stepperY.setMaxSpeed(max_speed_y);      // wgląb
-    } else if( input.startsWith("SET ACCX") ){
-      acc_x = decodeInt( input, 9 );    // SET ACCX i spacja
-      stepperX.setAcceleration(acc_x);
-    }else if( input.startsWith("SET ACCY") ){      
-      acc_y = decodeInt( input, 9 );    // SET ACCY i spacja
-      stepperY.setAcceleration(acc_y);
+	if ( input.startsWith("SET") ) {      // tutaj niektore beda synchroniczne inne asynchroniczne wiec czasem zwracaj RET, a czasem dopiero po zakonczeniu
+		if( input.startsWith("SET LED") ){    // zapal LEDa o numerze 1-9
+		  unsigned int pin = input.substring(7).toInt();      // "SET LED4 ON" na "4 ON"
+		  if( pin == 1 ){                  pin = STATUS_LED01;
+		  }else if( pin == 2 ){            pin = STATUS_LED02;
+		  }else if( pin == 3 ){            pin = STATUS_LED03;
+		  }else if( pin == 4 ){            pin = STATUS_LED04;
+		  }else if( pin == 5 ){            pin = STATUS_LED05;
+		  }else if( pin == 6 ){            pin = STATUS_LED06;
+		  }else if( pin == 7 ){            pin = STATUS_LED07;
+		  }else if( pin == 8 ){            pin = STATUS_LED08;
+		  }else if( pin == 9 ){            pin = STATUS_LED09;
+		  }else{                           pin = 0;
+		  }
+		  if(pin != 0 ){
+			if( input.endsWith("ON") ){
+			  digitalWrite(pin, HIGH );      
+			} else{
+			  digitalWrite(pin, LOW );
+			}
+		  }
+		}else if( input.startsWith("SET X") ){
+		  long pos = decodePosition( AXIS_X, input, 6 );
+		  last_stepper_operation = true;
+		  posx(pos);
+		  defaultResult = false;
+		} else if( input.startsWith("SET Y") ){
+		  long pos = decodePosition( AXIS_Y, input, 6 );
+		  last_stepper_operation = true;
+		  posy(pos);
+		  defaultResult = false;
+		}else if( input.startsWith("SET SPEEDX") ){
+		  max_speed_x = decodeInt( input, 11 );    // 10 znakow i spacja
+		  stepperX.setMaxSpeed(max_speed_x);    // lewo prawo
+		}else if( input.startsWith("SET SPEEDY") ){
+		  max_speed_y = decodeInt( input, 11 );
+		  stepperY.setMaxSpeed(max_speed_y);      // wgląb
+		} else if( input.startsWith("SET ACCX") ){
+		  acc_x = decodeInt( input, 9 );    // SET ACCX i spacja
+		  stepperX.setAcceleration(acc_x);
+		}else if( input.startsWith("SET ACCY") ){      
+		  acc_y = decodeInt( input, 9 );    // SET ACCY i spacja
+		  stepperY.setAcceleration(acc_y);
 
-    }else if( input.equals("SET Z MAX") ){
-       if(!irr_max_z){
-          int up_pos = SERVOZ_UP_POS;
-          servo_last = up_pos;
-          servoZ.writeMicroseconds(up_pos);             // na doł
-          delay(SERVOZ_UP_TIME);
-          irr_max_z = true;
-          irr_min_z = false;
-       }
-       send_current_position(true);
-     }else if( input.equals("SET Z MIN") ){
-       if(!irr_min_z){
-          int down_pos = SERVOZ_DOWN_POS;
-          servo_last = down_pos;
-          servoZ.writeMicroseconds(down_pos);         // na doł
-          delay(SERVOZ_DOWN_TIME);
-          irr_max_z = false;
-          irr_min_z = true;
-       }
-       send2android("LENGTHZ "+ String(dlugosc_z) );
-       send_current_position(true);
-     }else if( input.startsWith("SET Z ") ){
-      int msec = decodeInt( input, 6 );    // 10 znakow i spacja
-      send2debuger( "msec", "w gore1" );
-      servo_last = msec;
-      servoZ.writeMicroseconds(msec);
-    }else{
-      send2android("ARDUINO NO COMMAND [" + input +"]");
-      defaultResult = false;
-    }
-  }else if( input.equals( "WAIT READY") ){      // tylko zwróc zwrotkę
+		}else if( input.equals("SET Z MAX") ){
+		   if(!irr_max_z){
+			  int up_pos = SERVOZ_UP_POS;
+			  servo_last = up_pos;
+			  servoZ.writeMicroseconds(up_pos);             // na doł
+			  delay(SERVOZ_UP_TIME);
+			  irr_max_z = true;
+			  irr_min_z = false;
+		   }
+		   send_current_position(true);
+		 }else if( input.equals("SET Z MIN") ){
+		   if(!irr_min_z){
+			  int down_pos = SERVOZ_DOWN_POS;
+			  servo_last = down_pos;
+			  servoZ.writeMicroseconds(down_pos);         // na doł
+			  delay(SERVOZ_DOWN_TIME);
+			  irr_max_z = false;
+			  irr_min_z = true;
+		   }
+		   send2android("LENGTHZ "+ String(dlugosc_z) );
+		   send_current_position(true);
+		 }else if( input.startsWith("SET Z ") ){
+		  int msec = decodeInt( input, 6 );    // 10 znakow i spacja
+		  send2debuger( "msec", "w gore1" );
+		  servo_last = msec;
+		  servoZ.writeMicroseconds(msec);
+		}else{
+		  send2android("ARDUINO NO COMMAND [" + input +"]");
+		  defaultResult = false;
+		}
+	}else if( input.startsWith("WAIT GLASS ") ){
+		long min_diff = decodeInt( input, 11 );        // WAIT GLASS i spacja
+		byte res = wait4glass(min_diff);
+		if(res == 0){    // nie ma szklanki i nie będzie
+		  send2android("ERROR "+ input);
+		  defaultResult = false;
+		}
+	}else if( input.startsWith("MIX ") ){       // MIX 245
+		long czas = decodeInt( input, 4 );        // MIX i spacja
+		mieszadlo_enable(czas);
+		defaultResult = false;
+	}else if( input.equals("LIVE ANALOG OFF") ){
+		analog_reading	= false;
+		analog_num = -1;
+		analog_speed = 0;
+		analog_repeat = 0;
+	}else if( input.startsWith("LIVE ANALOG") ){      // LIVE ANALOG 3,100,5
+		String digits     = input.substring( 12 );
+		char charBuf[50];
+		digits.toCharArray(charBuf, 50);
+		sscanf(charBuf,"%i,%i,%i", &analog_num, &analog_speed, &analog_repeat );
+		analog_reading	= true;
+		analog_pos = 0;
+		analog_sum = 0;
+		if( analog_num <= 15 ){
+			pinMode( analog_num, INPUT);
+		}
+//		LIVE ANALOG 8,200,2
+//		LIVE ANALOG 10,100,1
+//		LIVE ANALOG OFF
 
-  }else if( input.startsWith("WAIT GLASS ") ){
-    long min_diff = decodeInt( input, 11 );        // WAIT GLASS i spacja
-    byte res = wait4glass(min_diff);
-    if(res == 0){    // nie ma szklanki i nie będzie
-      send2android("ERROR "+ input);
-      defaultResult = false;
-    }
-  }else if( input.startsWith("MIX ") ){       // MIX 245
-    long czas = decodeInt( input, 4 );        // MIX i spacja
-    mieszadlo_enable(czas);
-    defaultResult = false;
+	}else if( input.equals("LIVE WEIGHT ON") ){      // RET LIVE WEIGHT ON
+		read_waga = true;
+	}else if( input.equals("LIVE WEIGHT OFF") ){    // RET LIVE WEIGHT OFF
+		read_waga = false;
+	}else if( input.startsWith("GET")) {
+		if( input == "GET SPEED" ){      // podaje prędkosci i akceleracje silnikow X i Y
+			send2android("VAL SPEEDX " + String(max_speed_y) + ","+ String(acc_x) );
+			send2android("VAL SPEEDY " + String(max_speed_x) + ","+ String(acc_y) );
+		}else if( input.equals( "GET VERSION" )){
+		  send2android( "VAL VERSION " + String(version));
+		}else if( input.equals( "GET CARRET" )){      // pozycja karetki x,y
+		  send_current_position( false );
+		}else if( input == "GET GLASS" ){       // waga szklanki
+		  long unsigned int waga = read_szklanka();
+		  send2android("GLASS " + String(waga));
+		}else if( input.equals( "GET WEIGHT") ){       // waga butelek (do 15 liczb nieujemnych)
+		  String res = "";
+		  for (byte count=0; count<16; count++) {              // 16 razy
+			long unsigned waga = read_butelka(count);
+			res = res + String(waga);    // odczytaj wartosc
+			if(count<15){
+			  res = res + ',';        
+			}
+		  }
+		  send2android( "WEIGHT " +res);    
+		}else{
+		  send2android("ARDUINO NO COMMAND [" + input +"]");
+		}
+		defaultResult = false;
 
-  }else if( input.equals("LIVE ANALOG") ){      // LIVE ANALOG 3 ON
-    long numer = decodeInt( input, 12 );
-        
-    String res     = stos.substring(0,c);
-    stos           = stos.substring(c+1);
+	}else if( input.equals("ENABLEX") ){
+		stepperX.enableOutputs();
+	}else if( input.equals("DISABLEX") ){
+		if(STEPPERX_READY_DISABLE){
+		  stepperX.disableOutputs();
+		}
+	}else if( input.equals("ENABLEY") ){
+		stepperY.enableOutputs();
+	}else if( input.equals("DISABLEY") ){
+		if(STEPPERY_READY_DISABLE){
+		  stepperY.disableOutputs();
+		}
+	}else if( input.equals("ENABLEZ") ){
+		servoZ.attach(STEPPER_Z_PWM);                  // przypisz do pinu, uruchamia PWMa 
+	}else if( input.equals("DISABLEZ") ){
+		servoZ.detach();                               // odetnij sterowanie
+	}else if( input.equals("PING2ARDUINO") ){        // odeslij PONG
+		send2android("PONG");
+		defaultResult = false;
+	}else if( input.startsWith("ANDROID ") ){    // zwrotka, nic nie rób
+		defaultResult = false;
+	}else if( input.equals( "PONG" )){           // nic, to byla odpowiedz na moje PING
+		defaultResult = false;
+	}else if( input.equals( "PING2ANDROID") ){      // nic nie rob
+		defaultResult = false;
+	}else if( input.equals( "WAIT READY") ){      // tylko zwróc zwrotkę
 
-      LIVE ANALOG1 - 10
-  
-  
-
-
-  }else if( input.equals("LIVE WEIGHT ON") ){      // RET LIVE WEIGHT ON
-    read_waga = true;
-  }else if( input.equals("LIVE WEIGHT OFF") ){    // RET LIVE WEIGHT OFF
-    read_waga = false;
-  }else if( input.startsWith("GET")) {
-    if( input == "GET SPEED" ){      // podaje prędkosci i akceleracje silnikow X i Y
-        send2android("VAL SPEEDX " + String(max_speed_y) + ","+ String(acc_x) );
-        send2android("VAL SPEEDY " + String(max_speed_x) + ","+ String(acc_y) );
-    }else if( input.equals( "GET VERSION" )){
-      send2android( "VAL VERSION " + String(version));
-    }else if( input.equals( "GET CARRET" )){      // pozycja karetki x,y
-      send_current_position( false );
-    }else if( input == "GET GLASS" ){       // waga szklanki
-      long unsigned int waga = read_szklanka();
-      send2android("GLASS " + String(waga));
-    }else if( input.equals( "GET WEIGHT") ){       // waga butelek (do 15 liczb nieujemnych)
-      String res = "";
-      for (byte count=0; count<16; count++) {              // 16 razy
-        long unsigned waga = read_butelka(count);
-        res = res + String(waga);    // odczytaj wartosc
-        if(count<15){
-          res = res + ',';        
-        }
-      }
-      send2android( "WEIGHT " +res);    
-    }else{
-      send2android("ARDUINO NO COMMAND [" + input +"]");
-    }
-    defaultResult = false;
-/*
-  }else if( input.startsWith("IRR") ){
-    if( input.startsWith("IRR STOP") ){    // zatrzymaj wszystko, ale zamknij dozownik plynow, zatrzymaj silniki
-      defaultResult = false;
-      status = STATE_BUSY; 
-      status = STATE_READY;               // a po zakonczeniu zatrzymywania
-    }
-  } else if( input.equals( "READY") ){      // odeślij READY AS POS
-    send_ret = true;
-    defaultResult = false;
-    send_current_position(true);
-  }else if( input == "NORET" ){
-    send_ret = false;
-    */
-  }else if( input.equals("ENABLEX") ){
-    stepperX.enableOutputs();
-  }else if( input.equals("DISABLEX") ){
-    if(STEPPERX_READY_DISABLE){
-      stepperX.disableOutputs();
-    }
-  }else if( input.equals("ENABLEY") ){
-    stepperY.enableOutputs();
-  }else if( input.equals("DISABLEY") ){
-    if(STEPPERY_READY_DISABLE){
-      stepperY.disableOutputs();
-    }
-  }else if( input.equals("ENABLEZ") ){
-    servoZ.attach(STEPPER_Z_PWM);                  // przypisz do pinu, uruchamia PWMa 
-  }else if( input.equals("DISABLEZ") ){
-    servoZ.detach();                               // odetnij sterowanie
-  }else if( input.equals("PING2ARDUINO") ){        // odeslij PONG
-    send2android("PONG");
-    defaultResult = false;
-  }else if( input.startsWith("ANDROID ") ){    // zwrotka, nic nie rób
-    defaultResult = false;
-  }else if( input.equals( "PONG" )){           // nic, to byla odpowiedz na moje PING
-    defaultResult = false;
-  }else if( input.equals( "PING2ANDROID") ){      // nic nie rob
-    defaultResult = false;
-    
-/*
-  }else if( input.equals("KALIBRUJX") ){
-    // kaliberacja wagi razem z kalubracją X
-    waga_zero = read_szklanka();    // TODO - wydzielić
-    send2android("GLASS " + String(waga_zero));
-    stosPush("NORET");
-    stosPush("SET X " + String( - XLENGTH));
-    stosPush("SET X " + String( XLENGTH ));
-    stosPush("SET X 0");
-    stosPush("READY");
-  }else if( input.equals( "KALIBRUJY") ){
-    stosPush("NORET");
-    stosPush("SET Y " + String( - YLENGTH ));
-    stosPush("SET Y " + String( YLENGTH ));
-    stosPush("SET Y 0");
-    stosPush("READY");
-*/  
-  }else{
-    send2android("ARDUINO NO COMMAND [" + input +"]");
-    defaultResult = false;  
-  }
-  if(defaultResult && send_ret ){
-    send2android("RET " + input );
-  }
+	}else{
+		send2android("ARDUINO NO COMMAND [" + input +"]");
+		defaultResult = false;  
+	}
+	if(defaultResult && send_ret ){
+		send2android("RET " + input );
+	}
 }
 
 // newPos = pozucja logiczna (zamieniana jest na tecniczną wewnątrz)
@@ -809,10 +815,10 @@ long int maplong(unsigned long x, unsigned long in_min, unsigned long in_max, un
 }
 
 unsigned int readDistance0(){
-  return 0;//ultrasonic0.ping_median( DIST_REPEAT ); // Do multiple pings (default=5), discard out of range pings and return median in microseconds. 
+  return ultrasonic0.ping_median( DIST_REPEAT ); // Do multiple pings (default=5), discard out of range pings and return median in microseconds. 
 }
 unsigned int readDistance1(){
-  return 0;//ultrasonic1.ping_median( DIST_REPEAT ); // Do multiple pings (default=5), discard out of range pings and return median in microseconds. 
+  return ultrasonic1.ping_median( DIST_REPEAT ); // Do multiple pings (default=5), discard out of range pings and return median in microseconds. 
 }
 // Event handler for the shell connection. 
 // This event handler is called whenever data is sent from Android Device to Seeeduino ADK.
@@ -1106,8 +1112,36 @@ void readAndroidInput( String input ){    // odbierz przez ADB z androida
     long wait = decodeInt( input, 10 );        // WAIT TIME i spacja
     delay(wait); 
 
-
-
     */
+	/*
+	}else if( input.equals("KALIBRUJX") ){
+	// kaliberacja wagi razem z kalubracją X
+	waga_zero = read_szklanka();    // TODO - wydzielić
+	send2android("GLASS " + String(waga_zero));
+	stosPush("NORET");
+	stosPush("SET X " + String( - XLENGTH));
+	stosPush("SET X " + String( XLENGTH ));
+	stosPush("SET X 0");
+	stosPush("READY");
+	}else if( input.equals( "KALIBRUJY") ){
+	stosPush("NORET");
+	stosPush("SET Y " + String( - YLENGTH ));
+	stosPush("SET Y " + String( YLENGTH ));
+	stosPush("SET Y 0");
+	stosPush("READY");
+	*/  
 
-
+		/*
+	}else if( input.startsWith("IRR") ){
+	if( input.startsWith("IRR STOP") ){    // zatrzymaj wszystko, ale zamknij dozownik plynow, zatrzymaj silniki
+	  defaultResult = false;
+	  status = STATE_BUSY; 
+	  status = STATE_READY;               // a po zakonczeniu zatrzymywania
+	}
+	} else if( input.equals( "READY") ){      // odeślij READY AS POS
+	send_ret = true;
+	defaultResult = false;
+	send_current_position(true);
+	}else if( input == "NORET" ){
+	send_ret = false;
+	*/
