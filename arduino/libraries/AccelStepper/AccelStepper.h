@@ -295,13 +295,17 @@ public:
     /// be > 0. Caution: Speeds that exceed the maximum speed supported by the processor may
     /// Result in non-linear accelerations and decelerations.
     void    setMaxSpeed(float speed);
+    float    getMaxSpeed();
 
     /// Sets the acceleration and deceleration parameter.
     /// \param[in] acceleration The desired acceleration in steps per second
     /// per second. Must be > 0.0. This is an expensive call since it requires a square 
     /// root to be calculated. Dont call more ofthen than needed
     void    setAcceleration(float acceleration);
+	float   getAcceleration();
 
+    void    setInterface(uint8_t interface = AccelStepper::FULL4WIRE);
+	
     /// Sets the desired constant speed for use with runSpeed().
     /// \param[in] speed The desired constant speed in steps per
     /// second. Positive is clockwise. Speeds of more than 1000 steps per
@@ -356,6 +360,8 @@ public:
     /// Sets a new target position that causes the stepper
     /// to stop as quickly as possible, using to the current speed and acceleration parameters.
     void stop();
+    void stop( float multispeed );
+    void stopNow( boolean disableoutput = false );
 
     /// Disable motor pin outputs by setting them all LOW
     /// Depending on the design of your electronics this may turn off
@@ -397,6 +403,10 @@ public:
     /// \param[in] pin4Invert True for inverted pin4, false for non-inverted
     /// \param[in] enableInvert    True for inverted enable pin, false (default) for non-inverted
     void    setPinsInverted(bool pin1Invert, bool pin2Invert, bool pin3Invert, bool pin4Invert, bool enableInvert);
+	
+	// Disable outputs on ready?
+    boolean     disable_on_ready;
+    boolean     is_disabled;
 
 protected:
 
@@ -553,6 +563,10 @@ private:
 
     /// Current direction motor is spinning in
     boolean _direction; // 1 == CW
+	
+	
+	uint8_t           _last_output;
+	//uint8_t           _last_step;
 
 };
 

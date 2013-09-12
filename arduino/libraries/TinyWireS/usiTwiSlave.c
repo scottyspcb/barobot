@@ -63,6 +63,7 @@ Change Activity:
 #endif
 
 #if defined(__AVR_ATtiny84__) | \
+     defined( __AVR_ATtiny24__ ) | \
      defined(__AVR_ATtiny44__)
 #  define DDR_USI             DDRA
 #  define PORT_USI            PORTA
