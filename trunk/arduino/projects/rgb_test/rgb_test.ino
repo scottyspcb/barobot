@@ -1,59 +1,76 @@
+#include <Wire.h>
+int x = 1;
+
+// to jest slave
+#define MY_ADDR 0x04
+#define SLAVE_ADDR 0x04
+#define MASTER_ADDR 0x02
+
+#define VERSION 0x01
+#define DEVICE_TYPE 0x01
+
 unsigned long int mic  =0;
 
 #define LEDSIZE 8
 typedef struct {
-  unsigned char pin;
-  unsigned char wypelnienie;	// 8 bitów		0 - 256
+  byte pin;
+  byte wypelnienie;	// 8 bitów		0 - 256
   uint16_t on_time;	        // 16bitów		0 - 65536 ms max
   uint16_t off_time;	        // 16bitów		0 - 65536 ms max
-} LED;
+} 
+LED;
 
 LED leds[LEDSIZE] = {
-  { 6, 10, 100, 100 },
-  { 7, 20, 100, 100 },
-  { 8, 30, 100, 100 },
-  { 9, 50, 100, 100 },
-  { 10, 70, 100, 100 },
-  { 11, 100, 100, 100 },
-  { 12, 150, 100, 100 },
-  { 13, 255, 100, 100 }
+  {6, 10, 100, 100   },
+  {7, 20, 100, 100   },
+  {8, 30, 100, 100   },
+  {9, 50, 100, 100   } ,
+  { 10, 70, 100, 100   },
+  {11, 100, 100, 100   },
+  {12, 150, 100, 100   },
+  {13, 255, 100, 100   }
 };
 
-unsigned char i8  = LEDSIZE;
+byte i8  = LEDSIZE;
 
 void setup(){
   while(i8--){
     pinMode(leds[i8].pin, OUTPUT);  
   }
-  
+
+  Wire.begin(MY_ADDR);
+  Wire.onReceive(receiveEvent); // register event   
+
+  Serial.println("START SLAVE"); 
+
   Serial.begin(115200,SERIAL_8N1);
   /*
     Serial.println( "--------" );
-    Serial.println( "--------" );
-    Serial.println( "--1-----" );
-    i8= LEDSIZE;
-    while(i8--){
-      Serial.println( String(i8) );
-    }
-  
+   Serial.println( "--------" );
+   Serial.println( "--1-----" );
+   i8= LEDSIZE;
+   while(i8--){
+   Serial.println( String(i8) );
+   }
+   
    Serial.println( "----2----" );
-  for(i8=LEDSIZE-1;i8>0;i8--){
-      Serial.println( String(i8) );
-  }
+   for(i8=LEDSIZE-1;i8>0;i8--){
+   Serial.println( String(i8) );
+   }
    Serial.println( "----3----" );
-  for(i8  = 0;i8<LEDSIZE;i8++){
-      Serial.println( String(i8) );
-  }*/
-  
-    pinMode(A0, INPUT);
-    pinMode(A1, INPUT);
-    pinMode(A2, INPUT);
+   for(i8  = 0;i8<LEDSIZE;i8++){
+   Serial.println( String(i8) );
+   }*/
 
-//  analogWrite(leds[4].pin, 255);
-//  digitalWrite(leds[5].pin, 255);
-// mic = micros();
-    
-// initialize timer1 
+  pinMode(A0, INPUT);
+  pinMode(A1, INPUT);
+  pinMode(A2, INPUT);
+
+  //  analogWrite(leds[4].pin, 255);
+  //  digitalWrite(leds[5].pin, 255);
+  // mic = micros();
+
+  // initialize timer1 
   noInterrupts();           // disable all interrupts
   TCCR1A = 0;
   TCCR1B = 0;
@@ -88,71 +105,150 @@ volatile bool sig2 = false;
 void loop(){  
   if( cycle == 0 ){
     for(i8=LEDSIZE;i8>0;i8--){
-       if(leds[i8-1].wypelnienie >0 ){
+      if(leds[i8-1].wypelnienie >0 ){
         digitalWrite(leds[i8-1].pin, HIGH);
-       }
+      }
     }
     if( mediumcycle == 0 ){    // przekręcił się duży licznik
       mediumcycle     = mediumcycle_max;
-
-        if( bigcycle == 0 ){    // przekręcił się duży licznik
-          bigcycle     = bigcycle_max;
-          wypelnienie  = map( analogRead(A0), 0, 1024, 0, cycle_max );
-          czas_on      = map( analogRead(A1), 0, 1024, 0, on_max );
-          czas_off     = map( analogRead(A2), 0, 1024, 0, off_max );
-       //   Serial.println( String(wypelnienie) );
-      //    Serial.println( String(micros() - mic) + " " + String(wypelnienie) );
-       //   mic = micros();
-          
-          for(i8=LEDSIZE;i8>0;i8--){
-            leds[i8-1].wypelnienie = wypelnienie;
-          }
-        }
-        bigcycle--;
+      if( bigcycle == 0 ){    // przekręcił się duży licznik
+        sig = true;
+      }
+      bigcycle--;
     }
     mediumcycle--;
-
   }
   //else{    // nie trzeba dla 0 bo juz sprawdzam ten warunek
-    for(i8=LEDSIZE;i8>0;i8--){
-      if(leds[i8-1].wypelnienie == cycle ){
-        digitalWrite(leds[i8-1].pin, LOW  );
-      }
+  for(i8=LEDSIZE;i8>0;i8--){
+    if(leds[i8-1].wypelnienie == cycle ){
+      digitalWrite(leds[i8-1].pin, LOW  );
     }
-//  }
+  }
+  //  }
   cycle++;
   /*
   if( sig2 ){
-    Serial.println( "b " + String(micros() - mic)  );
-    mic = micros();  
-    sig2 = false;  
-  }  
-  if( sig ){
-    Serial.println(  "a " + String(micros() - mic)  );
-    mic = micros();
-    sig = false;  
-  } */ 
+   Serial.println( "b " + String(micros() - mic)  );
+   mic = micros();  
+   sig2 = false; 
+   }  
+   Serial.println(  "a " + String(micros() - mic)  );
+   mic = micros();
+   sig = false; 
+   }*/
+
+   if( sig ){
+        bigcycle     = bigcycle_max;
+        wypelnienie  = map( analogRead(A0), 0, 1024, 0, cycle_max );
+        czas_on      = map( analogRead(A1), 0, 1024, 0, on_max );
+        czas_off     = map( analogRead(A2), 0, 1024, 0, off_max );
+        //   Serial.println( String(wypelnienie) );
+     //   Serial.println( String(micros() - mic) + " " + String(wypelnienie) );
+     //   mic = micros();
+        for(i8=LEDSIZE;i8>0;i8--){
+           leds[i8-1].wypelnienie = wypelnienie;
+        }
+        sig= false;
+   }
 }
+
+//volatile byte buffer[10];
+byte buffer[20];
+byte super1 = 1;
+byte super2 = 2;
+byte cc = 0;
+void receiveEvent(int howMany){
+    cc = 0;
+    Serial.println("-------");
+    while( Wire.available()){ // loop through all but the last  
+      byte aa = Wire.read(); // receive byte as a character
+      Serial.print("Odbieram: " );
+      Serial.println(aa,HEX);
+      buffer[cc++] = aa;
+    }
+    if(cc == 0){
+      return;
+    }
+//    Serial.println("Komenda: " );
+ //   printHex(buffer[0]);
+     byte command = buffer[0];
+    if( command == 0x11 ){                // PWM     3 bajty
+      super1  = buffer[1];
+      super2  = buffer[2];
+      /*
+      Serial.print("Odebralem X: ");
+      printHex(super1);
+      Serial.print("Odebralem Y: ");
+      printHex(super2);
+      */
+    }else if( command == 0x22 ){          // BLINK   4 bajty
+    }else if( command == 0x44 ){          // FADE    3 bajty
+    }else if( command == 0x55 ){          // SYNCHRO 1 bajt
+    }else if( command == 0x66 ){          // GET VALUE  2 bajty
+        byte ttt = 0x37;
+        Wire.write(ttt);
+    }else if( command == 0x77 ){          // SET VALUE  3 bajty
+    }else if( command == 0x88 ){          // DIR        3 bajty
+      Wire.write(super1); 
+      Wire.write(super2);
+//      Serial.print("Wysylam X: ");
+//      printHex(super1);
+//      Serial.print("Wysylam Y: ");      
+//      printHex(super2);
+    }else if( command == 0x99 ){          // TEPE + VERSION       3 bajty
+//      Serial.println(byte(VERSION),HEX);
+        byte ttt = 0x87;
+        Wire.write(ttt);
+        ttt = VERSION;
+        Wire.write(ttt);
+//        Serial.print("Wersja: ");
+//        printHex(ttt);
+        ttt = DEVICE_TYPE;
+        Wire.write(ttt);
+    }else if( command == 0xEE ){          // STOP       3 bajty
+        Wire.write(0x32);
+    }
+
+
+//    Serial.println("++++++++++");
+  //  Serial.println("<==bylo:" + String(cc) + " " + String(howMany));  
+  //  while(howMany--){
+  //    Wire.write(0x33);
+  //  }
+  /*
+  //  Wire.beginTransmission(MASTER_ADDR);
+    String a = "slave x is " + String(x);
+    const char* aa = (const char *) a.c_str();
+    Wire.write(aa);
+  //  Wire.endTransmission();
+    x++;*/
+}
+
+void printHex(byte val){
+  int temp =  val;
+  Serial.println(temp,HEX);
+}
+
 volatile uint8_t ISRcounter = 0; /* Count the number of times the ISR has run */
 /*
 ISR( SIG_OVERFLOW1 ){
-  sig = true;
-} 
-ISR( SIG_OVERFLOW0 ){
-  sig = true;
-} 
-ISR( SIG_OVERFLOW2 ){
-  sig = true;
-} 
-ISR(TIM0_OVF_vect){
-  sig = true;
-} 
-ISR(TIM333333_OVF_veffct){
-  sig = true;
-} 
-*/
+ sig = true;
+ } 
+ ISR( SIG_OVERFLOW0 ){
+ sig = true;
+ } 
+ ISR( SIG_OVERFLOW2 ){
+ sig = true;
+ } 
+ ISR(TIM0_OVF_vect){
+ sig = true;
+ } 
+ ISR(TIM333333_OVF_veffct){
+ sig = true;
+ } 
+ */
 ISR(TIMER1_COMPA_vect){
-  sig = true;
+//  sig = true;
 }
 
 ISR(TIMER1_OVF_vect)        // interrupt service routine that wraps a user defined function supplied by attachInterrupt
@@ -163,6 +259,8 @@ ISR(TIMER1_OVF_vect)        // interrupt service routine that wraps a user defin
 
 /*
     //    for(i8  = 0;i8<LEDSIZE;i8++){
-void reload(){
-  analogWrite(leds[2].pin, wypelnienie);
-}*/
+ void reload(){
+ analogWrite(leds[2].pin, wypelnienie);
+ 
+ }*/
+
