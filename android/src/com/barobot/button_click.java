@@ -130,8 +130,10 @@ public class button_click implements OnClickListener{
 			q.add("SET Y " + virtualComponents.get("NEUTRAL_POS_Y", "0" ), true );
 			long lengthx4	=  virtualComponents.getInt("LENGTHX", 600 );
 			for( int i =0; i<10;i++){
-				q.add("SET X " + (lengthx4/4), true );
-				q.add("SET X " + (lengthx4/4 * 3) , true );
+				//q.add("SET X " + (lengthx4/4), true );
+				//q.add("SET X " + (lengthx4/4 * 3) , true );
+				q.add("SET X 0", true );
+				q.add("SET X " + (lengthx4) , true );
 			}
 			ar.send(q);
 			break;
@@ -147,8 +149,10 @@ public class button_click implements OnClickListener{
 		case R.id.machajz:
 			q.add("ENABLEZ", true);
 			for( int i =0; i<10;i++){
-				q.add("SET Z MAX", true );
-				q.add("SET Z MIN", true );
+				q.add("SET Z MAX", true);		// SET Z zwraca początek operacji a nie koniec
+				q.addWait( virtualComponents.SERVOZ_UP_TIME );	// wiec trzeba poczekać
+				q.add("SET Z MIN", true);		// SET Z zwraca początek operacji a nie koniec
+				q.addWait( virtualComponents.SERVOZ_DOWN_TIME );	// wiec trzeba poczekać
 			}
 			q.add("DISABLEZ", true);
 			ar.send(q);
@@ -183,7 +187,7 @@ public class button_click implements OnClickListener{
 		    ar.send(q);
 			break;
 		case R.id.glweight:
-			ar.send("GET GLASS");
+			ar.send("GET ANALOG " + virtualComponents.ANALOG_WAGA);
 			break;
 		case R.id.bottweight:
 			ar.send("GET WEIGHT");
@@ -250,42 +254,6 @@ public class button_click implements OnClickListener{
 			virtualComponents.moveZDown( q );
 			long lengthy3	=  virtualComponents.getInt("LENGTHY", 600 );
 			ar.send("SET Y -" + lengthy3 );
-			break;	
-
-		case R.id.length_x:
-			virtualComponents.moveZDown( q );
-			// do obecnej pozycji dodaj różnicę do końca
-			long lengthx	=  virtualComponents.getInt("LENGTHX", 1600);
-			long posx3		=  virtualComponents.getInt("POSX", 55);	
-			if( lengthx > 0 ){
-				long target = lengthx - posx3;
-				q.add("SET X +" + target, true);
-			}
-			ar.send(q);
-			break;	
-		case R.id.length_x2:
-			virtualComponents.moveZDown( q );
-			// od obecnej pozycji odejmij tą pozycję (powinno zajechac do 0)
-			q.add("SET X -" + virtualComponents.getInt("POSY", 0 ), true);
-			ar.send(q);
-			break;		
-
-		case R.id.length_y:
-			virtualComponents.moveZDown( q );
-			// do obecnej pozycji dodaj różnicę do konkońca
-			long lengthy	=  virtualComponents.getInt("LENGTHY", 600 );
-			long posy3		=  virtualComponents.getInt("POSY", 0 );	
-			if( lengthy > 0 ){
-				long target = lengthy - posy3;
-				q.add("SET Y +" + target, true);
-			}
-			ar.send(q);
-			break;	
-		case R.id.length_y2:
-			virtualComponents.moveZDown( q );
-			// od obecnej pozycji odejmij tą pozycję (powinno zajechac do 0)
-			q.add("SET Y -" + virtualComponents.getInt("POSY", 0 ), true);
-			ar.send(q);
 			break;	
 		case R.id.unlock:
 			ar.unlock();

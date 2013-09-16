@@ -53,7 +53,7 @@ public class Constant {
 			Log.w(tag4,string);
 		}
 	}
-	public static void log(String tag22, String string, IOException e) {
+	public static void log(String tag22, String string, Exception e) {
 		// TODO Auto-generated method stub
 		if(Constant.D) {
 			Log.w(tag22,string,e);

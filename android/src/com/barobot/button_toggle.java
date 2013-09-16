@@ -13,7 +13,7 @@ public class button_toggle implements OnClickListener{
   	  	ToggleButton tb			= (ToggleButton) v;
   	  	boolean isChecked		= tb.isChecked();
   	  	tb.setChecked(!isChecked);		//anuluj zmian, zrb to dopiero po otrzymaniu potwierdzenia
-  	  	
+
   	  	Arduino ar = Arduino.getInstance();
 		switch (v.getId()) {
 	    	case R.id.led1:
@@ -104,9 +104,9 @@ public class button_toggle implements OnClickListener{
 				break;
 			case R.id.wagi_live:
 	    		if(isChecked){
-	    			ar.send("LIVE WEIGHT ON");
+	    			virtualComponents.enable_analog(ar, virtualComponents.ANALOG_WAGA, 50, 2);
 	    		}else{
-	    			ar.send("LIVE WEIGHT OFF");	    			
+	    			virtualComponents.disable_analog( ar, virtualComponents.ANALOG_WAGA ); 			
 	    		}
 	    	  	break;
 		}

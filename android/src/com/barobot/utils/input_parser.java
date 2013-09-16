@@ -2,12 +2,8 @@ package com.barobot.utils;
 
 import com.barobot.DebugWindow;
 import com.barobot.R;
-import com.barobot.R.id;
 import com.barobot.hardware.virtualComponents;
-
-import android.os.AsyncTask;
-import android.util.Log;
-import android.widget.SeekBar;
+import com.barobot.webview.AJS;
 
 public class input_parser {
 	private static String buffer = "";
@@ -45,17 +41,22 @@ public class input_parser {
 		boolean is_ret = false;
 
 		if(fromArduino.startsWith("RET ")){						// na końcu bo to może odblokować wysyłanie i spowodować zapętlenie
-			if(fromArduino.startsWith("RET LIVE WEIGHT")){	
-				String fromArduino2 = fromArduino.replace("RET LIVE WEIGHT ", "");
-				final DebugWindow dialog = DebugWindow.getInstance();
-				if(dialog!=null){
-					dialog.setChecked( R.id.wagi_live, "ON".equals(fromArduino2) );
-				}
-			}else if(fromArduino.startsWith("RET SET LED")){	
+			if(fromArduino.startsWith("RET SET LED")){	
 				String fromArduino2 = fromArduino.replace("RET SET LED", "");
 				String[] tokens = fromArduino2.split(" ");		// numer i wartosc
 				virtualComponents.set( "LED" + tokens[0],  tokens[1] );		//  ON lub OFF
-	
+
+			}else if(fromArduino.startsWith("RET LIVE ANALOG OFF")){
+				final DebugWindow dialog = DebugWindow.getInstance();
+				if(dialog!=null){
+					dialog.setChecked( R.id.wagi_live, false );
+				}
+			}else if(fromArduino.startsWith("RET LIVE ANALOG 2,")){	
+				String fromArduino2 = fromArduino.replace("RET LIVE ANALOG 2,", "");
+				final DebugWindow dialog = DebugWindow.getInstance();
+				if(dialog!=null){
+					dialog.setChecked( R.id.wagi_live, !"OFF".equals(fromArduino2) );
+				}				
 			}else if(fromArduino.startsWith("RET POS")){	
 				String fromArduino2 = fromArduino.replace("RET POS ", "");
 				String[] tokens = fromArduino2.split(",");
@@ -92,16 +93,35 @@ public class input_parser {
 				virtualComponents.set( "POSZ",tokens[2]);
 			}			
 			is_ret = Arduino.getInstance().read_ret( fromArduino );		// zapisuj zwrotki
+		}else if(fromArduino.startsWith("ANALOG")){
+			AJS aa = AJS.getInstance();
+			if(aa!=null){
+				String[] tokens = fromArduino.split(" ");
+				if(tokens.length > 1 ){
+					aa.oscyloskop( tokens[1] );
+				}
+			}
+			if(fromArduino.startsWith("ANALOG2 ")){	
+				String fromArduino21 = fromArduino.replace("ANALOG2 ", "");
+				virtualComponents.set( "GLASS_WEIGHT", fromArduino21);
+				int noglass_weight = virtualComponents.getInt( "NOGLASS_WEIGHT", 0 );
+				int e = Integer.parseInt(fromArduino21);
+				if( e < noglass_weight ){		// jesli jest lżej od tego ile powinno byc
+					virtualComponents.set( "NOGLASS_WEIGHT", fromArduino21);
+				}
+			}
+
+		}else if(fromArduino.startsWith("INTERVAL")){
+			AJS aa = AJS.getInstance();
+			if(aa!=null){
+				aa.oscyloskop_interval();
+			}
 		}else if(fromArduino.startsWith("ERROR")){	
 			input_parser.handleError( fromArduino );			// analizuj błędy
 
 		}else if( fromArduino.startsWith("VAL ANALOG0")){
 			String fromArduino2 = fromArduino.replace("VAL ANALOG0 ", "");			
 			virtualComponents.set( "ANALOG0",fromArduino2);
-
-		}else if( fromArduino.startsWith("VAL DISTANCE0")){
-			String fromArduino2 = fromArduino.replace("VAL DISTANCE0 ", "");
-			virtualComponents.set( "DISTANCE0",fromArduino2);
 
 		}else if(fromArduino.startsWith("IRR ")){
 		}else if(fromArduino.startsWith("LENGTHX")){	
@@ -115,16 +135,7 @@ public class input_parser {
 		}else if(fromArduino.startsWith("LENGTHZ")){
 			String fromArduino2 = fromArduino.replace("LENGTHZ ", "");
 			virtualComponents.set( "LENGTHZ",fromArduino2);
-			
-		}else if(fromArduino.startsWith("GLASS")){	
-			String fromArduino2 = fromArduino.replace("GLASS ", "");
-			virtualComponents.set( "GLASS_WEIGHT", fromArduino2);
-			
-			int noglass_weight = virtualComponents.getInt( "NOGLASS_WEIGHT", 0 );
-			int e = Integer.parseInt(fromArduino2);
-			if( e < noglass_weight ){		// jesli jest lżej od tego ile powinno byc
-				virtualComponents.set( "NOGLASS_WEIGHT", fromArduino2);	
-			}
+
 		}else if(fromArduino.startsWith("WEIGHT")){	
 			String fromArduino2 = fromArduino.replace("WEIGHT ", "");
 			virtualComponents.set( "WEIGHT",fromArduino2);

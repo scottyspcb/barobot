@@ -16,7 +16,7 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_centerInParent="true"
-            android:text="...----=== oldtown barobot 2113 ==----..."
+            android:text="...----=== barobot 2013 ==----..."
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textSize="40sp" />
     </RelativeLayout>
