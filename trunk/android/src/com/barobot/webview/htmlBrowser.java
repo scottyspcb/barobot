@@ -62,12 +62,13 @@ public class htmlBrowser {
 		context.put("elements", v2.iterator() );
 */
 		
-		this.m.webview.loadUrl("http://google.pl");
+	//	this.m.webview.loadUrl("http://google.pl");
+		this.m.webview.loadUrl("file:///android_asset/oscyloskop.htm");
 		
 	//	String tplcc = this.fetchTplVel("scroll_view", context );
 	//	String tplcc = this.fetchTplVel("main_page_test", context );
 	//	Log.d("+HTML",tplcc);
-////		this.m.webview.loadDataWithBaseURL("file:///android_asset/", tplcc, "text/html", "UTF-8", null );
+//		this.m.webview.loadDataWithBaseURL("file:///android_asset/", tplcc, "text/html", "UTF-8", null );
 	}
 
 	private void VelocityInit(){

@@ -1,6 +1,7 @@
 package org.microbridge.server;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
@@ -84,12 +85,12 @@ public class Server
 	{
 		keepAlive = true;
 		try {
-			serverSocket = new ServerSocket(port);
+			//serverSocket = new ServerSocket(port);	
+			serverSocket = new ServerSocket();
+			serverSocket.setReuseAddress(true);
+			serverSocket.bind(new InetSocketAddress(6677));			
 		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-			serverSocket = new ServerSocket(port);
 		}
-		//serverSocket.setReuseAddress(true);
 
 		(listenThread = new Thread(){
 			public void run()

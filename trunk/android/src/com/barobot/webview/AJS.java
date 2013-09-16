@@ -3,6 +3,8 @@ package com.barobot.webview;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.barobot.utils.Constant;
+
 import android.content.Context;
 import android.util.Log;
 import android.webkit.WebView;
@@ -10,12 +12,17 @@ import android.widget.Toast;
 
 public class AJS {
 	Context mContext;
+	private static AJS inst;
 
+	public static AJS getInstance() {
+		return inst;
+	}
 	public static Map<String, String> ready2send = new HashMap<String, String>();
 	 WebView webview;
 	    public AJS(Context c, WebView w) {
 	        mContext = c;
 	        webview = w;
+			inst = this;
 	    }
 	    public void showToast(String toast) {
 	        Toast.makeText(mContext, toast, Toast.LENGTH_SHORT).show();
@@ -88,7 +95,7 @@ public class AJS {
 	    //	this.runJs( "putIn", "#main_title","jeah!" );
 	    }
 
-		public void  doPhoto() {
+		public void doPhoto() {
 			//mContext.cm.doPhoto();
 			/*
 			Intent intent = new Intent();
@@ -97,12 +104,16 @@ public class AJS {
 		    intent.addCategory(Intent.CATEGORY_OPENABLE);
 		    startActivityForResult(intent, mContext.PHOTO_REQUEST_CODE);*/
 		}
-
-	    
-	    
-	    
-	    
-	    
+		public void oscyloskop( final String in ) {
+	    	final AJS appi = this;
+	    	appi.webview.post(new Runnable() {
+	            @Override
+	            public void run() { 
+	    			String url = "javascript:sendToDraw('"+ in +"');void(0);";
+	            	appi.webview.loadUrl(url);
+	            }
+	        });
+		}
 		private void runJs(final String method, final String... args) {
 	    	final AJS appi = this;
 	    	appi.webview.post(new Runnable() {
@@ -121,7 +132,6 @@ public class AJS {
 	            }
 	        }); 
 		}
-
 	   private static String addSlashes(String str) {
 		  if (str == null){
 		     return "";
@@ -139,5 +149,15 @@ public class AJS {
 	   }
 	public void setOrientation(String string) {
 		this.runJs( "setOrientation", string );
+	}
+	public void oscyloskop_interval() {
+    	final AJS appi = this;
+    	appi.webview.post(new Runnable() {
+            @Override
+            public void run() { 
+    			String url = "javascript:sendToDraw();void(0);";
+            	appi.webview.loadUrl(url);
+            }
+        });
 	}
 }

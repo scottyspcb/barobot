@@ -320,15 +320,6 @@ android:layout_height="fill_parent">
 			        android:text="MACHAJY" />
 
 			    <Button
-			        android:id="@+id/length_x"
-			        android:layout_width="wrap_content"
-			        android:layout_height="wrap_content"
-			        android:layout_alignBaseline="@+id/kalibrujx"
-			        android:layout_alignParentLeft="false"
-			        android:layout_toRightOf="@+id/losujx"
-			        android:text="X+LENGTHX" />
-
-			    <Button
 			        android:id="@+id/machajx"
 			        android:layout_width="wrap_content"
 			        android:layout_height="wrap_content"
@@ -351,22 +342,6 @@ android:layout_height="fill_parent">
 			        android:layout_alignBaseline="@+id/machajy"
 			        android:layout_toRightOf="@+id/machajy"
 			        android:text="LOSUJY" />
-
-			    <Button
-			        android:id="@+id/length_y"
-			        android:layout_width="wrap_content"
-			        android:layout_height="wrap_content"
-			        android:layout_alignBaseline="@+id/kalibrujy"
-			        android:layout_toRightOf="@+id/losujy"
-			        android:text="Y+LENGTHY" />
-
-			    <Button
-			        android:id="@+id/length_y2"
-			        android:layout_width="wrap_content"
-			        android:layout_height="wrap_content"
-			        android:layout_alignBaseline="@+id/kalibrujy"
-			        android:layout_toRightOf="@+id/length_y"
-			        android:text="Y-POS Y" />
 
 			    <Button
 			        android:id="@+id/fill5000"
@@ -441,14 +416,6 @@ android:layout_height="fill_parent">
 			        android:layout_alignParentTop="true"
 			        android:layout_toLeftOf="@+id/set_y_100"
 			        android:text="-600" />
-
-			    <Button
-			        android:id="@+id/length_x2"
-			        android:layout_width="wrap_content"
-			        android:layout_height="wrap_content"
-			        android:layout_alignBaseline="@+id/kalibrujx"
-			        android:layout_toRightOf="@+id/length_x"
-			        android:text="X-POS X" />
 
 			    <TextView
 			        android:id="@+id/dlugosc_x"

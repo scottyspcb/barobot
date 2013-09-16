@@ -64,6 +64,7 @@ public class Arduino extends AbstractServerListener{
 			}
 			return true;
 		} catch (IOException e){
+			Constant.log(Constant.TAG, "+ ADB Server error", e );
 			return false;
 		}
 	}
@@ -173,7 +174,7 @@ public class Arduino extends AbstractServerListener{
 				autoconnect();
 			}
 		} catch (Exception e) {
-			Constant.log(Constant.TAG, "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+			Constant.log(Constant.TAG, "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", e);
 		}
 	}
     public void bt_disconnect() {
@@ -347,7 +348,7 @@ public class Arduino extends AbstractServerListener{
 	            }
 			}
 		} catch (IOException e)	{
-			Constant.log(Constant.TAG, "problem sending TCP message");
+			Constant.log(Constant.TAG, "problem sending TCP message",e);
 		}
 	}
 	private void passString( String command ) throws IOException {

@@ -11,13 +11,11 @@ import com.barobot.utils.interval;
 import com.barobot.utils.Arduino;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -64,7 +62,6 @@ public class BarobotMain extends Activity {
 
 		cm = new CameraManager( this );
 		cm.findCameras();
-		
     }
 
     private ArrayList<interval> inters = new ArrayList<interval>();    
@@ -233,3 +230,20 @@ public class BarobotMain extends Activity {
 		return instance;
 	}
 }
+
+/*
+new AlertDialog.Builder(this)
+.setTitle("Delete entry")
+.setMessage("Are you sure you want to delete this entry?")
+.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+    public void onClick(DialogInterface dialog, int which) { 
+        // continue with delete
+    }
+ })
+.setNegativeButton("No", new DialogInterface.OnClickListener() {
+    public void onClick(DialogInterface dialog, int which) { 
+        // do nothing
+    }
+ })
+ .show();
+*/

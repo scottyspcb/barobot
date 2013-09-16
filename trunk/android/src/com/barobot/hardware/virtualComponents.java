@@ -46,6 +46,14 @@ public class virtualComponents {
 	private static final int SERVOZ_PAC_POS = 1900;
 	private static final int SERVOZ_PAC_TIME_WAIT = 400;
 
+	public static final int SERVOZ_UP_TIME = 700;
+	public static final int SERVOZ_DOWN_TIME = 600;
+	
+	public static final int ANALOG_WAGA = 2;
+	public static final int ANALOG_DIST1 = 20;
+	public static final int ANALOG_DIST2 = 21;
+	public static final int ANALOG_HALL = 10;
+
 	private static String[] persistant = {
 		"LENGTHX","LENGTHY","LENGTHZ","LAST_BT_DEVICE",
 		"NEUTRAL_POS_Y",
@@ -227,13 +235,15 @@ public class virtualComponents {
 		q.add("ENABLEX", true);
 //		q.add("ENABLEY", true);
 		q.add("ENABLEZ", true);
-		q.add("SET Z MIN", true);
+		q.add("SET Z MAX", true);		// SET Z zwraca początek operacji a nie koniec
+		q.addWait( virtualComponents.SERVOZ_UP_TIME );	// wiec trzeba poczekać
 		q.addWait( virtualComponents.SERVOZ_PAC_TIME_WAIT );
 		q.add("SET Z " + virtualComponents.SERVOZ_PAC_POS, true);	
 		q.addWait( virtualComponents.SERVOZ_PAC_TIME_UP );
 		q.add("SET Z " + virtualComponents.SERVOZ_DOWN_POS, true);
 		q.addWait( virtualComponents.SERVOZ_PAC_TIME_DOWN );
-		q.add("SET Z MIN", true);
+		q.add("SET Z MAX", true);		// SET Z zwraca początek operacji a nie koniec
+		q.addWait( virtualComponents.SERVOZ_UP_TIME );	// wiec trzeba poczekać
 		q.add("DISABLEX", true);
 //	    q.add("DISABLEY", true);
 	    q.add("DISABLEZ", true);
@@ -247,10 +257,10 @@ public class virtualComponents {
 		Arduino ar = Arduino.getInstance();
 		ar.clear();
 		ar.send("LIVE WEIGHT OFF");
+		ar.send("ENABLEZ");
+		ar.send("SET Z MAX");		// SET Z zwraca początek operacji a nie koniec
 		ar.send("DISABLEX");
 	    ar.send("DISABLEY");
-		ar.send("ENABLEZ");
-		ar.send("SET Z MIN");
 		ar.send("DISABLEZ");
 		ar.send("GET CARRET");
 	}
@@ -261,7 +271,8 @@ public class virtualComponents {
 	}
 	public static void moveZDown( ArduinoQueue q ) {
 		q.add("ENABLEZ", true);
-		q.add("SET Z MIN", true );
+		q.add("SET Z MIN", true);		// SET Z zwraca początek operacji a nie koniec
+		q.addWait( virtualComponents.SERVOZ_DOWN_TIME );	// wiec trzeba poczekać
 	    q.add("DISABLEZ", true);
 	}
 	public static void moveToBottle(final int num ) {
@@ -294,12 +305,13 @@ public class virtualComponents {
 			q.add("ENABLEX", true);
 			q.add("ENABLEY", true);
 			q.add("ENABLEZ", true);
-			if(virtualComponents.need_glass_up){
-				q.add("WAIT GLASS " + virtualComponents.weigh_min_diff, true);
-			}
-			q.add("SET Z MAX", true);
-			q.addWait( time );
-			q.add("SET Z MIN", true);
+			q.addWaitGlass();
+			q.add("SET Z MAX", true);		// SET Z zwraca początek operacji a nie koniec
+			q.addWait( virtualComponents.SERVOZ_UP_TIME );	// wiec trzeba poczekać
+
+			q.addWait( time );			// czekaj na nalanie
+			q.add("SET Z MIN", true);		// SET Z zwraca początek operacji a nie koniec
+			q.addWait( virtualComponents.SERVOZ_DOWN_TIME );	// wiec trzeba poczekać
 			q.add( new rpc_message( true ) {
 				@Override
 				public ArduinoQueue run() {
@@ -311,12 +323,13 @@ public class virtualComponents {
 						q2.addWait( virtualComponents.SERVOZ_PAC_TIME_UP );
 						q2.add("SET Z " + virtualComponents.SERVOZ_DOWN_POS, true);
 						q2.addWait( virtualComponents.SERVOZ_PAC_TIME_DOWN );
-						q2.add("SET Z MIN", true);
+						q2.add("SET Z MIN", true);		// SET Z zwraca początek operacji a nie koniec
+						q2.addWait( virtualComponents.SERVOZ_DOWN_TIME );	// wiec trzeba poczekać
 						return q2;
 					}
 					return null;
 				}
-			} );				
+			} );
 			q.add("DISABLEX", true);
 		    q.add("DISABLEY", true);
 		    q.add("DISABLEZ", true);
@@ -324,18 +337,27 @@ public class virtualComponents {
 		q.add("GET CARRET", true);
 		ar.send( q );
 	}
+	
+	public static void enable_analog( Arduino ar, int pin, int time, int repeat) {
+		ar.send("LIVE ANALOG "+pin+","+time+","+repeat);		// repeat pomiary co time na porcie pin
+	}
+	public static void disable_analog(Arduino ar, int analogWaga) {
+		ar.send("LIVE ANALOG OFF");
+	}
+
 	public static void nalej(int time) {
 		Arduino ar = Arduino.getInstance();
 		ArduinoQueue q = new ArduinoQueue();
-		if(virtualComponents.need_glass_up){
-			q.add("WAIT GLASS " + virtualComponents.weigh_min_diff, true);
-		}
+		q.addWaitGlass();
 		q.add("ENABLEX", true);
-//		q.add("ENABLEY", true);
+//		q.add("ENABLEY", true);	
 		q.add("ENABLEZ", true);
-		q.add("SET Z MAX", true);
+		q.add("SET Z MAX", true);		// SET Z zwraca początek operacji a nie koniec
+		q.addWait( virtualComponents.SERVOZ_UP_TIME );	// wiec trzeba poczekać
+
 		q.addWait( time );
-		q.add("SET Z MIN", true);
+		q.add("SET Z MIN", true);		// SET Z zwraca początek operacji a nie koniec
+		q.addWait( virtualComponents.SERVOZ_DOWN_TIME );	// wiec trzeba poczekać
 		q.add( new rpc_message( true ) {
 			@Override
 			public ArduinoQueue run() {
@@ -347,7 +369,8 @@ public class virtualComponents {
 					q2.addWait( virtualComponents.SERVOZ_PAC_TIME_UP );
 					q2.add("SET Z " + virtualComponents.SERVOZ_DOWN_POS, true);
 					q2.addWait( virtualComponents.SERVOZ_PAC_TIME_DOWN );
-					q2.add("SET Z MIN", true);
+					q2.add("SET Z MIN", true);		// SET Z zwraca początek operacji a nie koniec
+					q2.addWait( virtualComponents.SERVOZ_DOWN_TIME );	// wiec trzeba poczekać
 					return q2;
 				}
 				return null;

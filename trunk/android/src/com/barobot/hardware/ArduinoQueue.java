@@ -48,7 +48,16 @@ public class ArduinoQueue {
 			@Override
 			public ArduinoQueue run() {
 				this.name				= "wait glass 2";
-				// przestan skanować po 10 sek
+				final rpc_message m3	= this;
+				final Handler handler	= new Handler();
+				handler.postDelayed(new Runnable() {
+				  @Override
+				  public void run() {
+					  Arduino ar 		= Arduino.getInstance();  
+					  ar.unlock( m3 );
+				  }
+				}, 15000);						// przestan skanować po 15 sek
+
 				return null;
 			}
 			public boolean isRet(String message) {	// czy to co przyszło jest zwrotką tej komendy
@@ -64,6 +73,32 @@ public class ArduinoQueue {
 				return true;
 			}
 		};
+		
+		final rpc_message finishGlass = new rpc_message( true ) {
+			@Override
+			public ArduinoQueue run() {
+				this.name				= "finish glass";
+				int glass_weight = virtualComponents.getInt( "GLASS", 0 );
+				int noglass_weight = virtualComponents.getInt( "NOGLASS_WEIGHT", 0 );
+				if( noglass_weight + virtualComponents.weigh_min_diff < glass_weight ){		// jest ciężej 
+				}else{		// nie ma szklanki wiec przerwij
+					Arduino ar	= new Arduino();
+					// error = nie ma szklanki
+					boolean dd = true;
+					if(dd){		// przerwij gdy nie ma szklanki
+						ar.clear();
+					}else{			// wyświetl komunikat i poproś jeszcze raz
+						
+						
+					}
+				}
+				final rpc_message m3	= this;
+				return null;
+			}
+			public boolean isBlocing() {
+				return false;
+			}};
+		
 		final rpc_message m2 = new rpc_message( true ) {
 			@Override
 			public ArduinoQueue run() {
@@ -76,10 +111,9 @@ public class ArduinoQueue {
 				q2.add("SET LED5 ON", true);
 				q2.add( wait4glass );					// jest szklanka lub nie ma
 				q2.add("LIVE WEIGHT OFF", true);
-				
 				q2.add("DISABLEX", true);
 				q2.add("DISABLEY", true);
-				q2.add( wait4glass );					// jest szklanka lub nie ma
+				q2.add( finishGlass );					// jest szklanka lub nie ma
 				return q2;
 			}
 			public boolean isBlocing() {
@@ -88,8 +122,6 @@ public class ArduinoQueue {
 		};
 		output.add( m2 );
 /*
-		this.add("WAIT GLASS " + virtualComponents.weigh_min_diff, true);		
-
 				
 		long unsigned waga = read_szklanka();
 		send2android("GLASS " + String(waga));
