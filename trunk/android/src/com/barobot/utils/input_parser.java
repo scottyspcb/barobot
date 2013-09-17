@@ -46,13 +46,13 @@ public class input_parser {
 				String[] tokens = fromArduino2.split(" ");		// numer i wartosc
 				virtualComponents.set( "LED" + tokens[0],  tokens[1] );		//  ON lub OFF
 
-			}else if(fromArduino.startsWith("RET LIVE ANALOG OFF")){
+			}else if(fromArduino.startsWith("RET LIVE A OFF")){
 				final DebugWindow dialog = DebugWindow.getInstance();
 				if(dialog!=null){
 					dialog.setChecked( R.id.wagi_live, false );
 				}
-			}else if(fromArduino.startsWith("RET LIVE ANALOG 2,")){	
-				String fromArduino2 = fromArduino.replace("RET LIVE ANALOG 2,", "");
+			}else if(fromArduino.startsWith("RET LIVE A 2,")){	
+				String fromArduino2 = fromArduino.replace("RET LIVE A 2,", "");
 				final DebugWindow dialog = DebugWindow.getInstance();
 				if(dialog!=null){
 					dialog.setChecked( R.id.wagi_live, !"OFF".equals(fromArduino2) );
@@ -93,7 +93,7 @@ public class input_parser {
 				virtualComponents.set( "POSZ",tokens[2]);
 			}			
 			is_ret = Arduino.getInstance().read_ret( fromArduino );		// zapisuj zwrotki
-		}else if(fromArduino.startsWith("ANALOG")){
+		}else if(fromArduino.startsWith("A")){
 			AJS aa = AJS.getInstance();
 			if(aa!=null){
 				String[] tokens = fromArduino.split(" ");
@@ -101,8 +101,8 @@ public class input_parser {
 					aa.oscyloskop( tokens[1] );
 				}
 			}
-			if(fromArduino.startsWith("ANALOG2 ")){	
-				String fromArduino21 = fromArduino.replace("ANALOG2 ", "");
+			if(fromArduino.startsWith("A2 ")){	
+				String fromArduino21 = fromArduino.replace("A2 ", "");
 				virtualComponents.set( "GLASS_WEIGHT", fromArduino21);
 				int noglass_weight = virtualComponents.getInt( "NOGLASS_WEIGHT", 0 );
 				int e = Integer.parseInt(fromArduino21);
@@ -119,9 +119,9 @@ public class input_parser {
 		}else if(fromArduino.startsWith("ERROR")){	
 			input_parser.handleError( fromArduino );			// analizuj błędy
 
-		}else if( fromArduino.startsWith("VAL ANALOG0")){
-			String fromArduino2 = fromArduino.replace("VAL ANALOG0 ", "");			
-			virtualComponents.set( "ANALOG0",fromArduino2);
+		}else if( fromArduino.startsWith("VAL A0")){
+			String fromArduino2 = fromArduino.replace("VAL A0 ", "");			
+			virtualComponents.set( "A0",fromArduino2);
 
 		}else if(fromArduino.startsWith("IRR ")){
 		}else if(fromArduino.startsWith("LENGTHX")){	
