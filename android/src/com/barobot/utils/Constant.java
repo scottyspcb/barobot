@@ -43,7 +43,7 @@ public class Constant {
     public static final int STATE_CONNECTED = 3;  // now connected to a remote device
 
     // Debugging
-    public static final String TAG3 = "DeviceListActivity";
+    public static final String TAG3 = "BTListActivity";
 
     // Return Intent extra
     public static String EXTRA_DEVICE_ADDRESS = "device_address";

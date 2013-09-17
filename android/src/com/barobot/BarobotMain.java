@@ -105,9 +105,9 @@ public class BarobotMain extends Activity {
                 Toast.makeText(this, "Bluetooth jest niedostępny", Toast.LENGTH_LONG).show();
                 finish();
             }
-            // Launch the DeviceListActivity to see devices and do scan
-            serverIntent = new Intent(this, DeviceListActivity.class);
-            startActivityForResult(serverIntent, DeviceListActivity.INTENT_NAME);
+            // Launch the BTListActivity to see devices and do scan
+            serverIntent = new Intent(this, BTListActivity.class);
+            startActivityForResult(serverIntent, BTListActivity.INTENT_NAME);
             return true;
 
         case R.id.update_drinks:
@@ -189,9 +189,9 @@ public class BarobotMain extends Activity {
         case MainSettingsActivity.INTENT_NAME:
         	Constant.log(Constant.TAG, "END OF SETTINGS");
             break;
-        case DeviceListActivity.INTENT_NAME:
+        case BTListActivity.INTENT_NAME:
         	Constant.log(Constant.TAG, "REQUEST_CONNECT_DEVICE_SECURE");
-            // When DeviceListActivity returns with a device to connect
+            // When BTListActivity returns with a device to connect
             if (resultCode == Activity.RESULT_OK) {
                 String address = data.getExtras().getString(Constant.EXTRA_DEVICE_ADDRESS);           // Get the device MAC address
                 Arduino.connectBTDeviceId(address);

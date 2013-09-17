@@ -187,7 +187,7 @@ public class button_click implements OnClickListener{
 		    ar.send(q);
 			break;
 		case R.id.glweight:
-			ar.send("GET ANALOG " + virtualComponents.ANALOG_WAGA);
+			ar.send("GET A " + virtualComponents.ANALOG_WAGA);
 			break;
 		case R.id.bottweight:
 			ar.send("GET WEIGHT");

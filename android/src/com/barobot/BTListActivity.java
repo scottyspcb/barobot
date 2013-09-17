@@ -30,7 +30,7 @@ import android.widget.AdapterView.OnItemClickListener;
  * by the user, the MAC address of the device is sent back to the parent
  * Activity in the result Intent.
  */
-public class DeviceListActivity extends Activity {
+public class BTListActivity extends Activity {
     // Member fields
     private BluetoothAdapter mBtAdapter;
 	public static final int INTENT_NAME = 8;

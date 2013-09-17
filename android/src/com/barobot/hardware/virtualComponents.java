@@ -154,19 +154,12 @@ public class virtualComponents {
 					}
 				});
 	    	}
-
-		}else if("GLASS_WEIGHT".equals(name) &&  dialog != null ){
-			dialog.setText( R.id.dist1, value, false );
 		}else if("POSX".equals(name) &&  dialog != null ){
 			dialog.setText( R.id.position_x, value, false );
 		}else if("POSY".equals(name) &&  dialog != null ){
 			dialog.setText( R.id.position_y, value, false );
 		}else if("POSZ".equals(name) &&  dialog != null ){
-			dialog.setText( R.id.position_z, value, false );	
-		}else if("ANALOG0".equals(name) &&  dialog != null ){
-			dialog.setText( R.id.analog0, value, false );
-		}else if("DISTANCE0".equals(name) &&  dialog != null ){
-			dialog.setText( R.id.dist1, value, false );				
+			dialog.setText( R.id.position_z, value, false );		
 		}else if("LED1".equals(name) &&  dialog != null ){
 			dialog.setChecked( R.id.led1, "ON".equals(value) );
 		}else if("LED2".equals(name) &&  dialog != null ){
@@ -187,21 +180,7 @@ public class virtualComponents {
 			dialog.setChecked( R.id.led9, "ON".equals(value) );
 		}else if("LED10".equals(name) &&  dialog != null ){
 			dialog.setChecked( R.id.led10, "ON".equals(value) );
-		}else if("DISTANCE0".equals(name) &&  dialog != null ){
-			dialog.setText( R.id.dist1, value, false );
-		}else if("DISTANCE0".equals(name) &&  dialog != null ){
-			dialog.setText( R.id.dist1, value, false );
-		}else if("DISTANCE0".equals(name) &&  dialog != null ){
-			dialog.setText( R.id.dist1, value, false );
-		}else if("DISTANCE0".equals(name) &&  dialog != null ){
-			dialog.setText( R.id.dist1, value, false );
-		}else if("DISTANCE0".equals(name) &&  dialog != null ){
-			dialog.setText( R.id.dist1, value, false );
-		}else if("DISTANCE0".equals(name) &&  dialog != null ){
-			dialog.setText( R.id.dist1, value, false );
-		}else if("DISTANCE0".equals(name) &&  dialog != null ){
-			dialog.setText( R.id.dist1, value, false );
-		}else if("DISTANCE0".equals(name) &&  dialog != null ){
+		}else if("aaaaaaaa".equals(name) &&  dialog != null ){
 			dialog.setText( R.id.dist1, value, false );
 		}
 	}
@@ -339,10 +318,10 @@ public class virtualComponents {
 	}
 	
 	public static void enable_analog( Arduino ar, int pin, int time, int repeat) {
-		ar.send("LIVE ANALOG "+pin+","+time+","+repeat);		// repeat pomiary co time na porcie pin
+		ar.send("LIVE A "+pin+","+time+","+repeat);		// repeat pomiary co time na porcie pin
 	}
 	public static void disable_analog(Arduino ar, int analogWaga) {
-		ar.send("LIVE ANALOG OFF");
+		ar.send("LIVE A OFF");
 	}
 
 	public static void nalej(int time) {
