@@ -23,42 +23,45 @@
     <string name="button_scan">Szukanie urządzeń w pobliżu</string>
     <string name="tvText">0</string>
     <string name="menu_settings">Ustawienia</string>
-    <string name="back_to_main_feature">Rób Drinki</string>
+    <string name="back_to_main_feature">Pij drinki z Barobotem</string>
 
-    <!-- Options Menu -->
-    <string name="secure_connect">Connect to Barobot</string>
+    <string name="secure_connect">Połącz z Barobotem</string>
     <string name="title_activity_update">Update</string>
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
     <string name="about_info">Autorzy...</string>
     <string name="title_activity_about">O programie</string>
     <string name="title_activity_web">WebActivity</string>
-
     <string name="processing_window_title">Analiza wejścia</string>
+    <string name="live_analog0">0</string>
+    <string name="live_analog1">Szklanka</string>
+    <string name="live_analog2">2</string>
+    <string name="live_analog3">3</string>
+    <string name="live_analog4">Hall</string>
+    <string name="live_analog5">5</string>
+    <string name="live_analog6">6</string>
+    <string name="live_analog7">7</string>
+    <string name="live_analog8">8</string>
+    <string name="live_analog9">9</string>
+    <string name="live_analog10">10</string>
+    <string name="live_analog11">11</string>
+    <string name="live_analog12">12</string>
+    <string name="live_analog13">13</string>
+    <string name="live_analog14">14</string>
+    <string name="live_analog15">15</string>
+    <string name="live_analog20">Ultra góra</string>
+    <string name="live_analog21">Ultra bok</string>
+    <string name="select_repeat">Powtórzeń</string>
+    <string name="select_timeout">Częstotliwość</string>
+    <string name="web_machaj_y">Machaj Y</string>
+    <string name="web_machaj_x">Machaj X</string>
+    <string name="title_activity_device_list">Tryb serwisowy</string>
 
-	<string name="live_analog0">0</string>
-	<string name="live_analog1">Szklanka</string>
-	<string name="live_analog2">2</string>
-	<string name="live_analog3">3</string>
-	<string name="live_analog4">Hall</string>
-	<string name="live_analog5">5</string>
-	<string name="live_analog6">6</string>
-	<string name="live_analog7">7</string>
-	<string name="live_analog8">8</string>
-	<string name="live_analog9">9</string>
-	<string name="live_analog10">10</string>
-	<string name="live_analog11">11</string>
-	<string name="live_analog12">12</string>
-	<string name="live_analog13">13</string>
-	<string name="live_analog14">14</string>
-	<string name="live_analog15">15</string>
-	<string name="live_analog20">Ultra góra</string>
-	<string name="live_analog21">Ultra bok</string>
-
-
-	<string name="select_repeat">Powtórzeń</string>
-	<string name="select_timeout">Częstotliwość</string>
-	<string name="web_machaj_y">Machaj Y</string>
-	<string name="web_machaj_x">Machaj X</string>
+    <string name="title_section1">Rozkazy</string>
+    <string name="title_section2">Urządzenia</string>
+    <string name="title_section3">Oświetlenie</string>
+    <string name="title_section4">Butelki</string>
+    <string name="title_section5">Analiza wejścia</string>
+    <string name="title_section6">Historia</string>
 
 </resources>

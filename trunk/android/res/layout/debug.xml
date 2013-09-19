@@ -50,6 +50,7 @@ android:layout_height="fill_parent">
 			    android:id="@+id/tab2"
 			    android:layout_width="match_parent"
 			    android:layout_height="match_parent" >
+
 			    <Button
 			        android:id="@+id/set_x_100"
 			        style="android:buttonStyle"
@@ -75,7 +76,7 @@ android:layout_height="fill_parent">
 			        android:layout_width="wrap_content"
 			        android:layout_height="wrap_content"
 			        android:layout_alignBaseline="@+id/set_x_1000"
-			        android:layout_toRightOf="@+id/set_x_1"
+			        android:layout_toRightOf="@+id/set_x_10"
 			        android:text="+10" />
 
 			    <Button
@@ -91,16 +92,8 @@ android:layout_height="fill_parent">
 			        android:layout_width="wrap_content"
 			        android:layout_height="wrap_content"
 			        android:layout_alignBottom="@+id/set_y_600"
-			        android:layout_toLeftOf="@+id/set_y_0"
-			        android:text="-10" />
-
-			    <Button
-			        android:id="@+id/set_y_0"
-			        android:layout_width="wrap_content"
-			        android:layout_height="wrap_content"
-			        android:layout_alignBottom="@+id/set_y_600"
 			        android:layout_toLeftOf="@+id/set_y10"
-			        android:text="Y 0" />
+			        android:text="-10" />
 
 			    <Button
 			        android:id="@+id/set_y600"
@@ -231,6 +224,7 @@ android:layout_height="fill_parent">
 			        android:layout_width="70dp"
 			        android:layout_height="wrap_content"
 			        android:layout_alignBaseline="@+id/kalibrujx"
+			        android:layout_alignRight="@+id/min_y"
 			        android:layout_toRightOf="@+id/max_x"
 			        android:text="MIN X" />
 
@@ -240,6 +234,7 @@ android:layout_height="fill_parent">
 			        android:layout_width="70dp"
 			        android:layout_height="wrap_content"
 			        android:layout_alignBaseline="@+id/kalibrujz"
+			        android:layout_alignRight="@+id/min_y"
 			        android:layout_toRightOf="@+id/max_z"
 			        android:text="MIN Z" />
 
@@ -276,6 +271,7 @@ android:layout_height="fill_parent">
 			        android:layout_width="70dp"
 			        android:layout_height="wrap_content"
 			        android:layout_alignBaseline="@+id/kalibrujx"
+			        android:layout_alignRight="@+id/max_z"
 			        android:layout_toRightOf="@+id/kalibrujx"
 			        android:text="MAX X" />
 
@@ -284,6 +280,7 @@ android:layout_height="fill_parent">
 			        android:layout_width="70dp"
 			        android:layout_height="wrap_content"
 			        android:layout_alignBaseline="@+id/kalibrujz"
+			        android:layout_alignRight="@+id/led7"
 			        android:layout_toRightOf="@+id/kalibrujz"
 			        android:text="MAX Z" />
 
@@ -292,6 +289,7 @@ android:layout_height="fill_parent">
 			        android:layout_width="70dp"
 			        android:layout_height="wrap_content"
 			        android:layout_alignBaseline="@+id/kalibrujy"
+			        android:layout_alignRight="@+id/pacpac"
 			        android:layout_toRightOf="@+id/max_y"
 			        android:text="MIN Y" />
 
@@ -300,6 +298,7 @@ android:layout_height="fill_parent">
 			        android:layout_width="70dp"
 			        android:layout_height="wrap_content"
 			        android:layout_alignBaseline="@+id/kalibrujy"
+			        android:layout_alignRight="@+id/max_z"
 			        android:layout_toRightOf="@+id/kalibrujy"
 			        android:text="MAX Y" />
 
@@ -386,15 +385,6 @@ android:layout_height="fill_parent">
 			        android:text="@string/tvText"
 			        android:textSize="32sp"
 			        android:textStyle="bold" />
-
-			    <Button
-			        android:id="@+id/set_x_1"
-			        style="android:buttonStyle"
-			        android:layout_width="wrap_content"
-			        android:layout_height="wrap_content"
-			        android:layout_alignBaseline="@+id/set_x_1000"
-			        android:layout_toRightOf="@+id/set_x_10"
-			        android:text="X 0" />
 
 			    <TextView
 			        android:id="@+id/position_y"
@@ -489,26 +479,14 @@ android:layout_height="fill_parent">
 			        android:textSize="32sp"
 			        android:textStyle="bold" />
 
-			    <TextView
-			        android:id="@+id/main_waga"
-			        android:layout_width="120dp"
-			        android:layout_height="wrap_content"
-			        android:layout_alignParentLeft="true"
-			        android:layout_below="@+id/position_z"
-			        android:layout_margin="5dp"
-			        android:ellipsize="end"
-			        android:gravity="center"
-			        android:text="@string/tvText"
-			        android:textSize="32sp"
-			        android:textStyle="bold" />
-
 			    <ToggleButton
 			        android:id="@+id/wagi_live"
 			        android:layout_width="wrap_content"
 			        android:layout_height="wrap_content"
 			        android:layout_alignLeft="@+id/dlugosc_z"
-			        android:layout_alignTop="@+id/main_waga"
-			        android:layout_toLeftOf="@+id/set_x100"
+			        android:layout_alignParentLeft="true"
+			        android:layout_alignRight="@+id/set_neutral_y"
+			        android:layout_below="@+id/position_z"
 			        android:text="ToggleButton"
 			        android:textOff="Waga OFF"
 			        android:textOn="Waga ON" />
@@ -517,8 +495,8 @@ android:layout_height="fill_parent">
 			        android:id="@+id/glweight"
 			        android:layout_width="wrap_content"
 			        android:layout_height="wrap_content"
-			        android:layout_alignLeft="@+id/kalibrujz"
-			        android:layout_alignTop="@+id/main_waga"
+			        android:layout_below="@+id/position_z"
+			        android:layout_toRightOf="@+id/wagi_live"
 			        android:text="Czytaj wagę raz" />
 
 			    <Button
@@ -529,16 +507,6 @@ android:layout_height="fill_parent">
 			        android:layout_alignBottom="@+id/glweight"
 			        android:layout_toRightOf="@+id/glweight"
 			        android:text="Czytaj butelki raz" />
-
-			    <ToggleButton
-			        android:id="@+id/set_bottle"
-			        android:layout_width="wrap_content"
-			        android:layout_height="wrap_content"
-			        android:layout_alignTop="@+id/bottweight"
-			        android:layout_toRightOf="@+id/bottweight"
-			        android:text="ToggleButton"
-			        android:textOff="Tutaj jest butelka..."
-			        android:textOn="Tutaj jest butelka..." />
 
 			    <Button
 			        android:id="@+id/smile"
@@ -552,7 +520,6 @@ android:layout_height="fill_parent">
 			        android:id="@+id/set_neutral_y"
 			        android:layout_width="wrap_content"
 			        android:layout_height="wrap_content"
-			        android:layout_alignLeft="@+id/main_waga"
 			        android:layout_below="@+id/glweight"
 			        android:text="Tu jest neutralny Y" />
 
@@ -571,15 +538,16 @@ android:layout_height="fill_parent">
 			        android:layout_height="wrap_content"
 			        android:layout_alignBaseline="@+id/goToNeutralY"
 			        android:layout_alignBottom="@+id/goToNeutralY"
-			        android:layout_toLeftOf="@+id/max_y"
+			        android:layout_toRightOf="@+id/goToNeutralY"
 			        android:text="Odblokuj" />
 
 			    <ToggleButton
 			        android:id="@+id/auto_fill"
 			        android:layout_width="wrap_content"
 			        android:layout_height="wrap_content"
+			        android:layout_alignBaseline="@+id/bottweight"
 			        android:layout_alignBottom="@+id/set_bottle"
-			        android:layout_toRightOf="@+id/losujy"
+			        android:layout_toRightOf="@+id/bottweight"
 			        android:text="ToggleButton"
 			        android:textOff="Nie nalewaj od razu"
 			        android:textOn="Nalewaj od razu" />
@@ -597,11 +565,12 @@ android:layout_height="fill_parent">
 			        android:id="@+id/need_glass"
 			        android:layout_width="wrap_content"
 			        android:layout_height="wrap_content"
+			        android:layout_alignBaseline="@+id/auto_fill"
 			        android:layout_alignBottom="@+id/auto_fill"
 			        android:layout_toRightOf="@+id/auto_fill"
 			        android:text="ToggleButton"
-			        android:textOn="Wymagaj szklanki" 
-			        android:textOff="Nie wymagaj szklanki" />
+			        android:textOff="Nie wymagaj szklanki"
+			        android:textOn="Wymagaj szklanki" />
 
 			    <Button
 			        android:id="@+id/pacpac"
@@ -609,9 +578,19 @@ android:layout_height="fill_parent">
 			        android:layout_height="wrap_content"
 			        android:layout_alignBaseline="@+id/smile"
 			        android:layout_alignBottom="@+id/smile"
-			        android:layout_toRightOf="@+id/led7"
+			        android:layout_toRightOf="@+id/smile"
 			        android:text="Pacnij" />
 
+			    <ToggleButton
+			        android:id="@+id/set_bottle"
+			        android:layout_width="wrap_content"
+			        android:layout_height="wrap_content"
+			        android:layout_alignBaseline="@+id/pacpac"
+			        android:layout_alignBottom="@+id/pacpac"
+			        android:layout_toRightOf="@+id/pacpac"
+			        android:text="ToggleButton"
+			        android:textOff="Tutaj jest butelka..."
+			        android:textOn="Tutaj jest butelka..." />
 			</RelativeLayout>
 
 			<RelativeLayout

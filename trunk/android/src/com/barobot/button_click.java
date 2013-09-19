@@ -38,11 +38,6 @@ public class button_click implements OnClickListener{
 			q.add("SET X " + ((-10) * virtualComponents.mnoznikx), true );
 			ar.send(q);
 			break;
-		case R.id.set_x_1:
-			virtualComponents.moveZDown( q );
-			q.add("SET X 0", true );
-			ar.send(q);
-			break;
 		case R.id.set_x10:
 			virtualComponents.moveZDown( q );
 			q.add("SET X +" + ((10) * virtualComponents.mnoznikx), true );
@@ -71,11 +66,6 @@ public class button_click implements OnClickListener{
 		case R.id.set_y_10:
 			virtualComponents.moveZDown( q );
 			q.add("SET Y " + ((-10) * virtualComponents.mnozniky), true );
-			ar.send(q);
-			break;
-		case R.id.set_y_0:
-			virtualComponents.moveZDown( q );
-			q.add("SET Y 0", true );
 			ar.send(q);
 			break;
 		case R.id.set_y10:

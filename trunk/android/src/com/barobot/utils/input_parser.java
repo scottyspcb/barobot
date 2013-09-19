@@ -105,9 +105,12 @@ public class input_parser {
 				String fromArduino21 = fromArduino.replace("A2 ", "");
 				virtualComponents.set( "GLASS_WEIGHT", fromArduino21);
 				int noglass_weight = virtualComponents.getInt( "NOGLASS_WEIGHT", 0 );
-				int e = Integer.parseInt(fromArduino21);
-				if( e < noglass_weight ){		// jesli jest lżej od tego ile powinno byc
-					virtualComponents.set( "NOGLASS_WEIGHT", fromArduino21);
+				try {
+					int e = Integer.parseInt(fromArduino21);
+					if( e < noglass_weight ){		// jesli jest lżej od tego ile powinno byc
+						virtualComponents.set( "NOGLASS_WEIGHT", fromArduino21);
+					}
+				} catch ( java.lang.NumberFormatException e2) {
 				}
 			}
 
