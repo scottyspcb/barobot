@@ -42,7 +42,7 @@ public class BTListActivity extends Activity {
 
         // Setup the window
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-        setContentView(R.layout.device_list);
+        setContentView(R.layout.bt_list_activity_view);
         Arduino.getInstance().stop_autoconnect = true;
 
         // Set result CANCELED in case the user backs out

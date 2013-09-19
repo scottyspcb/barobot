@@ -35,19 +35,16 @@ public class DebugWindow extends Activity {
 	public TabHost tabHost;
 	public static final int INTENT_NAME = 7;	
 	private static DebugWindow instance;
-	SeekBar sbAdcValue;
     private ListView mConversationView;
     public ArrayAdapter<History_item> mConversationArrayAdapter;
 
 	public View getObject(String namespace, String mDrawableName) {
-		int resID = getResources().getIdentifier(mDrawableName, namespace,
-				getPackageName());
+		int resID = getResources().getIdentifier(mDrawableName, namespace,getPackageName());
 		return findViewById(resID);
 	}
 
 	public int getResource(String namespace, String mDrawableName) {
-		int resID = getResources().getIdentifier(mDrawableName, namespace,
-				getPackageName());
+		int resID = getResources().getIdentifier(mDrawableName, namespace,getPackageName());
 		return resID;
 	}
 
@@ -61,7 +58,7 @@ public class DebugWindow extends Activity {
 		super.onCreate(savedInstanceState);
 
 		// Setup the window
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
+//		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.debug);
 
 		// Set result CANCELED in case the user backs out
@@ -131,14 +128,12 @@ public class DebugWindow extends Activity {
 				R.id.set_x1000,
 				R.id.set_x100,
 				R.id.set_x10,
-				R.id.set_x_1,
 				R.id.set_x_1000,
 				R.id.set_x_100,
 				R.id.set_x_10,
 				R.id.set_y_600,
 				R.id.set_y_100,
 				R.id.set_y_10,
-				R.id.set_y_0,
 				R.id.set_y10,
 				R.id.set_y100,
 				R.id.set_y600,
@@ -384,7 +379,7 @@ public class DebugWindow extends Activity {
 	public static void showToast(String string) {
 		Toast.makeText(DebugWindow.getInstance(), R.string.not_connected,Toast.LENGTH_SHORT).show();
 	}
-	
+
 	@Override
     public boolean onCreateOptionsMenu(Menu menu) {
 	    MenuInflater inflater = getMenuInflater();
@@ -396,11 +391,8 @@ public class DebugWindow extends Activity {
     public boolean onOptionsItemSelected(MenuItem item) {
         Intent serverIntent = null;
         switch (item.getItemId()) {
-        case R.id.main_feature:
-    		setResult(Activity.RESULT_CANCELED);
-	        return true;
 
-       case R.id.processing_window:
+        case R.id.processing_window:
     	    serverIntent = new Intent(this, WebActivity.class);
             startActivityForResult(serverIntent, WebActivity.INTENT_NAME);
             break;

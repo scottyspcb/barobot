@@ -120,6 +120,12 @@ public class BarobotMain extends Activity {
             startActivityForResult(serverIntent, AboutActivity.INTENT_NAME );
 	        return true;   
 
+        case R.id.menu_debug_window:
+            serverIntent = new Intent(this, DebugActivity.class);
+            startActivityForResult(serverIntent, DebugActivity.INTENT_NAME );
+	        return true;       
+
+	        
 	    case R.id.debug_mode_window:
             serverIntent = new Intent(this, DebugWindow.class);
             startActivityForResult(serverIntent, DebugWindow.INTENT_NAME);
@@ -189,6 +195,9 @@ public class BarobotMain extends Activity {
         case MainSettingsActivity.INTENT_NAME:
         	Constant.log(Constant.TAG, "END OF SETTINGS");
             break;
+        case DebugActivity.INTENT_NAME:
+        	Constant.log(Constant.TAG, "END OF DebugActivity");
+            break;    
         case BTListActivity.INTENT_NAME:
         	Constant.log(Constant.TAG, "REQUEST_CONNECT_DEVICE_SECURE");
             // When BTListActivity returns with a device to connect

@@ -55,8 +55,12 @@
         </activity>
         <activity
             android:name="com.barobot.WebActivity"
- 			android:configChanges="keyboard|keyboardHidden|screenSize|orientation"
+            android:configChanges="keyboard|keyboardHidden|screenSize|orientation"
             android:label="@string/title_activity_web" >
+        </activity>
+        <activity
+            android:name="com.barobot.DebugActivity"
+            android:label="@string/title_activity_device_list" >
         </activity>
     </application>
 
