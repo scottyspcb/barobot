@@ -2,8 +2,6 @@
 	<script type="text/javascript" src="jquery-1.7.2.min.js"></script>
 	<script src="processing.js" type="text/javascript"></script>	
 	<script src="oscyloskop.js" type="text/javascript"></script>
-	
-	
 	<link rel="stylesheet" type="text/css" media="screen" href="jquery-ui-1.7.2.custom.css" />
 	<link rel="stylesheet" type="text/css" media="screen" href="bootstrap_ltr.css" />
 	<style>
@@ -15,19 +13,14 @@
 
 <body style="padding:0px;margin:0px">
 	<div id="menu" style="width:100%;text-align:center">
-		<button href="javascript:void(0)" onclick="reverseY(this)" class="btn btn-large">Reverse Y</button>
-		<button href="javascript:void(0)" onclick="toggleLocalMin(this)" class="btn btn-large active">Auto Scale</button>
-		<button href="javascript:void(0)" onclick="clear(this)" class="btn btn-large">Wyczysc</button>
-		<button href="javascript:void(0)" onclick="dots(this)" class="btn btn-large">Rysuj Punkty</button>
-		<button href="javascript:void(0)" onclick="lines(this)" class="btn btn-large active">Rysuj Linie</button>
-		<button href="javascript:void(0)" onclick="column(this)" class="btn btn-large">Rysuj Slupki</button>
-		<button href="javascript:void(0)" onclick="sethighspeed( this )" class="btn btn-large">HIGH SPEED</button>
-		<button href="javascript:void(0)" onclick="changex( this, 1)" id="xup" class="btn btn-large">X+</button>
-		<button href="javascript:void(0)" onclick="changex( this, -1)" id="xdown" class="btn btn-large">X-</button>
-		<button href="javascript:void(0)" onclick="changefps( this,1 )" class="btn btn-large">FPS+</button>
-		<button href="javascript:void(0)" onclick="changefps( this,-1 )" class="btn btn-large">FPS-</button>	
-		<div class="colors">
-		</div>
+		<button href="javascript:void(0)" onclick="reverseY()" class="btn btn-large">Reverse Y</button>
+		<button href="javascript:void(0)" onclick="toggleLocalMin()" class="btn btn-large active">Auto Scale</button>
+		<button href="javascript:void(0)" onclick="dots()" class="btn btn-large">Rysuj Punkty</button>
+		<button href="javascript:void(0)" onclick="lines()" class="btn btn-large active">Rysuj Linie</button>
+		<button href="javascript:void(0)" onclick="column()" class="btn btn-large">Rysuj Slupki</button>
+		<button href="javascript:void(0)" onclick="sethighspeed(  )" class="btn btn-large">HIGH SPEED</button>
+		<button href="javascript:void(0)" onclick="changex(1)" id="xup" class="btn btn-large">X+</button>
+		<button href="javascript:void(0)" onclick="changex( -1)" id="xdown" class="btn btn-large">X-</button>
 	</div>
 	<canvas name="maindrawing3" style="image-rendering: -moz-crisp-edges ! important;" id="maindrawing1" tabindex="0" width="100%" height="100%" data-processing-sources="controller.pde"></canvas>
 	<script type="text/javascript">

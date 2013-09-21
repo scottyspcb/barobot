@@ -10,7 +10,7 @@ public class button_zajedz  implements OnClickListener {
 	public void onClick(View v) {
 		boolean setting_mode	= false;	
 		ToggleButton tb			= null;
-		DebugWindow bb			= DebugWindow.getInstance();
+		DebugActivity bb			= DebugActivity.getInstance();
 		if(bb!=null){
 			tb			= (ToggleButton) bb.findViewById(R.id.set_bottle);
 			if (tb != null) {

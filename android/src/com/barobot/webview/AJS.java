@@ -114,7 +114,7 @@ public class AJS {
 	            }
 	        });
 		}
-		private void runJs(final String method, final String... args) {
+		public void runJs(final String method, final String... args) {
 	    	final AJS appi = this;
 	    	appi.webview.post(new Runnable() {
 	            @Override

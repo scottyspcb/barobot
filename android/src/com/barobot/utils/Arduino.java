@@ -10,7 +10,8 @@ import org.microbridge.server.Client;
 import org.microbridge.server.Server;
 
 import com.barobot.BarobotMain;
-import com.barobot.DebugWindow;
+import com.barobot.R;
+import com.barobot.debug.DebugTabLog;
 import com.barobot.hardware.ArduinoQueue;
 import com.barobot.hardware.BluetoothChatService;
 import com.barobot.hardware.rpc_message;
@@ -23,6 +24,7 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 public class Arduino extends AbstractServerListener{
@@ -39,13 +41,16 @@ public class Arduino extends AbstractServerListener{
 	private Server server = null;
     private static BluetoothAdapter mBluetoothAdapter = null;    // Local Bluetooth adapter
     private static BluetoothChatService mChatService = null;    // Member object for the chat services
-
+    public ArrayAdapter<History_item> mConversationArrayAdapter;
+    
 	public boolean adb_connected = false;
 	public static Arduino getInstance(){
-		if( instance == null){
-			instance = new Arduino();
-		}
 		return instance;
+	}
+
+	public Arduino(BarobotMain barobotMain) {
+		instance = this;
+		mConversationArrayAdapter = new ArrayAdapter<History_item>(barobotMain, R.layout.message);
 	}
 
 	public boolean connectADB(){
@@ -81,10 +86,7 @@ public class Arduino extends AbstractServerListener{
 	                switch (msg.arg1) {
 	                case Constant.STATE_CONNECTED:
 	                	Arduino.getInstance().clear();
-	                    DebugWindow dd = DebugWindow.getInstance();
-	                    if(dd!= null){
-	                    	dd.clearList();
-	                    }        	
+	                    clearHistory();
 	                    break;
 	            //    case Constant.STATE_CONNECTING:
 	            //    case Constant.STATE_LISTEN:
@@ -168,13 +170,16 @@ public class Arduino extends AbstractServerListener{
 	public void setupBT(BarobotMain barobotMain) {
 		Constant.log(Constant.TAG, "setupBT()");
         // Initialize the BluetoothChatService to perform bluetooth connections
+		if(mChatService != null ){
+			mChatService.destroy();
+		}
         try {
 			mChatService = new BluetoothChatService( this.mHandler, barobotMain);
 			if(this.allowAutoconnect()){
 				autoconnect();
 			}
 		} catch (Exception e) {
-			Constant.log(Constant.TAG, "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", e);
+			Constant.log(Constant.TAG, "BluetoothChatService fatal error", e);
 		}
 	}
     public void bt_disconnect() {
@@ -233,10 +238,6 @@ public class Arduino extends AbstractServerListener{
 		if(bb!=null){
 			return bb;
 		}
-		bb = DebugWindow.getInstance();
-		if(bb!=null){
-			return bb;
-		}
 		return null;
 	}
 	public void onServerStarted(Server server){
@@ -264,14 +265,9 @@ public class Arduino extends AbstractServerListener{
 	}
 
 	public void onClientDisconnect(Server server, Client client){
-		final DebugWindow bb = DebugWindow.getInstance();		
+		Context bb = getContext();	
 		if(bb!=null){
-			bb.runOnUiThread(new Runnable() {
-				@Override
-				public void run() {
-					Toast.makeText(bb, "ADB onClientDisconnect", Toast.LENGTH_LONG).show();
-				}
-			});
+			Toast.makeText(bb, "ADB onClientDisconnect", Toast.LENGTH_LONG).show();
 		}
 		this.adb_connected = false;
 		clear();
@@ -302,12 +298,9 @@ public class Arduino extends AbstractServerListener{
 			//Constant.log("isRet?", "["+message+"][" +  this.wait_for.command+"]");
 			is_ret = true;
 			if(this.wait_for.isRet(retm)){
-		        DebugWindow dd = DebugWindow.getInstance();
 				this.wait_for = null;
 				if(output2.isEmpty()){
-		            if(dd!= null){
-		            	dd.addToList( "--------------------------------------------------", true );
-		            }
+		           	addToList( "--------------------------------------------------", true );
 				}else{
 					exec();		// wyslij wszystko co jest dalej
 				}
@@ -320,7 +313,7 @@ public class Arduino extends AbstractServerListener{
 		if(this.wait_for != null){
 			return;		// jestem w trakcie oczekiwania
 		}
-        DebugWindow dd = DebugWindow.getInstance();
+
 		try	{
 			boolean wasEmpty = output2.isEmpty();
 			while (!output2.isEmpty()) {
@@ -331,9 +324,7 @@ public class Arduino extends AbstractServerListener{
 				}else{
 					this.passString(m.command);
 				}
-		        if(dd!= null){
-		        	dd.addToList( m );
-		        }
+		        addToList( m );
 				if(m.isBlocing()){		// czekam na zwrotkę tej komendy zanim wykonam coś dalej
 					m.send_timestamp	= System.nanoTime();
                 	this.wait_for		= m;
@@ -343,9 +334,7 @@ public class Arduino extends AbstractServerListener{
                 }
 			}
 			if(!wasEmpty){
-	            if(dd!= null){
-	            	dd.addToList( "--------------------------------------------------", true );
-	            }
+            	addToList( "--------------------------------------------------", true );
 			}
 		} catch (IOException e)	{
 			Constant.log(Constant.TAG, "problem sending TCP message",e);
@@ -382,6 +371,34 @@ public class Arduino extends AbstractServerListener{
 		this.wait_for = null;
 	}
 
+    
+	public void addToList(final rpc_message m) {
+		final Arduino parent = this;
+	//	cc.runOnUiThread(new Runnable() {
+	//		@Override
+	//		public void run() {
+				parent.mConversationArrayAdapter.add( m );
+	//		}
+	//	});		
+	}
+	public void addToList(final String string, final boolean direction ) {
+		final Arduino parent = this;
+	//	cc.runOnUiThread(new Runnable() {
+	//		@Override
+	//		public void run() {
+				parent.mConversationArrayAdapter.add( new History_item( string.trim(), direction) );
+	//		}
+	//	});	
+	}
+	public void clearHistory() {
+		final Arduino parent = this;
+	//	cc.runOnUiThread(new Runnable() {
+	//		@Override
+	//		public void run() {
+				parent.mConversationArrayAdapter.clear();
+	//		}
+	//	});	
+	}
 }
 
 /*

@@ -2,18 +2,25 @@ package com.barobot;
 
 import java.util.Random;
 
+import com.barobot.drinks.RunnableWithData;
 import com.barobot.hardware.ArduinoQueue;
 import com.barobot.hardware.virtualComponents;
 import com.barobot.utils.Constant;
 import com.barobot.utils.Arduino;
+import com.barobot.webview.AJS;
 
+import android.app.Dialog;
+import android.content.Context;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 public class button_click implements OnClickListener{
-	private DebugWindow dbw;
+	private Context dbw;
 	
-	public button_click(DebugWindow debugWindow){
+	public button_click(Context debugWindow){
 		dbw = debugWindow;
 	}
 
@@ -193,9 +200,9 @@ public class button_click implements OnClickListener{
 			String posy		=  virtualComponents.get("POSY", "0" );
 			Constant.log(Constant.TAG,"wybierz butelkę3...");
 			Toast.makeText(dbw, "Wybierz butelkę do zapisania pozycji " + posx + "/" + posy, Toast.LENGTH_LONG).show();
-			dbw.tabHost.setCurrentTabByTag("tab0");
-			dbw.tabHost.bringToFront();
-			dbw.tabHost.setEnabled(true);
+//			dbw.tabHost.setCurrentTabByTag("tab0");
+//			dbw.tabHost.bringToFront();
+//			dbw.tabHost.setEnabled(true);
 
 			break;
 		case R.id.max_z:
@@ -248,17 +255,144 @@ public class button_click implements OnClickListener{
 		case R.id.unlock:
 			ar.unlock();
 			break;
-		case R.id.clear_history:
-			dbw.clearList();
-			break;
 		case R.id.pacpac:	
 			virtualComponents.pacpac();
 			break;
 		case R.id.smile:
 			BarobotMain.getInstance().cm.doPhoto();
-			break;	
+			break;
+		case R.id.graph_random:
+	  	  	ToggleButton tb			= (ToggleButton) v;
+	  	  	boolean isChecked		= tb.isChecked();
+			if(isChecked){
+				int graph_source5	= virtualComponents.graph_source;
+				virtualComponents.disable_analog(ar, graph_source5 );
+				int graph_speed2 = virtualComponents.graph_speed;
+				AJS.getInstance().runJs("show_random", ""+graph_speed2);	
+			}else{
+				int graph_speed2 = virtualComponents.graph_speed;
+				AJS.getInstance().runJs("show_random", "false");
+			}
+
+			break;
+
+		case R.id.graph_source:
+			int graph_source	= virtualComponents.graph_source;
+			show_dialog( new RunnableWithData(){
+				@Override
+				public void run() {
+					// TODO Auto-generated method stub
+					virtualComponents.graph_source		= Integer.parseInt(this.data);	
+					Arduino ar							= Arduino.getInstance();
+					virtualComponents.enable_analog(ar, virtualComponents.graph_source, virtualComponents.graph_speed, virtualComponents.graph_repeat);	
+				}
+        	}, ""+graph_source);
+
+			/*
+        	deviceManager dm = deviceManager.getInstance();
+        	dm.getDevices( devices.DEVICE_ANALOG );
+        	dm.getDevices( devices.DEVICE_ULTRA );
+           	live_analog_num		= 20;
+        	.getDevices( devices.DEVICE_ANALOG );
+        	virtualComponents.getDevices( ANALOG );
+        	device.liveEnable();
+*/
+			break;
+		case R.id.graph_speed:
+			show_dialog( new RunnableWithData(){
+				@Override
+				public void run() {
+					// TODO Auto-generated method stub
+					virtualComponents.graph_speed		= Integer.parseInt(this.data);
+					Arduino ar							= Arduino.getInstance();
+					virtualComponents.enable_analog(ar, virtualComponents.graph_source, virtualComponents.graph_speed, virtualComponents.graph_repeat);
+				}
+        	}, ""+virtualComponents.graph_speed);
+
+			break;
+		case R.id.graph_repeat:	
+			show_dialog( new RunnableWithData(){
+				@Override
+				public void run() {
+					// TODO Auto-generated method stub
+					virtualComponents.graph_repeat	= Integer.parseInt(this.data);
+					Arduino ar						= Arduino.getInstance();
+		        	virtualComponents.enable_analog(ar, virtualComponents.graph_source, virtualComponents.graph_speed, virtualComponents.graph_repeat);	
+				}
+        	}, ""+virtualComponents.graph_repeat);
+			break;
+		case R.id.graph_xsize:
+			show_dialog( new RunnableWithData(){
+				@Override
+				public void run() {
+					// TODO Auto-generated method stub
+					virtualComponents.graph_xsize		= Integer.parseInt(this.data);
+					AJS.getInstance().runJs("changex", ""+virtualComponents.graph_xsize);
+				}
+        	}, ""+virtualComponents.graph_speed);
+			break;
+		case R.id.graph_active:
+	  	  	ToggleButton tb2		= (ToggleButton) v;
+	  	  	boolean isChecked2		= tb2.isChecked();
+			if(isChecked2){
+				int graph_source9	= virtualComponents.graph_source;
+				virtualComponents.disable_analog(ar, graph_source9 );
+				AJS.getInstance().runJs("show_random", "false");
+			}
+			break;
+		case R.id.graph_fps:
+			show_dialog( new RunnableWithData(){
+				@Override
+				public void run() {
+					// TODO Auto-generated method stub
+					virtualComponents.graph_fps		= Integer.parseInt(this.data);
+					AJS.getInstance().runJs("changefps", ""+virtualComponents.graph_fps);
+				}
+        	}, ""+virtualComponents.graph_fps);
+			break;
+		case R.id.graph_reverse:
+			AJS.getInstance().runJs("reverseY");
+			break;
+		case R.id.graph_scale:
+			AJS.getInstance().runJs("toggleLocalMin");
+			break;
+		case R.id.graph_points:
+			AJS.getInstance().runJs("dots");
+			break;
+		case R.id.graph_lines:
+			AJS.getInstance().runJs("lines");
+			break;
+		case R.id.graph_columns:
+			AJS.getInstance().runJs("column");
+			break;
+		case R.id.graph_high_speed:
+			AJS.getInstance().runJs("sethighspeed");
+			break;
 	   }
 	}
+
+	 public void show_dialog( final RunnableWithData onfinish, String defaultValue ){
+		// custom dialog
+		final Dialog dialog = new Dialog(dbw);
+		dialog.setContentView(R.layout.dialog_int);
+		dialog.setTitle("Podaj...");
+
+		// set the custom dialog components - text, image and button
+		final EditText text = (EditText) dialog.findViewById(R.id.dialog_int_input);
+		text.setText(defaultValue);
+
+		Button dialogButton = (Button) dialog.findViewById(R.id.dialog_int_dialogButtonOK);
+		// if button is clicked, close the custom dialog
+		dialogButton.setOnClickListener(new OnClickListener() {
+			public void onClick(View v) {
+				String res =  text.getText().toString();
+				onfinish.sendData(res);
+				onfinish.run();
+				dialog.dismiss();
+			}
+		});
+		dialog.show();
+	 }
 
 	private void setSpeed() {
 		if( virtualComponents.hasGlass() ){
