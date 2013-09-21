@@ -9,8 +9,8 @@ import android.os.Handler;
 public class ArduinoQueue {
 	public LinkedList<rpc_message> output = new LinkedList<rpc_message>();
 
-	public void add(Runnable runnable ) {
-	}
+//	public void add(Runnable runnable ) {
+//	}
 	public void add( String message, boolean doWwait ){
 		if( message == null || message== ""){
 			return;
@@ -82,14 +82,11 @@ public class ArduinoQueue {
 				int noglass_weight = virtualComponents.getInt( "NOGLASS_WEIGHT", 0 );
 				if( noglass_weight + virtualComponents.weigh_min_diff < glass_weight ){		// jest ciężej 
 				}else{		// nie ma szklanki wiec przerwij
-					Arduino ar	= new Arduino();
 					// error = nie ma szklanki
 					boolean dd = true;
 					if(dd){		// przerwij gdy nie ma szklanki
-						ar.clear();
+						Arduino.getInstance().clear();
 					}else{			// wyświetl komunikat i poproś jeszcze raz
-						
-						
 					}
 				}
 				final rpc_message m3	= this;

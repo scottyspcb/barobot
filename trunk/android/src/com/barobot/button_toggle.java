@@ -86,6 +86,11 @@ public class button_toggle implements OnClickListener{
 	    			ar.send("SET LED10 OFF");
 	    		}
 	    	  	break;
+	    	 
+	    // ---------------------------------  	
+	    	  	
+	    	  	
+	    	  	
 			case R.id.need_glass:
 				tb.setChecked(isChecked);		//tutaj jednak zmieniaj
 				if(isChecked){

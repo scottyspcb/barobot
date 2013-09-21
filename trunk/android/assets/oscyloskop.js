@@ -23,60 +23,44 @@ var runOnProc = function( funcName, args){
 		pp = Processing.getInstanceById('maindrawing1');
 	}		
 };
-
-var column = function( btn ){
-	$(btn).toggleClass("active");
+var column = function(){
 	runOnProc( "column" );
-};var reverseY = function( btn ){
-	$(btn).toggleClass("active");
+};
+var reverseY = function(){
 	runOnProc( "reverseY" );
 };
-var dots = function( btn ){
-	$(btn).toggleClass("active");
+var dots = function(){
 	runOnProc( "dots" );
 };
-var lines = function( btn ){
-	$(btn).toggleClass("active");
+var lines = function(){
 	runOnProc( "lines" );
 };
-
-var toggleLocalMin = function(btn){
-	$(btn).toggleClass("active");
+var toggleLocalMin = function(){
 	runOnProc( "toggleLocalMin" );
 };
-var sethighspeed = function(btn){
-	$(btn).toggleClass("active");
+var sethighspeed = function(){
 	runOnProc( "sethighspeed" );
 };
-var changex = function( btn, val ){
+var changex = function( val ){
 	runOnProc( "changex", [ val ] );
 };
-var changefps = function( btn, val ){
+var changefps = function( val ){
 	runOnProc( "changefps", [ val ] );
 };
-var clear = function(btn){
-	runOnProc( "clear" );
-};
 
-
-var dimm = function( name ){
-	if(pp){
-		var ret = pp.toggleDimm( name );
-		if( ret ){
-			$(".dimm_" + name ).removeClass("disabled");
-		}else{
-			$(".dimm_" + name ).addClass("disabled");
-		}
+var tt			= null;
+var random_on	= false;
+var show_random = function( speed ){
+	if( random_on || speed === false ){
+		clearTimeout(tt);
+		tt = null;
+		random_on = false;
 	}else{
-		pp = Processing.getInstanceById('maindrawing1');
+		random_on = true;
+		tt = setTimeout( simulate, speed );
 	}
 };
 
-var addDimm = function( name, color ){
-	var btn	= '<a href="javascript:void(0)" id="dimm_'+ name +'" onclick="dimm('+name+')" class="btn">'+ name +'</a>';
-	$(".colors").append( btn );
-
-};
 var add = 0;
 var simulate = function(){
 	var ttt1 = Math.round((Math.random()) * 500 +add )-250
@@ -89,5 +73,7 @@ var simulate = function(){
 //	var inp	= ttt1 + "," + ttt2;
 	var inp	= "" + ttt1;
 	sendToDraw( inp );
-	setTimeout( simulate, 10 );
+	if(random_on){
+		tt = setTimeout( simulate, 10 );
+	}
 };

@@ -1,8 +1,8 @@
 SpinArm arm;
 
 // zmienne uniwersalne:
-var height3		= $(window).height() - $("#menu").height() - 20;
-int width5		= $(window).width() - 1;
+var height3		= window.innerHeight - 10;
+int width5		= window.innerWidth;
 var srodek		= int(height3/2);
 var dol			= int(height3);
 int fps			= 10;
@@ -16,7 +16,6 @@ int interval_size= 0;
 //tablice w zale¿nosci od wymiaru
 int[] lastX		= new int[dimms];		// 10 wymiarów max
 int[] agvs		= new int[dimms];		// 10 wymiarów max
-
 int[] skala		= new int[dimms];
 int[] ymax		= new int[dimms];
 int[] ymin		= new int[dimms];
@@ -29,7 +28,6 @@ palette[2]=color(255,255,0);
 palette[3]=color(255,255,255);
 palette[4]=color(128,0,0);
 palette[5]=color(128,0,255);
-
 
 int data_width							= int((width5 -10) / skalax);
 int  buffer_width						= width5;		// tak jakby skalax = 1
@@ -207,22 +205,19 @@ void column() {
 }
 
 void changefps( val ) {
-	fps = fps + val;
+	fps = val;
 	frameRate(fps);
 	println(fps);
 }
 
 void changex( val ) {
-	skalax		+= val;
+	skalax		= val;
 	if( skalax > 10 ){
 		skalax = 10;
 	}
 	if( skalax < 1 ){
 		skalax = 1;
 	}
-	$("#xdown").text("X " + (skalax - 1));
-	$("#xup").text("X " + (skalax + 1));
-
 	data_width		= int((width5 -10) / skalax);	
 }
 
@@ -242,10 +237,7 @@ void new_interval() {		// zacznij pokazywc od lewej, skaluj na d³ugosc okresu je
 	if( skalax2 > 1 ){
 		skalax			= floor(skalax);
 		data_width		= int((width5 -10) / skalax);
-		$("#xdown").text("X " + (skalax - 1));
-		$("#xup").text("X " + (skalax + 1));
 	}
-
 	interval_size = 0;
 }
 

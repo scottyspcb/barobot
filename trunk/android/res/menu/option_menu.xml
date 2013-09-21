@@ -19,10 +19,6 @@
 		    android:title="@string/do_update"  
 		    android:icon="@android:drawable/ic_menu_rotate"/>
 		
-   		<item android:id="@+id/debug_mode_window"
-   		     android:title="@string/debug_mode_window"
-   		     android:icon="@android:drawable/ic_menu_preferences"></item>
-		
    		
   
   		<item android:id="@+id/menu_debug_window"

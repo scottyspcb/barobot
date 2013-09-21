@@ -20,7 +20,7 @@ public class CameraManager {
 	//	back_cameraId = findCamera( CameraInfo.CAMERA_FACING_BACK );
 		bm = barobotMain;
 	}
-	public void doPhoto() {
+	public synchronized void doPhoto() {
 		if(front_camera!=null){
 			front_camera.takePicture(null, null, new PhotoHandler(bm.getApplicationContext(), 1 ));
 		}else{

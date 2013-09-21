@@ -3,7 +3,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.barobot.DebugWindow;
+import com.barobot.DebugActivity;
 import com.barobot.R;
 import com.barobot.R.id;
 import com.barobot.utils.Constant;
@@ -74,6 +74,12 @@ public class virtualComponents {
 		"BOTTLE_X_14","BOTTLE_Y_14",
 		"BOTTLE_X_15","BOTTLE_Y_15",
 	};
+	public static int graph_speed	= 20;
+	public static int graph_repeat	= 2;
+	public static int graph_source	= 2;
+	public static int graph_xsize	= 4;
+	public static int graph_fps		= 10;
+
 	public static void init( Activity app ){
 		application		= app;
 		myPrefs			= application.getSharedPreferences(Constant.SETTINGS_TAG, Context.MODE_PRIVATE);
@@ -120,69 +126,13 @@ public class virtualComponents {
 		return virtualComponents.getInt("BOTTLE_Y_" + i, b_pos_y[i]);
 	}
 	private static void update(String name, String value) {
-		final DebugWindow dialog = DebugWindow.getInstance();
-		if( "LENGTHX".equals(name)){
-			dialog.setText( R.id.dlugosc_x, value, false );
-		}else if( "LENGTHY".equals(name)){
-			dialog.setText( R.id.dlugosc_y, value, false );
-		}else if("LENGTHZ".equals(name)){
-			dialog.setText( R.id.dlugosc_z, value, false );
-		}else if("WEIGHT".equals(name) && dialog != null ){
-			final String[] tokens = value.split(",");
-	    	Constant.log("RUNNABLE", "waga: "+value );
-	    	Constant.log("RUNNABLE", "waga: "+tokens.length );
-	    	if(tokens.length == 16){
-				application.runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						dialog.setText( R.id.waga1, tokens[0], false );
-						dialog.setText( R.id.waga2, tokens[1], false );
-						dialog.setText( R.id.waga3, tokens[2], false );
-						dialog.setText( R.id.waga4, tokens[3], false );
-						dialog.setText( R.id.waga5, tokens[4], false );
-						dialog.setText( R.id.waga6, tokens[5], false );
-						dialog.setText( R.id.waga7, tokens[6], false );
-						dialog.setText( R.id.waga8, tokens[7], false );
-						dialog.setText( R.id.waga9, tokens[8], false );
-						dialog.setText( R.id.waga10, tokens[9], false );
-						dialog.setText( R.id.waga11, tokens[10], false );
-						dialog.setText( R.id.waga12, tokens[11], false );
-						dialog.setText( R.id.waga13, tokens[12], false );
-						dialog.setText( R.id.waga14, tokens[13], false );
-						dialog.setText( R.id.waga15, tokens[14], false );
-						dialog.setText( R.id.waga16, tokens[15], false );
-					}
-				});
-	    	}
-		}else if("POSX".equals(name) &&  dialog != null ){
-			dialog.setText( R.id.position_x, value, false );
-		}else if("POSY".equals(name) &&  dialog != null ){
-			dialog.setText( R.id.position_y, value, false );
-		}else if("POSZ".equals(name) &&  dialog != null ){
-			dialog.setText( R.id.position_z, value, false );		
-		}else if("LED1".equals(name) &&  dialog != null ){
-			dialog.setChecked( R.id.led1, "ON".equals(value) );
-		}else if("LED2".equals(name) &&  dialog != null ){
-			dialog.setChecked( R.id.led2, "ON".equals(value) );
-		}else if("LED3".equals(name) &&  dialog != null ){
-			dialog.setChecked( R.id.led3, "ON".equals(value) );
-		}else if("LED4".equals(name) &&  dialog != null ){
-			dialog.setChecked( R.id.led4, "ON".equals(value) );
-		}else if("LED5".equals(name) &&  dialog != null ){
-			dialog.setChecked( R.id.led5, "ON".equals(value) );
-		}else if("LED6".equals(name) &&  dialog != null ){
-			dialog.setChecked( R.id.led6, "ON".equals(value) );
-		}else if("LED7".equals(name) &&  dialog != null ){
-			dialog.setChecked( R.id.led7, "ON".equals(value) );
-		}else if("LED8".equals(name) &&  dialog != null ){
-			dialog.setChecked( R.id.led8, "ON".equals(value) );
-		}else if("LED9".equals(name) &&  dialog != null ){
-			dialog.setChecked( R.id.led9, "ON".equals(value) );
-		}else if("LED10".equals(name) &&  dialog != null ){
-			dialog.setChecked( R.id.led10, "ON".equals(value) );
-		}else if("aaaaaaaa".equals(name) &&  dialog != null ){
-			dialog.setText( R.id.dist1, value, false );
+		
+		
+		final DebugActivity dialog = DebugActivity.getInstance();
+		if(dialog!=null){
+			dialog.update(name, value );
 		}
+
 	}
 	// zapisz ze tutaj jest butelka o danym numerze
 	public static void hereIsBottle(int i) {
@@ -192,13 +142,6 @@ public class virtualComponents {
 		virtualComponents.set("BOTTLE_X_" + i, posx );
 		virtualComponents.set("BOTTLE_Y_" + i, posy );
 		Toast.makeText(application, "Zapisano ["+posx+"/"+posy+"] jako butelka " + (i+1), Toast.LENGTH_LONG).show();
-		DebugWindow bb			= DebugWindow.getInstance();
-		if(bb!=null){
-			bb.refreshPos();
-			bb.tabHost.setCurrentTabByTag("tab1");
-			bb.tabHost.bringToFront();
-			bb.tabHost.setEnabled(true);
-		}
 	}
 	public static boolean hasGlass() {
 		return false;

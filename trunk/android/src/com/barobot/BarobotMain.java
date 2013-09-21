@@ -33,7 +33,8 @@ public class BarobotMain extends Activity {
 		instance = this;	        // Set up the window layout
         setContentView(R.layout.main);
         virtualComponents.init( this );
-
+        Arduino ar = new Arduino( this );
+        
         // Initialize the compose field with a listener for the return key
         /*
         mOutEditText = (EditText) findViewById(R.id.edit_text_out);
@@ -52,7 +53,7 @@ public class BarobotMain extends Activity {
 	    */
         boolean autoadb = true;
         if(autoadb){
-			boolean res = Arduino.getInstance().connectADB();
+			boolean res = ar.connectADB();
 			if(res == false ){
 				Constant.log(Constant.TAG, "Unable to start TCP server" );
 				System.exit(-1);
@@ -109,34 +110,23 @@ public class BarobotMain extends Activity {
             serverIntent = new Intent(this, BTListActivity.class);
             startActivityForResult(serverIntent, BTListActivity.INTENT_NAME);
             return true;
-
         case R.id.update_drinks:
             serverIntent = new Intent(this, UpdateActivity.class);
             startActivityForResult(serverIntent, UpdateActivity.INTENT_NAME );
 	        return true;
-
         case R.id.about_item:
             serverIntent = new Intent(this, AboutActivity.class);
             startActivityForResult(serverIntent, AboutActivity.INTENT_NAME );
 	        return true;   
-
         case R.id.menu_debug_window:
             serverIntent = new Intent(this, DebugActivity.class);
             startActivityForResult(serverIntent, DebugActivity.INTENT_NAME );
-	        return true;       
-
-	        
-	    case R.id.debug_mode_window:
-            serverIntent = new Intent(this, DebugWindow.class);
-            startActivityForResult(serverIntent, DebugWindow.INTENT_NAME);
 	        return true;
-
        case R.id.menu_settings:
     	   serverIntent = new Intent(this, MainSettingsActivity.class);
             startActivityForResult(serverIntent, MainSettingsActivity.INTENT_NAME);
             break;
-	    }        
-
+	    }
         return false;
     }
     @Override
@@ -189,9 +179,7 @@ public class BarobotMain extends Activity {
         case AboutActivity.INTENT_NAME:
         	Constant.log(Constant.TAG, "END OF AboutActivity");
             break;
-        case DebugWindow.INTENT_NAME:
-        	Constant.log(Constant.TAG, "END OF BEBUG_WINDOW");
-            break;
+  
         case MainSettingsActivity.INTENT_NAME:
         	Constant.log(Constant.TAG, "END OF SETTINGS");
             break;

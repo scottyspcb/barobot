@@ -1,0 +1,356 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+       <LinearLayout
+           android:id="@+id/nalej_tyl"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_alignParentLeft="true"
+           android:layout_alignParentRight="true" >
+
+           <Button
+               android:id="@+id/nalej2"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:maxWidth="128dp"
+               android:minHeight="148dip"
+               android:minWidth="100dp"
+               android:text="2" />
+
+           <Button
+               android:id="@+id/nalej4"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:maxWidth="128dp"
+               android:minHeight="148dip"
+               android:minWidth="100dp"
+               android:text="4" />
+
+           <Button
+               android:id="@+id/nalej6"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:maxWidth="128dp"
+               android:minHeight="148dip"
+               android:minWidth="100dp"
+               android:text="6" />
+
+           <Button
+               android:id="@+id/nalej8"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:maxWidth="128dp"
+               android:minHeight="148dip"
+               android:minWidth="100dp"
+               android:text="8" />
+
+           <Button
+               android:id="@+id/nalej10"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:maxWidth="128dp"
+               android:minHeight="148dip"
+               android:minWidth="100dp"
+               android:text="10" />
+
+           <Button
+               android:id="@+id/nalej12"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:maxWidth="128dp"
+               android:minHeight="148dip"
+               android:minWidth="100dp"
+               android:text="12" />
+
+           <Button
+               android:id="@+id/nalej14"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:maxWidth="128dp"
+               android:minHeight="148dip"
+               android:minWidth="100dp"
+               android:text="14" />
+
+           <Button
+               android:id="@+id/nalej16"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:maxWidth="128dp"
+               android:minHeight="148dip"
+               android:minWidth="100dp"
+               android:text="16" />
+       </LinearLayout>
+
+       <LinearLayout
+           android:id="@+id/wagi_przod"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_alignParentBottom="true"
+           android:layout_alignParentLeft="true" >
+
+           <TextView
+               android:id="@+id/waga1"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:lines="1"
+               android:linksClickable="false"
+               android:minWidth="100dp"
+               android:text="1323ml"
+               android:textAppearance="?android:attr/textAppearanceLarge" />
+
+           <TextView
+               android:id="@+id/waga3"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:lines="1"
+               android:linksClickable="false"
+               android:minWidth="100dp"
+               android:text="1323ml"
+               android:textAppearance="?android:attr/textAppearanceLarge" />
+
+           <TextView
+               android:id="@+id/waga5"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:lines="1"
+               android:linksClickable="false"
+               android:minWidth="100dp"
+               android:text="1323ml"
+               android:textAppearance="?android:attr/textAppearanceLarge" />
+
+           <TextView
+               android:id="@+id/waga7"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:lines="1"
+               android:linksClickable="false"
+               android:minWidth="100dp"
+               android:text="1323ml"
+               android:textAppearance="?android:attr/textAppearanceLarge" />
+
+           <TextView
+               android:id="@+id/waga9"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:lines="1"
+               android:linksClickable="false"
+               android:minWidth="100dp"
+               android:text="1323ml"
+               android:textAppearance="?android:attr/textAppearanceLarge" />
+
+           <TextView
+               android:id="@+id/waga11"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:lines="1"
+               android:linksClickable="false"
+               android:minWidth="100dp"
+               android:text="1323ml"
+               android:textAppearance="?android:attr/textAppearanceLarge" />
+
+           <TextView
+               android:id="@+id/waga13"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:lines="1"
+               android:linksClickable="false"
+               android:minWidth="100dp"
+               android:text="1323ml"
+               android:textAppearance="?android:attr/textAppearanceLarge" />
+
+           <TextView
+               android:id="@+id/waga15"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:lines="1"
+               android:linksClickable="false"
+               android:minWidth="100dp"
+               android:text="1323ml"
+               android:textAppearance="?android:attr/textAppearanceLarge" />
+       </LinearLayout>
+
+       <LinearLayout
+           android:id="@+id/nalej_przod"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_above="@+id/wagi_przod"
+           android:layout_alignParentLeft="true"
+           android:layout_alignParentRight="true" >
+
+           <Button
+               android:id="@+id/nalej1"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:maxWidth="128dp"
+               android:minHeight="148dip"
+               android:minWidth="100dp"
+               android:text="1 (start)" />
+
+           <Button
+               android:id="@+id/nalej3"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:maxWidth="128dp"
+               android:minHeight="148dip"
+               android:minWidth="100dp"
+               android:text="3" />
+
+           <Button
+               android:id="@+id/nalej5"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:maxWidth="128dp"
+               android:minHeight="148dip"
+               android:minWidth="100dp"
+               android:text="5" />
+
+           <Button
+               android:id="@+id/nalej7"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:maxWidth="128dp"
+               android:minHeight="148dip"
+               android:minWidth="100dp"
+               android:text="7" />
+
+           <Button
+               android:id="@+id/nalej9"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:maxWidth="128dp"
+               android:minHeight="148dip"
+               android:minWidth="100dp"
+               android:text="9" />
+
+           <Button
+               android:id="@+id/nalej11"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:maxWidth="128dp"
+               android:minHeight="148dip"
+               android:minWidth="100dp"
+               android:text="11" />
+
+           <Button
+               android:id="@+id/nalej13"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:maxWidth="128dp"
+               android:minHeight="148dip"
+               android:minWidth="100dp"
+               android:text="13" />
+
+           <Button
+               android:id="@+id/nalej15"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:maxWidth="128dp"
+               android:minHeight="148dip"
+               android:minWidth="100dp"
+               android:text="15" />
+       </LinearLayout>
+
+       <LinearLayout
+           android:id="@+id/wagi_tyl"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_alignParentLeft="true"
+           android:layout_alignParentRight="true"
+           android:layout_below="@+id/nalej_tyl" >
+
+           <TextView
+               android:id="@+id/waga2"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:lines="1"
+               android:linksClickable="false"
+               android:minWidth="100dp"
+               android:text="1323ml"
+               android:textAppearance="?android:attr/textAppearanceLarge" />
+
+           <TextView
+               android:id="@+id/waga4"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:lines="1"
+               android:linksClickable="false"
+               android:minWidth="100dp"
+               android:text="1323ml"
+               android:textAppearance="?android:attr/textAppearanceLarge" />
+
+           <TextView
+               android:id="@+id/waga6"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:lines="1"
+               android:linksClickable="false"
+               android:minWidth="100dp"
+               android:text="1323ml"
+               android:textAppearance="?android:attr/textAppearanceLarge" />
+
+           <TextView
+               android:id="@+id/waga8"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:lines="1"
+               android:linksClickable="false"
+               android:minWidth="100dp"
+               android:text="1323ml"
+               android:textAppearance="?android:attr/textAppearanceLarge" />
+
+           <TextView
+               android:id="@+id/waga10"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:lines="1"
+               android:linksClickable="false"
+               android:minWidth="100dp"
+               android:text="1323ml"
+               android:textAppearance="?android:attr/textAppearanceLarge" />
+
+           <TextView
+               android:id="@+id/waga12"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:lines="1"
+               android:linksClickable="false"
+               android:minWidth="100dp"
+               android:text="1323ml"
+               android:textAppearance="?android:attr/textAppearanceLarge" />
+
+           <TextView
+               android:id="@+id/waga14"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:lines="1"
+               android:linksClickable="false"
+               android:minWidth="100dp"
+               android:text="1323ml"
+               android:textAppearance="?android:attr/textAppearanceLarge" />
+
+           <TextView
+               android:id="@+id/waga16"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:lines="1"
+               android:linksClickable="false"
+               android:minWidth="100dp"
+               android:text="1323ml"
+               android:textAppearance="?android:attr/textAppearanceLarge" />
+       </LinearLayout>
+
+       <Button
+           android:id="@+id/nalej_tutaj"
+           android:layout_width="wrap_content"
+           android:layout_height="50dp"
+           android:layout_alignParentLeft="true"
+           android:layout_alignParentRight="true"
+           android:layout_centerVertical="true"
+           android:maxWidth="128dp"
+           android:minHeight="50dp"
+           android:minWidth="100dp"
+           android:text="Nalej tutaj" />
+
+</RelativeLayout>

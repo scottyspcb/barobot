@@ -1,6 +1,6 @@
 package com.barobot.utils;
 
-import com.barobot.DebugWindow;
+import com.barobot.DebugActivity;
 import com.barobot.R;
 import com.barobot.hardware.virtualComponents;
 import com.barobot.webview.AJS;
@@ -47,13 +47,13 @@ public class input_parser {
 				virtualComponents.set( "LED" + tokens[0],  tokens[1] );		//  ON lub OFF
 
 			}else if(fromArduino.startsWith("RET LIVE A OFF")){
-				final DebugWindow dialog = DebugWindow.getInstance();
+				final DebugActivity dialog = DebugActivity.getInstance();
 				if(dialog!=null){
 					dialog.setChecked( R.id.wagi_live, false );
 				}
 			}else if(fromArduino.startsWith("RET LIVE A 2,")){	
 				String fromArduino2 = fromArduino.replace("RET LIVE A 2,", "");
-				final DebugWindow dialog = DebugWindow.getInstance();
+				final DebugActivity dialog = DebugActivity.getInstance();
 				if(dialog!=null){
 					dialog.setChecked( R.id.wagi_live, !"OFF".equals(fromArduino2) );
 				}				
@@ -152,9 +152,9 @@ public class input_parser {
 			Arduino q			= Arduino.getInstance();
 			q.clear();
 		}
-		DebugWindow	bb6 = DebugWindow.getInstance();
-        if( !is_ret && bb6!= null){
-        	bb6.addToList(fromArduino, false );
+        if( !is_ret ){
+			Arduino q			= Arduino.getInstance();
+        	q.addToList(fromArduino, false );
         }
 	}
 	

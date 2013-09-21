@@ -37,9 +37,9 @@ public class BluetoothChatService {
     private ConnectThread mConnectThread;
     private ConnectedThread mConnectedThread;
     private int mState;
-    private static boolean hasInstance = false;
-    public boolean is_connected = false;
-	public String bt_connected_device = null;
+    private static boolean hasInstance	= false;
+    public boolean is_connected			= false;
+	public String bt_connected_device	= null;
     /**
      * Constructor. Prepares a new BluetoothChat session.
      * @param context  The UI Activity Context
@@ -173,6 +173,7 @@ public class BluetoothChatService {
     }
 	public void destroy() {
     	this.stop();
+    	BluetoothChatService.hasInstance = false;
 		BarobotMain.getInstance().unregisterReceiver(this.btEvents);
 	}
  
