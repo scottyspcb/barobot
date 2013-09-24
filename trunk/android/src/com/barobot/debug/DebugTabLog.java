@@ -20,6 +20,7 @@ import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.ToggleButton;
 
 public class DebugTabLog extends Fragment {
 	public int tab_id	= -1 ;
@@ -32,7 +33,6 @@ public class DebugTabLog extends Fragment {
     	this.tab_id = tabCommandsId;
     	this.cc		= debugActivity;
     	mConversation = Arduino.getInstance().mConversationArrayAdapter;
-
 	}
 	@Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -48,15 +48,34 @@ public class DebugTabLog extends Fragment {
 		//View rootView = inflater.inflate( R.layout.fragment_device_list_dummy, container, false);
 		View rootView = inflater.inflate( lay, container, false);
 		Button xb1 = (Button) rootView.findViewById(R.id.clear_history);
-		final DebugTabLog dbw = this;
 		xb1.setOnClickListener( new OnClickListener(){
 			@Override
 			public void onClick(View v) {
 				Arduino.getInstance().clearHistory();
 			};			
 		});
+		
+		ToggleButton xb2 = (ToggleButton) rootView.findViewById(R.id.logs_enable);
+		xb2.setOnClickListener( new OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				ToggleButton tb			= (ToggleButton) v;
+		  	  	boolean isChecked		= tb.isChecked();
+		  	  	enableLogs( isChecked );
+
+			};			
+		});		
 	    mConversationView = (ListView) rootView.findViewById(R.id.led_list);
 	    mConversationView.setAdapter(mConversation);
+	    
+		ToggleButton xb7 = (ToggleButton) rootView.findViewById(R.id.logs_enable);
+		xb7.setChecked(true);
 		return rootView;
+	}
+	protected void enableLogs(boolean isChecked) {
+  	  	if(isChecked){
+  	  		Constant.log("DebugTabLog", "enable");		  	  		
+  	  	}
+  	  	Arduino.getInstance().log_active = isChecked;
 	}
 }

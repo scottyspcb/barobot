@@ -1,9 +1,12 @@
 package com.barobot;
 
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import com.barobot.hardware.DeviceSet;
 import com.barobot.hardware.virtualComponents;
 import com.barobot.utils.CameraManager;
 import com.barobot.utils.Constant;
@@ -16,6 +19,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -93,6 +97,20 @@ public class BarobotMain extends Activity {
 	@Override
     public boolean onCreateOptionsMenu(Menu menu) {
 	    MenuInflater inflater = getMenuInflater();
+	    
+	    DeviceSet.loadXML(this, R.raw.devices);
+
+	    File sdDir = Environment.getExternalStorageDirectory();
+	    Constant.log("DIR1", sdDir.getAbsolutePath() );
+	    try {
+			Constant.log("DIR2", sdDir.getCanonicalPath() );
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	    Constant.log("DIR3", File.pathSeparator);
+	    Constant.log("DIR4", ""+sdDir.getFreeSpace() );
+	    
 	    inflater.inflate(R.menu.option_menu, menu);
 	    return true;
     }

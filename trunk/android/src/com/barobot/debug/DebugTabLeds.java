@@ -2,17 +2,17 @@ package com.barobot.debug;
 
 import com.barobot.DebugActivity;
 import com.barobot.R;
-import com.barobot.button_toggle;
+import com.barobot.hardware.DeviceSet;
 import com.barobot.utils.Constant;
 
 import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.ToggleButton;
 
 public class DebugTabLeds extends Fragment {
@@ -59,6 +59,8 @@ public class DebugTabLeds extends Fragment {
 				xb3.setOnClickListener(bt);			
 			}	
 		}
+
+		
 		return rootView;
 	}
 }

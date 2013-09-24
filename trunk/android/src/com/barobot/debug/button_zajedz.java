@@ -1,4 +1,7 @@
-package com.barobot;
+package com.barobot.debug;
+import com.barobot.DebugActivity;
+import com.barobot.R;
+import com.barobot.R.id;
 import com.barobot.hardware.virtualComponents;
 
 import android.view.View;
@@ -10,7 +13,7 @@ public class button_zajedz  implements OnClickListener {
 	public void onClick(View v) {
 		boolean setting_mode	= false;	
 		ToggleButton tb			= null;
-		DebugActivity bb			= DebugActivity.getInstance();
+		DebugActivity bb		= DebugActivity.getInstance();
 		if(bb!=null){
 			tb			= (ToggleButton) bb.findViewById(R.id.set_bottle);
 			if (tb != null) {

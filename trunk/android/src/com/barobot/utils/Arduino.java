@@ -12,6 +12,7 @@ import org.microbridge.server.Server;
 import com.barobot.BarobotMain;
 import com.barobot.R;
 import com.barobot.debug.DebugTabLog;
+import com.barobot.drinks.RunnableWithData;
 import com.barobot.hardware.ArduinoQueue;
 import com.barobot.hardware.BluetoothChatService;
 import com.barobot.hardware.rpc_message;
@@ -36,7 +37,7 @@ public class Arduino extends AbstractServerListener{
 
 	//private ArrayList <message> output3 = new ArrayList <message>();
 	//private static Queue<String> input = new LinkedList<String>();
-	
+
 	public boolean stop_autoconnect = false;
 	private Server server = null;
     private static BluetoothAdapter mBluetoothAdapter = null;    // Local Bluetooth adapter
@@ -52,7 +53,6 @@ public class Arduino extends AbstractServerListener{
 		instance = this;
 		mConversationArrayAdapter = new ArrayAdapter<History_item>(barobotMain, R.layout.message);
 	}
-
 	public boolean connectADB(){
 		// Create TCP server (based on  MicroBridge LightWeight Server)
 		try{
@@ -80,35 +80,27 @@ public class Arduino extends AbstractServerListener{
     // The Handler that gets information back from the BluetoothChatService
     public final Handler mHandler = new Handler() {
         @Override
-        public synchronized void handleMessage(Message msg) {
+        public void handleMessage(Message msg) {
             switch (msg.what) {
-            	case Constant.MESSAGE_STATE_CHANGE:
-	                switch (msg.arg1) {
-	                case Constant.STATE_CONNECTED:
-	                	Arduino.getInstance().clear();
-	                    clearHistory();
-	                    break;
-	            //    case Constant.STATE_CONNECTING:
-	            //    case Constant.STATE_LISTEN:
-	            //    case Constant.STATE_NONE:
-	                }
-	                break;
-	                /*
-            case Constant.MESSAGE_WRITE:
-                byte[] writeBuf = (byte[]) msg.obj;
-                String writeMessage = new String(writeBuf);
-                DebugWindow dd = DebugWindow.getInstance();
-                if(dd!= null){
-                	dd.addToList(writeMessage, true );
-                }
-                break;*/
             case Constant.MESSAGE_READ:
-                byte[] readBuf = (byte[]) msg.obj;
+               // byte[] readBuf = (byte[]) msg.obj;
                 // construct a string from the valid bytes in the buffer
-                String readMessage = new String(readBuf, 0, msg.arg1);
+              //  String readMessage = new String(readBuf, 0, msg.arg1);
                 //Log.i(Constant.TAG, "buffer read " + readMessage );
-				input_parser.readInput(readMessage);
+				input_parser.readInput((String) msg.obj);
                 break;
+        	case Constant.MESSAGE_STATE_CHANGE:
+                switch (msg.arg1) {
+                case Constant.STATE_CONNECTED:
+                	Arduino.getInstance().clear();
+                    clearHistory();
+                    break;
+            //    case Constant.STATE_CONNECTING:
+            //    case Constant.STATE_LISTEN:
+            //    case Constant.STATE_NONE:
+                }
+                break;
+
             case Constant.MESSAGE_DEVICE_NAME:
                 // save the connected device's name
             	mChatService.bt_connected_device = msg.getData().getString(Constant.DEVICE_NAME);
@@ -125,7 +117,6 @@ public class Arduino extends AbstractServerListener{
             }
         }
     };
-
 	public void destroy() {
 		this.clear();
         if (mChatService != null){ 
@@ -166,7 +157,6 @@ public class Arduino extends AbstractServerListener{
 		return true;
 	}
 
-
 	public void setupBT(BarobotMain barobotMain) {
 		Constant.log(Constant.TAG, "setupBT()");
         // Initialize the BluetoothChatService to perform bluetooth connections
@@ -174,7 +164,7 @@ public class Arduino extends AbstractServerListener{
 			mChatService.destroy();
 		}
         try {
-			mChatService = new BluetoothChatService( this.mHandler, barobotMain);
+			mChatService = new BluetoothChatService( this.mHandler, barobotMain );
 			if(this.allowAutoconnect()){
 				autoconnect();
 			}
@@ -371,33 +361,22 @@ public class Arduino extends AbstractServerListener{
 		this.wait_for = null;
 	}
 
-    
+    public boolean log_active	= true;
+
 	public void addToList(final rpc_message m) {
-		final Arduino parent = this;
-	//	cc.runOnUiThread(new Runnable() {
-	//		@Override
-	//		public void run() {
-				parent.mConversationArrayAdapter.add( m );
-	//		}
-	//	});		
+		if(log_active){
+			mConversationArrayAdapter.add( m );
+		}
 	}
 	public void addToList(final String string, final boolean direction ) {
-		final Arduino parent = this;
-	//	cc.runOnUiThread(new Runnable() {
-	//		@Override
-	//		public void run() {
-				parent.mConversationArrayAdapter.add( new History_item( string.trim(), direction) );
-	//		}
-	//	});	
+		if(log_active){
+			this.mConversationArrayAdapter.add( new History_item( string.trim(), direction) );
+		}
 	}
 	public void clearHistory() {
-		final Arduino parent = this;
-	//	cc.runOnUiThread(new Runnable() {
-	//		@Override
-	//		public void run() {
-				parent.mConversationArrayAdapter.clear();
-	//		}
-	//	});	
+		if(log_active){
+			mConversationArrayAdapter.clear();
+		}
 	}
 }
 

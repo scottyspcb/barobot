@@ -2,7 +2,6 @@ package com.barobot.debug;
 
 import com.barobot.DebugActivity;
 import com.barobot.R;
-import com.barobot.button_click;
 import com.barobot.utils.Constant;
 import com.barobot.webview.AJS;
 import android.app.Activity;
@@ -93,9 +92,11 @@ public class DebugTabGraph extends Fragment {
 			}
 		}
 		ToggleButton xb1 = (ToggleButton) rootView.findViewById(R.id.graph_lines);
-		xb1.setSelected(true);
+		xb1.setChecked(true);
+		
 		ToggleButton xb2 = (ToggleButton) rootView.findViewById(R.id.graph_scale);
-		xb2.setSelected(true);
+		xb2.setChecked(true);
+
 		return rootView;
 	}
 
@@ -241,10 +242,6 @@ public class DebugTabGraph extends Fragment {
 		Constant.log("DebugTabGraph", "startActivity");
 		super.startActivity(intent);
 	}
-	
-	
-	
-	
 
 	protected void initUI() {
 		// Retrieve UI elements
@@ -255,7 +252,7 @@ public class DebugTabGraph extends Fragment {
 	    	this.webview.setLayoutParams(new ViewGroup.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
 	        this.webview.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
 	        this.webview.setScrollbarFadingEnabled(true);
-	        
+
 	   		WebSettings webSettings = this.webview.getSettings();
 	   		webSettings.setLoadsImagesAutomatically(true);
 	   		webSettings.setBuiltInZoomControls(true);

@@ -8,7 +8,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import com.barobot.BarobotMain;
+import com.barobot.drinks.RunnableWithData;
 import com.barobot.utils.Constant;
+import com.barobot.utils.input_parser;
 
 
 import android.bluetooth.BluetoothAdapter;
@@ -61,8 +63,8 @@ public class BluetoothChatService {
         barobotMain.registerReceiver(this.btEvents, f1);
         barobotMain.registerReceiver(this.btEvents, f2);
     }
-    
-    // The BroadcastReceiver that listens for discovered devices and
+ 
+	// The BroadcastReceiver that listens for discovered devices and
     // changes the title when discovery is finished
     public final BroadcastReceiver btEvents = new BroadcastReceiver() {
         @Override
@@ -172,11 +174,15 @@ public class BluetoothChatService {
         setState(Constant.STATE_NONE);
     }
 	public void destroy() {
-    	this.stop();
     	BluetoothChatService.hasInstance = false;
-		BarobotMain.getInstance().unregisterReceiver(this.btEvents);
+		try {
+			BarobotMain.getInstance().unregisterReceiver(this.btEvents);
+		} catch (IllegalArgumentException e) {
+		}
+		this.stop();
 	}
- 
+	
+
     /**
      * Write to the ConnectedThread in an unsynchronized manner
      * @param out The bytes to write
@@ -245,21 +251,18 @@ public class BluetoothChatService {
     private class ConnectThread extends Thread {
         private final BluetoothSocket mmSocket;
         private final BluetoothDevice mmDevice;
-        private String mSocketType;
 
         public ConnectThread(BluetoothDevice device) {
             mmDevice = device;
             BluetoothSocket tmp = null;
-            mSocketType =  "Secure" ;
-
             // Get a BluetoothSocket for a connection with the given BluetoothDevice
             try {
                //tmp = device.createRfcommSocketToServiceRecord(Constant.MY_UUID_SECURE);
                Method m = device.getClass().getMethod("createRfcommSocket", new Class[] {int.class});
                tmp = (BluetoothSocket) m.invoke(device, 1);
-               
+
          //   } catch (IOException e) {
-          //      Constant.log(Constant.TAG2, "Socket Type: " + mSocketType + "create() failed", e);
+          //      Constant.log(Constant.TAG2, "Socket Type: " +  "Secure" + "create() failed", e);
             } catch (NoSuchMethodException e) {
 				e.printStackTrace();
 			} catch (IllegalArgumentException e) {
@@ -273,11 +276,10 @@ public class BluetoothChatService {
         }
 
         public void run() {
-            setName("ConnectThread" + mSocketType);
+            setName("ConnectThread" +  "Secure");
             if(mAdapter.isDiscovering()){            // Always cancel discovery because it will slow down a connection
             	mAdapter.cancelDiscovery();
             }
-
             // Make a connection to the BluetoothSocket
             try {
                 // This is a blocking call and will only return on a
@@ -287,7 +289,7 @@ public class BluetoothChatService {
                 try {		// Close the socket
                     mmSocket.close();
                 } catch (IOException e2) {
-                    Constant.log(Constant.TAG2, "unable to close() " + mSocketType +
+                    Constant.log(Constant.TAG2, "unable to close() " +  "Secure" +
                             " socket during connection failure", e2);
                 }
                 connectionFailed();
@@ -299,13 +301,13 @@ public class BluetoothChatService {
                 mConnectThread = null;
             }
             // Start the connected thread
-            connected(mmSocket, mmDevice, mSocketType);
+            connected(mmSocket, mmDevice,  "Secure");
         }
         public void cancel() {
             try {
                 mmSocket.close();
             } catch (IOException e) {
-                Constant.log(Constant.TAG2, "close() of connect " + mSocketType + " socket failed", e);
+                Constant.log(Constant.TAG2, "close() of connect " +  "Secure" + " socket failed", e);
             }
         }
     }
@@ -346,9 +348,15 @@ public class BluetoothChatService {
 	            // Keep listening to the InputStream while connected
 	            while (reading) {
 	                try {
-	                    byte[] buffer = new byte[1024];
+	                    byte[] buffer = new byte[ 512 ];
 	                    int bytes = mmInStream.read(buffer);
-	                    mHandler.obtainMessage(Constant.MESSAGE_READ, bytes, -1, buffer) .sendToTarget();   // Send the obtained bytes to the UI Activity
+	                    // construct a string from the valid bytes in the buffer
+	                    String readMessage = new String(buffer, 0, bytes);
+	                    //Log.i(Constant.TAG, "buffer read " + readMessage );
+	    				//input_parser.readInput(readMessage);
+	                 //   mReader.sendData(readMessage);
+	                 //   mReader.run();
+	                    mHandler.obtainMessage(Constant.MESSAGE_READ, bytes, -1, readMessage).sendToTarget();   // Send the obtained bytes to the UI Activity
 	                } catch (IOException e) {
 	                    Constant.log(Constant.TAG, "disconnected", e);
 	                    connectionLost();
@@ -367,10 +375,7 @@ public class BluetoothChatService {
                 mmOutStream.write(buffer);
             //    String str = new String(buffer, "UTF-8");
            //     Log.i(Constant.TAG, "buffer write " + str );
-                
                 // Share the sent message back to the UI Activity
-                mHandler.obtainMessage(Constant.MESSAGE_WRITE, -1, -1, buffer)
-                        .sendToTarget();
             } catch (IOException e) {
                 Constant.log(Constant.TAG, "Exception during write", e);
             }

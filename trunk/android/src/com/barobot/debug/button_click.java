@@ -1,7 +1,11 @@
-package com.barobot;
+package com.barobot.debug;
 
 import java.util.Random;
 
+import com.barobot.BarobotMain;
+import com.barobot.R;
+import com.barobot.R.id;
+import com.barobot.R.layout;
 import com.barobot.drinks.RunnableWithData;
 import com.barobot.hardware.ArduinoQueue;
 import com.barobot.hardware.virtualComponents;
@@ -183,12 +187,6 @@ public class button_click implements OnClickListener{
 		    }
 		    ar.send(q);
 			break;
-		case R.id.glweight:
-			ar.send("GET A " + virtualComponents.ANALOG_WAGA);
-			break;
-		case R.id.bottweight:
-			ar.send("GET WEIGHT");
-			break;
 		case R.id.fill5000:
 			virtualComponents.nalej( 3000 );
 			break;
@@ -270,10 +268,8 @@ public class button_click implements OnClickListener{
 				int graph_speed2 = virtualComponents.graph_speed;
 				AJS.getInstance().runJs("show_random", ""+graph_speed2);	
 			}else{
-				int graph_speed2 = virtualComponents.graph_speed;
-				AJS.getInstance().runJs("show_random", "false");
+				AJS.getInstance().runJs("show_random", "0");
 			}
-
 			break;
 
 		case R.id.graph_source:
@@ -329,15 +325,15 @@ public class button_click implements OnClickListener{
 					virtualComponents.graph_xsize		= Integer.parseInt(this.data);
 					AJS.getInstance().runJs("changex", ""+virtualComponents.graph_xsize);
 				}
-        	}, ""+virtualComponents.graph_speed);
+        	}, ""+virtualComponents.graph_xsize);
 			break;
 		case R.id.graph_active:
 	  	  	ToggleButton tb2		= (ToggleButton) v;
 	  	  	boolean isChecked2		= tb2.isChecked();
-			if(isChecked2){
+			if(!isChecked2){
 				int graph_source9	= virtualComponents.graph_source;
 				virtualComponents.disable_analog(ar, graph_source9 );
-				AJS.getInstance().runJs("show_random", "false");
+				AJS.getInstance().runJs("show_random", "0");
 			}
 			break;
 		case R.id.graph_fps:
@@ -368,9 +364,21 @@ public class button_click implements OnClickListener{
 		case R.id.graph_high_speed:
 			AJS.getInstance().runJs("sethighspeed");
 			break;
+			
+		case R.id.bottle_next:
+			break;	
+		case R.id.bottle_prev:
+			break;
+		case R.id.goto_max_y:
+			break;
+		case R.id.goto_max_x:
+			break;
+		case R.id.goto_min_x:
+			break;
+		case R.id.goto_min_y:
+			break;	
 	   }
 	}
-
 	 public void show_dialog( final RunnableWithData onfinish, String defaultValue ){
 		// custom dialog
 		final Dialog dialog = new Dialog(dbw);

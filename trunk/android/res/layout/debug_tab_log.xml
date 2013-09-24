@@ -16,7 +16,7 @@
     </ListView>
 
     <ToggleButton
-        android:id="@+id/toggleButton1"
+        android:id="@+id/logs_enable"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
@@ -30,7 +30,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
-        android:layout_below="@+id/toggleButton1"
+        android:layout_below="@+id/logs_enable"
         android:text="Wyczyść" />
 
 </RelativeLayout>
