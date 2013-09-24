@@ -50,7 +50,7 @@ public class BTListActivity extends Activity {
 
         // Initialize array adapters. One for already paired devices and
         // one for newly discovered devices
-        mDevicesArrayAdapter = new ArrayAdapter<String>(this, R.layout.device_name);
+        mDevicesArrayAdapter = new ArrayAdapter<String>(this, R.layout.bt_device);
 
         // Find and set up the ListView for paired devices
         ListView pairedListView = (ListView) findViewById(R.id.paired_devices);

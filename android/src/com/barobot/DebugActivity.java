@@ -129,6 +129,7 @@ public class DebugActivity extends FragmentActivity implements	ActionBar.TabList
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
+		menu.clear();
 		getMenuInflater().inflate(R.menu.device_list, menu);
 		Constant.log("Debug", "onPrepareOptionsMenu");
 		int position = mViewPager.getCurrentItem();
@@ -145,11 +146,7 @@ public class DebugActivity extends FragmentActivity implements	ActionBar.TabList
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		//return false;
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.device_list, menu);
-		Constant.log("Debug", "onCreateOptionsMenu");
-
-		return true;
+		return true;		// wszystko dzieje sie w onPrepareOptionsMenu
 	}
 
 	@Override
@@ -257,8 +254,6 @@ public class DebugActivity extends FragmentActivity implements	ActionBar.TabList
 			setChecked( R.id.led9, "ON".equals(value) );
 		}else if("LED10".equals(name) ){
 			setChecked( R.id.led10, "ON".equals(value) );
-		}else if("aaaaaaaa".equals(name) ){
-			setText( R.id.dist1, value, false );
 		}
 	}
 

@@ -91,7 +91,7 @@
 
     <Button
         android:id="@+id/min_x"
-        android:layout_width="70dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/kalibrujx"
         android:layout_alignRight="@+id/min_y"
@@ -100,8 +100,8 @@
 
     <Button
         android:id="@+id/min_z"
-        style="buttonStyle"
-        android:layout_width="70dp"
+        style="android:buttonStyle"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/kalibrujz"
         android:layout_alignRight="@+id/min_y"
@@ -138,16 +138,15 @@
 
     <Button
         android:id="@+id/max_x"
-        android:layout_width="70dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/kalibrujx"
-        android:layout_alignRight="@+id/max_z"
         android:layout_toRightOf="@+id/kalibrujx"
         android:text="MAX X" />
 
     <Button
         android:id="@+id/max_z"
-        android:layout_width="70dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/kalibrujz"
         android:layout_toRightOf="@+id/kalibrujz"
@@ -155,16 +154,15 @@
 
     <Button
         android:id="@+id/min_y"
-        android:layout_width="70dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/kalibrujy"
-        android:layout_alignRight="@+id/pacpac"
         android:layout_toRightOf="@+id/max_y"
         android:text="MIN Y" />
 
     <Button
         android:id="@+id/max_y"
-        android:layout_width="70dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/kalibrujy"
         android:layout_alignRight="@+id/max_z"
@@ -185,7 +183,7 @@
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/min_y"
         android:layout_toRightOf="@+id/min_y"
-        android:text="MACHAJY" />
+        android:text="MACHAJ" />
 
     <Button
         android:id="@+id/machajx"
@@ -193,7 +191,7 @@
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/kalibrujx"
         android:layout_toRightOf="@+id/min_x"
-        android:text="MACHAJX" />
+        android:text="MACHAJ" />
 
     <Button
         android:id="@+id/losujx"
@@ -201,7 +199,7 @@
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/kalibrujx"
         android:layout_toRightOf="@+id/machajx"
-        android:text="LOSUJX" />
+        android:text="LOSUJ" />
 
     <Button
         android:id="@+id/losujy"
@@ -209,7 +207,7 @@
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/machajy"
         android:layout_toRightOf="@+id/machajy"
-        android:text="LOSUJY" />
+        android:text="LOSUJ" />
 
     <Button
         android:id="@+id/fill5000"
@@ -328,29 +326,15 @@
         android:layout_toRightOf="@+id/unlock"
         android:text="smile" />
 
-    <Button
-        android:id="@+id/set_neutral_y"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/glweight"
-        android:text="Tu jest neutralny Y" />
-
-    <Button
-        android:id="@+id/goToNeutralY"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/set_neutral_y"
-        android:layout_alignBottom="@+id/set_neutral_y"
-        android:layout_toRightOf="@+id/set_neutral_y"
-        android:text="Idź do neutral Y" />
+    
 
     <Button
         android:id="@+id/unlock"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/goToNeutralY"
-        android:layout_alignBottom="@+id/goToNeutralY"
-        android:layout_toRightOf="@+id/goToNeutralY"
+        android:layout_alignBaseline="@+id/set_neutral_y"
+        android:layout_alignBottom="@+id/set_neutral_y"
+        android:layout_toRightOf="@+id/set_neutral_y"
         android:text="Odblokuj" />
 
     <Button
@@ -363,58 +347,13 @@
         android:text="Pacnij" />
 
     <ToggleButton
-        android:id="@+id/set_bottle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/wagi_live"
-        android:layout_toRightOf="@+id/wagi_live"
-        android:text="ToggleButton"
-        android:textOff="Tutaj jest butelka..."
-        android:textOn="Tutaj jest butelka..." />
-
-    <TextView
-        android:id="@+id/analog0"
-        android:layout_width="120dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_margin="5dp"
-        android:ellipsize="end"
-        android:gravity="center"
-        android:text="@string/tvText"
-        android:textSize="32sp"
-        android:textStyle="bold" />
-
-    <TextView
-        android:id="@+id/dist1"
-        android:layout_width="120dp"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/analog0"
-        android:layout_alignParentLeft="true"
-        android:layout_margin="5dp"
-        android:ellipsize="end"
-        android:gravity="center"
-        android:text="@string/tvText"
-        android:textSize="32sp"
-        android:textStyle="bold" />
-
-    <ToggleButton
         android:id="@+id/auto_fill"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/dist1"
-        android:layout_below="@+id/set_neutral_y"
+        android:layout_below="@+id/goToNeutralY"
         android:text="ToggleButton"
         android:textOff="Nie nalewaj od razu"
         android:textOn="Nalewaj od razu" />
-
-    <Button
-        android:id="@+id/glweight"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignRight="@+id/max_z"
-        android:layout_centerVertical="true"
-        android:text="Czytaj wagę raz" />
 
     <ToggleButton
         android:id="@+id/need_glass"
@@ -436,5 +375,81 @@
         android:text="ToggleButton"
         android:textOff="Waga OFF"
         android:textOn="Waga ON" />
+
+    <ToggleButton
+        android:id="@+id/set_bottle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/wagi_live"
+        android:layout_toRightOf="@+id/wagi_live"
+        android:text="ToggleButton"
+        android:textOff="Tutaj jest butelka..."
+        android:textOn="Tutaj jest butelka..." />
+
+    <Button
+        android:id="@+id/goto_min_y"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/losujy"
+        android:layout_toRightOf="@+id/goto_max_y"
+        android:text="Znajdź MIN STOP" />
+
+    <Button
+        android:id="@+id/goto_max_y"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/losujy"
+        android:layout_toRightOf="@+id/losujy"
+        android:text="Znajdź MAX STOP" />
+
+    <Button
+        android:id="@+id/goto_min_x"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/losujx"
+        android:layout_toRightOf="@+id/goto_max_x"
+        android:text="Znajdź MIN STOP" />
+
+    <Button
+        android:id="@+id/goto_max_x"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/losujx"
+        android:layout_toRightOf="@+id/losujx"
+        android:text="Znajdź MAX STOP" />
+
+    <Button
+        android:id="@+id/bottle_next"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/auto_fill"
+        android:text="Następna butelka" />
+
+    <Button
+        android:id="@+id/bottle_prev"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/bottle_next"
+        android:layout_alignBottom="@+id/bottle_next"
+        android:layout_toRightOf="@+id/bottle_next"
+        android:text="Poprzednia butelka" />
+
+    <Button
+        android:id="@+id/set_neutral_y"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/goToNeutralY"
+        android:layout_alignBottom="@+id/goToNeutralY"
+        android:layout_toRightOf="@+id/goToNeutralY"
+        android:text="Tu jest neutralny Y" />
+
+    <Button
+        android:id="@+id/goToNeutralY"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/position_z"
+        android:text="Idź do neutral Y" />
 
 </RelativeLayout>

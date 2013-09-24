@@ -51,7 +51,7 @@ var changefps = function( val ){
 var tt			= null;
 var random_on	= false;
 var show_random = function( speed ){
-	if( random_on || speed === false ){
+	if( random_on || speed == '0' ||speed == 0 ){
 		clearTimeout(tt);
 		tt = null;
 		random_on = false;

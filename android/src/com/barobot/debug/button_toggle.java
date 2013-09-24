@@ -1,4 +1,6 @@
-package com.barobot;
+package com.barobot.debug;
+import com.barobot.R;
+import com.barobot.R.id;
 import com.barobot.hardware.virtualComponents;
 import com.barobot.utils.Arduino;
 

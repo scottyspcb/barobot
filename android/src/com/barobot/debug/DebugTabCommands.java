@@ -2,8 +2,6 @@ package com.barobot.debug;
 
 import com.barobot.DebugActivity;
 import com.barobot.R;
-import com.barobot.button_click;
-import com.barobot.button_toggle;
 import com.barobot.R.id;
 import com.barobot.utils.Constant;
 
@@ -31,7 +29,6 @@ public class DebugTabCommands extends Fragment {
 		//Integer.toString(getArguments().getInt(DebugActivity.ARG_SECTION_NUMBER))
     	Constant.log("DebugTabCommands", "onActivityCreated");
         super.onActivityCreated(savedInstanceState);
-
     }
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
@@ -69,8 +66,6 @@ public class DebugTabCommands extends Fragment {
 				R.id.set_y10,
 				R.id.set_y100,
 				R.id.set_y600,
-				R.id.glweight,
-				R.id.bottweight,
 				R.id.fill5000,
 				R.id.set_bottle,
 				R.id.set_neutral_y,

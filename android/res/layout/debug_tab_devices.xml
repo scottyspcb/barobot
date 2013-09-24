@@ -10,16 +10,15 @@
         android:gravity="center_vertical|center_horizontal"
         android:text="Nie wykryto żadnych urządzeń"
         android:textAppearance="?android:attr/textAppearanceMedium" />
- 
- <ListView
-     android:id="@+id/device_list"
-     android:layout_width="match_parent"
-     android:layout_height="match_parent"
-     android:layout_alignParentLeft="true"
-     android:layout_below="@+id/text5"
-     android:layout_weight="1"
-     android:stackFromBottom="true"
-     android:transcriptMode="alwaysScroll" >
+    
+<ListView
+    android:id="@+id/device_list"
+    android:layout_width="match_parent"
+    android:clipChildren="false"
+    android:layout_height="wrap_content"
+    android:layout_alignParentLeft="true"
+    android:layout_alignParentTop="true" >
 
-			    </ListView>
+    </ListView>
+    
 </RelativeLayout>

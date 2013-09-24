@@ -1,5 +1,7 @@
 package com.barobot.utils;
 
+import android.util.Log;
+
 import com.barobot.DebugActivity;
 import com.barobot.R;
 import com.barobot.hardware.virtualComponents;
@@ -10,12 +12,11 @@ public class input_parser {
 	public static String separator = "\n";
 
 	public static void readInput( final String in ){
-		if(null == in){
-			return;
-		}	
+		//if(null == in){
+		//	return;
+		//}
 		synchronized (input_parser.class) {
 			input_parser.buffer = input_parser.buffer + in;
-			
 			//Log.i(Constant.TAG, "input [" + input_parser.buffer+"]" );
 			int end = input_parser.buffer.indexOf(separator);
 			if( end!=-1){
@@ -25,12 +26,12 @@ public class input_parser {
 					input_parser.buffer = input_parser.buffer.substring(end+1);
 					command				= command.trim();
 				//	Log.i(Constant.TAG, "zostalo [" + input_parser.buffer +"]");
-					if(! "".equals(command)){
-						//bb6.addToList(command + " /// " + input_parser.buffer );
-						parseInput(command);
+					if("".equals(command)){
+						Log.i(Constant.TAG, "posta komenda!!!]");
 					}
-					end					= input_parser.buffer.indexOf(separator);
-				//	Log.i(Constant.TAG, "[" + command +"/"+ input_parser.buffer+"]");
+					parseInput(command);
+					end		= input_parser.buffer.indexOf(separator);
+				//	
 				}
 			}
         }
@@ -40,7 +41,32 @@ public class input_parser {
 		//Log.i(Constant.TAG, "parse:[" + fromArduino +"]");
 		boolean is_ret = false;
 
-		if(fromArduino.startsWith("RET ")){						// na końcu bo to może odblokować wysyłanie i spowodować zapętlenie
+		if(fromArduino.startsWith("A")){
+			AJS aa = AJS.getInstance();
+			if(aa!=null){
+				String[] tokens = fromArduino.split(" ");
+				if(tokens.length > 1 ){
+					try {
+						int e = Integer.parseInt( tokens[1] );
+						e	= e / virtualComponents.graph_repeat;		// podziel przez liczbe powtorzen
+						aa.oscyloskop( tokens[1] );
+					} catch ( java.lang.NumberFormatException e2) {
+					}
+				}
+			}
+			if(fromArduino.startsWith("A2 ")){	
+				String fromArduino21 = fromArduino.replace("A2 ", "");
+				virtualComponents.set( "GLASS_WEIGHT", fromArduino21);
+				int noglass_weight = virtualComponents.getInt( "NOGLASS_WEIGHT", 0 );
+				try {
+					int e = Integer.parseInt(fromArduino21);
+					if( e < noglass_weight ){		// jesli jest lżej od tego ile powinno byc
+						virtualComponents.set( "NOGLASS_WEIGHT", fromArduino21);
+					}
+				} catch ( java.lang.NumberFormatException e2) {
+				}
+			}
+		}else if(fromArduino.startsWith("RET ")){						// na końcu bo to może odblokować wysyłanie i spowodować zapętlenie
 			if(fromArduino.startsWith("RET SET LED")){	
 				String fromArduino2 = fromArduino.replace("RET SET LED", "");
 				String[] tokens = fromArduino2.split(" ");		// numer i wartosc
@@ -56,7 +82,10 @@ public class input_parser {
 				final DebugActivity dialog = DebugActivity.getInstance();
 				if(dialog!=null){
 					dialog.setChecked( R.id.wagi_live, !"OFF".equals(fromArduino2) );
-				}				
+				}
+			}else if( fromArduino.equals("RET REBOOT") ){		//  właśnie uruchomiłem arduino
+				Arduino q			= Arduino.getInstance();
+				q.clear();
 			}else if(fromArduino.startsWith("RET POS")){	
 				String fromArduino2 = fromArduino.replace("RET POS ", "");
 				String[] tokens = fromArduino2.split(",");
@@ -87,33 +116,12 @@ public class input_parser {
 				String fromArduino2 = fromArduino.replace("RET READY AT ", "");
 				String[] tokens = fromArduino2.split(",");
 				virtualComponents.is_ready = true;
-		
 				virtualComponents.set( "POSX",tokens[0]);
 				virtualComponents.set( "POSY",tokens[1]);
 				virtualComponents.set( "POSZ",tokens[2]);
 			}			
 			is_ret = Arduino.getInstance().read_ret( fromArduino );		// zapisuj zwrotki
-		}else if(fromArduino.startsWith("A")){
-			AJS aa = AJS.getInstance();
-			if(aa!=null){
-				String[] tokens = fromArduino.split(" ");
-				if(tokens.length > 1 ){
-					aa.oscyloskop( tokens[1] );
-				}
-			}
-			if(fromArduino.startsWith("A2 ")){	
-				String fromArduino21 = fromArduino.replace("A2 ", "");
-				virtualComponents.set( "GLASS_WEIGHT", fromArduino21);
-				int noglass_weight = virtualComponents.getInt( "NOGLASS_WEIGHT", 0 );
-				try {
-					int e = Integer.parseInt(fromArduino21);
-					if( e < noglass_weight ){		// jesli jest lżej od tego ile powinno byc
-						virtualComponents.set( "NOGLASS_WEIGHT", fromArduino21);
-					}
-				} catch ( java.lang.NumberFormatException e2) {
-				}
-			}
-
+		
 		}else if(fromArduino.startsWith("INTERVAL")){
 			AJS aa = AJS.getInstance();
 			if(aa!=null){
@@ -148,19 +156,13 @@ public class input_parser {
 		}else if(fromArduino.startsWith("PING")){
 //			toSend.add("PONG");
 		}
-		if( fromArduino.equals("RET REBOOT") ){		//  właśnie uruchomiłem arduino
-			Arduino q			= Arduino.getInstance();
-			q.clear();
-		}
-        if( !is_ret ){
+        if( !is_ret ){ // jesli nie jest zwrotka
 			Arduino q			= Arduino.getInstance();
         	q.addToList(fromArduino, false );
         }
 	}
-	
 	private static void handleError(String fromArduino) {	
 	}
-	
 	/*
 	// UpdateData Asynchronously sends the value received from ADK Main Board. 
 	// This is triggered by onReceive()

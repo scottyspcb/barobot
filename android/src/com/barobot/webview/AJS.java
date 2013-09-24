@@ -105,18 +105,15 @@ public class AJS {
 		    startActivityForResult(intent, mContext.PHOTO_REQUEST_CODE);*/
 		}
 		public void oscyloskop( final String in ) {
-	    	final AJS appi = this;
-	    	appi.webview.post(new Runnable() {
+	    	webview.post(new Runnable() {
 	            @Override
-	            public void run() { 
-	    			String url = "javascript:sendToDraw('"+ in +"');void(0);";
-	            	appi.webview.loadUrl(url);
+	            public void run() {
+	            	webview.loadUrl( "javascript:sendToDraw('"+ in +"');");
 	            }
 	        });
 		}
 		public void runJs(final String method, final String... args) {
-	    	final AJS appi = this;
-	    	appi.webview.post(new Runnable() {
+	    	webview.post(new Runnable() {
 	            @Override
 	            public void run() { 
 	    			String callargs = "";
@@ -128,7 +125,7 @@ public class AJS {
 	    			}
 	    			String url = "javascript:"+method+"("+ callargs +");void(0);";
 	    			Log.d("+URL", url );
-	            	appi.webview.loadUrl(url);
+	            	webview.loadUrl(url);
 	            }
 	        }); 
 		}
@@ -151,12 +148,11 @@ public class AJS {
 		this.runJs( "setOrientation", string );
 	}
 	public void oscyloskop_interval() {
-    	final AJS appi = this;
-    	appi.webview.post(new Runnable() {
+    	webview.post(new Runnable() {
             @Override
             public void run() { 
     			String url = "javascript:sendToDraw();void(0);";
-            	appi.webview.loadUrl(url);
+            	webview.loadUrl(url);
             }
         });
 	}

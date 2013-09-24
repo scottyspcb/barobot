@@ -2,7 +2,6 @@ package com.barobot.debug;
 
 import com.barobot.DebugActivity;
 import com.barobot.R;
-import com.barobot.button_zajedz;
 import com.barobot.R.id;
 import com.barobot.hardware.virtualComponents;
 import com.barobot.utils.Constant;

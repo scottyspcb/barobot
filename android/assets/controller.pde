@@ -1,17 +1,17 @@
 SpinArm arm;
 
 // zmienne uniwersalne:
-var height3		= window.innerHeight - 10;
+var height3		= window.innerHeight - 1;
 int width5		= window.innerWidth;
 var srodek		= int(height3/2);
 var dol			= int(height3);
 int fps			= 10;
 int dot_size	= 5;
-int dimms		= 10;
+int dimms		= 4;
 int inited		= 0;		// ile wymiarów danych
 int skalax		= 4;
 int interval_size= 0;
-
+boolean need_refresh	= true;
 
 //tablice w zale¿nosci od wymiaru
 int[] lastX		= new int[dimms];		// 10 wymiarów max
@@ -26,8 +26,6 @@ palette[0]=color(0,255,0);
 palette[1]=color(0,0,255);
 palette[2]=color(255,255,0);
 palette[3]=color(255,255,255);
-palette[4]=color(128,0,0);
-palette[5]=color(128,0,255);
 
 int data_width							= int((width5 -10) / skalax);
 int  buffer_width						= width5;		// tak jakby skalax = 1
@@ -38,7 +36,6 @@ boolean localmin	= true;
 boolean draw_dots	= false;
 boolean draw_lines	= true;
 boolean draw_columns= false;
-
 
 void setup() {
 	size(width5, height3);
@@ -76,19 +73,30 @@ void readInput( vals ) {
 			ymax[d]		= max( ymax[d], val );
 			ymin[d]		= min( ymin[d], val );
 		}
-	//	println(val);
 		lastX[d]++;
 		interval_size++;
 	}
+	need_refresh = true;
 }
 
 void getValue( d, rawY ) {		// podaje liczbê px od do³u ekranu (do³u wykresu)
 	//int y1	= dol - int(rawY * skala)-ymin;
 	// ymin powinien byæ zawsze na pozycji 0 wykresu czyli "dol" ekranu
 	return dol + (rawY - ymin[d]) * skala[d];
+
+	return dol + (rawY* skala[d] - ymin[d]* skala[d]);
 }
 
+void getValue2( d, rawY, margin ) {		// podaje liczbê px od do³u ekranu (do³u wykresu)
+	return margin  + rawY* skala[d];
+}
+
+
 void draw() {
+	if(!need_refresh){
+		return
+	}
+	need_refresh = false;
 	background(0, 0, 0);
 
 	/*
@@ -103,9 +111,9 @@ void draw() {
 
 	for (int d = 0; d < inited; d++) {		// dla ka¿xego wymiaru
 		skala[d]		= dol / ( ymin[d] - ymax[d] );
-
-		int newymin	= 10000;
-		int newymax	= -10000;
+		int margin		= dol - ymin[d]* skala[d];
+		int newymin		= 10000;
+		int newymax		= -10000;
 			
 		stroke(palette[ d ]);
 		
@@ -113,10 +121,10 @@ void draw() {
 		int sigma		= int(sqrt(sigma2[d]/data_width) * 1);	// wariancja
 		sigma2[d]		= 0;
 
-		int odch1		= getValue(d,agvs[d] + sigma);	// zaznacz srednia + sigma 
+		int odch1		= getValue2(d,agvs[d] + sigma, margin);	// zaznacz srednia + sigma 
 		line(0, odch1, width5, odch1);		// srednia
 			
-		int odch2		= getValue(d,agvs[d] - sigma);	// zaznacz srednia - sigma 
+		int odch2		= getValue2(d,agvs[d] - sigma, margin);	// zaznacz srednia - sigma 
 		line(0, odch2, width5, odch2);		// srednia
 
 		
@@ -135,9 +143,8 @@ void draw() {
 		int zakres = ymax[d]- ymin[d];
 		for (int i = 0; i < 20; i++) {
 			int val		= int( ymax[d] - zakres/20 * i);
-			int new_y	= int(getValue(d, val));
-			text("" + val, 5, new_y); 			
-		
+			int new_y	= int(getValue2(d, val, margin));
+			text("" + val, 5, new_y);
 		}
 		
 		
@@ -145,7 +152,7 @@ void draw() {
 		
 		for (int i = 0; i < data_width; i++) {	
 			int val		= history[ d ][ i ];
-			int new_y	= getValue(d, val);
+			int new_y	= getValue2(d, val, margin);
 			int new_x	= i* skalax;
 			agv_sum		+=	val;
 
@@ -196,18 +203,21 @@ void draw() {
 
 void dots() {
 	draw_dots = !draw_dots;
+	need_refresh = true;
 }
 void lines() {
 	draw_lines = !draw_lines;
+	need_refresh = true;
 }
 void column() {
 	draw_columns = !draw_columns;
+	need_refresh = true;
 }
 
 void changefps( val ) {
 	fps = val;
 	frameRate(fps);
-	println(fps);
+	need_refresh = true;
 }
 
 void changex( val ) {
@@ -218,14 +228,17 @@ void changex( val ) {
 	if( skalax < 1 ){
 		skalax = 1;
 	}
+	need_refresh = true;
 	data_width		= int((width5 -10) / skalax);	
 }
 
 void toggleLocalMin() {	
+	need_refresh = true;
 	localmin = !localmin;
 }
 
 void clear() {
+	need_refresh = true;
 	reversed	= 0 - reversed;
 }
 
@@ -238,18 +251,22 @@ void new_interval() {		// zacznij pokazywc od lewej, skaluj na d³ugosc okresu je
 		skalax			= floor(skalax);
 		data_width		= int((width5 -10) / skalax);
 	}
+	need_refresh = true;
 	interval_size = 0;
 }
 
 void reverseY() {
+	need_refresh = true;
 	reversed	= 0 - reversed;
 }
 
 void sethighspeed() {
+	need_refresh = true;
 	fps	= 30;
 }
 void toggleDimm( name ) {
 	for (int d = 0; d < inited; d++) {		// dla ka¿xego wymiaru
 	}
+	need_refresh = true;
 	data_width = 1;
 }
