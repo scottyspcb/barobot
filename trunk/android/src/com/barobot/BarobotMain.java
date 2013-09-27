@@ -67,6 +67,23 @@ public class BarobotMain extends Activity {
 
 		cm = new CameraManager( this );
 		cm.findCameras();
+
+	    DeviceSet.loadXML(this, R.raw.devices);
+
+
+	    File sdDir = Environment.getExternalStorageDirectory();
+	    Constant.log("DIR1", sdDir.getAbsolutePath() );
+	    try {
+			Constant.log("DIR2", sdDir.getCanonicalPath() );
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	    Constant.log("DIR3", File.pathSeparator);
+	    Constant.log("DIR4", ""+sdDir.getFreeSpace() );
+	    
+		
+		
     }
 
     private ArrayList<interval> inters = new ArrayList<interval>();    
@@ -97,19 +114,6 @@ public class BarobotMain extends Activity {
 	@Override
     public boolean onCreateOptionsMenu(Menu menu) {
 	    MenuInflater inflater = getMenuInflater();
-	    
-	    DeviceSet.loadXML(this, R.raw.devices);
-
-	    File sdDir = Environment.getExternalStorageDirectory();
-	    Constant.log("DIR1", sdDir.getAbsolutePath() );
-	    try {
-			Constant.log("DIR2", sdDir.getCanonicalPath() );
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	    Constant.log("DIR3", File.pathSeparator);
-	    Constant.log("DIR4", ""+sdDir.getFreeSpace() );
 	    
 	    inflater.inflate(R.menu.option_menu, menu);
 	    return true;
@@ -180,12 +184,13 @@ public class BarobotMain extends Activity {
     @Override
     public void onDestroy() {
     	Constant.log("MAINWINDOW", "onDestroy");
+        Arduino.getInstance().destroy();
+    	DeviceSet.clear();
     	Iterator<interval> it = this.inters.iterator();
     	while(it.hasNext()){
     		it.next().cancel();
     	}
         cm.onDestroy();
-        Arduino.getInstance().destroy();
         super.onDestroy();
     }
     public void onActivityResult(int requestCode, int resultCode, Intent data) {

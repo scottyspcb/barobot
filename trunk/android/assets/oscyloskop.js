@@ -23,23 +23,23 @@ var runOnProc = function( funcName, args){
 		pp = Processing.getInstanceById('maindrawing1');
 	}		
 };
-var column = function(){
-	runOnProc( "column" );
+var column = function(val){
+	runOnProc( "column", [ val ] );
 };
-var reverseY = function(){
-	runOnProc( "reverseY" );
+var reverseY = function(val){
+	runOnProc( "reverseY", [ val ] );
 };
-var dots = function(){
-	runOnProc( "dots" );
+var dots = function(val){
+	runOnProc( "dots", [ val ] );
 };
-var lines = function(){
-	runOnProc( "lines" );
+var lines = function(val){
+	runOnProc( "lines", [ val ] );
 };
-var toggleLocalMin = function(){
-	runOnProc( "toggleLocalMin" );
+var toggleLocalMin = function( val ){
+	runOnProc( "toggleLocalMin", [ val ] );
 };
-var sethighspeed = function(){
-	runOnProc( "sethighspeed" );
+var sethighspeed = function(val){
+	runOnProc( "sethighspeed", [ val ] );
 };
 var changex = function( val ){
 	runOnProc( "changex", [ val ] );

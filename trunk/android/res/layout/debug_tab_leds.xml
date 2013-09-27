@@ -96,25 +96,15 @@
 			        android:textOff="10 OFF"
 			        android:textOn="10 ON" />
 
-			    <TextView
-			        android:id="@+id/text5"
+			    <ListView
+			        android:id="@+id/led_list"
 			        android:layout_width="match_parent"
 			        android:layout_height="wrap_content"
 			        android:layout_alignParentLeft="true"
 			        android:layout_below="@+id/led1"
-			        android:gravity="center_vertical|center_horizontal"
-			        android:text="Nie znaleziono sterwników LED"
-			        android:textAppearance="?android:attr/textAppearanceMedium" />
-
-			    <ListView
-			        android:id="@+id/led_list"
-			        android:layout_width="match_parent"
-			        android:layout_height="match_parent"
-			        android:layout_alignParentLeft="true"
-			        android:layout_below="@+id/text5"
-			        android:layout_weight="1"
-			        android:stackFromBottom="true"
-			        android:transcriptMode="alwaysScroll" >
+			        android:clipChildren="false"
+			        android:footerDividersEnabled="false"
+			        android:headerDividersEnabled="false" >
 
 			    </ListView>
     

@@ -26,7 +26,7 @@ public class rpc_message extends History_item{
 	public boolean isRet(String message) {	// czy to co przyszło jest zwrotką tej komendy
 		message =message.trim();
 		if( this.blocing){
-			if( message.startsWith("RET READY AT ") ){	// np "RET READY AT 0,0,0"
+			if( message.startsWith("R READY AT ") ){	// np "R READY AT 0,0,0"
 				if( command.startsWith("SET Y ") ){
 					ret = message;
 					return true;
@@ -37,13 +37,13 @@ public class rpc_message extends History_item{
 				}
 				return false;
 			}
-			if( message.startsWith("RET POS ") ){	// np "POS 0,0,0"
+			if( message.startsWith("R POS ") ){	// np "POS 0,0,0"
 				if( command.startsWith("GET CARRET")){
 					ret = message;
 					return true;
 				}
 			}
-			if( message.equals( "RET " + this.command )){
+			if( message.equals( "R " + this.command )){
 				ret = message;
 
 				return true;
