@@ -1,43 +1,19 @@
 // -----------
-// Gdzie jest android? Tylko jedna z tych 3 opcji moz byc wlaczona na raz
-// czy Android jest na koncu BT (Serial3)
-#define USE_BT false
-// czy Android jest na koncu USB
-#define USE_ADB false
-// udawaj androida po serialu
 #define USE_SERIAL0 true
 // -----------
 
 
-// czy debugowac przez BT
-#define DEBUG_OVER_BT false
-
 // czy debugowac przez Serial0
-#define DEBUG_OVER_SERIAL false  //
-
-#define DEBUG_ADB2ANDROID false  //
-
-
-#define I2C_ENABLED true
-#define I2C_BUFF_LENGTH 10
-
+#define DEBUG_OVER_SERIAL true  //
 
 #define DEBUG_SERIAL_INPUT false
 #define DEBUG_BT_INPUT false
 #define DEBUG_ADB_INPUT false
-#define DEBUG_OUTPUT2ANDROID true    //
-
-#define I2C_MASTER_ADDR 0x100
-#define I2C_DEVICE_VERSION 0x11     // v1.0
-#define I2C_DEVICE_TYPE 0x12        // mainboard
+#define DEBUG_OUTPUT2ANDROID false    //
 
 
 // obsluga zrodel wejscia
 #define SERIAL0_BOUND 115200
-//#define BT_BOUND 9600
-#define BT_BOUND 115200
-#define BT_DEV_NAME "barobotA"
-//#define SERIAL0_BOUND 9600
 
 // ycz usyzwac sterownika 2 czy 4 pinowego
 #define SERVOX4PIN true
@@ -248,28 +224,12 @@ const int PIN49 = 49;
 // ktory to LED od szklanyki (jeden z powyzszych)
 #define STATUS_GLASS_LED STATUS_LED05
 
-// tyle czekaj na ustawienie się adresu na multiplekserze
-#define MULTI_ADDR_TIME 10
-// czas pomiedzy czytaniem kolejnej butelki
-#define MULTI_READ_TIME 10
-// ile razy czytać jedną butelkę (jako potęga liczby 2)
-#define MULTI_READ_COUNT 8
-// ile razy czytać jedną ciezar szklanki (jako potęga liczby 2)
-#define WAGA_READ_COUNT 4
-
 // domyslen ustawienie mocy silnika Z
 // pozycja jechania do góry i czas jechania
 #define SERVOZ_UP_POS 2200
 
 // pozycja jechania w dół i czas jechania
 #define SERVOZ_DOWN_POS 900
-
-// pozycja do której zajechac robiąc PAC
-//#define SERVOZ_PAC_POS 1900
-//#define SERVOZ_PAC_TIME_WAIT 400    // po zjechaniu na dół tyle czekaj przed zrobieniem PAC
-//#define SERVOZ_PAC_TIME_UP 300      // czasu tyle jedz na gore
-//#define SERVOZ_PAC_TIME_DOWN 400    // czasu tyle jedz na dół
-
 // domyslnie ustawienie mocy silnikow Xy
 #if SERVOX4PIN==true
   #define SPEEDX 400
@@ -288,7 +248,7 @@ const int PIN49 = 49;
   #define ACCELERY 1050
 #else
   #define SPEEDY 4000
-  #define ACCELERY 3000
+  #define ACCELERY 10000
   #define YLENGTH 10000  
 #endif
 
@@ -302,15 +262,12 @@ const int PIN49 = 49;
 // czy wylączaj stepper Y gdy zajechal za miejsce?
 #define STEPPERY_READY_DISABLE true
 
-/*
-#define STEPPERX_ADD_X_LOW 3
-#define STEPPERX_ADD_X_HIGH 3
-#define STEPPERX_ADD_Y_LOW 3
-#define STEPPERX_ADD_Y_HIGH 3
-*/
-
 // ile razy odczytać wage zanim stwierdze ze nie ma szklanki
 #define WAGA_REPEAT_COUNT 5
 // minimalna waga szklanki
 
 // INNE
+
+// 1 znak rozdielający komendy
+#define SEPARATOR_CHAR '\n'
+
