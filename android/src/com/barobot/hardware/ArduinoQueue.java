@@ -102,14 +102,14 @@ public class ArduinoQueue {
 				this.name		= "wait glass";
 				ArduinoQueue q2	= new ArduinoQueue();
 				q2.add("LIVE WEIGHT ON", true);
-				q2.add("ENABLEX", true);
-				q2.add("ENABLEY", true);
+				q2.add("EX", true);
+				q2.add("EY", true);
 				q2.addWait(10);
 				q2.add("SET LED5 ON", true);
 				q2.add( wait4glass );					// jest szklanka lub nie ma
 				q2.add("LIVE WEIGHT OFF", true);
-				q2.add("DISABLEX", true);
-				q2.add("DISABLEY", true);
+				q2.add("DX", true);
+				q2.add("DY", true);
 				q2.add( finishGlass );					// jest szklanka lub nie ma
 				return q2;
 			}

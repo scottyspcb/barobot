@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -43,10 +44,6 @@ public class DeviceSet {
 
 	public DeviceSet add(String ff) {
 		if(featureIndex.containsKey(ff)){
-			
-			
-			
-			
 			this.set.addAll(featureIndex.get(ff));
 		}
 		return this;
@@ -87,8 +84,7 @@ public class DeviceSet {
          //   	 Constant.log("readFeed","device: "+ type);
             	 Device d = readEntry(parser);
             	 d.setTypeName(type); 
-            	 d.setTypeName(name);
-            	 fullSet.add(d);
+            	 d.setName(name);
             } else {
                 skip(parser);
             }
@@ -101,7 +97,8 @@ public class DeviceSet {
     private static Device readEntry(XmlPullParser parser) throws XmlPullParserException, IOException {
         parser.require(XmlPullParser.START_TAG, ns, "device");
         Device e =  new Device();
-
+   	 	fullSet.add(e);
+        entries.add(e);
         while (parser.next() != XmlPullParser.END_TAG) {
             if (parser.getEventType() != XmlPullParser.START_TAG) {
                 continue;
@@ -132,7 +129,6 @@ public class DeviceSet {
                 String name = parser.getAttributeValue(null, "name");
             //	Constant.log("readEntry","device start: " + type);
                 Device c = readEntry(parser);
-                fullSet.add(c);
                 c.setName(name);
                 c.setTypeName(type);
             	e.addChild( c );
@@ -141,7 +137,6 @@ public class DeviceSet {
                 skip(parser);
             }
         }
-        entries.add(e);
         return e;
     }
  
@@ -164,27 +159,7 @@ public class DeviceSet {
         }
         return result;
     }
-/*
-    
-    // Processes link tags in the feed.
-    private String readLink(XmlPullParser parser) throws IOException, XmlPullParserException {
-        String link = "";
-        parser.require(XmlPullParser.START_TAG, ns, "link");
-        String tag = parser.getName();
-        String relType = parser.getAttributeValue(null, "rel");
-        if (tag.equals("link")) {
-            if (relType.equals("alternate")) {
-                link = parser.getAttributeValue(null, "href");
-                parser.nextTag();
-            }
-        }
-        parser.require(XmlPullParser.END_TAG, ns, "link");
-        return link;
-    }
 
-    // For the tags title and summary, extracts their text values.
-   
-*/
     // Skips tags the parser isn't interested in. Uses depth to handle nested tags. i.e.,
     // if the next tag after a START_TAG isn't a matching END_TAG, it keeps going until it
     // finds the matching END_TAG (as indicated by the value of "depth" being 0).
@@ -205,7 +180,39 @@ public class DeviceSet {
             }
         }
     }
+	public static Set<String> getFeatures() {
+		return featureIndex.keySet();
+	}
 	public static DeviceSet getAll() {
 		return new DeviceSet(DeviceSet.fullSet);
 	}
+
+	public static void clear() {
+		featureIndex.clear();
+		fullSet.clear();
+		entries.clear();
+	}
 }
+
+
+/*
+
+// Processes link tags in the feed.
+private String readLink(XmlPullParser parser) throws IOException, XmlPullParserException {
+    String link = "";
+    parser.require(XmlPullParser.START_TAG, ns, "link");
+    String tag = parser.getName();
+    String relType = parser.getAttributeValue(null, "rel");
+    if (tag.equals("link")) {
+        if (relType.equals("alternate")) {
+            link = parser.getAttributeValue(null, "href");
+            parser.nextTag();
+        }
+    }
+    parser.require(XmlPullParser.END_TAG, ns, "link");
+    return link;
+}
+
+// For the tags title and summary, extracts their text values.
+
+*/

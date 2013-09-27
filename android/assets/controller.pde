@@ -201,16 +201,16 @@ void draw() {
 
 // zmiany ustawien
 
-void dots() {
-	draw_dots = !draw_dots;
+void dots(val) {
+	draw_dots = !!val;
 	need_refresh = true;
 }
-void lines() {
-	draw_lines = !draw_lines;
+void lines(val) {
+	draw_lines = !!val;
 	need_refresh = true;
 }
-void column() {
-	draw_columns = !draw_columns;
+void column(val) {
+	draw_columns = !!val;
 	need_refresh = true;
 }
 
@@ -232,9 +232,9 @@ void changex( val ) {
 	data_width		= int((width5 -10) / skalax);	
 }
 
-void toggleLocalMin() {	
+void toggleLocalMin( val ) {	
 	need_refresh = true;
-	localmin = !localmin;
+	localmin =  !!val
 }
 
 void clear() {
@@ -255,14 +255,22 @@ void new_interval() {		// zacznij pokazywc od lewej, skaluj na d³ugosc okresu je
 	interval_size = 0;
 }
 
-void reverseY() {
+void reverseY(val) {
 	need_refresh = true;
-	reversed	= 0 - reversed;
+	if(val){
+		reversed	= -1
+	}else{
+		reversed	= 1;
+	}
 }
 
-void sethighspeed() {
-	need_refresh = true;
-	fps	= 30;
+void sethighspeed(val) {
+	need_refresh =true;
+	if(val){
+		fps	= 30;
+	}else{
+		fps	= 10;
+	}
 }
 void toggleDimm( name ) {
 	for (int d = 0; d < inited; d++) {		// dla ka¿xego wymiaru

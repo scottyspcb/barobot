@@ -154,9 +154,9 @@ public class virtualComponents {
 	public static void pacpac() {
 		Arduino ar = Arduino.getInstance();
 		ArduinoQueue q = new ArduinoQueue();		
-		q.add("ENABLEX", true);
-//		q.add("ENABLEY", true);
-		q.add("ENABLEZ", true);
+		q.add("EX", true);
+//		q.add("EY", true);
+		q.add("EZ", true);
 		q.add("SET Z MAX", true);		// SET Z zwraca początek operacji a nie koniec
 		q.addWait( virtualComponents.SERVOZ_UP_TIME );	// wiec trzeba poczekać
 		q.addWait( virtualComponents.SERVOZ_PAC_TIME_WAIT );
@@ -166,9 +166,9 @@ public class virtualComponents {
 		q.addWait( virtualComponents.SERVOZ_PAC_TIME_DOWN );
 		q.add("SET Z MAX", true);		// SET Z zwraca początek operacji a nie koniec
 		q.addWait( virtualComponents.SERVOZ_UP_TIME );	// wiec trzeba poczekać
-		q.add("DISABLEX", true);
-//	    q.add("DISABLEY", true);
-	    q.add("DISABLEZ", true);
+		q.add("DX", true);
+//	    q.add("DY", true);
+	    q.add("DZ", true);
 	    q.add("GET CARRET", true);
 		ar.send(q);
 	}
@@ -178,12 +178,12 @@ public class virtualComponents {
 	public static void cancel_all() {
 		Arduino ar = Arduino.getInstance();
 		ar.clear();
-		ar.send("LIVE WEIGHT OFF");
-		ar.send("ENABLEZ");
+		ar.send("LIVE A OFF");
+		ar.send("EZ");
 		ar.send("SET Z MAX");		// SET Z zwraca początek operacji a nie koniec
-		ar.send("DISABLEX");
-	    ar.send("DISABLEY");
-		ar.send("DISABLEZ");
+		ar.send("DX");
+	    ar.send("DY");
+		ar.send("DZ");
 		ar.send("GET CARRET");
 	}
 
@@ -192,10 +192,10 @@ public class virtualComponents {
 		ar.clear();
 	}
 	public static void moveZDown( ArduinoQueue q ) {
-		q.add("ENABLEZ", true);
+		q.add("EZ", true);
 		q.add("SET Z MIN", true);		// SET Z zwraca początek operacji a nie koniec
 		q.addWait( virtualComponents.SERVOZ_DOWN_TIME );	// wiec trzeba poczekać
-	    q.add("DISABLEZ", true);
+	    q.add("DZ", true);
 	}
 	public static void moveToBottle(final int num ) {
 		int time			= 2000;
@@ -224,9 +224,9 @@ public class virtualComponents {
 		} );
 
 		if( autofill== "1"){
-			q.add("ENABLEX", true);
-			q.add("ENABLEY", true);
-			q.add("ENABLEZ", true);
+			q.add("EX", true);
+			q.add("EY", true);
+			q.add("EZ", true);
 			q.addWaitGlass();
 			q.add("SET Z MAX", true);		// SET Z zwraca początek operacji a nie koniec
 			q.addWait( virtualComponents.SERVOZ_UP_TIME );	// wiec trzeba poczekać
@@ -252,9 +252,9 @@ public class virtualComponents {
 					return null;
 				}
 			} );
-			q.add("DISABLEX", true);
-		    q.add("DISABLEY", true);
-		    q.add("DISABLEZ", true);
+			q.add("DX", true);
+		    q.add("DY", true);
+		    q.add("DZ", true);
 		}
 		q.add("GET CARRET", true);
 		ar.send( q );
@@ -271,9 +271,9 @@ public class virtualComponents {
 		Arduino ar = Arduino.getInstance();
 		ArduinoQueue q = new ArduinoQueue();
 		q.addWaitGlass();
-		q.add("ENABLEX", true);
-//		q.add("ENABLEY", true);	
-		q.add("ENABLEZ", true);
+		q.add("EX", true);
+//		q.add("EY", true);	
+		q.add("EZ", true);
 		q.add("SET Z MAX", true);		// SET Z zwraca początek operacji a nie koniec
 		q.addWait( virtualComponents.SERVOZ_UP_TIME );	// wiec trzeba poczekać
 
@@ -298,9 +298,9 @@ public class virtualComponents {
 				return null;
 			}
 		} );
-		q.add("DISABLEX", true);
-//	    q.add("DISABLEY", true);
-	    q.add("DISABLEZ", true);
+		q.add("DX", true);
+//	    q.add("DY", true);
+	    q.add("DZ", true);
 	    q.add("GET CARRET", true);
 	    ar.send(q);
 	}

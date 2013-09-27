@@ -49,7 +49,7 @@ public class input_parser {
 					try {
 						int e = Integer.parseInt( tokens[1] );
 						e	= e / virtualComponents.graph_repeat;		// podziel przez liczbe powtorzen
-						aa.oscyloskop( tokens[1] );
+						aa.oscyloskop( e );
 					} catch ( java.lang.NumberFormatException e2) {
 					}
 				}
@@ -66,28 +66,28 @@ public class input_parser {
 				} catch ( java.lang.NumberFormatException e2) {
 				}
 			}
-		}else if(fromArduino.startsWith("RET ")){						// na końcu bo to może odblokować wysyłanie i spowodować zapętlenie
-			if(fromArduino.startsWith("RET SET LED")){	
-				String fromArduino2 = fromArduino.replace("RET SET LED", "");
+		}else if(fromArduino.startsWith("R ")){						// na końcu bo to może odblokować wysyłanie i spowodować zapętlenie
+			if(fromArduino.startsWith("R SET LED")){	
+				String fromArduino2 = fromArduino.replace("R SET LED", "");
 				String[] tokens = fromArduino2.split(" ");		// numer i wartosc
 				virtualComponents.set( "LED" + tokens[0],  tokens[1] );		//  ON lub OFF
 
-			}else if(fromArduino.startsWith("RET LIVE A OFF")){
+			}else if(fromArduino.startsWith("R LIVE A OFF")){
 				final DebugActivity dialog = DebugActivity.getInstance();
 				if(dialog!=null){
 					dialog.setChecked( R.id.wagi_live, false );
 				}
-			}else if(fromArduino.startsWith("RET LIVE A 2,")){	
-				String fromArduino2 = fromArduino.replace("RET LIVE A 2,", "");
+			}else if(fromArduino.startsWith("R LIVE A 2,")){	
+				String fromArduino2 = fromArduino.replace("R LIVE A 2,", "");
 				final DebugActivity dialog = DebugActivity.getInstance();
 				if(dialog!=null){
 					dialog.setChecked( R.id.wagi_live, !"OFF".equals(fromArduino2) );
 				}
-			}else if( fromArduino.equals("RET REBOOT") ){		//  właśnie uruchomiłem arduino
+			}else if( fromArduino.equals("R REBOOT") ){		//  właśnie uruchomiłem arduino
 				Arduino q			= Arduino.getInstance();
 				q.clear();
-			}else if(fromArduino.startsWith("RET POS")){	
-				String fromArduino2 = fromArduino.replace("RET POS ", "");
+			}else if(fromArduino.startsWith("R POS")){	
+				String fromArduino2 = fromArduino.replace("R POS ", "");
 				String[] tokens = fromArduino2.split(",");
 	
 				virtualComponents.set( "POSX",tokens[0]);
@@ -112,8 +112,8 @@ public class input_parser {
 					virtualComponents.set( "LENGTHZ", "" + posz);
 				}
 
-			}else if(fromArduino.startsWith("RET READY AT")){	
-				String fromArduino2 = fromArduino.replace("RET READY AT ", "");
+			}else if(fromArduino.startsWith("R READY AT")){	
+				String fromArduino2 = fromArduino.replace("R READY AT ", "");
 				String[] tokens = fromArduino2.split(",");
 				virtualComponents.is_ready = true;
 				virtualComponents.set( "POSX",tokens[0]);

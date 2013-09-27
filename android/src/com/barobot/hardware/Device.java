@@ -11,11 +11,15 @@ public class Device {
 	private static Map<String, String> feature = new HashMap<String, String>();
 	private static Map<String, String> config = new HashMap<String, String>();
 	public LinkedList<Device> contains = new LinkedList<Device>();
+	public boolean is_active	= true;
 
 	public Device(){
 	}
 	public int getType(){
 		return type;
+	}
+	public String getName(){
+		return this.typeName +" / "+ this.name;
 	}
 	public boolean isImplement( int feature ){
 		return false;
@@ -52,5 +56,7 @@ public class Device {
 	public void addConfig(String key, String value, String size, String persistent) {
 		config.put(key, value);
 	}
-
+	public void setActive(boolean isChecked) {
+		this.is_active = isChecked;
+	}
 }
