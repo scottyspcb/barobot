@@ -222,7 +222,7 @@ void on_int5R(){    encoder_y++;  encoder_diff_y++;}
 
 void afterSetup(){ 
 	send2debuger("INIT", "START ready");
-	NewPing::timer_ms(1, run_steppers);   // Create a Timer2 interrupt that calls func
+	//NewPing::timer_ms(1, run_steppers);   // Create a Timer2 interrupt that calls func
 
 	//NewPing::timer_ms(40, in_40ms);   // Create a Timer2 interrupt that calls func
 	//NewPing::timer_ms(100, in_100ms);   // Create a Timer2 interrupt that calls func
@@ -247,7 +247,7 @@ void setup(){
 	afterSetup();
 	status= STATE_READY;      // po wykonaniu operacji jest w stanie gotowym
 	send2debuger("INIT", "Koniec init");
-	send2android( "R REBOOT" );
+	sendln2android( "R REBOOT" );
 	//interrupts();
 }
 
@@ -288,10 +288,17 @@ unsigned int servo_last = 123;
 void loop(){
 	mil = millis();
 
+	run_steppers();
+
 	if( analog_reading &&  mil > milisAnalog ){
 		milisAnalog = mil+ analog_speed;
 		if( analog_pos == analog_repeat ){			// wyślij
-			send2android("A" + String(analog_num) + " " + String(analog_sum));	// bez spacji przed numerem pina
+			send2android("A");
+		//	send2android(analog_num);				// bez spacji przed numerem pina
+			send2android(" ");
+		//	send2android(analog_sum);
+			sendln2android();
+			//sendln2android("A" + String(analog_num) + " " + String(analog_sum));	// bez spacji przed numerem pina
 			analog_pos = 0;
 			analog_sum = 0;
 		}
@@ -319,10 +326,6 @@ void loop(){
 		if(  mil > milis40 + 40 ){      // 25 razy na sek
 		in_40ms();
 		milis40 = mil;
-	}
-	if( mil > milis1000 + 3000 ){      // 1 razy na sek
-		in_3000ms();
-		milis1000 = mil;
 	}*/
 	#if DEBUG_OVER_SERIAL || DEBUG_SERIAL_INPUT
 		if (Console0Complete) {
@@ -330,7 +333,7 @@ void loop(){
 			if(DEBUG_SERIAL_INPUT){
 				send2debuger( "READ0", serial0Buffer );
 			}
-		//	send2android(serial0Buffer);???????
+		//	sendln2android(serial0Buffer);???????
 			Console0Complete = false;
 			serial0Buffer = "";
 		}
@@ -344,11 +347,6 @@ void loop(){
 		}
 	#endif
 }
-
-void in_3000ms(){
-}
-
-
 
 
 long decodePosition( int axis, String input, int odetnij ){
@@ -449,7 +447,7 @@ void parseInput( String input ){   // zrozum co sie dzieje
 				irr_max_z = false;
 				irr_min_z = true;
 			 }
-			 send2android("LENGTHZ "+ String(dlugosc_z) );
+			 sendln2android("LENGTHZ "+ String(dlugosc_z) );
 	//		send_current_position(true);
 		 }else if( input.startsWith("SET Z ") ){
 			int msec = decodeInt( input, 6 );    // 10 znakow i spacja
@@ -457,7 +455,7 @@ void parseInput( String input ){   // zrozum co sie dzieje
 			servo_last = msec;
 			servoZ.writeMicroseconds(msec);
 		}else{
-			send2android("ARDUINO NO COMMAND [" + input +"]");
+			sendln2android("ARDUINO NO COMMAND [" + input +"]");
 			defaultResult = false;
 		}
 	}else if( input.equals("LIVE A OFF") ){
@@ -484,10 +482,10 @@ void parseInput( String input ){   // zrozum co sie dzieje
 //		LIVE A OFF
 	}else if( input.startsWith("GET")) {
 		if( input == "GET SPEED" ){      // podaje prędkosci i akceleracje silnikow X i Y
-			send2android("VAL SPEEDX " + String(max_speed_y) + ","+ String(acc_x) );
-			send2android("VAL SPEEDY " + String(max_speed_x) + ","+ String(acc_y) );
+			sendln2android("VAL SPEEDX " + String(max_speed_y) + ","+ String(acc_x) );
+			sendln2android("VAL SPEEDY " + String(max_speed_x) + ","+ String(acc_y) );
 		}else if( input.equals( "GET VERSION" )){
-			send2android( "VAL VERSION " + String(version));
+			sendln2android( "VAL VERSION " + String(version));
 		}else if( input.equals( "GET CARRET" )){      // pozycja karetki x,y
 			send_current_position( false );
 		}else if( input.startsWith("GET A ") ){      // GET A 3 raz. Spacja przed numerem pinu
@@ -503,14 +501,14 @@ void parseInput( String input ){   // zrozum co sie dzieje
 			}else{
 				val	= analogRead(numer);
 			}
-			send2android("A" + String(numer) + " " + String(val));				// A2 124		// bez spacji przed numerem pinu
+			sendln2android("A" + String(numer) + " " + String(val));				// A2 124		// bez spacji przed numerem pinu
 	//		GET A 2
 	//		GET A 2
 	//		GET A 4
 	//		GET A 20
 	//		GET A 21
 		}else{
-			send2android("ARDUINO NO COMMAND [" + input +"]");
+			sendln2android("ARDUINO NO COMMAND [" + input +"]");
 		}
 		defaultResult = false;
 
@@ -549,7 +547,7 @@ void parseInput( String input ){   // zrozum co sie dzieje
 	}else if( input.equals("DZ") ){
 		servoZ.detach();							 // odetnij sterowanie
 	}else if( input.equals("PING2ARDUINO") ){        // odeslij PONG
-		send2android("PONG");
+		sendln2android("PONG");
 		defaultResult = false;
 	}else if( input.startsWith("ANDROID ") ){    // zwrotka, nic nie rób
 		defaultResult = false;
@@ -558,13 +556,12 @@ void parseInput( String input ){   // zrozum co sie dzieje
 	}else if( input.equals( "PING2ANDROID") ){      // nic nie rob
 		defaultResult = false;
 	}else if( input.equals( "WAIT READY") ){      // tylko zwróc zwrotkę
-
 	}else{
-		send2android("ARDUINO NO COMMAND [" + input +"]");
+		sendln2android("ARDUINO NO COMMAND [" + input +"]");
 		defaultResult = false;  
 	}
 	if(defaultResult && send_ret ){
-		send2android("R " + input );
+		sendln2android("R " + input );
 	}
 }
 
@@ -622,11 +619,11 @@ long int posz(){
 
 void send_current_position( boolean isReady ){ 
 	if(isReady){
-		send2android("R READY AT " + String(posx()) + "," + String(posy())+ "," + String(posz()));
+		sendln2android("R READY AT " + String(posx()) + "," + String(posy())+ "," + String(posz()));
 	}else{
-		send2android("R POS " + String(posx()) + "," + String(posy())+ "," + String(posz()));
+		sendln2android("R POS " + String(posx()) + "," + String(posy())+ "," + String(posz()));
 	}
-//  send2android("ENCODERS [" + String(encoder_diff_x) + "/" + String(encoder_x)+ "] [" + String(encoder_diff_y)+ "/" + String(encoder_y));
+//  sendln2android("ENCODERS [" + String(encoder_diff_x) + "/" + String(encoder_x)+ "] [" + String(encoder_diff_y)+ "/" + String(encoder_y));
 }
 
 //void on_int1R(){  int1_value = HIGH;}   // pin 3      // Krańcowy Z na wcisniecie
@@ -679,14 +676,14 @@ void run_steppers(){    // robione w każdym przebiegu loop
 			  irr_min_x = true;      // to jest minimum
 			  dlugosc_x = last_max_x;
 			  send2debuger("osX MIN", "dlugosc:" + String(dlugosc_x)+ " margines: " + String(margin_x)+ " jade: " + String(stepperX.distanceToGo()));
-			  send2android("LENGTHX " +  String(dlugosc_x) );
+			  sendln2android("LENGTHX " +  String(dlugosc_x) );
 			}else if( dist_x > 0 ){			 // jechalem w gore
 			  stepperX.stopNow();
 			  last_max_x = posx();   // to jest pozycja skrajna
 			  irr_max_x = true;
 			  dlugosc_x = last_max_x;
 			  send2debuger("osX MAX", "dlugosc:" + String(dlugosc_x)+ " margines: " + String(margin_x));
-			  send2android("LENGTHX " +  String(dlugosc_x) );
+			  sendln2android("LENGTHX " +  String(dlugosc_x) );
 			}else{
 			  send2debuger("osX", "dist_x :" + String(dist_x)+ " margines: " + String(margin_x) +  " distanceToGo: " + String(stepperX.distanceToGo()));
 			}
@@ -733,14 +730,14 @@ void run_steppers(){    // robione w każdym przebiegu loop
 			  irr_min_y = true;			 // to jest minimum
 			  dlugosc_y = last_max_y;       // margines rowny różnicy
 			  send2debuger("osY MIN", "dlugosc:" + String(dlugosc_y)+ " margines: " + String(margin_y)+ " jade: " + String(stepperY.distanceToGo()));
-			  send2android("LENGTHY " +  String(dlugosc_y) );
+			  sendln2android("LENGTHY " +  String(dlugosc_y) );
 			}else if( dist_y > 0 ){			 // jechalem w gore
 			  stepperY.stopNow();
 			  last_max_y = posy();   // to jest pozycja skrajna
 			  irr_max_y = true;
 			  dlugosc_y = last_max_y;
 			  send2debuger("osY MAX", "dlugosc:" + String(dlugosc_y)+ " margines: " + String(margin_y));
-			  send2android("LENGTHY " +  String(dlugosc_y) );
+			  sendln2android("LENGTHY " +  String(dlugosc_y) );
 			}else{
 			  send2debuger("osY", "dist_y :" + String(dist_y)+ " margines: " + String(margin_y) +  " distanceToGo: " + String(stepperY.distanceToGo()));
 			}
@@ -765,10 +762,10 @@ void scann_i2c(){
 			error = Wire.endTransmission(); 
 			if (error == 0) {
 				String info = "DEVICE I2C " + String(address);
-				send2android( info );
+				sendln2android( info );
 			}else if (error==4) {
 				String info = "DEVICE I2C " + String(address);
-				send2android( info );
+				sendln2android( info );
 			}
 		}
 	#endif
@@ -920,8 +917,7 @@ void serialEvent(){				       // FUNKCJA WBUDOWANA - zbieraj dane z serial0 i se
 	}
 }
 #if USE_ADB
-	int send2adb( String output2){      // wyslij string do androida
-		String output = output2 + '\n';
+	int send2adb( String output){      // wyslij string do androida
 		int res = -2;
 		byte cnt = 0;
 		while( res == -2 && cnt < 10 ){        // powtarzaj 4 razy
@@ -941,46 +937,112 @@ void serialEvent(){				       // FUNKCJA WBUDOWANA - zbieraj dane z serial0 i se
 		}
 		return res;
 	}
-	int send2android( String output2 ){      // wyslij string do androida
-	if( adb_ready ){
-			int res = send2adb(output2);
-			#if DEBUG_ADB2ANDROID
-				send2debuger( "2ANDROID ADBSEND: " + String(res), output2 );
-			#endif
-			return res;
+	void sendln2android(){      // wyslij string do androida
+		if( adb_ready ){
+				int res = send2adb('\n');
 		}
-	}else{
-		#if DEBUG_OUTPUT2ANDROID
-			send2debuger( "2ANDROID NOSEND", output2 );
-		#endif
 	}
-	return -1;
+	int sendln2android( String output2 ){      // wyslij string do androida
+		if( adb_ready ){
+				String output = output2 + '\n';
+				int res = send2adb(output);
+				#if DEBUG_ADB2ANDROID
+					send2debuger( "2ANDROID ADBSEND: " + String(res), output2 );
+				#endif
+				return res;
+		}else{
+			#if DEBUG_OUTPUT2ANDROID
+				send2debuger( "2ANDROID NOSEND", output2 );
+			#endif
+		}
+		return -1;
+	}
+	int send2android( String output2 ){      // wyslij string do androida
+		if( adb_ready ){
+				int res = send2adb(output2);
+				#if DEBUG_ADB2ANDROID
+					send2debuger( "2ANDROID ADBSEND: " + String(res), output2 );
+				#endif
+				return res;
+		}else{
+			#if DEBUG_OUTPUT2ANDROID
+				send2debuger( "2ANDROID NOSEND", output2 );
+			#endif
+		}
+		return -1;
+	}
 #endif
 
 #if USE_BT
+	void sendln2android(){      // wyslij string do androida
+		Serial3.println();
+	}
+	int sendln2android( String output2 ){      // wyslij string do androida
+		#if DEBUG_OUTPUT2ANDROID
+			send2debuger( "2ANDROID BTSEND", output2 );
+		#endif
+		Serial3.println( output2 );
+		return 0;
+	}
 	int send2android( String output2 ){      // wyslij string do androida
-	#if DEBUG_OUTPUT2ANDROID
-		send2debuger( "2ANDROID BTSEND", output2 );
-	#endif
-	Serial3.println( output2 );
-	return 0;
-}
+		#if DEBUG_OUTPUT2ANDROID
+			send2debuger( "2ANDROID BTSEND", output2 );
+		#endif
+		Serial3.print( output2 );
+		return 0;
+	}
 #endif
 
 #if USE_SERIAL0
+	void sendln2android(){      // wyslij string do androida
+		Serial.println();
+	}
+	int sendln2android( String output2 ){      // wyslij string do androida
+		#if DEBUG_OUTPUT2ANDROID && !DEBUG_OVER_SERIAL
+			send2debuger( "2ANDROID BTSEND", output2 );
+		#endif
+		Serial.println( output2 );
+		return 0;
+	}
 	int send2android( String output2 ){      // wyslij string do androida
-	#if DEBUG_OUTPUT2ANDROID && !DEBUG_OVER_SERIAL
-		send2debuger( "2ANDROID BTSEND", output2 );
-	#endif
-	Serial.println( output2 );
-	return 0;
-}
+		#if DEBUG_OUTPUT2ANDROID && !DEBUG_OVER_SERIAL
+			send2debuger( "2ANDROID BTSEND", output2 );
+		#endif
+		Serial.print( output2 );
+		return 0;
+	}
 #endif
+
+
+
+
+template <typename T> void send2android2 (const T& value){
+	//const byte * k = (const byte*) &value;
+	//Serial.print( value );
+	return;
+}
+
+/*
+template <typename T> void I2C_readAnything(T& value){
+	byte * k = (byte*) &value;
+}
+*/
+
+
+
+
+
+
+
 
 	
 
 
 void readSerial3Input( String input ){       // odebralem z BT od androida
+
+	int a = 0;
+	send2android2(a );
+
 	#if DEBUG_BT_INPUT
 		send2debuger( "READ3", input);
 	#endif
@@ -1114,7 +1176,7 @@ void stosClear(){        // pobierz ze stosu
 		long min_diff = decodeInt( input, 11 );        // WAIT GLASS i spacja
 		byte res = wait4glass(min_diff);
 		if(res == 0){    // nie ma szklanki i nie będzie
-			send2android("ERROR "+ input);
+			sendln2android("ERROR "+ input);
 			defaultResult = false;
 		}
 	}else if( input.startsWith("IRR") ){
@@ -1132,7 +1194,7 @@ void stosClear(){        // pobierz ze stosu
 
 byte wait4glass( int min_diff ){
 	long unsigned waga = read_szklanka();
-	send2android("GLASS " + String(waga));
+	sendln2android("GLASS " + String(waga));
 	if( waga < waga_zero + min_diff ){          // rozni się o mniej niż WAGA_MIN_DIFF
 		unsigned int repeat = 0;
 		while( repeat < WAGA_REPEAT_COUNT && (waga < waga_zero + min_diff) ){          // powtarzaj WAGA_REPEAT_CONUT razy
@@ -1141,7 +1203,7 @@ byte wait4glass( int min_diff ){
 			digitalWrite( STATUS_GLASS_LED, LOW );         // zgaś
 			delay(300);
 			waga = read_szklanka();
-			send2android("GLASS " + String(waga));
+			sendln2android("GLASS " + String(waga));
 		}
 		//jak juz jest ok to i tak poczekaj sekundę na usunięcie ręki wkłądającej szklankę
 		delay(2000);
@@ -1156,7 +1218,7 @@ byte wait4glass( int min_diff ){
 
 		}else if( input == "GET GLASS" ){       // waga szklanki
 			long unsigned int waga = read_szklanka();
-			send2android("GLASS " + String(waga));
+			sendln2android("GLASS " + String(waga));
 
 		}else if( input.equals( "GET WEIGHT") ){       // waga butelek (do 15 liczb nieujemnych)
 			String res = "";
@@ -1167,7 +1229,7 @@ byte wait4glass( int min_diff ){
 					res = res + ',';        
 				}
 			}
-			send2android( "WEIGHT " +res);   
+			sendln2android( "WEIGHT " +res);   
 // obluga wag
 unsigned int read_szklanka(){
 	digitalWrite( PIN_MADDR0, 0 );      //   // Ustaw numer na muxach, wystaw adres
