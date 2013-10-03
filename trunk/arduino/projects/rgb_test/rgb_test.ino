@@ -7,7 +7,7 @@ int x = 1;
 #define MASTER_ADDR 0x02
 
 #define VERSION 0x01
-#define DEVICE_TYPE 0x01
+#define DEVICE_TYPE 0x41
 
 unsigned long int mic  =0;
 
@@ -39,8 +39,9 @@ void setup(){
   }
 
   Wire.begin(MY_ADDR);
-  Wire.onReceive(receiveEvent); // register event   
-
+  Wire.onReceive(receiveEvent); // register event 
+  Wire.onRequest(requestEvent); // register event   
+  
   Serial.println("START SLAVE"); 
 
   Serial.begin(115200,SERIAL_8N1);
@@ -69,7 +70,7 @@ void setup(){
   //  analogWrite(leds[4].pin, 255);
   //  digitalWrite(leds[5].pin, 255);
   // mic = micros();
-
+/*
   // initialize timer1 
   noInterrupts();           // disable all interrupts
   TCCR1A = 0;
@@ -81,6 +82,7 @@ void setup(){
   TCCR1B |= (1 << CS12);    // 256 prescaler 
   TIMSK1 |= (1 << OCIE1A);  // enable timer compare interrupt
   interrupts();             // enable all interrupts
+  */
 }
 
 unsigned int wypelnienie  = 0;
@@ -153,75 +155,98 @@ void loop(){
 }
 
 //volatile byte buffer[10];
-byte buffer[20];
+byte in_buffer[10];
 byte super1 = 1;
 byte super2 = 2;
-byte cc = 0;
+
 void receiveEvent(int howMany){
-    cc = 0;
+  byte cc = 0;
+  byte aa = 0;
+  while( Wire.available()){ // loop through all but the last  
+    aa = Wire.read(); // receive byte as a character
+    Serial.print("Odbieram" + String(cc) + ":");
+    printHex(aa);
+    in_buffer[cc] = aa;
+    cc++;
+  }
+  // komendy bez odpowiedzi tutaj:
+   byte command = in_buffer[0];
+   if( command == 0x11 ){                // PWM     3 bajty
+        super1  = in_buffer[1];
+        super2  = in_buffer[2];
+  
+      //  Serial.print("Odebralem X: ");
+      //  printHex(super1);
+     //   Serial.print("Odebralem Y: ");
+     //   printHex(super2);
+   }
+}
+
+void requestEvent(){ 
+  
     Serial.println("-------");
+
+//  byte cc = 0;
+//  byte aa = 0;
+  /*
+  
     while( Wire.available()){ // loop through all but the last  
-      byte aa = Wire.read(); // receive byte as a character
-      Serial.print("Odbieram: " );
-      Serial.println(aa,HEX);
-      buffer[cc++] = aa;
-    }
-    if(cc == 0){
-      return;
-    }
-//    Serial.println("Komenda: " );
- //   printHex(buffer[0]);
-     byte command = buffer[0];
+      aa = Wire.read(); // receive byte as a character
+      Serial.print("IN: " );
+      printHex(aa);
+    }*/
+
+    byte command = in_buffer[0];
+    Serial.print("komenda: " );
+    printHex(in_buffer[0]);
+
     if( command == 0x11 ){                // PWM     3 bajty
-      super1  = buffer[1];
-      super2  = buffer[2];
-      /*
-      Serial.print("Odebralem X: ");
-      printHex(super1);
-      Serial.print("Odebralem Y: ");
-      printHex(super2);
-      */
+
     }else if( command == 0x22 ){          // BLINK   4 bajty
     }else if( command == 0x44 ){          // FADE    3 bajty
     }else if( command == 0x55 ){          // SYNCHRO 1 bajt
     }else if( command == 0x66 ){          // GET VALUE  2 bajty
-        byte ttt = 0x37;
-        Wire.write(ttt);
+       byte ttt[1] = {0x39};
+       Wire.write(ttt,1);
+        
+       Serial.print("Wysylam: ");
+       printHex(ttt[0]);
+  
     }else if( command == 0x77 ){          // SET VALUE  3 bajty
     }else if( command == 0x88 ){          // DIR        3 bajty
-      Wire.write(super1); 
-      Wire.write(super2);
-//      Serial.print("Wysylam X: ");
-//      printHex(super1);
-//      Serial.print("Wysylam Y: ");      
-//      printHex(super2);
+      byte ttt[5] = {0x5A,super1,super2,super1,super2};
+      Wire.write(ttt,5);
+
+
+      Serial.print("Wysylam X: ");
+      printHex(super1);
+      Serial.print("Wysylam Y: ");      
+      printHex(super2);
+
     }else if( command == 0x99 ){          // TEPE + VERSION       3 bajty
-//      Serial.println(byte(VERSION),HEX);
         byte ttt = 0x87;
-        Wire.write(ttt);
+        Wire.write(ttt); 
+
         ttt = VERSION;
-        Wire.write(ttt);
-//        Serial.print("Wersja: ");
-//        printHex(ttt);
+        Wire.write(ttt);  
+      
+        Serial.print("Wysylam: ");
+        printHex(ttt);
+        
         ttt = DEVICE_TYPE;
         Wire.write(ttt);
+
+        Serial.print("Wysylam: ");
+        printHex(ttt); 
+        Serial.print("Wysylam: ");
+        printHex(VERSION);
+        Serial.print("Wysylam: ");
+        printHex(DEVICE_TYPE);
+        
+
     }else if( command == 0xEE ){          // STOP       3 bajty
         Wire.write(0x32);
     }
-
-
-//    Serial.println("++++++++++");
-  //  Serial.println("<==bylo:" + String(cc) + " " + String(howMany));  
-  //  while(howMany--){
-  //    Wire.write(0x33);
-  //  }
-  /*
-  //  Wire.beginTransmission(MASTER_ADDR);
-    String a = "slave x is " + String(x);
-    const char* aa = (const char *) a.c_str();
-    Wire.write(aa);
-  //  Wire.endTransmission();
-    x++;*/
 }
 
 void printHex(byte val){
@@ -246,6 +271,21 @@ ISR( SIG_OVERFLOW1 ){
  ISR(TIM333333_OVF_veffct){
  sig = true;
  } 
+
+
+//    Serial.println("++++++++++");
+  //  Serial.println("<==bylo:" + String(cc) + " " + String(howMany));  
+  //  while(howMany--){
+  //    Wire.write(0x33);
+  //  }
+  /*
+  //  Wire.beginTransmission(MASTER_ADDR);
+    String a = "slave x is " + String(x);
+    const char* aa = (const char *) a.c_str();
+
+  //  Wire.endTransmission();
+    x++;
+
  */
 ISR(TIMER1_COMPA_vect){
 //  sig = true;
