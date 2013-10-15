@@ -41,10 +41,6 @@ void AccelStepper::move(long relative)
 // returns true if a step occurred
 boolean AccelStepper::runSpeed()
 {
-    // Dont do anything unless we actually have a step interval
-    if (!_stepInterval){
-		return false;
-	}
     unsigned long time = micros();
     // Gymnastics to detect wrapping of either the nextStepTime and/or the current time
     unsigned long nextStepTime = _lastStepTime + _stepInterval;
@@ -175,12 +171,15 @@ void AccelStepper::computeNewSpeed()
 // You must call this at least once per step, preferably in your main loop
 // If the motor is in the desired position, the cost is very small
 // returns true if we are still running to position
-boolean AccelStepper::run()
+void AccelStepper::run()
 {
+    // Dont do anything unless we actually have a step interval
+    if (!_stepInterval){
+		return;
+	}
     if (runSpeed()){
 		computeNewSpeed();
 	}
-    return true;
 }
 
 AccelStepper::AccelStepper(uint8_t interface, uint8_t pin1, uint8_t pin2, uint8_t pin3, uint8_t pin4)
@@ -620,8 +619,13 @@ boolean AccelStepper::runSpeedToPosition()
 	return false;
     if (_targetPos >_currentPos)
 	_direction = DIRECTION_CW;
-    else
-	_direction = DIRECTION_CCW;
+    else{
+		_direction = DIRECTION_CCW;
+	}
+    // Dont do anything unless we actually have a step interval
+    if (!_stepInterval){
+		return false;
+	}
     return runSpeed();
 }
 
