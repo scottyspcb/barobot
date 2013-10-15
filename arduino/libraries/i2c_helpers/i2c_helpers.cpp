@@ -1,7 +1,4 @@
-#include <Arduino.h>
-#include <Wire.h>
-#include <avr/eeprom.h>
-#define MASTER_ADDR 0x01
+#include <i2c_helpers.h>
 /*
 byte in_buffer[5];
 byte out_buffer[5];
@@ -91,6 +88,7 @@ void delay2( word ww ){
 }
 byte my_address = 0x00;
 void init_i2c(){
+	Wire.begin();    // chwilowo jako master
   byte ad1 = eeprom_read_byte((unsigned char *) 0x00);
   byte ad2 = eeprom_read_byte((unsigned char *) 0x01);  
   byte ad3 = eeprom_read_byte((unsigned char *) 0x02);  
@@ -107,21 +105,21 @@ void init_i2c(){
     }
   }
   Serial.println("old" + String(my_address) );
-  Wire.begin();    // chwilowo jako master
   pinMode(5,INPUT_PULLUP);
   pinMode(6,INPUT_PULLUP);
   while(check_free( MASTER_ADDR )){		// jeœli jest wolne to nie ma mastera = b³¹d i czekaj na mastera
 	Serial.println("!master" );
 	delay2(100);
   }
-  
+ 
   if( my_address < 0x03 || my_address > 110 || !check_free(my_address)){    // zajety - sprawdzaj inne...
-    for(my_address = 5; my_address <= 110; my_address++ ) {  // zarezerwowane adresy 0x00 - 0x03
-        if(check_free(my_address)){    // gotowe, jest adres
-              break;
-        }
-    }
-	delay2(my_address);
+
+	my_address = 5;
+	while( (++my_address )<=110 && !check_free(my_address) ){		// a¿ do znalezienia wolnego lub konca listy
+		asm("nop");
+	}
+	delay2(my_address);  
+  
   }
   save_i2c_address( 0x00, my_address, ad1 );    // zapisuje gdy my_address != oa
   Serial.println("na" + String(my_address) );
@@ -129,3 +127,12 @@ void init_i2c(){
 }
 
 
+/*
+    * Output   0 .. success
+    *          1 .. length to long for buffer
+    *          2 .. address send, NACK received
+    *          3 .. data send, NACK received
+    *          4 .. other twi error (lost bus arbitration, bus error, ..)
+    *          5 .. timed out while trying to become Bus Master
+    *          6 .. timed out while waiting for data to be sent
+*/
