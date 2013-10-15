@@ -14,7 +14,7 @@ volatile byte y = 10;
 
 
 void setup(){
-  Wire.begin();
+  Wire.begin(MASTER_ADDR);
   pinMode(led, OUTPUT); 
   Serial.begin(115200);
   Wire.onReceive(receiveEvent);
@@ -22,41 +22,29 @@ void setup(){
 }
 
 byte pin = 0;
-
+byte address = 0x04;
+  
 void loop(){
-  byte error = 0;
-  byte address = 0x04;
-  Serial.println("---------------------------------------------LOOP-------------------------------------");
-//  Wire.beginTransmission(address);
-//  Serial.println("LOOP2");
-//  error = Wire.endTransmission();
-  if (error == 0){
-      unsigned int errors= test_slave( address );
-      i2c_setPWM( address, pin, x );
-      x = x + 30;
-      if( x == 0 ){
-         x = 100;
-      }
-      pin++;
-      if( pin > 8 ){
-          pin = 0;
-      }
+  Serial.println("----------LOOP------");
+  
+  scann();
+//  unsigned int errors= test_slave( address );
 
-      uint16_t readed = i2c_getVersion(address);
-      Serial.println("-----i2c_getVersion" );
-      printHex( readed>>8 );
-      printHex( readed & 0xff );
- 
-//   }  
-  }else{
-      Serial.println("Nie ma urzadzenia");
+  x = x + 30;
+  if( x == 0 ){
+     x = 100;
   }
-/*
+  pin++;
+  if( pin > 8 ){
+      pin = 0;
+  }
+
   digitalWrite(led, HIGH); 
   delay(100);
   digitalWrite(led, LOW);
   delay(100);
-
+  delay(500);
+/*
   digitalWrite(led, HIGH); 
   delay(100);
   digitalWrite(led, LOW);
@@ -82,6 +70,54 @@ void loop(){
   digitalWrite(led, LOW);
   delay(100);*/
 }
+
+
+void scann(){
+  byte error;
+  int nDevices;
+  nDevices = 0;
+  for(byte aaa = 1; aaa < 127; aaa++ ) {
+    Wire.beginTransmission(aaa);
+    error = Wire.endTransmission();
+    if (error == 0){
+      address = aaa;
+      printHex(aaa, false );
+      Serial.print("- I2C found");
+      uint16_t readed = i2c_getVersion(aaa);
+      
+      Serial.print(" type: ");
+      printHex( readed>>8, false );
+      Serial.print(" ver: ");
+      printHex( readed & 0xff, false );
+      Serial.println("");
+      
+      if( (readed>>8) > 0 && (readed & 0xff >0)){
+        i2c_setPWM( aaa, pin, x );
+        unsigned int errors= test_slave( address );
+        digitalWrite(led, HIGH); 
+        delay(100);
+        digitalWrite(led, LOW);
+        delay(100);
+        nDevices++;
+      }else{
+        printHex( address, false );
+        Serial.println("- !!! to nie jest urzadzenie i2c");
+      }
+
+    } else if (error==4){
+      Serial.print("!!!Unknow error at address 0x");
+      printHex(aaa );
+    }else{
+    //  Serial.print("no dev at address 0x");
+    //  printHex(aaa );
+    //  printHex(error );
+    }
+    
+  }
+   Serial.println("Devices:" + String(nDevices));
+}
+
+
 
 
 void i2c_resetCycles( byte slave_address ){
@@ -133,7 +169,7 @@ uint16_t i2c_getVersion( byte slave_address ){      // zwraca 2 bajty. typ na m≈
   out_buffer[0]  = 0x19;
   byte error = writeRegisters(slave_address, 1, true );
   if( error ){
-   Serial.println("i2c_getVersion error1");  
+   Serial.println("!!!i2c_getVersion error1");  
   }
   if( !error ){
     readRegisters( slave_address, 2 );
@@ -142,7 +178,7 @@ uint16_t i2c_getVersion( byte slave_address ){      // zwraca 2 bajty. typ na m≈
     return res;
   }
   if( error ){
-   Serial.println("i2c_getVersion error1");  
+   Serial.println("!!!i2c_getVersion error1");  
   }
   return 0xFF;
 }
@@ -160,37 +196,42 @@ byte i2c_test_slave( byte slave_address, byte num1, byte num2 ){      // testuj
   out_buffer[2]  = num2;  
   byte error = writeRegisters(slave_address, 3, true );
   if( error != 0 ){
-   Serial.println("Test error1");  
+   Serial.println("!!!Test error1" + String(error));  
   }
   if( error == 0 ){
     readRegisters( slave_address, 1 );
     return in_buffer[0];
   }
   if( error ){
-   Serial.println("Test error2");  
+   Serial.println("!!!Test error2");  
   }
   return 0xFF;
 }
 
 unsigned int test_slave(byte slave_address){
-  byte cntr1 = 20;
-  const byte c2_max = 10;
+//  printHex( slave_address, false );
+//  Serial.println("- Test_slave start" );
+  byte cntr1 = 5;
+  const byte c2_max = 30;
+  unsigned int cc = cntr1 * c2_max;
   byte res = 0;
   unsigned int errors= 0;
-  while(cntr1--){
+  while(--cntr1){
     byte cntr2 = c2_max;  
-    while(cntr2--){
+    while(--cntr2){
       res = i2c_test_slave(slave_address, cntr1, cntr2);
       byte valid = cntr1 ^ cntr2;
       if(res !=valid){
         errors++;
-        Serial.println("zle "+ String(res) + " != " + String( valid ) );
+        printHex( slave_address, false );
+        Serial.println("- !!! zle "+ String(res) + " != " + String( valid ) );
       }
    //  delay(10);
     }    
   }
-  unsigned int cc = cntr1 * c2_max;
-  Serial.println("------------Test_slave (" + String(cc) + "): " + String(errors));
+
+  printHex( slave_address, false );
+  Serial.println("- Test_slave (" + String(cc) + "): " + String(errors));
   return errors;
 }
 
@@ -230,17 +271,34 @@ uint16_t i2c_getAnalogValue( byte slave_address, byte pin ){ // Pobierz analogow
   return 0xFF;
 }
 
+volatile byte in_buffer2[10];
+
 void receiveEvent(int howMany){
-  Serial.println("receiveEvent");
+  byte cnt = 0;
   while( Wire.available()){ // loop through all but the last  
-    char aa = Wire.read(); // receive byte as a character
-    printHex(aa);
+    in_buffer2[cnt++]= Wire.read(); // receive byte as a character
+  }
+  if(in_buffer2[0] == 0x21){    // slave input pin value
+    printHex(in_buffer2[1], false );
+    String ss = "- IN " + String(in_buffer2[2]) + ": " + String(in_buffer2[3]);
+    Serial.println(ss);
+  }else{
+    Serial.println("receiveEvent");
+    printHex(in_buffer2[0]);
   }
 }
 
 void printHex(byte val){
-  int temp =  val;
+  int temp =  val;  
   Serial.println(temp,HEX);
+}
+void printHex(byte val, boolean newline){
+  int temp =  val;
+  if(newline){
+    Serial.println(temp,HEX);
+  }else{
+    Serial.print(temp,HEX);
+  }
 }
 
 
@@ -264,7 +322,7 @@ byte readRegisters(byte deviceAddress, byte length){
     count++;
   }
   if( count != length){
-    Serial.println("!Odebralem liczb:" + String(count) );
+    Serial.println("!!!Odebralem liczb:" + String(count) );
   }
   return count;
 }
@@ -281,7 +339,7 @@ byte writeRegisters(int deviceAddress, byte length, boolean wait) {
     }
     byte error = Wire.endTransmission();     // end transmission
     if( error ){
-      Serial.println("writeRegisters error: " + String(error));
+      Serial.println("!!! writeRegisters error: " + String(error));
       delay(100);
       return error;
     }
