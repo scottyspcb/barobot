@@ -1247,3 +1247,11 @@ unsigned int read_szklanka(){
 	return rr >>WAGA_READ_COUNT;
 }
 */
+
+
+void forceHardReset(){
+  cli(); // disable interrupts
+  wdt_enable(WDTO_15MS); // enable watchdog
+  while(1); // wait for watchdog to reset processor
+}
+
