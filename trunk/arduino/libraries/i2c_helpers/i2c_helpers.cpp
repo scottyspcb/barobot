@@ -61,10 +61,11 @@ void printHex(byte val, boolean newline){
 	}
 }
 */
-byte check_free( byte address){    // true jesli wolne
-  //Serial.println("szukam:" + String(address)  );
+boolean check_free( byte address){    // true jesli wolne
   Wire.beginTransmission(address);
-  return (Wire.endTransmission() == 2) ? true : false;    // 2 - wolne, inne = zajete;
+  boolean bb = (Wire.endTransmission() == 2) ? true : false;    // 2 - wolne, inne = zajete;
+  Serial.println("szukam:" +String(address)+"/"+ String(bb ? "1" : "0")  ); 
+  return bb;
 }
 
 void save_i2c_address( int epromaddress, byte new_address, byte old_address){
@@ -86,44 +87,45 @@ void delay2( word ww ){
       }
     }
 }
+
 byte my_address = 0x00;
 void init_i2c(){
 	Wire.begin();    // chwilowo jako master
-  byte ad1 = eeprom_read_byte((unsigned char *) 0x00);
-  byte ad2 = eeprom_read_byte((unsigned char *) 0x01);  
-  byte ad3 = eeprom_read_byte((unsigned char *) 0x02);  
+	byte ad1 = eeprom_read_byte((unsigned char *) 0x00);
+	byte ad2 = eeprom_read_byte((unsigned char *) 0x01);  
+	byte ad3 = eeprom_read_byte((unsigned char *) 0x02);  
 
-  if(ad1 == ad2 && ad1 == ad3 ){
-    my_address   = ad1;
-  }else{    // znajdz ten co sie nei zgadza i go zadpisz
-    if( ad1 == ad2 ){        // ad3 sie nie zgadza
-    	eeprom_write_byte((unsigned char *) 0x03, ad1);
-    }else if( ad2 == ad3 ){  // ad1 sie nie zgadza
-    	eeprom_write_byte((unsigned char *) 0x01, ad1);
-    }else if( ad1 == ad3 ){  // ad2 sie nie zgadza
-    	eeprom_write_byte((unsigned char *) 0x02, ad1);
-    }
-  }
-  Serial.println("old" + String(my_address) );
-  pinMode(5,INPUT_PULLUP);
-  pinMode(6,INPUT_PULLUP);
-  while(check_free( MASTER_ADDR )){		// jeœli jest wolne to nie ma mastera = b³¹d i czekaj na mastera
-	Serial.println("!master" );
-	delay2(100);
-  }
- 
-  if( my_address < 0x03 || my_address > 110 || !check_free(my_address)){    // zajety - sprawdzaj inne...
-
-	my_address = 5;
-	while( (++my_address )<=110 && !check_free(my_address) ){		// a¿ do znalezienia wolnego lub konca listy
-		asm("nop");
+	if(ad1 == ad2 && ad1 == ad3 ){
+		my_address   = ad1;
+	}else{    // znajdz ten co sie nei zgadza i go zadpisz
+		if( ad1 == ad2 ){        // ad3 sie nie zgadza
+			eeprom_write_byte((unsigned char *) 0x03, ad1);
+		}else if( ad2 == ad3 ){  // ad1 sie nie zgadza
+			eeprom_write_byte((unsigned char *) 0x01, ad1);
+		}else if( ad1 == ad3 ){  // ad2 sie nie zgadza
+			eeprom_write_byte((unsigned char *) 0x02, ad1);
+		}
 	}
-	delay2(my_address);  
-  
-  }
-  save_i2c_address( 0x00, my_address, ad1 );    // zapisuje gdy my_address != oa
-  Serial.println("na" + String(my_address) );
-  Wire.begin(my_address);
+	delay2(my_address);
+
+	Serial.println("old" + String(my_address) );
+	while(check_free( MASTER_ADDR )){		// jeœli jest wolne to nie ma mastera = b³¹d i czekaj na mastera
+		Serial.println("!master" );
+		delay2(100);
+	}
+	Serial.println("+m" );
+		
+	my_address = 0;
+	if( my_address < 0x03 || my_address > 110 || !check_free(my_address)){    // zajety - sprawdzaj inne...
+		Serial.println("-");
+		my_address = 5;
+		while( (++my_address )<=110 && !check_free(my_address) ){		// a¿ do znalezienia wolnego lub konca listy
+			asm("nop");
+		}
+	}
+	Wire.begin(my_address);
+	Serial.println("na" + String(my_address) );
+//	save_i2c_address( 0x00, my_address, ad1 );    // zapisuje gdy my_address != oa
 }
 
 
