@@ -153,6 +153,31 @@ Change Activity:
 #endif
 
 
+#if defined( __AVR_ATmega328P__ )
+
+/* Data Register, Port C */
+#define    PC7          7
+#define    PC6          6
+#define    PC5          5
+#define    PC4          4
+#define    PC3          3
+#define    PC2          2
+#define    PC1          1
+#define    PC0          0
+
+
+#  define DDR_USI             DDRC
+#  define DDR_USI             DDRC
+#  define PORT_USI            PORTC
+#  define PIN_USI             PINC
+#  define PORT_USI_SDA        PC4
+#  define PORT_USI_SCL        PC5
+#  define PIN_USI_SDA         PINC4
+#  define PIN_USI_SCL         PINC5
+#  define USI_START_COND_INT  USISIF
+#  define USI_START_VECTOR    USI_START_vect
+#  define USI_OVERFLOW_VECTOR USI_OVERFLOW_vect
+#endif
 
 /********************************************************************************
 

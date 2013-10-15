@@ -1,6 +1,9 @@
 #ifndef I2C_HELPERS
-#define I2C_HELPERS
-
+	#define I2C_HELPERS
+	#define MASTER_ADDR 0x01
+	#include <Arduino.h>
+	#include <WSWire.h>
+	#include <avr/eeprom.h>
 
 byte readRegisters( byte deviceAddress, byte length);
 byte writeRegisters( int deviceAddress, byte length, boolean wait);
