@@ -4,7 +4,7 @@ int x = 1;
 // to jest slave
 #define MY_ADDR 0x04
 #define SLAVE_ADDR 0x04
-#define MASTER_ADDR 0x02
+#define MASTER_ADDR 0x01
 
 #define VERSION 0x01
 #define DEVICE_TYPE 0x10
