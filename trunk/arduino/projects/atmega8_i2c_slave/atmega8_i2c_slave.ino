@@ -1,4 +1,4 @@
-#include <Wire.h>
+#include <WSWire.h>
 #include <arduino.h>
 #include <i2c_helpers.h>
 #include <avr/eeprom.h>
@@ -14,7 +14,7 @@ typedef struct {
   byte wypelnienie;	        // 8 bitów		0 - 256
   uint16_t on_time;	        // 16bitów		0 - 65536 ms max
   uint16_t off_time;	        // 16bitów		0 - 65536 ms max
-} 
+}
 LED;
 
 LED leds[LEDSIZE] = {
@@ -27,13 +27,12 @@ volatile bool use_local = false;
 volatile byte in_buffer1[5];
 byte i8  = LEDSIZE;
 
-
 void setup(){
 //  pinMode(A0, INPUT);
-  pinMode(13, OUTPUT);
 //  Serial.begin(38400,SERIAL_8N1);
   Serial.begin(38400);
   init_i2c();
+  pinMode(13, OUTPUT);
   Wire.onReceive(receiveEvent);
   Wire.onRequest(requestEvent);
 }
@@ -145,7 +144,7 @@ void requestEvent(){
     }
 }
 
-void send_pin_value( byte pin, byte value ){
+static void send_pin_value( byte pin, byte value ){
   Serial.println("out p "+ String( my_address ) +" / "+ String( pin ) +"/"+ String(value));
   Wire.beginTransmission(MASTER_ADDR);  
   byte ttt[4] = {0x21,my_address,pin,value};
