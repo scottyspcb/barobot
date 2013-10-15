@@ -1,4 +1,5 @@
 #include <Wire.h>
+#include <i2c_helpers.h>
 
 // to jest master
 #define MY_ADDR 0x01
@@ -16,9 +17,9 @@ volatile byte y = 10;
 void setup(){
   Wire.begin(MASTER_ADDR);
   pinMode(led, OUTPUT); 
-  Serial.begin(115200);
+//  Serial.begin(115200);
   Wire.onReceive(receiveEvent);
-  Serial.println("START MASTER");
+  //Serial.println("START MASTER");
 }
 
 byte pin = 0;
