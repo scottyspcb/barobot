@@ -61,11 +61,36 @@ void printHex(byte val, boolean newline){
 	}
 }
 */
-boolean check_free( byte address){    // true jesli wolne
-  Wire.beginTransmission(address);
-  boolean bb = (Wire.endTransmission() == 2) ? true : false;    // 2 - wolne, inne = zajete;
-  Serial.println("szukam:" +String(address)+"/"+ String(bb ? "1" : "0")  ); 
-  return bb;
+byte addr_is_used( byte address){    // true jesli wolne
+	Wire.beginTransmission(address);
+	byte ee = Wire.endTransmission();
+	Serial.println("szukam:" +String(address)+"/"+ String(ee) );
+	if( ee == 2 || ee == 6 ){
+		return 0;
+	}
+	if( ee == 0){
+		return 1;
+	}
+	return 6;
+
+	/*
+		*	0 .. USED
+		*	1 .. not possible
+		*	2 .. FREE
+		*	3 .. not possible
+		*	4 .. ERROR
+		*	5 .. timed out while trying to become Bus Master
+		*	6 .. timed out while waiting for data to be sent
+	*/
+
+	/*
+		RETURNS
+		*	0 .. NOT USED,	FREE		(2)
+		*	1 .. USED,		NOT FREE	(0)
+		*	6 .. ERROR,		TIMEOUT		(6)
+	*/
+  //boolean bb = (ee == 2) ? true : false;    // 2 - wolne, inne = zajete;
+ // return bb;
 }
 
 void save_i2c_address( int epromaddress, byte new_address, byte old_address){
@@ -80,8 +105,9 @@ void delay2( word ww ){
 //    uint32_t wait = 0xFFFFFF;
 //    uint32_t wait = 4294967295;
     //word ww = my_address;
+	++ww;	// jesli wstawilem zero to masakra
     while( --ww ){
-      int32_t wait = 50000;
+      uint16_t wait = 50000;		//65536max
       while(--wait ){
         asm("nop");
       }
@@ -89,7 +115,9 @@ void delay2( word ww ){
 }
 
 byte my_address = 0x00;
-void init_i2c(){
+boolean init_i2c(){
+	pinMode(5,INPUT_PULLUP);
+	pinMode(6,INPUT_PULLUP);
 	Wire.begin();    // chwilowo jako master
 	byte ad1 = eeprom_read_byte((unsigned char *) 0x00);
 	byte ad2 = eeprom_read_byte((unsigned char *) 0x01);  
@@ -108,24 +136,27 @@ void init_i2c(){
 	}
 	delay2(my_address);
 
-	Serial.println("old" + String(my_address) );
-	while(check_free( MASTER_ADDR )){		// jeœli jest wolne to nie ma mastera = b³¹d i czekaj na mastera
-		Serial.println("!master" );
+	//Serial.println("old" + String(my_address) );
+	while(!addr_is_used( MASTER_ADDR )){		// jeœli jest wolne to nie ma mastera = b³¹d i czekaj na mastera
+		Serial.println("!m" );
 		delay2(100);
 	}
-	Serial.println("+m" );
-		
+	//Serial.println( "+m" );
 	my_address = 0;
-	if( my_address < 0x03 || my_address > 110 || !check_free(my_address)){    // zajety - sprawdzaj inne...
+	if( my_address < 0x03 || my_address > 111 || addr_is_used(my_address)){    // zajety - sprawdzaj inne...
 		Serial.println("-");
 		my_address = 5;
-		while( (++my_address )<=110 && !check_free(my_address) ){		// a¿ do znalezienia wolnego lub konca listy
-			asm("nop");
+		while( (++my_address )<=110 && addr_is_used(my_address) ){		// a¿ do znalezienia wolnego lub konca listy
+		//	asm("nop");
 		}
 	}
+	if( my_address ==111 ){
+		return false;
+	}
 	Wire.begin(my_address);
-	Serial.println("na" + String(my_address) );
-//	save_i2c_address( 0x00, my_address, ad1 );    // zapisuje gdy my_address != oa
+	//Serial.println("na" + String(my_address) );
+	save_i2c_address( 0x00, my_address, ad1 );    // zapisuje gdy my_address != oa
+	return true;
 }
 
 
