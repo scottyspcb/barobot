@@ -1,10 +1,10 @@
-#include <Wire.h>
+#include <WSWire.h>
 
 void setup(){
-  Wire.begin();
+  Wire.begin(0x01);
   pinMode(5,INPUT_PULLUP);
   pinMode(6,INPUT_PULLUP);
-  Serial.begin(9600);
+  Serial.begin(115200);
   Serial.println("\nI2C Scanner");
 }
 byte error, address;
@@ -12,8 +12,9 @@ int nDevices;
 
 void loop(){
   Serial.println("Scanning...");
+    Wire.begin(0x01);
   nDevices = 0;
-  for(address = 1; address < 127; address++ )   {
+  for(address = 1; address < 20; address++ )   {
     Wire.beginTransmission(address);
     error = Wire.endTransmission();
 
@@ -23,10 +24,8 @@ void loop(){
       Serial.println("  !");
 
       nDevices++;
-    }
-    else if (error==4){
-      Serial.print("Unknow error at address: ");
-      Serial.println(address,HEX);
+    }else{
+     Serial.println("ERROR:"+String(address)+" / "+String(error));
     }
   }
   Serial.println("done\n");

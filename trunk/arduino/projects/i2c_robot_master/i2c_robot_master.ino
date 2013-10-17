@@ -1,4 +1,4 @@
-#include <Wire.h>
+#include <WSWire.h>
 #include <i2c_helpers.h>
 
 // to jest master
@@ -15,20 +15,22 @@ volatile byte y = 10;
 
 
 void setup(){
+  Serial.begin(115200);
   Wire.begin(MASTER_ADDR);
-  pinMode(led, OUTPUT); 
-//  Serial.begin(115200);
   Wire.onReceive(receiveEvent);
-  //Serial.println("START MASTER");
+  pinMode(led, OUTPUT);  
+  Serial.println("START MASTER");
 }
 
 byte pin = 0;
-byte address = 0x04;
+//byte address = 0x04;
+  byte nDevices=0;
+  byte error=0;
   
 void loop(){
   Serial.println("----------LOOP------");
   
-  scann();
+
 //  unsigned int errors= test_slave( address );
 
   x = x + 30;
@@ -40,11 +42,37 @@ void loop(){
       pin = 0;
   }
 
+  Serial.println("Scanning...");
+
+  nDevices = 0;
+  for(byte addr2 = 1; addr2 < 20; addr2++ )   {
+    Wire.beginTransmission(addr2);
+    error = Wire.endTransmission();
+
+    if (error == 0){
+      Serial.print("I2C device found at address: ");
+      printHex(addr2, false );
+      uint16_t readed = i2c_getVersion(addr2);
+      Serial.print(" type: ");
+      printHex( readed>>8, false );
+      Serial.print(" ver: ");
+      printHex( readed & 0xff, false );
+      Serial.println("");
+      nDevices++;
+    }else{
+     Serial.println("ERROR:"+String(addr2)+" / "+String(error));
+    }
+  }
+  Serial.println("Devices:" + String(nDevices));
+
   digitalWrite(led, HIGH); 
   delay(100);
   digitalWrite(led, LOW);
   delay(100);
-  delay(500);
+  
+  
+  scann();
+  
 /*
   digitalWrite(led, HIGH); 
   delay(100);
@@ -81,27 +109,18 @@ void scann(){
     Wire.beginTransmission(aaa);
     error = Wire.endTransmission();
     if (error == 0){
-      address = aaa;
-      printHex(aaa, false );
-      Serial.print("- I2C found");
+
       uint16_t readed = i2c_getVersion(aaa);
-      
-      Serial.print(" type: ");
-      printHex( readed>>8, false );
-      Serial.print(" ver: ");
-      printHex( readed & 0xff, false );
-      Serial.println("");
-      
       if( (readed>>8) > 0 && (readed & 0xff >0)){
         i2c_setPWM( aaa, pin, x );
-        unsigned int errors= test_slave( address );
+        unsigned int errors= test_slave( aaa );
         digitalWrite(led, HIGH); 
         delay(100);
         digitalWrite(led, LOW);
         delay(100);
         nDevices++;
       }else{
-        printHex( address, false );
+        printHex( aaa, false );
         Serial.println("- !!! to nie jest urzadzenie i2c");
       }
 
@@ -115,7 +134,7 @@ void scann(){
     }
     
   }
-   Serial.println("Devices:" + String(nDevices));
+
 }
 
 
@@ -167,7 +186,7 @@ void i2c_setOutput( byte slave_address, byte new_addr ){			                	// Z
 }
 
 uint16_t i2c_getVersion( byte slave_address ){      // zwraca 2 bajty. typ na młodszych bitach, versja na starszych
-  out_buffer[0]  = 0x19;
+  out_buffer[0]  = 0x29;
   byte error = writeRegisters(slave_address, 1, true );
   if( error ){
    Serial.println("!!!i2c_getVersion error1");  
@@ -192,7 +211,7 @@ void i2c_stop(  byte slave_address ){      // zgaś wszystko
 
 
 byte i2c_test_slave( byte slave_address, byte num1, byte num2 ){      // testuj
-  out_buffer[0]  = 0x1A;
+  out_buffer[0]  = 0x2A;
   out_buffer[1]  = num1;
   out_buffer[2]  = num2;  
   byte error = writeRegisters(slave_address, 3, true );
@@ -237,7 +256,7 @@ unsigned int test_slave(byte slave_address){
 }
 
 boolean i2c_getValue(  byte slave_address, byte pin ){      // zwraca 2 bajty. typ na młodszych bitach, versja na starszych
-  out_buffer[0]  = 0x18;
+  out_buffer[0]  = 0x28;
   out_buffer[1]  = pin;
   byte error = writeRegisters(slave_address, 2, true );
   if(!error){
@@ -256,7 +275,7 @@ boolean i2c_getValue(  byte slave_address, byte pin ){      // zwraca 2 bajty. t
 }
 
 uint16_t i2c_getAnalogValue( byte slave_address, byte pin ){ // Pobierz analogowo wartość PIN o numerze ( 2 bajty )
-  out_buffer[0]  = 0x16;
+  out_buffer[0]  = 0x26;
   out_buffer[1]  = pin;
   byte error = writeRegisters( slave_address, 2, true );
   if(!error){
@@ -280,9 +299,9 @@ void receiveEvent(int howMany){
     in_buffer2[cnt++]= Wire.read(); // receive byte as a character
   }
   if(in_buffer2[0] == 0x21){    // slave input pin value
-    printHex(in_buffer2[1], false );
-    String ss = "- IN " + String(in_buffer2[2]) + ": " + String(in_buffer2[3]);
-    Serial.println(ss);
+//    printHex(in_buffer2[1], false );
+  //  String ss = "- IN " + String(in_buffer2[2]) + ": " + String(in_buffer2[3]);
+  //  Serial.println(ss);
   }else{
     Serial.println("receiveEvent");
     printHex(in_buffer2[0]);
