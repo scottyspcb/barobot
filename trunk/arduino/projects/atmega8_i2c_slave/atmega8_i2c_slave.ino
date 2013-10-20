@@ -3,23 +3,37 @@
 #include <i2c_helpers.h>
 #include <avr/eeprom.h>
 
-// ATMEL ATMEGA8 & 168 / ARDUINO
+#if defined(__AVR_ATmega8__)
+#define TCCR2A TCCR2
+#define TCCR2B TCCR2
+#define COM2A1 COM21
+#define COM2A0 COM20
+#define OCR2A OCR2
+#define TIMSK2 TIMSK
+#define OCIE2A OCIE2
+#define TIMER2_COMPA_vect TIMER2_COMP_vect
+#define TIMSK1 TIMSK
+#endif
+
+#include <SoftPWM.h>
+
+// ATMEL ATMEGA8 / ARDUINO
 //
 //                  +-\/-+
-//            PC6  1|    |28  PC5 (AI 5/ D19)
-//      (D 0) PD0  2|    |27  PC4 (AI 4/ D18)
-//      (D 1) PD1  3|    |26  PC3 (AI 3/ D17)
-//      (D 2) PD2  4|    |25  PC2 (AI 2/ D16)
-// PWM+ (D 3) PD3  5|    |24  PC1 (AI 1/ D15)
-//      (D 4) PD4  6|    |23  PC0 (AI 0/ D14)
+//            PC6  1|    |28  PC5 (A5/ D19)
+//      (D0)  PD0  2|    |27  PC4 (A4/ D18)
+//      (D1)  PD1  3|    |26  PC3 (A3/ D17)
+//      (D2)  PD2  4|    |25  PC2 (A2/ D16)
+//      (D3)  PD3  5|    |24  PC1 (A1/ D15)
+//      (D4)  PD4  6|    |23  PC0 (A0/ D14)
 //            VCC  7|    |22  GND
 //            GND  8|    |21  AREF
 //            PB6  9|    |20  AVCC
-//            PB7 10|    |19  PB5 (D 13)
-// PWM+ (D 5) PD5 11|    |18  PB4 (D 12)
-// PWM+ (D 6) PD6 12|    |17  PB3 (D 11) PWM
-//      (D 7) PD7 13|    |16  PB2 (D 10) PWM
-//      (D 8) PB0 14|    |15  PB1 (D 9) PWM
+//            PB7 10|    |19  PB5 (D13)
+//      (D5)  PD5 11|    |18  PB4 (D12)
+//      (D6)  PD6 12|    |17  PB3 (D11) PWM
+//      (D7)  PD7 13|    |16  PB2 (D10) PWM
+//      (D8)  PB0 14|    |15  PB1 (D9) PWM
 //                  +----+
 
 // pin01  arduino --  PC6	RESET           - CONN1
@@ -45,21 +59,23 @@
 // pin20  arduino --  AVCC
 // pin21  arduino --  AREF
 // pin22  arduino --  GND
-// pin23  arduino A0  PC0	ADC0		- 
-// pin24  arduino A1  PC1	ADC1		- 
-// pin25  arduino A2  PC2	ADC2		- 
-// pin26  arduino A3  PC3	ADC3		- 
-// pin27  arduino A4  PC4	ADC4	SDA	- CONN1
-// pin28  arduino A5  PC5	ADC5	SCL	- CONN1
+// pin23  arduino A0/D14  PC0	ADC0		- 
+// pin24  arduino A1/D15  PC1	ADC1		- 
+// pin25  arduino A2/D16  PC2	ADC2		- 
+// pin26  arduino A3/D17  PC3	ADC3		- 
+// pin27  arduino A4/D18  PC4	ADC4	SDA	- CONN1
+// pin28  arduino A5/D19  PC5	ADC5	SCL	- CONN1
 
 #define LEFT_RESET_PIN 14
+#define MY_POKE_PIN 5
 
 // to jest slave
 #define VERSION 0x01
 #define DEVICE_TYPE 0x10
 #define MASTER_ADDR 0x01
-#define LEFT_RESET_PIN 4
-#define MY_POKE_PIN 4
+
+uint8_t leds[10] = {6,7,8, 9, 10, 11, 12, 13, 14, 15};
+/*
 
 #define LEDSIZE 8
 typedef struct {
@@ -71,29 +87,32 @@ typedef struct {
 LED;
 
 LED leds[LEDSIZE] = {
-  {8, 10, 100, 100   },
-  {9, 10, 100, 100   },
-  {8, 10, 100, 100   },
-  {9, 10, 100, 100   },
-  {8, 10, 100, 100   },
-  {9, 10, 100, 100   },
-  {8, 10, 100, 100   },
-  {9, 10, 100, 100   }
+  {8, 10, 100, 100 },
+  {9, 10, 100, 100 },
+  {8, 10, 100, 100 },
+  {9, 10, 100, 100 },
+  {8, 10, 100, 100 },
+  {9, 10, 100, 100 },
+  {8, 10, 100, 100 },
+  {9, 10, 100, 100 }
 };
+*/
 
 volatile bool use_local = false;
 volatile byte in_buffer1[5];
-byte i8  = LEDSIZE;
+//byte i8 = LEDSIZE;
 
 void setup(){
-  pinMode(MY_POKE_PIN, INPUT);
+  pinMode(8, OUTPUT);
+  digitalWrite(8, 1); 
 //  Serial.begin(38400);
-  Serial.begin(115200);
-  Serial.println("start" );
+//  Serial.begin(115200);
   if(!init_i2c()){
 //    show_error(5 );
   }
+    SoftPWMBegin();
   pinMode(13, OUTPUT);
+//  pinMode(MY_POKE_PIN, INPUT);
   Wire.onReceive(receiveEvent);
   Wire.onRequest(requestEvent);
   send_here_i_am();  // wyslij ze oto jestem
@@ -106,10 +125,10 @@ boolean diddd = false;
 void loop() {
   mil = millis();
   	if( mil > milis100 + 4000 ){    // co 4 sek
-                send_pin_value( A0, diddd ? 1 : 0 );
-                diddd = !diddd;
+                send_pin_value( MY_POKE_PIN, diddd ? 1 : 0 );
+//                diddd = !diddd;
   		milis100 = mil;
-                digitalWrite(13, diddd);
+//                digitalWrite(13, diddd);
   	}
   /*
   int sw = analogRead( A0 );
@@ -119,38 +138,30 @@ void loop() {
     last_send_value = nval;
   }  
   */
-
-//send_poke();
     if( use_local&& in_buffer1[0] ){          // komendy bez odpowiedzi tutaj:
       byte command = in_buffer1[0];
       if( command == 0x11 ){                // PWM     3 bajty
            // setPWM(in_buffer1[1],in_buffer1[2]);
-            leds[in_buffer1[1]].wypelnienie = in_buffer1[2];
+ //           leds[in_buffer1[1]].wypelnienie = in_buffer1[2];
       }else if( command == 0x10 ){          // reset
       }else if( command == 0x12 ){          // set time
       }else if( command == 0x13 ){          // fade
       }else if( command == 0x14 ){          // set dir
       }else if( command == 0x15 ){          // set output
       }else if( command == 0x16 ){          // Resetuj urządzenie obok
-         Serial.println("R-" );
         pinMode(LEFT_RESET_PIN, OUTPUT); 
-        digitalWrite(LEFT_RESET_PIN, LOW);       // pin w stanie niskim
-        
-      }else if( command == 0x17 ){         // Koniec resetu urządzenia obok, ustaw pin w stan wysokiej impedancji
-        Serial.println("R0" );
-        pinMode(LEFT_RESET_PIN, INPUT);          // set pin to input
-        digitalWrite(LEFT_RESET_PIN, LOW);       // turn OFF pullup resistors
+        digitalWrite(LEFT_RESET_PIN, LOW);  // pin w stanie niskim
+      }else if( command == 0x17 ){          // Koniec resetu urządzenia obok, ustaw pin w stan wysokiej impedancji
+        pinMode(LEFT_RESET_PIN, INPUT);     // set pin to input
+        digitalWrite(LEFT_RESET_PIN, LOW);  // turn OFF pullup resistors
       }else if( command == 0x1E ){          // zmien address
       }
+      in_buffer1[0] = 0;
       use_local = false;
    }
 }
 
 void receiveEvent(int howMany){
-  /*if(in_buffer1[0] || use_local ){
-    Serial.print("NKomenda");
-    printHex(in_buffer1[0]);
-  }*/
   byte cntr = 0;
   byte aa = 0;
   while( Wire.available()){ // loop through all but the last  
@@ -159,19 +170,13 @@ void receiveEvent(int howMany){
     cntr++;
   }
   byte sss = (in_buffer1[0] >> 4);
-  if ( sss == 1 ){      // najstarsze 8 bitów = 1 to wykonaj w głównym wątku
+  if ( sss == 1 ){      // najstarsze 8 bitów RÓWNE 1 to wykonaj w głównym wątku
       use_local = true;  
   }
 }
 
 void requestEvent(){ 
   // w in_buffer jest polecenie
-  /*
-    while( Wire.available()){ // loop through all but the last  
-      aa = Wire.read(); // receive byte as a character
-      Serial.print("IN: " );
-      printHex(aa);
-    }*/
     byte command = in_buffer1[0];
     if( command == 0x26 ){  // get analog value
     /*
@@ -198,7 +203,7 @@ void requestEvent(){
 static void send_pin_value( byte pin, byte value ){
   byte ttt[4] = {0x21,my_address,pin,value};
   send(ttt,4);
-//  Serial.println("out "+ String( my_address ) +" / "+ String( pin ) +"/"+ String(value)+ "/e:" + String(error));
+ // Serial.println("out "+ String( my_address ) +" / "+ String( pin ) +"/"+ String(value));
 }
 void send_poke(){
   byte ttt[2] = {0x22,my_address};
@@ -207,6 +212,7 @@ void send_poke(){
 static void send_here_i_am(){
   byte ttt[2] = {0x23,my_address};
   send(ttt,2);
+//  Serial.println("hello "+ String( my_address ));  
 }
 void send( byte buffer[], byte ss ){
   Wire.beginTransmission(MASTER_ADDR);  
@@ -214,6 +220,7 @@ void send( byte buffer[], byte ss ){
   byte error = Wire.endTransmission();
 //  Serial.println("out "+ String( my_address ) +" / "+ String( pin ) +"/"+ String(value)+ "/e:" + String(error));
 }
+
 
 /*
 void show_error( byte error_code ){    // mrygaj czerwonym tyle razy
