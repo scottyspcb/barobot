@@ -5,8 +5,7 @@
 #include <Arduino.h>
 
 // sterowanie plusem? false gdy sterowaniem minusem
-#define COMMON_ANODE false
-
+#define COMMON_ANODE true
 
 #define sbi(x,y) x |= _BV(y) //set bit - using bitwise OR operator 
 #define cbi(x,y) x &= ~(_BV(y)) //clear bit - using bitwise AND operator
@@ -15,7 +14,6 @@
 
 void SoftPWMSet(int8_t pin, uint8_t value, uint8_t hardset = 0);
 void SoftPWMEnd(int8_t pin);
-void SoftPWMSetFadeTime(int8_t pin, uint16_t fadeUpTime, uint16_t fadeDownTime);
 
 #define SOFTPWM_TIMER_SET(val)     (TCNT2 = (val))
 #define SOFTPWM_MAXCHANNELS 8
@@ -36,10 +34,14 @@ typedef struct{
 
 volatile softPWMChannel _softpwm_channels[SOFTPWM_MAXCHANNELS];
 volatile uint8_t _isr_softcount = 0xff;
-volatile unsigned long nanotime = 0;
-volatile unsigned long timertime = 100000;
+
 volatile boolean pwmnow= false;
-volatile uint8_t checktime= false;
+
+volatile uint16_t timertime = 100000;
+volatile unsigned long _nanotime = 0;
+volatile uint8_t _timediv= 0;
+volatile uint8_t checktime= 0;
+
 
 ISR(TIMER2_COMP_vect){
   if(pwmnow){
@@ -48,10 +50,14 @@ ISR(TIMER2_COMP_vect){
     if(++_isr_softcount == 0){
       int16_t newvalue;
       int16_t direction;
-      if(++checktime==0){
-//        unsigned long time = micros();
-//        timertime = time - nanotime;
-//        nanotime = time;
+      if( checktime && ++_timediv==0){
+        if(checktime == 1){    // zmierzylem raz
+          _nanotime =  micros();
+          checktime = 2;
+        }else if(checktime == 2){    // zmierzylem 2 raz, to starczy
+          timertime  = micros() - _nanotime;
+          checktime = 0;
+        }
       }
       // set all channels high - let's start again
       // and accept new checkvals
@@ -120,25 +126,6 @@ void SoftPWMSet(int8_t pin, uint8_t value, uint8_t hardset){
   }
 }
 
-void initPWM(int8_t pin, int8_t firstfree){
-  // we have a free pin we can use
-  _softpwm_channels[firstfree].pin = pin;
-  _softpwm_channels[firstfree].outport = portOutputRegister(digitalPinToPort(pin));
-  _softpwm_channels[firstfree].pinmask = digitalPinToBitMask(pin);
-//    _softpwm_channels[firstfree].checkval = 0;\
-
-  // now prepare the pin for output
-  // turn it off to start (no glitch)
-  pinMode(pin, OUTPUT);
-
-  #if COMMON_ANODE
-   *_softpwm_channels[firstfree].outport &= ~(_softpwm_channels[firstfree].pinmask);          // turn off the channel (set GND)
-  #else
-   *_softpwm_channels[firstfree].outport |= _softpwm_channels[firstfree].pinmask;              // turn off the channel (set VCC)
-  #endif
-}
-
-
 void SoftPWMEnd(int8_t pin){
   uint8_t i;
   for (i = 0; i < SOFTPWM_MAXCHANNELS; i++)  {
@@ -153,31 +140,23 @@ void SoftPWMEnd(int8_t pin){
   }
 }
 
+uint8_t fadeToSteps( uint16_t fadeTime ){
+  if (fadeTime){    // > 0
+    uint8_t t = 255UL * (SOFTPWM_OCR * 256UL / (F_CPU / 8000UL)) / fadeTime;
+    Serial.println("fadeTime "+ String(t));   
+    return t;
+  }
+  return 0;
+}
 
-void SoftPWMSetFadeTime(int8_t pin, uint16_t fadeUpTime, uint16_t fadeDownTime)
-{
-  int16_t fadeAmount;
+void SoftPWMSetFadeTime(int8_t pin, uint8_t fadeUpTime, uint8_t fadeDownTime){
   uint8_t i;
-
   for (i = 0; i < SOFTPWM_MAXCHANNELS; i++){
     if ((pin < 0 && _softpwm_channels[i].pin >= 0) ||  // ALL pins
        (pin >= 0 && _softpwm_channels[i].pin == pin))  // individual pin
     {
-      fadeAmount = 0;
-      if (fadeUpTime > 0){
-        fadeAmount = 255UL * (SOFTPWM_OCR * 256UL / (F_CPU / 8000UL)) / fadeUpTime *2U;
-        Serial.println("fadeUpTime " +String(pin)+"/"+ String(fadeAmount) + "/ " + String(SOFTPWM_OCR));
-
-      }
-      _softpwm_channels[i].fadeuprate = fadeAmount;
-
-      fadeAmount = 0;
-      if (fadeDownTime > 0){
-        fadeAmount = 255UL * (SOFTPWM_OCR * 256UL / (F_CPU / 8000UL)) / fadeDownTime *2U;
-        Serial.println("fadeDownTime " +String(pin)+"/"+ String(fadeAmount) + "/ " + String(SOFTPWM_OCR));
-      }
-      _softpwm_channels[i].fadedownrate = fadeAmount;
-
+      _softpwm_channels[i].fadeuprate = fadeUpTime;
+      _softpwm_channels[i].fadedownrate = fadeDownTime;
       if (pin >= 0) { // we've set individual pin
         break;
       }
@@ -185,6 +164,14 @@ void SoftPWMSetFadeTime(int8_t pin, uint16_t fadeUpTime, uint16_t fadeDownTime)
   }
 }
 
+/*
+16000000
+8
+256
+60
+130
+ */
+ 
 void setup(){
   Serial.begin(38400);
   delay(1000);
@@ -194,34 +181,19 @@ void setup(){
   Serial.println(256UL);
   Serial.println(SOFTPWM_FREQ);
   Serial.println(SOFTPWM_OCR);
-/*
-16000000
-8
-256
-60
-130
- */
- 
+
   uint8_t leds[SOFTPWM_MAXCHANNELS] = {4, 5, 6, 7, 8, 9, 16, 17};
   
-  for (uint8_t i = 0; i < SOFTPWM_MAXCHANNELS; i++)
-  {
-    _softpwm_channels[i].pin = -1;
-    _softpwm_channels[i].outport = 0;
+  for (uint8_t i = 0; i < SOFTPWM_MAXCHANNELS; i++){
+    uint8_t pin = leds[i];
+
+    _softpwm_channels[i].pin = pin;
+    _softpwm_channels[i].outport =portOutputRegister(digitalPinToPort(pin));
+    _softpwm_channels[i].pinmask = digitalPinToBitMask(pin);
     _softpwm_channels[i].fadeuprate = 0;
     _softpwm_channels[i].fadedownrate = 0;
-  }
-
-  for (int8_t i = 0; i < SOFTPWM_MAXCHANNELS; i++)  {
-    uint8_t pin = leds[i];
-    // we have a free pin we can use
-    _softpwm_channels[i].pin = pin;
-    _softpwm_channels[i].outport = portOutputRegister(digitalPinToPort(pin));
-    _softpwm_channels[i].pinmask = digitalPinToBitMask(pin);
   //    _softpwm_channels[i].checkval = 0;\
-  
-    // now prepare the pin for output
-    // turn it off to start (no glitch)
+
     pinMode(pin, OUTPUT);
   
     #if COMMON_ANODE
@@ -266,21 +238,25 @@ void setup(){
   SoftPWMSet(16, 255);
   SoftPWMSet(17, 255);
 
-  SoftPWMSetFadeTime(4,  3000, 3000);
-  SoftPWMSetFadeTime(5,  3000, 3000);
-  SoftPWMSetFadeTime(6,  3000, 3000);
-  SoftPWMSetFadeTime(7,  3000, 3000);
-  SoftPWMSetFadeTime(8,  1000, 1000);
-  SoftPWMSetFadeTime(9,  1000, 1000);
-  SoftPWMSetFadeTime(16, 1000, 1000);
-  SoftPWMSetFadeTime(17, 1000, 1000);
+  uint8_t t3000 = fadeToSteps(4000);
+  uint8_t t1000 = fadeToSteps(1000);
+  SoftPWMSetFadeTime(4, t3000,t3000);
+  SoftPWMSetFadeTime(5, t3000,t3000);
+  SoftPWMSetFadeTime(6, t3000,t3000);
+  SoftPWMSetFadeTime(8, t3000,t3000);
+
+
+  SoftPWMSetFadeTime(7, t1000,t1000);
+  SoftPWMSetFadeTime(9, t1000,t1000);
+  SoftPWMSetFadeTime(16,t1000,t1000);
+  SoftPWMSetFadeTime(17,0,0);
 
   Serial.println("ready");
   sei();    // enable interrupts
 }
 
 void loop() {
-  Serial.println(timertime);
+  checktime  =1;
   Serial.println("-on-");
 
   SoftPWMSet(4, 255);      // zgas
@@ -292,7 +268,9 @@ void loop() {
   SoftPWMSet(16, 255);
   SoftPWMSet(17, 255);
 
-  delay(3000);
+  Serial.println(timertime);
+  
+  delay(4000);
 
   Serial.println("soff");
   SoftPWMSet(4, 0);
@@ -304,7 +282,7 @@ void loop() {
   SoftPWMSet(16, 0);
   SoftPWMSet(17, 0);
 
-  delay(3000);
+  delay(4000);
 }
 
 /*
@@ -314,6 +292,24 @@ void toggle( boolean toggle, uint8_t i){
   }else{
     *_softpwm_channels[i].outport |= _softpwm_channels[i].pinmask;
   } 
+}
+
+void initPWM(int8_t pin, int8_t firstfree){
+  // we have a free pin we can use
+  _softpwm_channels[firstfree].pin = pin;
+  _softpwm_channels[firstfree].outport = portOutputRegister(digitalPinToPort(pin));
+  _softpwm_channels[firstfree].pinmask = digitalPinToBitMask(pin);
+//    _softpwm_channels[firstfree].checkval = 0;\
+
+  // now prepare the pin for output
+  // turn it off to start (no glitch)
+  pinMode(pin, OUTPUT);
+
+  #if COMMON_ANODE
+   *_softpwm_channels[firstfree].outport &= ~(_softpwm_channels[firstfree].pinmask);          // turn off the channel (set GND)
+  #else
+   *_softpwm_channels[firstfree].outport |= _softpwm_channels[firstfree].pinmask;              // turn off the channel (set VCC)
+  #endif
 }
  */
 
