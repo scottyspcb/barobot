@@ -22,18 +22,18 @@
 //                  +-\/-+
 //            PC6  1|    |28  PC5 (A5/ D19)
 //      (D0)  PD0  2|    |27  PC4 (A4/ D18)
-//      (D1)  PD1  3|    |26  PC3 (A3/ D17)
-//      (D2)  PD2  4|    |25  PC2 (A2/ D16)
+//      (D1)  PD1  3|    |26  PC3 (A3/ D17)    L
+//      (D2)  PD2  4|    |25  PC2 (A2/ D16)    L
 //      (D3)  PD3  5|    |24  PC1 (A1/ D15)
-//      (D4)  PD4  6|    |23  PC0 (A0/ D14)
+//   L  (D4)  PD4  6|    |23  PC0 (A0/ D14)
 //            VCC  7|    |22  GND
 //            GND  8|    |21  AREF
 //            PB6  9|    |20  AVCC
 //            PB7 10|    |19  PB5 (D13)
-//      (D5)  PD5 11|    |18  PB4 (D12)
-//      (D6)  PD6 12|    |17  PB3 (D11) PWM
-//      (D7)  PD7 13|    |16  PB2 (D10) PWM
-//      (D8)  PB0 14|    |15  PB1 (D9) PWM
+//   L  (D5)  PD5 11|    |18  PB4 (D12)
+//   L  (D6)  PD6 12|    |17  PB3 (D11) PWM
+//   L  (D7)  PD7 13|    |16  PB2 (D10) PWM
+//   L  (D8)  PB0 14|    |15  PB1 (D9) PWM      L
 //                  +----+
 
 // pin01  arduino --  PC6	RESET           - CONN1
@@ -73,30 +73,6 @@
 #define VERSION 0x01
 #define DEVICE_TYPE 0x10
 #define MASTER_ADDR 0x01
-
-uint8_t leds[10] = {6,7,8, 9, 10, 11, 12, 13, 14, 15};
-/*
-
-#define LEDSIZE 8
-typedef struct {
-  byte pin;
-  byte wypelnienie;	        // 8 bitów		0 - 256
-  uint16_t on_time;	        // 16bitów		0 - 65536 ms max
-  uint16_t off_time;	        // 16bitów		0 - 65536 ms max
-}
-LED;
-
-LED leds[LEDSIZE] = {
-  {8, 10, 100, 100 },
-  {9, 10, 100, 100 },
-  {8, 10, 100, 100 },
-  {9, 10, 100, 100 },
-  {8, 10, 100, 100 },
-  {9, 10, 100, 100 },
-  {8, 10, 100, 100 },
-  {9, 10, 100, 100 }
-};
-*/
 
 volatile bool use_local = false;
 volatile byte in_buffer1[5];
