@@ -1,13 +1,8 @@
 // sterowanie plusem? false gdy sterowaniem minusem
 #define COMMON_ANODE true
 
-#define sbi(x,y) x |= _BV(y) //set bit - using bitwise OR operator 
-#define cbi(x,y) x &= ~(_BV(y)) //clear bit - using bitwise AND operator
-#define tbi(x,y) x ^= _BV(y) //toggle bit - using bitwise XOR operator
-#define is_high(x,y) (x & _BV(y) == _BV(y)) //check if the y'th bit of register 'x' is high ... test if its AND with 1 is 1
-
-void SoftPWMSet(int8_t pin, uint8_t value);
-void SoftPWMEnd(int8_t pin);
+void PWMSet(int8_t pin, uint8_t value);
+void PWMEnd(int8_t pin);
 
 typedef struct{ 
   int8_t pin;      // hardware I/O port and pin for this channel
@@ -17,11 +12,11 @@ typedef struct{
   uint8_t fadeuprate;
   uint8_t fadedownrate;
   uint8_t checkval;
-} softPWMChannel;
+} PWMChannel;
 
 #define LEDS 8
-volatile softPWMChannel _softpwm_channels[LEDS]= {{4,0,0,0,0,0},{5,0,0,0,0,0},{6,0,0,0,0,0},{7,0,0,0,0,0},{8,0,0,0,0,0},{9,0,0,0,0,0},{16,0,0,0,0,0},{17,0,0,0,0,0}};
-volatile uint8_t _isr_softcount = 0xff;
+volatile PWMChannel _pwm_channels[LEDS]= {{4,0,0,0,0,0},{5,0,0,0,0,0},{6,0,0,0,0,0},{7,0,0,0,0,0},{8,0,0,0,0,0},{9,0,0,0,0,0},{16,0,0,0,0,0},{17,0,0,0,0,0}};
+volatile uint8_t _isr_count = 0xff;
 volatile boolean pwmnow= false;
 
 volatile uint16_t timertime = 100000;
@@ -33,7 +28,7 @@ ISR(TIMER2_COMP_vect){
   if(pwmnow){
     pwmnow=false;
     uint8_t i;
-    if(++_isr_softcount == 0){
+    if(++_isr_count == 0){
       if( checktime /* && ++_timediv==0*/ ){
         if(checktime == 1){    // zmierzylem raz
           _nanotime =  micros();
@@ -47,9 +42,9 @@ ISR(TIMER2_COMP_vect){
       // and accept new checkvals
       int16_t newvalue;
       int16_t direction;
-      volatile softPWMChannel *led;    
+      volatile PWMChannel *led;    
       for (i = 0; i < LEDS; i++){
-        led = &_softpwm_channels[i];
+        led = &_pwm_channels[i];
         direction = (led->pwmvalue - led->checkval);            // we want to fade to the new value
         if (direction > 0 && led->fadeuprate > 0){
           newvalue = led->checkval + led->fadeuprate;
@@ -75,11 +70,11 @@ ISR(TIMER2_COMP_vect){
       }
     }
     for (i = 0; i < LEDS; i++) {
-      if(_softpwm_channels[i].checkval == _isr_softcount) { // if it's a valid pin // if we have hit the width
+      if(_pwm_channels[i].checkval == _isr_count) { // if it's a valid pin // if we have hit the width
           #if COMMON_ANODE
-           *_softpwm_channels[i].outport &= ~(_softpwm_channels[i].pinmask);          // turn off the channel (set GND)
+           *_pwm_channels[i].outport &= ~(_pwm_channels[i].pinmask);          // turn off the channel (set GND)
          #else
-           *_softpwm_channels[i].outport |= _softpwm_channels[i].pinmask;              // turn off the channel (set VCC)
+           *_pwm_channels[i].outport |= _pwm_channels[i].pinmask;              // turn off the channel (set VCC)
          #endif
       }
     }
@@ -88,13 +83,13 @@ ISR(TIMER2_COMP_vect){
   }
 }
 
-void SoftPWMSet(int8_t pin, uint8_t value){
+void PWMSet(int8_t pin, uint8_t value){
   uint8_t i;
   for (i = 0; i < LEDS; i++){
-    if ((pin < 0 && _softpwm_channels[i].pin >= 0) ||  // ALL pins
-       (pin >= 0 && _softpwm_channels[i].pin == pin))  // individual pin
+    if ((pin < 0 && _pwm_channels[i].pin >= 0) ||  // ALL pins
+       (pin >= 0 && _pwm_channels[i].pin == pin))  // individual pin
     {
-      _softpwm_channels[i].pwmvalue = value;        // set the pin (and exit, if individual pin)
+      _pwm_channels[i].pwmvalue = value;        // set the pin (and exit, if individual pin)
       if (pin >= 0){ // we've set the individual pin
         return;
       }
@@ -102,13 +97,13 @@ void SoftPWMSet(int8_t pin, uint8_t value){
   }
 }
 
-void SoftPWMSetFadeTime(int8_t pin, uint8_t fadeUpTime, uint8_t fadeDownTime){
+void PWMSetFadeTime(int8_t pin, uint8_t fadeUpTime, uint8_t fadeDownTime){
   for (uint8_t i = 0; i < LEDS; i++){
-    if ((pin < 0 && _softpwm_channels[i].pin >= 0) ||  // ALL pins
-       (pin >= 0 && _softpwm_channels[i].pin == pin))  // individual pin
+    if ((pin < 0 && _pwm_channels[i].pin >= 0) ||  // ALL pins
+       (pin >= 0 && _pwm_channels[i].pin == pin))  // individual pin
     {
-      _softpwm_channels[i].fadeuprate = fadeUpTime;
-      _softpwm_channels[i].fadedownrate = fadeDownTime;
+      _pwm_channels[i].fadeuprate = fadeUpTime;
+      _pwm_channels[i].fadedownrate = fadeDownTime;
       if (pin >= 0){ // we've set the individual pin
         return;
       }
@@ -119,14 +114,14 @@ void SoftPWMSetFadeTime(int8_t pin, uint8_t fadeUpTime, uint8_t fadeDownTime){
 void setup(){
   Serial.begin(38400);
   for (uint8_t i = 0; i < LEDS; i++){
-    uint8_t pin = _softpwm_channels[i].pin;
-    _softpwm_channels[i].outport =portOutputRegister(digitalPinToPort(pin));
-    _softpwm_channels[i].pinmask = digitalPinToBitMask(pin);
+    uint8_t pin = _pwm_channels[i].pin;
+    _pwm_channels[i].outport =portOutputRegister(digitalPinToPort(pin));
+    _pwm_channels[i].pinmask = digitalPinToBitMask(pin);
     pinMode(pin, OUTPUT);
     #if COMMON_ANODE
-     *_softpwm_channels[i].outport &= ~(_softpwm_channels[i].pinmask);          // turn off the channel (set GND)
+     *_pwm_channels[i].outport &= ~(_pwm_channels[i].pinmask);          // turn off the channel (set GND)
     #else
-     *_softpwm_channels[i].outport |= _softpwm_channels[i].pinmask;              // turn off the channel (set VCC)
+     *_pwm_channels[i].outport |= _pwm_channels[i].pinmask;              // turn off the channel (set VCC)
     #endif
   }
 
@@ -150,15 +145,15 @@ void setup(){
   TCCR2 |= (1 << WGM21);    // Set to CTC Mode
   TIMSK |= (1 << OCIE2);    // Set interrupt on compare match
 
-  SoftPWMSetFadeTime(4, 0, 5);
-  SoftPWMSetFadeTime(5, 3, 5);
-  SoftPWMSetFadeTime(6, 5, 5);
-  SoftPWMSetFadeTime(7, 6, 5);
+  PWMSetFadeTime(4, 0, 5);
+  PWMSetFadeTime(5, 3, 5);
+  PWMSetFadeTime(6, 5, 5);
+  PWMSetFadeTime(7, 6, 5);
 
-  SoftPWMSetFadeTime(8, 8, 5);
-  SoftPWMSetFadeTime(9, 9, 5);
-  SoftPWMSetFadeTime(16,10, 5);
-  SoftPWMSetFadeTime(17,11, 5);
+  PWMSetFadeTime(8, 8, 5);
+  PWMSetFadeTime(9, 9, 5);
+  PWMSetFadeTime(16,10, 5);
+  PWMSetFadeTime(17,11, 5);
 
   sei();    // enable interrupts
 }
@@ -167,28 +162,28 @@ void loop() {
   checktime  =1;
   Serial.println("-on-");
 
-  SoftPWMSet(4, 255);    //zapal
-  SoftPWMSet(5, 255);
-  SoftPWMSet(6, 255);
-  SoftPWMSet(7, 255);
-  SoftPWMSet(8, 255);
-  SoftPWMSet(9, 255);
-  SoftPWMSet(16, 255);
-  SoftPWMSet(17, 255);
+  PWMSet(4, 255);    //zapal
+  PWMSet(5, 255);
+  PWMSet(6, 255);
+  PWMSet(7, 255);
+  PWMSet(8, 255);
+  PWMSet(9, 255);
+  PWMSet(16, 255);
+  PWMSet(17, 255);
 
   Serial.println(timertime);
   
   delay(1500);
 
   Serial.println("soff");
-  SoftPWMSet(4, 10);
-  SoftPWMSet(5, 10);
-  SoftPWMSet(6, 10);
-  SoftPWMSet(7, 10);
-  SoftPWMSet(8, 10);
-  SoftPWMSet(9, 10);
-  SoftPWMSet(16, 10);
-  SoftPWMSet(17, 10);
+  PWMSet(4, 10);
+  PWMSet(5, 10);
+  PWMSet(6, 10);
+  PWMSet(7, 10);
+  PWMSet(8, 10);
+  PWMSet(9, 10);
+  PWMSet(16, 10);
+  PWMSet(17, 10);
 
   delay(1500);
 }
@@ -196,46 +191,46 @@ void loop() {
 /*
   if (hardset){
     TCNT2 = 0;
-    _isr_softcount = 0xff;
+    _isr_count = 0xff;
   }
 
 
 void toggle( boolean toggle, uint8_t i){
   if (toggle){
-    *_softpwm_channels[i].outport &= ~(_softpwm_channels[i].pinmask);
+    *_pwm_channels[i].outport &= ~(_pwm_channels[i].pinmask);
   }else{
-    *_softpwm_channels[i].outport |= _softpwm_channels[i].pinmask;
+    *_pwm_channels[i].outport |= _pwm_channels[i].pinmask;
   } 
 }
 
 void initPWM(int8_t pin, int8_t firstfree){
   // we have a free pin we can use
-  _softpwm_channels[firstfree].pin = pin;
-  _softpwm_channels[firstfree].outport = portOutputRegister(digitalPinToPort(pin));
-  _softpwm_channels[firstfree].pinmask = digitalPinToBitMask(pin);
-//    _softpwm_channels[firstfree].checkval = 0;\
+  _pwm_channels[firstfree].pin = pin;
+  _pwm_channels[firstfree].outport = portOutputRegister(digitalPinToPort(pin));
+  _pwm_channels[firstfree].pinmask = digitalPinToBitMask(pin);
+//    _pwm_channels[firstfree].checkval = 0;\
 
   // now prepare the pin for output
   // turn it off to start (no glitch)
   pinMode(pin, OUTPUT);
 
   #if COMMON_ANODE
-   *_softpwm_channels[firstfree].outport &= ~(_softpwm_channels[firstfree].pinmask);          // turn off the channel (set GND)
+   *_pwm_channels[firstfree].outport &= ~(_pwm_channels[firstfree].pinmask);          // turn off the channel (set GND)
   #else
-   *_softpwm_channels[firstfree].outport |= _softpwm_channels[firstfree].pinmask;              // turn off the channel (set VCC)
+   *_pwm_channels[firstfree].outport |= _pwm_channels[firstfree].pinmask;              // turn off the channel (set VCC)
   #endif
 }
 
-void SoftPWMEnd(int8_t pin){
+void PWMEnd(int8_t pin){
   uint8_t i;
-  for (i = 0; i < SOFTPWM_MAXCHANNELS; i++)  {
-    if ((pin < 0 && _softpwm_channels[i].pin >= 0) ||  // ALL pins
-       (pin >= 0 && _softpwm_channels[i].pin == pin))  // individual pin
+  for (i = 0; i < PWM_MAXCHANNELS; i++)  {
+    if ((pin < 0 && _pwm_channels[i].pin >= 0) ||  // ALL pins
+       (pin >= 0 && _pwm_channels[i].pin == pin))  // individual pin
     {
       // now disable the pin (put it into INPUT mode)
-      digitalWrite(_softpwm_channels[i].pin, 1);
-      pinMode(_softpwm_channels[i].pin, INPUT);
-      _softpwm_channels[i].pin = -1;      // remove the pin
+      digitalWrite(_pwm_channels[i].pin, 1);
+      pinMode(_pwm_channels[i].pin, INPUT);
+      _pwm_channels[i].pin = -1;      // remove the pin
     }
   }
 }
@@ -243,7 +238,7 @@ void SoftPWMEnd(int8_t pin){
 uint8_t fadeToSteps( uint16_t fadeTime ){
   if (fadeTime){    // > 0
   //  uint8_t t = 255UL * 8000UL /(8UL*60UL) / fadeTime;
-    uint8_t t = 255UL * (SOFTPWM_OCR * 256UL / (F_CPU / 8000UL)) / fadeTime;
+    uint8_t t = 255UL * (PWM_OCR * 256UL / (F_CPU / 8000UL)) / fadeTime;
     uint8_t t = 
     Serial.println("fadeTime "+ String(t));   
     return t;
