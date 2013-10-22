@@ -3,19 +3,6 @@
 #include <i2c_helpers.h>
 #include <avr/eeprom.h>
 
-#if defined(__AVR_ATmega8__)
-#define TCCR2A TCCR2
-#define TCCR2B TCCR2
-#define COM2A1 COM21
-#define COM2A0 COM20
-#define OCR2A OCR2
-#define TIMSK2 TIMSK
-#define OCIE2A OCIE2
-#define TIMER2_COMPA_vect TIMER2_COMP_vect
-#define TIMSK1 TIMSK
-#endif
-
-#include <SoftPWM.h>
 
 // ATMEL ATMEGA8 / ARDUINO
 //
@@ -86,7 +73,6 @@ void setup(){
   if(!init_i2c()){
 //    show_error(5 );
   }
-    SoftPWMBegin();
   pinMode(13, OUTPUT);
 //  pinMode(MY_POKE_PIN, INPUT);
   Wire.onReceive(receiveEvent);
@@ -218,10 +204,4 @@ void serialEvent(){				       // FUNKCJA WBUDOWANA - zbieraj dane z serial0
 	}
 }*/
 
-/*
-void setPWM(byte pin, byte level){
-    leds[pin].wypelnienie = level;
-    Serial.println("setPWM:" + String(pin) + "/" + String(level) );
-}
-*/
 
