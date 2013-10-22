@@ -116,8 +116,6 @@ void delay2( word ww ){
 
 byte my_address = 0x00;
 boolean init_i2c(){
-	pinMode(5,INPUT_PULLUP);
-	pinMode(6,INPUT_PULLUP);
 	Wire.begin();    // chwilowo jako master
 	byte ad1 = eeprom_read_byte((unsigned char *) 0x00);
 	byte ad2 = eeprom_read_byte((unsigned char *) 0x01);  
@@ -168,4 +166,16 @@ boolean init_i2c(){
     *          4 .. other twi error (lost bus arbitration, bus error, ..)
     *          5 .. timed out while trying to become Bus Master
     *          6 .. timed out while waiting for data to be sent
+*/
+
+
+
+/*
+void delay_ms(uint16_t ms) {
+while (ms) {
+_delay_ms(1);
+ms--;
+}
+}
+ 
 */
