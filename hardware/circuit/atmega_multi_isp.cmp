@@ -1,0 +1,115 @@
+Cmp-Mod V01 Created by CvPcb (2013-07-07 BZR 4022)-stable date = 2013-10-24 00:42:40
+
+BeginCmp
+TimeStamp = /5266856D;
+Reference = C1;
+ValeurCmp = C;
+IdModule  = C1;
+EndCmp
+
+BeginCmp
+TimeStamp = /52668131;
+Reference = C2;
+ValeurCmp = C;
+IdModule  = ;
+EndCmp
+
+BeginCmp
+TimeStamp = /526684DC;
+Reference = C3;
+ValeurCmp = C;
+IdModule  = ;
+EndCmp
+
+BeginCmp
+TimeStamp = /52668592;
+Reference = C4;
+ValeurCmp = C;
+IdModule  = ;
+EndCmp
+
+BeginCmp
+TimeStamp = /52668567;
+Reference = IC1;
+ValeurCmp = ATMEGA8-P;
+IdModule  = ;
+EndCmp
+
+BeginCmp
+TimeStamp = /526680B4;
+Reference = IC2;
+ValeurCmp = ATMEGA8-P;
+IdModule  = ;
+EndCmp
+
+BeginCmp
+TimeStamp = /526684D6;
+Reference = IC3;
+ValeurCmp = ATMEGA8-P;
+IdModule  = ;
+EndCmp
+
+BeginCmp
+TimeStamp = /5266858C;
+Reference = IC4;
+ValeurCmp = ATMEGA8-P;
+IdModule  = ;
+EndCmp
+
+BeginCmp
+TimeStamp = /5266A6E1;
+Reference = K1;
+ValeurCmp = CONN_3;
+IdModule  = ;
+EndCmp
+
+BeginCmp
+TimeStamp = /5266837D;
+Reference = P1;
+ValeurCmp = CONN_14;
+IdModule  = DIP-14__300;
+EndCmp
+
+BeginCmp
+TimeStamp = /526684F4;
+Reference = P2;
+ValeurCmp = CONN_14;
+IdModule  = DIP-14__300;
+EndCmp
+
+BeginCmp
+TimeStamp = /526685AA;
+Reference = P3;
+ValeurCmp = CONN_14;
+IdModule  = DIP-14__300;
+EndCmp
+
+BeginCmp
+TimeStamp = /52668573;
+Reference = R1;
+ValeurCmp = R;
+IdModule  = R1;
+EndCmp
+
+BeginCmp
+TimeStamp = /5266813E;
+Reference = R2;
+ValeurCmp = R;
+IdModule  = R1;
+EndCmp
+
+BeginCmp
+TimeStamp = /526684E2;
+Reference = R4;
+ValeurCmp = R;
+IdModule  = R1;
+EndCmp
+
+BeginCmp
+TimeStamp = /52668598;
+Reference = R5;
+ValeurCmp = R;
+IdModule  = R1;
+EndCmp
+
+EndListe

@@ -1,0 +1,40 @@
+eeschema (2013-07-07 BZR 4022)-stable  >> Creation date: 2013-10-24 00:38:20
+#Cmp ( sort. wg = Oznaczenie ) (z podelementem)
+| C1         C           ~                   ; ~           ; ~           
+| C2         C           ~                   ; ~           ; ~           
+| C3         C           ~                   ; ~           ; ~           
+| C4         C           ~                   ; ~           ; ~           
+| IC1        ATMEGA8-P                       ; DIL28       ;             
+| IC2        ATMEGA8-P                       ; DIL28       ;             
+| IC3        ATMEGA8-P                       ; DIL28       ;             
+| IC4        ATMEGA8-P                       ; DIL28       ;             
+| K1         CONN_3                          ;             ;             
+| P1         CONN_14                         ;             ;             
+| P2         CONN_14                         ;             ;             
+| P3         CONN_14                         ;             ;             
+| R1         R           ~                   ; ~           ; ~           
+| R2         R           ~                   ; ~           ; ~           
+| R4         R           ~                   ; ~           ; ~           
+| R5         R           ~                   ; ~           ; ~           
+#End Cmp
+
+#Cmp ( sort. wg = Wartość ) (z podelementem)
+| C            C1        Loc /(X=15,240 mm, Y=205,740 mm); ~           ; ~           
+| C            C2        Loc /(X=27,940 mm, Y=99,060 mm); ~           ; ~           
+| C            C3        Loc /(X=167,640 mm, Y=99,060 mm); ~           ; ~           
+| C            C4        Loc /(X=295,910 mm, Y=99,060 mm); ~           ; ~           
+| ATMEGA8-P    IC1       Loc /(X=55,880 mm, Y=198,120 mm); DIL28       ;             
+| ATMEGA8-P    IC2       Loc /(X=68,580 mm, Y=115,570 mm); DIL28       ;             
+| ATMEGA8-P    IC3       Loc /(X=208,280 mm, Y=115,570 mm); DIL28       ;             
+| ATMEGA8-P    IC4       Loc /(X=336,550 mm, Y=115,570 mm); DIL28       ;             
+| CONN_3       K1        Loc /(X=119,380 mm, Y=208,280 mm);             ;             
+| CONN_14      P1        Loc /(X=115,570 mm, Y=60,960 mm);             ;             
+| CONN_14      P2        Loc /(X=255,270 mm, Y=58,420 mm);             ;             
+| CONN_14      P3        Loc /(X=383,540 mm, Y=57,150 mm);             ;             
+| R            R1        Loc /(X=24,130 mm, Y=170,180 mm); ~           ; ~           
+| R            R2        Loc /(X=39,370 mm, Y=81,280 mm); ~           ; ~           
+| R            R4        Loc /(X=179,070 mm, Y=81,280 mm); ~           ; ~           
+| R            R5        Loc /(X=307,340 mm, Y=81,280 mm); ~           ; ~           
+#Koniec Cmp
+
+#Koniec listy
