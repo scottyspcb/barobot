@@ -47,6 +47,8 @@ byte writeRegisters(int deviceAddress, byte length, boolean wait) {
     return 0;
 }
 
+*/
+
 void printHex(byte val){
   int temp =  val;
   Serial.println(temp,HEX);
@@ -60,7 +62,6 @@ void printHex(byte val, boolean newline){
 		Serial.print(temp,HEX);
 	}
 }
-*/
 byte addr_is_used( byte address){    // true jesli wolne
 	Wire.beginTransmission(address);
 	byte ee = Wire.endTransmission();
