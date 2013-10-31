@@ -1,5 +1,4 @@
 #include <WSWire.h>
-#include <i2c_helpers.h>
 
 // to jest master
 #define MY_ADDR 0x01
@@ -9,16 +8,15 @@
 #define RESERVED_I2C_ADDRESS 0x03       // pod tym adresem spawdzam czy linia jest drożna
 int led = 13;
 
+#define BUFFER_LENGTH 10
 volatile byte in_buffer[5];
-
-
-volatile byte input_buffer[3][5] = {{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0}};      // 3 bufory po 5 bajtów
-
+volatile byte input_buffer[BUFFER_LENGTH][5] = {{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0}};      // 6 buforow po 5 bajtów
 volatile byte out_buffer[5];
 volatile boolean was_event = false;
 
 #define LEFT_RESET_PIN 14
 #define UPANELS_MAX_LENGTH  16
+
 byte nextpos = 0;
 boolean scann_order = false;
 byte order[UPANELS_MAX_LENGTH] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
@@ -32,13 +30,34 @@ void setup(){
   Wire.onReceive(receiveEvent);
   pinMode(led, OUTPUT);  
 }
+
 byte pin = 0;
 //byte address = 0x04;
-  byte nDevices=0;
-  byte error=0;
-  
+byte nDevices=0;
+byte error=0;
+
+void check_i2c(){  
+  Wire.beginTransmission(RESERVED_I2C_ADDRESS);
+  byte ee = Wire.endTransmission();     // czy linia jest drozna
+  if(ee == 6 ){    // niedrozna - resetuj i2c
+    Serial.println("RESET WIRE");
+    Wire.begin(MASTER_ADDR);
+    for(byte sa = 0x05; sa <= 110; sa++ ) {       // wyslij wszystkim ze reset
+      out_buffer[0]  = 0x16;
+      writeRegisters(sa, 1, true );
+    }
+    pinMode(LEFT_RESET_PIN, OUTPUT); 
+    digitalWrite(LEFT_RESET_PIN, LOW);       // pin w stanie niskim
+    asm("nop");    // at least 1,5 us
+    // end reset = start first slave
+    pinMode(LEFT_RESET_PIN, INPUT);          // set pin to input
+    digitalWrite(LEFT_RESET_PIN, LOW);       // turn OFF pullup resistors
+  }
+}
+int kk  =1;
 void loop(){
   Serial.println("----------LOOP------");
+  check_i2c();
   x = x + 30;
   if( x == 0 ){
      x = 100;
@@ -65,45 +84,57 @@ void loop(){
       Serial.println("");
       nDevices++;
     }else{
-     Serial.println("ERROR:"+String(addr2)+" / "+String(error));
+     Serial.println("RET: "+String(addr2)+" / "+String(error));
     }
   }
   Serial.println("Devices:" + String(nDevices));
-
-
   scann();
-  digitalWrite(led, HIGH); 
-  delay(100);
-  digitalWrite(led, LOW);
-  delay(100);
-
-  if( input_buffer[0][0] ){
-    proceed( input_buffer[0] );
+  kk++;
+  if(kk>=5){
+    get_order();
+    kk=0;
   }
-  if( input_buffer[1][0] ){
-    proceed( input_buffer[0] );
+  digitalWrite(led, HIGH); 
+  delay(100);
+  digitalWrite(led, LOW);
+  delay(100);
+  for( byte i=0;i<BUFFER_LENGTH;i++){
+    if( input_buffer[i][0] ){
+      proceed( input_buffer[i] );
+      input_buffer[i][0] = 0;
+    }
   }
-  if( input_buffer[2][0] ){
-    proceed( input_buffer[0] );
-  }
-
-/*
-  digitalWrite(led, HIGH); 
-  delay(100);
-  digitalWrite(led, LOW);
-  delay(100);
-
-
-  digitalWrite(led, HIGH); 
-  delay(100);
-  digitalWrite(led, LOW);
-  delay(100);
-
-  digitalWrite(led, HIGH); 
-  delay(100);
-  digitalWrite(led, LOW);
-  delay(100);*/
 }
+
+void scann(){
+  byte error;
+  int nDevices= 0;
+
+  for(byte aaa = 1; aaa < 127; aaa++ ) {
+    Wire.beginTransmission(aaa);
+    error = Wire.endTransmission();
+    if (error == 0){
+      uint16_t readed = i2c_getVersion(aaa);
+      if( (readed>>8) > 0 && (readed & 0xff >0)){
+        i2c_setPWM( aaa, pin, x );
+        unsigned int errors= test_slave( aaa );
+        nDevices++;
+      }else{
+        printHex( aaa, false );
+        Serial.println("- !!! to nie jest urzadzenie i2c");
+      }
+    } else if (error==4){
+      Serial.print("!!!Unknow error at address 0x");
+      printHex(aaa );
+    }else{
+    //  Serial.print("no dev at address 0x");
+    //  printHex(aaa );
+    //  printHex(error );
+    }
+  }
+}
+
+
 
 void proceed( volatile byte buffer[5] ){
   if(buffer[0] == 0x21){    // slave input pin value
@@ -118,9 +149,10 @@ void proceed( volatile byte buffer[5] ){
       byte pos = getOrder(buffer[1]);
       if( pos !=0xFF || (nextpos >= UPANELS_MAX_LENGTH) ){
         scann_order  =  false;
+        Serial.println("koniec order");
       }else{
         printHex( buffer[1], false );
-        Serial.println("- na pozycji (" + String(nextpos) );
+        Serial.println("- na pozycji " + String(nextpos) + "- resetuje nastepny");
         order[nextpos++]  = buffer[1];     // na tm miejscu slave o tym adresie
         i2c_reset_next( buffer[1] );       // reset next (next to slave)
         i2c_run_next( buffer[1] );
@@ -132,51 +164,6 @@ void proceed( volatile byte buffer[5] ){
   }
   buffer[0] = 0;  //ready
 }
-
-void scann(){
-  byte error;
-  int nDevices;
-  nDevices = 0;
-  
-  Wire.beginTransmission(RESERVED_I2C_ADDRESS);
-  byte ee = Wire.endTransmission();     // czy linia jest drozna
-  if(ee == 6 ){    // niedrozna - resetuj i2c
-    Serial.println("RESET WIRE");
-    Wire.begin(MASTER_ADDR);
-  }
-
-  for(byte aaa = 1; aaa < 127; aaa++ ) {
-    Wire.beginTransmission(aaa);
-    error = Wire.endTransmission();
-    if (error == 0){
-      uint16_t readed = i2c_getVersion(aaa);
-      if( (readed>>8) > 0 && (readed & 0xff >0)){
-        i2c_setPWM( aaa, pin, x );
-        unsigned int errors= test_slave( aaa );
-        digitalWrite(led, HIGH); 
-        delay(100);
-        digitalWrite(led, LOW);
-        delay(100);
-        nDevices++;
-      }else{
-        printHex( aaa, false );
-        Serial.println("- !!! to nie jest urzadzenie i2c");
-      }
-
-    } else if (error==4){
-      Serial.print("!!!Unknow error at address 0x");
-      printHex(aaa );
-    }else{
-    //  Serial.print("no dev at address 0x");
-    //  printHex(aaa );
-    //  printHex(error );
-    }
-    
-  }
-
-}
-
-
 
 
 void i2c_resetCycles( byte slave_address ){
@@ -223,16 +210,17 @@ void i2c_run_next( byte slave_address ){			            // Koniec resetu urządze
   writeRegisters(slave_address, 1, true );
 }
 
-
 void get_order(){      // pobierz kolejnosc elementów
       pinMode(LEFT_RESET_PIN, OUTPUT); 
       digitalWrite(LEFT_RESET_PIN, LOW);       // pin w stanie niskim
       asm("nop");    // at least 1,5 us
+      asm("nop");    // at least 1,5 us 
       // end reset = start first slave
       pinMode(LEFT_RESET_PIN, INPUT);          // set pin to input
       digitalWrite(LEFT_RESET_PIN, LOW);       // turn OFF pullup resistors        
       // wait for  here_i_am {0x23,my_address}
       nextpos = 0;
+      Serial.println("get_order");
       scann_order = true;
 }
 
@@ -293,7 +281,7 @@ unsigned int test_slave(byte slave_address){
 //  printHex( slave_address, false );
 //  Serial.println("- Test_slave start" );
   byte cntr1 = 5;
-  const byte c2_max = 30;
+  const byte c2_max = 10;
   unsigned int cc = cntr1 * c2_max;
   byte res = 0;
   unsigned int errors= 0;
@@ -310,7 +298,6 @@ unsigned int test_slave(byte slave_address){
    //  delay(10);
     }    
   }
-
   printHex( slave_address, false );
   Serial.println("- Test_slave (" + String(cc) + "): " + String(errors));
   return errors;
@@ -353,35 +340,35 @@ uint16_t i2c_getAnalogValue( byte slave_address, byte pin ){ // Pobierz analogow
 }
 
 void receiveEvent(int howMany){
+  if(!howMany){
+     return;
+  }
   byte cnt = 0;
-  volatile byte (*buffer)[5];
-  if(input_buffer[0][0] == 0 ){
-    buffer  = (&input_buffer[0]);
-  }else if(input_buffer[1][0] == 0 ){
-    buffer  = (&input_buffer[1]);
-  }else{
-    buffer  = (&input_buffer[2]);
+  volatile byte (*buffer) = 0;
+  Serial.print("input " );
+  for( byte a = 0; a < BUFFER_LENGTH; a++ ){
+    if(input_buffer[a][0] == 0 ){
+      buffer = (&input_buffer[a][0]); 
+      while( Wire.available()){ // loop through all but the last
+        byte w =  Wire.read(); // receive byte as a character
+        *(buffer +(cnt++)) = w;
+        printHex(w, false ); 
+      }
+      Serial.println(""); 
+      return;
+    }
   }
-  while( Wire.available()){ // loop through all but the last  
-    *buffer[cnt++] = Wire.read(); // receive byte as a character
-  }
+  Serial.println(" - pelno"); 
 }
-
 
 byte getOrder( byte address ){
     for(byte i =0; i<nextpos;i++){
       if(order[i] == address){      // powtórzono
-        printHex( address, false );
-        Serial.println("- powtozony" );
         return i;
       }
     }
     return 0xFF;
 }
-  
-  
-
-
 
 void printHex(byte val){
   int temp =  val;  

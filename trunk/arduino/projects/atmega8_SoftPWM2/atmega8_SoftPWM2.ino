@@ -17,7 +17,7 @@ typedef struct{
   uint8_t timeup;      // Czas trwania DOWN
 } PWMChannel;
 
-#define LEDS 8
+#define LEDS 12
 volatile PWMChannel _pwm_channels[LEDS]= {{4,0,0,0,0,0},{5,0,0,0,0,0},{6,0,0,0,0,0},{7,0,0,0,0,0},{8,0,0,0,0,0},{9,0,0,0,0,0},{16,0,0,0,0,0},{17,0,0,0,0,0}};
 volatile uint8_t _isr_count = 0xff;
 volatile boolean pwmnow= false;

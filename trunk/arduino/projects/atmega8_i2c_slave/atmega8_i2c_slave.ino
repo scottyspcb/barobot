@@ -7,7 +7,7 @@
 // ATMEL ATMEGA8 / ARDUINO
 //
 //                  +-\/-+
-//            PC6  1|    |28  PC5 (A5/ D19)
+//   s        PC6  1|    |28  PC5 (A5/ D19)
 //      (D0)  PD0  2|    |27  PC4 (A4/ D18)
 //      (D1)  PD1  3|    |26  PC3 (A3/ D17)    L
 //      (D2)  PD2  4|    |25  PC2 (A2/ D16)    L
@@ -88,9 +88,9 @@ void loop() {
   mil = millis();
   	if( mil > milis100 + 4000 ){    // co 4 sek
                 send_pin_value( MY_POKE_PIN, diddd ? 1 : 0 );
-//                diddd = !diddd;
+                diddd = !diddd;
   		milis100 = mil;
-//                digitalWrite(13, diddd);
+                digitalWrite(8, diddd);
   	}
   /*
   int sw = analogRead( A0 );
@@ -124,6 +124,9 @@ void loop() {
 }
 
 void receiveEvent(int howMany){
+  if(!howMany){
+     return;
+  }
   byte cntr = 0;
   byte aa = 0;
   while( Wire.available()){ // loop through all but the last  
@@ -135,6 +138,7 @@ void receiveEvent(int howMany){
   if ( sss == 1 ){      // najstarsze 8 bitów RÓWNE 1 to wykonaj w głównym wątku
       use_local = true;  
   }
+
 }
 
 void requestEvent(){ 
@@ -173,14 +177,21 @@ void send_poke(){
 }
 static void send_here_i_am(){
   byte ttt[2] = {0x23,my_address};
-  send(ttt,2);
-//  Serial.println("hello "+ String( my_address ));  
+  send(ttt,2); 
 }
 void send( byte buffer[], byte ss ){
-  Wire.beginTransmission(MASTER_ADDR);  
-  Wire.write(buffer,ss);
-  byte error = Wire.endTransmission();
-//  Serial.println("out "+ String( my_address ) +" / "+ String( pin ) +"/"+ String(value)+ "/e:" + String(error));
+  byte ret = 1;
+  byte licznik = 250;
+  while( ret && licznik++ ){    // prubuj 5 razy, zakoncz gdy error = 0;
+    Wire.beginTransmission(MASTER_ADDR);  
+    Wire.write(buffer,ss);
+    ret = Wire.endTransmission();
+//    Serial.print("send"+String(licznik) +": " + String( my_address ) +": ");
+//    printHex(buffer[0], false ); 
+//    Serial.print(", ");
+//    printHex(buffer[1], false ); 
+//    Serial.println(" / "+ String(ret) );  
+  }
 }
 
 
