@@ -4,54 +4,6 @@
 #include <avr/eeprom.h>
 
 
-// ATMEL ATMEGA8 / ARDUINO
-//
-//                  +-\/-+
-//   s        PC6  1|    |28  PC5 (A5/ D19)
-//      (D0)  PD0  2|    |27  PC4 (A4/ D18)
-//      (D1)  PD1  3|    |26  PC3 (A3/ D17)    L
-//      (D2)  PD2  4|    |25  PC2 (A2/ D16)    L
-//      (D3)  PD3  5|    |24  PC1 (A1/ D15)
-//   L  (D4)  PD4  6|    |23  PC0 (A0/ D14)
-//            VCC  7|    |22  GND
-//            GND  8|    |21  AREF
-//            PB6  9|    |20  AVCC
-//            PB7 10|    |19  PB5 (D13)
-//   L  (D5)  PD5 11|    |18  PB4 (D12)
-//   L  (D6)  PD6 12|    |17  PB3 (D11) PWM
-//   L  (D7)  PD7 13|    |16  PB2 (D10) PWM
-//   L  (D8)  PB0 14|    |15  PB1 (D9) PWM      L
-//                  +----+
-
-// pin01  arduino --  PC6	RESET           - CONN1
-// pin02  arduino 00  PD0	RX		- CONN2
-// pin03  arduino 01  PD1	TX		- CONN2
-// pin04  arduino 02  PD2	INT0		- SWITCH
-// pin05  arduino 03  PD3	INT1		- CONN1
-// pin06  arduino 04  PD4		        -
-// pin07  arduino --  VCC
-// pin08  arduino --  GND
-// pin09  arduino ??  PB6	XTAL1		- 
-// pin10  arduino ??  PB7	XTAL2		- 
-// pin11  arduino 05  PD5                       - LED R TOP
-// pin12  arduino 06  PD6                       - LED G TOP
-// pin13  arduino 07  PD7                       - LED B TOP
-// pin14  arduino 08  PB0                       - LED W TOP
-
-// pin15  arduino 09  PB1			- 
-// pin16  arduino 10  PB2	SS		- 
-// pin17  arduino 11  PB3	MOSI		- CONN1
-// pin18  arduino 12  PB4	MISO		- CONN1
-// pin19  arduino 13  PB5	SCK		- CONN1
-// pin20  arduino --  AVCC
-// pin21  arduino --  AREF
-// pin22  arduino --  GND
-// pin23  arduino A0/D14  PC0	ADC0		- 
-// pin24  arduino A1/D15  PC1	ADC1		- 
-// pin25  arduino A2/D16  PC2	ADC2		- 
-// pin26  arduino A3/D17  PC3	ADC3		- 
-// pin27  arduino A4/D18  PC4	ADC4	SDA	- CONN1
-// pin28  arduino A5/D19  PC5	ADC5	SCL	- CONN1
 
 #define LEFT_RESET_PIN 14
 #define MY_POKE_PIN 5
