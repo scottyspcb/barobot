@@ -1,5 +1,4 @@
-// sterowanie plusem? false gdy sterowaniem minusem
-#define COMMON_ANODE true
+#include <barobot_common.h>
 
 void PWMSet(uint8_t pin, uint8_t value);
 void PWMEnd(uint8_t pin);
@@ -17,8 +16,8 @@ typedef struct{
   uint8_t timeup;      // Czas trwania DOWN
 } PWMChannel;
 
-#define LEDS 12
-volatile PWMChannel _pwm_channels[LEDS]= {{4,0,0,0,0,0},{5,0,0,0,0,0},{6,0,0,0,0,0},{7,0,0,0,0,0},{8,0,0,0,0,0},{9,0,0,0,0,0},{16,0,0,0,0,0},{17,0,0,0,0,0}};
+
+volatile PWMChannel _pwm_channels[COUNT_UPANEL_ONBOARD_LED]= {{4,0,0,0,0,0},{5,0,0,0,0,0},{6,0,0,0,0,0},{7,0,0,0,0,0},{8,0,0,0,0,0},{9,0,0,0,0,0},{16,0,0,0,0,0},{17,0,0,0,0,0}};
 volatile uint8_t _isr_count = 0xff;
 volatile boolean pwmnow= false;
 
@@ -29,7 +28,7 @@ volatile uint8_t checktime= 0;
 
 ISR(TIMER2_COMP_vect){
   if(pwmnow){
-    uint8_t i=LEDS;
+    uint8_t i=COUNT_UPANEL_ONBOARD_LED;
     pwmnow=false;
     if(++_isr_count == 0){
       if( checktime /* && ++_timediv==0*/ ){
@@ -62,7 +61,7 @@ ISR(TIMER2_COMP_vect){
         }
         led->current_pwm = newvalue;
         if (newvalue > 0){                  // set the pin high (if not 0) // don't set if current_pwm == 0
-          #if COMMON_ANODE
+          #if UPANEL_COMMON_ANODE
            *(led->outport) |= led->pinmask;            // turn on the channel (set VCC)
          #else
            *(led->outport) &= ~(led->pinmask);          // turn on the channel (set GND) 
@@ -72,7 +71,7 @@ ISR(TIMER2_COMP_vect){
     }else{
       while(i--){
        if( _pwm_channels[i].current_pwm == _isr_count) {                          // if it's a valid pin // if we have hit the width
-            #if COMMON_ANODE
+            #if UPANEL_COMMON_ANODE
              *_pwm_channels[i].outport &= ~(_pwm_channels[i].pinmask);          // turn off the channel (set GND)
            #else
              *_pwm_channels[i].outport |= _pwm_channels[i].pinmask;              // turn off the channel (set VCC)
@@ -87,7 +86,7 @@ ISR(TIMER2_COMP_vect){
 
 void PWM(uint8_t pin, uint8_t pwmup, uint8_t pwmdown, uint8_t timeup, uint8_t timedown, uint8_t fadeup, uint8_t fadedown){
   if(pin == 0xff ){
-    uint8_t i=LEDS;
+    uint8_t i=COUNT_UPANEL_ONBOARD_LED;
     while(i--){    
      _pwm_channels[i].fadeup =  fadeup; 
      _pwm_channels[i].fadedown =  fadedown;
@@ -108,7 +107,7 @@ void PWM(uint8_t pin, uint8_t pwmup, uint8_t pwmdown, uint8_t timeup, uint8_t ti
 
 void PWMSet(uint8_t pin, uint8_t up){
   if(pin == 0xff ){
-    uint8_t i=LEDS;
+    uint8_t i=COUNT_UPANEL_ONBOARD_LED;
     while(i--){
       _pwm_channels[i].pwmup =  up;
     }
@@ -119,7 +118,7 @@ void PWMSet(uint8_t pin, uint8_t up){
 
 void PWMSetFadeTime(uint8_t pin, uint8_t up, uint8_t down){
   if(pin == 0xff ){
-    uint8_t i=LEDS;
+    uint8_t i=COUNT_UPANEL_ONBOARD_LED;
     while(i--){
       _pwm_channels[i].fadeup =  up;
       _pwm_channels[i].fadedown = down;
@@ -143,7 +142,7 @@ void setup(){
     _pwm_channels[i].outport = portOutputRegister(digitalPinToPort(pin));
     _pwm_channels[i].pinmask = digitalPinToBitMask(pin);
 //  pinMode(pin, OUTPUT);
-    #if COMMON_ANODE
+    #if UPANEL_COMMON_ANODE
      *_pwm_channels[i].outport &= ~(_pwm_channels[i].pinmask);          // turn off the channel (set GND)
     #else
      *_pwm_channels[i].outport |= _pwm_channels[i].pinmask;              // turn off the channel (set VCC)
@@ -151,12 +150,12 @@ void setup(){
   }
      */ 
 
-  for (uint8_t i = 0; i < LEDS; ++i){
+  for (uint8_t i = 0; i < COUNT_UPANEL_ONBOARD_LED; ++i){
     uint8_t pin = _pwm_channels[i].pin;
     _pwm_channels[i].outport = portOutputRegister(digitalPinToPort(pin));
     _pwm_channels[i].pinmask = digitalPinToBitMask(pin);
 //  pinMode(pin, OUTPUT);
-    #if COMMON_ANODE
+    #if UPANEL_COMMON_ANODE
      *_pwm_channels[i].outport &= ~(_pwm_channels[i].pinmask);          // turn off the channel (set GND)
     #else
      *_pwm_channels[i].outport |= _pwm_channels[i].pinmask;              // turn off the channel (set VCC)

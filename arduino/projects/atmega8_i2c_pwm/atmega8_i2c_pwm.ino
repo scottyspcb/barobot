@@ -1,18 +1,24 @@
-/*
-Komponenty:
+#include <WSWire.h>
+#include <i2c_helpers.h>
 
-HALL_X
-HALL_Y
-
-SERVO_Y
-SERVO_Z
-
-WEIGHT_SENSOR
-NEXT_RESET
-I2C
-
-*/
-
+// ATMEL ATMEGA8 / ARDUINO
+//
+//                  +-\/-+
+//            PC6  1|    |28  PC5 (A5/ D19)
+//      (D0)  PD0  2|    |27  PC4 (A4/ D18)
+//      (D1)  PD1  3|    |26  PC3 (A3/ D17)    L
+//      (D2)  PD2  4|    |25  PC2 (A2/ D16)    L
+//      (D3)  PD3  5|    |24  PC1 (A1/ D15)
+//   L  (D4)  PD4  6|    |23  PC0 (A0/ D14)
+//            VCC  7|    |22  GND
+//            GND  8|    |21  AREF
+//            PB6  9|    |20  AVCC
+//            PB7 10|    |19  PB5 (D13)
+//   L  (D5)  PD5 11|    |18  PB4 (D12)
+//   L  (D6)  PD6 12|    |17  PB3 (D11) PWM
+//   L  (D7)  PD7 13|    |16  PB2 (D10) PWM
+//   L  (D8)  PB0 14|    |15  PB1 (D9) PWM      L
+//                  +----+
 
 // pin01  arduino --  PC6	RESET           - CONN1
 // pin02  arduino 00  PD0	RX		- CONN2
@@ -24,49 +30,33 @@ I2C
 // pin08  arduino --  GND
 // pin09  arduino ??  PB6	XTAL1		- 
 // pin10  arduino ??  PB7	XTAL2		- 
-// pin11  arduino 05  PD5                       - 
-// pin12  arduino 06  PD6                       -
-// pin13  arduino 07  PD7                       -
-// pin14  arduino 08  PB0                       - 
+// pin11  arduino 05  PD5                       - LED R TOP
+// pin12  arduino 06  PD6                       - LED G TOP
+// pin13  arduino 07  PD7                       - LED B TOP
+// pin14  arduino 08  PB0                       - LED W TOP
 
-// pin15  arduino 09  PB1			- SERVO_X
-// pin16  arduino 10  PB2	SS		- SERVO_Y
+// pin15  arduino 09  PB1			- 
+// pin16  arduino 10  PB2	SS		- 
 // pin17  arduino 11  PB3	MOSI		- CONN1
 // pin18  arduino 12  PB4	MISO		- CONN1
 // pin19  arduino 13  PB5	SCK		- CONN1
 // pin20  arduino --  AVCC
 // pin21  arduino --  AREF
 // pin22  arduino --  GND
-// pin23  arduino A0/D14  PC0	ADC0		- HALL_X 
-// pin24  arduino A1/D15  PC1	ADC1		- HALL_Y 
-// pin25  arduino A2/D16  PC2	ADC2		- WEIGHT
+// pin23  arduino A0/D14  PC0	ADC0		- 
+// pin24  arduino A1/D15  PC1	ADC1		- 
+// pin25  arduino A2/D16  PC2	ADC2		- 
 // pin26  arduino A3/D17  PC3	ADC3		- 
 // pin27  arduino A4/D18  PC4	ADC4	SDA	- CONN1
 // pin28  arduino A5/D19  PC5	ADC5	SCL	- CONN1
 
-#include <WSWire.h>
-#include <i2c_helpers.h>
-#include <barobot_common.h>
-#include <avr/eeprom.h>
-#include <Servo.h>
+#define LEFT_RESET_PIN 14
+#define MY_POKE_PIN 5
 
-
-unsigned int typical_zero = 512;
-unsigned int last_max = 0;
-unsigned int last_min = 0;
-
-
-Servo servoY;
-Servo servoZ;
-unsigned int servo_y_last = 0;
-unsigned int servo_z_last = 0;
-
-unsigned int servo_y_max_pos = 0;
-unsigned int servo_y_min_pos = 0;
-
-unsigned int servo_z_max_pos = 0;
-unsigned int servo_z_min_pos = 0;
-
+// to jest slave
+#define VERSION 0x01
+#define DEVICE_TYPE 0x10
+#define MASTER_ADDR 0x01
 
 volatile bool use_local = false;
 volatile byte in_buffer1[5];
@@ -74,8 +64,10 @@ volatile byte in_buffer1[5];
 void setup(){
 //  Serial.begin(38400);
 //  Serial.begin(115200);
-  my_address = I2C_ADR_TROLLEY;
-  Wire.begin(I2C_ADR_TROLLEY);
+  if(!init_i2c()){
+//    show_error(5 );
+  }
+//  pinMode(MY_POKE_PIN, INPUT);
   Wire.onReceive(receiveEvent);
   Wire.onRequest(requestEvent);
   send_here_i_am();  // wyslij ze oto jestem
@@ -87,9 +79,9 @@ boolean diddd = false;
 
 void loop() {
   mil = millis();
-
   if( mil > milis100 + 4000 ){    // co 4 sek
-        milis100 = mil;
+        send_pin_value( MY_POKE_PIN, diddd ? 1 : 0 );
+  milis100 = mil;
   }
 
     if( use_local&& in_buffer1[0] ){          // komendy bez odpowiedzi tutaj:
@@ -98,6 +90,17 @@ void loop() {
            // setPWM(in_buffer1[1],in_buffer1[2]);
  //           leds[in_buffer1[1]].wypelnienie = in_buffer1[2];
       }else if( command == 0x10 ){          // reset
+      }else if( command == 0x12 ){          // set time
+      }else if( command == 0x13 ){          // fade
+      }else if( command == 0x14 ){          // set dir
+      }else if( command == 0x15 ){          // set output
+      }else if( command == 0x16 ){          // Resetuj urządzenie obok
+        pinMode(LEFT_RESET_PIN, OUTPUT); 
+        digitalWrite(LEFT_RESET_PIN, LOW);  // pin w stanie niskim
+      }else if( command == 0x17 ){          // Koniec resetu urządzenia obok, ustaw pin w stan wysokiej impedancji
+        pinMode(LEFT_RESET_PIN, INPUT);     // set pin to input
+        digitalWrite(LEFT_RESET_PIN, LOW);  // turn OFF pullup resistors
+      }else if( command == 0x1E ){          // zmien address
       }
       in_buffer1[0] = 0;
       use_local = false;
@@ -131,7 +134,7 @@ void requestEvent(){
         byte ttt[1]    = {value ? 0xff:0xff};
         Wire.write(ttt,1);*/
     }else if( command == 0x29 ){          // TEPE + VERSION       3 bajty
-        byte ttt[2] = {TROLLEY_DEVICE_TYPE,TROLLEY_VERSION};
+        byte ttt[2] = {VERSION,DEVICE_TYPE};
         Wire.write(ttt,2);
     }else if( command == 0x2A ){    // return xor
         byte res = in_buffer1[1] ^ in_buffer1[2];
@@ -148,7 +151,10 @@ static void send_pin_value( byte pin, byte value ){
   send(ttt,4);
  // Serial.println("out "+ String( my_address ) +" / "+ String( pin ) +"/"+ String(value));
 }
-
+void send_poke(){
+  byte ttt[2] = {0x22,my_address};
+  send(ttt,2);
+}
 static void send_here_i_am(){
   byte ttt[2] = {0x23,my_address};
   send(ttt,2);
@@ -162,4 +168,30 @@ void send( byte buffer[], byte ss ){
 }
 
 
+/*
+void show_error( byte error_code ){    // mrygaj czerwonym tyle razy
+  while(true){
+    while(--error_code){
+      digitalWrite(13, 1);
+      delay2(100);    
+      digitalWrite(13, 0);
+      delay2(100);
+    }
+  }
+}*/
+
+/*
+void serialEvent(){				       // FUNKCJA WBUDOWANA - zbieraj dane z serial0
+	while (Serial.available()) {    // odczytuj gdy istnieja dane i poprzednie zostaly odczytane
+		char inChar = (char)Serial.read(); 
+                Serial.write(inChar);
+	}
+}*/
+
+/*
+void setPWM(byte pin, byte level){
+    leds[pin].wypelnienie = level;
+    Serial.println("setPWM:" + String(pin) + "/" + String(level) );
+}
+*/
 
