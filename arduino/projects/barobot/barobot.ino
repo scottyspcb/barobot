@@ -7,9 +7,8 @@
 #include <I2C_Send.h>
 //#include "Timer.h"
 
-#if I2C_ENABLED
 #include <Wire.h>
-#endif
+
 
 // to jest master
 #define I2C_ADDR 0x01
@@ -830,6 +829,15 @@ byte i2c_buffer[I2C_BUFF_LENGTH];
 
 
 /*
+// tyle czekaj na ustawienie się adresu na multiplekserze
+#define MULTI_ADDR_TIME 10
+// czas pomiedzy czytaniem kolejnej butelki
+#define MULTI_READ_TIME 10
+// ile razy czytać jedną butelkę (jako potęga liczby 2)
+#define MULTI_READ_COUNT 8
+// ile razy czytać jedną ciezar szklanki (jako potęga liczby 2)
+#define WAGA_READ_COUNT 4
+
 unsigned long read_butelka(byte numer){
 	digitalWrite(PIN_MADDR0, bitRead(numer,0) );      //   // Ustaw numer na muxach, wystaw adres
 	digitalWrite(PIN_MADDR1, bitRead(numer,1) );

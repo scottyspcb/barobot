@@ -1,3 +1,4 @@
+#define IS_UPANEL true
 #include <barobot_common.h>
 
 void PWMSet(uint8_t pin, uint8_t value);
@@ -17,7 +18,16 @@ typedef struct{
 } PWMChannel;
 
 
-volatile PWMChannel _pwm_channels[COUNT_UPANEL_ONBOARD_LED]= {{4,0,0,0,0,0},{5,0,0,0,0,0},{6,0,0,0,0,0},{7,0,0,0,0,0},{8,0,0,0,0,0},{9,0,0,0,0,0},{16,0,0,0,0,0},{17,0,0,0,0,0}};
+volatile PWMChannel _pwm_channels[COUNT_UPANEL_ONBOARD_LED]= {
+{PIN_UPANEL_LED0_NUM,0,0,0,0,0},
+{PIN_UPANEL_LED1_NUM,0,0,0,0,0},
+{PIN_UPANEL_LED2_NUM,0,0,0,0,0},
+{PIN_UPANEL_LED3_NUM,0,0,0,0,0},
+{PIN_UPANEL_LED4_NUM,0,0,0,0,0},
+{PIN_UPANEL_LED5_NUM,0,0,0,0,0},
+{PIN_UPANEL_LED6_NUM,0,0,0,0,0},
+{PIN_UPANEL_LED7_NUM,0,0,0,0,0}};
+
 volatile uint8_t _isr_count = 0xff;
 volatile boolean pwmnow= false;
 
@@ -228,6 +238,35 @@ void loop() {
 
 
 /*
+
+void h_to_rgb(byte h, color* c){
+    byte hd = h / 42;   // 42 == 252/6,  252 == H_MAX
+    byte hi = hd % 6;   // gives 0-5
+    byte f = h % 42; 
+    byte fs = f * 6;
+    switch( hi ) {
+        case 0:
+            c->r = 252;     c->g = fs;      c->b = 0;
+           break;
+        case 1:
+            c->r = 252-fs;  c->g = 252;     c->b = 0;
+            break;
+        case 2:
+            c->r = 0;       c->g = 252;     c->b = fs;
+            break;
+        case 3:
+            c->r = 0;       c->g = 252-fs;  c->b = 252;
+            break;
+        case 4:
+            c->r = fs;      c->g = 0;       c->b = 252;
+            break;
+        case 5:
+            c->r = 252;     c->g = 0;       c->b = 252-fs;
+            break;
+    }
+}
+
+
 TCNT2 = 0;
  _isr_count = 0xff;
 

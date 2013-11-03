@@ -1,3 +1,4 @@
+#define IS_TROLLEY true
 /*
 Komponenty:
 
@@ -12,8 +13,6 @@ NEXT_RESET
 I2C
 
 */
-
-
 // pin01  arduino --  PC6	RESET           - CONN1
 // pin02  arduino 00  PD0	RX		- CONN2
 // pin03  arduino 01  PD1	TX		- CONN2
@@ -50,14 +49,13 @@ I2C
 #include <avr/eeprom.h>
 #include <Servo.h>
 
-
 unsigned int typical_zero = 512;
 unsigned int last_max = 0;
 unsigned int last_min = 0;
 
-
 Servo servoY;
 Servo servoZ;
+
 unsigned int servo_y_last = 0;
 unsigned int servo_z_last = 0;
 
@@ -155,7 +153,7 @@ static void send_here_i_am(){
 //  Serial.println("hello "+ String( my_address ));  
 }
 void send( byte buffer[], byte ss ){
-  Wire.beginTransmission(MASTER_ADDR);  
+  Wire.beginTransmission(I2C_ADR_MAINBOARD);  
   Wire.write(buffer,ss);
   byte error = Wire.endTransmission();
 //  Serial.println("out "+ String( my_address ) +" / "+ String( pin ) +"/"+ String(value)+ "/e:" + String(error));

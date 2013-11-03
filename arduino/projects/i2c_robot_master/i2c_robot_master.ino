@@ -1,11 +1,7 @@
+#define IS_MAINBOARD true
 #include <WSWire.h>
+#include <barobot_common.h>
 
-// to jest master
-#define MY_ADDR 0x01
-#define MASTER_ADDR 0x01
-#define VERSION 0x01
-#define DEVICE_TYPE 0x12
-#define RESERVED_I2C_ADDRESS 0x03       // pod tym adresem spawdzam czy linia jest drożna
 int led = 13;
 
 #define BUFFER_LENGTH 10
@@ -14,19 +10,16 @@ volatile byte input_buffer[BUFFER_LENGTH][5] = {{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0
 volatile byte out_buffer[5];
 volatile boolean was_event = false;
 
-#define LEFT_RESET_PIN 14
-#define UPANELS_MAX_LENGTH  16
-
 byte nextpos = 0;
 boolean scann_order = false;
-byte order[UPANELS_MAX_LENGTH] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+byte order[COUNT_UPANEL] = {0,0,0,0,0,0,0,0,0,0,0};
 
 byte x = 0;
 byte y = 10;
 
 void setup(){
   Serial.begin(115200);
-  Wire.begin(MASTER_ADDR);
+  Wire.begin(I2C_ADR_MAINBOARD);
   Wire.onReceive(receiveEvent);
   pinMode(led, OUTPUT);  
 }
@@ -37,21 +30,21 @@ byte nDevices=0;
 byte error=0;
 
 void check_i2c(){  
-  Wire.beginTransmission(RESERVED_I2C_ADDRESS);
+  Wire.beginTransmission(I2C_ADR_RESERVED);
   byte ee = Wire.endTransmission();     // czy linia jest drozna
   if(ee == 6 ){    // niedrozna - resetuj i2c
     Serial.println("RESET WIRE");
-    Wire.begin(MASTER_ADDR);
+    Wire.begin(I2C_ADR_MAINBOARD);
     for(byte sa = 0x05; sa <= 110; sa++ ) {       // wyslij wszystkim ze reset
       out_buffer[0]  = 0x16;
       writeRegisters(sa, 1, true );
     }
-    pinMode(LEFT_RESET_PIN, OUTPUT); 
-    digitalWrite(LEFT_RESET_PIN, LOW);       // pin w stanie niskim
+    pinMode(PIN_MAINBOARD_LEFT_RESET, OUTPUT); 
+    digitalWrite(PIN_MAINBOARD_LEFT_RESET, LOW);       // pin w stanie niskim
     asm("nop");    // at least 1,5 us
     // end reset = start first slave
-    pinMode(LEFT_RESET_PIN, INPUT);          // set pin to input
-    digitalWrite(LEFT_RESET_PIN, LOW);       // turn OFF pullup resistors
+    pinMode(PIN_MAINBOARD_LEFT_RESET, INPUT);          // set pin to input
+    digitalWrite(PIN_MAINBOARD_LEFT_RESET, LOW);       // turn OFF pullup resistors
   }
 }
 int kk  =1;
@@ -147,7 +140,7 @@ void proceed( volatile byte buffer[5] ){
     boolean used = false;
     if(scann_order){
       byte pos = getOrder(buffer[1]);
-      if( pos !=0xFF || (nextpos >= UPANELS_MAX_LENGTH) ){
+      if( pos !=0xFF || (nextpos >= COUNT_UPANEL) ){
         scann_order  =  false;
         Serial.println("koniec order");
       }else{
@@ -211,13 +204,13 @@ void i2c_run_next( byte slave_address ){			            // Koniec resetu urządze
 }
 
 void get_order(){      // pobierz kolejnosc elementów
-      pinMode(LEFT_RESET_PIN, OUTPUT); 
-      digitalWrite(LEFT_RESET_PIN, LOW);       // pin w stanie niskim
+      pinMode(PIN_MAINBOARD_LEFT_RESET, OUTPUT); 
+      digitalWrite(PIN_MAINBOARD_LEFT_RESET, LOW);       // pin w stanie niskim
       asm("nop");    // at least 1,5 us
       asm("nop");    // at least 1,5 us 
       // end reset = start first slave
-      pinMode(LEFT_RESET_PIN, INPUT);          // set pin to input
-      digitalWrite(LEFT_RESET_PIN, LOW);       // turn OFF pullup resistors        
+      pinMode(PIN_MAINBOARD_LEFT_RESET, INPUT);          // set pin to input
+      digitalWrite(PIN_MAINBOARD_LEFT_RESET, LOW);       // turn OFF pullup resistors        
       // wait for  here_i_am {0x23,my_address}
       nextpos = 0;
       Serial.println("get_order");
@@ -370,18 +363,6 @@ byte getOrder( byte address ){
     return 0xFF;
 }
 
-void printHex(byte val){
-  int temp =  val;  
-  Serial.println(temp,HEX);
-}
-void printHex(byte val, boolean newline){
-  int temp =  val;
-  if(newline){
-    Serial.println(temp,HEX);
-  }else{
-    Serial.print(temp,HEX);
-  }
-}
 
 // Funkcja odczytywania N rejestrow
 byte readRegisters(byte deviceAddress, byte length){
@@ -437,6 +418,18 @@ byte writeRegisters(int deviceAddress, byte length, boolean wait) {
 
 
 
+void printHex(byte val){
+  int temp =  val;  
+  Serial.println(temp,HEX);
+}
+void printHex(byte val, boolean newline){
+  int temp =  val;
+  if(newline){
+    Serial.println(temp,HEX);
+  }else{
+    Serial.print(temp,HEX);
+  }
+}
 
 
 /*
@@ -476,6 +469,8 @@ byte GetRegisters(byte deviceAddress, byte command, byte length){
   
   return 1;
 }
+
+
 byte readRegisterTemp(int deviceAddress, byte command){
     Wire.beginTransmission(deviceAddress);
     Wire.write(command); // register to read

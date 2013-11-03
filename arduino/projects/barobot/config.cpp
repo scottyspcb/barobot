@@ -248,27 +248,12 @@ const int PIN49 = 49;
 // ktory to LED od szklanyki (jeden z powyzszych)
 #define STATUS_GLASS_LED STATUS_LED05
 
-// tyle czekaj na ustawienie się adresu na multiplekserze
-#define MULTI_ADDR_TIME 10
-// czas pomiedzy czytaniem kolejnej butelki
-#define MULTI_READ_TIME 10
-// ile razy czytać jedną butelkę (jako potęga liczby 2)
-#define MULTI_READ_COUNT 8
-// ile razy czytać jedną ciezar szklanki (jako potęga liczby 2)
-#define WAGA_READ_COUNT 4
-
 // domyslen ustawienie mocy silnika Z
 // pozycja jechania do góry i czas jechania
 #define SERVOZ_UP_POS 2200
 
 // pozycja jechania w dół i czas jechania
 #define SERVOZ_DOWN_POS 900
-
-// pozycja do której zajechac robiąc PAC
-//#define SERVOZ_PAC_POS 1900
-//#define SERVOZ_PAC_TIME_WAIT 400    // po zjechaniu na dół tyle czekaj przed zrobieniem PAC
-//#define SERVOZ_PAC_TIME_UP 300      // czasu tyle jedz na gore
-//#define SERVOZ_PAC_TIME_DOWN 400    // czasu tyle jedz na dół
 
 // domyslnie ustawienie mocy silnikow Xy
 #if SERVOX4PIN==true
@@ -308,9 +293,3 @@ const int PIN49 = 49;
 #define STEPPERX_ADD_Y_LOW 3
 #define STEPPERX_ADD_Y_HIGH 3
 */
-
-// ile razy odczytać wage zanim stwierdze ze nie ma szklanki
-#define WAGA_REPEAT_COUNT 5
-// minimalna waga szklanki
-
-// INNE
