@@ -1,21 +1,10 @@
+#define IS_UPANEL true
 #include <WSWire.h>
-#include <arduino.h>
 #include <i2c_helpers.h>
-#include <avr/eeprom.h>
-
-
-
-#define LEFT_RESET_PIN 14
-#define MY_POKE_PIN 5
-
-// to jest slave
-#define VERSION 0x01
-#define DEVICE_TYPE 0x10
-#define MASTER_ADDR 0x01
+#include <barobot_common.h>
 
 volatile bool use_local = false;
 volatile byte in_buffer1[5];
-//byte i8 = LEDSIZE;
 
 void setup(){
   pinMode(8, OUTPUT);
@@ -39,7 +28,7 @@ boolean diddd = false;
 void loop() {
   mil = millis();
   	if( mil > milis100 + 4000 ){    // co 4 sek
-                send_pin_value( MY_POKE_PIN, diddd ? 1 : 0 );
+                send_pin_value( PIN_UPANEL_POKE, diddd ? 1 : 0 );
                 diddd = !diddd;
   		milis100 = mil;
                 digitalWrite(8, diddd);
@@ -63,11 +52,11 @@ void loop() {
       }else if( command == 0x14 ){          // set dir
       }else if( command == 0x15 ){          // set output
       }else if( command == 0x16 ){          // Resetuj urządzenie obok
-        pinMode(LEFT_RESET_PIN, OUTPUT); 
-        digitalWrite(LEFT_RESET_PIN, LOW);  // pin w stanie niskim
+        pinMode(PIN_UPANEL_LEFT_RESET, OUTPUT); 
+        digitalWrite(PIN_UPANEL_LEFT_RESET, LOW);  // pin w stanie niskim
       }else if( command == 0x17 ){          // Koniec resetu urządzenia obok, ustaw pin w stan wysokiej impedancji
-        pinMode(LEFT_RESET_PIN, INPUT);     // set pin to input
-        digitalWrite(LEFT_RESET_PIN, LOW);  // turn OFF pullup resistors
+        pinMode(PIN_UPANEL_LEFT_RESET, INPUT);     // set pin to input
+        digitalWrite(PIN_UPANEL_LEFT_RESET, LOW);  // turn OFF pullup resistors
       }else if( command == 0x1E ){          // zmien address
       }
       in_buffer1[0] = 0;
@@ -106,7 +95,7 @@ void requestEvent(){
         byte ttt[1]    = {value ? 0xff:0xff};
         Wire.write(ttt,1);*/
     }else if( command == 0x29 ){          // TEPE + VERSION       3 bajty
-        byte ttt[2] = {VERSION,DEVICE_TYPE};
+        byte ttt[2] = {UPANEL_DEVICE_TYPE,UPANEL_VERSION};
         Wire.write(ttt,2);
     }else if( command == 0x2A ){    // return xor
         byte res = in_buffer1[1] ^ in_buffer1[2];
@@ -135,7 +124,7 @@ void send( byte buffer[], byte ss ){
   byte ret = 1;
   byte licznik = 250;
   while( ret && licznik++ ){    // prubuj 5 razy, zakoncz gdy error = 0;
-    Wire.beginTransmission(MASTER_ADDR);  
+    Wire.beginTransmission(I2C_ADR_MAINBOARD);  
     Wire.write(buffer,ss);
     ret = Wire.endTransmission();
 //    Serial.print("send"+String(licznik) +": " + String( my_address ) +": ");
