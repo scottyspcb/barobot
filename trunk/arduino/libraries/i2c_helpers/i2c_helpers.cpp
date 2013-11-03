@@ -1,4 +1,5 @@
 #include <i2c_helpers.h>
+#include <barobot_common.h>
 /*
 byte in_buffer[5];
 byte out_buffer[5];
@@ -136,7 +137,7 @@ boolean init_i2c(){
 	delay2(my_address);
 
 	//Serial.println("old" + String(my_address) );
-	while(!addr_is_used( MASTER_ADDR )){		// jeœli jest wolne to nie ma mastera = b³¹d i czekaj na mastera
+	while(!addr_is_used( I2C_ADR_MAINBOARD )){		// jeœli jest wolne to nie ma mastera = b³¹d i czekaj na mastera
 		Serial.println("!m" );
 		delay2(100);
 	}
