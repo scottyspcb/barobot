@@ -198,7 +198,9 @@ public class DebugTabGraph extends Fragment {
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 		Constant.log("DebugTabGraph", "onSaveInstanceState");
-		webview.saveState(outState);
+		if(webview!=null && outState!= null){
+			webview.saveState(outState);
+		}
 	}
 	@Override
 	public void onStart() {

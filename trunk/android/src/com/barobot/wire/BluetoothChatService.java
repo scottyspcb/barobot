@@ -1,5 +1,5 @@
 
-package com.barobot.hardware;
+package com.barobot.wire;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,6 +9,7 @@ import java.lang.reflect.Method;
 
 import com.barobot.BarobotMain;
 import com.barobot.drinks.RunnableWithData;
+import com.barobot.hardware.virtualComponents;
 import com.barobot.utils.Constant;
 import com.barobot.utils.input_parser;
 
@@ -49,7 +50,7 @@ public class BluetoothChatService {
      * @param barobotMain 
      * @throws Exception 
      */
-    public BluetoothChatService(Handler handler, BarobotMain barobotMain) throws Exception {
+    public BluetoothChatService(Handler handler) throws Exception {
     	if(hasInstance){
     		throw new Exception("duplikat bluetooth");
     	}
@@ -58,6 +59,7 @@ public class BluetoothChatService {
         mHandler = handler;
         hasInstance = true;
 
+        BarobotMain barobotMain =  BarobotMain.getInstance();
         IntentFilter f1 = new IntentFilter(BluetoothDevice.ACTION_ACL_DISCONNECT_REQUESTED);
         IntentFilter f2 = new IntentFilter(BluetoothDevice.ACTION_ACL_DISCONNECTED);
         barobotMain.registerReceiver(this.btEvents, f1);
@@ -398,17 +400,15 @@ public class BluetoothChatService {
         this.connect(device);		//Attempt to connect to the device
 	}
 
-	public int initBt() {
+	public boolean initBt() {
         Constant.log(Constant.TAG, "++ ON START ++");
-        // If BT is not on, request that it be enabled.
-        // setupChat() will then be called during onActivityResult
         if(mAdapter==null){
-        	return 12;
+        	return false;
         }
         if (mAdapter.isEnabled()) {
-            return 1;
+            return true;
         }else{
-        	return 12;
+        	return false;
         }
 	}
 }

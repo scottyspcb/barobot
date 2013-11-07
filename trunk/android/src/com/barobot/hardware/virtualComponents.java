@@ -6,6 +6,7 @@ import java.util.Map;
 import com.barobot.DebugActivity;
 import com.barobot.R;
 import com.barobot.R.id;
+import com.barobot.utils.ArduinoQueue;
 import com.barobot.utils.Constant;
 import com.barobot.utils.Arduino;
 

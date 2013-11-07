@@ -1,6 +1,5 @@
 package com.barobot;
 
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -30,6 +29,7 @@ public class BarobotMain extends Activity {
     // Layout Views
 	private static BarobotMain instance;
 	public CameraManager cm;
+    public ArrayList<interval> inters = new ArrayList<interval>();    
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -37,8 +37,6 @@ public class BarobotMain extends Activity {
 		instance = this;	        // Set up the window layout
         setContentView(R.layout.main);
         virtualComponents.init( this );
-        Arduino ar = new Arduino( this );
-        
         // Initialize the compose field with a listener for the return key
         /*
         mOutEditText = (EditText) findViewById(R.id.edit_text_out);
@@ -55,21 +53,12 @@ public class BarobotMain extends Activity {
 	        }
 	    });
 	    */
-        boolean autoadb = true;
-        if(autoadb){
-			boolean res = ar.connectADB();
-			if(res == false ){
-				Constant.log(Constant.TAG, "Unable to start TCP server" );
-				System.exit(-1);
-			}
-        }       
-		this.runTimer();
+        new Arduino(this);
 
 		cm = new CameraManager( this );
 		cm.findCameras();
 
 	    DeviceSet.loadXML(this, R.raw.devices);
-
 
 	    File sdDir = Environment.getExternalStorageDirectory();
 	    Constant.log("DIR1", sdDir.getAbsolutePath() );
@@ -81,40 +70,11 @@ public class BarobotMain extends Activity {
 		}
 	    Constant.log("DIR3", File.pathSeparator);
 	    Constant.log("DIR4", ""+sdDir.getFreeSpace() );
-	    
-		
-		
     }
-
-    private ArrayList<interval> inters = new ArrayList<interval>();    
-    private void runTimer() {
-//    	interval inn = new interval();
-//   	inn.run(1000,5000);
-//    	this.inters.add(inn);
-    	interval inn = new interval(new Runnable() {
-    		private int count = 0;
-		    public void run() {
-		    	Arduino ar = Arduino.getInstance();
-		        if( ar.allowAutoconnect()){
-		        	count++;
-		        	if(count > 2){		// po 10 sek
-		//        		Constant.log("RUNNABLE", "3 try autoconnect" );
-		        		ar.autoconnect();
-		        	}
-			    }else{
-			    	count = 0;
-		        }
-		   }
-		});
-    	inn.run(1000,5000);
-    	inn.pause();
-    	this.inters.add(inn);
-	}
 
 	@Override
     public boolean onCreateOptionsMenu(Menu menu) {
 	    MenuInflater inflater = getMenuInflater();
-	    
 	    inflater.inflate(R.menu.option_menu, menu);
 	    return true;
     }
@@ -124,11 +84,11 @@ public class BarobotMain extends Activity {
         Intent serverIntent = null;
         switch (item.getItemId()) {
         case R.id.secure_connect_scan:
-             if( Arduino.getInstance().checkBT() == false ){
+
+            if( Arduino.getInstance().checkBT() == false ){
                 Toast.makeText(this, "Bluetooth jest niedostępny", Toast.LENGTH_LONG).show();
                 finish();
             }
-            // Launch the BTListActivity to see devices and do scan
             serverIntent = new Intent(this, BTListActivity.class);
             startActivityForResult(serverIntent, BTListActivity.INTENT_NAME);
             return true;
@@ -154,15 +114,7 @@ public class BarobotMain extends Activity {
     @Override
     public void onStart() {
         super.onStart();
-        if( Arduino.getInstance().checkBT() != false ){
-	        int res = Arduino.startBt();
-	        if( res == 34){		// jesli jest wlaczony
-	        	 Arduino.getInstance().setupBT( this);
-	        }else if( res == 12){	// jesli wymaga wlaczenia to wroci do onActivityResult
-	            Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-	            startActivityForResult(enableIntent, Constant.REQUEST_ENABLE_BT);
-	        }
-        }
+        Arduino.getInstance().onStart( this );
     }
 
 	@Override
@@ -208,13 +160,13 @@ public class BarobotMain extends Activity {
             break;
         case DebugActivity.INTENT_NAME:
         	Constant.log(Constant.TAG, "END OF DebugActivity");
-            break;    
+            break;
         case BTListActivity.INTENT_NAME:
         	Constant.log(Constant.TAG, "REQUEST_CONNECT_DEVICE_SECURE");
             // When BTListActivity returns with a device to connect
             if (resultCode == Activity.RESULT_OK) {
                 String address = data.getExtras().getString(Constant.EXTRA_DEVICE_ADDRESS);           // Get the device MAC address
-                Arduino.connectBTDeviceId(address);
+                Arduino.getInstance().connectId(address);
             }
             break;
 
@@ -223,7 +175,7 @@ public class BarobotMain extends Activity {
             // When the request to enable Bluetooth returns
             if (resultCode == Activity.RESULT_OK) {
                 // Bluetooth is now enabled, so set up session
-                Arduino.getInstance().setupBT( this);
+                Arduino.getInstance().setupBT( this );
             } else {
                 // User did not enable Bluetooth or an error occurred
                 Constant.log(Constant.TAG, "BT not enabled");
@@ -248,6 +200,21 @@ public class BarobotMain extends Activity {
 	}
 	public static BarobotMain getInstance(){
 		return instance;
+	}
+
+	@Override
+	public void onBackPressed() {
+	    new AlertDialog.Builder(this)
+	        .setIcon(android.R.drawable.ic_dialog_alert)
+	        .setTitle("Koniec?")
+	        .setMessage("Czy na pewno zamknąć aplikację przerwać pracę robota?")
+	        .setPositiveButton("Yes", new DialogInterface.OnClickListener(){
+	        @Override
+	        public void onClick(DialogInterface dialog, int which) {
+	            finish();
+	        }
+	    })
+	    .setNegativeButton("No", null).show();
 	}
 }
 

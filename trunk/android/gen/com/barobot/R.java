@@ -30,18 +30,31 @@ public final class R {
         public static final int app_icon=0x7f020000;
     }
     public static final class id {
-        public static final int SeekBar01=0x7f0a0089;
-        public static final int SeekBar02=0x7f0a008b;
-        public static final int SeekBar03=0x7f0a008a;
-        public static final int SeekBar04=0x7f0a0086;
-        public static final int SeekBar05=0x7f0a0088;
-        public static final int SeekBar06=0x7f0a0087;
+        public static final int SeekBar01=0x7f0a008b;
+        public static final int SeekBar02=0x7f0a008d;
+        public static final int SeekBar03=0x7f0a008c;
+        public static final int SeekBar04=0x7f0a0087;
+        public static final int SeekBar05=0x7f0a0089;
+        public static final int SeekBar06=0x7f0a0088;
+        public static final int SeekBar07=0x7f0a0085;
         public static final int SeekBar08=0x7f0a0084;
         public static final int SeekBar09=0x7f0a0083;
+        public static final int SeekBar10=0x7f0a008a;
+        public static final int SeekBar11=0x7f0a008e;
+        public static final int SeekBar12=0x7f0a0093;
+        public static final int SeekBar13=0x7f0a0090;
+        public static final int SeekBar14=0x7f0a0092;
+        public static final int SeekBar15=0x7f0a0091;
+        public static final int SeekBar16=0x7f0a0098;
+        public static final int SeekBar17=0x7f0a0096;
+        public static final int SeekBar18=0x7f0a0095;
+        public static final int SeekBar19=0x7f0a0097;
         public static final int TextView01=0x7f0a0081;
-        public static final int TextView02=0x7f0a0085;
-        public static final int about_item=0x7f0a0095;
-        public static final int action_settings=0x7f0a008f;
+        public static final int TextView02=0x7f0a0086;
+        public static final int TextView03=0x7f0a0094;
+        public static final int TextView04=0x7f0a008f;
+        public static final int about_item=0x7f0a00a2;
+        public static final int action_settings=0x7f0a009c;
         public static final int auto_fill=0x7f0a0050;
         public static final int bottle_next=0x7f0a0059;
         public static final int bottle_prev=0x7f0a005a;
@@ -53,12 +66,12 @@ public final class R {
         public static final int device_filter=0x7f0a005c;
         public static final int device_list=0x7f0a005d;
         public static final int device_settings=0x7f0a007c;
-        public static final int dialog_int_dialogButtonOK=0x7f0a008d;
-        public static final int dialog_int_input=0x7f0a008c;
+        public static final int dialog_int_dialogButtonOK=0x7f0a009a;
+        public static final int dialog_int_input=0x7f0a0099;
         public static final int dlugosc_x=0x7f0a003f;
         public static final int dlugosc_y=0x7f0a0041;
         public static final int dlugosc_z=0x7f0a0042;
-        public static final int do_update=0x7f0a0097;
+        public static final int do_update=0x7f0a00a4;
         public static final int fill5000=0x7f0a0049;
         public static final int goToNeutralY=0x7f0a0051;
         public static final int goto_max_x=0x7f0a0058;
@@ -99,13 +112,13 @@ public final class R {
         public static final int machajx=0x7f0a0046;
         public static final int machajy=0x7f0a0045;
         public static final int machajz=0x7f0a0044;
-        public static final int main_feature=0x7f0a0090;
-        public static final int main_feature2=0x7f0a0096;
+        public static final int main_feature=0x7f0a009d;
+        public static final int main_feature2=0x7f0a00a3;
         public static final int max_x=0x7f0a003b;
         public static final int max_y=0x7f0a0043;
         public static final int max_z=0x7f0a003e;
-        public static final int menu_debug_window=0x7f0a0093;
-        public static final int menu_settings=0x7f0a0094;
+        public static final int menu_debug_window=0x7f0a00a0;
+        public static final int menu_settings=0x7f0a00a1;
         public static final int min_x=0x7f0a0038;
         public static final int min_y=0x7f0a003a;
         public static final int min_z=0x7f0a003c;
@@ -137,7 +150,7 @@ public final class R {
         public static final int position_y=0x7f0a004b;
         public static final int position_z=0x7f0a004a;
         public static final int scrollView2=0x7f0a0003;
-        public static final int secure_connect_scan=0x7f0a0091;
+        public static final int secure_connect_scan=0x7f0a009e;
         public static final int set_bottle=0x7f0a0054;
         public static final int set_neutral_y=0x7f0a004e;
         public static final int set_x10=0x7f0a002f;
@@ -155,11 +168,11 @@ public final class R {
         public static final int smile=0x7f0a004c;
         public static final int tab3=0x7f0a0077;
         public static final int textView1=0x7f0a005b;
-        public static final int textView1045=0x7f0a008e;
+        public static final int textView1045=0x7f0a009b;
         public static final int textView_item_custom=0x7f0a007b;
         public static final int toggleButton2=0x7f0a007e;
         public static final int unlock=0x7f0a004d;
-        public static final int update_drinks=0x7f0a0092;
+        public static final int update_drinks=0x7f0a009f;
         public static final int update_message=0x7f0a0001;
         public static final int waga1=0x7f0a0010;
         public static final int waga10=0x7f0a0026;
@@ -208,6 +221,7 @@ public final class R {
         public static final int option_menu=0x7f090002;
         public static final int update=0x7f090003;
         public static final int web=0x7f090004;
+        public static final int wire_source=0x7f090005;
     }
     public static final class raw {
         public static final int devices=0x7f050000;
@@ -298,9 +312,10 @@ public final class R {
         public static final int web_machaj_y=0x7f07002f;
     }
     public static final class xml {
-        public static final int pref_data_sync=0x7f040000;
-        public static final int pref_general=0x7f040001;
-        public static final int pref_headers=0x7f040002;
-        public static final int pref_notification=0x7f040003;
+        public static final int device_filter=0x7f040000;
+        public static final int pref_data_sync=0x7f040001;
+        public static final int pref_general=0x7f040002;
+        public static final int pref_headers=0x7f040003;
+        public static final int pref_notification=0x7f040004;
     }
 }
