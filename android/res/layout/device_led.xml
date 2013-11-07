@@ -57,6 +57,7 @@
             android:id="@+id/TextView01"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="7dp"
             android:text="Moc"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textSize="20sp" />
@@ -88,6 +89,15 @@
             android:max="100"
             android:progress="0" />
 
+        <SeekBar
+            android:id="@+id/SeekBar07"
+            android:layout_width="184dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="#444444"
+            android:max="100"
+            android:progress="0" />
+
     </LinearLayout>
 
     <LinearLayout
@@ -100,9 +110,9 @@
             android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="7dp"
-            android:text="Częstotliwość"
+            android:text="Czas ON"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textSize="14sp" />
+            android:textSize="20sp" />
 
         <SeekBar
             android:id="@+id/SeekBar04"
@@ -131,6 +141,15 @@
             android:max="100"
             android:progress="0" />
 
+        <SeekBar
+            android:id="@+id/SeekBar10"
+            android:layout_width="184dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="#444444"
+            android:max="100"
+            android:progress="0" />
+
     </LinearLayout>
 
     <LinearLayout
@@ -142,7 +161,7 @@
             android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
-            android:text="Narastanie"
+            android:text="Czas OFF"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textSize="18sp" />
 
@@ -173,6 +192,115 @@
             android:max="100"
             android:progress="0" />
 
+        <SeekBar
+            android:id="@+id/SeekBar11"
+            android:layout_width="184dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="#444444"
+            android:max="100"
+            android:progress="0" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:id="@+id/TextView04"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="Narastanie"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textSize="18sp" />
+
+        <SeekBar
+            android:id="@+id/SeekBar13"
+            android:layout_width="184dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="#220000"
+            android:max="100"
+            android:progress="0" />
+
+        <SeekBar
+            android:id="@+id/SeekBar15"
+            android:layout_width="184dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="#002200"
+            android:max="100"
+            android:progress="0" />
+
+        <SeekBar
+            android:id="@+id/SeekBar14"
+            android:layout_width="184dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="#000022"
+            android:max="100"
+            android:progress="0" />
+
+        <SeekBar
+            android:id="@+id/SeekBar12"
+            android:layout_width="184dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="#444444"
+            android:max="100"
+            android:progress="0" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:id="@+id/TextView03"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="Opadanie"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textSize="18sp" />
+
+        <SeekBar
+            android:id="@+id/SeekBar18"
+            android:layout_width="184dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="#220000"
+            android:max="100"
+            android:progress="0" />
+
+        <SeekBar
+            android:id="@+id/SeekBar17"
+            android:layout_width="184dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="#002200"
+            android:max="100"
+            android:progress="0" />
+
+        <SeekBar
+            android:id="@+id/SeekBar19"
+            android:layout_width="184dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="#000022"
+            android:max="100"
+            android:progress="0" />
+
+        <SeekBar
+            android:id="@+id/SeekBar16"
+            android:layout_width="184dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="#444444"
+            android:max="100"
+            android:progress="0" />
     </LinearLayout>
 
 </LinearLayout>

@@ -1,6 +1,7 @@
 package com.barobot.hardware;
 
 import com.barobot.utils.Arduino;
+import com.barobot.utils.ArduinoQueue;
 import com.barobot.utils.History_item;
 
 

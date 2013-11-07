@@ -1,8 +1,9 @@
-package com.barobot.hardware;
+package com.barobot.utils;
 
 import java.util.LinkedList;
 
-import com.barobot.utils.Arduino;
+import com.barobot.hardware.rpc_message;
+import com.barobot.hardware.virtualComponents;
 
 import android.os.Handler;
 

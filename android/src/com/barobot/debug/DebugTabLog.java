@@ -3,9 +3,9 @@ package com.barobot.debug;
 import com.barobot.DebugActivity;
 import com.barobot.R;
 import com.barobot.R.id;
-import com.barobot.hardware.ArduinoQueue;
 import com.barobot.hardware.rpc_message;
 import com.barobot.utils.Arduino;
+import com.barobot.utils.ArduinoQueue;
 import com.barobot.utils.Constant;
 import com.barobot.utils.History_item;
 
