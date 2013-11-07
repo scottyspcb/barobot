@@ -79,7 +79,7 @@ void receiveEvent(int howMany){
   if ( sss == 1 ){      // najstarsze 8 bitów RÓWNE 1 to wykonaj w głównym wątku
       use_local = true;  
   }
-
+  // w tym miejscu jednynie proste komendy nie wymagające zwrotek
 }
 
 void requestEvent(){ 
@@ -117,8 +117,8 @@ void send_poke(){
   send(ttt,2);
 }
 static void send_here_i_am(){
-  byte ttt[2] = {0x23,my_address};
-  send(ttt,2); 
+  byte ttt[4] = {0x23,my_address,UPANEL_DEVICE_TYPE,UPANEL_VERSION};
+  send(ttt,4); 
 }
 void send( byte buffer[], byte ss ){
   byte ret = 1;

@@ -12,7 +12,7 @@ volatile boolean was_event = false;
 
 byte nextpos = 0;
 boolean scann_order = false;
-byte order[COUNT_UPANEL] = {0,0,0,0,0,0,0,0,0,0,0};
+byte order[COUNT_UPANEL] = {0,0,0,0,0,0,0,0,0,0,0,0};
 
 byte x = 0;
 byte y = 10;
