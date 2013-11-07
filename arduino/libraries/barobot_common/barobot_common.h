@@ -50,7 +50,7 @@ ATMEGA8 / ARDUINO
 
 
 /*------------------------------ PROGRAMMER ------------------------------*/
-#define PROGRAMMER_DEVICE_TYPE 0x13
+#define PROGRAMMER_DEVICE_TYPE 0x14
 #define PROGRAMMER_VERSION 0x01
 #define PROGRAMMER_VERSION 0x01
 #define PROGRAMMER_F_CPU 12000000
@@ -127,14 +127,21 @@ ATMEGA8 / ARDUINO
 	#define PIN_IPANEL_SERVO_Y 5		// ppin 11
 	#define PIN_IPANEL_SERVO_Z 6		// ppin 12
 
-	#define PIN_UPANEL_LED0_NUM	2		// ppin 4
-	#define PIN_UPANEL_LED1_NUM	3		// ppin 5
-	#define PIN_UPANEL_LED2_NUM	4		// ppin 6
-	#define PIN_UPANEL_LED3_NUM	7		// ppin 13
-	#define PIN_UPANEL_LED4_NUM	8		// ppin 14
-	#define PIN_UPANEL_LED5_NUM	9		// ppin 15
-	#define PIN_UPANEL_LED6_NUM	10		// ppin 16
-	#define PIN_UPANEL_LED7_NUM	17		// ppin 26
+	#define PIN_IPANEL_LED0_NUM	2		// ppin 4
+	#define PIN_IPANEL_LED1_NUM	3		// ppin 5
+	#define PIN_IPANEL_LED2_NUM	4		// ppin 6
+	#define PIN_IPANEL_LED3_NUM	7		// ppin 13
+	#define PIN_IPANEL_LED4_NUM	8		// ppin 14
+	#define PIN_IPANEL_LED5_NUM	9		// ppin 15
+	#define PIN_IPANEL_LED6_NUM	10		// ppin 16
+	#define PIN_IPANEL_LED7_NUM	17		// ppin 26
+
+	// Organizacja pamiêci:
+	/*
+	0x00	- NEUTRAL_VALUE kopia 0
+	0x01	- NEUTRAL_VALUE kopia 1
+
+	*/
 
 
 #endif
@@ -143,9 +150,24 @@ ATMEGA8 / ARDUINO
 
 
 #endif
+
 /*------------------ UPANEL -------------------*/
 
 #if IS_UPANEL
+	/*
+		Komponenty:
+
+		HALL_X
+		HALL_Y
+
+		SERVO_Y
+		SERVO_Z
+
+		WEIGHT_SENSOR
+		NEXT_RESET		???
+		I2C
+
+	*/
 
 	#define UPANEL_COMMON_ANODE true		// sterowanie plusem? false gdy sterowaniem minusem
 
@@ -169,16 +191,111 @@ ATMEGA8 / ARDUINO
 	#define PIN_UPANEL_LED5_MASK	digital_pin_to_bit_mask_PGM+PIN_UPANEL_LED5_NUM
 	#define PIN_UPANEL_LED6_MASK	digital_pin_to_bit_mask_PGM+PIN_UPANEL_LED6_NUM
 	#define PIN_UPANEL_LED7_MASK	digital_pin_to_bit_mask_PGM+PIN_UPANEL_LED7_NUM
+	
+		
+	// Organizacja pamiêci:
+	/*
+	0x00	- i2c adres kopia 0
+	0x01	- i2c adres kopia 1
+	0x02	- i2c adres kopia 2
+
+	0xF0	- starts m³odsze
+	0xF1	- starts starsze
+	
+	0xF2	- i2c errors m³odsze
+	0xF3	- i2c errors starsze
+
+	0xFA	- watchdog m³odsze
+	0xFB	- watchdog starsze
+
+	*/
+	
+	
 #endif
 
 
 
+/* 
+DIP28
+	pin01	PC6	arduino ??		RESET	- CONN1
+	pin02	PD0	arduino 00		RX		- CONN2
+	pin03	PD1	arduino 01		TX		- CONN2
+	pin04	PD2	arduino 02		INT0	- SWITCH
+	pin05	PD3	arduino 03		INT1	- CONN1
+	pin06	PD4	arduino 04		-
+	pin07	VCC
+	pin08	GND	
+	pin09	PB6	arduino ??		XTAL1 
+	pin10	PB7	arduino ??		XTAL2	
+	pin11	PD5	arduino 05		-
+	pin12	PD6	arduino 06		-
+	pin13	PD7	arduino 07		-
+	pin14	PB0	arduino 08		- 
+	pin15	PB1	arduino 09				-SERVO_X
+	pin16	PB2	arduino 10		SS		-SERVO_Y
+	pin17	PB3	arduino 11		MOSI	-CONN1
+	pin18	PB4	arduino 12		MISO	-CONN1
+	pin19	PB5	arduino 13		SCK		-CONN1
+	pin20	AVCC	
+	pin21	AREF	
+	pin22	GND	
+	pin23	PC0	arduino A0/D14	ADC0	HALL_X 
+	pin24	PC1	arduino A1/D15	ADC1	HALL_Y 
+	pin25	PC2	arduino A2/D16	ADC2	WEIGHT
+	pin26	PC3	arduino A3/D17	ADC3	
+	pin27	PC4	arduino A4/D18	ADC4	SDA	-CONN1
+	pin28	PC5	arduino A5/D19	ADC5	SCL	-CONN1
+
+TQFP32
+	pin01	PD3	arduino 03	PWM	- CONN1
+	pin02	PD4	arduino 04
+	pin03	GND
+	pin04	VCC
+	pin05	GND
+	pin06	VCC
+	pin07	PB6	arduino ??	XTAL1 
+	pin08	PB7	arduino ??	XTAL2
+	pin09	PD5	arduino 05	PWM			-SERVO_Y
+	pin10	PD6	arduino 06	PWM			-SERVO_Z
+	pin11	PD7	arduino 07				- 
+	pin12	PB0	arduino 08				-
+	pin13	PB1	arduino 09		
+	pin14	PB2	arduino 10	PWM,SS
+
+	pin15	PB3	arduino 11	MOSI		-CONN1
+	pin16	PB4	arduino 12	MISO		-CONN1
+	pin17	PB5	arduino 13	SCK			-CONN1
+	pin18	AVCC
+	pin19	ADC6	??
+	pin20	AREF
+	pin21	GND
+	pin22	ADC7	??
+	pin23	PC0	arduino A0/D14	ADC0	-HALL_X  
+	pin24	PC1	arduino A1/D15	ADC1	-HALL_Y 
+	pin25	PC2	arduino A2/D16	ADC2	-WEIGHT
+	pin26	PC3	arduino A3/D17	ADC3	-
+	pin27	PC4	arduino A4/D18	ADC4	-SDA	-CONN1
+	pin28	PC5	arduino A5/D19	ADC5	-SCL	-CONN1
+	pin29	PC6	arduino ??		RESET	-CONN1
+	pin30	PD0	arduino 00		RX		-CONN2
+	pin31	PD1	arduino 01		TX		-CONN2
+	pin32	PD2	arduino 02		INT0	-
 
 
+	#define PIN_IPANEL_HALL_X A0		// ppin 23
+	#define PIN_IPANEL_HALL_Y A1		// ppin 24
+	#define PIN_IPANEL_WEIGHT A2		// ppin 25
 
+	#define PIN_IPANEL_SERVO_Y 5		// ppin 9
+	#define PIN_IPANEL_SERVO_Z 6		// ppin 10
 
+	#define PIN_UPANEL_LED0_NUM	2		// ppin 32
+	#define PIN_UPANEL_LED1_NUM	3		// ppin 1
+	#define PIN_UPANEL_LED2_NUM	4		// ppin 2
+	#define PIN_UPANEL_LED3_NUM	7		// ppin 11
+	#define PIN_UPANEL_LED4_NUM	8		// ppin 12
+	#define PIN_UPANEL_LED5_NUM	9		// ppin 13
+	#define PIN_UPANEL_LED6_NUM	10		// ppin 14
+	#define PIN_UPANEL_LED7_NUM	17		// ppin 26
 
-
-
-
-
+*/
