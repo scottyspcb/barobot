@@ -21,7 +21,12 @@
 			<method code="0x12"	name="getServoZPos"		desc="Pobierz pozycję Y">			
 				<ret type="uint8" name="high_val"  		desc="Pozycja starsze bity"></ret>
 				<ret type="uint8" name="low_val"		desc="Pozycja młodsze bity"></ret>	
-			</method>	
+			</method>
+			
+			
+			
+			
+			
 		</interface>
 
 	</interfaces>
