@@ -1,0 +1,19 @@
+
+Android:
+
+lsmod
+
+
+
+$ rmmod usbserial
+
+$ insmod /etc/firmware/usbserial.ko
+insmod pl2303.ko
+
+
+
+
+
+
+
+cat /proc/tty/drivers
