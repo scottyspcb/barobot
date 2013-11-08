@@ -1,0 +1,236 @@
+----------------------------------------------------------------------
+MAINBOARD -> SLAVE (over TWI)
+
+0001 0110 b	=	0x16	void reset_next( byte addr )							// Resetuj urządzenie obok urządzenia adresowego, stan niski na wyjściu resetuje tego obok
+0001 0111 b	=	0x17	void run_next( byte naddr )								// Koniec resetu urządzenia obok urządzenia adresowego, stan wysokiej impedancji na wyjściu
+0001 0110 b	=	0x1E	void changeAddress( byte new_addr )						// Zmień adres I2c, musi być podane co najmniej 4 razy zeby zadziałało. (2 bajty)
+
+0010 1001 b	=	0x29	2xbyte getVersion()										// Wypisz rodzaj urządzenia i wersję softu ( 1 bajt )
+0010 1010 b	=	0x2A	byte test_slave( byte num1, byte num2 )					// Zwróć XOR wejścia (2 byte)
+
+----------------------------------------------------------------------
+MAINBOARD -> UPANEL (over TWI)
+
+0001 0000 b	=	0x10	void resetCycles() 										// Resetuj zegar (1 bajt)
+0001 0001 b	=	0x11	void setPWM( byte pin, byte level )						// Wpisz wypełnienie PWM do LEDa ( 3 bajty )
+0001 0010 b	=	0x12	void setTime( byte pin, byte on_time, byte off_time )	// Czas pomiędzy kolejnym zapaleniem i Czas od zapalenia do zgaszenia ( 4 bajty )
+0001 0011 b	=	0x13	void setFading( byte pin, byte level )					// Czas i kierunek zanikania PWMa	( 3 bajty )
+0001 0100 b	=	0x14	void setDir( byte pin, byte dir) 						// Ustaw kierunek dla PINU o numerze ( 3 bajty )
+0001 0101 b	=	0x15	void setOutput( byte pin, byte value) 					// Wpisz cyfrowo PIN o numerze	 ( 3 bajty )
+
+0010 0001 b	=	0x26	2xbyte getAnalogValue( byte pin )						// Pobierz analogowo wartość PIN o numerze ( 2 bajty )
+0010 1000 b	=	0x28	byte getValue( byte pin )								// Pobierz cyfrowo wartość PIN o numerze ( 2 bajty )
+
+----------------------------------------------------------------------
+MAINBOARD -> WOZEK (over TWI)
+
+0001 0001 b	=	0x11	void goToServoYPos( byte high_val, byte low_val )
+0001 0010 b	=	0x12	void goToServoZPos( byte high_val, byte low_val )
+
+0010 0000 b	=	0x21	2xbyte goServoYPos();
+0010 0000 b	=	0x22	2xbyte goServoZPos();
+
+
+
+
+STAN:
+	NEUTRAL
+	CENTER
+	ON_FRONT_POS
+	ON_BACK_POS
+	TO_FAR
+	TO_CLOSE
+
+
+
+----------------------------------------------------------------------
+WOZEK -> MAINBOARD (over TWI)
+
+HALL:
+
+local_max( hall, max_value )
+global_max( hall, max_value )
+
+
+
+
+
+
+
+UPANEL -> MAINBOARD (over TWI)
+
+0x22	void poke( byte my_address ) 			// wciśnięto POKE_PIN (2 byte)
+0x23	void here_i_am( byte my_address, device_type, version ) 		// włączyłęm się!  (4 byte)
+0x21	void interrupt( byte my_address, byte pin, byte value ) // Wynik 1024 na pinie więcej niż 0.1 sek (4 bajty) = wciśnięto przycisk.
+			Przykład:
+					0x21	0x22	0x03	255			// pin "3" na urządzeniu 0x22 jest w stanie 255
+
+									
+----------------------------------------------------------------------
+Silnik
+
+0x13	0x01 	void disableOutputs()
+0x13	0x02 	void enableOutputs()
+
+0x13	0x03 	void moveTo(int32)				//long
+0x13	0x04 	void stopNow( boolean disableoutput = false );
+0x13	0x05 	void setAcceleration(int32 acceleration)		// float
+0x13	0x06 	void setMaxSpeed(int32 speed);
+0x13	0x07 	void void stop( int32 multispeed );
+
+0x13	0x11 	int32 currentPosition()			//long
+0x13	0x12 	int32 distanceToGo()			//long
+0x1E			void changeAddress( byte new_addr )		// Zmień adres I2c, musi być podane co najmniej 4 razy zeby zadziałało. (2 bajty)
+					
+		
+
+		
+		
+		
+		
+		
+		
+		
+Kody błedów:
+
+0x10	I2C HANGS
+0x11	WATCHDOG ALERT
+0x12	DONT UNDERSTAND
+0x14	INPUT OUT OF RANGE
+0x15	SENSOR VALUE OUT OD RANGE 
+0x16	SENSOR DISCONNECTED
+0x17	MOVE ERROR
+0x18	STOP EVERYTHING
+0x1
+0x1
+0x1
+0x1
+
+
+
+
+
+		
+		
+		
+		
+		
+		
+		
+		
+Opisy:
+
+0x10	Resetuj zegar
+0x11	Wpisz wypełnienie PWM do LEDa ( 3 bajty )
+			Zakres:
+				0-255 (0% - 100%)
+			Przykład:
+					0x11	0	255			// włącz LED 1 na 100%
+					0x11	9	0			// wyłącz LED 10
+					0x11	5	127			// LED 6 na 50%
+
+0x12	Czas pomiędzy kolejnym zapaleniem i Czas od zapalenia do zgaszenia ( 4 bajty )
+			Zakres:
+				0 - 65536
+
+			Przykład:
+					0x12	0	123		23	// włącz led 1 z co 123 okresów i zgaś po 23 okresach (świeć 23 okresy, 100 okresów zgaszony)
+					0x12	0	123		23	// włącz led 1 z co 123 okresów i zgaś po 23 okresach (świeć 23 okresy, 100 okresów zgaszony)
+
+0x13	Czas i kierunek zanikania PWMa	( 3 bajty )
+
+0x14	Ustaw kierunek dla PINU o numerze ( 3 bajty )
+					0x14	0		1			// OUT
+					0x14	5		2			// IN
+					0x14	11		0			// nie ustawione
+
+0x15	Wpisz cyfrowo PIN o numerze	 ( 3 bajty )
+					0x15	0x00		1
+					0x15	0x05		0
+					0x15	0x0B		1
+
+0x26	Pobierz anlalogowo PIN o numerze ( 2 bajty )
+					0x16	0x02
+					0x16	0x03
+			return 2 bytes:
+					A - bit adresu pina (3 bity = 8 adresow)
+					V - bit wartości
+					AAA000VV	VVVVVVVV
+					00000011	11111111	// Wynik 1024 na pinie 0
+					00100011	11111111	// Wynik 1024 na pinie 1
+					11100011	11111111	// Wynik 1024 na pinie 7
+
+					buffer[0]	= pin + 2 starsze bity wyniku
+					buffer[1]	= 8 młodszych bitów wyniku
+
+0x28	Pobierz cyfrowo PIN o numerze ( 2 bajty )
+					0x18	0
+					0x18	5
+					0x18	11
+					0x18	11
+			return 1 byte:
+					0xFF		// wynik HIGH
+					0x00		// wynik LOW
+
+					buffer[0]	= pin
+					buffer[1]	= wartosc
+					
+0x29	Wypisz rodzaj urządzenia i wersję softu
+			return 2 bytes:
+					byte1	byte2		// byte1 - typ urządzenia, byte2 - wersja
+					0x01	0x02		// 0x01 = SLAVE / U-panel, 0x02 = versja 2
+					0x12	0x03		// 0x12 = MASTER / MainBoard, 0x02 = versja 3
+					0x02	0x04		// 0x03 = SLAVE / Carret, 0x02 = versja 4
+
+					buffer[0]	= typ
+					buffer[1]	= wersja
+
+
+
+
+
+U-panel
+
+
+
+avrdude -P COM7 -c arduino -p atmega8 -v -v -v -v -v -i 100 -b 38400
+avrdude -P COM40 -c stk500v1 -p m328p -v -v -v -v -v -i 100 -b 57600
+
+
+
+cat /sdcard/android.hardware.usb.host.xml > /system/etc/permissions/android.hardware.usb.host.xml
+
+
+
+
+
+
+https://libusb.org/wiki/libusb-1.0
+
+http://android.serverbox.ch/?p=151
+
+http://www.recursion.jp/avrcdc/
+http://www.fourwalledcubicle.com/LUFA.php
+micropendous 
+https://instruct1.cit.cornell.edu/courses/ee476/FinalProjects/s2007/blh36_cdl28_dct23/blh36_cdl28_dct23/index.html
+
+http://www.cesko.host.sk/IgorPlugUSB/IgorPlug-USB%20%28AVR%29_eng.htm
+http://dicks.home.xs4all.nl/avr/usbtiny/
+
+http://android.serverbox.ch/?p=370
+
+
+
+
+
+
+Kolor
+
+
+
+
+
+
+
+
+

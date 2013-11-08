@@ -1,0 +1,128 @@
+
+
+1. Dorobiæ config LEDow
+2. Dorobiæ parent dla urzadzen
+3. Dorobiæ config ON/OFF  dla LEDow
+4. Dorobiæ funkce skladajaca komendy dla LEDa
+5. Optymalizowaæ wysy³anie
+
+
+
+Safety	( robot jest bezpieczny dla œwodowiska pracy )
+	Zasilacz z cet. CE
+	Ekrany poch³aniaj¹ce magnetyzm z robota
+	Ekrany poch³aniaj¹ce elektromagnetyzm z robota
+	http://www.forum.invisionresources.pl/topic/299-ekranowanie-aparatury-elektronicznej/
+
+
+Security ( œrodowisko pracy nie wp³ywa na pracê robota )
+	Ekrany poch³aniaj¹ce magnetyzm z zewnêtrz
+	Ekrany poch³aniaj¹ce elektromagnetyzm  z zewnêtrz
+	Kontrola pozycji XYZ
+	Sprawdzenie po³¹czeñ elektronicznych
+	Wolne piny w uC po³¹czone do masy.
+	
+	T³umienie zak³óceñ w zasilaniu:
+	http://4.bp.blogspot.com/-tft2F8-bB0I/TrEQZGhcgyI/AAAAAAAABgc/yRPGoECsLF4/s1600/lekcewazyc_czy_nie_sch01.gif
+	- 100nF na wejœciu VCC
+	- 100nF AREF do GND
+	- AVCC przez d³awik do VCC oraz 100 nF równolegle do GND
+
+
+
+	Je¿eli u¿ywasz piny ADC4-ADC5 jako interfejs TWI (I2C) wp³ywaj¹
+	one (zak³ócaj¹) na pomiary kana³ów ADC4-ADC5, ale nie zak³ócaj¹ pomiarów na pozosta³ych kana³ach ADC.
+	
+	
+	
+
+
+1. Tryb nalewania drinków
+2. Tyb serwisowy
+3. Ustawienia
+4. Informacje
+5. Autualizacja bazy drinków
+
+2. Wszystkie opcje, które moga byc pomocne podczas serwisowania urzadzenia
+
+
+
+
+
+Splash screen przy uruchamianiu
+Sposoby wyboru drinka:
+	- Ulubione
+	- Wszystkie alfabetycznie
+	- Kategoriami
+	- Losowo
+
+
+Kategorie g³ówne:
+	- po nazwie
+	- po g³ównym sk³adniku alkoholowym
+	- po g³ównym sk³adniku bezalkoholowym
+	- po typie
+		- Klasyczne
+		- Popularne
+		- Bezalkoholowe
+		
+	- po kolorze
+		- R
+		- G
+		- B
+		- W
+		- Pink
+		- Yellow
+		- Brown
+		
+	- po typie
+	
+	
+	
+Sposób wyœwietlania:
+	- pó³ka z butelkami
+	- lista
+
+
+Kategorie:
+	- P³yn
+		- alkoholowy
+			- wódka
+			- piwo			// co z piwem?
+			- 
+
+		- bezalkoholowy
+			- sok
+			- syrop
+			- herbata
+			- kawa			// co z temperatur¹?
+			- woda (soda)
+			- piwo
+	- Owoce
+	- Lód
+	- Cukier
+	- Przyprawy
+	- Inne
+	- Szklanki
+	- Dekoracje
+	- S³omki
+
+	
+	
+	
+Jeœli jest mo¿liwe zrobienie mniej ni¿ 10 ró¿nych drinków to ekran domyœlny zawiera je wszystkie
+
+
+Co ze szklankami? Wybór co wk³adam? 
+Ostrze¿enie o alkoholu? 
+Abuse of alkohol is dangerous for your health use with moderation
+
+Tryb czyszczenia nalewaków? - wstaw wodê do ka¿dego nalewaka a robot bedzie jechal az napelni kubek
+
+"Czy utworzyæ skrót do aplikacji na pulpicie?"
+Lista zakupów
+
+
+
+	
+	
