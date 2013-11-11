@@ -1,3 +1,5 @@
+#include <Arduino.h>
+
 /*
 ATMEGA8 / ARDUINO
                   +-\/-+
@@ -33,6 +35,7 @@ ATMEGA8 / ARDUINO
 #define MAINBOARD_VERSION 0x01
 #define MAINBOARD_F_CPU 16000000
 #define MAINBOARD_CPU atmega328"
+#define MAINBOARD_SERIAL0_BOUND 115200
 
 
 /*------------------------------ IPANEL     ------------------------------*/
@@ -40,6 +43,7 @@ ATMEGA8 / ARDUINO
 #define IPANEL_VERSION 0x01
 #define IPANEL_F_CPU == 16000000
 #define IPANEL_CPU "atmega328"
+#define IPANEL_SERIAL0_BOUND 115200
 
 /*------------------------------ TROLLEY    ------------------------------*/
 /*
@@ -47,6 +51,7 @@ ATMEGA8 / ARDUINO
 #define TROLLEY_VERSION 0x01
 #define TROLLEY_F_CPU 8000000
 #define TROLLEY_CPU "atmega8"
+#define TROLLEY_SERIAL0_BOUND 115200
 */
 
 
@@ -55,12 +60,6 @@ ATMEGA8 / ARDUINO
 #define PROGRAMMER_VERSION 0x01
 #define PROGRAMMER_F_CPU 12000000
 #define PROGRAMMER_CPU "atmega8"
-
-/*------------------------------  UPANEL    ------------------------------*/
-#define UPANEL_DEVICE_TYPE 0x13
-#define UPANEL_VERSION 0x01
-#define UPANEL_F_CPU 8000000
-#define UPANEL_CPU "atmega8"
 
 
 /*------------------------------ OTHER ------------------------------*/
@@ -133,16 +132,15 @@ ATMEGA8 / ARDUINO
 	/*
 		Komponenty:
 
-		HALL_X
-		HALL_Y
+		HALL_X	: getValue
+		HALL_Y	: getValue
 
-		SERVO_Y
-		SERVO_Z
+		SERVO_Y	: setSpeed, setPos, getPos
+		SERVO_Z	: setSpeed, setPos, getPos
 
-		WEIGHT_SENSOR
-		NEXT_RESET		???
-		I2C
-
+		WEIGHT_SENSOR	getValue,
+		8xLED			set PWMUP,PWMDOWN,FadeUp, FadeDown,TimeUp,TimeDown
+		I2C				getValue, test_slave
 	*/
 
 	#define IPANEL_COMMON_ANODE false		// sterowanie plusem? false gdy sterowaniem minusem
@@ -175,6 +173,15 @@ ATMEGA8 / ARDUINO
 	#define PIN_IPANEL_LED6_NUM	10		// dip pin 16
 	#define PIN_IPANEL_LED7_NUM	17		// dip pin 26
 
+	#define PIN_UPANEL_LED0_MASK	digital_pin_to_bit_mask_PGM+PIN_UPANEL_LED0_NUM
+	#define PIN_UPANEL_LED1_MASK	digital_pin_to_bit_mask_PGM+PIN_UPANEL_LED1_NUM
+	#define PIN_UPANEL_LED2_MASK	digital_pin_to_bit_mask_PGM+PIN_UPANEL_LED2_NUM
+	#define PIN_UPANEL_LED3_MASK	digital_pin_to_bit_mask_PGM+PIN_UPANEL_LED3_NUM
+	#define PIN_UPANEL_LED4_MASK	digital_pin_to_bit_mask_PGM+PIN_UPANEL_LED4_NUM
+	#define PIN_UPANEL_LED5_MASK	digital_pin_to_bit_mask_PGM+PIN_UPANEL_LED5_NUM
+	#define PIN_UPANEL_LED6_MASK	digital_pin_to_bit_mask_PGM+PIN_UPANEL_LED6_NUM
+	#define PIN_UPANEL_LED7_MASK	digital_pin_to_bit_mask_PGM+PIN_UPANEL_LED7_NUM
+	
 	// Organizacja pami璚i:
 	/*
 	0x00	- NEUTRAL_VALUE kopia 0
@@ -185,7 +192,14 @@ ATMEGA8 / ARDUINO
 
 #endif
 
-/*------------------ UPANEL -------------------*/
+
+/*------------------------------  UPANEL    ------------------------------*/
+
+#define UPANEL_DEVICE_TYPE 0x13
+#define UPANEL_VERSION 0x01
+#define UPANEL_F_CPU 8000000
+#define UPANEL_CPU "atmega8"
+#define UPANEL_SERIAL0_BOUND 115200
 
 #if IS_UPANEL
 
@@ -213,8 +227,27 @@ ATMEGA8 / ARDUINO
 	#define PIN_UPANEL_LED5_MASK	digital_pin_to_bit_mask_PGM+PIN_UPANEL_LED5_NUM
 	#define PIN_UPANEL_LED6_MASK	digital_pin_to_bit_mask_PGM+PIN_UPANEL_LED6_NUM
 	#define PIN_UPANEL_LED7_MASK	digital_pin_to_bit_mask_PGM+PIN_UPANEL_LED7_NUM
-	
 
+
+	// Organizacja pami璚i:
+	/*
+	0x00	- i2c adres kopia 0
+	0x01	- i2c adres kopia 1
+	0x02	- i2c adres kopia 2
+
+	0xF0	- starts m這dsze
+	0xF1	- starts starsze
+	
+	0xF2	- i2c errors m這dsze
+	0xF3	- i2c errors starsze
+
+	0xFA	- watchdog m這dsze
+	0xFB	- watchdog starsze
+	*/
+	
+#endif
+
+#if HAS_LEDS
 	typedef struct{ 
 	  uint8_t pin;      // hardware I/O port and pin for this channel
 	  volatile uint8_t *outport;
@@ -238,25 +271,7 @@ ATMEGA8 / ARDUINO
 		{16,0,0,0,0,0},
 		{17,0,0,0,0,0}
 	};
-	
-	// Organizacja pami璚i:
-	/*
-	0x00	- i2c adres kopia 0
-	0x01	- i2c adres kopia 1
-	0x02	- i2c adres kopia 2
-
-	0xF0	- starts m這dsze
-	0xF1	- starts starsze
-	
-	0xF2	- i2c errors m這dsze
-	0xF3	- i2c errors starsze
-
-	0xFA	- watchdog m這dsze
-	0xFB	- watchdog starsze
-	*/
-	
 #endif
-
 
 
 /* 
