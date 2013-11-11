@@ -1,4 +1,5 @@
 #define IS_IPANEL true
+#define HAS_LEDS true
 #include <WSWire.h>
 #include <i2c_helpers.h>
 #include <barobot_common.h>
@@ -19,10 +20,8 @@ uint16_t servo_y_last = 0;
 uint16_t servo_z_last = 0;
 boolean diddd = false;
 
-
 void setup(){
-//  Serial.begin(38400);
-  Serial.begin(115200);
+  Serial.begin(IPANEL_SERIAL0_BOUND);
   Serial.println("wozek start"); 
   my_address = I2C_ADR_IPANEL;
   Wire.begin(I2C_ADR_IPANEL);
@@ -74,7 +73,6 @@ void proceed( volatile byte buffer[5] ){
   }
   buffer[0] = 0;  //ready
 }
-
 
 void receiveEvent(int howMany){
   if(!howMany){
