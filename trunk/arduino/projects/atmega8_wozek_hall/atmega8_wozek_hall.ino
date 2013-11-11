@@ -10,8 +10,7 @@ unsigned int last_max = 0;
 unsigned int last_min = 0;
 
 volatile byte input_buffer[IPANEL_BUFFER_LENGTH][5] = {{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0}};      // 6 buforow po 5 bajtów
-volatile byte out_buffer[5];
-volatile boolean was_event = false;
+volatile byte last_index = 0;
 
 Servo servoY;
 Servo servoZ;
@@ -19,7 +18,7 @@ Servo servoZ;
 uint16_t servo_y_last = 0;
 uint16_t servo_z_last = 0;
 boolean diddd = false;
-volatile byte in_buffer1[5];
+
 
 void setup(){
 //  Serial.begin(38400);
@@ -32,50 +31,49 @@ void setup(){
   send_here_i_am();  // wyslij ze oto jestem
   pinMode(PIN_IPANEL_LED_TEST, OUTPUT);
   diddd = !diddd;
-  digitalWrite(PIN_IPANEL_LED_TEST, true);
+  digitalWrite(PIN_IPANEL_LED_TEST, LOW);
 }
 
 long int mil = 0;
 long int milis100 = 0;
-
 
 void loop() {
   mil = millis();
   if( mil > milis100 + 4000 ){    // co 4 sek
         milis100 = mil;
   }
-/*
-  for( byte i=0;i<BUFFER_LENGTH;i++){
-    if( input_buffer[i][0] ){
+  for( byte i=0;i<IPANEL_BUFFER_LENGTH;i++){
+    if( input_buffer[i][0] >0 && bit_is_clear(input_buffer[i][0], 3 )){    // 0000 1000 b
       proceed( input_buffer[i] );
       input_buffer[i][0] = 0;
     }
-  }*/ 
+  }
 }
 
 void proceed( volatile byte buffer[5] ){
+  Serial.print("proceed - ");
+  printHex(buffer[0], false);
+  Serial.print(" ");
+  printHex(buffer[1], false);
+  Serial.print(" ");
+  printHex(buffer[2]);
+
   if(buffer[0] == 0x21){    // slave input pin value
-//    printHex(buffer[1], false );
-  String ss = "- IN " + String(buffer[2]) + ": " + String(buffer[3]);
-  Serial.println(ss);
-  }else if(buffer[0] == 0x22){    // poke - wcisnieto przycisk
-  }else if( buffer[0]  == 0x29 ){          // TEPE + VERSION       3 bajty
-      byte ttt[2] = {UPANEL_DEVICE_TYPE,UPANEL_VERSION};
-      Wire.write(ttt,2);
-  }else if( buffer[0]  == 0x2A ){    // return xor
-      byte res = in_buffer1[1] ^ in_buffer1[2];
-      Wire.write(res);
-      if( res & 1 ){    // ustawiony najmlodzzy bit
-        diddd = !diddd;
-        digitalWrite(PIN_IPANEL_LED_TEST, diddd);
-      }
+  //    printHex(buffer[1], false );
+    String ss = "- IN " + String(buffer[2]) + ": " + String(buffer[3]);
+    Serial.println(ss);
+  }else if( buffer[0]  == 0xff ){ 
+
   }else{
-    Serial.print("recieve unknown - ");
-    printHex(buffer[0]);
+    Serial.print("proceed unknown - ");
+    printHex(buffer[0], false);
+    Serial.print(" ");
+    printHex(buffer[1], false);
+    Serial.print(" ");
+    printHex(buffer[2]);
   }
   buffer[0] = 0;  //ready
 }
-
 
 
 void receiveEvent(int howMany){
@@ -94,26 +92,35 @@ void receiveEvent(int howMany){
         printHex(w, false ); 
       }
       Serial.println(""); 
+      last_index = a;
       return;
     }
   }
   Serial.println(" - pelno"); 
 }
 
-void requestEvent(){ 
+void requestEvent(){
   // w in_buffer jest polecenie
-    byte command = in_buffer1[0];
+    byte command = input_buffer[last_index][0];
     if( command == 0x29 ){          // TEPE + VERSION       3 bajty
         byte ttt[2] = {IPANEL_DEVICE_TYPE,IPANEL_VERSION};
         Wire.write(ttt,2);
     }else if( command == 0x2A ){    // return xor
-        byte res = in_buffer1[1] ^ in_buffer1[2];
+        byte res = input_buffer[last_index][1] ^ input_buffer[last_index][2];
         Wire.write(res);
         if( res & 1 ){    // ustawiony najmlodzzy bit
           diddd = !diddd;
           digitalWrite(PIN_IPANEL_LED_TEST, diddd);
         }
+    }else{
+      Serial.print("requestEvent unknown - ");
+      printHex(input_buffer[last_index][0], false);
+      Serial.print(" ");
+      printHex(input_buffer[last_index][1], false);
+      Serial.print(" ");
+      printHex(input_buffer[last_index][2]);
     }
+    input_buffer[last_index][0] = 0;
 }
 
 static void send_pin_value( byte pin, byte value ){
@@ -123,15 +130,26 @@ static void send_pin_value( byte pin, byte value ){
 }
 
 static void send_here_i_am(){
-  byte ttt[4] = {0x23,my_address,TROLLEY_DEVICE_TYPE,TROLLEY_VERSION};
-  Serial.println("hello "+ String( my_address ));  
+  byte ttt[4] = {0x23,my_address,IPANEL_DEVICE_TYPE,IPANEL_VERSION};
+//  Serial.println("hello "+ String( my_address ));  
   send(ttt,4);
 }
 byte send( byte buffer[], byte ss ){
   Wire.beginTransmission(I2C_ADR_MAINBOARD);  
   Wire.write(buffer,ss);
   byte error = Wire.endTransmission();
-  Serial.println("out "+ String( my_address ) +": ("+ String( buffer[0] ) +","+ String(buffer[1])+ ") e: " + String(error));
+  
+  Serial.print("out "+ String( my_address ) +": (" );
+  printHex( buffer[0], false ); 
+  Serial.print(" ");
+  printHex( buffer[1], false ); 
+  Serial.print(" ");
+  printHex( buffer[2], false ); 
+  Serial.print(" ");
+  printHex( buffer[3], false ); 
+  Serial.println( ") e: " + String(error));
+  
+  
   return error;
 }
 
