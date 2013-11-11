@@ -18,19 +18,17 @@ MAINBOARD -> UPANEL (over TWI)
 0001 0100 b	=	0x14	void setDir( byte pin, byte dir) 						// Ustaw kierunek dla PINU o numerze ( 3 bajty )
 0001 0101 b	=	0x15	void setOutput( byte pin, byte value) 					// Wpisz cyfrowo PIN o numerze	 ( 3 bajty )
 
-0010 0001 b	=	0x26	2xbyte getAnalogValue( byte pin )						// Pobierz analogowo wartość PIN o numerze ( 2 bajty )
+0010 1001 b	=	0x26	2xbyte getAnalogValue( byte pin )						// Pobierz analogowo wartość PIN o numerze ( 2 bajty )
 0010 1000 b	=	0x28	byte getValue( byte pin )								// Pobierz cyfrowo wartość PIN o numerze ( 2 bajty )
 
 ----------------------------------------------------------------------
-MAINBOARD -> WOZEK (over TWI)
+MAINBOARD -> IPANEL (over TWI)
 
 0001 0001 b	=	0x11	void goToServoYPos( byte high_val, byte low_val )
 0001 0010 b	=	0x12	void goToServoZPos( byte high_val, byte low_val )
 
-0010 0000 b	=	0x21	2xbyte goServoYPos();
-0010 0000 b	=	0x22	2xbyte goServoZPos();
-
-
+0010 1000 b	=	0x25	2xbyte goServoYPos();
+0010 1000 b	=	0x26	2xbyte goServoZPos();
 
 
 STAN:
@@ -41,8 +39,6 @@ STAN:
 	TO_FAR
 	TO_CLOSE
 
-
-
 ----------------------------------------------------------------------
 WOZEK -> MAINBOARD (over TWI)
 
@@ -50,11 +46,6 @@ HALL:
 
 local_max( hall, max_value )
 global_max( hall, max_value )
-
-
-
-
-
 
 
 UPANEL -> MAINBOARD (over TWI)
@@ -84,33 +75,7 @@ Silnik
 					
 		
 
-		
-		
-		
-		
-		
-		
-		
-Kody błedów:
 
-0x10	I2C HANGS
-0x11	WATCHDOG ALERT
-0x12	DONT UNDERSTAND
-0x14	INPUT OUT OF RANGE
-0x15	SENSOR VALUE OUT OD RANGE 
-0x16	SENSOR DISCONNECTED
-0x17	MOVE ERROR
-0x18	STOP EVERYTHING
-0x1
-0x1
-0x1
-0x1
-
-
-
-
-
-		
 		
 		
 		
@@ -194,7 +159,33 @@ U-panel
 
 
 avrdude -P COM7 -c arduino -p atmega8 -v -v -v -v -v -i 100 -b 38400
-avrdude -P COM40 -c stk500v1 -p m328p -v -v -v -v -v -i 100 -b 57600
+		
+		
+		
+		
+		
+		
+		
+Kody błedów:
+
+0x10	I2C HANGS
+0x11	WATCHDOG ALERT
+0x12	DONT UNDERSTAND
+0x14	INPUT OUT OF RANGE
+0x15	SENSOR VALUE OUT OD RANGE 
+0x16	SENSOR DISCONNECTED
+0x17	MOVE ERROR
+0x18	STOP EVERYTHING
+0x1
+0x1
+0x1
+0x1
+
+
+
+
+
+		avrdude -P COM40 -c stk500v1 -p m328p -v -v -v -v -v -i 100 -b 57600
 
 
 
