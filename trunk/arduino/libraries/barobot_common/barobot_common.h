@@ -42,11 +42,12 @@ ATMEGA8 / ARDUINO
 #define IPANEL_CPU "atmega328"
 
 /*------------------------------ TROLLEY    ------------------------------*/
+/*
 #define TROLLEY_DEVICE_TYPE 0x13
 #define TROLLEY_VERSION 0x01
 #define TROLLEY_F_CPU 8000000
 #define TROLLEY_CPU "atmega8"
-
+*/
 
 
 /*------------------------------ PROGRAMMER ------------------------------*/
@@ -144,8 +145,8 @@ ATMEGA8 / ARDUINO
 
 	*/
 
-	#define IPANEL_COMMON_ANODE true		// sterowanie plusem? false gdy sterowaniem minusem
-	#define IPANEL_BUFFER_LENGTH 10
+	#define IPANEL_COMMON_ANODE false		// sterowanie plusem? false gdy sterowaniem minusem
+	#define IPANEL_BUFFER_LENGTH 6
 		
 	// domyslen ustawienie mocy silnika Z
 	// pozycja jechania do góry i czas jechania
@@ -188,7 +189,7 @@ ATMEGA8 / ARDUINO
 
 #if IS_UPANEL
 
-	#define UPANEL_COMMON_ANODE true		// sterowanie plusem? false gdy sterowaniem minusem
+	#define UPANEL_COMMON_ANODE false		// sterowanie plusem? false gdy sterowaniem minusem
 
 	#define PIN_UPANEL_LEFT_RESET 14
 	#define PIN_UPANEL_POKE 3			// dip pin 5
@@ -213,7 +214,31 @@ ATMEGA8 / ARDUINO
 	#define PIN_UPANEL_LED6_MASK	digital_pin_to_bit_mask_PGM+PIN_UPANEL_LED6_NUM
 	#define PIN_UPANEL_LED7_MASK	digital_pin_to_bit_mask_PGM+PIN_UPANEL_LED7_NUM
 	
-		
+
+	typedef struct{ 
+	  uint8_t pin;      // hardware I/O port and pin for this channel
+	  volatile uint8_t *outport;
+	  uint8_t pinmask;
+	  uint8_t current_pwm;
+	  uint8_t fadeup;      // 0- 15
+	  uint8_t fadedown;    // 0- 15
+	  uint8_t pwmup;       // PWM przy UP
+	  uint8_t pwmdown;     // PWM przy DOWN
+	  uint8_t timedown;    // Czas trwania UP
+	  uint8_t timeup;      // Czas trwania DOWN
+	} PWMChannel;
+
+	volatile PWMChannel _pwm_channels[COUNT_UPANEL_ONBOARD_LED]= {
+		{4,0,0,0,0,0},
+		{5,0,0,0,0,0},
+		{6,0,0,0,0,0},
+		{7,0,0,0,0,0},
+		{8,0,0,0,0,0},
+		{9,0,0,0,0,0},
+		{16,0,0,0,0,0},
+		{17,0,0,0,0,0}
+	};
+	
 	// Organizacja pamiêci:
 	/*
 	0x00	- i2c adres kopia 0
@@ -228,9 +253,7 @@ ATMEGA8 / ARDUINO
 
 	0xFA	- watchdog m³odsze
 	0xFB	- watchdog starsze
-
 	*/
-	
 	
 #endif
 
