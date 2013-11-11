@@ -1,0 +1,74 @@
+eeschema (2013-07-07 BZR 4022)-stable  >> Creation date: 2013-11-05 00:17:29
+#Cmp ( sort. wg = Oznaczenie ) (z podelementem)
+| C1         27p         ~                   ; ~           ; ~           
+| C2         27p         ~                   ; ~           ; ~           
+| C3         100nF       ~                   ; SM1206      ; ~           
+| C4         100nF       ~                   ; SM1206      ; ~           
+| C5         100nF       ~                   ; SM1206      ; ~           
+| D1         LED         ~                   ; SM1206      ; ~           
+| D2         LED         ~                   ; SM1206      ; ~           
+| D3         LED         ~                   ; SM1206      ; ~           
+| hall_x1    CONN_3                          ;             ;             
+| hall_y1    CONN_3                          ;             ;             
+| IC1        ATMEGA328P-A                    ; TQFP32      ;             
+| LED1       LEDS2_CRBG                      ; SM1206      ;             
+| LED2       LEDS2_CRBG                      ; SM1206      ;             
+| LED3       LEDS2_CRBG                      ; SM1206      ;             
+| P1         CONN_8                          ;             ;             
+| R1         10k         ~                   ; SM1206      ; ~           
+| R2         10k         ~                   ; SM1206      ; ~           
+| R3         10k         ~                   ; SM1206      ; ~           
+| R4         10k         ~                   ; SM1206      ; ~           
+| R5         10k         ~                   ; SM1206      ; ~           
+| R6         10k         ~                   ; SM1206      ; ~           
+| R7         10k         ~                   ; SM1206      ; ~           
+| R8         10k         ~                   ; SM1206      ; ~           
+| R9         10k         ~                   ; SM1206      ; ~           
+| R10        10k         ~                   ; SM1206      ; ~           
+| R11        10k         ~                   ; SM1206      ; ~           
+| Servo_Y1   CONN_3                          ;             ;             
+| Servo_Z1   CONN_3                          ;             ;             
+| SW1        SW_PUSH_SMALL~                   ; SM0201_r    ; ~           
+| U2         ULN2003A                        ; SM1206      ;             
+| UART1      CONN_3                          ;             ;             
+| Waga1      CONN_2                          ;             ;             
+| X1         16MHz       ~                   ; ~           ; ~           
+#End Cmp
+
+#Cmp ( sort. wg = Wartość ) (z podelementem)
+| CONN_3       Servo_Z1  Loc /(X=116,840 mm, Y=201,930 mm);             ;             
+| 27p          C1        Loc /(X=104,140 mm, Y=198,120 mm); ~           ; ~           
+| ATMEGA328P-A IC1       Loc /(X=76,200 mm, Y=99,060 mm); TQFP32      ;             
+| LEDS2_CRBG   LED1      Loc /(X=233,680 mm, Y=113,030 mm); SM1206      ;             
+| LEDS2_CRBG   LED2      Loc /(X=222,250 mm, Y=142,240 mm); SM1206      ;             
+| LEDS2_CRBG   LED3      Loc /(X=220,980 mm, Y=125,730 mm); SM1206      ;             
+| CONN_8       P1        Loc /(X=125,730 mm, Y=30,480 mm);             ;             
+| 10k          R1        Loc /(X=77,470 mm, Y=57,150 mm); SM1206      ; ~           
+| CONN_3       Servo_Y1  Loc /(X=132,080 mm, Y=201,930 mm);             ;             
+| 27p          C2        Loc /(X=88,900 mm, Y=198,120 mm); ~           ; ~           
+| 100nF        C3        Loc /(X=19,050 mm, Y=64,770 mm); SM1206      ; ~           
+| 100nF        C4        Loc /(X=24,130 mm, Y=78,740 mm); SM1206      ; ~           
+| 100nF        C5        Loc /(X=44,450 mm, Y=86,360 mm); SM1206      ; ~           
+| LED          D1        Loc /(X=224,790 mm, Y=162,560 mm); SM1206      ; ~           
+| LED          D2        Loc /(X=223,520 mm, Y=104,140 mm); SM1206      ; ~           
+| LED          D3        Loc /(X=224,790 mm, Y=168,910 mm); SM1206      ; ~           
+| 10k          R2        Loc /(X=113,030 mm, Y=158,750 mm); SM1206      ; ~           
+| 10k          R3        Loc /(X=209,550 mm, Y=162,560 mm); SM1206      ; ~           
+| 10k          R4        Loc /(X=154,940 mm, Y=104,140 mm); SM1206      ; ~           
+| 10k          R5        Loc /(X=198,120 mm, Y=109,220 mm); SM1206      ; ~           
+| 10k          R6        Loc /(X=198,120 mm, Y=113,030 mm); SM1206      ; ~           
+| 10k          R7        Loc /(X=198,120 mm, Y=116,840 mm); SM1206      ; ~           
+| 10k          R8        Loc /(X=205,740 mm, Y=138,430 mm); SM1206      ; ~           
+| 10k          R9        Loc /(X=205,740 mm, Y=142,240 mm); SM1206      ; ~           
+| 10k          R10       Loc /(X=205,740 mm, Y=146,050 mm); SM1206      ; ~           
+| 10k          R11       Loc /(X=209,550 mm, Y=168,910 mm); SM1206      ; ~           
+| CONN_3       hall_y1   Loc /(X=177,800 mm, Y=201,930 mm);             ;             
+| CONN_3       hall_x1   Loc /(X=163,830 mm, Y=201,930 mm);             ;             
+| SW_PUSH_SMALL SW1       Loc /(X=110,490 mm, Y=170,180 mm); SM0201_r    ; ~           
+| ULN2003A     U2        Loc /(X=158,750 mm, Y=119,380 mm); SM1206      ;             
+| CONN_3       UART1     Loc /(X=115,570 mm, Y=144,780 mm);             ;             
+| CONN_2       Waga1     Loc /(X=147,320 mm, Y=201,930 mm);             ;             
+| 16MHz        X1        Loc /(X=96,520 mm, Y=190,500 mm); ~           ; ~           
+#Koniec Cmp
+
+#Koniec listy
