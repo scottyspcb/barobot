@@ -1,14 +1,14 @@
 #define IS_MAINBOARD true
+#define IS_PROGRAMMER true
 #include <WSWire.h>
 #include <barobot_common.h>
+#include <i2c_helpers.h>
 
-int led = 13;
 
-#define BUFFER_LENGTH 10
 volatile byte in_buffer[5];
-volatile byte input_buffer[BUFFER_LENGTH][5] = {{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0}};      // 6 buforow po 5 bajtów
+volatile byte input_buffer[MAINBOARD_BUFFER_LENGTH][5] = {{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0}};      // 6 buforow po 5 bajtów
 volatile byte out_buffer[5];
-volatile boolean was_event = false;
+
 
 byte nextpos = 0;
 boolean scann_order = false;
@@ -21,13 +21,11 @@ void setup(){
   Serial.begin(115200);
   Wire.begin(I2C_ADR_MAINBOARD);
   Wire.onReceive(receiveEvent);
-  pinMode(led, OUTPUT);  
 }
 
 byte pin = 0;
 //byte address = 0x04;
 byte nDevices=0;
-byte error=0;
 
 void check_i2c(){  
   Wire.beginTransmission(I2C_ADR_RESERVED);
@@ -35,18 +33,27 @@ void check_i2c(){
   if(ee == 6 ){    // niedrozna - resetuj i2c
     Serial.println("RESET WIRE");
     Wire.begin(I2C_ADR_MAINBOARD);
+/*
     for(byte sa = 0x05; sa <= 110; sa++ ) {       // wyslij wszystkim ze reset
       out_buffer[0]  = 0x16;
       writeRegisters(sa, 1, true );
-    }
-    pinMode(PIN_MAINBOARD_LEFT_RESET, OUTPUT); 
-    digitalWrite(PIN_MAINBOARD_LEFT_RESET, LOW);       // pin w stanie niskim
+    }*/
+    pinMode(PIN_PROGRAMMER_RESET_UPANEL, OUTPUT); 
+    digitalWrite(PIN_PROGRAMMER_RESET_UPANEL, LOW);       // pin w stanie niskim
+    
+    pinMode(PIN_PROGRAMMER_RESET_IPANEL, OUTPUT); 
+    digitalWrite(PIN_PROGRAMMER_RESET_IPANEL, LOW);       // pin w stanie niskim
+
     asm("nop");    // at least 1,5 us
     // end reset = start first slave
-    pinMode(PIN_MAINBOARD_LEFT_RESET, INPUT);          // set pin to input
-    digitalWrite(PIN_MAINBOARD_LEFT_RESET, LOW);       // turn OFF pullup resistors
+    pinMode(PIN_PROGRAMMER_RESET_UPANEL, INPUT);          // set pin to input
+    digitalWrite(PIN_PROGRAMMER_RESET_UPANEL, LOW);       // turn OFF pullup resistors
+    
+    pinMode(PIN_PROGRAMMER_RESET_IPANEL, INPUT);          // set pin to input
+    digitalWrite(PIN_PROGRAMMER_RESET_IPANEL, LOW);       // turn OFF pullup resistors 
   }
 }
+
 int kk  =1;
 void loop(){
   Serial.println("----------LOOP------");
@@ -60,11 +67,12 @@ void loop(){
       pin = 0;
   }
   nDevices = 0;
+  byte error=0;
   for(byte addr2 = 1; addr2 < 20; addr2++ )   {
     Wire.beginTransmission(addr2);
     error = Wire.endTransmission();
     if (error == 0){
-      Serial.print("I2C device found at address: ");
+      Serial.print("device found at:");
       printHex(addr2, false );
       uint16_t readed = i2c_getVersion(addr2);
       Serial.print(" type: ");
@@ -83,15 +91,12 @@ void loop(){
   Serial.println("Devices:" + String(nDevices));
   scann();
   kk++;
-  if(kk>=5){
+  if(kk>=7){
     get_order();
     kk=0;
   }
-  digitalWrite(led, HIGH); 
-  delay(100);
-  digitalWrite(led, LOW);
-  delay(100);
-  for( byte i=0;i<BUFFER_LENGTH;i++){
+  delay(2000);
+  for( byte i=0;i<MAINBOARD_BUFFER_LENGTH;i++){
     if( input_buffer[i][0] ){
       proceed( input_buffer[i] );
       input_buffer[i][0] = 0;
@@ -102,8 +107,7 @@ void loop(){
 void scann(){
   byte error;
   int nDevices= 0;
-
-  for(byte aaa = 1; aaa < 127; aaa++ ) {
+  for(byte aaa = I2C_ADR_MAINBOARD; aaa < 20; aaa++ ) {
     Wire.beginTransmission(aaa);
     error = Wire.endTransmission();
     if (error == 0){
@@ -114,26 +118,25 @@ void scann(){
         nDevices++;
       }else{
         printHex( aaa, false );
-        Serial.println("- !!! to nie jest urzadzenie i2c");
+        Serial.print("- !!! to nie jest urzadzenie i2c: ret 0x");
+        printHex( (readed>>8), false );
+        printHex( (readed & 0xff) );
       }
     } else if (error==4){
       Serial.print("!!!Unknow error at address 0x");
       printHex(aaa );
     }else{
-    //  Serial.print("no dev at address 0x");
-    //  printHex(aaa );
-    //  printHex(error );
+//      Serial.print("error " +String(error)  +" at address 0x");
+//      printHex(aaa);
     }
   }
 }
 
-
-
 void proceed( volatile byte buffer[5] ){
   if(buffer[0] == 0x21){    // slave input pin value
 //    printHex(buffer[1], false );
-  //  String ss = "- IN " + String(buffer[2]) + ": " + String(buffer[3]);
-  //  Serial.println(ss);
+  String ss = "- IN " + String(buffer[2]) + ": " + String(buffer[3]);
+  Serial.println(ss);
   }else if(buffer[0] == 0x22){    // poke - wcisnieto przycisk
   }else if(buffer[0] == 0x23){    // here_i_am
     // sprawdz czy ten adres nie jest uzywany
@@ -204,20 +207,21 @@ void i2c_run_next( byte slave_address ){			            // Koniec resetu urządze
 }
 
 void get_order(){      // pobierz kolejnosc elementów
-      pinMode(PIN_MAINBOARD_LEFT_RESET, OUTPUT); 
-      digitalWrite(PIN_MAINBOARD_LEFT_RESET, LOW);       // pin w stanie niskim
+      Serial.println("Resetuje");
+
+      pinMode(PIN_PROGRAMMER_RESET_UPANEL, OUTPUT); 
+      digitalWrite(PIN_PROGRAMMER_RESET_UPANEL, LOW);       // pin w stanie niskim
       asm("nop");    // at least 1,5 us
-      asm("nop");    // at least 1,5 us 
       // end reset = start first slave
-      pinMode(PIN_MAINBOARD_LEFT_RESET, INPUT);          // set pin to input
-      digitalWrite(PIN_MAINBOARD_LEFT_RESET, LOW);       // turn OFF pullup resistors        
-      // wait for  here_i_am {0x23,my_address}
+      pinMode(PIN_PROGRAMMER_RESET_UPANEL, INPUT);          // set pin to input
+      digitalWrite(PIN_PROGRAMMER_RESET_UPANEL, LOW);       // turn OFF pullup resistors        
+      // wait for  here_i_am {0x23,my_address,type,ver}
       nextpos = 0;
       Serial.println("get_order");
       scann_order = true;
 }
 
-void i2c_setOutput( byte slave_address, byte new_addr ){			                	// Zmień adres I2c, musi być podane co najmniej 4 razy zeby zadziałało. (2 bajty)
+void i2c_setOutput( byte slave_address, byte new_addr ){			// Zmień adres I2c, musi być podane co najmniej 4 razy zeby zadziałało. (2 bajty)
   out_buffer[0]  = 0x1E;
   out_buffer[1]  = new_addr;
   writeRegisters(slave_address, 2, true );    // powtarzaj
@@ -339,7 +343,7 @@ void receiveEvent(int howMany){
   byte cnt = 0;
   volatile byte (*buffer) = 0;
   Serial.print("input " );
-  for( byte a = 0; a < BUFFER_LENGTH; a++ ){
+  for( byte a = 0; a < MAINBOARD_BUFFER_LENGTH; a++ ){
     if(input_buffer[a][0] == 0 ){
       buffer = (&input_buffer[a][0]); 
       while( Wire.available()){ // loop through all but the last
@@ -417,7 +421,7 @@ byte writeRegisters(int deviceAddress, byte length, boolean wait) {
 
 
 
-
+/*
 void printHex(byte val){
   int temp =  val;  
   Serial.println(temp,HEX);
@@ -430,7 +434,7 @@ void printHex(byte val, boolean newline){
     Serial.print(temp,HEX);
   }
 }
-
+*/
 
 /*
 byte GetRegisters(byte deviceAddress, byte command, byte length){
@@ -490,3 +494,447 @@ byte readRegisterTemp(int deviceAddress, byte command){
     return Wire.read();
 }
 */
+
+
+#define HWVER 2
+#define SWMAJ 1
+#define SWMIN 18
+#define EECHUNK (32)
+
+#define PTIME       30
+#define STK_OK      0x10
+#define STK_FAILED  0x11
+#define STK_UNKNOWN 0x12
+#define STK_INSYNC  0x14
+#define STK_NOSYNC  0x15
+#define CRC_EOP     0x20
+#define beget16(addr) (*addr * 256 + *(addr+1) )
+
+typedef struct param {
+  uint8_t devicecode;
+  uint8_t revision;
+  uint8_t progtype;
+  uint8_t parmode;
+  uint8_t polling;
+  uint8_t selftimed;
+  uint8_t lockbytes;
+  uint8_t fusebytes;
+  int flashpoll;
+  int eeprompoll;
+  int pagesize;
+  int eepromsize;
+  int flashsize;
+} parameter;
+
+parameter param;
+int error=0;
+int pmode=0;
+// address for reading and writing, set by 'U' command
+int here;
+uint8_t buff[256]; // global block storage
+uint8_t hbval=128;
+int8_t hbdelta=8;
+
+
+
+void pulse(int pin, int times) {
+  do {
+    digitalWrite(pin, HIGH);
+    delay(PTIME);
+    digitalWrite(pin, LOW);
+    delay(PTIME);
+  } 
+  while (times--);
+}
+void heartbeat() {    // this provides a heartbeat on pin 9, so you can tell the software is running.
+  if (hbval > 192) hbdelta = -hbdelta;
+  if (hbval < 32) hbdelta = -hbdelta;
+  hbval += hbdelta;
+  analogWrite(PIN_PROGRAMMER_LED_STATE, hbval);
+  delay(20);
+}
+
+void start_isp() {
+  Serial.begin(19200);
+
+  pinMode(PIN_PROGRAMMER_LED_ACTIVE, OUTPUT);
+  pinMode(PIN_PROGRAMMER_LED_ERROR, OUTPUT);  
+  pinMode(PIN_PROGRAMMER_LED_STATE, OUTPUT);
+ 
+  pulse(PIN_PROGRAMMER_LED_ACTIVE, 2);
+  pulse(PIN_PROGRAMMER_LED_ERROR, 2);
+  pulse(PIN_PROGRAMMER_LED_STATE, 2);
+  
+  while(true){
+    loop_isp();
+  }
+}
+
+void loop_isp() {
+  // is pmode active?
+  if (pmode) {
+    digitalWrite(PIN_PROGRAMMER_LED_ACTIVE, HIGH); 
+  }
+  else digitalWrite(PIN_PROGRAMMER_LED_ACTIVE, LOW);
+  // is there an error?
+  if (error){
+    digitalWrite(PIN_PROGRAMMER_LED_ERROR, HIGH); 
+  }
+  else {
+    digitalWrite(PIN_PROGRAMMER_LED_ERROR, LOW);
+  }
+
+  // light the heartbeat LED
+  heartbeat();
+  if (Serial.available()) {
+    simulateisp();
+  }
+}
+
+uint8_t getch() {
+  while(!Serial.available());
+  return Serial.read();
+}
+void fill(int n) {
+  for (int x = 0; x < n; x++) {
+    buff[x] = getch();
+  }
+}
+
+void prog_lamp(int state) {
+  if (PROG_FLICKER)
+    digitalWrite(PIN_PROGRAMMER_LED_ACTIVE, state);
+}
+
+void spi_init() {
+  uint8_t x;
+  SPCR = 0x53;
+  x=SPSR;
+  x=SPDR;
+}
+
+void spi_wait() {
+  do {
+  } while (!(SPSR & (1 << SPIF)));
+}
+
+uint8_t spi_send(uint8_t b) {
+  uint8_t reply;
+  SPDR=b;
+  spi_wait();
+  reply = SPDR;
+  return reply;
+}
+
+uint8_t spi_transaction(uint8_t a, uint8_t b, uint8_t c, uint8_t d) {
+  uint8_t n;
+  spi_send(a); 
+  n=spi_send(b);
+  //if (n != a) error = -1;
+  n=spi_send(c);
+  return spi_send(d);
+}
+
+void empty_reply() {
+  if (CRC_EOP == getch()) {
+    Serial.print((char)STK_INSYNC);
+    Serial.print((char)STK_OK);
+  } else {
+    error++;
+    Serial.print((char)STK_NOSYNC);
+  }
+}
+
+void breply(uint8_t b) {
+  if (CRC_EOP == getch()) {
+    Serial.print((char)STK_INSYNC);
+    Serial.print((char)b);
+    Serial.print((char)STK_OK);
+  } else {
+    error++;
+    Serial.print((char)STK_NOSYNC);
+  }
+}
+
+void get_version(uint8_t c) {
+  switch(c) {
+  case 0x80:
+    breply(HWVER);
+    break;
+  case 0x81:
+    breply(SWMAJ);
+    break;
+  case 0x82:
+    breply(SWMIN);
+    break;
+  case 0x93:
+    breply('S'); // serial programmer
+    break;
+  default:
+    breply(0);
+  }
+}
+
+void set_parameters() {
+  // call this after reading paramter packet into buff[]
+  param.devicecode = buff[0];
+  param.revision   = buff[1];
+  param.progtype   = buff[2];
+  param.parmode    = buff[3];
+  param.polling    = buff[4];
+  param.selftimed  = buff[5];
+  param.lockbytes  = buff[6];
+  param.fusebytes  = buff[7];
+  param.flashpoll  = buff[8]; 
+  // ignore buff[9] (= buff[8])
+  // following are 16 bits (big endian)
+  param.eeprompoll = beget16(&buff[10]);
+  param.pagesize   = beget16(&buff[12]);
+  param.eepromsize = beget16(&buff[14]);
+
+  // 32 bits flashsize (big endian)
+  param.flashsize = buff[16] * 0x01000000+ buff[17] * 0x00010000 + buff[18] * 0x00000100 + buff[19];
+}
+
+void start_pmode() {
+  spi_init();
+  // following delays may not work on all targets...
+  byte reset_pin  = PIN_PROGRAMMER_RESET_UPANEL;
+  pinMode(reset_pin, OUTPUT);
+  digitalWrite(reset_pin, HIGH);
+  pinMode(SCK, OUTPUT);
+  digitalWrite(SCK, LOW);
+  delay(50);
+  digitalWrite(reset_pin, LOW);
+  delay(50);
+  pinMode(MISO, INPUT);
+  pinMode(MOSI, OUTPUT);
+  spi_transaction(0xAC, 0x53, 0x00, 0x00);
+  pmode = 1;
+}
+
+void end_pmode() {
+  pinMode(MISO, INPUT);
+  pinMode(MOSI, INPUT);
+  pinMode(SCK, INPUT);
+  byte reset_pin  = PIN_PROGRAMMER_RESET_UPANEL;
+  pinMode(reset_pin, INPUT);    // ten jako ostati
+  pmode = 0;
+}
+
+void universal() {
+  int w;
+  uint8_t ch;
+  fill(4);
+  ch = spi_transaction(buff[0], buff[1], buff[2], buff[3]);
+  breply(ch);
+}
+
+void flash(uint8_t hilo, int addr, uint8_t data) {
+  spi_transaction(0x40+8*hilo, 
+  addr>>8 & 0xFF, 
+  addr & 0xFF,
+  data);
+}
+void commit(int addr) {
+  if (PROG_FLICKER) prog_lamp(LOW);
+  spi_transaction(0x4C, (addr >> 8) & 0xFF, addr & 0xFF, 0);
+  if (PROG_FLICKER) {
+    delay(PTIME);
+    prog_lamp(HIGH);
+  }
+}
+
+//#define _current_page(x) (here & 0xFFFFE0)
+int current_page(int addr) {
+  if (param.pagesize == 32)  return here & 0xFFFFFFF0;
+  if (param.pagesize == 64)  return here & 0xFFFFFFE0;
+  if (param.pagesize == 128) return here & 0xFFFFFFC0;
+  if (param.pagesize == 256) return here & 0xFFFFFF80;
+  return here;
+}
+
+void write_flash(int length) {
+  fill(length);
+  if (CRC_EOP == getch()) {
+    Serial.print((char) STK_INSYNC);
+    Serial.print((char) write_flash_pages(length));
+  }else {
+    error++;
+    Serial.print((char) STK_NOSYNC);
+  }
+}
+
+uint8_t write_flash_pages(int length) {
+  int x = 0;
+  int page = current_page(here);
+  while (x < length) {
+    if (page != current_page(here)) {
+      commit(page);
+      page = current_page(here);
+    }
+    flash(LOW, here, buff[x++]);
+    flash(HIGH, here, buff[x++]);
+    here++;
+  }
+
+  commit(page);
+  return STK_OK;
+}
+
+void program_page() {
+  char result = (char) STK_FAILED;
+  int length = 256 * getch();
+  length += getch();
+  char memtype = getch();
+  // flash memory @here, (length) bytes
+  if (memtype == 'F') {
+    write_flash(length);
+    return;
+  }
+  if (memtype == 'E') {
+    result = STK_OK;
+    if (CRC_EOP == getch()) {
+      Serial.print((char) STK_INSYNC);
+      Serial.print(result);
+    } else {
+      error++;
+      Serial.print((char) STK_NOSYNC);
+    }
+    return;
+  }
+  Serial.print((char)STK_FAILED);
+  return;
+}
+
+uint8_t flash_read(uint8_t hilo, int addr) {
+  return spi_transaction(0x20 + hilo * 8,
+  (addr >> 8) & 0xFF,
+  addr & 0xFF,
+  0);
+}
+
+char flash_read_page(int length) {
+  for (int x = 0; x < length; x+=2) {
+    uint8_t low = flash_read(LOW, here);
+    Serial.print((char) low);
+    uint8_t high = flash_read(HIGH, here);
+    Serial.print((char) high);
+    here++;
+  }
+  return STK_OK;
+}
+
+void read_page() {
+  char result = (char)STK_FAILED;
+  int length = 256 * getch();
+  length += getch();
+  char memtype = getch();
+  if (CRC_EOP != getch()) {
+    error++;
+    Serial.print((char) STK_NOSYNC);
+    return;
+  }
+  Serial.print((char) STK_INSYNC);
+  if (memtype == 'F') {
+    result = flash_read_page(length);
+  }
+
+  Serial.print(result);
+  return;
+}
+
+void read_signature() {
+  if (CRC_EOP != getch()) {
+    error++;
+    Serial.print((char) STK_NOSYNC);
+    return;
+  }
+  Serial.print((char) STK_INSYNC);
+  uint8_t high = spi_transaction(0x30, 0x00, 0x00, 0x00);
+  Serial.print((char) high);
+  uint8_t middle = spi_transaction(0x30, 0x00, 0x01, 0x00);
+  Serial.print((char) middle);
+  uint8_t low = spi_transaction(0x30, 0x00, 0x02, 0x00);
+  Serial.print((char) low);
+  Serial.print((char) STK_OK);
+}
+
+int simulateisp() { 
+  uint8_t data, low, high;
+  uint8_t ch = getch();
+  switch (ch) {
+  case '0': // signon
+    error = 0;
+    empty_reply();
+    break;
+  case '1':
+    if (getch() == CRC_EOP) {
+      Serial.print((char) STK_INSYNC);
+      Serial.print("AVR ISP");
+      Serial.print((char) STK_OK);
+    }
+    break;
+  case 'A':
+    get_version(getch());
+    break;
+  case 'B':
+    fill(20);
+    set_parameters();
+    empty_reply();
+    break;
+  case 'E': // extended parameters - ignore for now
+    fill(5);
+    empty_reply();
+    break;
+  case 'P':
+    start_pmode();
+    empty_reply();
+    break;
+  case 'U': // set address (word)
+    here = getch();
+    here += 256 * getch();
+    empty_reply();
+    break;
+  case 'Q': //0x51
+    error=0;
+    end_pmode();
+    empty_reply();
+    break;
+  case 'V': //0x56
+    universal();
+    break;
+  case 0x60: //STK_PROG_FLASH
+    low = getch();
+    high = getch();
+    empty_reply();
+    break;
+  case 0x61: //STK_PROG_DATA
+    data = getch();
+    empty_reply();
+    break;
+  case 0x64: //STK_PROG_PAGE
+    program_page();
+    break;
+  case 0x74: //STK_READ_PAGE 't'
+    read_page();    
+    break;
+  case 0x75: //STK_READ_SIGN 'u'
+    read_signature();
+    break;
+    // expecting a command, not CRC_EOP
+    // this is how we can get back in sync
+  case CRC_EOP:
+    error++;
+    Serial.print((char) STK_NOSYNC);
+    break;
+  default:
+    error++;
+    if (CRC_EOP == getch()) 
+      Serial.print((char)STK_UNKNOWN);
+    else
+      Serial.print((char)STK_NOSYNC);
+  }
+}
+
+
