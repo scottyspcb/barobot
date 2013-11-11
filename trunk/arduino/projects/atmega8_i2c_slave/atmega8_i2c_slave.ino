@@ -14,8 +14,8 @@ void setup(){
   if(!init_i2c()){
 //    show_error(5 );
   }
-  pinMode(13, OUTPUT);
-//  pinMode(MY_POKE_PIN, INPUT);
+  pinMode(PIN_UPANEL_LED_TEST, OUTPUT);
+  pinMode(PIN_UPANEL_POKE, INPUT);
   Wire.onReceive(receiveEvent);
   Wire.onRequest(requestEvent);
   send_here_i_am();  // wyslij ze oto jestem
@@ -31,7 +31,7 @@ void loop() {
                 send_pin_value( PIN_UPANEL_POKE, diddd ? 1 : 0 );
                 diddd = !diddd;
   		milis100 = mil;
-                digitalWrite(8, diddd);
+                digitalWrite(PIN_UPANEL_LED_TEST, diddd);
   	}
   /*
   int sw = analogRead( A0 );
@@ -77,7 +77,7 @@ void receiveEvent(int howMany){
   }
   byte sss = (in_buffer1[0] >> 4);
   if ( sss == 1 ){      // najstarsze 8 bitów RÓWNE 1 to wykonaj w głównym wątku
-      use_local = true;  
+      use_local = true;
   }
   // w tym miejscu jednynie proste komendy nie wymagające zwrotek
 }
@@ -102,7 +102,7 @@ void requestEvent(){
         Wire.write(res);
         if( res & 1 ){    // ustawiony najmlodzzy bit
           diddd = !diddd;
-          digitalWrite(13, diddd);
+          digitalWrite(PIN_UPANEL_LED_TEST, diddd);
         }
     }
 }
@@ -140,9 +140,9 @@ void send( byte buffer[], byte ss ){
 void show_error( byte error_code ){    // mrygaj czerwonym tyle razy
   while(true){
     while(--error_code){
-      digitalWrite(13, 1);
+      digitalWrite(PIN_UPANEL_LED_TEST, 1);
       delay2(100);    
-      digitalWrite(13, 0);
+      digitalWrite(PIN_UPANEL_LED_TEST, 0);
       delay2(100);
     }
   }
