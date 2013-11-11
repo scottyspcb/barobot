@@ -23,7 +23,7 @@ ATMEGA8 / ARDUINO
 #define I2C_ADR_MAINBOARD 0x01
 #define I2C_ADR_RESERVED 0x06
 #define I2C_ADR_PROGRAMMER 0x07
-#define I2C_ADR_TROLLEY 0x09
+//#define I2C_ADR_TROLLEY 0x09
 #define I2C_ADR_IPANEL 0x0A
 #define I2C_ADR_USTART 0x0B
 #define I2C_ADR_UEND 0x70
@@ -51,7 +51,6 @@ ATMEGA8 / ARDUINO
 
 /*------------------------------ PROGRAMMER ------------------------------*/
 #define PROGRAMMER_DEVICE_TYPE 0x14
-#define PROGRAMMER_VERSION 0x01
 #define PROGRAMMER_VERSION 0x01
 #define PROGRAMMER_F_CPU 12000000
 #define PROGRAMMER_CPU "atmega8"
@@ -83,6 +82,7 @@ ATMEGA8 / ARDUINO
 	#define MAINBOARD_STEPPER_READY_DISABLE true
 	#define MAINBOARD_SERVO_4PIN false
 
+	#define MAINBOARD_BUFFER_LENGTH 10
 
 	// domyslnie ustawienie mocy silnikow Xy
 	#if MAINBOARD_SERVO_4PIN==true
@@ -103,57 +103,32 @@ ATMEGA8 / ARDUINO
 	#define PIN_MAINBOARD_STEPPER_STEP2 PIN48
 	#define PIN_MAINBOARD_STEPPER_STEP3 PIN49
 	#define PIN_MAINBOARD_STEPPER_ENABLE PIN44
-	#define PIN_MAINBOARD_LEFT_RESET 14
+	
+	
+	#if IS_PROGRAMMER
+		// Put an LED (with resistor) on the following pins:
+		// 9: Heartbeat   - shows the programmer is running
+		// 8: Error       - Lights up if something goes wrong (use red if that makes sense)
+		// 7: Programming - In communication with the slave
+		
+		#define PIN_PROGRAMMER_LED_ACTIVE	7		// dip 13
+		#define PIN_PROGRAMMER_LED_ERROR   	8		// dip 14
+		#define PIN_PROGRAMMER_LED_STATE    9		// dip 15
+		
+		//#define PIN_PROGRAMMER_RESET_MAINBOARD 2	// dip 4
+		#define PIN_PROGRAMMER_RESET_UPANEL 9		// dip ??
+		#define PIN_PROGRAMMER_RESET_IPANEL 8		// dip ??
+
+		
+		#define PROG_FLICKER true
+		
+	#endif
 
 #endif
 
 /*------------------ IPANEL -------------------*/
 #if IS_IPANEL
-	#define IPANEL_COMMON_ANODE true		// sterowanie plusem? false gdy sterowaniem minusem
 
-	// domyslen ustawienie mocy silnika Z
-	// pozycja jechania do góry i czas jechania
-	#define IPANEL_SERVOZ_UP_POS 2200
-
-	// pozycja jechania w dó³ i czas jechania
-	#define IPANEL_SERVOZ_DOWN_POS 900
-
-	//#define PIN_IPANEL_SELF_RESET 7		// ppin 13
-
-	#define PIN_IPANEL_HALL_X A0		// ppin 23
-	#define PIN_IPANEL_HALL_Y A1		// ppin 24
-	#define PIN_IPANEL_WEIGHT A2		// ppin 25
-
-	#define PIN_IPANEL_SERVO_Y 5		// ppin 11
-	#define PIN_IPANEL_SERVO_Z 6		// ppin 12
-
-	#define PIN_IPANEL_LED0_NUM	2		// ppin 4
-	#define PIN_IPANEL_LED1_NUM	3		// ppin 5
-	#define PIN_IPANEL_LED2_NUM	4		// ppin 6
-	#define PIN_IPANEL_LED3_NUM	7		// ppin 13
-	#define PIN_IPANEL_LED4_NUM	8		// ppin 14
-	#define PIN_IPANEL_LED5_NUM	9		// ppin 15
-	#define PIN_IPANEL_LED6_NUM	10		// ppin 16
-	#define PIN_IPANEL_LED7_NUM	17		// ppin 26
-
-	// Organizacja pamiêci:
-	/*
-	0x00	- NEUTRAL_VALUE kopia 0
-	0x01	- NEUTRAL_VALUE kopia 1
-
-	*/
-
-
-#endif
-/*------------------ PROGRAMMER -------------------*/
-#if IS_PROGRAMMER
-
-
-#endif
-
-/*------------------ UPANEL -------------------*/
-
-#if IS_UPANEL
 	/*
 		Komponenty:
 
@@ -169,19 +144,65 @@ ATMEGA8 / ARDUINO
 
 	*/
 
+	#define IPANEL_COMMON_ANODE true		// sterowanie plusem? false gdy sterowaniem minusem
+	#define IPANEL_BUFFER_LENGTH 10
+		
+	// domyslen ustawienie mocy silnika Z
+	// pozycja jechania do góry i czas jechania
+	#define IPANEL_SERVOZ_UP_POS 2200
+
+	// pozycja jechania w dó³ i czas jechania
+	#define IPANEL_SERVOZ_DOWN_POS 900
+
+	#define PIN_IPANEL_LED_TEST 4		// dip pin ??
+	
+	//#define PIN_IPANEL_SELF_RESET 7	// dip pin 13
+
+	#define PIN_IPANEL_HALL_X A0		// dip pin 23
+	#define PIN_IPANEL_HALL_Y A1		// dip pin 24
+	#define PIN_IPANEL_WEIGHT A2		// dip pin 25
+
+	#define PIN_IPANEL_SERVO_Y 5		// dip pin 11
+	#define PIN_IPANEL_SERVO_Z 6		// dip pin 12
+
+	#define PIN_IPANEL_LED0_NUM	2		// dip pin 4
+	#define PIN_IPANEL_LED1_NUM	3		// dip pin 5
+	#define PIN_IPANEL_LED2_NUM	4		// dip pin 6
+	#define PIN_IPANEL_LED3_NUM	7		// dip pin 13
+	#define PIN_IPANEL_LED4_NUM	8		// dip pin 14
+	#define PIN_IPANEL_LED5_NUM	9		// dip pin 15
+	#define PIN_IPANEL_LED6_NUM	10		// dip pin 16
+	#define PIN_IPANEL_LED7_NUM	17		// dip pin 26
+
+	// Organizacja pamiêci:
+	/*
+	0x00	- NEUTRAL_VALUE kopia 0
+	0x01	- NEUTRAL_VALUE kopia 1
+
+	*/
+
+
+#endif
+
+/*------------------ UPANEL -------------------*/
+
+#if IS_UPANEL
+
 	#define UPANEL_COMMON_ANODE true		// sterowanie plusem? false gdy sterowaniem minusem
 
 	#define PIN_UPANEL_LEFT_RESET 14
-	#define PIN_UPANEL_POKE 5
+	#define PIN_UPANEL_POKE 3			// dip pin 5
 
-	#define PIN_UPANEL_LED0_NUM	4
-	#define PIN_UPANEL_LED1_NUM	5
-	#define PIN_UPANEL_LED2_NUM	6
-	#define PIN_UPANEL_LED3_NUM	7
-	#define PIN_UPANEL_LED4_NUM	8
-	#define PIN_UPANEL_LED5_NUM	9
-	#define PIN_UPANEL_LED6_NUM	16
-	#define PIN_UPANEL_LED7_NUM	17
+	#define PIN_UPANEL_LED_TEST 4		// pin 6
+		
+	#define PIN_UPANEL_LED0_NUM	4		// dip pin 6
+	#define PIN_UPANEL_LED1_NUM	5		// dip pin 11
+	#define PIN_UPANEL_LED2_NUM	6		// dip pin 12
+	#define PIN_UPANEL_LED3_NUM	7		// dip pin 13
+	#define PIN_UPANEL_LED4_NUM	8		// dip pin 14
+	#define PIN_UPANEL_LED5_NUM	9		// dip pin 15
+	#define PIN_UPANEL_LED6_NUM	16		// dip pin 25 A2
+	#define PIN_UPANEL_LED7_NUM	17		// dip pin 26 A3
 
 	#define PIN_UPANEL_LED0_MASK	digital_pin_to_bit_mask_PGM+PIN_UPANEL_LED0_NUM
 	#define PIN_UPANEL_LED1_MASK	digital_pin_to_bit_mask_PGM+PIN_UPANEL_LED1_NUM
