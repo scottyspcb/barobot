@@ -78,11 +78,16 @@ ATMEGA8 / ARDUINO
 	#define MAINBOARD_BT_BOUND 115200
 	#define MAINBOARD_BT_DEV_NAME "barobotA"
 
+	// set as INPUT do allow programming over ISP
+	#define PIN_MAINBOARD_SCK 11
+	#define PIN_MAINBOARD_MISO 12
+	#define PIN_MAINBOARD_MOSI 13
+
 	// czy wyl¹czaj stepper X gdy zajechal za miejsce?
 	#define MAINBOARD_STEPPER_READY_DISABLE true
 	#define MAINBOARD_SERVO_4PIN false
 
-	#define MAINBOARD_BUFFER_LENGTH 10
+	#define MAINBOARD_BUFFER_LENGTH 5
 
 	// domyslnie ustawienie mocy silnikow Xy
 	#if MAINBOARD_SERVO_4PIN==true
@@ -95,32 +100,40 @@ ATMEGA8 / ARDUINO
 	  #define MAINBOARD_XLENGTH 12700
 	#endif
 
-	//#define MAINBOARD_SERIAL0_BOUND 9600
-	#define PIN_MAINBOARD_STEPPER_STEP PIN46
-	#define PIN_MAINBOARD_STEPPER_DIR PIN47
-	#define PIN_MAINBOARD_STEPPER_STEP0 PIN46
-	#define PIN_MAINBOARD_STEPPER_STEP1 PIN47
-	#define PIN_MAINBOARD_STEPPER_STEP2 PIN48
-	#define PIN_MAINBOARD_STEPPER_STEP3 PIN49
-	#define PIN_MAINBOARD_STEPPER_ENABLE PIN44
-	
-	
-	#if IS_PROGRAMMER
-		// Put an LED (with resistor) on the following pins:
-		// 9: Heartbeat   - shows the programmer is running
-		// 8: Error       - Lights up if something goes wrong (use red if that makes sense)
-		// 7: Programming - In communication with the slave
-		
-		#define PIN_PROGRAMMER_LED_ACTIVE	7		// dip 13
-		#define PIN_PROGRAMMER_LED_ERROR   	8		// dip 14
-		#define PIN_PROGRAMMER_LED_STATE    9		// dip 15
-		
-		//#define PIN_PROGRAMMER_RESET_MAINBOARD 2	// dip 4
-		#define PIN_PROGRAMMER_RESET_UPANEL 9		// dip ??
-		#define PIN_PROGRAMMER_RESET_IPANEL 8		// dip ??
+	#define PIN_MAINBOARD_STEPPER_STEP 5
+	#define PIN_MAINBOARD_STEPPER_DIR 6
+	#define PIN_MAINBOARD_STEPPER_STEP0 5
+	#define PIN_MAINBOARD_STEPPER_STEP1 6
+	#define PIN_MAINBOARD_STEPPER_STEP2 7
+	#define PIN_MAINBOARD_STEPPER_STEP3 8
+	#define PIN_MAINBOARD_STEPPER_ENABLE A0
 
+	#if IS_PROGRAMMER	
+		#define HWVER		2
+		#define SWMAJ		1
+		#define SWMIN		18
+		#define PTIME       30
+		#define STK_OK      0x10
+		#define STK_FAILED  0x11
+		#define STK_UNKNOWN 0x12
+		#define STK_INSYNC  0x14
+		#define STK_NOSYNC  0x15
+		#define CRC_EOP     0x20
+		#define beget16(addr) (*addr * 256 + *(addr+1) )
+
+		//#define PROGRAMMER_SERIAL0_BOUND 115200
+		#define PROGRAMMER_SERIAL0_BOUND 19200
+		#define PIN_PROGRAMMER_LED_ACTIVE	2		// dip ??		shows the programmer is running
+		#define PIN_PROGRAMMER_LED_STATE    3		// dip ??		In communication with the slave
+		#define PIN_PROGRAMMER_LED_ERROR   	4		// dip ??		Lights up if something goes wrong (use red if that makes sense)
+
+		//#define PIN_PROGRAMMER_RESET_MAINBOARD 7	// dip ??
 		
-		#define PROG_FLICKER true
+		#define PIN_PROGRAMMER_RESET_UPANEL 9		// dip ??
+		#define PIN_PROGRAMMER_RESET_IPANEL 10		// dip ??
+		
+		#define PROGRAMMER_METHOD_PIN	true
+		#define PROGRAMMER_METHOD_RPC	false
 		
 	#endif
 
@@ -154,9 +167,13 @@ ATMEGA8 / ARDUINO
 	#define IPANEL_SERVOZ_DOWN_POS 900
 
 	#define PIN_IPANEL_LED_TEST 4		// dip pin ??
-	
-	//#define PIN_IPANEL_SELF_RESET 7	// dip pin 13
 
+	
+	// set as INPUT do allow programming over ISP
+	#define PIN_IPANEL_SCK 11		// dip pin 17
+	#define PIN_IPANEL_MISO 12		// dip pin 18
+	#define PIN_IPANEL_MOSI 13		// dip pin 19
+	
 	#define PIN_IPANEL_HALL_X A0		// dip pin 23
 	#define PIN_IPANEL_HALL_Y A1		// dip pin 24
 	#define PIN_IPANEL_WEIGHT A2		// dip pin 25
@@ -173,14 +190,14 @@ ATMEGA8 / ARDUINO
 	#define PIN_IPANEL_LED6_NUM	10		// dip pin 16
 	#define PIN_IPANEL_LED7_NUM	17		// dip pin 26
 
-	#define PIN_UPANEL_LED0_MASK	digital_pin_to_bit_mask_PGM+PIN_UPANEL_LED0_NUM
-	#define PIN_UPANEL_LED1_MASK	digital_pin_to_bit_mask_PGM+PIN_UPANEL_LED1_NUM
-	#define PIN_UPANEL_LED2_MASK	digital_pin_to_bit_mask_PGM+PIN_UPANEL_LED2_NUM
-	#define PIN_UPANEL_LED3_MASK	digital_pin_to_bit_mask_PGM+PIN_UPANEL_LED3_NUM
-	#define PIN_UPANEL_LED4_MASK	digital_pin_to_bit_mask_PGM+PIN_UPANEL_LED4_NUM
-	#define PIN_UPANEL_LED5_MASK	digital_pin_to_bit_mask_PGM+PIN_UPANEL_LED5_NUM
-	#define PIN_UPANEL_LED6_MASK	digital_pin_to_bit_mask_PGM+PIN_UPANEL_LED6_NUM
-	#define PIN_UPANEL_LED7_MASK	digital_pin_to_bit_mask_PGM+PIN_UPANEL_LED7_NUM
+	#define PIN_IPANEL_LED0_MASK	digital_pin_to_bit_mask_PGM+PIN_IPANEL_LED0_NUM
+	#define PIN_IPANEL_LED1_MASK	digital_pin_to_bit_mask_PGM+PIN_IPANEL_LED1_NUM
+	#define PIN_IPANEL_LED2_MASK	digital_pin_to_bit_mask_PGM+PIN_IPANEL_LED2_NUM
+	#define PIN_IPANEL_LED3_MASK	digital_pin_to_bit_mask_PGM+PIN_IPANEL_LED3_NUM
+	#define PIN_IPANEL_LED4_MASK	digital_pin_to_bit_mask_PGM+PIN_IPANEL_LED4_NUM
+	#define PIN_IPANEL_LED5_MASK	digital_pin_to_bit_mask_PGM+PIN_IPANEL_LED5_NUM
+	#define PIN_IPANEL_LED6_MASK	digital_pin_to_bit_mask_PGM+PIN_IPANEL_LED6_NUM
+	#define PIN_IPANEL_LED7_MASK	digital_pin_to_bit_mask_PGM+PIN_IPANEL_LED7_NUM
 	
 	// Organizacja pamiêci:
 	/*
@@ -188,6 +205,9 @@ ATMEGA8 / ARDUINO
 	0x01	- NEUTRAL_VALUE kopia 1
 
 	*/
+
+	boolean prog_mode  = false;    // czy magistrala jest w trybie programowania?
+	boolean prog_me    = false;    // czymam zamiar programowaæ mnie?
 
 
 #endif
@@ -205,7 +225,12 @@ ATMEGA8 / ARDUINO
 
 	#define UPANEL_COMMON_ANODE false		// sterowanie plusem? false gdy sterowaniem minusem
 
-	#define PIN_UPANEL_LEFT_RESET 14
+	// set as INPUT do allow programming over ISP
+	#define PIN_UPANEL_SCK 11				// dip pin 17
+	#define PIN_UPANEL_MISO 12				// dip pin 18
+	#define PIN_UPANEL_MOSI 13				// dip pin 19
+
+	#define PIN_UPANEL_LEFT_RESET 14	// dip pin 23
 	#define PIN_UPANEL_POKE 3			// dip pin 5
 
 	#define PIN_UPANEL_LED_TEST 4		// pin 6
@@ -228,7 +253,9 @@ ATMEGA8 / ARDUINO
 	#define PIN_UPANEL_LED6_MASK	digital_pin_to_bit_mask_PGM+PIN_UPANEL_LED6_NUM
 	#define PIN_UPANEL_LED7_MASK	digital_pin_to_bit_mask_PGM+PIN_UPANEL_LED7_NUM
 
-
+	boolean prog_mode  = false;    // czy magistrala jest w trybie programowania?
+	boolean prog_me    = false;    // czymam zamiar programowaæ mnie?
+	
 	// Organizacja pamiêci:
 	/*
 	0x00	- i2c adres kopia 0
