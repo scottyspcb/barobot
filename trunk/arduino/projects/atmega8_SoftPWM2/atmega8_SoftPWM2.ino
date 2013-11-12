@@ -1,32 +1,6 @@
 #define IS_UPANEL true
+#define HAS_LEDS true
 #include <barobot_common.h>
-
-void PWMSet(uint8_t pin, uint8_t value);
-void PWMEnd(uint8_t pin);
-
-typedef struct{ 
-  uint8_t pin;      // hardware I/O port and pin for this channel
-  volatile uint8_t *outport;
-  uint8_t pinmask;
-  uint8_t current_pwm;
-  uint8_t fadeup;      // 0- 15
-  uint8_t fadedown;    // 0- 15
-  uint8_t pwmup;       // PWM przy UP
-  uint8_t pwmdown;     // PWM przy DOWN
-  uint8_t timedown;    // Czas trwania UP
-  uint8_t timeup;      // Czas trwania DOWN
-} PWMChannel;
-
-
-volatile PWMChannel _pwm_channels[COUNT_UPANEL_ONBOARD_LED]= {
-{PIN_UPANEL_LED0_NUM,0,0,0,0,0},
-{PIN_UPANEL_LED1_NUM,0,0,0,0,0},
-{PIN_UPANEL_LED2_NUM,0,0,0,0,0},
-{PIN_UPANEL_LED3_NUM,0,0,0,0,0},
-{PIN_UPANEL_LED4_NUM,0,0,0,0,0},
-{PIN_UPANEL_LED5_NUM,0,0,0,0,0},
-{PIN_UPANEL_LED6_NUM,0,0,0,0,0},
-{PIN_UPANEL_LED7_NUM,0,0,0,0,0}};
 
 volatile uint8_t _isr_count = 0xff;
 volatile boolean pwmnow= false;

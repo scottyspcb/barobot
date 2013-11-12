@@ -21,9 +21,9 @@ uint16_t servo_z_last = 0;
 boolean diddd = false;
 
 void setup(){
-  pinMode(11, INPUT);  
-  pinMode(12, INPUT);  
-  pinMode(13, INPUT);   
+  pinMode(PIN_IPANEL_SCK, INPUT );         // stan wysokiej impedancji
+  pinMode(PIN_IPANEL_MISO, INPUT );        // stan wysokiej impedancji
+  pinMode(PIN_IPANEL_MOSI, INPUT );        // stan wysokiej impedancji
 
   Serial.begin(IPANEL_SERIAL0_BOUND);
   Serial.println("wozek start"); 
@@ -114,7 +114,7 @@ void requestEvent(){
           diddd = !diddd;
           digitalWrite(PIN_IPANEL_LED_TEST, diddd);
         }
-    }else{
+    }else if(!prog_mode){
       Serial.print("requestEvent unknown - ");
       printHex(input_buffer[last_index][0], false);
       Serial.print(" ");
@@ -137,6 +137,9 @@ static void send_here_i_am(){
   send(ttt,4);
 }
 byte send( byte buffer[], byte ss ){
+  if(prog_mode){
+    return 10;
+  }
   Wire.beginTransmission(I2C_ADR_MAINBOARD);  
   Wire.write(buffer,ss);
   byte error = Wire.endTransmission();
@@ -150,8 +153,7 @@ byte send( byte buffer[], byte ss ){
   Serial.print(" ");
   printHex( buffer[3], false ); 
   Serial.println( ") e: " + String(error));
-  
-  
+
   return error;
 }
 

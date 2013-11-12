@@ -5,33 +5,62 @@
 
 volatile bool use_local = false;
 volatile byte in_buffer1[5];
+boolean prog_mode  = false;    // czy magistrala jest w trybie programowania?
+boolean prog_me    = false;    // czymam zamiar programować mnie?
 
 void setup(){
-  pinMode(8, OUTPUT);
-  digitalWrite(8, 1); 
-//  Serial.begin(38400);
-//  Serial.begin(115200);
+  pinMode(PIN_UPANEL_SCK, INPUT );         // stan wysokiej impedancji
+  pinMode(PIN_UPANEL_MISO, INPUT );        // stan wysokiej impedancji
+  pinMode(PIN_UPANEL_MOSI, INPUT );        // stan wysokiej impedancji
+  pinMode(PIN_UPANEL_LEFT_RESET, INPUT);   // stan wysokiej impedancji
+
+  pinMode(PIN_UPANEL_LED0_NUM, OUTPUT);
+  pinMode(PIN_UPANEL_LED1_NUM, OUTPUT);
+  pinMode(PIN_UPANEL_LED2_NUM, OUTPUT);
+  pinMode(PIN_UPANEL_LED3_NUM, OUTPUT);
+  pinMode(PIN_UPANEL_LED4_NUM, OUTPUT);
+  pinMode(PIN_UPANEL_LED5_NUM, OUTPUT);
+  pinMode(PIN_UPANEL_LED6_NUM, OUTPUT);
+  pinMode(PIN_UPANEL_LED7_NUM, OUTPUT);
+
+  pinMode(PIN_UPANEL_LED0_NUM, LOW);
+  pinMode(PIN_UPANEL_LED1_NUM, HIGH);
+  pinMode(PIN_UPANEL_LED2_NUM, HIGH);
+  pinMode(PIN_UPANEL_LED3_NUM, HIGH);
+  pinMode(PIN_UPANEL_LED4_NUM, HIGH);
+  pinMode(PIN_UPANEL_LED5_NUM, HIGH);
+  pinMode(PIN_UPANEL_LED6_NUM, HIGH);
+  pinMode(PIN_UPANEL_LED7_NUM, HIGH);
+
+  pinMode(PIN_UPANEL_POKE, INPUT);
+  
+  digitalWrite(PIN_UPANEL_LED0_NUM, 0 );
+  digitalWrite(PIN_UPANEL_LED3_NUM, 0 );
+
+//  Serial.begin(UPANEL_SERIAL0_BOUND);
   if(!init_i2c()){
 //    show_error(5 );
   }
-  pinMode(PIN_UPANEL_LED_TEST, OUTPUT);
-  pinMode(PIN_UPANEL_POKE, INPUT);
   Wire.onReceive(receiveEvent);
   Wire.onRequest(requestEvent);
   send_here_i_am();  // wyslij ze oto jestem
 }
 
 long int mil = 0;
-long int milis100 = 0;
+long int milis1 = 0;
+long int milis4 = 0;
 boolean diddd = false;
 
 void loop() {
   mil = millis();
-  	if( mil > milis100 + 4000 ){    // co 4 sek
-                send_pin_value( PIN_UPANEL_POKE, diddd ? 1 : 0 );
+  	if( mil > milis1 + 1000 ){    // co 4 sek
                 diddd = !diddd;
-  		milis100 = mil;
+  		milis1 = mil;
                 digitalWrite(PIN_UPANEL_LED_TEST, diddd);
+  	}
+  	if( mil > milis4 + 4000 ){    // co 4 sek
+                send_pin_value( PIN_UPANEL_POKE, diddd ? 1 : 0 );
+  		milis4 = mil;
   	}
   /*
   int sw = analogRead( A0 );
@@ -42,21 +71,37 @@ void loop() {
   }  
   */
     if( use_local&& in_buffer1[0] ){          // komendy bez odpowiedzi tutaj:
+      digitalWrite(PIN_UPANEL_LED7_NUM, !digitalRead(PIN_UPANEL_LED7_NUM) );
       byte command = in_buffer1[0];
       if( command == 0x11 ){                // PWM     3 bajty
            // setPWM(in_buffer1[1],in_buffer1[2]);
  //           leds[in_buffer1[1]].wypelnienie = in_buffer1[2];
-      }else if( command == 0x10 ){          // reset
-      }else if( command == 0x12 ){          // set time
-      }else if( command == 0x13 ){          // fade
-      }else if( command == 0x14 ){          // set dir
-      }else if( command == 0x15 ){          // set output
-      }else if( command == 0x16 ){          // Resetuj urządzenie obok
+      }else if( command == 0x10 ){         // reset
+      }else if( command == 0x12 ){         // set time
+      }else if( command == 0x13 ){         // fade
+      }else if( command == 0x14 ){         // set dir
+      }else if( command == 0x15 ){         // set output
+
+      }else if( command == 0x1C ){         // prog mode on
+        pinMode(PIN_UPANEL_LED1_NUM, LOW);
+        if(in_buffer1[1] == my_address){
+          prog_me = true;
+        }else{
+          prog_me = false;
+        }
+        prog_mode = true;
+      }else if( command == 0x1B ){         // prog mode off
+        pinMode(PIN_UPANEL_LED1_NUM, HIGH);
+        prog_mode = false;
+
+      }else if( command == 0x16 ){         // Resetuj urządzenie obok
         pinMode(PIN_UPANEL_LEFT_RESET, OUTPUT); 
-        digitalWrite(PIN_UPANEL_LEFT_RESET, LOW);  // pin w stanie niskim
+        digitalWrite(PIN_UPANEL_LEFT_RESET, LOW );
       }else if( command == 0x17 ){          // Koniec resetu urządzenia obok, ustaw pin w stan wysokiej impedancji
-        pinMode(PIN_UPANEL_LEFT_RESET, INPUT);     // set pin to input
-        digitalWrite(PIN_UPANEL_LEFT_RESET, LOW);  // turn OFF pullup resistors
+        digitalWrite(PIN_UPANEL_LEFT_RESET, HIGH);     // set pin to input
+        pinMode(PIN_UPANEL_LEFT_RESET, INPUT);
+//        digitalWrite(PIN_UPANEL_LEFT_RESET, LOW);  // turn OFF pullup resistors
+
       }else if( command == 0x1E ){          // zmien address
       }
       in_buffer1[0] = 0;
@@ -75,8 +120,7 @@ void receiveEvent(int howMany){
     in_buffer1[cntr] = aa;
     cntr++;
   }
-  byte sss = (in_buffer1[0] >> 4);
-  if ( sss == 1 ){      // najstarsze 8 bitów RÓWNE 1 to wykonaj w głównym wątku
+  if ( bit_is_set( in_buffer1[0], 4 ) ){      // IF like: xxx0 xxxx - run in main loop, else in requestEvent
       use_local = true;
   }
   // w tym miejscu jednynie proste komendy nie wymagające zwrotek
@@ -118,9 +162,12 @@ void send_poke(){
 }
 static void send_here_i_am(){
   byte ttt[4] = {0x23,my_address,UPANEL_DEVICE_TYPE,UPANEL_VERSION};
-  send(ttt,4); 
+  send(ttt,4);
 }
 void send( byte buffer[], byte ss ){
+  if(prog_mode){
+    return;
+  }
   byte ret = 1;
   byte licznik = 250;
   while( ret && licznik++ ){    // prubuj 5 razy, zakoncz gdy error = 0;
@@ -134,7 +181,6 @@ void send( byte buffer[], byte ss ){
 //    Serial.println(" / "+ String(ret) );  
   }
 }
-
 
 /*
 void show_error( byte error_code ){    // mrygaj czerwonym tyle razy
