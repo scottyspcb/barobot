@@ -67,7 +67,7 @@ byte addr_is_used( byte address){    // true jesli wolne
 	Wire.beginTransmission(address);
 	byte ee = Wire.endTransmission();
 	Serial.println("szukam:" +String(address)+"/"+ String(ee) );
-	if( ee == 2 || ee == 6 ){
+	if( ee == 2 || ee == 6 ){		// kody b³êdów
 		return 0;
 	}
 	if( ee == 0){
@@ -143,14 +143,14 @@ boolean init_i2c(){
 	}
 	//Serial.println( "+m" );
 	my_address = 0;
-	if( my_address < 0x03 || my_address > 111 || addr_is_used(my_address)){    // zajety - sprawdzaj inne...
+	if( my_address < I2C_ADR_USTART || my_address > I2C_ADR_UEND || addr_is_used(my_address)){    // zajety - sprawdzaj inne...
 		Serial.println("-");
-		my_address = 5;
+		my_address = I2C_ADR_USTART;
 		while( (++my_address )<=110 && addr_is_used(my_address) ){		// a¿ do znalezienia wolnego lub konca listy
 		//	asm("nop");
 		}
 	}
-	if( my_address ==111 ){
+	if( my_address == I2C_ADR_UEND ){		// czyli przeskanowalem cala magistrale i nie bylo zadnego wolnego = magistrala wisi
 		return false;
 	}
 	Wire.begin(my_address);
