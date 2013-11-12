@@ -25,6 +25,25 @@ void setup(){
   pinMode(PIN_IPANEL_MISO, INPUT );        // stan wysokiej impedancji
   pinMode(PIN_IPANEL_MOSI, INPUT );        // stan wysokiej impedancji
 
+  pinMode(PIN_IPANEL_LED0_NUM, OUTPUT);
+  pinMode(PIN_IPANEL_LED1_NUM, OUTPUT);
+  pinMode(PIN_IPANEL_LED2_NUM, OUTPUT);
+  pinMode(PIN_IPANEL_LED3_NUM, OUTPUT);
+  pinMode(PIN_IPANEL_LED4_NUM, OUTPUT);
+  pinMode(PIN_IPANEL_LED5_NUM, OUTPUT);
+  pinMode(PIN_IPANEL_LED6_NUM, OUTPUT);
+  pinMode(PIN_IPANEL_LED7_NUM, OUTPUT);
+
+  pinMode(PIN_IPANEL_LED0_NUM, LOW);
+  pinMode(PIN_IPANEL_LED1_NUM, HIGH);
+  pinMode(PIN_IPANEL_LED2_NUM, HIGH);
+  pinMode(PIN_IPANEL_LED3_NUM, HIGH);
+  pinMode(PIN_IPANEL_LED4_NUM, HIGH);
+  pinMode(PIN_IPANEL_LED5_NUM, HIGH);
+  pinMode(PIN_IPANEL_LED6_NUM, HIGH);
+  pinMode(PIN_IPANEL_LED7_NUM, HIGH);
+
+
   Serial.begin(IPANEL_SERIAL0_BOUND);
   Serial.println("wozek start"); 
   my_address = I2C_ADR_IPANEL;
@@ -65,6 +84,21 @@ void proceed( volatile byte buffer[5] ){
   //    printHex(buffer[1], false );
     String ss = "- IN " + String(buffer[2]) + ": " + String(buffer[3]);
     Serial.println(ss);
+
+  }else if( buffer[0] == 0x1C ){         // prog mode on
+    pinMode(PIN_IPANEL_LED1_NUM, LOW);
+    if(buffer[1] == my_address){
+      prog_me = true;
+    }else{
+      prog_me = false;
+    }
+    prog_mode = true;
+  }else if( buffer[0] == 0x1B ){         // prog mode off
+    pinMode(PIN_IPANEL_LED1_NUM, HIGH);
+    prog_mode = false;
+
+    
+    
   }else if( buffer[0]  == 0xff ){ 
 
   }else{
