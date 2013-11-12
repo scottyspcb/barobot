@@ -21,6 +21,10 @@ uint16_t servo_z_last = 0;
 boolean diddd = false;
 
 void setup(){
+  pinMode(11, INPUT);  
+  pinMode(12, INPUT);  
+  pinMode(13, INPUT);   
+
   Serial.begin(IPANEL_SERIAL0_BOUND);
   Serial.println("wozek start"); 
   my_address = I2C_ADR_IPANEL;
@@ -42,7 +46,7 @@ void loop() {
         milis100 = mil;
   }
   for( byte i=0;i<IPANEL_BUFFER_LENGTH;i++){
-    if( input_buffer[i][0] >0 && bit_is_clear(input_buffer[i][0], 3 )){    // 0000 1000 b
+    if( input_buffer[i][0] >0 && bit_is_set(input_buffer[i][0], 4 )){    // bez xxx1 xxxx b
       proceed( input_buffer[i] );
       input_buffer[i][0] = 0;
     }
@@ -136,7 +140,7 @@ byte send( byte buffer[], byte ss ){
   Wire.beginTransmission(I2C_ADR_MAINBOARD);  
   Wire.write(buffer,ss);
   byte error = Wire.endTransmission();
-  
+
   Serial.print("out "+ String( my_address ) +": (" );
   printHex( buffer[0], false ); 
   Serial.print(" ");
