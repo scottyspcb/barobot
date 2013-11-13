@@ -34,7 +34,7 @@ ATMEGA8 / ARDUINO
 #define MAINBOARD_DEVICE_TYPE 0x10
 #define MAINBOARD_VERSION 0x01
 #define MAINBOARD_F_CPU 16000000
-#define MAINBOARD_CPU atmega328"
+#define MAINBOARD_CPU "atmega328"
 #define MAINBOARD_SERIAL0_BOUND 115200
 
 
@@ -87,7 +87,7 @@ ATMEGA8 / ARDUINO
 	#define MAINBOARD_STEPPER_READY_DISABLE true
 	#define MAINBOARD_SERVO_4PIN false
 
-	#define MAINBOARD_BUFFER_LENGTH 5
+	#define MAINBOARD_BUFFER_LENGTH 3
 
 	// domyslnie ustawienie mocy silnikow Xy
 	#if MAINBOARD_SERVO_4PIN==true
@@ -107,6 +107,9 @@ ATMEGA8 / ARDUINO
 	#define PIN_MAINBOARD_STEPPER_STEP2 7
 	#define PIN_MAINBOARD_STEPPER_STEP3 8
 	#define PIN_MAINBOARD_STEPPER_ENABLE A0
+	
+	#define PIN_MAINBOARD_SDA SDA
+	#define PIN_MAINBOARD_SCL SCL
 
 	#if IS_PROGRAMMER	
 		#define HWVER		2
@@ -120,6 +123,7 @@ ATMEGA8 / ARDUINO
 		#define STK_NOSYNC  0x15
 		#define CRC_EOP     0x20
 		#define beget16(addr) (*addr * 256 + *(addr+1) )
+
 
 		//#define PROGRAMMER_SERIAL0_BOUND 115200
 		#define PROGRAMMER_SERIAL0_BOUND 19200
@@ -166,8 +170,8 @@ ATMEGA8 / ARDUINO
 	// pozycja jechania w dó³ i czas jechania
 	#define IPANEL_SERVOZ_DOWN_POS 900
 
-	#define PIN_IPANEL_LED_TEST 4		// dip pin ??
-
+	#define PIN_IPANEL_SDA SDA
+	#define PIN_IPANEL_SCL SCL
 	
 	// set as INPUT do allow programming over ISP
 	#define PIN_IPANEL_SCK 11		// dip pin 17
@@ -199,16 +203,22 @@ ATMEGA8 / ARDUINO
 	#define PIN_IPANEL_LED6_MASK	digital_pin_to_bit_mask_PGM+PIN_IPANEL_LED6_NUM
 	#define PIN_IPANEL_LED7_MASK	digital_pin_to_bit_mask_PGM+PIN_IPANEL_LED7_NUM
 	
+	#define LED_TOP_RED					PIN_IPANEL_LED0_NUM
+	#define LED_TOP_BLUE				PIN_IPANEL_LED1_NUM
+	#define LED_TOP_GREEN				PIN_IPANEL_LED2_NUM
+	#define LED_TOP_WHITE				PIN_IPANEL_LED3_NUM
+	#define LED_BOTTOM_RED				PIN_IPANEL_LED4_NUM
+	#define LED_BOTTOM_BLUE				PIN_IPANEL_LED5_NUM
+	#define LED_BOTTOM_GREEN			PIN_IPANEL_LED6_NUM
+	#define LED_BOTTOM_WHITE			PIN_IPANEL_LED7_NUM
+	
+	
 	// Organizacja pamiêci:
 	/*
 	0x00	- NEUTRAL_VALUE kopia 0
 	0x01	- NEUTRAL_VALUE kopia 1
 
 	*/
-
-	boolean prog_mode  = false;    // czy magistrala jest w trybie programowania?
-	boolean prog_me    = false;    // czymam zamiar programowaæ mnie?
-
 
 #endif
 
@@ -232,9 +242,10 @@ ATMEGA8 / ARDUINO
 
 	#define PIN_UPANEL_LEFT_RESET 14	// dip pin 23
 	#define PIN_UPANEL_POKE 3			// dip pin 5
-
-	#define PIN_UPANEL_LED_TEST 4		// pin 6
 		
+	#define PIN_UPANEL_SDA SDA
+	#define PIN_UPANEL_SCL SCL
+	
 	#define PIN_UPANEL_LED0_NUM	4		// dip pin 6
 	#define PIN_UPANEL_LED1_NUM	5		// dip pin 11
 	#define PIN_UPANEL_LED2_NUM	6		// dip pin 12
@@ -253,9 +264,16 @@ ATMEGA8 / ARDUINO
 	#define PIN_UPANEL_LED6_MASK	digital_pin_to_bit_mask_PGM+PIN_UPANEL_LED6_NUM
 	#define PIN_UPANEL_LED7_MASK	digital_pin_to_bit_mask_PGM+PIN_UPANEL_LED7_NUM
 
-	boolean prog_mode  = false;    // czy magistrala jest w trybie programowania?
-	boolean prog_me    = false;    // czymam zamiar programowaæ mnie?
+	#define LED_TOP_RED					PIN_UPANEL_LED0_NUM
+	#define LED_TOP_BLUE				PIN_UPANEL_LED1_NUM
+	#define LED_TOP_GREEN				PIN_UPANEL_LED2_NUM
+	#define LED_TOP_WHITE				PIN_UPANEL_LED3_NUM
+	#define LED_BOTTOM_RED				PIN_UPANEL_LED4_NUM
+	#define LED_BOTTOM_BLUE				PIN_UPANEL_LED5_NUM
+	#define LED_BOTTOM_GREEN			PIN_UPANEL_LED6_NUM
+	#define LED_BOTTOM_WHITE			PIN_UPANEL_LED7_NUM
 	
+
 	// Organizacja pamiêci:
 	/*
 	0x00	- i2c adres kopia 0
@@ -298,6 +316,9 @@ ATMEGA8 / ARDUINO
 		{16,0,0,0,0,0},
 		{17,0,0,0,0,0}
 	};
+	boolean prog_mode  = false;    // czy magistrala jest w trybie programowania?
+	boolean prog_me    = false;    // czymam zamiar programowaæ mnie?
+	
 #endif
 
 
@@ -385,3 +406,27 @@ TQFP32
 	#define PIN_UPANEL_LED7_NUM	17		// ppin 26
 
 */
+
+/*
+
+D:\PROG\arduino-1.0.5\hardware/tools/avr/bin/avrdude -CD:\PROG\arduino-1.0.5\hardware/tools/avr/etc/avrdude.conf -v -v -v -v -D -patmega8 -cstk500v1 -P\\.\COM43 -b19200 -Uflash:w:c:\temp\build7005077114599572471.tmp\atmega8_i2c_slave.cpp.hex:i -Ulock:w:0x3F:m -Uhfuse:w:0xc4:m -Ulfuse:w:0xe4:m
+
+
+D:\PROG\arduino-1.0.5\hardware/tools/avr/bin/avrdude -CD:\PROG\arduino-1.0.5\hardware/tools/avr/etc/avrdude.conf -v -v -v -v -D -patmega8 -cstk500v1 -P\\.\COM43 -b19200 -Ulock:w:0x3F:m -Uhfuse:w:0xc4:m -Ulfuse:w:0xe4:m
+
+
+D:\PROG\arduino-1.0.5\hardware/tools/avr/bin/avrdude -CD:\PROG\arduino-1.0.5\hardware/tools/avr/etc/avrdude.conf -v -v -v -v -patmega8 -cstk500v1 -P\\.\COM43 -b19200 -Uflash:w:c:\temp\build7005077114599572471.tmp\atmega8_i2c_slave.cpp.hex:i
+
+
+
+
+
+
+
+
+
+
+
+*/
+
+
