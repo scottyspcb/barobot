@@ -138,8 +138,8 @@ boolean init_i2c(){
 
 	//Serial.println("old" + String(my_address) );
 	while(!addr_is_used( I2C_ADR_MAINBOARD )){		// jeœli jest wolne to nie ma mastera = b³¹d i czekaj na mastera
-		Serial.println("!m" );
 		delay2(100);
+		return false;
 	}
 	//Serial.println( "+m" );
 	my_address = 0;
@@ -158,7 +158,6 @@ boolean init_i2c(){
 	save_i2c_address( 0x00, my_address, ad1 );    // zapisuje gdy my_address != oa
 	return true;
 }
-
 
 /*
     * Output   0 .. success
