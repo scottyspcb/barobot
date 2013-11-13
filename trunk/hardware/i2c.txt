@@ -1,12 +1,16 @@
 ----------------------------------------------------------------------
 MAINBOARD -> SLAVE (over TWI)
 
-0001 0110 b	=	0x16	void reset_next( byte addr )							// Resetuj urządzenie obok urządzenia adresowego, stan niski na wyjściu resetuje tego obok
-0001 0111 b	=	0x17	void run_next( byte naddr )								// Koniec resetu urządzenia obok urządzenia adresowego, stan wysokiej impedancji na wyjściu
-0001 0110 b	=	0x1E	void changeAddress( byte new_addr )						// Zmień adres I2c, musi być podane co najmniej 4 razy zeby zadziałało. (2 bajty)
+0001 0110 b	=	0x16	void reset_next( byte addr )					// Resetuj urządzenie obok urządzenia adresowego, stan niski na wyjściu resetuje tego obok
+0001 0111 b	=	0x17	void run_next( byte naddr )						// Koniec resetu urządzenia obok urządzenia adresowego, stan wysokiej impedancji na wyjściu
+0001 0110 b	=	0x1E	void changeAddress( byte new_addr )				// Zmień adres I2c, musi być podane co najmniej 4 razy zeby zadziałało. (2 bajty)
 
-0010 1001 b	=	0x29	2xbyte getVersion()										// Wypisz rodzaj urządzenia i wersję softu ( 1 bajt )
-0010 1010 b	=	0x2A	byte test_slave( byte num1, byte num2 )					// Zwróć XOR wejścia (2 byte)
+0001 1011 b	=	0x1B	void prog_mode_on( byte new_addr )				// Magistrala w trybie programowania, zamilknij do odwołania
+0001 1100 b	=	0x1C	void prog_mode_off()							// Koniec trybu programowania
+
+
+0010 1001 b	=	0x29	2xbyte getVersion()								// Wypisz rodzaj urządzenia i wersję softu ( 1 bajt )
+0010 1010 b	=	0x2A	byte test_slave( byte num1, byte num2 )			// Zwróć XOR wejścia (2 byte)
 
 ----------------------------------------------------------------------
 MAINBOARD -> UPANEL (over TWI)
@@ -39,6 +43,26 @@ STAN:
 	TO_FAR
 	TO_CLOSE
 
+	
+	
+	
+----------------------------------------------------------------------
+WOZEK -> MAINBOARD -> ANDROID (over TWI)
+
+ANALOG		0x34	majorbyte	minorbyte
+
+HALLEVENT	0x35	majorbyte	minorbyte	state
+ENDSTOP		0x36	majorbyte	minorbyte	state
+
+
+
+----------------------------------------------------------------------
+MAINBOARD -> ANDROID (over TWI)
+
+I2C_SlaveMsg	0x43	address	byte1	byte2	... byteN		\n
+
+
+	
 ----------------------------------------------------------------------
 WOZEK -> MAINBOARD (over TWI)
 
