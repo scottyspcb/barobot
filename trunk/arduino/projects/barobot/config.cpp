@@ -1,11 +1,11 @@
 // -----------
 // Gdzie jest android? Tylko jedna z tych 3 opcji moz byc wlaczona na raz
 // czy Android jest na koncu BT (Serial3)
-#define USE_BT false
+#define USE_BT true
 // czy Android jest na koncu USB
 #define USE_ADB false
 // udawaj androida po serialu
-#define USE_SERIAL0 true
+#define USE_SERIAL0 false
 // -----------
 
 
@@ -13,12 +13,12 @@
 #define DEBUG_OVER_BT false
 
 // czy debugowac przez Serial0
-#define DEBUG_OVER_SERIAL false  //
+#define DEBUG_OVER_SERIAL true  //
 
 #define DEBUG_ADB2ANDROID false  //
 
 
-#define I2C_ENABLED true
+#define I2C_ENABLED false
 #define I2C_BUFF_LENGTH 10
 
 

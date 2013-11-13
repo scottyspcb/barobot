@@ -4,7 +4,7 @@
 #include <SPI.h>
 #include <Adb.h>
 #include <Servo.h>
-#include <I2C_Send.h>
+//#include <I2C_Send.h>
 //#include "Timer.h"
 
 #include <Wire.h>
@@ -68,7 +68,7 @@ void setupSerial(){      // uzyte w setup()
 		delay(1100);
 		String ret = getFromBT();
 //		send2debuger( "BTIN", ret );
-		if( ret.equals( "OK") ){			// jestem w trybie komend AT chipu BT
+		if( ret.equals( "OK" ) ){			// jestem w trybie komend AT chipu BT
 			Serial3.print( "AT+PIN0000" );
 			delay(1100);
 			ret = getFromBT(); 
@@ -286,18 +286,16 @@ unsigned int servo_last = 123;
 
 void loop(){
 	mil = millis();
-
 	run_steppers();
-
 	if( analog_reading &&  mil > milisAnalog ){
 		milisAnalog = mil+ analog_speed;
 		if( analog_pos == analog_repeat ){			// wyślij
 			send2android("A");
-		//	send2android(analog_num);				// bez spacji przed numerem pina
+			send2android(String(analog_num));				// bez spacji przed numerem pina
 			send2android(" ");
-		//	send2android(analog_sum);
+			send2android(String(analog_sum));
 			sendln2android();
-			//sendln2android("A" + String(analog_num) + " " + String(analog_sum));	// bez spacji przed numerem pina
+		//	sendln2android("A" + String(analog_num) + " " + String(analog_sum));	// bez spacji przed numerem pina
 			analog_pos = 0;
 			analog_sum = 0;
 		}
@@ -950,7 +948,7 @@ void serialEvent(){				       // FUNKCJA WBUDOWANA - zbieraj dane z serial0 i se
 				int res = send2adb('\n');
 		}
 	}
-	int sendln2android( String output2 ){      // wyslij string do androida
+	void sendln2android( String output2 ){      // wyslij string do androida
 		if( adb_ready ){
 				String output = output2 + '\n';
 				int res = send2adb(output);
@@ -963,9 +961,8 @@ void serialEvent(){				       // FUNKCJA WBUDOWANA - zbieraj dane z serial0 i se
 				send2debuger( "2ANDROID NOSEND", output2 );
 			#endif
 		}
-		return -1;
 	}
-	int send2android( String output2 ){      // wyslij string do androida
+	void send2android( String output2 ){      // wyslij string do androida
 		if( adb_ready ){
 				int res = send2adb(output2);
 				#if DEBUG_ADB2ANDROID
@@ -977,7 +974,6 @@ void serialEvent(){				       // FUNKCJA WBUDOWANA - zbieraj dane z serial0 i se
 				send2debuger( "2ANDROID NOSEND", output2 );
 			#endif
 		}
-		return -1;
 	}
 #endif
 
@@ -985,19 +981,17 @@ void serialEvent(){				       // FUNKCJA WBUDOWANA - zbieraj dane z serial0 i se
 	void sendln2android(){      // wyslij string do androida
 		Serial3.println();
 	}
-	int sendln2android( String output2 ){      // wyslij string do androida
+	void sendln2android( String output2 ){      // wyslij string do androida
 		#if DEBUG_OUTPUT2ANDROID
 			send2debuger( "2ANDROID BTSEND", output2 );
 		#endif
 		Serial3.println( output2 );
-		return 0;
 	}
-	int send2android( String output2 ){      // wyslij string do androida
+	void send2android( String output2 ){      // wyslij string do androida
 		#if DEBUG_OUTPUT2ANDROID
 			send2debuger( "2ANDROID BTSEND", output2 );
 		#endif
 		Serial3.print( output2 );
-		return 0;
 	}
 #endif
 
@@ -1005,32 +999,30 @@ void serialEvent(){				       // FUNKCJA WBUDOWANA - zbieraj dane z serial0 i se
 	void sendln2android(){      // wyslij string do androida
 		Serial.println();
 	}
-	int sendln2android( String output2 ){      // wyslij string do androida
+	void sendln2android( String output2 ){      // wyslij string do androida
 		#if DEBUG_OUTPUT2ANDROID && !DEBUG_OVER_SERIAL
 			send2debuger( "2ANDROID BTSEND", output2 );
 		#endif
 		Serial.println( output2 );
-		return 0;
 	}
-	int send2android( String output2 ){      // wyslij string do androida
+	void send2android( String output2 ){      // wyslij string do androida
 		#if DEBUG_OUTPUT2ANDROID && !DEBUG_OVER_SERIAL
 			send2debuger( "2ANDROID BTSEND", output2 );
 		#endif
 		Serial.print( output2 );
-		return 0;
 	}
 #endif
 
 
 
-
+/*
 template <typename T> void send2android2 (const T& value){
 	//const byte * k = (const byte*) &value;
 	//Serial.print( value );
 	return;
 }
 
-/*
+
 template <typename T> void I2C_readAnything(T& value){
 	byte * k = (byte*) &value;
 }
@@ -1038,19 +1030,7 @@ template <typename T> void I2C_readAnything(T& value){
 
 
 
-
-
-
-
-
-	
-
-
 void readSerial3Input( String input ){       // odebralem z BT od androida
-
-	int a = 0;
-	send2android2(a );
-
 	#if DEBUG_BT_INPUT
 		send2debuger( "READ3", input);
 	#endif
@@ -1256,10 +1236,10 @@ unsigned int read_szklanka(){
 }
 */
 
-
+/*
 void forceHardReset(){
   cli(); // disable interrupts
   wdt_enable(WDTO_15MS); // enable watchdog
   while(1); // wait for watchdog to reset processor
 }
-
+*/
