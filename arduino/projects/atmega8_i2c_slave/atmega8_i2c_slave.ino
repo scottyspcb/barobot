@@ -69,7 +69,7 @@ void loop() {
  //           leds[in_buffer1[1]].wypelnienie = in_buffer1[2];
       }else if( command == 0x10 ){         // reset
       }else if( command == 0x12 ){         // set time
-      }else if( command == 0x13 ){         // fade
+      }else if( command == 0x13 ){         // fadein out
       }else if( command == 0x14 ){         // set dir
       }else if( command == 0x15 ){         // set output
       }else if( command == 0x1C ){         // prog mode on
@@ -120,7 +120,7 @@ void loop() {
         // long press
         send_pin_value( PIN_UPANEL_POKE, 1 );
      }else if( button_down > 100 ){  // short press
-        send_pin_value( PIN_UPANEL_POKE, 2 );
+        send_pin_value( PIN_UPANEL_POKE, 0 );
      }
      button_down = 0;
    }
@@ -183,10 +183,7 @@ static void send_pin_value( byte pin, byte value ){
   send(ttt,4);
  // Serial.println("out "+ String( my_address ) +" / "+ String( pin ) +"/"+ String(value));
 }
-void send_poke(){
-  byte ttt[2] = {0x22,my_address};
-  send(ttt,2);
-}
+
 static void send_here_i_am(){
   byte ttt[4] = {0x23,my_address,UPANEL_DEVICE_TYPE,UPANEL_VERSION};
   send(ttt,4);
