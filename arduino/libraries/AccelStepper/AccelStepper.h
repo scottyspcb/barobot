@@ -3,7 +3,7 @@
 /// \mainpage AccelStepper library for Arduino
 ///
 /// This is the Arduino AccelStepper library.
-/// It provides an object-oriented interface for 2 or 4 pin stepper motors.
+/// It provides an object-oriented interface for 2, 3 or 4 pin stepper motors.
 ///
 /// The standard Arduino IDE includes the Stepper library
 /// (http://arduino.cc/en/Reference/Stepper) for stepper motors. It is
@@ -21,13 +21,11 @@
 /// \li Subclass support
 ///
 /// The latest version of this documentation can be downloaded from 
-/// http://www.open.com.au/mikem/arduino/AccelStepper
+/// http://www.airspayce.com/mikem/arduino/AccelStepper
+/// The version of the package that this documentation refers to can be downloaded 
+/// from http://www.airspayce.com/mikem/arduino/AccelStepper/AccelStepper-1.35.zip
 ///
 /// Example Arduino programs are included to show the main modes of use.
-///
-/// The version of the package that this documentation refers to can be downloaded 
-/// from http://www.open.com.au/mikem/arduino/AccelStepper/AccelStepper-1.30.zip
-/// You can find the latest version at http://www.open.com.au/mikem/arduino/AccelStepper
 ///
 /// You can also find online help and discussion at http://groups.google.com/group/accelstepper
 /// Please use that group for all questions and discussions on this topic. 
@@ -65,7 +63,7 @@
 /// \par Commercial Licensing
 /// This is the appropriate option if you are creating proprietary applications
 /// and you are not prepared to distribute and share the source code of your
-/// application. Contact info@open.com.au for details.
+/// application. Contact info@airspayce.com for details.
 ///
 /// \par Revision History
 /// \version 1.0 Initial release
@@ -136,11 +134,22 @@
 ///                with some sketches. Reported by Vadim.
 /// \version 1.30  Fixed a problem that could cause stepper to back up a few steps at the end of
 ///                accelerated travel with certain speeds. Reported and patched by jolo.
+/// \version 1.31  Updated author and distribution location details to airspayce.com
+/// \version 1.32  Fixed a problem with enableOutputs() and setEnablePin on Arduino Due that
+///                prevented the enable pin changing stae correctly. Reported by Duane Bishop.
+/// \version 1.33  Fixed an error in example AFMotor_ConstantSpeed.pde did not setMaxSpeed();
+///                Fixed a problem that caused incorrect pin sequencing of FULL3WIRE and HALF3WIRE.
+///                Unfortunately this meant changing the signature for all step*() functions.
+///                Added example MotorShield, showing how to use AdaFruit Motor Shield to control
+///                a 3 phase motor such as a HDD spindle motor (and without using the AFMotor library.
+/// \version 1.34  Added setPinsInverted(bool pin1Invert, bool pin2Invert, bool pin3Invert, bool pin4Invert, bool enableInvert) 
+///                to allow inversion of 2, 3 and 4 wire stepper pins. Requested by Oleg.
+/// \version 1.34  Removed default args from setPinsInverted(bool, bool, bool, bool, bool) to prevent ambiguity with 
+///                setPinsInverted(bool, bool, bool). Reported by Mac Mac.
 ///
-/// \author  Mike McCauley (mikem@open.com.au) DO NOT CONTACT THE AUTHOR DIRECTLY: USE THE LISTS
-// Copyright (C) 2009-2012 Mike McCauley
-// $Id: AccelStepper.h,v 1.15 2012/12/22 21:41:22 mikem Exp mikem $
-
+/// \author  Mike McCauley (mikem@airspayce.com) DO NOT CONTACT THE AUTHOR DIRECTLY: USE THE LISTS
+// Copyright (C) 2009-2013 Mike McCauley
+// $Id: AccelStepper.h,v 1.17 2013/05/30 22:41:21 mikem Exp mikem $
 #ifndef AccelStepper_h
 #define AccelStepper_h
 
@@ -271,7 +280,7 @@ public:
     /// frequently as possible, but at least once per minimum step interval,
     /// preferably in your main loop.
     /// \return true if the motor is at the target position.
-    boolean run();
+    void run();
 
     /// Poll the motor and step it if a step is due, implmenting a constant
     /// speed as set by the most recent call to setSpeed(). You must call this as
@@ -285,13 +294,16 @@ public:
     /// be > 0. Caution: Speeds that exceed the maximum speed supported by the processor may
     /// Result in non-linear accelerations and decelerations.
     void    setMaxSpeed(float speed);
+    float    getMaxSpeed();
 
     /// Sets the acceleration and deceleration parameter.
     /// \param[in] acceleration The desired acceleration in steps per second
     /// per second. Must be > 0.0. This is an expensive call since it requires a square 
     /// root to be calculated. Dont call more ofthen than needed
     void    setAcceleration(float acceleration);
+	float   getAcceleration();
 
+    void    setInterface(uint8_t interface = AccelStepper::FULL4WIRE);
     /// Sets the desired constant speed for use with runSpeed().
     /// \param[in] speed The desired constant speed in steps per
     /// second. Positive is clockwise. Speeds of more than 1000 steps per
@@ -346,7 +358,8 @@ public:
     /// Sets a new target position that causes the stepper
     /// to stop as quickly as possible, using to the current speed and acceleration parameters.
     void stop();
-
+    void stop( float multispeed );
+    void stopNow( boolean disableoutput = false );
     /// Disable motor pin outputs by setting them all LOW
     /// Depending on the design of your electronics this may turn off
     /// the power to the motor coils, saving power.
@@ -379,6 +392,17 @@ public:
     /// \param[in] step      True for inverted step pin, false for non-inverted
     /// \param[in] enable    True for inverted enable pin, false (default) for non-inverted
     void    setPinsInverted(bool direction, bool step, bool enable = false);
+    /// Sets the inversion for 2, 3 and 4 wire stepper pins
+    /// \param[in] pin1Invert True for inverted pin1, false for non-inverted
+    /// \param[in] pin2Invert True for inverted pin2, false for non-inverted
+    /// \param[in] pin3Invert True for inverted pin3, false for non-inverted
+    /// \param[in] pin4Invert True for inverted pin4, false for non-inverted
+    /// \param[in] enableInvert    True for inverted enable pin, false (default) for non-inverted
+    void    setPinsInverted(bool pin1Invert, bool pin2Invert, bool pin3Invert, bool pin4Invert, bool enableInvert);
+	
+	// Disable outputs on ready?
+    boolean     disable_on_ready;
+    boolean     is_disabled;
 
 protected:
 
@@ -460,6 +484,8 @@ protected:
     /// pin3, pin4.
     /// \param[in] step The current step phase number (0 to 7)
     virtual void   step8(uint8_t step);
+	
+    void   onReady();
 
 private:
     /// Number of pins on the stepper motor. Permits 2 or 4. 2 pins is a
@@ -536,6 +562,8 @@ private:
     /// Current direction motor is spinning in
     boolean _direction; // 1 == CW
 
+	uint8_t           _last_output;
+	//uint8_t           _last_step;
 };
 
 /// @example Random.pde
