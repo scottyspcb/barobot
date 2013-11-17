@@ -24,9 +24,11 @@ void AccelStepper::moveTo(long absolute)
 {
     if (_targetPos != absolute)
     {
-	_targetPos = absolute;
-	computeNewSpeed();
-	// compute new n?
+		if( disable_on_ready && is_disabled ){
+			enableOutputs();
+		}
+		_targetPos = absolute;
+		computeNewSpeed();	// compute new n?
     }
 }
 
@@ -51,24 +53,22 @@ boolean AccelStepper::runSpeed()
 	|| ((nextStepTime < _lastStepTime) && ((time >= nextStepTime) && (time < _lastStepTime))))
 
     {
-	if (_direction == DIRECTION_CW)
-	{
-	    // Clockwise
-	    _currentPos += 1;
-	}
-	else
-	{
-	    // Anticlockwise  
-	    _currentPos -= 1;
-	}
-	step(_currentPos & 0x7); // Bottom 3 bits (same as mod 8, but works with + and - numbers) 
+		if (_direction == DIRECTION_CW)
+		{
+			// Clockwise
+			_currentPos += 1;
+		
+		}else
+		{
+			// Anticlockwise  
+			_currentPos -= 1;
+		}
+		step(_currentPos & 0x7); // Bottom 3 bits (same as mod 8, but works with + and - numbers) 
 
-	_lastStepTime = time;
-	return true;
-    }
-    else
-    {
-	return false;
+		_lastStepTime = time;
+		return true;
+    }else{
+		return false;
     }
 }
 
@@ -108,6 +108,7 @@ void AccelStepper::computeNewSpeed()
 	_stepInterval = 0;
 	_speed = 0.0;
 	_n = 0;
+	onReady();
 	return;
     }
 
@@ -182,11 +183,11 @@ void AccelStepper::computeNewSpeed()
 // You must call this at least once per step, preferably in your main loop
 // If the motor is in the desired position, the cost is very small
 // returns true if we are still running to position
-boolean AccelStepper::run()
+void AccelStepper::run()
 {
-    if (runSpeed())
-	computeNewSpeed();
-    return true;
+    if (runSpeed()){
+		computeNewSpeed();
+	}
 }
 
 AccelStepper::AccelStepper(uint8_t interface, uint8_t pin1, uint8_t pin2, uint8_t pin3, uint8_t pin4)
@@ -206,6 +207,7 @@ AccelStepper::AccelStepper(uint8_t interface, uint8_t pin1, uint8_t pin2, uint8_
     _pin[1] = pin2;
     _pin[2] = pin3;
     _pin[3] = pin4;
+	disable_on_ready = false;
 
     // NEW
     _n = 0;
@@ -217,6 +219,7 @@ AccelStepper::AccelStepper(uint8_t interface, uint8_t pin1, uint8_t pin2, uint8_
     int i;
     for (i = 0; i < 4; i++)
 	_pinInverted[i] = 0;
+	is_disabled = true;
     enableOutputs();
 }
 
@@ -239,6 +242,8 @@ AccelStepper::AccelStepper(void (*forward)(), void (*backward)())
     _pin[3] = 0;
     _forward = forward;
     _backward = backward;
+	disable_on_ready = false;
+	is_disabled = false;
 
     // NEW
     _n = 0;
@@ -252,6 +257,16 @@ AccelStepper::AccelStepper(void (*forward)(), void (*backward)())
 	_pinInverted[i] = 0;
 }
 
+
+float AccelStepper::getMaxSpeed()
+{
+	return 	_maxSpeed;
+}
+void AccelStepper::setInterface(uint8_t interface)
+{
+	stopNow(false);
+    _interface = interface;
+}
 void AccelStepper::setMaxSpeed(float speed)
 {
     if (_maxSpeed != speed)
@@ -267,6 +282,16 @@ void AccelStepper::setMaxSpeed(float speed)
     }
 }
 
+void AccelStepper::onReady(){
+	if( disable_on_ready ){
+		disableOutputs();
+	}
+}
+
+
+float AccelStepper::getAcceleration(){
+	return _acceleration;
+}
 void AccelStepper::setAcceleration(float acceleration)
 {
     if (acceleration == 0.0)
@@ -287,8 +312,9 @@ void AccelStepper::setSpeed(float speed)
     if (speed == _speed)
         return;
     speed = constrain(speed, -_maxSpeed, _maxSpeed);
-    if (speed == 0.0)
+    if (speed == 0.0){
 	_stepInterval = 0;
+    }
     else
     {
 	_stepInterval = fabs(1000000.0 / speed);
@@ -343,6 +369,7 @@ void AccelStepper::step(uint8_t step)
 // ....
 void AccelStepper::setOutputPins(uint8_t mask)
 {
+	_last_output = mask;
     uint8_t numpins = 2;
     if (_interface == FULL4WIRE || _interface == HALF4WIRE)
 	numpins = 4;
@@ -523,31 +550,40 @@ void AccelStepper::step8(uint8_t step)
 // Prevents power consumption on the outputs
 void    AccelStepper::disableOutputs()
 {   
-    if (! _interface) return;
+  	if(!is_disabled){
+		is_disabled = true; 
+		if (! _interface) return;
 
-    setOutputPins(0); // Handles inversion automatically
-    if (_enablePin != 0xff)
-        digitalWrite(_enablePin, LOW ^ _enableInverted);
+		setOutputPins(0);
+		if (_enablePin != 0xff){
+			digitalWrite(_enablePin, LOW ^ _enableInverted);
+		}
+	}
 }
 
 void    AccelStepper::enableOutputs()
 {
-    if (! _interface) 
-	return;
+	if(is_disabled){
+		is_disabled = false;
+		if (! _interface) 
+		return;
 
-    pinMode(_pin[0], OUTPUT);
-    pinMode(_pin[1], OUTPUT);
-    if (_interface == FULL4WIRE || _interface == HALF4WIRE)
-    {
-        pinMode(_pin[2], OUTPUT);
-        pinMode(_pin[3], OUTPUT);
-    }
+		pinMode(_pin[0], OUTPUT);
+		pinMode(_pin[1], OUTPUT);
+		if (_interface == FULL4WIRE || _interface == HALF4WIRE)
+		{
+			pinMode(_pin[2], OUTPUT);
+			pinMode(_pin[3], OUTPUT);
+		}
 
-    if (_enablePin != 0xff)
-    {
-        digitalWrite(_enablePin, HIGH ^ _enableInverted);
-        pinMode(_enablePin, OUTPUT);
-    }
+		if (_enablePin != 0xff)
+		{
+			pinMode(_enablePin, OUTPUT);
+			digitalWrite(_enablePin, HIGH ^ _enableInverted);
+		}
+		//step(_currentPos);
+		setOutputPins( _last_output);
+	}
 }
 
 void AccelStepper::setMinPulseWidth(unsigned int minWidth)
@@ -562,22 +598,33 @@ void AccelStepper::setEnablePin(uint8_t enablePin)
     // This happens after construction, so init pin now.
     if (_enablePin != 0xff)
     {
-        digitalWrite(_enablePin, HIGH ^ _enableInverted);
         pinMode(_enablePin, OUTPUT);
+        digitalWrite(_enablePin, HIGH ^ _enableInverted);
     }
 }
 
-void AccelStepper::setPinsInverted(bool direction, bool step, bool enable)
+void AccelStepper::setPinsInverted(bool directionInvert, bool stepInvert, bool enableInvert)
 {
-    _pinInverted[0] = step;
-    _pinInverted[1] = direction;
-    _enableInverted = enable;
+    _pinInverted[0] = stepInvert;
+    _pinInverted[1] = directionInvert;
+    _enableInverted = enableInvert;
 }
 
+void AccelStepper::setPinsInverted(bool pin1Invert, bool pin2Invert, bool pin3Invert, bool pin4Invert, bool enableInvert)
+{    
+    _pinInverted[0] = pin1Invert;
+    _pinInverted[1] = pin2Invert;
+    _pinInverted[2] = pin3Invert;
+    _pinInverted[3] = pin4Invert;
+    _enableInverted = enableInvert;
+}
 
 // Blocks until the target position is reached and stopped
 void AccelStepper::runToPosition()
 {
+	if( disable_on_ready && is_disabled ){
+		enableOutputs();
+	}
     while (_speed != 0 || distanceToGo() != 0)
 	run();
 }
@@ -586,10 +633,15 @@ boolean AccelStepper::runSpeedToPosition()
 {
     if (_targetPos == _currentPos)
 	return false;
-    if (_targetPos >_currentPos)
-	_direction = DIRECTION_CW;
-    else
-	_direction = DIRECTION_CCW;
+    if (_targetPos >_currentPos){
+		_direction = DIRECTION_CW;
+    }else{
+		_direction = DIRECTION_CCW;
+	}
+    // Dont do anything unless we actually have a step interval
+    if (!_stepInterval){
+		return false;
+	}
     return runSpeed();
 }
 
@@ -600,14 +652,29 @@ void AccelStepper::runToNewPosition(long position)
     runToPosition();
 }
 
-void AccelStepper::stop()
-{
+void AccelStepper::stop(){
+	stop( 2.0 );
+}
+
+void AccelStepper::stop( float multispeed ){
     if (_speed != 0.0)
     {    
-	long stepsToStop = (long)((_speed * _speed) / (2.0 * _acceleration)) + 1; // Equation 16 (+integer rounding)
-	if (_speed > 0)
-	    move(stepsToStop);
-	else
-	    move(-stepsToStop);
-    }
+		long stepsToStop = (long)((_speed * _speed) / (multispeed * _acceleration)) + 1; // Equation 16 (+integer rounding)
+		if (_speed > 0){
+			move(stepsToStop);
+		}else{
+			move(-stepsToStop);
+		}
+	}
+}
+void AccelStepper::stopNow( boolean disableoutput )
+{
+	_targetPos = _currentPos;
+	_stepInterval = 0;
+	_speed = 0.0;
+	_lastStepTime = 0;
+	_n = 0;
+	if( disable_on_ready || disableoutput ){
+		disableOutputs();
+	}
 }
