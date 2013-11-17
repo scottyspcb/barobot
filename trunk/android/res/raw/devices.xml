@@ -1,34 +1,92 @@
 <?xml version="1.0" encoding="utf-8"?>
 <devices>
 	<interfaces>
-
 		<interface name="upanel_interface">
-			<method bcode="0001 0000"	code="0x11"	name="setPWM"	desc="Wpisz wypełnienie PWM do LEDa">
-				<param type="uint8" name="pin"  	desc="Numer LEDa"></param>
+			<method bcode="0000 0000"	code="0x10"	name="resetCycles"	desc="Synchronizuj pętle w slave"></method>
+			<method bcode="0000 0000"	code="0x11"	name="setPWM"	desc="Wpisz wypełnienie PWM do LEDa">
+				<param type="uint8" name="led"  	desc="Numer LEDa"></param>
 				<param type="uint8" name="level"	desc="Jasność"></param>
 			</method>
+			<method bcode="0000 0000"	code="0x12"	name="setTime"	desc="Czas pomiędzy kolejnym zapaleniem i Czas od zapalenia do zgaszenia">
+				<param type="uint8" name="led"  	desc="Numer LEDa"></param>
+				<param type="uint8" name="on_time"	desc="Czas on"></param>
+				<param type="uint8" name="off_time"	desc="Czas off"></param>
+			</method>
+			<method bcode="0000 0000"	code="0x13"	name="setFading"	desc="Czas i kierunek zanikania PWMa">
+				<param type="uint8" name="led"  	desc="Numer LEDa"></param>
+				<param type="uint8" name="fade_in"		desc="Prędkość zwiększania jasności"></param>
+				<param type="uint8" name="fade_oute"	desc="Prędkość zmniejszania jasności"></param>
+			</method>
+			<method bcode="0010 1001"	code="0x26"	name="getAnalogValue"	desc="Pobierz analogowo wartość PIN o numerze">
+				<param type="uint8" name="pin"  	desc="Numer pina zgodnie z arduino"></param>
+				<ret type="uint8" name="high_val"  		desc="Pozycja starsze bity"></ret>
+				<ret type="uint8" name="low_val"		desc="Pozycja młodsze bity"></ret>	
+			</method>
+			<method bcode="0010 1000"	code="0x28"	name="getValue"	desc="Pobierz cyfrowo wartość PIN o numerze">
+				<param type="uint8" name="pin"  	desc="Numer pina zgodnie z arduino"></param>
+				<ret type="uint8" name="high_val"  		desc="Pozycja starsze bity"></ret>
+			</method>
+			<method bcode="0010 1001"	code="0x29"	name="getVersion"	desc=" Wypisz rodzaj urządzenia i wersję softu">
+				<ret type="uint8" name="type"  		desc="Typ urzadzenia"></ret>
+				<ret type="uint8" name="version"	desc="Wersja software"></ret>	
+			</method>
+			<method bcode="0001 0110"	code="0x16"	name="reset_next"	desc="Resetuj urządzenie obok urządzenia adresowego, stan niski na wyjściu resetuje tego obok">
+				<param type="uint8" name="addr"  	desc="Adres i2c"></param>
+			</method>
+			<method bcode="0001 0111"	code="0x17"	name="run_next"	desc="Koniec resetu urządzenia obok urządzenia adresowego, stan wysokiej impedancji na wyjściu">
+				<param type="uint8" name="addr"  	desc="Adres i2c"></param>
+			</method>
+			<method bcode="0001 0110"	code="0x1E"	name="resetAddress"	desc="Resetuj adres I2c, musi być podane co najmniej 4 razy zeby zadziałało">
+				<param type="uint8" name="addr"  	desc="Adres i2c"></param>
+			</method>				
+			<method bcode="0001 1011"	code="0x1B"	name="prog_mode_on"	desc="Magistrala w trybie programowania, zamilknij do odwołania">
+				<param type="uint8" name="addr"  	desc="Adres i2c"></param>
+			</method>	
+			<method bcode="0001 1100"	code="0x1C"	name="prog_mode_on"	desc="Koniec trybu programowania">
+				<param type="uint8" name="addr"  	desc="Adres i2c"></param>
+			</method>
+			<method bcode="0010 1010"	code="0x2A"	name="prog_mode_on"	desc="Zwróć XOR wejścia">
+				<param type="uint8" name="num1"  	desc="Byte 1"></param>
+				<param type="uint8" name="num2"  	desc="Byte 2"></param>
+				<ret type="uint8" name="xor"  		desc="XOR bajtów wejściowych"></ret>
+			</method>	
 		</interface>
-
 		<interface name="ipanel_interface">
-			<method code="0x11"	name="goToServoYPos"	desc="Idź do pozycji Y">
+			<method  bcode="0010 0001"	code="0x11"	name="goToServoYPos"	desc="Idź do pozycji Y">
 				<param type="uint8" name="high_val"  	desc="Pozycja starsze bity"></param>
 				<param type="uint8" name="low_val"		desc="Pozycja młodsze bity"></param>
 			</method>
-			<method code="0x11"	name="getServoYPos"		desc="Pobierz pozycję Y">			
+			<method  bcode="0010 0010"	code="0x12"	name="goToServoZPos"	desc="Idź do pozycji Z">
+				<param type="uint8" name="high_val"  	desc="Pozycja starsze bity"></param>
+				<param type="uint8" name="low_val"		desc="Pozycja młodsze bity"></param>
+			</method>			
+			
+			<method  bcode="0010 1010"	code="0x25"	name="getServoYPos"		desc="Pobierz pozycję Y">			
 				<ret type="uint8" name="high_val"  		desc="Pozycja starsze bity"></ret>
 				<ret type="uint8" name="low_val"		desc="Pozycja młodsze bity"></ret>	
 			</method>
-			<method code="0x12"	name="getServoZPos"		desc="Pobierz pozycję Y">			
+			<method  bcode="0010 1010"	code="0x26"	name="getServoZPos"		desc="Pobierz pozycję Y">			
 				<ret type="uint8" name="high_val"  		desc="Pozycja starsze bity"></ret>
 				<ret type="uint8" name="low_val"		desc="Pozycja młodsze bity"></ret>	
-			</method>
-			
-			
-			
-			
-			
+			</method>			
 		</interface>
-
+		<interface name="android_input">
+			<method  bcode="0010 1010"	code="0x23"	name="here_i_am"		desc="Włączyłęm się do magistrali i2c">
+				<param type="uint8" name="my_address"  	desc="Adres i2c"></param>
+				<param type="uint8" name="device_type"	desc="Typ urzadzenia"></param>
+				<param type="uint8" name="version"		desc="Wersjay"></param>
+			</method>
+			<method  bcode="0010 1010"	code="0x23"	name="send_pin_value"		desc="Zmiana wartości waznego pinu">
+				<param type="uint8" name="my_address"  	desc="Adres i2c"></param>
+				<param type="uint8" name="pin"			desc="Numer pinu"></param>
+				<param type="uint8" name="value"		desc="Nowa wartosć"></param>
+			</method>
+			<method  bcode="0010 1010"	code="0x43"	name="I2C_SlaveMsg"		desc="Wiadomość od slave">
+				<param type="uint8" name="my_address"  	desc="Adres i2c"></param>
+				<param type="uint8" name="byte1"		desc="1 bajt wiadomości"></param>
+				<param type="uint8" name="byte2"		desc="2 bajt wiadomości"></param>
+				<param type="uint8" name="byteN"		desc="N bajt wiadomości"></param>
+			</method>
 	</interfaces>
 
 	<device type="u-panel" name="upanel0 panel" implements="upanel_interface">
