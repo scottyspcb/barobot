@@ -1,18 +1,15 @@
 #include <AccelStepper.h>
-#include "config.cpp";
+#include "config.cpp"
 #include <NewPing.h>
 #include <SPI.h>
 #include <Adb.h>
 #include <Servo.h>
 //#include <I2C_Send.h>
 //#include "Timer.h"
-
 #include <Wire.h>
-
 
 // to jest master
 #define I2C_ADDR 0x01
-#define I2C_MASTER_ADDR 0x01
 #define I2C_VERSION 0x01
 #define I2C_DEVICE_TYPE 0x12
 
@@ -290,11 +287,22 @@ void loop(){
 	if( analog_reading &&  mil > milisAnalog ){
 		milisAnalog = mil+ analog_speed;
 		if( analog_pos == analog_repeat ){			// wyślij
+
+                        Serial.print( "A" );
+                        Serial.print( analog_num );
+                        Serial.print( " " );
+                        Serial.println( analog_sum );
+
+                        Serial3.print( "A" );
+                        Serial3.print( analog_num );
+                        Serial3.print( " " );
+                        Serial3.println( analog_sum );
+                        /*
 			send2android("A");
 			send2android(String(analog_num));				// bez spacji przed numerem pina
 			send2android(" ");
 			send2android(String(analog_sum));
-			sendln2android();
+			sendln2android();*/
 		//	sendln2android("A" + String(analog_num) + " " + String(analog_sum));	// bez spacji przed numerem pina
 			analog_pos = 0;
 			analog_sum = 0;
@@ -528,7 +536,7 @@ void parseInput( String input ){   // zrozum co sie dzieje
 		send2debuger( "I2C PARAMS", ss );
 
 		char const *c	= ss.c_str();				// lista parametrow, pierwszy to komenda
-		for(byte a; a<ss.length(); a++){
+		for(byte a=0; a<ss.length(); a++){
 			send2debuger( "I2C PARAM", ""+String(c[a]) );
 		}	
 		defaultResult = false; 
@@ -581,9 +589,8 @@ void posz( long newPos ){    // zajedz do pozycji
 	servoZ.attach(STEPPER_Z_PWM);				  // przypisz do pinu, uruchamia PWMa 
 
 //  int up_pos = SERVOZ_UP_POS;
-	int roznica = abs(servo_last - newPos);
+//	int roznica = abs(servo_last - newPos);
 	// zamien pozycje na czas?
-
 
 	servoZ.writeMicroseconds(newPos);			 // na doł
 	servo_last = newPos;
