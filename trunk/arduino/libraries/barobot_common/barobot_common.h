@@ -16,7 +16,7 @@ ATMEGA8 / ARDUINO
       (D5)  PD5 11|    |18  PB4 (D12) MISO
  AIN0 (D6)  PD6 12|    |17  PB3 (D11) MOSI PWM
  AIN1 (D7)  PD7 13|    |16  PB2 (D10) SS PWM
-      (D8)  PB0 14|    |15  PB1 (D9) PWM      
+      (D8)  PB0 14|    |15  PB1 (D9) PWM
                   +----+
 */
 
