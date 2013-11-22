@@ -8,7 +8,7 @@
 //#include "Timer.h"
 #include <Wire.h>
 
-// to jest master
+// to jest masters
 #define I2C_ADDR 0x01
 #define I2C_VERSION 0x01
 #define I2C_DEVICE_TYPE 0x12
