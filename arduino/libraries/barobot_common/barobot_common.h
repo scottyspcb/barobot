@@ -38,21 +38,12 @@ ATMEGA8 / ARDUINO
 #define MAINBOARD_SERIAL0_BOUND 115200
 
 
-/*------------------------------ IPANEL     ------------------------------*/
+/*------------------------------ IPANEL (carret)    ------------------------------*/
 #define IPANEL_DEVICE_TYPE 0x11
 #define IPANEL_VERSION 0x01
 #define IPANEL_F_CPU == 16000000
 #define IPANEL_CPU "atmega328"
 #define IPANEL_SERIAL0_BOUND 115200
-
-/*------------------------------ TROLLEY    ------------------------------*/
-/*
-#define TROLLEY_DEVICE_TYPE 0x13
-#define TROLLEY_VERSION 0x01
-#define TROLLEY_F_CPU 8000000
-#define TROLLEY_CPU "atmega8"
-#define TROLLEY_SERIAL0_BOUND 115200
-*/
 
 
 /*------------------------------ PROGRAMMER ------------------------------*/
@@ -96,23 +87,22 @@ ATMEGA8 / ARDUINO
 	  #define MAINBOARD_XLENGTH 12700
 	#endif
 
-	
-	// opcja 2-pin
-		#define PIN_MAINBOARD_STEPPER_ENABLE 14
+	// silniki 2-pin (easy driver, palulu)
+		#define PIN_MAINBOARD_STEPPER_ENABLE 14			// arduino PIN 14
 		#define PIN_MAINBOARD_STEPPER_STEP 4
 		#define PIN_MAINBOARD_STEPPER_DIR 5
 
-		#define PIN_MAINBOARD_STEPPER_MS1 15
-		#define PIN_MAINBOARD_STEPPER_MS2 16
-		#define PIN_MAINBOARD_STEPPER_MS3 17
+		#define PIN_MAINBOARD_STEPPER_MS1 15			// microstepping controll 1
+		#define PIN_MAINBOARD_STEPPER_MS2 16			// microstepping controll 2
+		#define PIN_MAINBOARD_STEPPER_MS3 17			// microstepping controll 3
 
-	// opcja 4-pin
+	// silniki 4-pin (LMxxxx)
 		#define PIN_MAINBOARD_STEPPER_STEP0 14
 		#define PIN_MAINBOARD_STEPPER_STEP1 15
 		#define PIN_MAINBOARD_STEPPER_STEP2 16
 		#define PIN_MAINBOARD_STEPPER_STEP3 17
 
-	// set as INPUT do allow programming over ISP
+	// Set as INPUT to allow programming over ISP
 	#define PIN_MAINBOARD_SCK 11
 	#define PIN_MAINBOARD_MISO 12
 	#define PIN_MAINBOARD_MOSI 13
@@ -136,7 +126,7 @@ ATMEGA8 / ARDUINO
 
 		//#define PROGRAMMER_SERIAL0_BOUND 115200
 		#define PROGRAMMER_SERIAL0_BOUND 19200
-		//#define PIN_PROGRAMMER_RESET_MAINBOARD 7	// dip ??
+		//#define PIN_PROGRAMMER_RESET_MAINBOARD 7
 
 		#define PIN_PROGRAMMER_LED_OTHER   	3		// PWM dip ??
 		#define PIN_PROGRAMMER_LED_ERROR   	6		// PWM dip ??		Lights up if something goes wrong (use red if that makes sense)
@@ -171,7 +161,7 @@ ATMEGA8 / ARDUINO
 	*/
 
 	#define IPANEL_COMMON_ANODE false		// sterowanie plusem? false gdy sterowaniem minusem
-	#define IPANEL_BUFFER_LENGTH 6
+	#define IPANEL_BUFFER_LENGTH 6			// i2c input buffer
 		
 	// domyslen ustawienie mocy silnika Z
 	// pozycja jechania do góry i czas jechania
@@ -183,7 +173,7 @@ ATMEGA8 / ARDUINO
 	#define PIN_IPANEL_SDA SDA
 	#define PIN_IPANEL_SCL SCL
 	
-	// set as INPUT do allow programming over ISP
+	// set as INPUT to allow programming over ISP
 	#define PIN_IPANEL_SCK 11			// dip pin 17,
 	#define PIN_IPANEL_MISO 12			// dip pin 18,
 	#define PIN_IPANEL_MOSI 13			// dip pin 19,
@@ -223,11 +213,10 @@ ATMEGA8 / ARDUINO
 	#define LED_BOTTOM_WHITE			PIN_IPANEL_LED7_NUM
 	
 	
-	// Organizacja pamiêci:
+	// EEPROM content:
 	/*
 	0x00	- NEUTRAL_VALUE kopia 0
 	0x01	- NEUTRAL_VALUE kopia 1
-
 	*/
 
 #endif
@@ -284,7 +273,7 @@ ATMEGA8 / ARDUINO
 	#define LED_BOTTOM_WHITE			PIN_UPANEL_LED7_NUM
 	
 
-	// Organizacja pamiêci:
+	// EEPROM content:
 	/*
 	0x00	- i2c adres kopia 0
 	0x01	- i2c adres kopia 1
