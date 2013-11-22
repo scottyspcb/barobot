@@ -78,10 +78,6 @@ ATMEGA8 / ARDUINO
 	#define MAINBOARD_BT_BOUND 115200
 	#define MAINBOARD_BT_DEV_NAME "barobotA"
 
-	// set as INPUT do allow programming over ISP
-	#define PIN_MAINBOARD_SCK 11
-	#define PIN_MAINBOARD_MISO 12
-	#define PIN_MAINBOARD_MOSI 13
 
 	// czy wyl¹czaj stepper X gdy zajechal za miejsce?
 	#define MAINBOARD_STEPPER_READY_DISABLE true
@@ -100,17 +96,30 @@ ATMEGA8 / ARDUINO
 	  #define MAINBOARD_XLENGTH 12700
 	#endif
 
-	#define PIN_MAINBOARD_STEPPER_STEP 5
-	#define PIN_MAINBOARD_STEPPER_DIR 6
-	#define PIN_MAINBOARD_STEPPER_STEP0 5
-	#define PIN_MAINBOARD_STEPPER_STEP1 6
-	#define PIN_MAINBOARD_STEPPER_STEP2 7
-	#define PIN_MAINBOARD_STEPPER_STEP3 8
-	#define PIN_MAINBOARD_STEPPER_ENABLE A0
 	
-	#define PIN_MAINBOARD_SDA SDA
-	#define PIN_MAINBOARD_SCL SCL
+	// opcja 2-pin
+		#define PIN_MAINBOARD_STEPPER_ENABLE 14
+		#define PIN_MAINBOARD_STEPPER_STEP 4
+		#define PIN_MAINBOARD_STEPPER_DIR 5
 
+		#define PIN_MAINBOARD_STEPPER_MS1 15
+		#define PIN_MAINBOARD_STEPPER_MS2 16
+		#define PIN_MAINBOARD_STEPPER_MS3 17
+
+	// opcja 4-pin
+		#define PIN_MAINBOARD_STEPPER_STEP0 14
+		#define PIN_MAINBOARD_STEPPER_STEP1 15
+		#define PIN_MAINBOARD_STEPPER_STEP2 16
+		#define PIN_MAINBOARD_STEPPER_STEP3 17
+
+	// set as INPUT do allow programming over ISP
+	#define PIN_MAINBOARD_SCK 11
+	#define PIN_MAINBOARD_MISO 12
+	#define PIN_MAINBOARD_MOSI 13
+
+	#define PIN_MAINBOARD_SDA SDA			// arduino 18
+	#define PIN_MAINBOARD_SCL SCL			// arduino 19
+	
 	#if IS_PROGRAMMER	
 		#define HWVER		2
 		#define SWMAJ		1
@@ -127,15 +136,16 @@ ATMEGA8 / ARDUINO
 
 		//#define PROGRAMMER_SERIAL0_BOUND 115200
 		#define PROGRAMMER_SERIAL0_BOUND 19200
-		#define PIN_PROGRAMMER_LED_ACTIVE	2		// dip ??		shows the programmer is running
-		#define PIN_PROGRAMMER_LED_STATE    3		// dip ??		In communication with the slave
-		#define PIN_PROGRAMMER_LED_ERROR   	4		// dip ??		Lights up if something goes wrong (use red if that makes sense)
-
 		//#define PIN_PROGRAMMER_RESET_MAINBOARD 7	// dip ??
+
+		#define PIN_PROGRAMMER_LED_OTHER   	3		// PWM dip ??
+		#define PIN_PROGRAMMER_LED_ERROR   	6		// PWM dip ??		Lights up if something goes wrong (use red if that makes sense)
+		#define PIN_PROGRAMMER_LED_ACTIVE	9		// PWM dip ??		shows the programmer is running
+		#define PIN_PROGRAMMER_LED_STATE    10		// PWM dip ??		In communication with the slave
 		
-		#define PIN_PROGRAMMER_RESET_UPANEL 9		// dip ??
-		#define PIN_PROGRAMMER_RESET_IPANEL 10		// dip ??
-		
+		#define PIN_PROGRAMMER_RESET_UPANEL 7		// dip ??
+		#define PIN_PROGRAMMER_RESET_IPANEL 8		// dip ??
+
 		#define PROGRAMMER_METHOD_PIN	true
 		#define PROGRAMMER_METHOD_RPC	false
 		
@@ -174,25 +184,25 @@ ATMEGA8 / ARDUINO
 	#define PIN_IPANEL_SCL SCL
 	
 	// set as INPUT do allow programming over ISP
-	#define PIN_IPANEL_SCK 11		// dip pin 17
-	#define PIN_IPANEL_MISO 12		// dip pin 18
-	#define PIN_IPANEL_MOSI 13		// dip pin 19
+	#define PIN_IPANEL_SCK 11			// dip pin 17,
+	#define PIN_IPANEL_MISO 12			// dip pin 18,
+	#define PIN_IPANEL_MOSI 13			// dip pin 19,
 	
-	#define PIN_IPANEL_HALL_X A0		// dip pin 23
-	#define PIN_IPANEL_HALL_Y A1		// dip pin 24
-	#define PIN_IPANEL_WEIGHT A2		// dip pin 25
+	#define PIN_IPANEL_HALL_X A0		// dip pin 23,	Q 23
+	#define PIN_IPANEL_HALL_Y A1		// dip pin 24,	Q 24
+	#define PIN_IPANEL_WEIGHT A2		// dip pin 25,	Q 25
 
-	#define PIN_IPANEL_SERVO_Y 5		// dip pin 11
-	#define PIN_IPANEL_SERVO_Z 6		// dip pin 12
+	#define PIN_IPANEL_SERVO_Y 5		// dip pin 11,	Q 9
+	#define PIN_IPANEL_SERVO_Z 6		// dip pin 12,	Q 10
 
-	#define PIN_IPANEL_LED0_NUM	2		// dip pin 4
-	#define PIN_IPANEL_LED1_NUM	3		// dip pin 5
-	#define PIN_IPANEL_LED2_NUM	4		// dip pin 6
-	#define PIN_IPANEL_LED3_NUM	7		// dip pin 13
-	#define PIN_IPANEL_LED4_NUM	8		// dip pin 14
-	#define PIN_IPANEL_LED5_NUM	9		// dip pin 15
-	#define PIN_IPANEL_LED6_NUM	10		// dip pin 16
-	#define PIN_IPANEL_LED7_NUM	17		// dip pin 26
+	#define PIN_IPANEL_LED0_NUM	2		// dip pin 4		Q 32
+	#define PIN_IPANEL_LED1_NUM	3		// dip pin 5		Q 1
+	#define PIN_IPANEL_LED2_NUM	4		// dip pin 6,		Q 2
+	#define PIN_IPANEL_LED3_NUM	7		// dip pin 13,		Q 11
+	#define PIN_IPANEL_LED4_NUM	8		// dip pin 14,		Q 12
+	#define PIN_IPANEL_LED5_NUM	9		// dip pin 15,		Q 13
+	#define PIN_IPANEL_LED6_NUM	10		// dip pin 16		Q 14
+	#define PIN_IPANEL_LED7_NUM	17		// dip pin 26 A3,	Q 26
 
 	#define PIN_IPANEL_LED0_MASK	digital_pin_to_bit_mask_PGM+PIN_IPANEL_LED0_NUM
 	#define PIN_IPANEL_LED1_MASK	digital_pin_to_bit_mask_PGM+PIN_IPANEL_LED1_NUM
@@ -240,20 +250,20 @@ ATMEGA8 / ARDUINO
 	#define PIN_UPANEL_MISO 12				// dip pin 18
 	#define PIN_UPANEL_MOSI 13				// dip pin 19
 
-	#define PIN_UPANEL_LEFT_RESET 14	// dip pin 23
-	#define PIN_UPANEL_POKE 3			// dip pin 5
+	#define PIN_UPANEL_LEFT_RESET 14		// dip pin 23
+	#define PIN_UPANEL_POKE 3				// dip pin 5
 		
 	#define PIN_UPANEL_SDA SDA
 	#define PIN_UPANEL_SCL SCL
 	
-	#define PIN_UPANEL_LED0_NUM	4		// dip pin 6
-	#define PIN_UPANEL_LED1_NUM	5		// dip pin 11
-	#define PIN_UPANEL_LED2_NUM	6		// dip pin 12
-	#define PIN_UPANEL_LED3_NUM	7		// dip pin 13
-	#define PIN_UPANEL_LED4_NUM	8		// dip pin 14
-	#define PIN_UPANEL_LED5_NUM	9		// dip pin 15
-	#define PIN_UPANEL_LED6_NUM	16		// dip pin 25 A2
-	#define PIN_UPANEL_LED7_NUM	17		// dip pin 26 A3
+	#define PIN_UPANEL_LED0_NUM	4		// dip pin 6,		Q 2
+	#define PIN_UPANEL_LED1_NUM	5		// dip pin 11,		Q 9
+	#define PIN_UPANEL_LED2_NUM	6		// dip pin 12,		Q 10
+	#define PIN_UPANEL_LED3_NUM	7		// dip pin 13,		Q 11
+	#define PIN_UPANEL_LED4_NUM	8		// dip pin 14,		Q 12
+	#define PIN_UPANEL_LED5_NUM	9		// dip pin 15,		Q 13
+	#define PIN_UPANEL_LED6_NUM	16		// dip pin 25 A2,	Q 25
+	#define PIN_UPANEL_LED7_NUM	17		// dip pin 26 A3,	Q 26
 
 	#define PIN_UPANEL_LED0_MASK	digital_pin_to_bit_mask_PGM+PIN_UPANEL_LED0_NUM
 	#define PIN_UPANEL_LED1_MASK	digital_pin_to_bit_mask_PGM+PIN_UPANEL_LED1_NUM
@@ -353,6 +363,34 @@ DIP28
 	pin27	PC4	arduino A4/D18	ADC4	SDA	-CONN1
 	pin28	PC5	arduino A5/D19	ADC5	SCL	-CONN1
 
+	
+ARDUINO DIP to TQFP
+PIN			DIP		TQFP
+0			2		30		PD0
+1			3		31		PD1
+2			4		32		PD2
+3			5		1		PD3
+4			6		2		PD4
+5			11		9		PD5
+6			12		10		PD6
+7			13		11		PD7
+8			14		12		PB0
+9			15		13		PB1
+10			16		14		PB2
+11			17		15		PB3
+12			18		16		PB4
+13			19		17		PB5
+14	A0		23		23		PC0
+15	A1		24		24		PC1
+16	A2		25		25		PC2
+17	A3		26		26		PC3
+18	A4		27		27		PC4
+19	A5		28		28		PC5
+
+RESET		1		29		PC6
+XTAL1		9		7		PB6
+XTAL2		10		8		PB7
+
 TQFP32
 	pin01	PD3	arduino 03	PWM	- CONN1
 	pin02	PD4	arduino 04
@@ -388,45 +426,13 @@ TQFP32
 	pin31	PD1	arduino 01		TX		-CONN2
 	pin32	PD2	arduino 02		INT0	-
 
-
-	#define PIN_IPANEL_HALL_X A0		// ppin 23
-	#define PIN_IPANEL_HALL_Y A1		// ppin 24
-	#define PIN_IPANEL_WEIGHT A2		// ppin 25
-
-	#define PIN_IPANEL_SERVO_Y 5		// ppin 9
-	#define PIN_IPANEL_SERVO_Z 6		// ppin 10
-
-	#define PIN_UPANEL_LED0_NUM	2		// ppin 32
-	#define PIN_UPANEL_LED1_NUM	3		// ppin 1
-	#define PIN_UPANEL_LED2_NUM	4		// ppin 2
-	#define PIN_UPANEL_LED3_NUM	7		// ppin 11
-	#define PIN_UPANEL_LED4_NUM	8		// ppin 12
-	#define PIN_UPANEL_LED5_NUM	9		// ppin 13
-	#define PIN_UPANEL_LED6_NUM	10		// ppin 14
-	#define PIN_UPANEL_LED7_NUM	17		// ppin 26
-
 */
 
 /*
 
 D:\PROG\arduino-1.0.5\hardware/tools/avr/bin/avrdude -CD:\PROG\arduino-1.0.5\hardware/tools/avr/etc/avrdude.conf -v -v -v -v -D -patmega8 -cstk500v1 -P\\.\COM43 -b19200 -Uflash:w:c:\temp\build7005077114599572471.tmp\atmega8_i2c_slave.cpp.hex:i -Ulock:w:0x3F:m -Uhfuse:w:0xc4:m -Ulfuse:w:0xe4:m
-
-
 D:\PROG\arduino-1.0.5\hardware/tools/avr/bin/avrdude -CD:\PROG\arduino-1.0.5\hardware/tools/avr/etc/avrdude.conf -v -v -v -v -D -patmega8 -cstk500v1 -P\\.\COM43 -b19200 -Ulock:w:0x3F:m -Uhfuse:w:0xc4:m -Ulfuse:w:0xe4:m
-
-
 D:\PROG\arduino-1.0.5\hardware/tools/avr/bin/avrdude -CD:\PROG\arduino-1.0.5\hardware/tools/avr/etc/avrdude.conf -v -v -v -v -patmega8 -cstk500v1 -P\\.\COM43 -b19200 -Uflash:w:c:\temp\build7005077114599572471.tmp\atmega8_i2c_slave.cpp.hex:i
 
-
-
-
-
-
-
-
-
-
-
 */
-
 
