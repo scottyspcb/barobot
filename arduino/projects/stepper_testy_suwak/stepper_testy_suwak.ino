@@ -6,56 +6,67 @@
 //AccelStepper stepper(4, 46,47,48,49 );
 //AccelStepper stepper(4, 40,41,42,43 );
 //AccelStepper stepper(1, 8,9,10,11);
-AccelStepper stepper(1, 4, 5 );
+AccelStepper stepper(1, 2, 3 );
 
 String serial0Buffer = "";
 boolean Console0Complete = false;   // This will be set to true once we have a full string
 boolean dir = true;
 long unsigned target = 00;
 
-void setup(){   
+void setup(){
   Serial.begin(115200); 
-  stepper.setMaxSpeed(400);
-  stepper.setAcceleration(2500);
   stepper.disable_on_ready = true;
-//  stepper.moveTo(500);
-//  stepper.setMinPulseWidth(20);
-  stepper.setEnablePin(14);
+  stepper.setEnablePin(10);
+  stepper.setInterface(1);
   stepper.setPinsInverted( false, false, true ); // enable pin invert
+  stepper.setMaxSpeed(400);
+  stepper.setAcceleration(5500);
   Serial.println("HELLO"); 
   Serial.println("example: 10,25,100,1"); 
   Serial.println("example: 10,25,100,2"); 
   Serial.println("example: 20,65,200,1");
-  
-  
-  pinMode(15, OUTPUT);
-  pinMode(16, OUTPUT);
-  pinMode(17, OUTPUT);
-  digitalWrite(15, HIGH );
-  digitalWrite(16, HIGH );
-  digitalWrite(17, HIGH );
+  pinMode( A0, INPUT);
+  stepper.moveTo(100);
 }
-
+int last = 0;
+int in = 0;
+byte multip = 5;
+byte index = 0;
 void loop(){
-    if( target > 0 ){
-      if (stepper.distanceToGo() == 0){
-        delay(2000);
-        if( dir ){
-          Serial.println("UP -" + String(target*2)); 
-          stepper.move(-target*2); 
-        }else{
-          Serial.println("DOWN " + String(target*2));
-          stepper.move(target*2);
-        }
-        dir = !dir;
+//  if( (--index) == 0 ){
+//    index = multip;
+    in = analogRead(A0);
+    if( in == 512 || in == 513 || in == 511){    
+      if(last != in){
+        stepper.stopNow(true);
+        stepper.disableOutputs();
+        Serial.println("stop");
+        last = in;
+      }
+    }else if( abs(last - in) > 6 ){
+  //    Serial.println("analog: " + String(in) );
+      Serial.print("in= " + String(in) );
+      unsigned long sp= abs( in - 512 );
+      Serial.print("sp= " + String(sp) );
+      sp = sp * 30;
+      stepper.setMaxSpeed( sp );
+      last = in;
+      if (in > 512){
+        Serial.println(" maxSpeed -: " + String(sp) );
+        stepper.moveTo(400000);
+      }else{
+        Serial.println(" maxSpeed +: " + String(sp) );
+        stepper.moveTo(-400000);  
       }
     }
-    stepper.run();
+//  }
+  stepper.run();
+  /*
   if (Console0Complete) {
     parseInput( serial0Buffer );                      // parsuj wejscie
     Console0Complete = false;
     serial0Buffer = "";
-  }
+  }*/
 }
 
 //  format:  MAXSPEED,ACCELERATION,TARGET,MICROSTEPPING
