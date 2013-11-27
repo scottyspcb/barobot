@@ -1,25 +1,5 @@
 #include <Arduino.h>
 
-/*
-ATMEGA8 / ARDUINO
-                  +-\/-+
-            PC6  1|    |28  PC5 (A5/ D19) (SDA)
-  RX  (D0)  PD0  2|    |27  PC4 (A4/ D18) (SCL)
-  TX  (D1)  PD1  3|    |26  PC3 (A3/ D17)
- INT0 (D2)  PD2  4|    |25  PC2 (A2/ D16)
- INT1 (D3)  PD3  5|    |24  PC1 (A1/ D15)
- XCK  (D4)  PD4  6|    |23  PC0 (A0/ D14)
-            VCC  7|    |22  GND
-            GND  8|    |21  AREF
- XTAL       PB6  9|    |20  AVCC
- XTAL       PB7 10|    |19  PB5 (D13) SCK
-      (D5)  PD5 11|    |18  PB4 (D12) MISO
- AIN0 (D6)  PD6 12|    |17  PB3 (D11) MOSI PWM
- AIN1 (D7)  PD7 13|    |16  PB2 (D10) SS PWM
-      (D8)  PB0 14|    |15  PB1 (D9) PWM
-                  +----+
-*/
-
 /*------------------------------    i2c     ------------------------------*/
 //#define I2C_ADR_MASTER 0x01
 #define I2C_ADR_MAINBOARD 0x01
@@ -59,13 +39,14 @@ ATMEGA8 / ARDUINO
 #define COUNT_IPANEL 1
 #define COUNT_IPANEL_ONBOARD_LED 8
 
+
 /*------------------ MAINBOARD -------------------*/
 #if IS_MAINBOARD
 
 	#define MAINBOARD_USE_BT false
 	#define MAINBOARD_USE_SERIAL0 true
-	#define MAINBOARD_SERIAL0_BOUND 115200
-
+	#define SERIAL0_BOUND MAINBOARD_SERIAL0_BOUND
+	
 	#define MAINBOARD_BT_BOUND 115200
 	#define MAINBOARD_BT_DEV_NAME "barobotA"
 
@@ -103,9 +84,9 @@ ATMEGA8 / ARDUINO
 		#define PIN_MAINBOARD_STEPPER_STEP3 17
 
 	// Set as INPUT to allow programming over ISP
-	#define PIN_MAINBOARD_SCK 11
-	#define PIN_MAINBOARD_MISO 12
-	#define PIN_MAINBOARD_MOSI 13
+	#define PIN_MAINBOARD_SCK SCK			// 13
+	#define PIN_MAINBOARD_MISO MISO			// 11
+	#define PIN_MAINBOARD_MOSI MOSI			// 12
 
 	#define PIN_MAINBOARD_SDA SDA			// arduino 18
 	#define PIN_MAINBOARD_SCL SCL			// arduino 19
@@ -162,6 +143,7 @@ ATMEGA8 / ARDUINO
 
 	#define IPANEL_COMMON_ANODE false		// sterowanie plusem? false gdy sterowaniem minusem
 	#define IPANEL_BUFFER_LENGTH 6			// i2c input buffer
+	#define SERIAL0_BOUND MAINBOARD_SERIAL0_BOUND
 		
 	// domyslen ustawienie mocy silnika Z
 	// pozycja jechania do góry i czas jechania
@@ -174,13 +156,13 @@ ATMEGA8 / ARDUINO
 	#define PIN_IPANEL_SCL SCL
 	
 	// set as INPUT to allow programming over ISP
-	#define PIN_IPANEL_SCK 11			// dip pin 17,
-	#define PIN_IPANEL_MISO 12			// dip pin 18,
-	#define PIN_IPANEL_MOSI 13			// dip pin 19,
-	
-	#define PIN_IPANEL_HALL_X A0		// dip pin 23,	Q 23
-	#define PIN_IPANEL_HALL_Y A1		// dip pin 24,	Q 24
-	#define PIN_IPANEL_WEIGHT A2		// dip pin 25,	Q 25
+	#define PIN_IPANEL_SCK 13			// dip pin 17,
+	#define PIN_IPANEL_MISO 11			// dip pin 18,
+	#define PIN_IPANEL_MOSI 12			// dip pin 19,
+
+	#define PIN_IPANEL_HALL_X A0		// dip pin 23 A0,	Q 23
+	#define PIN_IPANEL_HALL_Y A1		// dip pin 24 A1,	Q 24
+	#define PIN_IPANEL_WEIGHT A2		// dip pin 25 A2,	Q 25
 
 	#define PIN_IPANEL_SERVO_Y 5		// dip pin 11,	Q 9
 	#define PIN_IPANEL_SERVO_Z 6		// dip pin 12,	Q 10
@@ -231,13 +213,13 @@ ATMEGA8 / ARDUINO
 #define UPANEL_SERIAL0_BOUND 115200
 
 #if IS_UPANEL
-
 	#define UPANEL_COMMON_ANODE false		// sterowanie plusem? false gdy sterowaniem minusem
+	#define SERIAL0_BOUND UPANEL_SERIAL0_BOUND
 
 	// set as INPUT do allow programming over ISP
-	#define PIN_UPANEL_SCK 11				// dip pin 17
-	#define PIN_UPANEL_MISO 12				// dip pin 18
-	#define PIN_UPANEL_MOSI 13				// dip pin 19
+	#define PIN_UPANEL_SCK SCK				// dip pin 17
+	#define PIN_UPANEL_MISO MISO				// dip pin 18
+	#define PIN_UPANEL_MOSI MOSI				// dip pin 19
 
 	#define PIN_UPANEL_LEFT_RESET 14		// dip pin 23
 	#define PIN_UPANEL_POKE 3				// dip pin 5
@@ -290,6 +272,44 @@ ATMEGA8 / ARDUINO
 	*/
 	
 #endif
+
+#if 1
+#define DEBUGINIT(sth) (Serial.begin(SERIAL0_BOUND))
+#define DEBUG(sth) (Serial.print(String(sth)))
+#define DEBUGLN(sth) (Serial.println(String(sth)))
+#else
+#define DEBUGINIT(sth)
+#define DEBUG(sth)
+#define DEBUGLN(sth)
+#endif
+
+#define METHOD_GETVERSION 	5
+#define METHOD_PROG_MODE_ON 	10
+#define METHOD_PROG_MODE_OFF 	14
+#define METHOD_TEST_SLAVE 	19
+#define METHOD_RESETCYCLES 	20
+#define METHOD_SETPWM 	38
+#define METHOD_SETTIME 	42
+#define METHOD_SETFADING 	46
+#define METHOD_RESETSLAVEADDRESS 	50
+#define METHOD_GETANALOGVALUE 	51
+#define METHOD_GETVALUE 	55
+#define METHOD_RESET_NEXT 	58
+#define METHOD_RUN_NEXT 	62
+#define METHOD_GETSERVOYPOS 	65
+#define METHOD_GOTOSERVOYPOS 	66
+#define METHOD_GETSERVOZPOS 	69
+#define METHOD_GOTOSERVOZPOS 	70
+#define METHOD_HERE_I_AM 	114
+#define METHOD_SEND_PIN_VALUE 	118
+#define METHOD_I2C_SLAVEMSG 	122
+#define METHOD_LIVE_ANALOG 	74
+#define METHOD_LIVE_OFF 	72
+#define METHOD_SEND2SLAVE 	127
+#define METHOD_DRIVER_ENABLE 	82
+#define METHOD_DRIVER_DISABLE 	86
+
+
 
 #if HAS_LEDS
 	typedef struct{ 
@@ -352,7 +372,26 @@ DIP28
 	pin27	PC4	arduino A4/D18	ADC4	SDA	-CONN1
 	pin28	PC5	arduino A5/D19	ADC5	SCL	-CONN1
 
-	
+
+ATMEGA8 / ARDUINO
+                  +-\/-+
+            PC6  1|    |28  PC5 (A5/ D19) (SDA)
+  RX  (D0)  PD0  2|    |27  PC4 (A4/ D18) (SCL)
+  TX  (D1)  PD1  3|    |26  PC3 (A3/ D17)
+ INT0 (D2)  PD2  4|    |25  PC2 (A2/ D16)
+ INT1 (D3)  PD3  5|    |24  PC1 (A1/ D15)
+ XCK  (D4)  PD4  6|    |23  PC0 (A0/ D14)
+            VCC  7|    |22  GND
+            GND  8|    |21  AREF
+ XTAL       PB6  9|    |20  AVCC
+ XTAL       PB7 10|    |19  PB5 (D13) SCK
+      (D5)  PD5 11|    |18  PB4 (D12) MISO
+ AIN0 (D6)  PD6 12|    |17  PB3 (D11) MOSI PWM
+ AIN1 (D7)  PD7 13|    |16  PB2 (D10) SS PWM
+      (D8)  PB0 14|    |15  PB1 (D9) PWM
+                  +----+
+
+
 ARDUINO DIP to TQFP
 PIN			DIP		TQFP
 0			2		30		PD0
