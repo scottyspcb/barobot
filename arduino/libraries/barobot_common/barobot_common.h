@@ -116,6 +116,7 @@
 		
 		#define PIN_PROGRAMMER_RESET_UPANEL 7		// dip ??
 		#define PIN_PROGRAMMER_RESET_IPANEL 8		// dip ??
+		#define PIN_PROGRAMMER_RESET_MASTER 15		// dip ??
 
 		#define PROGRAMMER_METHOD_PIN	true
 		#define PROGRAMMER_METHOD_RPC	false
@@ -309,6 +310,10 @@
 #define METHOD_DRIVER_ENABLE 	82
 #define METHOD_DRIVER_DISABLE 	86
 
+#define METHOD_RET_FROM_SLAVE 	88
+#define METHOD_I2C_ERROR 		90
+#define METHOD_RET_FROM_SLAVE2 	92
+
 
 
 #if HAS_LEDS
@@ -457,6 +462,9 @@ TQFP32
 */
 
 /*
+
+X5,40,200
+X55,60,-1250
 
 D:\PROG\arduino-1.0.5\hardware/tools/avr/bin/avrdude -CD:\PROG\arduino-1.0.5\hardware/tools/avr/etc/avrdude.conf -v -v -v -v -D -patmega8 -cstk500v1 -P\\.\COM43 -b19200 -Uflash:w:c:\temp\build7005077114599572471.tmp\atmega8_i2c_slave.cpp.hex:i -Ulock:w:0x3F:m -Uhfuse:w:0xc4:m -Ulfuse:w:0xe4:m
 D:\PROG\arduino-1.0.5\hardware/tools/avr/bin/avrdude -CD:\PROG\arduino-1.0.5\hardware/tools/avr/etc/avrdude.conf -v -v -v -v -D -patmega8 -cstk500v1 -P\\.\COM43 -b19200 -Ulock:w:0x3F:m -Uhfuse:w:0xc4:m -Ulfuse:w:0xe4:m
