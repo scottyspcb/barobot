@@ -78,16 +78,29 @@ void setup(){
   FlexiTimer2::set(40, 1.0/100, timer);
   FlexiTimer2::start();
 }
-
-//long int mil = 0;
+unsigned long milisAnalog = 0;
+long int mil = 0;
 //long int milis100 = 0;
 
 void loop() {
-//  mil = millis();
-
-  analogRead(PIN_IPANEL_HALL_Y );    // very often
-  analogRead(PIN_IPANEL_HALL_X );    // often
-  analogRead(PIN_IPANEL_WEIGHT );    // sometimes
+  mil = millis();
+//  analogRead(PIN_IPANEL_HALL_Y );    // very often
+//  analogRead(PIN_IPANEL_HALL_X );    // often
+//  analogRead(PIN_IPANEL_WEIGHT );    // sometimes
+ 
+	if( analog_reading &&  mil > milisAnalog ){
+		milisAnalog = mil+ analog_speed;
+		if( analog_pos == analog_repeat ){			// wyślij
+                        Serial.print( "A" );
+                        Serial.print( analog_num );
+                        Serial.print( " " );
+                        Serial.println( analog_sum );
+			analog_pos = 0;
+			analog_sum = 0;
+		}
+		analog_pos++;
+		analog_sum	+= analogRead(analog_num);
+	}
 
   // analizuj bufor wejsciowy i2c
   for( byte i=0;i<IPANEL_BUFFER_LENGTH;i++){
@@ -98,12 +111,9 @@ void loop() {
   }
 }
 
-
 void timer(){
   ticks++;
   digitalWrite(PIN_IPANEL_LED7_NUM,  !digitalRead(PIN_IPANEL_LED7_NUM));    // Toggle led. Read from register (not from pin)
-  
-  
   
   
   
@@ -140,8 +150,8 @@ void proceed( volatile byte buffer[5] ){
   }else if( buffer[0] == METHOD_LIVE_ANALOG ){         // LIVE A 3,100,5 // TODO method byte
       if(buffer[1] < 8){
         analog_num = buffer[1];      // analog num
-        analog_speed = buffer[2];    // speed  
-        analog_repeat = buffer[3];   // repeat        
+        analog_speed = buffer[2];    // speed
+        analog_repeat = buffer[3];   // repeat
         analog_pos = 0;
         analog_sum = 0;
         pinMode( A0 + analog_num, INPUT);      // numer portu analoga to nie numer pinu (w mega A0 to 54)
@@ -160,21 +170,30 @@ void proceed( volatile byte buffer[5] ){
       servoZ.detach();
     }
   }else if( buffer[0] == METHOD_GOTOSERVOYPOS ){
-    byte high_val = buffer[1];
-    byte low_val  = buffer[2];
-    
-    uint16_t t = buffer[1] >>
-    
+    // on wire: low_byte, high_byte
+    // in memory: low_byte, high_byte
     byte speed    = buffer[3];
+    uint16_t t = buffer[2] << 8 + buffer[1];    // little endian
 
   }else if( buffer[0] == METHOD_GOTOSERVOZPOS ){
-    byte high_val = buffer[1];
-    byte low_val  = buffer[2];
+    uint16_t t = buffer[2] << 8 + buffer[1];    // little endian
 
   }else if( buffer[0] == METHOD_SETPWM ){
+    byte led    = buffer[1];
+    byte level  = buffer[2];
+    
   }else if( buffer[0] == METHOD_SETTIME ){
+    byte led   = buffer[1];
+    byte on    = buffer[2];
+    byte off   = buffer[2];
+    
   }else if( buffer[0] == METHOD_SETFADING ){
+    byte led   = buffer[1];
+    byte on    = buffer[2];
+    byte off   = buffer[2];
+
   }else if( buffer[0] == METHOD_RESETCYCLES ){
+    // resetuj cykl petli pwm
   }else{
     DEBUG("proceed unknown - ");
     printHex(buffer[0], false);
@@ -231,9 +250,10 @@ void requestEvent(){
           diddd = !diddd;
           digitalWrite(PIN_IPANEL_LED1_NUM, diddd);
         }      
-//   todo     getAnalogValue
-//   todo     getValue
-        
+    }else if( command == METHOD_GETANALOGVALUE ){    
+    }else if( command == METHOD_GETVALUE ){    
+    }else if( command == METHOD_RESET_NEXT ){
+    }else if( command == METHOD_RUN_NEXT ){
     }else if(!prog_mode){
       DEBUG("requestEvent unknown - ");
       printHex(input_buffer[last_index][0], false);
@@ -253,7 +273,7 @@ static void send_pin_value( byte pin, byte value ){
 
 static void send_here_i_am(){
   byte ttt[4] = {METHOD_HERE_I_AM,my_address,IPANEL_DEVICE_TYPE,IPANEL_VERSION};
-//  DEBUGLN("hello "+ String( my_address ));  
+  DEBUGLN("hello "+ String( my_address ));  
   send(ttt,4);
 }
 

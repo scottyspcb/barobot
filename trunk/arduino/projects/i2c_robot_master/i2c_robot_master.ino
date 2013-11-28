@@ -4,14 +4,16 @@
 #include <barobot_common.h>
 #include <i2c_helpers.h>
 #include <AccelStepper.h>
+#include <FlexiTimer2.h>
 
-volatile byte in_buffer[5];
-volatile byte input_buffer[MAINBOARD_BUFFER_LENGTH][5] = {{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0}};
-volatile byte out_buffer[5];
+byte in_buffer[7];
+volatile byte input_buffer[MAINBOARD_BUFFER_LENGTH][7] = {{0,0,0,0,0,0,0},{0,0,0,0,0,0,0},{0,0,0,0,0,0,0}};
+byte out_buffer[7];
 uint8_t serialBuff[130];
 uint8_t serialBuff_pos   = 0;
 
 boolean error=0;
+volatile boolean stepper_now = false;
 int here;
 uint8_t hbval=128;
 
@@ -24,9 +26,7 @@ boolean Console0Complete = false;   // This will be set to true once we have a f
 boolean last_i2c_read_error = false;
 
 byte reprogramm_index = 0;
-
-
-long int milis100 = 0;
+long unsigned milis100 = 0;
 boolean diddd = false;
 
 /*
@@ -58,7 +58,6 @@ PROGN, RESETN    - programm after number
 SPECIAL
 fe  send to last known device
 ff  send to device AFTER last known device
-
 */
 
 void setup(){
@@ -80,7 +79,7 @@ void setup(){
   digitalWrite(SDA, 1);    // disable pullups
   digitalWrite(SCL, 1);    // disable pullups
   Wire.onReceive(receiveEvent);  
-//  Serial.println("master start");
+  setupStepper();
 }
 
 #if MAINBOARD_SERVO_4PIN==true
@@ -89,7 +88,28 @@ AccelStepper stepperX(8, PIN_MAINBOARD_STEPPER_STEP0, PIN_MAINBOARD_STEPPER_STEP
 AccelStepper stepperX(1, PIN_MAINBOARD_STEPPER_STEP, PIN_MAINBOARD_STEPPER_DIR);      // Step, DIR
 #endif
 
-void check_i2c(){  
+void setupStepper(){
+  stepperX.disable_on_ready = true;
+  stepperX.setEnablePin(PIN_MAINBOARD_STEPPER_ENABLE);
+  stepperX.setPinsInverted( false, false, true ); // enable pin invert
+  pinMode(PIN_MAINBOARD_STEPPER_MS1, OUTPUT);
+  pinMode(PIN_MAINBOARD_STEPPER_MS2, OUTPUT);
+  pinMode(PIN_MAINBOARD_STEPPER_MS3, OUTPUT);
+  digitalWrite(15, HIGH );
+  digitalWrite(16, HIGH );
+  digitalWrite(17, LOW );
+  stepperX.onReady(stepperReady);  
+  FlexiTimer2::set(1, 1.0/3000, timer);
+  FlexiTimer2::start();
+}
+
+void timer(){
+  stepper_now = true;
+}
+
+
+
+void check_i2c(){
   Wire.beginTransmission(I2C_ADR_RESERVED);
   byte ee = Wire.endTransmission();     // czy linia jest drozna
   if(ee == 6 ){    // niedrozna - resetuj i2c
@@ -97,31 +117,27 @@ void check_i2c(){
 //    pinMode(PIN_MAINBOARD_SDA, INPUT );
 //    pinMode(PIN_MAINBOARD_SCL, INPUT );
     Wire.begin(I2C_ADR_MAINBOARD);
-/*
-    for(byte sa = 0x05; sa <= 110; sa++ ) {       // wyslij wszystkim ze reset
-      out_buffer[0]  = 0x16;
-      writeRegisters(sa, 1, true );
-    }*/
-    tri_state( PIN_PROGRAMMER_RESET_UPANEL, false );       // pin w stanie niskim = reset
     tri_state( PIN_PROGRAMMER_RESET_IPANEL, false );       // pin w stanie niskim = reset
-    asm("nop");    // at least 1,5 us, can be more
-    tri_state( PIN_PROGRAMMER_RESET_UPANEL, true );       // pin w stanie niskim = reset
+    tri_state( PIN_PROGRAMMER_RESET_UPANEL, false );       // pin w stanie niskim = reset
     tri_state( PIN_PROGRAMMER_RESET_IPANEL, true );       // pin w stanie niskim = reset
+    tri_state( PIN_PROGRAMMER_RESET_UPANEL, true );       // pin w stanie niskim = reset
   }
 }
 
 void loop(){
         long int mil = millis();
-  	if( mil > milis100 + 2000 ){    // co 4 sek
+  	if( mil > milis100 + 2000 ){    // co 2 sek
                 check_i2c();
                 byte nDevices=0;
                 error=0;
                 for(byte addr2 = 1; addr2 < 20; addr2++ )   {
+                  stepperX.run();
                   Wire.beginTransmission(addr2);
                   error = Wire.endTransmission();
                   if (error == 0){
                     Serial.print("-dev @");
                     printHex(addr2, false );
+                    /*
                     uint16_t readed = i2c_getVersion(addr2);
                     Serial.print(" type: ");
                     printHex( readed>>8, false );    // starsze bity = typ
@@ -129,8 +145,9 @@ void loop(){
                     printHex( readed & 0xff, false );    // młodsze bity = ver
                     Serial.print(" pos: ");
                     byte pos = getResetOrder(addr2);
-                    printHex( pos, false );   
+                    printHex( pos, false );*/   
                     Serial.println("");
+                    stepperX.run();
                     nDevices++;
                   }else{
               //     Serial.println("RET: "+String(addr2)+" / "+String(error));
@@ -140,6 +157,7 @@ void loop(){
               //  scann();
                 hbval++;
                 if(hbval>=10){
+                  i2c_analog(I2C_ADR_IPANEL, 0);
                   get_order();
                   hbval=0;
                 }
@@ -158,6 +176,10 @@ void loop(){
         input_buffer[i][0] = 0;
       }
     }
+//   if(stepper_now){
+    stepperX.run();
+//    stepper_now = false;
+//   }
 }
 
 void scann(){
@@ -186,15 +208,55 @@ void scann(){
   }
 }
 
-void parseInput( String input ){   // zrozum co sie dzieje
+void proceed( volatile byte buffer[7] ){ // zrozum co przyszlo po i2c
+  if(prog_mode){
+    return;
+  }
+  if(buffer[0] == METHOD_HERE_I_AM){    // here_i_am
+    // sprawdz czy ten adres nie jest uzywany
+    if( buffer[2] == IPANEL_DEVICE_TYPE ){
+        Serial.println("Wozek! ");  
+    }else if(scann_order){
+      byte pos = getResetOrder(buffer[1]);
+      if( pos !=0xFF || (nextpos >= COUNT_UPANEL) ){
+        scann_order  =  false;
+        Serial.println("koniec order");
+      }else{
+        printHex( buffer[1], false );
+        Serial.println("- Upanel pod " + String(nextpos));
+        /*
+        printHex(buffer[1], false);
+        Serial.print(" ");
+        printHex(buffer[2], false);
+        Serial.print(" ");
+        printHex(buffer[3], false);
+        Serial.print(" ");
+        printHex(buffer[4], false);
+        Serial.print(" ");
+        printHex(buffer[5]);
+*/
+        order[nextpos++]  = buffer[1];     // na tm miejscu slave o tym adresie
+        i2c_reset_next( buffer[1], false );       // reset next (next to slave)
+        i2c_reset_next( buffer[1], true );
+      }
+    }
+  }else{
+    Serial.println("recieve unknown - ");
+    printHex(buffer[0]);
+  }
+  buffer[0] = 0;  //ready
+}
+
+void parseInput( String input ){   // zrozum co przyszlo po serialu
 	input.trim();
 	send2debuger( "COMMAND", input );
 	boolean defaultResult = true;
+        byte command = serialBuff[0];
 
-	if( input.charAt( 0 ) == METHOD_SEND2SLAVE ){      // wyślij przez i2c do slave i spodziewaj się wyniku
-          Serial.println("K14");
-          // np 0x14 0x0A 0x02 0x11 0x22 0x33       // wyślij po i2c do slave numer 0x0A bajty: 0x11 0x22 0x33  i spodziewaj się 2 bajtów wyniku
-          byte count          = input.length() - 3;    // tyle do wysłania
+	if( command == METHOD_SEND2SLAVE ){    // wyślij przez i2c do slave i spodziewaj się wyniku
+      //    Serial.println("A2S");
+          // np 0x14 0x0A 0x02 0x11 0x22 0x33            // wyślij po i2c do slave numer 0x0A bajty: 0x11 0x22 0x33  i spodziewaj się 2 bajtów wyniku
+          byte count          = input.length() - 3;      // tyle do wysłania
           byte slave_address  = input.charAt( 1 ); 
           byte needs          = input.charAt( 2 );
           if( count > 0){
@@ -203,13 +265,19 @@ void parseInput( String input ){   // zrozum co sie dzieje
             }
             byte error = writeRegisters(slave_address, count, true );
             if( error ){
-              Serial.println("!!!i2c_getVersion error1"); 
-              // ERROR command
+              Serial.println("!se i2c_getVersion"); 
+              byte ttt[3] = {METHOD_I2C_ERROR, slave_address, error};              // ERROR command
+              send2android(ttt,3);
             }else{
               if( needs > 0){                // moge chcieć 0 bajtów
                 readRegisters( slave_address, needs );
                 // wynik w in_buffer;
+                byte ttt[2] = {METHOD_RET_FROM_SLAVE,slave_address}; 
+                send2android(ttt,2);
+                send2android(in_buffer,needs);
+                send2androidEnd();
               }else{
+                //koniec komendy
               }
             }
           }else{  // nic nie wysyłaj bo nie ma co
@@ -257,7 +325,10 @@ void parseInput( String input ){   // zrozum co sie dzieje
                 }else{
 
                 }
-
+	}else if( input.startsWith("X")) {    // X10,10,10
+        	String ss 		= input.substring( 1 );		// 10,10,10
+                parseInput2(ss);
+        
 /*
         }else if ( input.startsWith("SET") ) {      // tutaj niektore beda synchroniczne inne asynchroniczne wiec czasem zwracaj R, a czasem dopiero po zakonczeniu
 		if( false){
@@ -267,7 +338,6 @@ void parseInput( String input ){   // zrozum co sie dzieje
 		}
 	}else if( input.startsWith("GET")) {
 		defaultResult = false;
-
 	}else if( input.equals("EX") ){
 		stepperX.enableOutputs();
 	}else if( input.equals("DX") ){
@@ -277,21 +347,17 @@ void parseInput( String input ){   // zrozum co sie dzieje
 	}else if( input.equals("I2C SCANN") ){
 //		scann_i2c();
 //		defaultResult = false;
-
 	}else if( input.startsWith("I2C ") ){			// wyślij komendę do urządzenia i2c o podanym numerze
 		byte address	= input.charAt( 4 );		// adres i2c
 		String ss 		= input.substring( 5 );		// "I2C " 4 znaki, 5 to adres więc podaj od szóstego
-
 		send2debuger( "I2C ADR", ""+String(address) );
 		send2debuger( "I2C LEN", ""+String(ss.length()) );
 		send2debuger( "I2C PARAMS", ss );
-
 		char const *c	= ss.c_str();				// lista parametrow, pierwszy to komenda
 		for(byte a; a<ss.length(); a++){
 			send2debuger( "I2C PARAM", ""+String(c[a]) );
 		}	
 		defaultResult = false; 
-
 	}else if( input.equals("PING2ARDUINO") ){        // odeslij PONG
 		sendln2android("PONG");
 		defaultResult = false;
@@ -299,11 +365,11 @@ void parseInput( String input ){   // zrozum co sie dzieje
 		defaultResult = false;
 	}else if( input.equals( "PONG" )){			// nic, to byla odpowiedz na moje PING
 		defaultResult = false;
+*/
 	}else if( input.equals( "PING2ANDROID") ){      // nic nie rob
 		defaultResult = false;
-
 	}else if( input.equals( "WAIT READY") ){      // tylko zwróc zwrotke
-*/
+
 	}else{
                 // nie rozumiem
 		sendln2android("ARDUINO NO COMMAND [" + input +"]");
@@ -313,6 +379,67 @@ void parseInput( String input ){   // zrozum co sie dzieje
 		sendln2android("R " + input );
 	}
 }
+
+void stepperReady( unsigned long int pos ){
+  Serial.println("--gotowe--"); 
+  Serial.println(String(pos)); 
+}
+
+
+
+
+
+
+
+
+void parseInput2( String input ){   // zrozum co sie dzieje
+  input.trim();
+  int comma = input.indexOf(',');
+  byte pos = 0;
+  Serial.println("------------------NOWY CONFIG-----------------"); 
+  while( comma != -1 ){
+      String current  = input.substring(0, comma);
+      input           = input.substring(comma + 1 );    // wytnij od tego znaku
+      setValue( pos, current );
+      comma = input.indexOf(',');
+      pos++;
+  }
+  if( input.length() > 0 ){
+      setValue( pos, input );
+  }  
+  Serial.println("----------------------------------------------"); 
+}
+
+ // MAXSPEED,ACCELERATION,TARGET
+void setValue(byte pos, String value ){
+  long unsigned val = decodeInt( value, 0 );
+  if( pos == 0 ){               // MAXSPEED
+    val = val * 100;
+    stepperX.setMaxSpeed(val);
+    Serial.println("setMaxSpeed: " + String(val) );
+  }else if( pos == 1 ){         // ACCELERATION
+    val = val * 100;
+    stepperX.setAcceleration(val);
+    Serial.println("setAcceleration: " + String(val) );
+  }else if( pos == 2 ){         // TARGET
+    val = val * 10;
+    Serial.println("moveTo: " + String(val) );
+    stepperX.move(val*2);
+  }
+}
+
+long unsigned decodeInt(String input, int odetnij ){
+  long pos = 0;
+  if(odetnij>0){
+    input = input.substring(odetnij);    // obetnij znaki z przodu
+  }
+  pos = input.toInt();
+  return pos;
+}
+
+
+
+
 
 void tri_state( byte pin_num, boolean pin_value ){
     if( pin_value ){
@@ -324,6 +451,27 @@ void tri_state( byte pin_num, boolean pin_value ){
       digitalWrite(pin_num, LOW);        // LOW value = reset
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 boolean reset_device_num( byte num, boolean pin_value ){
   if( num == 0x00 ){                        // master 
@@ -364,45 +512,6 @@ void read_prog_settings( String input, byte ns ){
       reprogramm_index    = target;
     }
     programmer_mode(true, serial_baud_num, slow_sck );
-}
-
-void proceed( volatile byte buffer[5] ){
-  if(prog_mode){
-    return;
-  }
-  if(buffer[0] == METHOD_HERE_I_AM){    // here_i_am
-    // sprawdz czy ten adres nie jest uzywany
-    if(scann_order){
-      byte pos = getResetOrder(buffer[1]);
-      if( pos !=0xFF || (nextpos >= COUNT_UPANEL) ){
-        scann_order  =  false;
-        Serial.println("koniec order");
-      }else if( buffer[2] == IPANEL_DEVICE_TYPE ){
-        Serial.println("Wozek! ");  
-      }else{
-        printHex( buffer[1], false );
-        Serial.println("- Upanel pod " + String(nextpos));
-        /*
-        printHex(buffer[1], false);
-        Serial.print(" ");
-        printHex(buffer[2], false);
-        Serial.print(" ");
-        printHex(buffer[3], false);
-        Serial.print(" ");
-        printHex(buffer[4], false);
-        Serial.print(" ");
-        printHex(buffer[5]);
-*/
-        order[nextpos++]  = buffer[1];     // na tm miejscu slave o tym adresie
-        i2c_reset_next( buffer[1], false );       // reset next (next to slave)
-        i2c_reset_next( buffer[1], true );
-      }
-    }
-  }else{
-    Serial.println("recieve unknown - ");
-    printHex(buffer[0]);
-  }
-  buffer[0] = 0;  //ready
 }
 
 void i2c_resetCycles( byte slave_address ){
@@ -453,14 +562,27 @@ void i2c_reset_next( byte slave_address, boolean pin_value ){
   }
 }
 
+void i2c_analog( byte slave_address, byte analog ){
+    out_buffer[0]  = METHOD_LIVE_ANALOG; 
+    out_buffer[1]  = analog;
+    out_buffer[2]  = 15;
+    out_buffer[3]  = 1;
+    writeRegisters(slave_address, 4, false );
+}
+void i2c_analog_off( byte slave_address, byte analog ){
+    out_buffer[0]  = METHOD_LIVE_OFF; 
+    writeRegisters(slave_address, 1, false );
+}
+
 void i2c_prog_mode( boolean active, byte slave_address ){                  // Toggle programm mode in slave
   if(active){
     out_buffer[0]  = METHOD_PROG_MODE_ON;    // ON
     out_buffer[1]  = slave_address;
+    writeRegisters(slave_address, 2, false );
   }else{
     out_buffer[0]  = METHOD_PROG_MODE_OFF;    // OFF
+    writeRegisters(slave_address, 1, false );
   }
-  writeRegisters(slave_address, 1, true );
 }
 
 void get_order(){      // pobierz kolejnosc elementów
@@ -584,26 +706,27 @@ uint16_t i2c_getAnalogValue( byte slave_address, byte pin ){ // Pobierz analogow
   return 0xFF;
 }
 
+// this is event handler, all vars should be volatile
 void receiveEvent(int howMany){
   if(!howMany){
      return;
   }
   byte cnt = 0;
   volatile byte (*buffer) = 0;
-//  Serial.print("input " );
+  DEBUG("input " );
   for( byte a = 0; a < MAINBOARD_BUFFER_LENGTH; a++ ){
     if(input_buffer[a][0] == 0 ){
       buffer = (&input_buffer[a][0]); 
       while( Wire.available()){ // loop through all but the last
         byte w =  Wire.read(); // receive byte as a character
         *(buffer +(cnt++)) = w;
-//        printHex(w, false ); 
+        DEBUG(w ); 
       }
-//      Serial.println(""); 
+      DEBUGLN(""); 
       return;
     }
   }
-//  Serial.println(" - pelno"); 
+  DEBUGLN(" - pelno"); 
 }
 
 // znajdz kod resetu
@@ -686,15 +809,20 @@ void send2debuger( String ns, String logstr ){
   }
 }
 
-void sendln2android(){      // wyslij string do androida
+void send2androidEnd(){      // wyslij string do androida
 	Serial.println();
 }
 void sendln2android( String output2 ){      // wyslij string do androida
 	Serial.println( output2 );
 }
+void send2android( uint8_t buf[], int len ){
+  Serial.write(buf, len);
+}
+
 void send2android( String output2 ){      // wyslij string do androida
 	Serial.print( output2 );
 }
+
 void serialEvent(){				             // Runs after every LOOP (means don't run if loop hangs)
     if(!prog_mode){
 	while (Serial.available() && !Console0Complete) {    // odczytuj gdy istnieja dane i poprzednie zostaly odczytane
