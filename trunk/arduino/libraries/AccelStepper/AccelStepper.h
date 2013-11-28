@@ -403,7 +403,8 @@ public:
 	// Disable outputs on ready?
     boolean     disable_on_ready;
     boolean     is_disabled;
-
+	void onReady( void (*)(unsigned long) );
+		
 protected:
 
     /// \brief Direction indicator
@@ -563,7 +564,8 @@ private:
     boolean _direction; // 1 == CW
 
 	uint8_t           _last_output;
-	//uint8_t           _last_step;
+	//uint8_t         _last_step;
+	static void (*user_onReady)(long unsigned int);
 };
 
 /// @example Random.pde

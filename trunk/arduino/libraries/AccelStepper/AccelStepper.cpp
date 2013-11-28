@@ -20,6 +20,8 @@ void dump(uint8_t* p, int l)
 }
 #endif
 
+void (*AccelStepper::user_onReady)(long unsigned int);
+
 void AccelStepper::moveTo(long absolute)
 {
     if (_targetPos != absolute)
@@ -286,6 +288,15 @@ void AccelStepper::onReady(){
 	if( disable_on_ready ){
 		disableOutputs();
 	}
+	if(user_onReady){
+		user_onReady( _currentPos );
+	}
+}
+
+// sets function called on slave write
+void AccelStepper::onReady( void (*function)(long unsigned int) )
+{
+  user_onReady = function;
 }
 
 
@@ -371,11 +382,27 @@ void AccelStepper::setOutputPins(uint8_t mask)
 {
 	_last_output = mask;
     uint8_t numpins = 2;
-    if (_interface == FULL4WIRE || _interface == HALF4WIRE)
-	numpins = 4;
+    if (_interface == FULL4WIRE || _interface == HALF4WIRE){
+		numpins = 4;
+	}
     uint8_t i;
-    for (i = 0; i < numpins; i++)
-	digitalWrite(_pin[i], (mask & (1 << i)) ? (HIGH ^ _pinInverted[i]) : (LOW ^ _pinInverted[i]));
+    for (i = 0; i < numpins; i++){
+		boolean value = (mask & (1 << i)) ? (HIGH ^ _pinInverted[i]) : (LOW ^ _pinInverted[i]);
+		digitalWrite(_pin[i], value );
+/*
+			volatile uint8_t *out;
+			byte pin		= _pin[i];
+			uint8_t bit		= pgm_read_byte( digital_pin_to_bit_mask_PGM + pin );
+			uint8_t port	= pgm_read_byte( digital_pin_to_port_PGM + pin );
+			out				= (volatile uint8_t *)(pgm_read_word( port_to_output_PGM + pin ));
+
+			if (value == LOW){
+				*out &= bit;  //clear bit
+			}else{
+				*out |= bit;  //set bit
+			}
+*/		
+	}
 }
 
 // 0 pin step function (ie for functional usage)
@@ -546,7 +573,7 @@ void AccelStepper::step8(uint8_t step)
             break;
     }
 }
-    
+
 // Prevents power consumption on the outputs
 void    AccelStepper::disableOutputs()
 {   
