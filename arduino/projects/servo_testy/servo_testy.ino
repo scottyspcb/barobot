@@ -1,7 +1,7 @@
 #include <FlexiTimer2.h>
 #include <Servo.h>
 
-#if 0
+#if 1
 #define DEBUG(sth) (Serial.print(String(sth)))
 #define DEBUGLN(sth) (Serial.println(String(sth)))
 #else
@@ -34,8 +34,6 @@ void setup(){
   Serial.begin(115200); 
   DEBUG("HELLO");
 
-  pinMode( A0, INPUT);
-  pinMode( 13, OUTPUT);
   enabled = false;
 //  FlexiTimer2::set(40, 1.0/1000, flash); // call every 500 1ms "ticks"
   FlexiTimer2::set(40, 1.0/100, flash);
@@ -51,7 +49,6 @@ byte sp = 1;
 void flash(){
   static boolean output = HIGH;
   if(pos != target_pos ){
-    digitalWrite(13, output);
     output = !output;
     long int this_distance =0;
     if( pos > target_pos ){
