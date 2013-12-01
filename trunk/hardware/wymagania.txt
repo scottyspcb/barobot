@@ -1,5 +1,4 @@
 
-
 1. Dorobiæ config LEDow
 2. Dorobiæ parent dla urzadzen
 3. Dorobiæ config ON/OFF  dla LEDow
@@ -124,5 +123,3 @@ Lista zakupów
 
 
 
-	
-	
