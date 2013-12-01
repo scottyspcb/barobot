@@ -25,7 +25,7 @@ void setup(){
   DDRB |= _BV(PB0) | _BV(PB1);
   DDRD |= _BV(PD4) | _BV(PD5) | _BV(PD6) | _BV(PD7);
 
-  digitalWrite(PIN_UPANEL_LED7_NUM, LOW );      // debug, oczekiwanie na adres
+  digitalWrite(PIN_UPANEL_LED7_NUM, HIGH );      // debug, oczekiwanie na adres
   if(!init_i2c()){
     {
       check_i2c_valid();
@@ -36,14 +36,14 @@ void setup(){
   Wire.onRequest(requestEvent);
   send_here_i_am();  // wyslij po i2c ze oto jestem
 
-  digitalWrite(PIN_UPANEL_LED0_NUM, HIGH );      // todo, niekoniecznie trzeba ustawiać startowe wartości w ten sposób
-  digitalWrite(PIN_UPANEL_LED1_NUM, HIGH );
-  digitalWrite(PIN_UPANEL_LED2_NUM, LOW );
-  digitalWrite(PIN_UPANEL_LED3_NUM, LOW );
-  digitalWrite(PIN_UPANEL_LED4_NUM, HIGH );
-  digitalWrite(PIN_UPANEL_LED5_NUM, HIGH );
-  digitalWrite(PIN_UPANEL_LED6_NUM, HIGH );
-  digitalWrite(PIN_UPANEL_LED7_NUM, HIGH );
+  digitalWrite(PIN_UPANEL_LED0_NUM, LOW );      // todo, niekoniecznie trzeba ustawiać startowe wartości w ten sposób
+  digitalWrite(PIN_UPANEL_LED1_NUM, LOW );
+  digitalWrite(PIN_UPANEL_LED2_NUM, HIGH );
+  digitalWrite(PIN_UPANEL_LED3_NUM, HIGH );
+  digitalWrite(PIN_UPANEL_LED4_NUM, LOW );
+  digitalWrite(PIN_UPANEL_LED5_NUM, LOW );
+  digitalWrite(PIN_UPANEL_LED6_NUM, LOW );
+  digitalWrite(PIN_UPANEL_LED7_NUM, LOW );
 //  attachInterrupt(0, button_down, FALLING);
 }
 
@@ -61,8 +61,7 @@ void loop() {
                 send_pin_value( PIN_UPANEL_POKE, diddd ? 1 : 0 );
   		milis4 = mil;
   	}
-  
-  
+
     if( use_local&& in_buffer1[0] ){          // komendy bez wymaganej odpowiedzi do mastera obsluguj tutaj:
       byte command = in_buffer1[0];
       if( command == METHOD_SETPWM ){                // PWM     3 bajty
@@ -74,15 +73,17 @@ void loop() {
 //      }else if( command == 0x14 ){         // set dir
 //      }else if( command == 0x15 ){         // set output
       }else if( command == METHOD_PROG_MODE_ON ){         // i2c in prog mode (master programuje jakis slave, ale nie mnie)
-        digitalWrite(LED_TOP_RED, LOW);
+        digitalWrite(LED_TOP_RED, HIGH);
         if(in_buffer1[1] == my_address){
           prog_me = true;
+          digitalWrite(LED_TOP_RED, HIGH);
+          digitalWrite(LED_BOTTOM_RED, HIGH);
         }else{
           prog_me = false;
         }
         prog_mode = true;
       }else if( command == METHOD_PROG_MODE_OFF ){         // i2c in prog mode off
-        digitalWrite(LED_TOP_RED, HIGH);
+        digitalWrite(LED_TOP_RED, LOW);
         prog_mode = false;
       }else if( command == METHOD_RESET_NEXT ){         // Resetuj urządzenie obok
         reset_next( LOW );
@@ -162,7 +163,7 @@ void requestEvent(){
 }
 
 static void send_pin_value( byte pin, byte value ){
-  byte ttt[5] = {I2C_SLAVEMSG,0x21,my_address,pin,value};
+  byte ttt[5] = {METHOD_I2C_SLAVEMSG,RETURN_PIN_VALUE,my_address,pin,value};
   send(ttt,5);
  // Serial.println("out "+ String( my_address ) +" / "+ String( pin ) +"/"+ String(value));
 }

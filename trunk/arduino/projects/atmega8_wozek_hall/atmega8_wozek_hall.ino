@@ -6,20 +6,33 @@
 #include <avr/eeprom.h>
 #include <Servo.h>
 #include <FlexiTimer2.h>
-
 #define UNCONNECTED_LEVEL  3
-
 //unsigned int typical_zero = 512;
 //unsigned int last_max = 0;
 //unsigned int last_min = 0;
-
 volatile byte input_buffer[IPANEL_BUFFER_LENGTH][5] = {{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0}};      // 6 buforow po 5 bajtów
 volatile byte last_index     = 0;
 volatile unsigned int ticks  = 0;
+
+	struct ServoChannel { 
+	  uint8_t pin;
+  	  int16_t delta_pos;
+	  int16_t target_pos; 
+	  int16_t last_pos; 
+          int16_t last_distance;
+	  volatile boolean pos_changed;
+	  volatile boolean enabled;
+	} ;
+
+        Servo servo_lib[2];
+	volatile ServoChannel servos[2]= {
+		{PIN_IPANEL_SERVO_Y,0,0,0,0,false,false},
+		{PIN_IPANEL_SERVO_Z,0,0,0,0,false,false},
+	};
+
 volatile boolean read_hallx  = false;
 volatile boolean read_hally  = false;
 volatile boolean read_weight = false;
-
 
 // oscyloskop
 boolean analog_reading = false;
@@ -30,11 +43,6 @@ byte analog_pos = 0;
 unsigned long analog_sum = 0;
 // koniec oscyloskop
 
-Servo servoY;
-Servo servoZ;
-
-uint16_t servo_y_last = 0;
-uint16_t servo_z_last = 0;
 boolean diddd = false;
 
 void setup(){
@@ -58,17 +66,17 @@ void setup(){
   pinMode(PIN_IPANEL_LED6_NUM, OUTPUT);
   pinMode(PIN_IPANEL_LED7_NUM, OUTPUT);
 
-  digitalWrite(PIN_IPANEL_LED0_NUM, LOW);
-  digitalWrite(PIN_IPANEL_LED1_NUM, HIGH);
-  digitalWrite(PIN_IPANEL_LED2_NUM, HIGH);
-  digitalWrite(PIN_IPANEL_LED3_NUM, HIGH);
-  digitalWrite(PIN_IPANEL_LED4_NUM, HIGH);
-  digitalWrite(PIN_IPANEL_LED5_NUM, HIGH);
-  digitalWrite(PIN_IPANEL_LED6_NUM, HIGH);
-  digitalWrite(PIN_IPANEL_LED7_NUM, HIGH);
+  digitalWrite(PIN_IPANEL_LED0_NUM, HIGH);
+  digitalWrite(PIN_IPANEL_LED1_NUM, LOW);
+  digitalWrite(PIN_IPANEL_LED2_NUM, LOW);
+  digitalWrite(PIN_IPANEL_LED3_NUM, LOW);
+  digitalWrite(PIN_IPANEL_LED4_NUM, LOW);
+  digitalWrite(PIN_IPANEL_LED5_NUM, LOW);
+  digitalWrite(PIN_IPANEL_LED6_NUM, LOW);
+  digitalWrite(PIN_IPANEL_LED7_NUM, LOW);
 
   DEBUGINIT();
-  DEBUGLN("wozek start"); 
+  DEBUGLN("-wozek start"); 
   my_address = I2C_ADR_IPANEL;
   Wire.begin(I2C_ADR_IPANEL);
   Wire.onReceive(receiveEvent);
@@ -79,15 +87,11 @@ void setup(){
   FlexiTimer2::start();
 }
 unsigned long milisAnalog = 0;
-long int mil = 0;
+unsigned long int mil = 0;
 //long int milis100 = 0;
 
 void loop() {
   mil = millis();
-//  analogRead(PIN_IPANEL_HALL_Y );    // very often
-//  analogRead(PIN_IPANEL_HALL_X );    // often
-//  analogRead(PIN_IPANEL_WEIGHT );    // sometimes
- 
 	if( analog_reading &&  mil > milisAnalog ){
 		milisAnalog = mil+ analog_speed;
 		if( analog_pos == analog_repeat ){			// wyślij
@@ -102,6 +106,9 @@ void loop() {
 		analog_sum	+= analogRead(analog_num);
 	}
 
+  update_servo( INNER_SERVOY );
+  update_servo( INNER_SERVOZ );
+
   // analizuj bufor wejsciowy i2c
   for( byte i=0;i<IPANEL_BUFFER_LENGTH;i++){
     if( input_buffer[i][0] >0 && bit_is_clear(input_buffer[i][0], 0 )){    // bez xxxx xxx1 b
@@ -111,36 +118,105 @@ void loop() {
   }
 }
 
-void timer(){
-  ticks++;
-  digitalWrite(PIN_IPANEL_LED7_NUM,  !digitalRead(PIN_IPANEL_LED7_NUM));    // Toggle led. Read from register (not from pin)
-  
-  
-  
+void update_servo( byte index ) {           // synchroniczne
+  if( servos[index].pos_changed == true ){  // mam byc gdzie indziej
+    DEBUG( "-przesuwam Y " );
+    DEBUGLN( String(servos[index].last_pos) );
+    servo_lib[index].writeMicroseconds(servos[index].last_pos);
+    servos[index].pos_changed = false;
+    if( servos[index].last_pos == servos[index].target_pos){
+      DEBUGLN( "-gotowe servo" );
+      send_servo(false, localToGlobal(index) );
+    }
+  }
 }
 
+void reload_servo( byte index ){      // in interrupt
+  volatile ServoChannel &ser = servos[index];
+  if( ser.enabled && ser.last_pos != ser.target_pos ){
+    long int this_distance =0;
+    long int delta = 0;
+    if( ser.last_pos > ser.target_pos ){
+      this_distance  = ser.last_pos - ser.target_pos;    
+    }else if( ser.last_pos < ser.target_pos ){
+      this_distance  = ser.target_pos - ser.last_pos;
+    }
+    int quoter = (ser.last_distance >> 2);                // this_distance zawsze sie zmiejsza
+    if( this_distance < quoter){                      // ostatnia cwiatrka = zwalniaj
+      delta = (ser.delta_pos * this_distance);
+      delta = delta /quoter;
+//      DEBUG("delta4 = " ); 
+    }else if( this_distance > (ser.last_distance - quoter)){        // pierwsza cwiatrka = przyspieszaj. tu zawsze this_distance > 3/4 * last_distance
+      delta = (ser.delta_pos * (ser.last_distance - this_distance ) );      // tu zawsze (last_distance - this_distance ) < quoter
+      delta = delta /quoter;
+//      DEBUG("delta1 = " ); 
+    }else{  // na maxa
+//      DEBUG("delta2 = " ); 
+      delta = ser.delta_pos;
+    }
+    if(ser.delta_pos > 0){
+        if( delta < 5){
+          delta = 5;
+        }
+    }else{
+        if( delta > -5){
+          delta = -5;
+        }
+    }
+    ser.last_pos = ser.last_pos + delta;
+    if( ser.delta_pos > 0 && ser.last_pos > ser.target_pos ){        // nie przekraczaj docelowej pozycji
+      ser.last_pos = ser.target_pos;
+     //     DEBUGLN("gotowe1"); 
+    }else if( ser.delta_pos < 0 && ser.last_pos < ser.target_pos ){
+    //      DEBUGLN("gotowe2"); 
+      ser.last_pos = ser.target_pos;    
+    }
+    ser.pos_changed = true;
+    /*
+    if(ser.pos_changed){
+      DEBUG(String(delta)); 
+      DEBUG(" "); 
+      DEBUG(String(ser.delta_pos)); 
+      DEBUG(" "); 
+      DEBUG(String(ser.target_pos)); 
+      DEBUG(" "); 
+      DEBUGLN(String(ser.last_pos));
+    }*/
+  } 
+}
+
+void timer(){  // in interrupt
+  ticks++;
+  digitalWrite(PIN_IPANEL_LED7_NUM,  !digitalRead(PIN_IPANEL_LED7_NUM));    // Toggle led. Read from register (not from pin)
+  reload_servo(INNER_SERVOY);
+  reload_servo(INNER_SERVOZ);  
+}
+
+// czytaj komendy i2c
 void proceed( volatile byte buffer[5] ){
-  DEBUG("proceed - ");
-  printHex(buffer[0], false);
+  DEBUG("-proceed - ");
+  DEBUG(String(buffer[0]));
   DEBUG(" ");
   printHex(buffer[1], false);
   DEBUG(" ");
-  printHex(buffer[2]);
+  printHex(buffer[2], false);
+  DEBUG(" ");
+  printHex(buffer[3], false);
+  DEBUG(" ");
+  printHex(buffer[4]);
 
   if( buffer[0] == METHOD_PROG_MODE_ON ){         // prog mode on
-    digitalWrite(PIN_IPANEL_LED1_NUM, LOW);
+    digitalWrite(PIN_IPANEL_LED1_NUM, HIGH);
     if(buffer[1] == my_address){
       prog_me = true;
-      digitalWrite(LED_TOP_GREEN, LOW);
-      digitalWrite(LED_BOTTOM_GREEN, LOW);  
-      digitalWrite(LED_TOP_RED, LOW);
-      digitalWrite(LED_BOTTOM_RED, LOW);
+      digitalWrite(LED_TOP_RED, HIGH);
+      digitalWrite(LED_BOTTOM_RED, HIGH);
     }else{
       prog_me = false;
     }
     prog_mode = true;
   }else if( buffer[0] == METHOD_PROG_MODE_OFF ){         // prog mode off
-    digitalWrite(PIN_IPANEL_LED1_NUM, HIGH);
+    digitalWrite(PIN_IPANEL_LED1_NUM, LOW);
     prog_mode = false;
     prog_me = false;
 
@@ -158,30 +234,41 @@ void proceed( volatile byte buffer[5] ){
         analog_reading	= true;
       }
   }else if( buffer[0] == METHOD_DRIVER_ENABLE ){
-    if(buffer[1] == 1){
-      servoZ.attach(PIN_IPANEL_SERVO_Y);
-    }else if(buffer[1] == 2){
-      servoZ.attach(PIN_IPANEL_SERVO_Z);
-    }
+    byte index = globalToLocal( buffer[1] );
+    servo_lib[index].attach(servos[index].pin);
+    servos[index].enabled= true;
+
   }else if( buffer[0] == METHOD_DRIVER_DISABLE ){
-    if(buffer[1] == 1){
-      servoZ.detach();
-    }else if(buffer[1] == 2){
-      servoZ.detach();
-    }
+    byte index = globalToLocal( buffer[1] );
+    servos[index].enabled= false;
+    servo_lib[index].detach();
+    servos[index].pos_changed = false;
   }else if( buffer[0] == METHOD_GOTOSERVOYPOS ){
-    // on wire: low_byte, high_byte
-    // in memory: low_byte, high_byte
-    byte speed    = buffer[3];
-    uint16_t t = buffer[2] << 8 + buffer[1];    // little endian
-
+    // on wire: low_byte, high_byte, speed
+    // in memory: 1=low_byte, 2=high_byte, 3=speed
+    byte sspeed    = buffer[3];
+    uint16_t target= buffer[2];           // little endian
+    target= (target << 8);
+    target+= buffer[1];    // little endian
+    DEBUG("SERVO Y speed ");
+    DEBUG(String(sspeed));
+    DEBUG(" target:");
+    DEBUGLN(String(target));
+    run_to(INNER_SERVOY,sspeed,target);
   }else if( buffer[0] == METHOD_GOTOSERVOZPOS ){
-    uint16_t t = buffer[2] << 8 + buffer[1];    // little endian
-
+    byte sspeed    = buffer[3];
+    uint16_t target= buffer[2];           // little endian
+    target= (target << 8);
+    target+= buffer[1];    // little endian
+    run_to(INNER_SERVOZ,sspeed,target);
   }else if( buffer[0] == METHOD_SETPWM ){
     byte led    = buffer[1];
     byte level  = buffer[2];
-    
+    if( level > 127){
+      digitalWrite(led, HIGH);
+    }else{
+      digitalWrite(led, LOW);
+    }
   }else if( buffer[0] == METHOD_SETTIME ){
     byte led   = buffer[1];
     byte on    = buffer[2];
@@ -195,7 +282,7 @@ void proceed( volatile byte buffer[5] ){
   }else if( buffer[0] == METHOD_RESETCYCLES ){
     // resetuj cykl petli pwm
   }else{
-    DEBUG("proceed unknown - ");
+    DEBUG("-proceed unknown - ");
     printHex(buffer[0], false);
     DEBUG(" ");
     printHex(buffer[1], false);
@@ -205,13 +292,28 @@ void proceed( volatile byte buffer[5] ){
   buffer[0] = 0;  //ready
 }
 
+void run_to(byte index, byte sspeed, uint16_t target){
+    servos[index].target_pos     = target;
+    if( servos[index].target_pos < servos[index].last_pos ){    // jedz w dol
+      servos[index].delta_pos = -sspeed;
+      servos[index].last_distance = servos[index].last_pos - servos[index].target_pos;
+    }else if( servos[index].target_pos > servos[index].last_pos ){    // jedz w gore
+      servos[index].delta_pos = sspeed;
+      servos[index].last_distance = servos[index].target_pos - servos[index].last_pos;
+    }
+    if(!servos[index].enabled){
+      servo_lib[index].attach(servos[index].pin);
+      servos[index].enabled = true;
+    }
+}
+
 void receiveEvent(int howMany){
   if(!howMany){
      return;
   }
   byte cnt = 0;
   volatile byte (*buffer) = 0;
-  DEBUG("input " );
+  DEBUG("-input " );
   for( byte a = 0; a < IPANEL_BUFFER_LENGTH; a++ ){
     if(input_buffer[a][0] == 0 ){
       buffer = (&input_buffer[a][0]); 
@@ -236,11 +338,11 @@ void requestEvent(){
         Wire.write(ttt,2);
         
     }else if( command == METHOD_GETSERVOYPOS ){         // getServoYPos
-        byte ttt[2] = {servo_y_last >>8,servo_y_last && 0xFF};
+        byte ttt[2] = {servos[INNER_SERVOY].last_pos >>8,servos[INNER_SERVOY].last_pos && 0xFF};
         Wire.write(ttt,2);
 
     }else if( command == METHOD_GETSERVOZPOS ){         // getServoZPos  
-        byte ttt[2] = {servo_z_last>>8,servo_z_last && 0xFF};
+        byte ttt[2] = {servos[INNER_SERVOZ].last_pos >>8,servos[INNER_SERVOZ].last_pos && 0xFF};
         Wire.write(ttt,2);
 
     }else if( command == METHOD_TEST_SLAVE ){    // return xor
@@ -250,12 +352,12 @@ void requestEvent(){
           diddd = !diddd;
           digitalWrite(PIN_IPANEL_LED1_NUM, diddd);
         }      
-    }else if( command == METHOD_GETANALOGVALUE ){    
-    }else if( command == METHOD_GETVALUE ){    
+    }else if( command == METHOD_GETANALOGVALUE ){
+    }else if( command == METHOD_GETVALUE ){
     }else if( command == METHOD_RESET_NEXT ){
     }else if( command == METHOD_RUN_NEXT ){
     }else if(!prog_mode){
-      DEBUG("requestEvent unknown - ");
+      DEBUG("-requestEvent unknown - ");
       printHex(input_buffer[last_index][0], false);
       DEBUG(" ");
       printHex(input_buffer[last_index][1], false);
@@ -266,14 +368,19 @@ void requestEvent(){
 }
 
 static void send_pin_value( byte pin, byte value ){
-  byte ttt[5] = {METHOD_I2C_SLAVEMSG,0x21,my_address,pin,value};
+  byte ttt[5] = {METHOD_I2C_SLAVEMSG,RETURN_PIN_VALUE,my_address,pin,value};
   send(ttt,5);
- // DEBUGLN("out "+ String( my_address ) +" / "+ String( pin ) +"/"+ String(value));
+ // DEBUGLN("-out "+ String( my_address ) +" / "+ String( pin ) +"/"+ String(value));
+}
+static void send_servo( boolean error, byte servo ){
+  byte ttt[3] = {METHOD_I2C_SLAVEMSG, error ? RETURN_DRIVER_ERROR : RETURN_DRIVER_READY, servo};
+  send(ttt,3);
+ // DEBUGLN("-out "+ String( my_address ) +" / "+ String( pin ) +"/"+ String(value));
 }
 
 static void send_here_i_am(){
   byte ttt[4] = {METHOD_HERE_I_AM,my_address,IPANEL_DEVICE_TYPE,IPANEL_VERSION};
-  DEBUGLN("hello "+ String( my_address ));  
+  DEBUGLN("-hello "+ String( my_address ));  
   send(ttt,4);
 }
 
@@ -287,23 +394,27 @@ void send( byte buffer[], byte ss ){
     Wire.beginTransmission(I2C_ADR_MAINBOARD);  
     Wire.write(buffer,ss);
     ret = Wire.endTransmission();
-//    DEBUG("send"+String(licznik) +": " + String( my_address ) +": ");
-//    printHex(buffer[0], false ); 
-//    DEBUG(", ");
-//    printHex(buffer[1], false ); 
-//    DEBUGLN(" / "+ String(ret) );
-
-      DEBUG("out "+ String( my_address ) +": (" );
-      printHex( buffer[0], false ); 
-      DEBUG(" ");
-      printHex( buffer[1], false ); 
-      DEBUG(" ");
-      printHex( buffer[2], false ); 
-      DEBUG(" ");
-      printHex( buffer[3], false ); 
-      DEBUGLN( ") e: " + String(ret));
+      DEBUG("-send"+String(licznik) +": " + String( my_address ) +": ");
+      printHex(buffer[0], false ); 
+      DEBUG(", ");
+      printHex(buffer[1], false ); 
+      DEBUGLN(" / "+ String(ret) );
   }
-//  return ret;
 }
 
-
+byte globalToLocal( byte ind ){      // get global device index used in android
+  if( ind == DRIVER_Y ){
+    return INNER_SERVOY;
+  }
+  return INNER_SERVOZ;  // DRIVER_Z
+}
+byte localToGlobal( byte ind ){      // get global device index used in android
+  if( ind == INNER_SERVOY ){
+    return DRIVER_Y;
+  }
+  return DRIVER_Z;  // INNER_SERVOZ
+}
+//  analogRead(PIN_IPANEL_HALL_Y );    // very often
+//  analogRead(PIN_IPANEL_HALL_X );    // often
+//  analogRead(PIN_IPANEL_WEIGHT );    // sometimes
+ 

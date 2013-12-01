@@ -13,10 +13,7 @@ String serial0Buffer = "";
 boolean Console0Complete = false;   // This will be set to true once we have a full string
 boolean dir = true;
 Servo servoZ;
-int last_in = 0;
-int in = 0;
-byte multip = 5;
-byte index = 0;
+
 #define STEPPER_Z_PWM 6
 #define SEPARATOR_CHAR '\n'
 boolean enabled = false;
@@ -27,34 +24,30 @@ boolean enabled = false;
 volatile int delta_pos = 0;
 volatile long unsigned last_distance = 0;
 volatile long unsigned last_pos = 0;
-volatile long unsigned pos = 0;
 volatile long unsigned target_pos = 0;
+volatile boolean pos_changed = false;
 
 void setup(){
   Serial.begin(115200); 
   DEBUG("HELLO");
-
   enabled = false;
 //  FlexiTimer2::set(40, 1.0/1000, flash); // call every 500 1ms "ticks"
   FlexiTimer2::set(40, 1.0/100, flash);
   // FlexiTimer2::set(500, flash); // MsTimer2 style is also supported
   FlexiTimer2::start();
-  in = analogRead(A0);
+//  in = analogRead(A0);
 //  target_pos = map(in, 0, 1023, SERVO_MIN_POS,  SERVO_MAX_POS);
 //  last_pos = target_pos;
-//  pos = target_pos;
 }
 
 byte sp = 1;
 void flash(){
-  static boolean output = HIGH;
-  if(pos != target_pos ){
-    output = !output;
+  if(last_pos != target_pos ){
     long int this_distance =0;
-    if( pos > target_pos ){
-      this_distance  = pos - target_pos;    
-    }else if( pos < target_pos ){
-      this_distance  = target_pos - pos;
+    if( last_pos > target_pos ){
+      this_distance  = last_pos - target_pos;    
+    }else if( last_pos < target_pos ){
+      this_distance  = target_pos - last_pos;
     }
     long int delta = 0;
     int quoter = (last_distance >> 2);                // this_distance zawsze sie zmiejsza
@@ -80,33 +73,24 @@ void flash(){
         }
     }
 //    DEBUGLN(String(delta)); 
-    pos = pos + delta;
-    if( delta_pos > 0 && pos > target_pos ){
-      pos = target_pos;
-    }else if( delta_pos < 0 && pos < target_pos ){
-      pos = target_pos;    
+    last_pos = last_pos + delta;
+    if( delta_pos > 0 && last_pos > target_pos ){
+      last_pos = target_pos;
+    }else if( delta_pos < 0 && last_pos < target_pos ){
+      last_pos = target_pos;    
     }
   }
 }
 
 void loop(){
-  if(pos != last_pos){  // mam byc gdzie indziej
-    DEBUG("\tpos= " + String(pos) );
-    DEBUG("\tlast_pos= " + String(last_pos) );
+  if(pos_changed){  // mam byc gdzie indziej
+    DEBUG("\tpos= " + String(last_pos) );
     DEBUG("\ttarget_pos= " + String(target_pos) );
     DEBUGLN();
-    last_pos = pos;
-    if( pos == target_pos){
+    if( last_pos == target_pos){
       DEBUGLN( "gotowe" ); 
     }else{
-      servoZ.writeMicroseconds(pos);
-    }
-  }
-  if( in <=1 ){
-    
-    if(last_in != in){
-      DEBUGLN("stop");
-      last_in = in;
+      servoZ.writeMicroseconds(last_pos);
     }
   }
   if (Console0Complete) {
@@ -145,19 +129,18 @@ void setValue(byte byte_pos, String value ){
     DEBUGLN("setMaxSpeed: " + String(sp) );    
   }else if( byte_pos == 1 ){                  // TARGET
     target_pos = val;
-    if( target_pos == pos ){  // rowne? nigdzie nie jedz
-    }else if( target_pos < pos ){    // jedz w dol
+    if( target_pos == last_pos ){  // rowne? nigdzie nie jedz
+    }else if( target_pos < last_pos ){    // jedz w dol
       delta_pos = -sp;
-      last_distance = pos - target_pos;
-    }else if( target_pos > pos ){    // jedz w gore
+      last_distance = last_pos - target_pos;
+    }else if( target_pos > last_pos ){    // jedz w gore
       delta_pos = sp;
-      last_distance = target_pos - pos;
+      last_distance = target_pos - last_pos;
     }
     if(!enabled){
       servoZ.attach(STEPPER_Z_PWM);
     }
     DEBUGLN("\tmoveTo: " + String(target_pos) );
-    DEBUGLN("\tpos: " + String(pos) );
     DEBUGLN("\tlast_pos: " + String(last_pos) );
     DEBUGLN("\tdelta= " + String(delta_pos) );
     DEBUGLN();
