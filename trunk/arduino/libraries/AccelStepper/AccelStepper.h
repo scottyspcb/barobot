@@ -403,7 +403,7 @@ public:
 	// Disable outputs on ready?
     boolean     disable_on_ready;
     boolean     is_disabled;
-	void onReady( void (*)(unsigned long) );
+	void onReady( void (*)(long int) );
 		
 protected:
 
@@ -565,7 +565,7 @@ private:
 
 	uint8_t           _last_output;
 	//uint8_t         _last_step;
-	static void (*user_onReady)(long unsigned int);
+	static void (*user_onReady)(long int);
 };
 
 /// @example Random.pde

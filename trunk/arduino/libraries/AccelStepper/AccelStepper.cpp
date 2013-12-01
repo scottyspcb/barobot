@@ -20,7 +20,7 @@ void dump(uint8_t* p, int l)
 }
 #endif
 
-void (*AccelStepper::user_onReady)(long unsigned int);
+void (*AccelStepper::user_onReady)(long int);
 
 void AccelStepper::moveTo(long absolute)
 {
@@ -294,7 +294,7 @@ void AccelStepper::onReady(){
 }
 
 // sets function called on slave write
-void AccelStepper::onReady( void (*function)(long unsigned int) )
+void AccelStepper::onReady( void (*function)(long int) )
 {
   user_onReady = function;
 }
