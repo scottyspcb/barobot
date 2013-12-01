@@ -14,7 +14,6 @@ function oscyloskop_interval( input ){
 	}
 }
 
-
 var runOnProc = function( funcName, args){
 	args = args || [];
 	if(pp){

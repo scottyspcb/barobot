@@ -1,11 +1,15 @@
 ----------------------------------------------------------------------
-IPANEL -> MAINBOARD
+MESSAGES 2 ANDROID
 
-Slave2main2Android	0x44	address	byte1 byte1 byte1
+0x44	Slave2main2Android		address	byte1 byte1 byte1
 
-ANALOG				0x34	majorbyte	minorbyte
-HALLEVENT			0x35	majorbyte	minorbyte	state
-ENDSTOP				0x36	majorbyte	minorbyte	state
+0x34	ANALOG					address	majorbyte	minorbyte
+0x35	HALLEVENT				address	majorbyte	minorbyte	state
+0x36	ENDSTOP					address majorbyte	minorbyte	state
+0x21	Important pin value
+
+
+
 
 									
 ----------------------------------------------------------------------
@@ -26,63 +30,6 @@ Silnik
 0x1E			void changeAddress( byte new_addr )		// Zmień adres I2c, musi być podane co najmniej 4 razy zeby zadziałało. (2 bajty)
 					
 		
-
-
-
-		
-Opisy:
-
-0x14	Ustaw kierunek dla PINU o numerze ( 3 bajty )
-					0x14	0		1			// OUT
-					0x14	5		2			// IN
-					0x14	11		0			// nie ustawione
-
-0x15	Wpisz cyfrowo PIN o numerze	 ( 3 bajty )
-					0x15	0x00		1
-					0x15	0x05		0
-					0x15	0x0B		1
-
-0x26	Pobierz anlalogowo PIN o numerze ( 2 bajty )
-					0x16	0x02
-					0x16	0x03
-			return 2 bytes:
-					A - bit adresu pina (3 bity = 8 adresow)
-					V - bit wartości
-					AAA000VV	VVVVVVVV
-					00000011	11111111	// Wynik 1024 na pinie 0
-					00100011	11111111	// Wynik 1024 na pinie 1
-					11100011	11111111	// Wynik 1024 na pinie 7
-
-					buffer[0]	= pin + 2 starsze bity wyniku
-					buffer[1]	= 8 młodszych bitów wyniku
-
-0x28	Pobierz cyfrowo PIN o numerze ( 2 bajty )
-					0x18	0
-					0x18	5
-					0x18	11
-					0x18	11
-			return 1 byte:
-					0xFF		// wynik HIGH
-					0x00		// wynik LOW
-
-					buffer[0]	= pin
-					buffer[1]	= wartosc
-					
-0x29	Wypisz rodzaj urządzenia i wersję softu
-			return 2 bytes:
-					byte1	byte2		// byte1 - typ urządzenia, byte2 - wersja
-					0x01	0x02		// 0x01 = SLAVE / U-panel, 0x02 = versja 2
-					0x12	0x03		// 0x12 = MASTER / MainBoard, 0x02 = versja 3
-					0x02	0x04		// 0x03 = SLAVE / Carret, 0x02 = versja 4
-
-					buffer[0]	= typ
-					buffer[1]	= wersja
-
-
-
-
-
-U-panel
 
 
 
@@ -140,13 +87,42 @@ http://android.serverbox.ch/?p=370
 
 
 
+ERROR_CANT_MOVE_X
+ERROR_CANT_MOVE_Y
+ERROR_CANT_MOVE_Z
+ERROR_NO_GLASS
 
 
 
-Kolor
+Tematy:
+
+
+- zasilanie 5V z 6V lub 6V z 5V
+- zamiennik INA 125
+- źródło prezyzyjnego napięcia do pomiarów
+- opkreslenie optymalnych napięć i prądów dla steppera x
+- pomiar prądu używanego przez servo y i z
+- policzyć zużycie prądu
+- zobaczyć przebiegi dla silnika x
+- 
+- 
 
 
 
+Pozycje:
+
+Y900,30
+Y1000,30
+Y2170,30
+
+
+Z1100,200
+Z1900,200
+
+
+
+
+Y2200,40
 
 
 
@@ -159,3 +135,5 @@ LIVE A OFF
 
 
 
+
+usprawnienia.gmail.com

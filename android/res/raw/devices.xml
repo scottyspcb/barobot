@@ -1,140 +1,152 @@
 <?xml version="1.0" encoding="utf-8"?>
 <devices>
-	<interfaces>
+	<interfaces>	
 		<interface name="i2c_basic">
-			<method name="getVersion"	desc="Wypisz rodzaj urządzenia i wersję softu">
-				<prefix bcode="0000 0000" code="0x29"></prefix>
+			<method name="GETVERSION"	desc="Wypisz rodzaj urządzenia i wersję softu">
+				<prefix bcode="00000101" code="0x05"></prefix>
 				<ret type="uint8" name="type"  		desc="Typ urzadzenia"></ret>
 				<ret type="uint8" name="version"	desc="Wersja software"></ret>	
 			</method>
-			<method 	name="prog_mode_on"	desc="Magistrala w trybie programowania, zamilknij do odwołania">
-				<prefix bcode="0000 0000" code="0x1B"></prefix>
+			<method 	name="PROG_MODE_ON"	desc="Magistrala w trybie programowania, zamilknij do odwołania">
+				<prefix bcode="00001010" code="0x0A"></prefix>
 				<param type="uint8" name="addr"  	desc="Adres i2c"></param>
 			</method>
-			<method	name="prog_mode_off"	desc="Koniec trybu programowania">
-				<prefix bcode="0000 0000" code="0x1C"></prefix>
+			<method	name="PROG_MODE_OFF"	desc="Koniec trybu programowania">
+				<prefix bcode="00001110" code="0xoE"></prefix>
 				<param type="uint8" name="addr"  	desc="Adres i2c"></param>
 			</method>
-			<method	name="test_slave"	desc="Zwróć XOR wejścia">
-				<prefix bcode="0000 0000" code="0x2A"></prefix>
+			<method	name="TEST_SLAVE"	desc="Zwróć XOR wejścia">
+				<prefix bcode="00010011" code="0x13"></prefix>
 				<param type="uint8" name="num1"  	desc="Byte 1"></param>
 				<param type="uint8" name="num2"  	desc="Byte 2"></param>
 				<ret type="uint8" name="xor"  		desc="XOR bajtów wejściowych"></ret>
 			</method>
 		</interface>
-		<interface name="pwm_8leds" >
-			<method	name="resetCycles"	desc="Synchronizuj pętle w slave">
-				<prefix bcode="0000 0000" code="0x10"></prefix>
+		<interface name="PWM_8LEDS" >
+			<method	name="RESETCYCLES"	desc="Synchronizuj pętle w slave">
+				<prefix bcode="00010100" code="0x14"></prefix>
 			</method>
-			<method name="setPWM"	desc="Wpisz wypełnienie PWM do LEDa">
-				<prefix bcode="0000 0000" code="0x11"></prefix>
+			<method name="SETPWM"	desc="Wpisz wypełnienie PWM do LEDa">
+				<prefix bcode="00100110" code="0x26"></prefix>
 				<param type="uint8" name="led"  	desc="Numer LEDa"></param>
-				<param type="uint8" name="level"	desc="Jasność"></param>
+				<param type="uint8" name="level"	desc="Jasność on"></param>
 			</method>
-			<method name="setTime"	desc="Czas pomiędzy kolejnym zapaleniem i Czas od zapalenia do zgaszenia">
-				<prefix bcode="0000 0000" code="0x12"></prefix>
+			<method name="SETTIME"	desc="Czas pomiędzy kolejnym zapaleniem i Czas od zapalenia do zgaszenia">
+				<prefix bcode="00101010" code="0x2A"></prefix>
 				<param type="uint8" name="led"  	desc="Numer LEDa"></param>
 				<param type="uint8" name="on_time"	desc="Czas on"></param>
 				<param type="uint8" name="off_time"	desc="Czas off"></param>
 			</method>
-			<method 	name="setFading"	desc="Czas i kierunek zanikania PWMa">
-				<prefix bcode="0000 0000" code="0x13"></prefix>
+			<method 	name="SETFADING"	desc="Czas i kierunek zanikania PWMa">
+				<prefix bcode="00101110" code="0x2E"></prefix>
 				<param type="uint8" name="led"  	desc="Numer LEDa"></param>
 				<param type="uint8" name="fade_in"		desc="Prędkość zwiększania jasności"></param>
 				<param type="uint8" name="fade_oute"	desc="Prędkość zmniejszania jasności"></param>
 			</method>		
 		</interface>
 		<interface name="upanel_interface" extends="pwm_8leds" >
-			<method 	name="getAnalogValue"	desc="Pobierz analogowo wartość PIN o numerze">
-				<prefix bcode="0000 0000" code="0x26"></prefix>
+			<method 	name="RESETSLAVEADDRESS"	desc="Mymuś reset adresu I2c urzadzenia. Musi być podane co najmniej 4 razy zeby zadziałało">
+				<prefix bcode="00110010" code="0x32"></prefix>
+				<param type="uint8" name="addr"  	desc="Adres i2c"></param>
+			</method>
+			<method 	name="GETANALOGVALUE"	desc="Pobierz analogowo wartość PIN o numerze">
+				<prefix bcode="00110011" code="0x33"></prefix>
 				<param type="uint8" name="pin"  	desc="Numer pina zgodnie z arduino"></param>
-				<ret type="uint8" name="high_val"  		desc="Pozycja starsze bity"></ret>
 				<ret type="uint8" name="low_val"		desc="Pozycja młodsze bity"></ret>	
+				<ret type="uint8" name="high_val"  		desc="Pozycja starsze bity"></ret>
 			</method>
-			<method name="getValue"	desc="Pobierz cyfrowo wartość PIN o numerze">
-				<prefix bcode="0000 0000" code="0x28"></prefix>
+			<method name="GETVALUE"	desc="Pobierz cyfrowo wartość PIN o numerze">
+				<prefix bcode="00110111" code="0x37"></prefix>
 				<param type="uint8" name="pin"  	desc="Numer pina zgodnie z arduino"></param>
 				<ret type="uint8" name="high_val"  		desc="Pozycja starsze bity"></ret>
 			</method>
-			<method 	name="reset_next"	desc="Resetuj urządzenie obok urządzenia adresowego, stan niski na wyjściu resetuje tego obok">
-				<prefix bcode="0000 0000" code="0x16"></prefix>
+			<method 	name="RESET_NEXT"	desc="Resetuj urządzenie obok urządzenia adresowego, stan niski na wyjściu resetuje tego obok">
+				<prefix bcode="00111010" code="0x3A"></prefix>
 				<param type="uint8" name="addr"  	desc="Adres i2c"></param>
 			</method>
-			<method 	name="run_next"	desc="Koniec resetu urządzenia obok urządzenia adresowego, stan wysokiej impedancji na wyjściu">
-				<prefix bcode="0000 0000" code="0x17"></prefix>
+			<method 	name="RUN_NEXT"	desc="Koniec resetu urządzenia obok urządzenia adresowego, stan wysokiej impedancji na wyjściu">
+				<prefix bcode="00111110" code="0x3E"></prefix>
 				<param type="uint8" name="addr"  	desc="Adres i2c"></param>
 			</method>
-			<method 	name="resetSlaveAddress"	desc="Resetuj adres I2c, musi być podane co najmniej 4 razy zeby zadziałało">
-				<prefix bcode="0000 0000" code="0x1E"></prefix>
-				<param type="uint8" name="addr"  	desc="Adres i2c"></param>
-			</method>
-
 		</interface>
 		<interface name="ipanel_interface" extends="pwm_8leds" >
-			<method  	name="goToServoYPos"	desc="Idź do pozycji Y">
-				<prefix bcode="0000 0000" code="0x11"></prefix>
-				<param type="uint8" name="high_val"  	desc="Pozycja starsze bity"></param>
-				<param type="uint8" name="low_val"		desc="Pozycja młodsze bity"></param>
-			</method>
-			<method  	name="goToServoZPos"	desc="Idź do pozycji Z">
-				<prefix bcode="0000 0000" code="0x12"></prefix>
-				<param type="uint8" name="high_val"  	desc="Pozycja starsze bity"></param>
-				<param type="uint8" name="low_val"		desc="Pozycja młodsze bity"></param>
-			</method>
-			<method  	name="getServoYPos"		desc="Pobierz pozycję Y">
-				<prefix bcode="0000 0000" code="0x25"></prefix>
-				<ret type="uint8" name="high_val"  		desc="Pozycja starsze bity"></ret>
+			<method  	name="GETSERVOYPOS"		desc="Pobierz pozycję Y">
+				<prefix bcode="01000001" code="0x41"></prefix>
 				<ret type="uint8" name="low_val"		desc="Pozycja młodsze bity"></ret>	
-			</method>
-			<method 	name="getServoZPos"		desc="Pobierz pozycję Z">
-				<prefix bcode="0000 0000" code="0x26"></prefix>
 				<ret type="uint8" name="high_val"  		desc="Pozycja starsze bity"></ret>
+			</method>
+			<method  	name="GOTOSERVOYPOS"	desc="Idź do pozycji Y">
+				<prefix bcode="01000010" code="0x42"></prefix>
+				<param type="uint8" name="low_val"		desc="Pozycja młodsze bity"></param>
+				<param type="uint8" name="high_val"  	desc="Pozycja starsze bity"></param>
+				<param type="uint8" name="speed"		desc="Predkosc 1-100"></param>
+			</method>
+			<method 	name="GETSERVOZPOS"		desc="Pobierz pozycję Z">
+				<prefix bcode="01000101" code="69"></prefix>
 				<ret type="uint8" name="low_val"		desc="Pozycja młodsze bity"></ret>	
-			</method>			
+				<ret type="uint8" name="high_val"  		desc="Pozycja starsze bity"></ret>
+			</method>
+			<method  	name="GOTOSERVOZPOS"	desc="Idź do pozycji Z">
+				<prefix bcode="01000110" code="70"></prefix>
+				<param type="uint8" name="low_val"		desc="Pozycja młodsze bity"></param>
+				<param type="uint8" name="high_val"  	desc="Pozycja starsze bity"></param>
+			</method>
+			<method  	name="LIVE_OFF"	desc="Koniec skanowania">
+				<prefix bcode="01001000" code="72"></prefix>
+			</method>
+			<method  	name="LIVE_ANALOG"	desc="Skanuj wejście analogowe">
+				<prefix bcode="01001010" code="74"></prefix>
+				<param type="uint8" name="pin"  	desc="Numer pina analogowego zgodnie z arduino"></param>
+				<param type="uint8" name="time"		desc="Pozycja młodsze bity"></param>
+				<param type="uint8" name="repeat"	desc="Powtórzeń"></param>
+			</method>	
+
+
+			<method  	name="DRIVER_ENABLE"	desc="Aktywuj silnik">
+				<prefix bcode="01010010" code="0x52"></prefix>
+				<param type="uint8" name="num"	desc="Numer silnika. X=0,Y=1,Z=2"></param>
+			</method>
+			<method  	name="DRIVER_DISABLE"	desc="Wyłącz silnik">
+				<prefix bcode="01010110" code="0x56"></prefix>
+				<param type="uint8" name="num"	desc="Numer silnika. X=0,Y=1,Z=2"></param>
+			</method>
+			
+			
+			
 		</interface>
 		<interface name="android_input">
-			<method 	name="here_i_am"		desc="Włączyłęm się do magistrali i2c">
-				<prefix bcode="0000 0000" code="0x23"></prefix>
+			<method 	name="HERE_I_AM"		desc="Włączyłęm się do magistrali i2c">
+				<prefix bcode="01110010" code="114"></prefix>
 				<param type="uint8" name="my_address"  	desc="Adres i2c"></param>
 				<param type="uint8" name="device_type"	desc="Typ urzadzenia"></param>
-				<param type="uint8" name="version"		desc="Wersjay"></param>
+				<param type="uint8" name="version"		desc="Wersja"></param>
 			</method>
-			<method  name="send_pin_value"		desc="Zmiana wartości waznego pinu">
-				<prefix bcode="0000 0000" code="0x23"></prefix>
+			<method  name="SEND_PIN_VALUE"		desc="Zmiana wartości waznego pinu">
+				<prefix bcode="01110110" code="118"></prefix>
 				<param type="uint8" name="my_address"  	desc="Adres i2c"></param>
 				<param type="uint8" name="pin"			desc="Numer pinu"></param>
 				<param type="uint8" name="value"		desc="Nowa wartosć"></param>
 			</method>
-			<method name="I2C_SlaveMsg"		desc="Wiadomość od slave">
-				<prefix bcode="0000 0000" code="0x43"></prefix>
+			<method name="I2C_SLAVEMSG"		desc="Wiadomość od slave do androida">
+				<prefix bcode="01111010" code="122"></prefix>
 				<param type="uint8" name="my_address"  	desc="Adres i2c"></param>
 				<param type="uint8" name="byte1"		desc="1 bajt wiadomości"></param>
 				<param type="uint8" name="byte2"		desc="2 bajt wiadomości"></param>
 				<param type="uint8" name="byteN"		desc="N bajt wiadomości"></param>
 			</method>
+			
+			<method name="SEND2SLAVE"		desc="Wiadomość od androida do slave">
+				<prefix bcode="01111111" code="127"></prefix>
+				<param type="uint8" name="my_address"  	desc="Adres i2c"></param>
+				<param type="uint8" name="byte1"		desc="1 bajt wiadomości"></param>
+				<param type="uint8" name="byte2"		desc="2 bajt wiadomości"></param>
+				<param type="uint8" name="byteN"		desc="N bajt wiadomości"></param>
+			</method>
+			
+			
 		</interface>
-		
 
 		<interface name="mainboard_interface" extends="pwm_8leds" >
-			<method 	name="here_i_am"		desc="Włączyłęm się do magistrali i2c">
-				<prefix bcode="0000 0000" code="0x23"></prefix>
-				<param type="uint8" name="my_address"  	desc="Adres i2c"></param>
-				<param type="uint8" name="device_type"	desc="Typ urzadzenia"></param>
-				<param type="uint8" name="version"		desc="Wersjay"></param>
-			</method>
-			<method 	name="send_pin_value"		desc="Zmiana wartości waznego pinu">
-				<prefix bcode="0000 0000" code="0x23"></prefix>
-				<param type="uint8" name="my_address"  	desc="Adres i2c"></param>
-				<param type="uint8" name="pin"			desc="Numer pinu"></param>
-				<param type="uint8" name="value"		desc="Nowa wartosć"></param>
-			</method>
-			<method  	name="I2C_SlaveMsg"		desc="Wiadomość od slave">
-				<prefix bcode="0000 0000" code="0x43"></prefix>
-				<param type="uint8" name="my_address"  	desc="Adres i2c"></param>
-				<param type="uint8" name="byte1"		desc="1 bajt wiadomości"></param>
-				<param type="uint8" name="byte2"		desc="2 bajt wiadomości"></param>
-				<param type="uint8" name="byteN"		desc="N bajt wiadomości"></param>
-			</method>
 		</interface>
 	</interfaces>
 
@@ -147,9 +159,9 @@
 		<feature name="HAS_VERSION" />
 		<feature name="HAS_DEVICE_TYPE" value="0x13" />
 
-		<config name="ABOVE_BOTTLE"	size="uint8" persistent="false">0</config>
+		<config name="ABOVE_BOTTLE"	size="uint8">0</config>
 		<config name="I2C_ADDRESS"	size="uint8" persistent="global">0x33</config>
-		<config name="EXISTS"		size="boolean" persistent="false">0</config>
+		<config name="EXISTS"		size="boolean">0</config>
 		<config name="ENABLED"		size="boolean" persistent="global">1</config>
 		<config name="VERSION"		size="uint8" persistent="global">0x00</config>
 
@@ -169,12 +181,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="1"	/>
 				<feature name="IS_RED_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 				
 			</device>
 			<device type="Green-led" name="upanel0 top green led">
@@ -186,12 +198,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="2"	/>
 				<feature name="IS_GREEN_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 			<device type="Blue-led" name="upanel0 top blue led">
 				<feature name="IS_LED" /> 
@@ -202,12 +214,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="3"	/>
 				<feature name="IS_BLUE_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 			<device type="White-led" name="upanel0 top white led">
 				<feature name="IS_LED" /> 
@@ -218,12 +230,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="4"	/>
 				<feature name="IS_WHITE_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 		</device>
 		<device type="RGBW-led" name="upanel0 bottom rgbw led">
@@ -243,12 +255,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="5"	/>
 				<feature name="IS_RED_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 			<device type="Green-led" name="upanel0 bottom green led">
 				<feature name="IS_LED" /> 
@@ -259,12 +271,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="6"	/>
 				<feature name="IS_GREEN_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 			<device type="Blue-led" name="upanel0 bottom blue led">
 				<feature name="IS_LED" /> 
@@ -275,12 +287,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="7"	/>
 				<feature name="IS_BLUE_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 			<device type="White-led" name="upanel0 bottom white led">
 				<feature name="IS_LED" /> 
@@ -291,12 +303,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="8"	/>
 				<feature name="IS_WHITE_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 		</device>
 		<device type="dip_switch" name="upanel0 dip switch">
@@ -323,9 +335,9 @@
 		<feature name="HAS_DEVICE_TYPE" value="0x13" />
 		<feature name="IMPLEMENTS" value="upanel_interface" />
 
-		<config name="ABOVE_BOTTLE"	size="uint8" persistent="false">1</config>
+		<config name="ABOVE_BOTTLE"	size="uint8">1</config>
 		<config name="I2C_ADDRESS"	size="uint8" persistent="I2C_1_ADDRESS">0x33</config>
-		<config name="EXISTS"		size="boolean" persistent="false">0</config>
+		<config name="EXISTS"		size="boolean">0</config>
 		<config name="ENABLED"		size="boolean" persistent="global">1</config>
 		<config name="VERSION"		size="uint8" persistent="I2C_0_VERSION">0x00</config>
 
@@ -346,12 +358,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="1"	/>
 				<feature name="IS_RED_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 			<device type="Green-led" name="upanel1 top green led">
 				<feature name="IS_LED" /> 
@@ -362,7 +374,7 @@
 				<feature name="HAS_EXTERNAL_PINS" value="2"	/>
 				<feature name="IS_GREEN_LED" />
 
-				<config name="PWM"			size="uint8" persistent="false">0</config>
+				<config name="PWM"			size="uint8">0</config>
 			</device>
 			<device type="Blue-led" name="upanel1 top blue led">
 				<feature name="IS_LED" /> 
@@ -373,12 +385,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="3"	/>
 				<feature name="IS_BLUE_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 			<device type="White-led" name="upanel1 top white led">
 				<feature name="IS_LED" /> 
@@ -389,12 +401,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="4"	/>
 				<feature name="IS_WHITE_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 		</device>
 		<device type="RGBW-led" name="upanel1 bottom rgbw led">
@@ -413,12 +425,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="5"	/>
 				<feature name="IS_RED_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 			<device type="Green-led" name="upanel1 bottom green led">
 				<feature name="IS_LED" /> 
@@ -429,12 +441,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="6"	/>
 				<feature name="IS_GREEN_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 			<device type="Blue-led" name="upanel1 bottom blue led">
 				<feature name="IS_LED" /> 
@@ -445,12 +457,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="7"	/>
 				<feature name="IS_BLUE_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 			<device type="White-led" name="upanel1 bottom white led">
 				<feature name="IS_LED" /> 
@@ -461,12 +473,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="8"	/>
 				<feature name="IS_WHITE_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 		</device>
 		<device type="dip_switch" name="upanel1 dip switch">
@@ -493,9 +505,9 @@
 		<feature name="HAS_DEVICE_TYPE" value="0x13" />
 		<feature name="IMPLEMENTS" value="upanel_interface" />
 
-		<config name="ABOVE_BOTTLE"	size="uint8" persistent="false">2</config>
+		<config name="ABOVE_BOTTLE"	size="uint8">2</config>
 		<config name="I2C_ADDRESS"	size="uint8" persistent="I2C_2_ADDRESS">0x33</config>
-		<config name="EXISTS"		size="boolean" persistent="false">0</config>
+		<config name="EXISTS"		size="boolean">0</config>
 		<config name="ENABLED"		size="boolean" persistent="global">1</config>
 		<config name="VERSION"		size="uint8" persistent="I2C_0_VERSION">0x00</config>
 		
@@ -516,12 +528,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="1"	/>
 				<feature name="IS_RED_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 			<device type="Green-led" name="upanel2 top green led">
 				<feature name="IS_LED" /> 
@@ -532,12 +544,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="2"	/>
 				<feature name="IS_GREEN_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 			<device type="Blue-led" name="upanel2 top blue led">
 				<feature name="IS_LED" /> 
@@ -548,12 +560,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="3"	/>
 				<feature name="IS_BLUE_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 			<device type="White-led" name="upanel2 top white led">
 				<feature name="IS_LED" /> 
@@ -564,12 +576,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="4"	/>
 				<feature name="IS_WHITE_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 		</device>
 		<device type="RGBW-led" name="upanel2 bottom rgbw led">
@@ -589,12 +601,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="5"	/>
 				<feature name="IS_RED_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 			<device type="Green-led" name="upanel2 bottom green led">
 				<feature name="IS_LED" /> 
@@ -605,12 +617,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="6"	/>
 				<feature name="IS_GREEN_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 			<device type="Blue-led" name="upanel2 bottom blue led">
 				<feature name="IS_LED" /> 
@@ -621,12 +633,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="7"	/>
 				<feature name="IS_BLUE_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 			<device type="White-led" name="upanel2 bottom white led">
 				<feature name="IS_LED" /> 
@@ -637,12 +649,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="8"	/>
 				<feature name="IS_WHITE_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 		</device>
 		<device type="dip_switch" name="upanel2 dip switch">
@@ -669,9 +681,9 @@
 		<feature name="HAS_DEVICE_TYPE" value="0x13" />
 		<feature name="IMPLEMENTS" value="upanel_interface" />
 
-		<config name="ABOVE_BOTTLE"	size="uint8" persistent="false">3</config>
+		<config name="ABOVE_BOTTLE"	size="uint8">3</config>
 		<config name="I2C_ADDRESS"	size="uint8" persistent="I2C_3_ADDRESS">0x33</config>
-		<config name="EXISTS"		size="boolean" persistent="false">0</config>
+		<config name="EXISTS"		size="boolean">0</config>
 		<config name="ENABLED"		size="boolean" persistent="global">1</config>
 		<config name="VERSION"		size="uint8" persistent="I2C_0_VERSION">0x00</config>
 
@@ -692,12 +704,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="1"	/>
 				<feature name="IS_RED_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 			<device type="Green-led" name="upanel3 top green led">
 				<feature name="IS_LED" /> 
@@ -708,12 +720,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="2"	/>
 				<feature name="IS_GREEN_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 			<device type="Blue-led" name="upanel3 top blue led">
 				<feature name="IS_LED" /> 
@@ -724,12 +736,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="3"	/>
 				<feature name="IS_BLUE_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 			<device type="White-led" name="upanel3 top white led">
 				<feature name="IS_LED" /> 
@@ -740,12 +752,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="4"	/>
 				<feature name="IS_WHITE_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 		</device>
 		<device type="RGBW-led" name="upanel3 bottom rgbw led">
@@ -765,12 +777,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="5"	/>
 				<feature name="IS_RED_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 			<device type="Green-led" name="upanel3 bottom green led">
 				<feature name="IS_LED" /> 
@@ -781,12 +793,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="6"	/>
 				<feature name="IS_GREEN_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 			<device type="Blue-led" name="upanel3 bottom blue led">
 				<feature name="IS_LED" /> 
@@ -797,12 +809,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="7"	/>
 				<feature name="IS_BLUE_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 			<device type="White-led" name="upanel3 bottom white led">
 				<feature name="IS_LED" /> 
@@ -813,12 +825,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="8"	/>
 				<feature name="IS_WHITE_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 		</device>
 		<device type="dip_switch" name="upanel3 dip switch">
@@ -845,9 +857,9 @@
 		<feature name="HAS_DEVICE_TYPE" value="0x13" />
 		<feature name="IMPLEMENTS" value="upanel_interface" />
 
-		<config name="ABOVE_BOTTLE"	size="uint8" persistent="false">4</config>
+		<config name="ABOVE_BOTTLE"	size="uint8">4</config>
 		<config name="I2C_ADDRESS"	size="uint8" persistent="I2C_4_ADDRESS">0x33</config>
-		<config name="EXISTS"		size="boolean" persistent="false">0</config>
+		<config name="EXISTS"		size="boolean">0</config>
 		<config name="ENABLED"		size="boolean" persistent="global">1</config>
 		<config name="VERSION"		size="uint8" persistent="I2C_4_VERSION">0x00</config>
 
@@ -868,12 +880,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="1"	/>
 				<feature name="IS_RED_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 			<device type="Green-led" name="upanel4 top green led">
 				<feature name="IS_LED" /> 
@@ -884,12 +896,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="2"	/>
 				<feature name="IS_GREEN_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 			<device type="Blue-led" name="upanel4 top blue led">
 				<feature name="IS_LED" /> 
@@ -900,12 +912,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="3"	/>
 				<feature name="IS_BLUE_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 			<device type="White-led" name="upanel4 top white led">
 				<feature name="IS_LED" /> 
@@ -916,12 +928,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="4"	/>
 				<feature name="IS_WHITE_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 		</device>
 		<device type="RGBW-led" name="upanel4 bottom rgbw led">
@@ -941,12 +953,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="5"	/>
 				<feature name="IS_RED_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 			<device type="Green-led" name="upanel4 bottom green led">
 				<feature name="IS_LED" /> 
@@ -957,12 +969,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="6"	/>
 				<feature name="IS_GREEN_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 			<device type="Blue-led" name="upanel4 bottom blue led">
 				<feature name="IS_LED" /> 
@@ -973,12 +985,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="7"	/>
 				<feature name="IS_BLUE_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 			<device type="White-led" name="upanel4 bottom white led">
 				<feature name="IS_LED" /> 
@@ -989,12 +1001,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="8"	/>
 				<feature name="IS_WHITE_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 		</device>
 		<device type="dip_switch" name="upanel4 dip switch">
@@ -1021,9 +1033,9 @@
 		<feature name="HAS_DEVICE_TYPE" value="0x13" />
 		<feature name="IMPLEMENTS" value="upanel_interface" />
 
-		<config name="ABOVE_BOTTLE"	size="uint8" persistent="false">5</config>
+		<config name="ABOVE_BOTTLE"	size="uint8">5</config>
 		<config name="I2C_ADDRESS"	size="uint8" persistent="I2C_5_ADDRESS">0x33</config>
-		<config name="EXISTS"		size="boolean" persistent="false">0</config>
+		<config name="EXISTS"		size="boolean">0</config>
 		<config name="ENABLED"		size="boolean" persistent="global">1</config>
 		<config name="VERSION"		size="uint8" persistent="I2C_5_VERSION">0x00</config>
 
@@ -1044,12 +1056,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="1"	/>
 				<feature name="IS_RED_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 			<device type="Green-led" name="upanel5 top green led">
 				<feature name="IS_LED" /> 
@@ -1060,12 +1072,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="2"	/>
 				<feature name="IS_GREEN_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 			<device type="Blue-led" name="upanel5 top blue led">
 				<feature name="IS_LED" /> 
@@ -1076,12 +1088,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="3"	/>
 				<feature name="IS_BLUE_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 			<device type="White-led" name="upanel5 top white led">
 				<feature name="IS_LED" /> 
@@ -1092,12 +1104,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="4"	/>
 				<feature name="IS_WHITE_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 		</device>
 		<device type="RGBW-led" name="upanel5 bottom rgbw led">
@@ -1117,12 +1129,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="5"	/>
 				<feature name="IS_RED_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 			<device type="Green-led" name="upanel5 bottom green led">
 				<feature name="IS_LED" /> 
@@ -1133,12 +1145,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="6"	/>
 				<feature name="IS_GREEN_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 			<device type="Blue-led" name="upanel5 bottom blue led">
 				<feature name="IS_LED" /> 
@@ -1149,12 +1161,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="7"	/>
 				<feature name="IS_BLUE_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 			<device type="White-led" name="upanel5 bottom white led">
 				<feature name="IS_LED" /> 
@@ -1165,12 +1177,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="8"	/>
 				<feature name="IS_WHITE_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 		</device>
 		<device type="dip_switch" name="upanel5 dip switch">
@@ -1197,9 +1209,9 @@
 		<feature name="HAS_DEVICE_TYPE" value="0x13" />
 		<feature name="IMPLEMENTS" value="upanel_interface" />
 
-		<config name="ABOVE_BOTTLE"	size="uint8" persistent="false">6</config>
+		<config name="ABOVE_BOTTLE"	size="uint8">6</config>
 		<config name="I2C_ADDRESS"	size="uint8" persistent="I2C_6_ADDRESS">0x33</config>
-		<config name="EXISTS"		size="boolean" persistent="false">0</config>
+		<config name="EXISTS"		size="boolean">0</config>
 		<config name="ENABLED"		size="boolean" persistent="global">1</config>
 		<config name="VERSION"		size="uint8" persistent="I2C_6_VERSION">0x00</config>
 
@@ -1220,12 +1232,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="1"	/>
 				<feature name="IS_RED_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 			<device type="Green-led" name="upanel6 top green led">
 				<feature name="IS_LED" /> 
@@ -1236,12 +1248,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="2"	/>
 				<feature name="IS_GREEN_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 			<device type="Blue-led" name="upanel6 top blue led">
 				<feature name="IS_LED" /> 
@@ -1252,12 +1264,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="3"	/>
 				<feature name="IS_BLUE_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 			<device type="White-led" name="upanel6 top white led">
 				<feature name="IS_LED" /> 
@@ -1268,12 +1280,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="4"	/>
 				<feature name="IS_WHITE_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 		</device>
 		<device type="RGBW-led" name="upanel6 bottom rgbw led">
@@ -1293,12 +1305,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="5"	/>
 				<feature name="IS_RED_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 			<device type="Green-led" name="upanel6 bottom green led">
 				<feature name="IS_LED" /> 
@@ -1309,12 +1321,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="6"	/>
 				<feature name="IS_GREEN_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 			<device type="Blue-led" name="upanel6 bottom blue led">
 				<feature name="IS_LED" /> 
@@ -1325,12 +1337,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="7"	/>
 				<feature name="IS_BLUE_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 			<device type="White-led" name="upanel6 bottom white led">
 				<feature name="IS_LED" /> 
@@ -1341,12 +1353,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="8"	/>
 				<feature name="IS_WHITE_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 		</device>
 		<device type="dip_switch" name="upanel6 dip switch">
@@ -1373,9 +1385,9 @@
 		<feature name="HAS_DEVICE_TYPE" value="0x13" />
 		<feature name="IMPLEMENTS" value="upanel_interface" />
 
-		<config name="ABOVE_BOTTLE"	size="uint8" persistent="false">7</config>
+		<config name="ABOVE_BOTTLE"	size="uint8">7</config>
 		<config name="I2C_ADDRESS"	size="uint8" persistent="I2C_7_ADDRESS">0x33</config>
-		<config name="EXISTS"		size="boolean" persistent="false">0</config>
+		<config name="EXISTS"		size="boolean">0</config>
 		<config name="ENABLED"		size="boolean" persistent="global">1</config>
 		<config name="VERSION"		size="uint8" persistent="I2C_7_VERSION">0x00</config>
 
@@ -1395,9 +1407,9 @@
 				<feature name="IS_FREQUENCY_OUTPUT" />
 				<feature name="HAS_EXTERNAL_PINS" value="1"	/>
 				<feature name="IS_RED_LED" />
-				<config name="PWM" size="uint8" persistent="false">0</config>
-				<config name="FREQUENCY" size="uint16" persistent="false">0</config>
-				<config name="FADE" size="int8" persistent="false">0</config>
+				<config name="PWM" size="uint8">0</config>
+				<config name="FREQUENCY" size="uint16">0</config>
+				<config name="FADE" size="int8">0</config>
 			</device>
 			<device type="Green-led" name="upanel7 top green led">
 				<feature name="IS_LED" /> 
@@ -1408,12 +1420,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="2"	/>
 				<feature name="IS_GREEN_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 			<device type="Blue-led" name="upanel7 top blue led">
 				<feature name="IS_LED" /> 
@@ -1424,12 +1436,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="3"	/>
 				<feature name="IS_BLUE_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 			<device type="White-led" name="upanel7 top white led">
 				<feature name="IS_LED" /> 
@@ -1440,12 +1452,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="4"	/>
 				<feature name="IS_WHITE_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 		</device>
 		<device type="RGBW-led" name="upanel7 bottom rgbw led">
@@ -1465,12 +1477,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="5"	/>
 				<feature name="IS_RED_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 			<device type="Green-led" name="upanel7 bottom green led">
 				<feature name="IS_LED" /> 
@@ -1481,12 +1493,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="6"	/>
 				<feature name="IS_GREEN_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 			<device type="Blue-led" name="upanel7 bottom blue led">
 				<feature name="IS_LED" /> 
@@ -1497,12 +1509,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="7"	/>
 				<feature name="IS_BLUE_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 			<device type="White-led" name="upanel7 bottom white led">
 				<feature name="IS_LED" /> 
@@ -1513,12 +1525,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="8"	/>
 				<feature name="IS_WHITE_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 		</device>
 		<device type="dip_switch" name="upanel7 dip switch">
@@ -1545,9 +1557,9 @@
 		<feature name="HAS_DEVICE_TYPE" value="0x13" />
 		<feature name="IMPLEMENTS" value="upanel_interface" />
 
-		<config name="ABOVE_BOTTLE"	size="uint8" persistent="false">8</config>
+		<config name="ABOVE_BOTTLE"	size="uint8">8</config>
 		<config name="I2C_ADDRESS"	size="uint8" persistent="I2C_8_ADDRESS">0x33</config>
-		<config name="EXISTS"		size="boolean" persistent="false">0</config>
+		<config name="EXISTS"		size="boolean">0</config>
 		<config name="ENABLED"		size="boolean" persistent="global">1</config>
 		<config name="VERSION"		size="uint8" persistent="I2C_8_VERSION">0x00</config>
 
@@ -1568,12 +1580,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="1"	/>
 				<feature name="IS_RED_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 			<device type="Green-led" name="upanel8 top green led">
 				<feature name="IS_LED" /> 
@@ -1584,12 +1596,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="2"	/>
 				<feature name="IS_GREEN_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 			<device type="Blue-led" name="upanel8 top blue led">
 				<feature name="IS_LED" /> 
@@ -1600,12 +1612,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="3"	/>
 				<feature name="IS_BLUE_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 			<device type="White-led" name="upanel8 top white led">
 				<feature name="IS_LED" /> 
@@ -1616,12 +1628,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="4"	/>
 				<feature name="IS_WHITE_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 		</device>
 		<device type="RGBW-led" name="upanel8 bottom rgbw led">
@@ -1641,12 +1653,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="5"	/>
 				<feature name="IS_RED_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 			<device type="Green-led" name="upanel8 bottom green led">
 				<feature name="IS_LED" /> 
@@ -1657,12 +1669,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="6"	/>
 				<feature name="IS_GREEN_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 			<device type="Blue-led" name="upanel8 bottom blue led">
 				<feature name="IS_LED" /> 
@@ -1673,12 +1685,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="7"	/>
 				<feature name="IS_BLUE_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 			<device type="White-led" name="upanel8 bottom white led">
 				<feature name="IS_LED" /> 
@@ -1689,12 +1701,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="8"	/>
 				<feature name="IS_WHITE_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 		</device>
 		<device type="dip_switch" name="upanel8 dip switch">
@@ -1721,9 +1733,9 @@
 		<feature name="HAS_DEVICE_TYPE" value="0x13" />
 		<feature name="IMPLEMENTS" value="upanel_interface" />
 
-		<config name="ABOVE_BOTTLE"	size="uint8" persistent="false">9</config>
+		<config name="ABOVE_BOTTLE"	size="uint8">9</config>
 		<config name="I2C_ADDRESS"	size="uint8" persistent="I2C_9_ADDRESS">0x33</config>
-		<config name="EXISTS"		size="boolean" persistent="false">0</config>
+		<config name="EXISTS"		size="boolean">0</config>
 		<config name="ENABLED"		size="boolean" persistent="global">1</config>
 		<config name="VERSION"		size="uint8" persistent="I2C_9_VERSION">0x00</config>
 		
@@ -1744,12 +1756,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="1"	/>
 				<feature name="IS_RED_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 			<device type="Green-led" name="upanel9 top green led">
 				<feature name="IS_LED" /> 
@@ -1760,12 +1772,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="2"	/>
 				<feature name="IS_GREEN_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 			<device type="Blue-led" name="upanel9 top blue led">
 				<feature name="IS_LED" /> 
@@ -1776,12 +1788,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="3"	/>
 				<feature name="IS_BLUE_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 			<device type="White-led" name="upanel9 top white led">
 				<feature name="IS_LED" /> 
@@ -1792,12 +1804,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="4"	/>
 				<feature name="IS_WHITE_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 		</device>
 		<device type="RGBW-led" name="upanel9 bottom rgbw led">
@@ -1816,12 +1828,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="5"	/>
 				<feature name="IS_RED_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 			<device type="Green-led" name="upanel9 bottom green led">
 				<feature name="IS_LED" /> 
@@ -1832,12 +1844,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="6"	/>
 				<feature name="IS_GREEN_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 			<device type="Blue-led" name="upanel9 bottom blue led">
 				<feature name="IS_LED" /> 
@@ -1848,12 +1860,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="7"	/>
 				<feature name="IS_BLUE_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 			<device type="White-led" name="upanel9 bottom white led">
 				<feature name="IS_LED" /> 
@@ -1864,12 +1876,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="8"	/>
 				<feature name="IS_WHITE_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 		</device>
 		<device type="dip_switch" name="upanel9 dip switch">
@@ -1896,9 +1908,9 @@
 		<feature name="HAS_DEVICE_TYPE" value="0x13" />
 		<feature name="IMPLEMENTS" value="upanel_interface" />
 
-		<config name="ABOVE_BOTTLE"	size="uint8" persistent="false">10</config>
+		<config name="ABOVE_BOTTLE"	size="uint8">10</config>
 		<config name="I2C_ADDRESS"	size="uint8" persistent="I2C_10_ADDRESS">0x33</config>
-		<config name="EXISTS"		size="boolean" persistent="false">0</config>
+		<config name="EXISTS"		size="boolean">0</config>
 		<config name="ENABLED"		size="boolean" persistent="global">1</config>
 		<config name="VERSION"		size="uint8" persistent="I2C_10_VERSION">0x00</config>
 
@@ -1919,12 +1931,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="1"	/>
 				<feature name="IS_RED_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 			<device type="Green-led" name="upanel10 top green led">
 				<feature name="IS_LED" /> 
@@ -1935,12 +1947,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="2"	/>
 				<feature name="IS_GREEN_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 			<device type="Blue-led" name="upanel10 top blue led">
 				<feature name="IS_LED" /> 
@@ -1951,12 +1963,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="3"	/>
 				<feature name="IS_BLUE_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 			<device type="White-led" name="upanel10 top white led">
 				<feature name="IS_LED" /> 
@@ -1967,12 +1979,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="4"	/>
 				<feature name="IS_WHITE_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 		</device>
 		<device type="RGBW-led" name="upanel10 bottom rgbw led">
@@ -1992,12 +2004,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="5"	/>
 				<feature name="IS_RED_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 			<device type="Green-led" name="upanel10 bottom green led">
 				<feature name="IS_LED" /> 
@@ -2008,12 +2020,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="6"	/>
 				<feature name="IS_GREEN_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 			<device type="Blue-led" name="upanel10 bottom blue led">
 				<feature name="IS_LED" /> 
@@ -2024,12 +2036,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="7"	/>
 				<feature name="IS_BLUE_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 			<device type="White-led" name="upanel10 bottom white led">
 				<feature name="IS_LED" /> 
@@ -2040,12 +2052,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="8"	/>
 				<feature name="IS_WHITE_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 		</device>
 		<device type="dip_switch" name="upanel10 dip switch">
@@ -2072,9 +2084,9 @@
 		<feature name="HAS_DEVICE_TYPE" value="0x13" />
 		<feature name="IMPLEMENTS" value="upanel_interface" />
 
-		<config name="ABOVE_BOTTLE"	size="uint8" persistent="false">11</config>
+		<config name="ABOVE_BOTTLE"	size="uint8">11</config>
 		<config name="I2C_ADDRESS"	size="uint8" persistent="I2C_11_ADDRESS">0x33</config>
-		<config name="EXISTS"		size="boolean" persistent="false">0</config>
+		<config name="EXISTS"		size="boolean">0</config>
 		<config name="ENABLED"		size="boolean" persistent="global">1</config>
 		<config name="VERSION"		size="uint8" persistent="I2C_11_VERSION">0x00</config>
 
@@ -2095,12 +2107,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="1"	/>
 				<feature name="IS_RED_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 			<device type="Green-led" name="upanel11 top green led">
 				<feature name="IS_LED" /> 
@@ -2111,12 +2123,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="2"	/>
 				<feature name="IS_GREEN_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 			<device type="Blue-led" name="upanel11 top blue led">
 				<feature name="IS_LED" /> 
@@ -2127,12 +2139,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="3"	/>
 				<feature name="IS_BLUE_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 			<device type="White-led" name="upanel11 top white led">
 				<feature name="IS_LED" /> 
@@ -2143,12 +2155,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="4"	/>
 				<feature name="IS_WHITE_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 		</device>
 		<device type="RGBW-led" name="upanel11 bottom rgbw led">
@@ -2168,12 +2180,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="5"	/>
 				<feature name="IS_RED_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 			<device type="Green-led" name="upanel11 bottom green led">
 				<feature name="IS_LED" /> 
@@ -2184,12 +2196,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="6"	/>
 				<feature name="IS_GREEN_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 			<device type="Blue-led" name="upanel11 bottom blue led">
 				<feature name="IS_LED" /> 
@@ -2200,12 +2212,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="7"	/>
 				<feature name="IS_BLUE_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 			<device type="White-led" name="upanel11 bottom white led">
 				<feature name="IS_LED" /> 
@@ -2216,12 +2228,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="8"	/>
 				<feature name="IS_WHITE_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 		</device>
 		<device type="dip_switch" name="upanel11 dip switch">
@@ -2275,12 +2287,12 @@
 					<feature name="HAS_EXTERNAL_PINS" value="1"	/>
 					<feature name="IS_RED_LED" />
 
-					<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-					<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-					<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-					<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-					<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-					<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+					<config name="PWM_UP"		size="uint8">0</config>
+					<config name="PWM_DOWN"		size="uint8">0</config>
+					<config name="FADE_IN"		size="uint4">0</config>
+					<config name="FADE_OUT"		size="uint4">0</config>
+					<config name="ON_TIME"		size="uint16">0</config>
+					<config name="OFF_TIME"		size="uint16">0</config>
 					</device>
 				<device type="Green-led" name="carret tower green led">
 					<feature name="IS_LED" /> 
@@ -2291,12 +2303,12 @@
 					<feature name="HAS_EXTERNAL_PINS" value="2"	/>
 					<feature name="IS_GREEN_LED" />
 
-					<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-					<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-					<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-					<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-					<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-					<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+					<config name="PWM_UP"		size="uint8">0</config>
+					<config name="PWM_DOWN"		size="uint8">0</config>
+					<config name="FADE_IN"		size="uint4">0</config>
+					<config name="FADE_OUT"		size="uint4">0</config>
+					<config name="ON_TIME"		size="uint16">0</config>
+					<config name="OFF_TIME"		size="uint16">0</config>
 
 				</device>
 				<device type="Blue-led" name="carret tower blue led">
@@ -2308,12 +2320,12 @@
 					<feature name="HAS_EXTERNAL_PINS" value="3"	/>
 					<feature name="IS_BLUE_LED" />
 
-					<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-					<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-					<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-					<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-					<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-					<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+					<config name="PWM_UP"		size="uint8">0</config>
+					<config name="PWM_DOWN"		size="uint8">0</config>
+					<config name="FADE_IN"		size="uint4">0</config>
+					<config name="FADE_OUT"		size="uint4">0</config>
+					<config name="ON_TIME"		size="uint16">0</config>
+					<config name="OFF_TIME"		size="uint16">0</config>
 
 				</device>
 				<device type="White-led" name="carret tower white led">
@@ -2325,12 +2337,12 @@
 					<feature name="HAS_EXTERNAL_PINS" value="4"	/>
 					<feature name="IS_WHITE_LED" />
 
-					<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-					<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-					<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-					<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-					<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-					<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+					<config name="PWM_UP"		size="uint8">0</config>
+					<config name="PWM_DOWN"		size="uint8">0</config>
+					<config name="FADE_IN"		size="uint4">0</config>
+					<config name="FADE_OUT"		size="uint4">0</config>
+					<config name="ON_TIME"		size="uint16">0</config>
+					<config name="OFF_TIME"		size="uint16">0</config>
 				</device>
 			</device>
 
@@ -2351,12 +2363,12 @@
 					<feature name="HAS_EXTERNAL_PINS" value="1"	/>
 					<feature name="IS_RED_LED" />
 
-					<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-					<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-					<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-					<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-					<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-					<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+					<config name="PWM_UP"		size="uint8">0</config>
+					<config name="PWM_DOWN"		size="uint8">0</config>
+					<config name="FADE_IN"		size="uint4">0</config>
+					<config name="FADE_OUT"		size="uint4">0</config>
+					<config name="ON_TIME"		size="uint16">0</config>
+					<config name="OFF_TIME"		size="uint16">0</config>
 
 				</device>
 				<device type="Green-led" name="carret tower green led">
@@ -2368,12 +2380,12 @@
 					<feature name="HAS_EXTERNAL_PINS" value="2"	/>
 					<feature name="IS_GREEN_LED" />
 
-					<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-					<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-					<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-					<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-					<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-					<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+					<config name="PWM_UP"		size="uint8">0</config>
+					<config name="PWM_DOWN"		size="uint8">0</config>
+					<config name="FADE_IN"		size="uint4">0</config>
+					<config name="FADE_OUT"		size="uint4">0</config>
+					<config name="ON_TIME"		size="uint16">0</config>
+					<config name="OFF_TIME"		size="uint16">0</config>
 
 				</device>
 				<device type="Blue-led" name="carret tower blue led">
@@ -2385,12 +2397,12 @@
 					<feature name="HAS_EXTERNAL_PINS" value="3"	/>
 					<feature name="IS_BLUE_LED" />
 
-					<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-					<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-					<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-					<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-					<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-					<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+					<config name="PWM_UP"		size="uint8">0</config>
+					<config name="PWM_DOWN"		size="uint8">0</config>
+					<config name="FADE_IN"		size="uint4">0</config>
+					<config name="FADE_OUT"		size="uint4">0</config>
+					<config name="ON_TIME"		size="uint16">0</config>
+					<config name="OFF_TIME"		size="uint16">0</config>
 
 				</device>
 				<device type="White-led" name="carret tower white led">
@@ -2402,12 +2414,12 @@
 					<feature name="HAS_EXTERNAL_PINS" value="4"	/>
 					<feature name="IS_WHITE_LED" />
 
-					<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-					<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-					<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-					<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-					<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-					<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+					<config name="PWM_UP"		size="uint8">0</config>
+					<config name="PWM_DOWN"		size="uint8">0</config>
+					<config name="FADE_IN"		size="uint4">0</config>
+					<config name="FADE_OUT"		size="uint4">0</config>
+					<config name="ON_TIME"		size="uint16">0</config>
+					<config name="OFF_TIME"		size="uint16">0</config>
 
 				</device>
 			</device>
@@ -2444,10 +2456,10 @@
 				<feature name="HAS_PINS" value="15" /> 
 				<feature name="IS_ANALOG_OUTPUT" /> 
 
-				<config name="MAX_POS" size="uint16" persistent="false">0</config>
-				<config name="MIN_POS" size="uint16" persistent="false">0</config>
-				<config name="DOWN_POS" size="uint16" persistent="false">0</config>
-				<config name="UP_POS" size="uint16" persistent="false">0</config>
+				<config name="MAX_POS" size="uint16">0</config>
+				<config name="MIN_POS" size="uint16">0</config>
+				<config name="DOWN_POS" size="uint16">0</config>
+				<config name="UP_POS" size="uint16">0</config>
 				<config name="NEUTRAL_POS" size="uint16" persistent="global">0</config>			
 			</device>
 			<device type="servo_z" name="engine Z">
@@ -2459,11 +2471,11 @@
 				<feature name="HAS_PINS" value="10"/>
 				<feature name="IS_ANALOG_OUTPUT" /> 
 				<config name="ENABLED"		size="boolean" persistent="global">1</config>
-				<config name="MAX_POS" size="uint16" persistent="false">0</config>
-				<config name="MIN_POS" size="uint16" persistent="false">0</config>
-				<config name="DOWN_POS" size="uint16" persistent="false">0</config>
-				<config name="UP_POS" size="uint16" persistent="false">0</config>
-				<config name="NEUTRAL_POS" size="uint16" persistent="false">0</config>
+				<config name="MAX_POS" size="uint16">0</config>
+				<config name="MIN_POS" size="uint16">0</config>
+				<config name="DOWN_POS" size="uint16">0</config>
+				<config name="UP_POS" size="uint16">0</config>
+				<config name="NEUTRAL_POS" size="uint16">0</config>
 			</device>			
 		</device>
 	</device>
@@ -2500,12 +2512,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="1"	/>
 				<feature name="IS_RED_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 			<device type="Green-led" name="mainboard main green led">
 				<feature name="IS_LED" /> 
@@ -2516,12 +2528,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="2"	/>
 				<feature name="IS_GREEN_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 			<device type="Blue-led" name="mainboard main blue led">
 				<feature name="IS_LED" /> 
@@ -2532,12 +2544,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="3"	/>
 				<feature name="IS_BLUE_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 			<device type="White-led" name="mainboard main white led">
 				<feature name="IS_LED" /> 
@@ -2548,12 +2560,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="4"	/>
 				<feature name="IS_WHITE_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 		</device>
 		<device type="RGBW-led" name="mainboard starter rgbw led">
@@ -2573,12 +2585,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="1"	/>
 				<feature name="IS_RED_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 			<device type="Green-led" name="mainboard starter green led">
 				<feature name="IS_LED" /> 
@@ -2589,12 +2601,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="2"	/>
 				<feature name="IS_GREEN_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 			<device type="Blue-led" name="mainboard starter blue led">
 				<feature name="IS_LED" /> 
@@ -2605,12 +2617,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="3"	/>
 				<feature name="IS_BLUE_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 			<device type="White-led" name="mainboard starter white led">
 				<feature name="IS_LED" /> 
@@ -2621,12 +2633,12 @@
 				<feature name="HAS_EXTERNAL_PINS" value="4"	/>
 				<feature name="IS_WHITE_LED" />
 
-				<config name="PWM_UP"		size="uint8" persistent="false">0</config>
-				<config name="PWM_DOWN"		size="uint8" persistent="false">0</config>
-				<config name="FADE_IN"		size="uint4" persistent="false">0</config>
-				<config name="FADE_OUT"		size="uint4" persistent="false">0</config>
-				<config name="ON_TIME"		size="uint16" persistent="false">0</config>
-				<config name="OFF_TIME"		size="uint16" persistent="false">0</config>
+				<config name="PWM_UP"		size="uint8">0</config>
+				<config name="PWM_DOWN"		size="uint8">0</config>
+				<config name="FADE_IN"		size="uint4">0</config>
+				<config name="FADE_OUT"		size="uint4">0</config>
+				<config name="ON_TIME"		size="uint16">0</config>
+				<config name="OFF_TIME"		size="uint16">0</config>
 			</device>
 		</device>
 		<device type="stepper_x_driver" name="engine X">
@@ -2638,12 +2650,12 @@
 			<feature name="HAS_PIN_DIR" value="11" size="uint32"/>
 
 			<config name="ENABLED"		size="boolean" persistent="global">1</config>
-			<config name="MAX_SPEED" size="uint16" persistent="false">0</config>
-			<config name="MAX_ACC" size="uint16" persistent="false">0</config>
-			<config name="MAX_POS" size="uint16" persistent="false">0</config>
-			<config name="MIN_POS" size="uint16" persistent="false">0</config>
-			<config name="DOWN_POS" size="uint16" persistent="false">0</config>
-			<config name="UP_POS" size="uint16" persistent="false">0</config>
+			<config name="MAX_SPEED" size="uint16">0</config>
+			<config name="MAX_ACC" size="uint16">0</config>
+			<config name="MAX_POS" size="uint16">0</config>
+			<config name="MIN_POS" size="uint16">0</config>
+			<config name="DOWN_POS" size="uint16">0</config>
+			<config name="UP_POS" size="uint16">0</config>
 			<config name="NEUTRAL_POS" size="uint16" persistent="global">0</config>
 
 			<device type="stepper_x" name="engine X stepper">
@@ -2673,10 +2685,10 @@
 			<config name="ENABLED"		size="boolean" persistent="global">1</config>
 			<config name="CAPACITY_DISPENSER" size="uint8" persistent="global">20</config>
 			<config name="CAPACITY_BOTTLE" size="uint16" persistent="global">500</config>
-			<config name="HAS_POSITION_X" size="uint32" persistent="false">0</config>
-			<config name="HAS_POSITION_Y" size="uint32" persistent="false">0</config>
-			<config name="IS_EMPTY" size="boolean" persistent="false">0</config>
-			<config name="IS_ACTIVE" size="boolean" persistent="false">0</config>
+			<config name="HAS_POSITION_X" size="uint32">0</config>
+			<config name="HAS_POSITION_Y" size="uint32">0</config>
+			<config name="IS_EMPTY" size="boolean">0</config>
+			<config name="IS_ACTIVE" size="boolean">0</config>
 			<config name="POURED" size="uint32" persistent="global">0</config>
 			<config name="BOTTLE_FLOW_TIME" size="uint32" persistent="global">0</config>
 			<config name="BOTTLE_FLOW_COUNT" size="uint32" persistent="global">0</config>
@@ -2691,10 +2703,10 @@
 			<config name="ENABLED"		size="boolean" persistent="global">1</config>
 			<config name="CAPACITY_DISPENSER" size="uint8" persistent="global">20</config>
 			<config name="CAPACITY_BOTTLE" size="uint16" persistent="global">500</config>
-			<config name="HAS_POSITION_X" size="uint32" persistent="false">0</config>
-			<config name="HAS_POSITION_Y" size="uint32" persistent="false">0</config>
-			<config name="IS_EMPTY" size="boolean" persistent="false">0</config>
-			<config name="IS_ACTIVE" size="boolean" persistent="false">0</config>
+			<config name="HAS_POSITION_X" size="uint32">0</config>
+			<config name="HAS_POSITION_Y" size="uint32">0</config>
+			<config name="IS_EMPTY" size="boolean">0</config>
+			<config name="IS_ACTIVE" size="boolean">0</config>
 			<config name="POURED" size="uint32" persistent="global">0</config>
 			<config name="BOTTLE_FLOW_TIME" size="uint32" persistent="global">0</config>
 			<config name="BOTTLE_FLOW_COUNT" size="uint32" persistent="global">0</config>
@@ -2709,10 +2721,10 @@
 			<config name="ENABLED"		size="boolean" persistent="global">1</config>
 			<config name="CAPACITY_DISPENSER" size="uint8" persistent="global">20</config>
 			<config name="CAPACITY_BOTTLE" size="uint16" persistent="global">500</config>
-			<config name="HAS_POSITION_X" size="uint32" persistent="false">0</config>
-			<config name="HAS_POSITION_Y" size="uint32" persistent="false">0</config>
-			<config name="IS_EMPTY" size="boolean" persistent="false">0</config>
-			<config name="IS_ACTIVE" size="boolean" persistent="false">0</config>
+			<config name="HAS_POSITION_X" size="uint32">0</config>
+			<config name="HAS_POSITION_Y" size="uint32">0</config>
+			<config name="IS_EMPTY" size="boolean">0</config>
+			<config name="IS_ACTIVE" size="boolean">0</config>
 			<config name="POURED" size="uint32" persistent="global">0</config>
 			<config name="BOTTLE_FLOW_TIME" size="uint32" persistent="global">0</config>
 			<config name="BOTTLE_FLOW_COUNT" size="uint32" persistent="global">0</config>
@@ -2727,10 +2739,10 @@
 			<config name="ENABLED"		size="boolean" persistent="global">1</config>
 			<config name="CAPACITY_DISPENSER" size="uint8" persistent="global">20</config>
 			<config name="CAPACITY_BOTTLE" size="uint16" persistent="global">500</config>
-			<config name="HAS_POSITION_X" size="uint32" persistent="false">0</config>
-			<config name="HAS_POSITION_Y" size="uint32" persistent="false">0</config>
-			<config name="IS_EMPTY" size="boolean" persistent="false">0</config>
-			<config name="IS_ACTIVE" size="boolean" persistent="false">0</config>
+			<config name="HAS_POSITION_X" size="uint32">0</config>
+			<config name="HAS_POSITION_Y" size="uint32">0</config>
+			<config name="IS_EMPTY" size="boolean">0</config>
+			<config name="IS_ACTIVE" size="boolean">0</config>
 			<config name="POURED" size="uint32" persistent="global">0</config>
 			<config name="BOTTLE_FLOW_TIME" size="uint32" persistent="global">0</config>
 			<config name="BOTTLE_FLOW_COUNT" size="uint32" persistent="global">0</config>
@@ -2745,10 +2757,10 @@
 			<config name="ENABLED"		size="boolean" persistent="global">1</config>
 			<config name="CAPACITY_DISPENSER" size="uint8" persistent="global">20</config>
 			<config name="CAPACITY_BOTTLE" size="uint16" persistent="global">500</config>
-			<config name="HAS_POSITION_X" size="uint32" persistent="false">0</config>
-			<config name="HAS_POSITION_Y" size="uint32" persistent="false">0</config>
-			<config name="IS_EMPTY" size="boolean" persistent="false">0</config>
-			<config name="IS_ACTIVE" size="boolean" persistent="false">0</config>
+			<config name="HAS_POSITION_X" size="uint32">0</config>
+			<config name="HAS_POSITION_Y" size="uint32">0</config>
+			<config name="IS_EMPTY" size="boolean">0</config>
+			<config name="IS_ACTIVE" size="boolean">0</config>
 			<config name="POURED" size="uint32" persistent="global">0</config>
 			<config name="BOTTLE_FLOW_TIME" size="uint32" persistent="global">0</config>
 			<config name="BOTTLE_FLOW_COUNT" size="uint32" persistent="global">0</config>
@@ -2763,10 +2775,10 @@
 			<config name="ENABLED"		size="boolean" persistent="global">1</config>
 			<config name="CAPACITY_DISPENSER" size="uint8" persistent="global">20</config>
 			<config name="CAPACITY_BOTTLE" size="uint16" persistent="global">500</config>
-			<config name="HAS_POSITION_X" size="uint32" persistent="false">0</config>
-			<config name="HAS_POSITION_Y" size="uint32" persistent="false">0</config>
-			<config name="IS_EMPTY" size="boolean" persistent="false">0</config>
-			<config name="IS_ACTIVE" size="boolean" persistent="false">0</config>
+			<config name="HAS_POSITION_X" size="uint32">0</config>
+			<config name="HAS_POSITION_Y" size="uint32">0</config>
+			<config name="IS_EMPTY" size="boolean">0</config>
+			<config name="IS_ACTIVE" size="boolean">0</config>
 			<config name="POURED" size="uint32" persistent="global">0</config>
 			<config name="BOTTLE_FLOW_TIME" size="uint32" persistent="global">0</config>
 			<config name="BOTTLE_FLOW_COUNT" size="uint32" persistent="global">0</config>
@@ -2781,10 +2793,10 @@
 			<config name="ENABLED"		size="boolean" persistent="global">1</config>
 			<config name="CAPACITY_DISPENSER" size="uint8" persistent="global">20</config>
 			<config name="CAPACITY_BOTTLE" size="uint16" persistent="global">500</config>
-			<config name="HAS_POSITION_X" size="uint32" persistent="false">0</config>
-			<config name="HAS_POSITION_Y" size="uint32" persistent="false">0</config>
-			<config name="IS_EMPTY" size="boolean" persistent="false">0</config>
-			<config name="IS_ACTIVE" size="boolean" persistent="false">0</config>
+			<config name="HAS_POSITION_X" size="uint32">0</config>
+			<config name="HAS_POSITION_Y" size="uint32">0</config>
+			<config name="IS_EMPTY" size="boolean">0</config>
+			<config name="IS_ACTIVE" size="boolean">0</config>
 			<config name="POURED" size="uint32" persistent="global">0</config>
 			<config name="BOTTLE_FLOW_TIME" size="uint32" persistent="global">0</config>
 			<config name="BOTTLE_FLOW_COUNT" size="uint32" persistent="global">0</config>
@@ -2799,10 +2811,10 @@
 			<config name="ENABLED"		size="boolean" persistent="global">1</config>
 			<config name="CAPACITY_DISPENSER" size="uint8" persistent="global">20</config>
 			<config name="CAPACITY_BOTTLE" size="uint16" persistent="global">500</config>
-			<config name="HAS_POSITION_X" size="uint32" persistent="false">0</config>
-			<config name="HAS_POSITION_Y" size="uint32" persistent="false">0</config>
-			<config name="IS_EMPTY" size="boolean" persistent="false">0</config>
-			<config name="IS_ACTIVE" size="boolean" persistent="false">0</config>
+			<config name="HAS_POSITION_X" size="uint32">0</config>
+			<config name="HAS_POSITION_Y" size="uint32">0</config>
+			<config name="IS_EMPTY" size="boolean">0</config>
+			<config name="IS_ACTIVE" size="boolean">0</config>
 			<config name="POURED" size="uint32" persistent="global">0</config>
 			<config name="BOTTLE_FLOW_TIME" size="uint32" persistent="global">0</config>
 			<config name="BOTTLE_FLOW_COUNT" size="uint32" persistent="global">0</config>
@@ -2817,10 +2829,10 @@
 			<config name="ENABLED"		size="boolean" persistent="global">1</config>
 			<config name="CAPACITY_DISPENSER" size="uint8" persistent="global">20</config>
 			<config name="CAPACITY_BOTTLE" size="uint16" persistent="global">500</config>
-			<config name="HAS_POSITION_X" size="uint32" persistent="false">0</config>
-			<config name="HAS_POSITION_Y" size="uint32" persistent="false">0</config>
-			<config name="IS_EMPTY" size="boolean" persistent="false">0</config>
-			<config name="IS_ACTIVE" size="boolean" persistent="false">0</config>
+			<config name="HAS_POSITION_X" size="uint32">0</config>
+			<config name="HAS_POSITION_Y" size="uint32">0</config>
+			<config name="IS_EMPTY" size="boolean">0</config>
+			<config name="IS_ACTIVE" size="boolean">0</config>
 			<config name="POURED" size="uint32" persistent="global">0</config>
 			<config name="BOTTLE_FLOW_TIME" size="uint32" persistent="global">0</config>
 			<config name="BOTTLE_FLOW_COUNT" size="uint32" persistent="global">0</config>
@@ -2835,10 +2847,10 @@
 			<config name="ENABLED"		size="boolean" persistent="global">1</config>
 			<config name="CAPACITY_DISPENSER" size="uint8" persistent="global">20</config>
 			<config name="CAPACITY_BOTTLE" size="uint16" persistent="global">500</config>
-			<config name="HAS_POSITION_X" size="uint32" persistent="false">0</config>
-			<config name="HAS_POSITION_Y" size="uint32" persistent="false">0</config>
-			<config name="IS_EMPTY" size="boolean" persistent="false">0</config>
-			<config name="IS_ACTIVE" size="boolean" persistent="false">0</config>
+			<config name="HAS_POSITION_X" size="uint32">0</config>
+			<config name="HAS_POSITION_Y" size="uint32">0</config>
+			<config name="IS_EMPTY" size="boolean">0</config>
+			<config name="IS_ACTIVE" size="boolean">0</config>
 			<config name="POURED" size="uint32" persistent="global">0</config>
 			<config name="BOTTLE_FLOW_TIME" size="uint32" persistent="global">0</config>
 			<config name="BOTTLE_FLOW_COUNT" size="uint32" persistent="global">0</config>
@@ -2853,10 +2865,10 @@
 			<config name="ENABLED"		size="boolean" persistent="global">1</config>
 			<config name="CAPACITY_DISPENSER" size="uint8" persistent="global">20</config>
 			<config name="CAPACITY_BOTTLE" size="uint16" persistent="global">500</config>
-			<config name="HAS_POSITION_X" size="uint32" persistent="false">0</config>
-			<config name="HAS_POSITION_Y" size="uint32" persistent="false">0</config>
-			<config name="IS_EMPTY" size="boolean" persistent="false">0</config>
-			<config name="IS_ACTIVE" size="boolean" persistent="false">0</config>
+			<config name="HAS_POSITION_X" size="uint32">0</config>
+			<config name="HAS_POSITION_Y" size="uint32">0</config>
+			<config name="IS_EMPTY" size="boolean">0</config>
+			<config name="IS_ACTIVE" size="boolean">0</config>
 			<config name="POURED" size="uint32" persistent="global">0</config>
 			<config name="BOTTLE_FLOW_TIME" size="uint32" persistent="global">0</config>
 			<config name="BOTTLE_FLOW_COUNT" size="uint32" persistent="global">0</config>
@@ -2872,10 +2884,10 @@
 			<config name="ENABLED"		size="boolean" persistent="global">1</config>
 			<config name="CAPACITY_DISPENSER" size="uint8" persistent="global">20</config>
 			<config name="CAPACITY_BOTTLE" size="uint16" persistent="global">500</config>
-			<config name="HAS_POSITION_X" size="uint32" persistent="false">0</config>
-			<config name="HAS_POSITION_Y" size="uint32" persistent="false">0</config>
-			<config name="IS_EMPTY" size="boolean" persistent="false">0</config>
-			<config name="IS_ACTIVE" size="boolean" persistent="false">0</config>
+			<config name="HAS_POSITION_X" size="uint32">0</config>
+			<config name="HAS_POSITION_Y" size="uint32">0</config>
+			<config name="IS_EMPTY" size="boolean">0</config>
+			<config name="IS_ACTIVE" size="boolean">0</config>
 			<config name="POURED" size="uint32" persistent="global">0</config>
 			<config name="BOTTLE_FLOW_TIME" size="uint32" persistent="global">0</config>
 			<config name="BOTTLE_FLOW_COUNT" size="uint32" persistent="global">0</config>
