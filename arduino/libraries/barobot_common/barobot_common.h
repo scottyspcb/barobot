@@ -315,6 +315,24 @@
 #define METHOD_RET_FROM_SLAVE2 	92
 
 
+#define RETURN_PIN_VALUE 		211
+//#define RETURN_ANALOG_CHANGE 	111
+
+
+
+
+
+#define INNER_SERVOY  0
+#define INNER_SERVOZ  1
+
+#define DRIVER_X 	4
+#define DRIVER_Y 	8
+#define DRIVER_Z 	16
+
+#define RETURN_DRIVER_ERROR 	211
+#define RETURN_DRIVER_READY 	211
+
+
 
 #if HAS_LEDS
 	typedef struct{ 
@@ -463,6 +481,142 @@ TQFP32
 
 /*
 
+
+
+
+
+
+
+
+boolean i2c_getValue(  byte slave_address, byte pin ){      // zwraca 2 bajty. typ na m³odszych bitach, versja na starszych
+  out_buffer[0]  = METHOD_GETVALUE;
+  out_buffer[1]  = pin;
+  byte error = writeRegisters(slave_address, 2, true );
+  if(!error){
+    readRegisters( slave_address, 1 );
+    byte res = in_buffer[0];    // = wersja
+    if( res == 0 ){
+      return false;
+    }
+    if( res == 0xFF ){
+       return true;
+    }
+    // todo. zwróc true ale raportuj warning
+    return true;
+  }
+  return false;
+}
+
+
+
+void i2c_reloadAddress( byte slave_address, byte new_addr ){			// Zmieñ adres I2c, musi byæ podane co najmniej 4 razy zeby zadzia³a³o. (2 bajty)
+  out_buffer[0]  = METHOD_RESETSLAVEADDRESS;
+  out_buffer[1]  = new_addr;
+  writeRegisters(slave_address, 2, true );    // powtarzaj
+  writeRegisters(slave_address, 2, true );
+  writeRegisters(slave_address, 2, true );
+  writeRegisters(slave_address, 2, true );
+  writeRegisters(slave_address, 2, true );
+}
+
+
+
+void i2c_resetCycles( byte slave_address ){
+  out_buffer[0]  = METHOD_RESETCYCLES;
+  writeRegisters(slave_address, 1, true );
+}
+void i2c_setPWM( byte slave_address, byte pin, byte level ){		                              // Wpisz wype³nienie PWM do LEDa ( 3 bajty )
+  out_buffer[0]  = METHOD_SETPWM;
+  out_buffer[1]  = pin;
+  out_buffer[2]  = level;
+  writeRegisters(slave_address, 3, true );
+}
+void i2c_setTime( byte slave_address, byte pin, byte on_time, byte off_time ){			            // Czas pomiêdzy kolejnym zapaleniem i Czas od zapalenia do zgaszenia ( 4 bajty )
+  out_buffer[0]  = METHOD_SETTIME;
+  out_buffer[1]  = pin;
+  out_buffer[2]  = on_time;
+  out_buffer[3]  = off_time;
+  writeRegisters(slave_address, 3, true );
+}
+void i2c_setFading( byte slave_address,  byte pin, byte level_in, byte level_out ){			       // Czas i kierunek zanikania PWMa	( 4 bajty )
+  out_buffer[0]  = METHOD_SETFADING;
+  out_buffer[1]  = pin;
+  out_buffer[2]  = level_in;
+  out_buffer[2]  = level_out;
+  writeRegisters(slave_address, 2, true );
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+ANDROID:	
+	- mainboard
+	- upanel
+	- carret
+
+MAINBOARD:
+	- android
+	- upanel
+	- carret
+
+	
+upanel:	
+	- android
+	- mainboard
+	- carret
+
+CARRET:	
+	- android
+	- mainboard
+	- upanel
+
+
+
+
+
+
+
+
+
+Master:
+- X
+	enable X
+	disable X
+
+	move Z
+
+
+
+
+Carret:
+	enable Y
+	enable Z
+
+	disable Y
+	disable Z
+	
+	move Y
+	move Z
+
+	hall X
+	hall Y
+	
+	
+
+
+
+
+
+
 X5,40,200
 X55,60,-1250
 
@@ -471,4 +625,9 @@ D:\PROG\arduino-1.0.5\hardware/tools/avr/bin/avrdude -CD:\PROG\arduino-1.0.5\har
 D:\PROG\arduino-1.0.5\hardware/tools/avr/bin/avrdude -CD:\PROG\arduino-1.0.5\hardware/tools/avr/etc/avrdude.conf -v -v -v -v -patmega8 -cstk500v1 -P\\.\COM43 -b19200 -Uflash:w:c:\temp\build7005077114599572471.tmp\atmega8_i2c_slave.cpp.hex:i
 
 */
+
+
+
+
+
 

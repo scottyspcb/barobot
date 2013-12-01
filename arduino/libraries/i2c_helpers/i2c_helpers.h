@@ -10,7 +10,7 @@
 	void printHex(byte val, boolean newline);
 
 	byte addr_is_used( byte address);    // true jesli wolne
-	static void save_i2c_address( int epromaddress, byte new_address, byte old_address);
+	void save_i2c_address( int epromaddress, byte new_address, byte old_address);
 	boolean init_i2c();
 	void delay2(word time);
 	extern byte my_address;
