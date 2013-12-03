@@ -68,6 +68,18 @@
             android:name="com.barobot.DebugActivity"
             android:label="@string/title_activity_device_list" >
         </activity>
+        <activity
+            android:name="com.barobot.gui.MainActivity"
+            android:label="@string/title_activity_barobot_main" >
+        </activity>
+        <activity 
+            android:name="com.barobot.gui.BottleSetupActivity"
+            android:label="@string/title_activity_bottle_setup" >
+        </activity>
+        <activity
+            android:name="com.barobot.gui.RecipeSetupActivity"
+            android:label="@string/title_activity_recipe_setup" >
+            
+        </activity>
     </application>
-
 </manifest>

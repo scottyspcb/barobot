@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import com.barobot.gui.BarobotActivity;
 import com.barobot.hardware.DeviceSet;
 import com.barobot.hardware.virtualComponents;
 import com.barobot.utils.CameraManager;
@@ -25,7 +26,7 @@ import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class BarobotMain extends Activity {
+public class BarobotMain extends BarobotActivity {
     // Layout Views
 	private static BarobotMain instance;
 	public CameraManager cm;
@@ -53,7 +54,6 @@ public class BarobotMain extends Activity {
 	        }
 	    });
 	    */
-        new Arduino(this);
 
 		cm = new CameraManager( this );
 		cm.findCameras();
@@ -72,45 +72,7 @@ public class BarobotMain extends Activity {
 	    Constant.log("DIR4", ""+sdDir.getFreeSpace() );
     }
 
-	@Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-	    MenuInflater inflater = getMenuInflater();
-	    inflater.inflate(R.menu.option_menu, menu);
-	    return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        Intent serverIntent = null;
-        switch (item.getItemId()) {
-        case R.id.secure_connect_scan:
-
-            if( Arduino.getInstance().checkBT() == false ){
-                Toast.makeText(this, "Bluetooth jest niedostępny", Toast.LENGTH_LONG).show();
-                finish();
-            }
-            serverIntent = new Intent(this, BTListActivity.class);
-            startActivityForResult(serverIntent, BTListActivity.INTENT_NAME);
-            return true;
-        case R.id.update_drinks:
-            serverIntent = new Intent(this, UpdateActivity.class);
-            startActivityForResult(serverIntent, UpdateActivity.INTENT_NAME );
-	        return true;
-        case R.id.about_item:
-            serverIntent = new Intent(this, AboutActivity.class);
-            startActivityForResult(serverIntent, AboutActivity.INTENT_NAME );
-	        return true;   
-        case R.id.menu_debug_window:
-            serverIntent = new Intent(this, DebugActivity.class);
-            startActivityForResult(serverIntent, DebugActivity.INTENT_NAME );
-	        return true;
-       case R.id.menu_settings:
-    	   serverIntent = new Intent(this, MainSettingsActivity.class);
-            startActivityForResult(serverIntent, MainSettingsActivity.INTENT_NAME);
-            break;
-	    }
-        return false;
-    }
+	
     @Override
     public void onStart() {
         super.onStart();

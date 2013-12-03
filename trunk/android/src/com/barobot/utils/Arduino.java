@@ -1,7 +1,9 @@
 package com.barobot.utils;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Random;
 
 import android.app.AlertDialog;
@@ -26,14 +28,19 @@ public class Arduino{
 	//private static Queue<String> input = new LinkedList<String>();
 	Wire connection = null;
 	public boolean stop_autoconnect = false;
-	public ArrayAdapter<History_item> mConversationArrayAdapter;
+	public List<History_item> mConversationHistory;
 	public static Arduino getInstance(){
+		if (instance == null)
+		{
+			instance = new Arduino();
+		}
 		return instance;
 	}
 
-	public Arduino(BarobotMain barobotMain) {
+	private Arduino() {
 		instance		= this;
-		mConversationArrayAdapter = new ArrayAdapter<History_item>(barobotMain, R.layout.message);
+		mConversationHistory = new ArrayList<History_item>();
+		//mConversationArrayAdapter = new ArrayAdapter<History_item>(barobotMain, R.layout.message);
 	}
 	public void onStart(final BarobotMain barobotMain) {
 		if( connection == null ){
@@ -267,14 +274,14 @@ public class Arduino{
 
 	public void addToList(final rpc_message m) {
 		if(log_active){
-			mConversationArrayAdapter.add( m );
+			mConversationHistory.add( m );
 		}
 	}
 	public void addToList(final String string, final boolean direction ) {
 		if(log_active){
 			BarobotMain.getInstance().runOnUiThread(new Runnable() {
 			     public void run() {
-			    	 mConversationArrayAdapter.add( new History_item( string.trim(), direction) );
+			    	 mConversationHistory.add( new History_item( string.trim(), direction) );
 			    }
 			});
 			
@@ -282,8 +289,12 @@ public class Arduino{
 	}
 	public void clearHistory() {
 		if(log_active){
-			mConversationArrayAdapter.clear();
+			mConversationHistory.clear();
 		}
+	}
+	
+	public List<History_item> getHistory(){
+		return mConversationHistory;
 	}
 	public void connectId(String address) {
 		Constant.log(Constant.TAG, "autoconnect z: " +address);

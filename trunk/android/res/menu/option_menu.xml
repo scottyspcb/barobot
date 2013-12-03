@@ -3,11 +3,16 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item android:id="@+id/main_feature"
-          android:icon="@android:drawable/ic_menu_revert"
-          android:title="@string/back_to_main_feature"
-          android:enabled="true"
-          android:checkable="false"
-           />
+          android:title="@string/action_main"
+          android:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_bottles"
+        android:title="@string/action_bottle_setup" 
+        android:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_recipes"
+        android:title="@string/action_recipe_setup" 
+        android:showAsAction="ifRoom" />
 
     	<item android:id="@+id/secure_connect_scan"
           android:icon="@android:drawable/ic_menu_search"
@@ -27,7 +32,6 @@
   
    		
 		<item android:id="@+id/menu_settings"
-        ic_menu_preferences=""
         android:showAsAction="never"
         android:title="@string/menu_settings"
         android:icon="@android:drawable/ic_menu_preferences"/>
