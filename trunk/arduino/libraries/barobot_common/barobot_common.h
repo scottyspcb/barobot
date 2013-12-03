@@ -165,6 +165,19 @@
 	#define PIN_IPANEL_HALL_Y A1		// dip pin 24 A1,	Q 24
 	#define PIN_IPANEL_WEIGHT A2		// dip pin 25 A2,	Q 25
 
+
+	#define INNER_HALL_X 0
+	#define INNER_HALL_Y 0
+	#define INNER_WEIGHT 1
+	
+
+	#define INNER_CODE_HALL_X 2
+	#define INNER_CODE_HALL_Y 3
+	#define INNER_CODE_WEIGHT 1
+	#define INNER_CODE_CURRENT_X 0
+	#define INNER_CODE_CURRENT_Y 1
+
+	
 	#define PIN_IPANEL_SERVO_Y 5		// dip pin 11,	Q 9
 	#define PIN_IPANEL_SERVO_Z 6		// dip pin 12,	Q 10
 
@@ -194,8 +207,7 @@
 	#define LED_BOTTOM_BLUE				PIN_PANEL_LED5_NUM
 	#define LED_BOTTOM_GREEN			PIN_PANEL_LED6_NUM
 	#define LED_BOTTOM_WHITE			PIN_PANEL_LED7_NUM
-	
-	
+
 	// EEPROM content:
 	/*
 	0x00	- NEUTRAL_VALUE kopia 0
@@ -315,8 +327,9 @@
 #define METHOD_RET_FROM_SLAVE2 	92
 
 
+#define METHOD_DEVICE_FOUND		220
 #define RETURN_PIN_VALUE 		211
-//#define RETURN_ANALOG_CHANGE 	111
+#define RETURN_ANALOG_CHANGE 	111
 
 
 
