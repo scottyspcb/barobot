@@ -25,6 +25,7 @@ public class SelectLiquidDialogFragment extends DialogFragment {
 
 	public boolean ShowEmptyButton = true;
 	public boolean ShowAddButton = true;
+	public boolean ShowVolumeReel = false;
 	public static SelectLiquidDialogFragment newInstance()
 	{
 		SelectLiquidDialogFragment instance = new SelectLiquidDialogFragment();
@@ -55,10 +56,44 @@ public class SelectLiquidDialogFragment extends DialogFragment {
 
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				Liquid selectedLiquid = arrayAdapter.getItem(which);
+				final Liquid selectedLiquid = arrayAdapter.getItem(which);
 
-				//Engine.GetInstance(getActivity()).UpdateBottleSlot(currentBottle, new Bottle(selectedLiquid, 0));
-				mListener.onDialogEnd(SelectLiquidDialogFragment.this, ReturnStatus.OK, selectedLiquid);
+				if (ShowVolumeReel) {
+					Integer[] volumes = new Integer[]{20, 40, 60, 80, 100, 120, 140, 160, 180, 200, 220, 240}; 
+					
+					final ArrayAdapter<Integer> arrayAdapter = new ArrayAdapter<Integer>(getActivity(), android.R.layout.select_dialog_singlechoice);
+					arrayAdapter.addAll(volumes);
+
+					AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+					builder.setTitle(R.string.liquid_select_title);
+					builder.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
+
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+								Integer volume = arrayAdapter.getItem(which);
+								
+								// We chose a liquid and then a volume
+								mListener.onDialogEnd(SelectLiquidDialogFragment.this, ReturnStatus.OK, selectedLiquid, volume);
+							}
+						
+					});
+					builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							
+							// We pressed cancel on volume reel
+							mListener.onDialogEnd(SelectLiquidDialogFragment.this, ReturnStatus.Canceled, null, -1);
+						}
+					});
+					AlertDialog ad = builder.create();
+					ad.show();
+					
+				} else {
+					// Volume reel was not enabled, we chose a liquid
+					mListener.onDialogEnd(SelectLiquidDialogFragment.this, ReturnStatus.OK, selectedLiquid, -1);
+				}
 			}
 		});
 		builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -66,7 +101,8 @@ public class SelectLiquidDialogFragment extends DialogFragment {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 
-				mListener.onDialogEnd(SelectLiquidDialogFragment.this, ReturnStatus.Canceled, null);
+				// We canceled the liquid selection
+				mListener.onDialogEnd(SelectLiquidDialogFragment.this, ReturnStatus.Canceled, null, -1);
 			}
 		});
 		if (ShowEmptyButton) {
@@ -74,8 +110,9 @@ public class SelectLiquidDialogFragment extends DialogFragment {
 
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
-					//Engine.GetInstance(getActivity()).UpdateBottleSlot(currentBottle, null);
-					mListener.onDialogEnd(SelectLiquidDialogFragment.this, ReturnStatus.OK, null);
+				
+					// we emptied the slot
+					mListener.onDialogEnd(SelectLiquidDialogFragment.this, ReturnStatus.OK, null, -1);
 				}
 			});
 		}
@@ -94,7 +131,8 @@ public class SelectLiquidDialogFragment extends DialogFragment {
 
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
-							mListener.onDialogEnd(SelectLiquidDialogFragment.this, ReturnStatus.Canceled, null);
+							// we cancaled adding a new bottle
+							mListener.onDialogEnd(SelectLiquidDialogFragment.this, ReturnStatus.Canceled, null, -1);
 						}
 					})
 					.setPositiveButton("Add", new DialogInterface.OnClickListener() {
@@ -110,12 +148,8 @@ public class SelectLiquidDialogFragment extends DialogFragment {
 
 							Liquid liquid = new Liquid(type, name, 0);
 
-							//Engine engine = Engine.GetInstance(getActivity());
-							//liquid.id = engine.AddLiquid(liquid);
-
-							//engine.UpdateBottleSlot(currentBottle, new Bottle(liquid, 0));
-
-							mListener.onDialogEnd(SelectLiquidDialogFragment.this, ReturnStatus.NewLiquid, liquid);
+							// we added a new bottle
+							mListener.onDialogEnd(SelectLiquidDialogFragment.this, ReturnStatus.NewLiquid, liquid, -1);
 						}
 					});
 					AlertDialog ad = builder.create();

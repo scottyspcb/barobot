@@ -12,5 +12,5 @@ public interface NoticeDialogListener {
 		NewLiquid
 	}
 
-	public void onDialogEnd(DialogFragment dialog, ReturnStatus status, Liquid liquid);
+	public void onDialogEnd(DialogFragment dialog, ReturnStatus status, Liquid liquid, int volume);
 }

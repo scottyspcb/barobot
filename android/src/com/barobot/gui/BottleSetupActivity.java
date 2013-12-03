@@ -103,7 +103,7 @@ public class BottleSetupActivity extends BarobotActivity
 	}*/
 
 	@Override
-	public void onDialogEnd(DialogFragment dialog, ReturnStatus status, Liquid liquid) {
+	public void onDialogEnd(DialogFragment dialog, ReturnStatus status, Liquid liquid, int volume) {
 		
 		switch (status){
 			case OK:

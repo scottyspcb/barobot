@@ -153,16 +153,17 @@ public class RecipeSetupActivity extends BarobotActivity
 		SelectLiquidDialogFragment newFragment = SelectLiquidDialogFragment.newInstance();
 		newFragment.ShowEmptyButton = false;
 		newFragment.ShowAddButton = false;
+		newFragment.ShowVolumeReel = true;
 		newFragment.show(ft, "dialog");
 	}
 
 	@Override
 	public void onDialogEnd(DialogFragment dialog, ReturnStatus status,
-			Liquid liquid) {
+			Liquid liquid, int volume) {
 		switch(status)
 		{
 		case OK:
-			Engine.GetInstance(this).addIngredient(currentRecipe.getId(), new Ingredient(liquid, 0));
+			Engine.GetInstance(this).addIngredient(currentRecipe.getId(), new Ingredient(liquid, volume));
 			UpdateRecipes(currentRecipe.getId());
 			break;
 		case Canceled:
