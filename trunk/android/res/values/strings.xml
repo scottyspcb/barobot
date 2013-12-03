@@ -87,6 +87,7 @@
     <string name="remove_recipe">Remove recipe</string>
     
     <string name="add_ingredient">Add ingredient</string>
+    <string name="remove_ingredients">Remove all ingredients</string>
     <string name="recipe_name">Recipe Name</string>
     <string name="recipe_description">Recipe Description</string>
 
