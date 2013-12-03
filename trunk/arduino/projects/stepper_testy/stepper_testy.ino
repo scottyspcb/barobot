@@ -13,7 +13,7 @@ boolean Console0Complete = false;   // This will be set to true once we have a f
 boolean dir = true;
 long unsigned target = 00;
 
-void setup(){   
+void setup(){
   Serial.begin(115200); 
   stepper.setMaxSpeed(400);
   stepper.setAcceleration(2500);

@@ -30,6 +30,7 @@ volatile boolean pos_changed = false;
 void setup(){
   Serial.begin(115200); 
   DEBUG("HELLO");
+  DEBUG("przyklad: 10,1900");
   enabled = false;
 //  FlexiTimer2::set(40, 1.0/1000, flash); // call every 500 1ms "ticks"
   FlexiTimer2::set(40, 1.0/100, flash);
@@ -64,21 +65,22 @@ void flash(){
       delta = delta_pos;
     }
     if(delta_pos > 0){
-        if( delta < 5){
-          delta = 5;
+        if( delta < 10){
+          delta = 10;
         }
     }else{
-        if( delta > -5){
-          delta = -5;
+        if( delta > -10){
+          delta = -10;
         }
     }
-//    DEBUGLN(String(delta)); 
+ //   DEBUGLN(String(delta)); 
     last_pos = last_pos + delta;
     if( delta_pos > 0 && last_pos > target_pos ){
       last_pos = target_pos;
     }else if( delta_pos < 0 && last_pos < target_pos ){
       last_pos = target_pos;    
     }
+    pos_changed = true;
   }
 }
 
@@ -92,6 +94,7 @@ void loop(){
     }else{
       servoZ.writeMicroseconds(last_pos);
     }
+    pos_changed = false;
   }
   if (Console0Complete) {
     parseInput( serial0Buffer );                      // parsuj wejscie

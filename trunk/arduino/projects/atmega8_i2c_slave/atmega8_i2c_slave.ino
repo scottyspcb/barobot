@@ -25,7 +25,7 @@ void setup(){
   DDRB |= _BV(PB0) | _BV(PB1);
   DDRD |= _BV(PD4) | _BV(PD5) | _BV(PD6) | _BV(PD7);
 
-  digitalWrite(PIN_UPANEL_LED7_NUM, HIGH );      // debug, oczekiwanie na adres
+  digitalWrite(PIN_PANEL_LED7_NUM, HIGH );      // debug, oczekiwanie na adres
   if(!init_i2c()){
     {
       check_i2c_valid();
@@ -36,14 +36,14 @@ void setup(){
   Wire.onRequest(requestEvent);
   send_here_i_am();  // wyslij po i2c ze oto jestem
 
-  digitalWrite(PIN_UPANEL_LED0_NUM, LOW );      // todo, niekoniecznie trzeba ustawiać startowe wartości w ten sposób
-  digitalWrite(PIN_UPANEL_LED1_NUM, LOW );
-  digitalWrite(PIN_UPANEL_LED2_NUM, HIGH );
-  digitalWrite(PIN_UPANEL_LED3_NUM, HIGH );
-  digitalWrite(PIN_UPANEL_LED4_NUM, LOW );
-  digitalWrite(PIN_UPANEL_LED5_NUM, LOW );
-  digitalWrite(PIN_UPANEL_LED6_NUM, LOW );
-  digitalWrite(PIN_UPANEL_LED7_NUM, LOW );
+  digitalWrite(PIN_PANEL_LED0_NUM, LOW );      // todo, niekoniecznie trzeba ustawiać startowe wartości w ten sposób
+  digitalWrite(PIN_PANEL_LED1_NUM, LOW );
+  digitalWrite(PIN_PANEL_LED2_NUM, HIGH );
+  digitalWrite(PIN_PANEL_LED3_NUM, HIGH );
+  digitalWrite(PIN_PANEL_LED4_NUM, LOW );
+  digitalWrite(PIN_PANEL_LED5_NUM, LOW );
+  digitalWrite(PIN_PANEL_LED6_NUM, LOW );
+  digitalWrite(PIN_PANEL_LED7_NUM, LOW );
 //  attachInterrupt(0, button_down, FALLING);
 }
 
@@ -55,7 +55,7 @@ void loop() {
   	if( mil > milis1 + 1000 ){    // debug, mrygaj co 1 sek
                 diddd = !diddd;
   		milis1 = mil;
-                digitalWrite(PIN_UPANEL_LED3_NUM, diddd);
+                digitalWrite(PIN_PANEL_LED3_NUM, diddd);
   	}
   	if( mil > milis4 + 4000 ){    // co 4 sek
                 send_pin_value( PIN_UPANEL_POKE, diddd ? 1 : 0 );
@@ -157,7 +157,7 @@ void requestEvent(){
         Wire.write(res);
         if( res & 0x01 ){    // ustawiony najmlodzzy bit
           diddd = !diddd;
-          digitalWrite(PIN_UPANEL_LED4_NUM, diddd);
+          digitalWrite(PIN_PANEL_LED4_NUM, diddd);
         }
     }
 }
@@ -213,6 +213,4 @@ void show_error( byte error_code ){    // mrygaj czerwonym tyle razy
     }
   }
 }*/
-
-
 

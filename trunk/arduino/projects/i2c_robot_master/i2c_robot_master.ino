@@ -70,7 +70,7 @@ void setup(){
   pinMode(PIN_PROGRAMMER_LED_STATE, OUTPUT);
 
   pinMode(PIN_MAINBOARD_SCK, INPUT );
-  pinMode(PIN_MAINBOARD_MISO, INPUT );  
+  pinMode(PIN_MAINBOARD_MISO, INPUT );
   pinMode(PIN_MAINBOARD_MOSI, INPUT );
 
   digitalWrite(PIN_PROGRAMMER_LED_ACTIVE, LOW);
@@ -225,17 +225,6 @@ void proceed( byte length,volatile uint8_t buffer[7] ){ // zrozum co przyszlo po
       }else{
         printHex( buffer[1], false );
         DEBUGLN("- Upanel pod " + String(nextpos));
-        /*
-        printHex(buffer[1], false);
-        DEBUG(" ");
-        printHex(buffer[2], false);
-        DEBUG(" ");
-        printHex(buffer[3], false);
-        DEBUG(" ");
-        printHex(buffer[4], false);
-        DEBUG(" ");
-        printHex(buffer[5]);
-*/
         order[nextpos++]  = buffer[1];     // na tm miejscu slave o tym adresie
         i2c_reset_next( buffer[1], false );       // reset next (next to slave)
         i2c_reset_next( buffer[1], true );
@@ -255,8 +244,18 @@ void proceed( byte length,volatile uint8_t buffer[7] ){ // zrozum co przyszlo po
         printHex(buffer[5]);
    
   }else{
-    DEBUGLN("recieve unknown - ");
-    printHex(buffer[0]);
+    DEBUG("- METHOD_I2C_SLAVEMSG ");
+    DEBUG(buffer[0]);
+    DEBUG(" ");
+    DEBUG(buffer[1]);
+    DEBUG(" ");
+    DEBUG(buffer[2]);
+    DEBUG(" ");
+    DEBUG(buffer[3]);
+    DEBUG(" ");
+    DEBUG(buffer[4]);
+    DEBUG(" ");
+    DEBUG(buffer[5]);
   }
   buffer[0] = 0;  //ready
 }
@@ -359,10 +358,29 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 	}else if( input.equals("EX") ){
 		stepperX.enableOutputs();
 
+	}else if( input.equals("EY") ){
+          out_buffer[0]  = METHOD_DRIVER_ENABLE;
+          out_buffer[1]  = DRIVER_Y;
+          writeRegisters(I2C_ADR_IPANEL, 2, false );
+	}else if( input.equals("EZ") ){
+          out_buffer[0]  = METHOD_DRIVER_ENABLE;
+          out_buffer[1]  = DRIVER_Z;
+          writeRegisters(I2C_ADR_IPANEL, 2, false );
+
 	}else if( input.equals("DX") ){
 		if(MAINBOARD_STEPPER_READY_DISABLE){
 			stepperX.disableOutputs();
 		}
+	}else if( input.equals("DY") ){
+          out_buffer[0]  = METHOD_DRIVER_DISABLE;
+          out_buffer[1]  = DRIVER_Y;
+          writeRegisters(I2C_ADR_IPANEL, 2, false );
+
+	}else if( input.equals("DZ") ){
+          out_buffer[0]  = METHOD_DRIVER_DISABLE;
+          out_buffer[1]  = DRIVER_Z;
+          writeRegisters(I2C_ADR_IPANEL, 2, false );
+
 /*
         }else if ( input.startsWith("SET") ) {      // tutaj niektore beda synchroniczne inne asynchroniczne wiec czasem zwracaj R, a czasem dopiero po zakonczeniu
 		if( false){
@@ -439,7 +457,7 @@ void paserDeriver( byte driver, String input ){   // odczytaj komende silnika
       if(maxspeed > 0){
         stepperX.setMaxSpeed(maxspeed);    
       }
-      stepperX.move(target);    
+      stepperX.move(target);
   }else if( maxspeed > 0 && driver == DRIVER_Y ){            // stepper Y
       out_buffer[0]  = METHOD_GOTOSERVOYPOS;
       out_buffer[1]  = target & 0xff;
@@ -539,6 +557,8 @@ void read_prog_settings( String input, byte ns ){
     }else if(ns == 2){     // PROGN
       reprogramm_index    = target;
     }
+    DEBUG("-prog start");
+    DEBUGLN(reprogramm_index);
     programmer_mode(true, serial_baud_num, slow_sck );
 }
 
