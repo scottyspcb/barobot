@@ -7,6 +7,7 @@
 #include <Servo.h>
 #include <FlexiTimer2.h>
 #define UNCONNECTED_LEVEL  3
+#define MIN_DELTA  20
 //unsigned int typical_zero = 512;
 //unsigned int last_max = 0;
 //unsigned int last_min = 0;
@@ -57,23 +58,7 @@ void setup(){
   pinMode(PIN_IPANEL_HALL_Y, INPUT);
   pinMode(PIN_IPANEL_WEIGHT, INPUT); 
 
-  pinMode(PIN_IPANEL_LED0_NUM, OUTPUT);
-  pinMode(PIN_IPANEL_LED1_NUM, OUTPUT);
-  pinMode(PIN_IPANEL_LED2_NUM, OUTPUT);
-  pinMode(PIN_IPANEL_LED3_NUM, OUTPUT);
-  pinMode(PIN_IPANEL_LED4_NUM, OUTPUT);
-  pinMode(PIN_IPANEL_LED5_NUM, OUTPUT);
-  pinMode(PIN_IPANEL_LED6_NUM, OUTPUT);
-  pinMode(PIN_IPANEL_LED7_NUM, OUTPUT);
-
-  digitalWrite(PIN_IPANEL_LED0_NUM, HIGH);
-  digitalWrite(PIN_IPANEL_LED1_NUM, LOW);
-  digitalWrite(PIN_IPANEL_LED2_NUM, LOW);
-  digitalWrite(PIN_IPANEL_LED3_NUM, LOW);
-  digitalWrite(PIN_IPANEL_LED4_NUM, LOW);
-  digitalWrite(PIN_IPANEL_LED5_NUM, LOW);
-  digitalWrite(PIN_IPANEL_LED6_NUM, LOW);
-  digitalWrite(PIN_IPANEL_LED7_NUM, LOW);
+  init_leds();
 
   DEBUGINIT();
   DEBUGLN("-wozek start"); 
@@ -86,10 +71,27 @@ void setup(){
   FlexiTimer2::set(40, 1.0/100, timer);
   FlexiTimer2::start();
 }
+
+void init_leds(){
+  for (uint8_t i = 0; i < COUNT_IPANEL_ONBOARD_LED; ++i){
+    uint8_t pin = _pwm_channels[i].pin;
+    _pwm_channels[i].outport = portOutputRegister(digitalPinToPort(pin));
+    _pwm_channels[i].pinmask = digitalPinToBitMask(pin);
+    pinMode(pin, OUTPUT);
+    #if UPANEL_COMMON_ANODE
+     *_pwm_channels[i].outport |= _pwm_channels[i].pinmask;                // turn off the channel (set GND)
+    #else
+     *_pwm_channels[i].outport &= ~(_pwm_channels[i].pinmask);             // turn off the channel (set VCC)
+    #endif
+  }
+  digitalWrite(PIN_PANEL_LED0_NUM, HIGH);
+}
+
 unsigned long milisAnalog = 0;
 unsigned long int mil = 0;
-//long int milis100 = 0;
+long int milis100 = 0;
 
+byte iii = 0;
 void loop() {
   mil = millis();
 	if( analog_reading &&  mil > milisAnalog ){
@@ -108,6 +110,27 @@ void loop() {
 
   update_servo( INNER_SERVOY );
   update_servo( INNER_SERVOZ );
+
+  	if( mil > milis100 ){    // debug, mrygaj co 1 sek
+          uint8_t pin = _pwm_channels[iii].pin; 
+          DEBUG( "-pin " );
+          DEBUG( iii );
+          DEBUG( "/" );
+          DEBUGLN( pin );
+          digitalWrite(_pwm_channels[0].pin, false);
+          digitalWrite(_pwm_channels[1].pin, false);
+          digitalWrite(_pwm_channels[2].pin, false);
+          digitalWrite(_pwm_channels[3].pin, false);
+          digitalWrite(_pwm_channels[4].pin, false);
+          digitalWrite(_pwm_channels[5].pin, false);       
+          digitalWrite(_pwm_channels[6].pin, false);
+          digitalWrite(_pwm_channels[7].pin, false);
+          digitalWrite(pin, true);
+          milis100 = mil + 2000;
+          iii++;
+          iii = iii %COUNT_IPANEL_ONBOARD_LED;
+  	}
+
 
   // analizuj bufor wejsciowy i2c
   for( byte i=0;i<IPANEL_BUFFER_LENGTH;i++){
@@ -155,12 +178,12 @@ void reload_servo( byte index ){      // in interrupt
       delta = ser.delta_pos;
     }
     if(ser.delta_pos > 0){
-        if( delta < 5){
-          delta = 5;
+        if( delta < MIN_DELTA){
+          delta = MIN_DELTA;
         }
     }else{
-        if( delta > -5){
-          delta = -5;
+        if( delta > -MIN_DELTA){
+          delta = -MIN_DELTA;
         }
     }
     ser.last_pos = ser.last_pos + delta;
@@ -187,7 +210,7 @@ void reload_servo( byte index ){      // in interrupt
 
 void timer(){  // in interrupt
   ticks++;
-  digitalWrite(PIN_IPANEL_LED7_NUM,  !digitalRead(PIN_IPANEL_LED7_NUM));    // Toggle led. Read from register (not from pin)
+//  digitalWrite(PIN_PANEL_LED7_NUM,  !digitalRead(PIN_PANEL_LED7_NUM));    // Toggle led. Read from register (not from pin)
   reload_servo(INNER_SERVOY);
   reload_servo(INNER_SERVOZ);  
 }
@@ -206,7 +229,7 @@ void proceed( volatile byte buffer[5] ){
   printHex(buffer[4]);
 
   if( buffer[0] == METHOD_PROG_MODE_ON ){         // prog mode on
-    digitalWrite(PIN_IPANEL_LED1_NUM, HIGH);
+    digitalWrite(PIN_PANEL_LED1_NUM, HIGH);
     if(buffer[1] == my_address){
       prog_me = true;
       digitalWrite(LED_TOP_RED, HIGH);
@@ -216,7 +239,7 @@ void proceed( volatile byte buffer[5] ){
     }
     prog_mode = true;
   }else if( buffer[0] == METHOD_PROG_MODE_OFF ){         // prog mode off
-    digitalWrite(PIN_IPANEL_LED1_NUM, LOW);
+    digitalWrite(PIN_PANEL_LED1_NUM, LOW);
     prog_mode = false;
     prog_me = false;
 
@@ -350,7 +373,7 @@ void requestEvent(){
         Wire.write(res);
         if( res & 1 ){    // ustawiony najmlodzzy bit
           diddd = !diddd;
-          digitalWrite(PIN_IPANEL_LED1_NUM, diddd);
+          digitalWrite(PIN_PANEL_LED1_NUM, diddd);
         }      
     }else if( command == METHOD_GETANALOGVALUE ){
     }else if( command == METHOD_GETVALUE ){
@@ -380,11 +403,11 @@ static void send_servo( boolean error, byte servo ){
 
 static void send_here_i_am(){
   byte ttt[4] = {METHOD_HERE_I_AM,my_address,IPANEL_DEVICE_TYPE,IPANEL_VERSION};
-  DEBUGLN("-hello "+ String( my_address ));  
+  DEBUGLN("-hello "+ String( my_address ));
   send(ttt,4);
 }
 
-void send( byte buffer[], byte ss ){
+void send( byte buffer[], byte length ){
   if(prog_mode){
     return;
   }
@@ -392,13 +415,21 @@ void send( byte buffer[], byte ss ){
   byte licznik = 250;
   while( ret && licznik++ ){    // prubuj 5 razy, zakoncz gdy error = 0;
     Wire.beginTransmission(I2C_ADR_MAINBOARD);  
-    Wire.write(buffer,ss);
+    Wire.write(buffer,length);
     ret = Wire.endTransmission();
-      DEBUG("-send"+String(licznik) +": " + String( my_address ) +": ");
-      printHex(buffer[0], false ); 
+      DEBUG("-send try:"+String(licznik) +", myadr: " + String( my_address ) +": ");
+      DEBUG(buffer[0]); 
       DEBUG(", ");
-      printHex(buffer[1], false ); 
-      DEBUGLN(" / "+ String(ret) );
+      DEBUG(buffer[1] ); 
+      if(length > 2){
+        DEBUG(", ");
+        DEBUG(buffer[2] ); 
+        if(length > 3){
+          DEBUG(", ");
+          DEBUG(buffer[3] ); 
+        }
+      }
+      DEBUGLN(" ret: "+ String(ret) );
   }
 }
 

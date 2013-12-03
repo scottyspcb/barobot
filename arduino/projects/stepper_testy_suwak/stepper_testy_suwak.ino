@@ -20,7 +20,7 @@ void setup(){
   stepper.setInterface(1);
   stepper.setPinsInverted( false, false, true ); // enable pin invert
   stepper.setMaxSpeed(400);
-  stepper.setAcceleration(5500);
+  stepper.setAcceleration(55000);
   Serial.println("HELLO"); 
   Serial.println("example: 10,25,100,1"); 
   Serial.println("example: 10,25,100,2"); 
@@ -53,10 +53,10 @@ void loop(){
       last = in;
       if (in > 512){
         Serial.println(" maxSpeed -: " + String(sp) );
-        stepper.moveTo(400000);
+        stepper.moveTo(40000);
       }else{
         Serial.println(" maxSpeed +: " + String(sp) );
-        stepper.moveTo(-400000);  
+        stepper.moveTo(-40000);  
       }
     }
 //  }
