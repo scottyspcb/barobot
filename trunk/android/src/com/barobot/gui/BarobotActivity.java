@@ -58,6 +58,7 @@ public class BarobotActivity extends Activity {
     		serverIntent = new Intent(this, MainSettingsActivity.class);
     		break;
     	}
+    	serverIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
     	startActivity(serverIntent);
     	return false;
     }
