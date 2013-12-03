@@ -168,32 +168,32 @@
 	#define PIN_IPANEL_SERVO_Y 5		// dip pin 11,	Q 9
 	#define PIN_IPANEL_SERVO_Z 6		// dip pin 12,	Q 10
 
-	#define PIN_IPANEL_LED0_NUM	2		// dip pin 4		Q 32
-	#define PIN_IPANEL_LED1_NUM	3		// dip pin 5		Q 1
-	#define PIN_IPANEL_LED2_NUM	4		// dip pin 6,		Q 2
-	#define PIN_IPANEL_LED3_NUM	7		// dip pin 13,		Q 11
-	#define PIN_IPANEL_LED4_NUM	8		// dip pin 14,		Q 12
-	#define PIN_IPANEL_LED5_NUM	9		// dip pin 15,		Q 13
-	#define PIN_IPANEL_LED6_NUM	10		// dip pin 16		Q 14
-	#define PIN_IPANEL_LED7_NUM	17		// dip pin 26 A3,	Q 26
+	#define PIN_PANEL_LED0_NUM	2		// dip pin 4		Q 32
+	#define PIN_PANEL_LED1_NUM	3		// dip pin 5		Q 1
+	#define PIN_PANEL_LED2_NUM	4		// dip pin 6,		Q 2
+	#define PIN_PANEL_LED3_NUM	7		// dip pin 13,		Q 11
+	#define PIN_PANEL_LED4_NUM	8		// dip pin 14,		Q 12
+	#define PIN_PANEL_LED5_NUM	9		// dip pin 15,		Q 13
+	#define PIN_PANEL_LED6_NUM	10		// dip pin 16		Q 14
+	#define PIN_PANEL_LED7_NUM	17		// dip pin 26 A3,	Q 26
 
-	#define PIN_IPANEL_LED0_MASK	digital_pin_to_bit_mask_PGM+PIN_IPANEL_LED0_NUM
-	#define PIN_IPANEL_LED1_MASK	digital_pin_to_bit_mask_PGM+PIN_IPANEL_LED1_NUM
-	#define PIN_IPANEL_LED2_MASK	digital_pin_to_bit_mask_PGM+PIN_IPANEL_LED2_NUM
-	#define PIN_IPANEL_LED3_MASK	digital_pin_to_bit_mask_PGM+PIN_IPANEL_LED3_NUM
-	#define PIN_IPANEL_LED4_MASK	digital_pin_to_bit_mask_PGM+PIN_IPANEL_LED4_NUM
-	#define PIN_IPANEL_LED5_MASK	digital_pin_to_bit_mask_PGM+PIN_IPANEL_LED5_NUM
-	#define PIN_IPANEL_LED6_MASK	digital_pin_to_bit_mask_PGM+PIN_IPANEL_LED6_NUM
-	#define PIN_IPANEL_LED7_MASK	digital_pin_to_bit_mask_PGM+PIN_IPANEL_LED7_NUM
+	#define PIN_PANEL_LED0_MASK	digital_pin_to_bit_mask_PGM+PIN_PANEL_LED0_NUM
+	#define PIN_PANEL_LED1_MASK	digital_pin_to_bit_mask_PGM+PIN_PANEL_LED1_NUM
+	#define PIN_PANEL_LED2_MASK	digital_pin_to_bit_mask_PGM+PIN_PANEL_LED2_NUM
+	#define PIN_PANEL_LED3_MASK	digital_pin_to_bit_mask_PGM+PIN_PANEL_LED3_NUM
+	#define PIN_PANEL_LED4_MASK	digital_pin_to_bit_mask_PGM+PIN_PANEL_LED4_NUM
+	#define PIN_PANEL_LED5_MASK	digital_pin_to_bit_mask_PGM+PIN_PANEL_LED5_NUM
+	#define PIN_PANEL_LED6_MASK	digital_pin_to_bit_mask_PGM+PIN_PANEL_LED6_NUM
+	#define PIN_PANEL_LED7_MASK	digital_pin_to_bit_mask_PGM+PIN_PANEL_LED7_NUM
 	
-	#define LED_TOP_RED					PIN_IPANEL_LED0_NUM
-	#define LED_TOP_BLUE				PIN_IPANEL_LED1_NUM
-	#define LED_TOP_GREEN				PIN_IPANEL_LED2_NUM
-	#define LED_TOP_WHITE				PIN_IPANEL_LED3_NUM
-	#define LED_BOTTOM_RED				PIN_IPANEL_LED4_NUM
-	#define LED_BOTTOM_BLUE				PIN_IPANEL_LED5_NUM
-	#define LED_BOTTOM_GREEN			PIN_IPANEL_LED6_NUM
-	#define LED_BOTTOM_WHITE			PIN_IPANEL_LED7_NUM
+	#define LED_TOP_RED					PIN_PANEL_LED0_NUM
+	#define LED_TOP_BLUE				PIN_PANEL_LED1_NUM
+	#define LED_TOP_GREEN				PIN_PANEL_LED2_NUM
+	#define LED_TOP_WHITE				PIN_PANEL_LED3_NUM
+	#define LED_BOTTOM_RED				PIN_PANEL_LED4_NUM
+	#define LED_BOTTOM_BLUE				PIN_PANEL_LED5_NUM
+	#define LED_BOTTOM_GREEN			PIN_PANEL_LED6_NUM
+	#define LED_BOTTOM_WHITE			PIN_PANEL_LED7_NUM
 	
 	
 	// EEPROM content:
@@ -214,7 +214,7 @@
 #define UPANEL_SERIAL0_BOUND 115200
 
 #if IS_UPANEL
-	#define UPANEL_COMMON_ANODE false		// sterowanie plusem? false gdy sterowaniem minusem
+	#define UPANEL_COMMON_ANODE false		// sterowanie minusem? false gdy sterowaniem minusem
 	#define SERIAL0_BOUND UPANEL_SERIAL0_BOUND
 
 	// set as INPUT do allow programming over ISP
@@ -228,32 +228,32 @@
 	#define PIN_UPANEL_SDA SDA
 	#define PIN_UPANEL_SCL SCL
 	
-	#define PIN_UPANEL_LED0_NUM	4		// dip pin 6,		Q 2
-	#define PIN_UPANEL_LED1_NUM	5		// dip pin 11,		Q 9
-	#define PIN_UPANEL_LED2_NUM	6		// dip pin 12,		Q 10
-	#define PIN_UPANEL_LED3_NUM	7		// dip pin 13,		Q 11
-	#define PIN_UPANEL_LED4_NUM	8		// dip pin 14,		Q 12
-	#define PIN_UPANEL_LED5_NUM	9		// dip pin 15,		Q 13
-	#define PIN_UPANEL_LED6_NUM	16		// dip pin 25 A2,	Q 25
-	#define PIN_UPANEL_LED7_NUM	17		// dip pin 26 A3,	Q 26
+	#define PIN_PANEL_LED0_NUM	4		// dip pin 6,		Q 2
+	#define PIN_PANEL_LED1_NUM	5		// dip pin 11,		Q 9
+	#define PIN_PANEL_LED2_NUM	6		// dip pin 12,		Q 10
+	#define PIN_PANEL_LED3_NUM	7		// dip pin 13,		Q 11
+	#define PIN_PANEL_LED4_NUM	8		// dip pin 14,		Q 12
+	#define PIN_PANEL_LED5_NUM	9		// dip pin 15,		Q 13
+	#define PIN_PANEL_LED6_NUM	16		// dip pin 25 A2,	Q 25
+	#define PIN_PANEL_LED7_NUM	17		// dip pin 26 A3,	Q 26
 
-	#define PIN_UPANEL_LED0_MASK	digital_pin_to_bit_mask_PGM+PIN_UPANEL_LED0_NUM
-	#define PIN_UPANEL_LED1_MASK	digital_pin_to_bit_mask_PGM+PIN_UPANEL_LED1_NUM
-	#define PIN_UPANEL_LED2_MASK	digital_pin_to_bit_mask_PGM+PIN_UPANEL_LED2_NUM
-	#define PIN_UPANEL_LED3_MASK	digital_pin_to_bit_mask_PGM+PIN_UPANEL_LED3_NUM
-	#define PIN_UPANEL_LED4_MASK	digital_pin_to_bit_mask_PGM+PIN_UPANEL_LED4_NUM
-	#define PIN_UPANEL_LED5_MASK	digital_pin_to_bit_mask_PGM+PIN_UPANEL_LED5_NUM
-	#define PIN_UPANEL_LED6_MASK	digital_pin_to_bit_mask_PGM+PIN_UPANEL_LED6_NUM
-	#define PIN_UPANEL_LED7_MASK	digital_pin_to_bit_mask_PGM+PIN_UPANEL_LED7_NUM
+	#define PIN_PANEL_LED0_MASK	digital_pin_to_bit_mask_PGM+PIN_PANEL_LED0_NUM
+	#define PIN_PANEL_LED1_MASK	digital_pin_to_bit_mask_PGM+PIN_PANEL_LED1_NUM
+	#define PIN_PANEL_LED2_MASK	digital_pin_to_bit_mask_PGM+PIN_PANEL_LED2_NUM
+	#define PIN_PANEL_LED3_MASK	digital_pin_to_bit_mask_PGM+PIN_PANEL_LED3_NUM
+	#define PIN_PANEL_LED4_MASK	digital_pin_to_bit_mask_PGM+PIN_PANEL_LED4_NUM
+	#define PIN_PANEL_LED5_MASK	digital_pin_to_bit_mask_PGM+PIN_PANEL_LED5_NUM
+	#define PIN_PANEL_LED6_MASK	digital_pin_to_bit_mask_PGM+PIN_PANEL_LED6_NUM
+	#define PIN_PANEL_LED7_MASK	digital_pin_to_bit_mask_PGM+PIN_PANEL_LED7_NUM
 
-	#define LED_TOP_RED					PIN_UPANEL_LED0_NUM
-	#define LED_TOP_BLUE				PIN_UPANEL_LED1_NUM
-	#define LED_TOP_GREEN				PIN_UPANEL_LED2_NUM
-	#define LED_TOP_WHITE				PIN_UPANEL_LED3_NUM
-	#define LED_BOTTOM_RED				PIN_UPANEL_LED4_NUM
-	#define LED_BOTTOM_BLUE				PIN_UPANEL_LED5_NUM
-	#define LED_BOTTOM_GREEN			PIN_UPANEL_LED6_NUM
-	#define LED_BOTTOM_WHITE			PIN_UPANEL_LED7_NUM
+	#define LED_TOP_RED					PIN_PANEL_LED0_NUM
+	#define LED_TOP_BLUE				PIN_PANEL_LED1_NUM
+	#define LED_TOP_GREEN				PIN_PANEL_LED2_NUM
+	#define LED_TOP_WHITE				PIN_PANEL_LED3_NUM
+	#define LED_BOTTOM_RED				PIN_PANEL_LED4_NUM
+	#define LED_BOTTOM_BLUE				PIN_PANEL_LED5_NUM
+	#define LED_BOTTOM_GREEN			PIN_PANEL_LED6_NUM
+	#define LED_BOTTOM_WHITE			PIN_PANEL_LED7_NUM
 	
 
 	// EEPROM content:
@@ -349,14 +349,14 @@
 	} PWMChannel;
 
 	volatile PWMChannel _pwm_channels[COUNT_UPANEL_ONBOARD_LED]= {
-		{4,0,0,0,0,0},
-		{5,0,0,0,0,0},
-		{6,0,0,0,0,0},
-		{7,0,0,0,0,0},
-		{8,0,0,0,0,0},
-		{9,0,0,0,0,0},
-		{16,0,0,0,0,0},
-		{17,0,0,0,0,0}
+		{LED_TOP_RED,0,0,0,0,0},
+		{LED_TOP_BLUE,0,0,0,0,0},
+		{LED_TOP_GREEN,0,0,0,0,0},
+		{LED_TOP_WHITE,0,0,0,0,0},
+		{LED_BOTTOM_RED,0,0,0,0,0},
+		{LED_BOTTOM_BLUE,0,0,0,0,0},
+		{LED_BOTTOM_GREEN,0,0,0,0,0},
+		{LED_BOTTOM_WHITE,0,0,0,0,0}
 	};
 	boolean prog_mode  = false;    // czy magistrala jest w trybie programowania?
 	boolean prog_me    = false;    // czymam zamiar programowaæ mnie?

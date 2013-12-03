@@ -142,9 +142,9 @@ boolean init_i2c(){
 		return false;
 	}
 	//Serial.println( "+m" );
-	my_address = 0;
+	//my_address = 0;
 	if( my_address < I2C_ADR_USTART || my_address > I2C_ADR_UEND || addr_is_used(my_address)){    // zajety - sprawdzaj inne...
-		Serial.println("-");
+	//	Serial.println("-");
 		my_address = I2C_ADR_USTART;
 		while( (++my_address )<=110 && addr_is_used(my_address) ){		// a¿ do znalezienia wolnego lub konca listy
 		//	asm("nop");
