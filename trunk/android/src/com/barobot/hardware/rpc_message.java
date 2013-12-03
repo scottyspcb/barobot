@@ -28,11 +28,11 @@ public class rpc_message extends History_item{
 		message =message.trim();
 		if( this.blocing){
 			if( message.startsWith("R READY AT ") ){	// np "R READY AT 0,0,0"
-				if( command.startsWith("SET Y ") ){
+				if( command.startsWith("Y") ){
 					ret = message;
 					return true;
 				}
-				if( command.startsWith("SET X ") ){
+				if( command.startsWith("X") ){
 					ret = message;
 					return true;
 				}

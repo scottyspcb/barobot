@@ -41,7 +41,8 @@ public class input_parser {
 		//Log.i(Constant.TAG, "parse:[" + fromArduino +"]");
 		boolean is_ret = false;
 
-		if(fromArduino.startsWith("A")){
+		char command = fromArduino.charAt(0);
+		if( command =='A' ){
 			AJS aa = AJS.getInstance();
 			if(aa!=null){
 				String[] tokens = fromArduino.split(" ");
@@ -54,7 +55,7 @@ public class input_parser {
 					}
 				}
 			}
-			if(fromArduino.startsWith("A2 ")){	
+			if(fromArduino.startsWith("A2 ")){			// analog2
 				String fromArduino21 = fromArduino.replace("A2 ", "");
 				virtualComponents.set( "GLASS_WEIGHT", fromArduino21);
 				int noglass_weight = virtualComponents.getInt( "NOGLASS_WEIGHT", 0 );
@@ -66,7 +67,7 @@ public class input_parser {
 				} catch ( java.lang.NumberFormatException e2) {
 				}
 			}
-		}else if(fromArduino.startsWith("R ")){						// na końcu bo to może odblokować wysyłanie i spowodować zapętlenie
+		}else if(command == 'R' ){		// na końcu bo to może odblokować wysyłanie i spowodować zapętlenie
 			if(fromArduino.startsWith("R SET LED")){	
 				String fromArduino2 = fromArduino.replace("R SET LED", "");
 				String[] tokens = fromArduino2.split(" ");		// numer i wartosc
@@ -77,7 +78,7 @@ public class input_parser {
 				if(dialog!=null){
 					dialog.setChecked( R.id.wagi_live, false );
 				}
-			}else if(fromArduino.startsWith("R LIVE A 2,")){	
+			}else if(fromArduino.startsWith("R LIVE A 2,")){
 				String fromArduino2 = fromArduino.replace("R LIVE A 2,", "");
 				final DebugActivity dialog = DebugActivity.getInstance();
 				if(dialog!=null){
@@ -86,50 +87,50 @@ public class input_parser {
 			}else if( fromArduino.equals("R REBOOT") ){		//  właśnie uruchomiłem arduino
 				Arduino q			= Arduino.getInstance();
 				q.clear();
-			}else if(fromArduino.startsWith("R POS")){	
-				String fromArduino2 = fromArduino.replace("R POS ", "");
-				String[] tokens = fromArduino2.split(",");
-	
-				virtualComponents.set( "POSX",tokens[0]);
-				virtualComponents.set( "POSY",tokens[1]);
-				virtualComponents.set( "POSZ",tokens[2]);
 
+			}else if(fromArduino.startsWith("POSX")){
+				String fromArduino2 = fromArduino.replace("POSX", "");
+				virtualComponents.set( "POSX",fromArduino2);
+				long posx = Long.parseLong(fromArduino2);
 				long lx	=  virtualComponents.getInt("LENGTHX", 600 );
-				long ly	=  virtualComponents.getInt("LENGTHY", 600 );
-				long lz	=  virtualComponents.getInt("LENGTHZ", 600 );
-				
-				long posx = Long.parseLong(tokens[0]);
-				long posy = Long.parseLong(tokens[1]);
-				long posz = Long.parseLong(tokens[2]);
-
 				if( posx > lx){		// Pozycja wieksza niz długosc? Zwieksz długosc
 					virtualComponents.set( "LENGTHX", "" + posx);
 				}
+			}else if(fromArduino.startsWith("POSY")){
+				String fromArduino2 = fromArduino.replace("POSY", "");
+				virtualComponents.set( "POSY",fromArduino2);
+				long posy = Long.parseLong(fromArduino2);
+				long ly	=  virtualComponents.getInt("LENGTHY", 600 );
 				if( posy > ly){		// Pozycja wieksza niz długosc? Zwieksz długosc
 					virtualComponents.set( "LENGTHY", "" + posy);
 				}
+			}else if(fromArduino.startsWith("POSZ")){
+				String fromArduino2 = fromArduino.replace("POSZ", "");
+				virtualComponents.set( "POSZ",fromArduino2);
+				long posz = Long.parseLong(fromArduino2);
+				long lz	=  virtualComponents.getInt("LENGTHZ", 600 );
 				if( posz > lz){		// Pozycja wieksza niz długosc? Zwieksz długosc
 					virtualComponents.set( "LENGTHZ", "" + posz);
-				}
+				}				
 
-			}else if(fromArduino.startsWith("R READY AT")){	
+			}else if(fromArduino.startsWith("R READY ")){	
 				String fromArduino2 = fromArduino.replace("R READY AT ", "");
 				String[] tokens = fromArduino2.split(",");
 				virtualComponents.is_ready = true;
 				virtualComponents.set( "POSX",tokens[0]);
 				virtualComponents.set( "POSY",tokens[1]);
 				virtualComponents.set( "POSZ",tokens[2]);
-			}			
+			}
 			is_ret = Arduino.getInstance().read_ret( fromArduino );		// zapisuj zwrotki
 		
+		}else if(command == 'E' ){  //error	
+			input_parser.handleError( fromArduino );			// analizuj błędy
+
 		}else if(fromArduino.startsWith("INTERVAL")){
 			AJS aa = AJS.getInstance();
 			if(aa!=null){
 				aa.oscyloskop_interval();
 			}
-		}else if(fromArduino.startsWith("ERROR")){	
-			input_parser.handleError( fromArduino );			// analizuj błędy
-
 		}else if( fromArduino.startsWith("VAL A0")){
 			String fromArduino2 = fromArduino.replace("VAL A0 ", "");			
 			virtualComponents.set( "A0",fromArduino2);
