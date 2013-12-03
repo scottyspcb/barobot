@@ -6,6 +6,13 @@
 #include <avr/eeprom.h>
 #include <Servo.h>
 #include <FlexiTimer2.h>
+#include <avr/io.h>
+#include <stdint.h>       // needed for uint8_t
+#include <avr/interrupt.h>
+
+#define ANALOGS  5
+volatile uint16_t ADCvalue[ANALOGS] = {0,0,0,0,0};
+
 #define UNCONNECTED_LEVEL  3
 #define MIN_DELTA  20
 //unsigned int typical_zero = 512;
@@ -31,10 +38,6 @@ volatile unsigned int ticks  = 0;
 		{PIN_IPANEL_SERVO_Z,0,0,0,0,false,false},
 	};
 
-volatile boolean read_hallx  = false;
-volatile boolean read_hally  = false;
-volatile boolean read_weight = false;
-
 // oscyloskop
 boolean analog_reading = false;
 byte analog_num = 0;
@@ -51,13 +54,12 @@ void setup(){
   pinMode(PIN_IPANEL_MISO, INPUT );        // stan wysokiej impedancji
   pinMode(PIN_IPANEL_MOSI, INPUT );        // stan wysokiej impedancji
 
-  pinMode(PIN_IPANEL_SERVO_Y, OUTPUT);
-  pinMode(PIN_IPANEL_SERVO_Z, OUTPUT);
+  pinMode(PIN_IPANEL_SERVO_Y, INPUT);      // nie pozwalaj na przypadkowe machanie na starcie
+  pinMode(PIN_IPANEL_SERVO_Z, INPUT);      // nie pozwalaj na przypadkowe machanie na starcie
 
   pinMode(PIN_IPANEL_HALL_X, INPUT);
   pinMode(PIN_IPANEL_HALL_Y, INPUT);
-  pinMode(PIN_IPANEL_WEIGHT, INPUT); 
-
+  pinMode(PIN_IPANEL_WEIGHT, INPUT);
   init_leds();
 
   DEBUGINIT();
@@ -70,6 +72,7 @@ void setup(){
   diddd = !diddd;
   FlexiTimer2::set(40, 1.0/100, timer);
   FlexiTimer2::start();
+  init_analogs();
 }
 
 void init_leds(){
@@ -89,8 +92,8 @@ void init_leds(){
 
 unsigned long milisAnalog = 0;
 unsigned long int mil = 0;
-long int milis100 = 0;
-
+long int milis1000 = 0;
+long int milis2000 = 0;
 byte iii = 0;
 void loop() {
   mil = millis();
@@ -105,13 +108,28 @@ void loop() {
 			analog_sum = 0;
 		}
 		analog_pos++;
-		analog_sum	+= analogRead(analog_num);
+                byte index      = (analog_num +ANALOGS -2 ) % ANALOGS;
+    		analog_sum	+= ADCvalue[index];
 	}
+        update_servo( INNER_SERVOY );
+        update_servo( INNER_SERVOZ );
+  	if( mil > milis1000 ){    // debug, mrygaj co 1 sek
+          DEBUG( "-analog" );
+          DEBUG(" /t");
+          DEBUG( ADCvalue[0] );
+          DEBUG(" /t");
+          DEBUG( ADCvalue[1] );
+          DEBUG(" /t");
+          DEBUG( ADCvalue[2] );
+          DEBUG(" /t");
+          DEBUG( ADCvalue[4] );
+          DEBUG(" /t");
+          DEBUG( ADCvalue[5] );
+          DEBUGLN( );
+          milis1000 = mil + 500;
+      }
 
-  update_servo( INNER_SERVOY );
-  update_servo( INNER_SERVOZ );
-
-  	if( mil > milis100 ){    // debug, mrygaj co 1 sek
+  	if( mil > milis2000 ){    // debug, mrygaj co 1 sek
           uint8_t pin = _pwm_channels[iii].pin; 
           DEBUG( "-pin " );
           DEBUG( iii );
@@ -126,7 +144,7 @@ void loop() {
           digitalWrite(_pwm_channels[6].pin, false);
           digitalWrite(_pwm_channels[7].pin, false);
           digitalWrite(pin, true);
-          milis100 = mil + 2000;
+          milis2000 = mil + 4000;
           iii++;
           iii = iii %COUNT_IPANEL_ONBOARD_LED;
   	}
@@ -142,21 +160,32 @@ void loop() {
 }
 
 void update_servo( byte index ) {           // synchroniczne
-  if( servos[index].pos_changed == true ){  // mam byc gdzie indziej
-    DEBUG( "-przesuwam Y " );
-    DEBUGLN( String(servos[index].last_pos) );
+  if( servos[index].pos_changed == true && !prog_mode){  // mam byc gdzie indziej
+//    DEBUG( "-przesuwam Y " );
+//    DEBUGLN( String(servos[index].last_pos) );
     servo_lib[index].writeMicroseconds(servos[index].last_pos);
     servos[index].pos_changed = false;
     if( servos[index].last_pos == servos[index].target_pos){
       DEBUGLN( "-gotowe servo" );
-      send_servo(false, localToGlobal(index) );
+      uint16_t margin = servos[index].last_pos;    // odwrotnie do ostatniej komendy
+      if(  servos[index].delta_pos > 0 ){      // jechalem w gore
+        DEBUGLN( "- -10" );
+        margin -= 10;
+      }else if(  servos[index].delta_pos < 0){  // jechalem w dol
+        DEBUGLN( "- +10" );
+        margin += 10;      
+      }
+      servo_lib[index].writeMicroseconds(margin);
+      send_servo(false, localToGlobal(index), servos[index].target_pos ); 
     }
   }
 }
 
+
+
 void reload_servo( byte index ){      // in interrupt
   volatile ServoChannel &ser = servos[index];
-  if( ser.enabled && ser.last_pos != ser.target_pos ){
+  if( servo_lib[index].attached() && ser.last_pos != ser.target_pos ){
     long int this_distance =0;
     long int delta = 0;
     if( ser.last_pos > ser.target_pos ){
@@ -265,6 +294,7 @@ void proceed( volatile byte buffer[5] ){
     byte index = globalToLocal( buffer[1] );
     servos[index].enabled= false;
     servo_lib[index].detach();
+    pinMode(servos[index].pin, INPUT);
     servos[index].pos_changed = false;
   }else if( buffer[0] == METHOD_GOTOSERVOYPOS ){
     // on wire: low_byte, high_byte, speed
@@ -316,6 +346,9 @@ void proceed( volatile byte buffer[5] ){
 }
 
 void run_to(byte index, byte sspeed, uint16_t target){
+    if(prog_mode){
+      return;
+    }
     servos[index].target_pos     = target;
     if( servos[index].target_pos < servos[index].last_pos ){    // jedz w dol
       servos[index].delta_pos = -sspeed;
@@ -324,7 +357,7 @@ void run_to(byte index, byte sspeed, uint16_t target){
       servos[index].delta_pos = sspeed;
       servos[index].last_distance = servos[index].target_pos - servos[index].last_pos;
     }
-    if(!servos[index].enabled){
+    if(!servo_lib[index].attached()){
       servo_lib[index].attach(servos[index].pin);
       servos[index].enabled = true;
     }
@@ -361,20 +394,20 @@ void requestEvent(){
         Wire.write(ttt,2);
         
     }else if( command == METHOD_GETSERVOYPOS ){         // getServoYPos
-        byte ttt[2] = {servos[INNER_SERVOY].last_pos >>8,servos[INNER_SERVOY].last_pos && 0xFF};
+        byte ttt[2] = {(servos[INNER_SERVOY].last_pos & 0xFF),(servos[INNER_SERVOY].last_pos >>8)};
         Wire.write(ttt,2);
 
     }else if( command == METHOD_GETSERVOZPOS ){         // getServoZPos  
-        byte ttt[2] = {servos[INNER_SERVOZ].last_pos >>8,servos[INNER_SERVOZ].last_pos && 0xFF};
+        byte ttt[2] = {(servos[INNER_SERVOZ].last_pos & 0xFF),(servos[INNER_SERVOZ].last_pos >>8)};
         Wire.write(ttt,2);
 
     }else if( command == METHOD_TEST_SLAVE ){    // return xor
         byte res = input_buffer[last_index][1] ^ input_buffer[last_index][2];
         Wire.write(res);
-        if( res & 1 ){    // ustawiony najmlodzzy bit
+        if( res & 1 ){    // ustawiony najmlodzszy bit
           diddd = !diddd;
           digitalWrite(PIN_PANEL_LED1_NUM, diddd);
-        }      
+        }
     }else if( command == METHOD_GETANALOGVALUE ){
     }else if( command == METHOD_GETVALUE ){
     }else if( command == METHOD_RESET_NEXT ){
@@ -389,15 +422,15 @@ void requestEvent(){
     }
     input_buffer[last_index][0] = 0;
 }
-
+/*
 static void send_pin_value( byte pin, byte value ){
   byte ttt[5] = {METHOD_I2C_SLAVEMSG,RETURN_PIN_VALUE,my_address,pin,value};
   send(ttt,5);
  // DEBUGLN("-out "+ String( my_address ) +" / "+ String( pin ) +"/"+ String(value));
-}
-static void send_servo( boolean error, byte servo ){
-  byte ttt[3] = {METHOD_I2C_SLAVEMSG, error ? RETURN_DRIVER_ERROR : RETURN_DRIVER_READY, servo};
-  send(ttt,3);
+}*/
+static void send_servo( boolean error, byte servo, uint16_t pos ){
+  byte ttt[5] = {METHOD_I2C_SLAVEMSG, error ? RETURN_DRIVER_ERROR : RETURN_DRIVER_READY, servo, (pos & 0xFF), (pos >>8) };
+  send(ttt,5);
  // DEBUGLN("-out "+ String( my_address ) +" / "+ String( pin ) +"/"+ String(value));
 }
 
@@ -448,4 +481,29 @@ byte localToGlobal( byte ind ){      // get global device index used in android
 //  analogRead(PIN_IPANEL_HALL_Y );    // very often
 //  analogRead(PIN_IPANEL_HALL_X );    // often
 //  analogRead(PIN_IPANEL_WEIGHT );    // sometimes
- 
+
+void init_analogs(){
+    ADMUX = 0;                // use ADC0
+    ADMUX |= (1 << REFS0);    // use AVcc as the reference
+    ADCSRA |= (1 << ADPS0);// 128 prescale  
+    ADCSRA |= (1 << ADPS1);
+    ADCSRA |= (1 << ADPS2);
+    ADCSRA |= (1 << ADATE);   // Set ADC Auto Trigger Enable
+    ADCSRB = 0;               // 0 for free running mode
+    ADCSRA |= (1 << ADEN);    // Enable the ADC
+    ADCSRA |= (1 << ADIE);    // Enable Interrupts 
+    ADCSRA |= (1 << ADSC);    // Start the ADC conversion
+    sei();
+}
+
+volatile uint8_t channel = 0;
+ISR(ADC_vect){
+   uint8_t tmp  = ADMUX;            // read the value of ADMUX register
+   tmp          &= 0xF8;
+   channel      = channel%3;
+   ADCvalue[ channel ] = ADCL | (ADCH << 8);  //  read low first
+//   ADCSRA |= (1 << ADSC);    // Start the ADC conversion
+   ADMUX        = (tmp | channel);
+   channel++;
+}
+
