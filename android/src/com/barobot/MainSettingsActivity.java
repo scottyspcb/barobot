@@ -137,9 +137,7 @@ public class MainSettingsActivity extends PreferenceActivity {
         	EditText accy = (EditText) findViewById(R.id.conf_acc_x);
         	queue q= queue.getInstance();
         	q.send("SET SPEEDX " + speedx.getText());
-        	q.send("SET ACCX " + accx.getText());
-        	q.send("SET SPEEDY " + speedy.getText());
-        	q.send("SET ACCY " + accy.getText());
+        	q.send("AX " + accx.getText());
         }
     }); */
 	

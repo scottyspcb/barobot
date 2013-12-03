@@ -104,9 +104,12 @@ Tematy:
 - pomiar prądu używanego przez servo y i z
 - policzyć zużycie prądu
 - zobaczyć przebiegi dla silnika x
-- 
-- 
+- procedura wyłączania zasilania
+- pullupy dla serv
+- pozycja max halla wyrażona w krokach steppera
+- pullup na enable pin X
 
+Z1900,10
 
 
 Pozycje:
@@ -119,6 +122,10 @@ Y2170,30
 Z1100,200
 Z1900,200
 
+
+Y900,10
+Z900,10
+X1000,6000
 
 
 

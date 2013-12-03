@@ -215,9 +215,9 @@ public class virtualComponents {
 				long y  		= getBottlePosY( num );
 				if(Long.parseLong(posx) != x || Long.parseLong(posy) != y ){		// musze jechac
 					ArduinoQueue	q2	= new ArduinoQueue();
-					q2.add("SET Y " + virtualComponents.get("NEUTRAL_POS_Y", "0" ), true );
-					q2.add("SET X " + x, true);
-					q2.add("SET Y " + y, true);
+					q2.add("Y" + virtualComponents.get("NEUTRAL_POS_Y", "0" ), true );
+					q2.add("X" + x, true);
+					q2.add("Y" + y, true);
 					return q2;
 				}
 				return null;

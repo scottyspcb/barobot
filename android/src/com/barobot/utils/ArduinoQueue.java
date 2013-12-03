@@ -74,7 +74,6 @@ public class ArduinoQueue {
 				return true;
 			}
 		};
-		
 		final rpc_message finishGlass = new rpc_message( true ) {
 			@Override
 			public ArduinoQueue run() {
@@ -106,7 +105,7 @@ public class ArduinoQueue {
 				q2.add("EX", true);
 				q2.add("EY", true);
 				q2.addWait(10);
-				q2.add("SET LED5 ON", true);
+		//		q2.add("SET LED5 ON", true);
 				q2.add( wait4glass );					// jest szklanka lub nie ma
 				q2.add("LIVE WEIGHT OFF", true);
 				q2.add("DX", true);
