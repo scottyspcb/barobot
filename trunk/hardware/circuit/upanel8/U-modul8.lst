@@ -1,0 +1,99 @@
+eeschema (2013-07-07 BZR 4022)-stable  >> Creation date: 2013-11-19 18:37:00
+#Cmp ( sort. wg = Oznaczenie ) (z podelementem)
+| C1         27p         ~                   ; ~           ; ~           
+| C2         27p         ~                   ; ~           ; ~           
+| C3         100nF       ~                   ; SM1206      ; ~           
+| C4         100nF       ~                   ; SM1206      ; ~           
+| C5         100nF       ~                   ; SM1206      ; ~           
+| C6         100uF       ~                   ; ~           ; ~           
+| hall_x1    CONN_3                          ;             ;             
+| hall_y1    CONN_3                          ;             ;             
+| IC1        ATMEGA328P-A                    ; TQFP32      ;             
+| P1         CONN_10                         ;             ;             
+| P2         CONN_1                          ;             ;             
+| P3         CONN_1                          ;             ;             
+| P4         CONN_4                          ;             ;             
+| P5         CONN_4                          ;             ;             
+| P6         CONN_2                          ;             ;             
+| P7         CONN_2                          ;             ;             
+| P8         CONN_4                          ;             ;             
+| P9         DIL16                           ;             ;             
+| P10        CONN_2                          ;             ;             
+| R1         10k         ~                   ; SM1206      ; ~           
+| R3         330         ~                   ; SM1206      ; ~           
+| R4         330         ~                   ; SM1206      ; ~           
+| R5         330         ~                   ; SM1206      ; ~           
+| R6         330         ~                   ; SM1206      ; ~           
+| R7         330         ~                   ; SM1206      ; ~           
+| R8         330         ~                   ; SM1206      ; ~           
+| R9         330         ~                   ; SM1206      ; ~           
+| R10        330         ~                   ; SM1206      ; ~           
+| Servo_Y1   CONN_3                          ;             ;             
+| Servo_Z1   CONN_3                          ;             ;             
+| U1         ULN2803A    ~                   ; TSSOP16     ; ~           
+| UART1      CONN_3                          ;             ;             
+| X1         16MHz       ~                   ; ~           ; ~           
+#End Cmp
+
+#Cmp ( sort. wg = Wartość ) (z podelementem)
+| 27p          C1        Loc /(X=104,140 mm, Y=198,120 mm); ~           ; ~           
+| 27p          C2        Loc /(X=88,900 mm, Y=198,120 mm); ~           ; ~           
+| 100nF        C3        Loc /(X=19,050 mm, Y=64,770 mm); SM1206      ; ~           
+| 100nF        C4        Loc /(X=24,130 mm, Y=78,740 mm); SM1206      ; ~           
+| 100nF        C5        Loc /(X=44,450 mm, Y=86,360 mm); SM1206      ; ~           
+| 100uF        C6        Loc /(X=175,260 mm, Y=163,830 mm); ~           ; ~           
+| ATMEGA328P-A IC1       Loc /(X=76,200 mm, Y=99,060 mm); TQFP32      ;             
+| CONN_3       Servo_Y1  Loc /(X=132,080 mm, Y=201,930 mm);             ;             
+| CONN_10      P1        Loc /(X=115,570 mm, Y=38,100 mm);             ;             
+| CONN_1       P2        Loc /(X=39,370 mm, Y=105,410 mm);             ;             
+| CONN_1       P3        Loc /(X=39,370 mm, Y=107,950 mm);             ;             
+| CONN_4       P4        Loc /(X=222,250 mm, Y=113,030 mm);             ;             
+| CONN_4       P5        Loc /(X=222,250 mm, Y=124,460 mm);             ;             
+| CONN_2       P6        Loc /(X=220,980 mm, Y=147,320 mm);             ;             
+| CONN_2       P7        Loc /(X=220,980 mm, Y=134,620 mm);             ;             
+| CONN_4       P8        Loc /(X=20,320 mm, Y=166,370 mm);             ;             
+| CONN_3       Servo_Z1  Loc /(X=116,840 mm, Y=201,930 mm);             ;             
+| DIL16        P9        Loc /(X=59,690 mm, Y=161,290 mm);             ;             
+| CONN_2       P10       Loc /(X=53,340 mm, Y=190,500 mm);             ;             
+| 330          R3        Loc /(X=205,740 mm, Y=143,510 mm); SM1206      ; ~           
+| 330          R4        Loc /(X=205,740 mm, Y=156,210 mm); SM1206      ; ~           
+| 330          R5        Loc /(X=198,120 mm, Y=109,220 mm); SM1206      ; ~           
+| 330          R6        Loc /(X=198,120 mm, Y=111,760 mm); SM1206      ; ~           
+| 330          R7        Loc /(X=198,120 mm, Y=116,840 mm); SM1206      ; ~           
+| 330          R8        Loc /(X=203,200 mm, Y=120,650 mm); SM1206      ; ~           
+| 330          R9        Loc /(X=203,200 mm, Y=123,190 mm); SM1206      ; ~           
+| 330          R10       Loc /(X=203,200 mm, Y=128,270 mm); SM1206      ; ~           
+| 10k          R1        Loc /(X=91,440 mm, Y=57,150 mm); SM1206      ; ~           
+| CONN_3       hall_y1   Loc /(X=177,800 mm, Y=201,930 mm);             ;             
+| CONN_3       hall_x1   Loc /(X=163,830 mm, Y=201,930 mm);             ;             
+| ULN2803A     U1        Loc /(X=158,750 mm, Y=119,380 mm); TSSOP16     ; ~           
+| CONN_3       UART1     Loc /(X=115,570 mm, Y=144,780 mm);             ;             
+| 16MHz        X1        Loc /(X=96,520 mm, Y=190,500 mm); ~           ; ~           
+#Koniec Cmp
+
+#Etykiety globalne, hierarchiczne i arkusze pinów ( porządek = Numer arkusza ) liczba = 9
+> GND                          Global              Loc /(X=19,050 mm, Y=88,900 mm)
+> GND                          Global              Loc /(X=195,580 mm, Y=190,500 mm)
+> GND                          Global              Loc /(X=53,340 mm, Y=134,620 mm)
+> GND                          Global              Loc /(X=106,680 mm, Y=147,320 mm)
+> GND                          Global              Loc /(X=88,900 mm, Y=205,740 mm)
+> GND                          Global              Loc /(X=175,260 mm, Y=171,450 mm)
+> GND                          Global              Loc /(X=29,210 mm, Y=209,550 mm)
+> PWR                          Global              Loc /(X=19,050 mm, Y=36,830 mm)
+> PWR                          Global              Loc /(X=175,260 mm, Y=153,670 mm)
+#End labels
+
+#Etykiety globalne, hierarchiczne i arkusze pinów ( porządek = Alfabetyczny ) liczba = 9
+
+> GND                          Global              Loc /(X=19,050 mm, Y=88,900 mm)
+> GND                          Global              Loc /(X=195,580 mm, Y=190,500 mm)
+> GND                          Global              Loc /(X=53,340 mm, Y=134,620 mm)
+> GND                          Global              Loc /(X=106,680 mm, Y=147,320 mm)
+> GND                          Global              Loc /(X=88,900 mm, Y=205,740 mm)
+> GND                          Global              Loc /(X=175,260 mm, Y=171,450 mm)
+> GND                          Global              Loc /(X=29,210 mm, Y=209,550 mm)
+> PWR                          Global              Loc /(X=19,050 mm, Y=36,830 mm)
+> PWR                          Global              Loc /(X=175,260 mm, Y=153,670 mm)
+#End labels
+
+#Koniec listy
