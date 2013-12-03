@@ -57,12 +57,7 @@ public class DebugActivity extends FragmentActivity implements	ActionBar.TabList
 
 	public DebugActivity(){
 		Constant.log("DebugActivity", "init");
-		objVector.add(DebugActivity.TAB_COMMANDS_ID,  	new DebugTabCommands( this, DebugActivity.TAB_COMMANDS_ID ));
-		objVector.add(DebugActivity.TAB_DEVICES_ID,  	new DebugTabDevices( this, DebugActivity.TAB_DEVICES_ID ));
-		objVector.add(DebugActivity.TAB_LEDS_ID,  		new DebugTabLeds( this, DebugActivity.TAB_LEDS_ID ));
-		objVector.add(DebugActivity.TAB_BOTTLES_ID,  	new DebugTabBottles( this, DebugActivity.TAB_BOTTLES_ID ));
-		objVector.add(DebugActivity.TAB_GRAPH_ID,  		new DebugTabGraph( this, DebugActivity.TAB_GRAPH_ID ));
-		objVector.add(DebugActivity.TAB_LOG_ID,  		new DebugTabLog( this, DebugActivity.TAB_LOG_ID ));
+		
 	}
 	
 	public static DebugActivity getInstance() {
@@ -86,6 +81,14 @@ public class DebugActivity extends FragmentActivity implements	ActionBar.TabList
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		
+		objVector.add(DebugActivity.TAB_COMMANDS_ID,  	new DebugTabCommands( this, DebugActivity.TAB_COMMANDS_ID ));
+		objVector.add(DebugActivity.TAB_DEVICES_ID,  	new DebugTabDevices( this, DebugActivity.TAB_DEVICES_ID ));
+		objVector.add(DebugActivity.TAB_LEDS_ID,  		new DebugTabLeds( this, DebugActivity.TAB_LEDS_ID ));
+		objVector.add(DebugActivity.TAB_BOTTLES_ID,  	new DebugTabBottles( this, DebugActivity.TAB_BOTTLES_ID ));
+		objVector.add(DebugActivity.TAB_GRAPH_ID,  		new DebugTabGraph( this, DebugActivity.TAB_GRAPH_ID ));
+		objVector.add(DebugActivity.TAB_LOG_ID,  		new DebugTabLog( this, DebugActivity.TAB_LOG_ID ));
+		
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_debug);
 		DebugActivity.instance = this;

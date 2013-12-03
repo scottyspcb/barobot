@@ -9,7 +9,7 @@
     <!-- BluetoothChat -->
     <string name="not_connected">You are not connected to a device</string>
     <string name="bt_not_enabled_leaving">Bluetooth was not enabled. Leaving Bluetooth Chat.</string>
-    <string name="title_connecting">connecting...</string>
+    <string name="title_connecting">connecting</string>
     <string name="title_connected_to">connected to <xliff:g id="device_name">%1$s</xliff:g></string>
     <string name="title_not_connected">not connected</string>
 
@@ -29,7 +29,7 @@
     <string name="title_activity_update">Update</string>
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
-    <string name="about_info">Autorzy...</string>
+    <string name="about_info">Autorzy</string>
     <string name="title_activity_about">O programie</string>
     <string name="title_activity_web">WebActivity</string>
     <string name="processing_window_title">Analiza wejścia</string>
@@ -63,5 +63,31 @@
     <string name="title_section4">Butelki</string>
     <string name="title_section5">Analiza wejścia</string>
     <string name="title_section6">Historia</string>
+    
+    <!-- GUI -->
+    <string name="action_main">Make a drink</string>
+    <string name="action_bottle_setup">Setup bottles</string>
+    <string name="action_recipe_setup">Customize Recipes</string>
+    <string name="edit_message">Enter a message</string>
+    <string name="button_send">Send</string>
+    <string name="make_button">Make a drink</string>
+    <string name="empty_slot">Empty</string>
+    <string name="liquid_select_title">Select liquid</string>
+    <string name="liquid_name">Liquid Name (Brand)</string>
+    <string name="liquid_type">Liquid Type</string>
+    <string name="title_activity_barobot_main">Barobot Main</string>
+    <string name="title_activity_bottle_setup">Bottle Setup</string>
+    <string name="title_activity_recipe_setup">Recipe Setup</string>
+    
+    <!-- Bottle Setup -->
+    <string name="empty_bottle_string">Empty</string>
+    
+    <!-- Recipe Setup -->
+    <string name="add_recipe">Add new recipe</string>
+    <string name="remove_recipe">Remove recipe</string>
+    
+    <string name="add_ingredient">Add ingredient</string>
+    <string name="recipe_name">Recipe Name</string>
+    <string name="recipe_description">Recipe Description</string>
 
 </resources>

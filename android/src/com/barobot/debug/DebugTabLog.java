@@ -9,6 +9,7 @@ import com.barobot.utils.ArduinoQueue;
 import com.barobot.utils.Constant;
 import com.barobot.utils.History_item;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
@@ -22,6 +23,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ToggleButton;
 
+@SuppressLint("ValidFragment")
 public class DebugTabLog extends Fragment {
 	public int tab_id	= -1 ;
 	private Activity cc;
@@ -32,7 +34,8 @@ public class DebugTabLog extends Fragment {
     	Constant.log("DebugTabLog", "init");
     	this.tab_id = tabCommandsId;
     	this.cc		= debugActivity;
-    	mConversation = Arduino.getInstance().mConversationArrayAdapter;
+    	mConversation = new ArrayAdapter<History_item>(cc, R.layout.message);
+    	mConversation.addAll(Arduino.getInstance().getHistory());
 	}
 	@Override
     public void onActivityCreated(Bundle savedInstanceState) {
