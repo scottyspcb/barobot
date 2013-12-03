@@ -24,14 +24,18 @@ void (*AccelStepper::user_onReady)(long int);
 
 void AccelStepper::moveTo(long absolute)
 {
-    if (_targetPos != absolute)
-    {
+    if (_targetPos == absolute )
+	{
+		if( _targetPos ==_currentPos){
+			onReady();
+		}
+    }else{
 		if( disable_on_ready && is_disabled ){
 			enableOutputs();
 		}
 		_targetPos = absolute;
 		computeNewSpeed();	// compute new n?
-    }
+	}
 }
 
 void AccelStepper::move(long relative)
