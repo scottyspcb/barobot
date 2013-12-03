@@ -156,6 +156,11 @@ public class RecipeSetupActivity extends BarobotActivity
 		newFragment.ShowVolumeReel = true;
 		newFragment.show(ft, "dialog");
 	}
+	public void removeIngredients(View view)
+	{
+		Engine.GetInstance(this).RemoveIngredients(currentRecipe.getId());
+		UpdateRecipes(currentRecipe.getId());
+	}
 
 	@Override
 	public void onDialogEnd(DialogFragment dialog, ReturnStatus status,

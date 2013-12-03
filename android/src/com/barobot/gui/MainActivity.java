@@ -10,6 +10,7 @@ import com.barobot.gui.dataobjects.Recipe;
 
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -35,11 +36,23 @@ public class MainActivity extends BarobotActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
+		PrepareDrinkList();
+		
+	}
+	
+	@Override
+	protected void onNewIntent(Intent intent) {
+		super.onNewIntent(intent);
+		
+		PrepareDrinkList();
+	}
+	
+	protected void PrepareDrinkList()
+	{
 		mEngine = Engine.GetInstance(this);
 		currentRecipe = -1;
 		
-		//mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, stringList);
-		mRecipies = mEngine.getRecipes();
+		mRecipies = mEngine.getPossibleRecipes();
 		rAdapter = new RecipeAdapter(this, R.layout.recipetile, mRecipies);
 		
 		GridView gridView = (GridView) findViewById(R.id.gridview_recipe);
@@ -48,7 +61,6 @@ public class MainActivity extends BarobotActivity {
 		
 		mMakeButton = (Button) findViewById(R.id.make_button);
 		mMakeButton.setVisibility(View.INVISIBLE);
-		
 	}
 	
 	public void make(View view)

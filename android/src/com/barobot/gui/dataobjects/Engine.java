@@ -72,6 +72,46 @@ public class Engine {
 		return db.getRecipes();
 	}
 	
+	public List<Recipe> getPossibleRecipes()
+	{
+		List<Recipe> recipes = db.getRecipes();
+		List<Recipe> result = new ArrayList<Recipe>();
+		for(Recipe recipe : recipes)
+		{
+			List<Ingredient> ing = recipe.getIngridients();
+			if (!ing.isEmpty() && checkIngredients(ing)){
+				result.add(recipe);
+			}
+		}
+		
+		return result;
+	}
+	
+	private boolean checkIngredients(List<Ingredient> ingredients)
+	{
+		for(Ingredient i : ingredients)
+		{
+			Boolean ingridientFound = false;
+			for (int idx = 1; idx <= 12; idx++)
+			{
+				if (bottleSet[idx] == null)
+				{
+					continue;
+				}
+				if (bottleSet[idx].getType().equalsIgnoreCase(i.getLiquid().type))
+				{
+					ingridientFound = true;
+				}
+			}
+			if (!ingridientFound)
+			{
+				return false;
+			}
+		}
+		
+		return true;
+	}
+	
 	public long AddLiquid(Liquid liquid) {
 		return db.InsertLiquid(liquid);
 	}
@@ -84,15 +124,15 @@ public class Engine {
 		for(Ingredient i : ingridients)
 		{
 			Boolean ingridientFound = false;
-			for (int idx = 0; idx < 12; idx++)
+			for (int idx = 1; idx <= 12; idx++)
 			{
 				if (bottleSet[idx] == null)
 				{
 					continue;
 				}
-				if (bottleSet[idx].getType() == i.getLiquid().type)
+				if (bottleSet[idx].getType().equalsIgnoreCase(i.getLiquid().type))
 				{
-					bottleSequence.add(idx+1);
+					bottleSequence.add(idx);
 					ingridientFound = true;
 				}
 			}
@@ -123,6 +163,10 @@ public class Engine {
 	
 	public void RemoveRecipe(long recipeId) {
 		db.DeleteRecipe(recipeId);
+	}
+	
+	public void RemoveIngredients(long recipeId) {
+		db.DeleteIngredients(recipeId);
 	}
 	
 	public void addIngredient(long recipeId, Ingredient ingredient)

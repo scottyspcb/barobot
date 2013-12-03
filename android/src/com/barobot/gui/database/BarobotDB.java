@@ -174,7 +174,12 @@ public class BarobotDB {
 		String []args = new String[]{String.valueOf(recipeId)};
 		db.delete(DataContract.Recipes.TABLE_NAME, whereRecipe, args);
 		
+		DeleteIngredients(recipeId);
+	}
+	
+	public void DeleteIngredients(long recipeId) {
 		String whereIngredient = DataContract.Ingredients.COLUMN_NAME_RECIPEID + "=?";
+		String []args = new String[]{String.valueOf(recipeId)};
 		db.delete(DataContract.Ingredients.TABLE_NAME, whereIngredient, args);
 	}
 	
