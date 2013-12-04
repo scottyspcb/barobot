@@ -11,7 +11,9 @@
 #include <avr/interrupt.h>
 
 #define ANALOGS  5
-volatile int16_t ADCvalue[ANALOGS] = {0,0,0,0,0};
+volatile int16_t ADCvalue[4][ANALOGS] = {{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0}};
+
+
 
 byte moving_x = DRIVER_DIR_STOP;      // informacja co robi główny silnik
 byte moving_y = DRIVER_DIR_STOP;      // informacja co robi silnik
@@ -99,10 +101,10 @@ unsigned long milis1000 = 0;
 unsigned long milis2000 = 0;
 byte iii = 0;
 
-int16_t typical_neutral = 510;
+int16_t typical_neutral = 511;
 int16_t threshold       = 30;
-int16_t enstrop_max     = 510;
-int16_t enstrop_min     = 510;
+int16_t enstrop_max     = 511;
+int16_t enstrop_min     = 511;
 
 boolean is_up    = false;
 boolean neutral  = false;
@@ -114,13 +116,12 @@ boolean is_falling  = false;
 int16_t historyx[HISTORY_LENGTH]  = {typical_neutral,typical_neutral,typical_neutral};
 int8_t historyx_index  = 0;
 
-#define WAVING  4
+#define WAVING  7
 
-byte cc = 0;
+int16_t cc = 0;
 
 void loop() {
         mil = millis();
-
 	if( analog_reading &&  mil > milisAnalog ){
 		milisAnalog = mil+ analog_speed;
 		if( analog_pos == analog_repeat ){			// wyślij
@@ -133,7 +134,7 @@ void loop() {
 		}
 		analog_pos++;
                 byte index      = (analog_num +ANALOGS -2 ) % ANALOGS;
-    		analog_sum	+= ADCvalue[index];
+    		analog_sum	+= ADCvalue[0][index];
 	}
         // analizuj 
         // todo do znalezienia: local max, local min, global min, global max,
@@ -141,43 +142,60 @@ void loop() {
         // send_x_pos( LOCAL_MIN )
         // send_x_pos( GLOBAL_MAX )
         // send_x_pos( GLOBAL_MIN )
-        int val1 = ADCvalue[INNER_CODE_HALL_X];      // copy, look at the ISR
-        int val = abs( val1 - typical_neutral );
-
         cc++;
-        if(cc>10){
-              cc = 0;
+        cli();
+        int16_t val1 = ADCvalue[0][INNER_CODE_HALL_X];      // copy, look at the ISR
+        sei();
+        int16_t val = abs( val1 - typical_neutral );
+        if(cc>2000){
+              cc   = 0;
               byte in = historyx_index + HISTORY_LENGTH;
-              byte b1 = historyx[ (in ) % HISTORY_LENGTH   ];       // -1
-              byte b2 = historyx[ (in -1 )% HISTORY_LENGTH ];       // -2
-              byte b3 = historyx[ (in -2 )% HISTORY_LENGTH ];       // -3
+              int16_t b1 = historyx[ (in -1 )% HISTORY_LENGTH ];       // -1
+              int16_t b2 = historyx[ (in -2 )% HISTORY_LENGTH ];       // -2
+              int16_t b3 = historyx[ (in -3 )% HISTORY_LENGTH ];       // -3
 
-              int diff = ((val + b1) -  (b2 + b3));
+           //   int16_t diff = ((val1 + b1) -  (b2 + b3));
+              int16_t diff = val1 - b2 + b1 - b3;
+
               if( diff < WAVING && diff > -WAVING ){
                 // odczyt pływa
               }else if( diff  < 0 ){          //rising
-                DEBUG( "R\t" );
+                DEBUG( "R" );
                 is_rising   = true;
                 is_falling  = false;
                 digitalWrite(_pwm_channels[6].pin, true);
                 digitalWrite(_pwm_channels[7].pin, false);
-
               }else if( diff > 0 ){
-                DEBUG( "F\t" );
-                is_falling  = true;
+                DEBUG( "F" );
+                is_falling = true;
                 is_rising  = false;
                 digitalWrite(_pwm_channels[6].pin, false);
                 digitalWrite(_pwm_channels[7].pin, true);
               }else if( is_falling ){
               }else if( is_rising ){
               }
-              DEBUG( String(val) );
-              DEBUG( "\t" );
-              DEBUG( String(diff) );
-              DEBUG( "\t" );
-              DEBUG( String(val + b1) );
-              DEBUG( "\t" );
-              DEBUGLN( String(b2 + b3) );
+          //    DEBUG( "\tin: " );    
+          //    DEBUG( String(in) );
+              DEBUG( "\td: " );
+              DEBUG(  String(diff) );
+
+              DEBUG( "\tval: " );      
+              DEBUG( String(val1) );
+
+              DEBUG( "\tbA: " );
+              DEBUG( String( b1) );
+
+              DEBUG( "\tbB: " );
+              DEBUG( String( b2) );
+
+              DEBUG( "\tbC: " );
+              DEBUG( String( b3) );
+
+         //     DEBUG( String(val + b1) );
+          //    DEBUG( "\t" );
+          //    DEBUGLN( String(b2 + b3) );
+
+              DEBUGLN();
 
            //   digitalWrite(_pwm_channels[6].pin, false);
            //   digitalWrite(_pwm_channels[7].pin, false);
@@ -214,13 +232,15 @@ void loop() {
             is_up = false;
             is_down = false;
           }
-
+          
+           historyx[historyx_index]  = val1;   
+           historyx_index            = (historyx_index+1)%HISTORY_LENGTH;
         }
-       historyx[historyx_index]  = val1;   
-       historyx_index            = (historyx_index+1)%HISTORY_LENGTH;
+
 
        // ADCvalue[INNER_CODE_HALL_X] -512;
       //  typical_neutral
+      /*
         if(moving_x){
       	  if( mil > milis1000 ){    // debug, mrygaj co 1 sek
               DEBUG( "-analog" );
@@ -240,7 +260,7 @@ void loop() {
               milis1000 = mil + 150;
           }
         }
-      
+      */
       update_servo( INNER_SERVOY );
       update_servo( INNER_SERVOZ );
         
@@ -633,11 +653,13 @@ void init_analogs(){
 }
 
 volatile uint8_t channel = 0;
+volatile uint8_t row = 0;
+
 ISR(ADC_vect){
    uint8_t tmp  = ADMUX;            // read the value of ADMUX register
    tmp          &= 0xF8;
    channel      = channel%3;
-   ADCvalue[ channel ] = ADCL | (ADCH << 8);  //  read low first
+   ADCvalue[ row % 4 ][ channel ] = ADCL | (ADCH << 8);  //  read low first
 //   ADCSRA |= (1 << ADSC);    // Start the ADC conversion
    ADMUX        = (tmp | channel);
    channel++;
