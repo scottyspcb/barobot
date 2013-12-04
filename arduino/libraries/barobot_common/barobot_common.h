@@ -165,19 +165,12 @@
 	#define PIN_IPANEL_HALL_Y A1		// dip pin 24 A1,	Q 24
 	#define PIN_IPANEL_WEIGHT A2		// dip pin 25 A2,	Q 25
 
-
-	#define INNER_HALL_X 0
-	#define INNER_HALL_Y 0
-	#define INNER_WEIGHT 1
-	
-
 	#define INNER_CODE_HALL_X 2
 	#define INNER_CODE_HALL_Y 3
-	#define INNER_CODE_WEIGHT 1
+	#define INNER_CODE_WEIGHT 4
 	#define INNER_CODE_CURRENT_X 0
 	#define INNER_CODE_CURRENT_Y 1
 
-	
 	#define PIN_IPANEL_SERVO_Y 5		// dip pin 11,	Q 9
 	#define PIN_IPANEL_SERVO_Z 6		// dip pin 12,	Q 10
 
@@ -215,6 +208,20 @@
 	*/
 
 #endif
+
+
+#define INNER_HALL_X 0
+#define INNER_HALL_Y 0
+#define INNER_WEIGHT 1
+
+
+#define HALL_GLOBAL_MIN 1
+#define HALL_GLOBAL_MAX 2
+#define HALL_LOCAL_MAX 4
+#define HALL_LOCAL_MIN 8
+
+
+
 
 
 /*------------------------------  UPANEL    ------------------------------*/
@@ -326,14 +333,20 @@
 #define METHOD_I2C_ERROR 		90
 #define METHOD_RET_FROM_SLAVE2 	92
 
-
+#define METHOD_STEPPER_MOVING 	222
+#define METHOD_IMPORTANT_ANALOG 	224
 #define METHOD_DEVICE_FOUND		220
 #define RETURN_PIN_VALUE 		211
 #define RETURN_ANALOG_CHANGE 	111
 
+#define RETURN_DRIVER_ERROR 	180
+#define RETURN_DRIVER_READY 	182
 
+// inne
 
-
+#define DRIVER_DIR_FORWARD 	32
+#define DRIVER_DIR_BACKWART 64
+#define DRIVER_DIR_STOP		0
 
 #define INNER_SERVOY  0
 #define INNER_SERVOZ  1
@@ -341,9 +354,6 @@
 #define DRIVER_X 	4
 #define DRIVER_Y 	8
 #define DRIVER_Z 	16
-
-#define RETURN_DRIVER_ERROR 	211
-#define RETURN_DRIVER_READY 	211
 
 
 
