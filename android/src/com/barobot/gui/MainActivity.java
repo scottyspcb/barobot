@@ -10,6 +10,8 @@ import com.barobot.gui.dataobjects.Recipe;
 
 
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -21,7 +23,8 @@ import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public class MainActivity extends BarobotActivity {
+public class MainActivity extends BarobotActivity 
+							implements ArduinoListener {
 	public final static String EXTRA_MESSAGE = "com.example.myfirstapp.MESSAGE";
 	private RecipeAdapter rAdapter;
 	private List<Recipe> mRecipies;
@@ -29,15 +32,12 @@ public class MainActivity extends BarobotActivity {
 	private Engine mEngine;
 	private int currentRecipe; 
 	
-	
-	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
 		PrepareDrinkList();
-		
 	}
 	
 	@Override
@@ -65,15 +65,34 @@ public class MainActivity extends BarobotActivity {
 	
 	public void make(View view)
 	{
-		// make a drink
-		if (currentRecipe != -1)
-		{
-			mEngine.Prepare(mRecipies.get(currentRecipe));
+		if (currentRecipe != -1) {
+			final Recipe recipe = mRecipies.get(currentRecipe);
 			
-			TextView textView = (TextView) findViewById(R.id.sequence_text);
-			textView.setText(mEngine.Sequence);
-		}
-		
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setTitle(R.string.glass_reminder_title);
+			builder.setMessage(R.string.glass_reminder_message);
+			builder.setPositiveButton(R.string.glass_reminder_button_ok, new DialogInterface.OnClickListener() {
+
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					
+					Button makeButton = (Button) findViewById(R.id.make_button);
+					makeButton.setEnabled(false);
+					
+					mEngine.Prepare(recipe, MainActivity.this);
+				}
+			});
+			builder.setNegativeButton(R.string.glass_reminder_button_cancel, new DialogInterface.OnClickListener() {
+				
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					// TODO Auto-generated method stub
+				}
+			});
+			
+			AlertDialog ad = builder.create();
+			ad.show();
+		}		
 	}
 	
 	// Create a message handling object as an anonymous class.
@@ -98,4 +117,25 @@ public class MainActivity extends BarobotActivity {
 	        currentRecipe = position;
 	    }
 	};
+
+	@Override
+	public void onQueueFinished() {
+		
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setTitle(R.string.pour_finished_title);
+		//builder.setMessage(R.string.pour_finished_message);
+		builder.setMessage("Used combination (" + mEngine.Sequence + ")");
+		builder.setNeutralButton(R.string.pour_finished_button, new DialogInterface.OnClickListener() {
+
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+
+				Button makeButton = (Button) findViewById(R.id.make_button);
+				makeButton.setEnabled(true);
+			}
+		});
+		
+		AlertDialog ad = builder.create();
+		ad.show();
+	}
 }

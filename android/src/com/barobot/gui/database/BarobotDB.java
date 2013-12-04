@@ -114,14 +114,18 @@ public class BarobotDB {
 	
 	public Bottle[] GetSlots()
 	{
+		final int NUMBER_OF_BOTTLES = 12;
+		
 		String query = "SELECT * FROM " + DataContract.Slots.TABLE_NAME
 				+ " INNER JOIN " + DataContract.Liquids.TABLE_NAME
 				+ " ON " + DataContract.Slots.TABLE_NAME+"."+DataContract.Slots.COLUMN_NAME_LIQUIDID
-				+ "=" + DataContract.Liquids.TABLE_NAME+"."+DataContract.Liquids._ID;
+				+ "=" + DataContract.Liquids.TABLE_NAME+"."+DataContract.Liquids._ID 
+				+ " WHERE " + DataContract.Slots.COLUMN_NAME_POSITION + "<=?";
 		
 		Bottle[] result = new Bottle[13];
+		String[] args = new String[]{String.valueOf(NUMBER_OF_BOTTLES)};
 		
-		Cursor c = db.rawQuery(query, null);
+		Cursor c = db.rawQuery(query, args);
 		
 		if (!c.moveToFirst()) {
 			// returning empty dataset
@@ -142,6 +146,46 @@ public class BarobotDB {
 		} while (c.moveToNext());
 		
 		return result;
+	}
+	
+	public List<Liquid> getOutsideComponents(int outsideId)
+	{
+		List<Liquid> result = new ArrayList<Liquid>();
+		
+		String query = "SELECT * FROM " + DataContract.Slots.TABLE_NAME
+				+ " INNER JOIN " + DataContract.Liquids.TABLE_NAME
+				+ " ON " + DataContract.Slots.TABLE_NAME+"."+DataContract.Slots.COLUMN_NAME_LIQUIDID
+				+ "=" + DataContract.Liquids.TABLE_NAME+"."+DataContract.Liquids._ID 
+				+ " WHERE " + DataContract.Slots.COLUMN_NAME_POSITION + "=?";
+			
+		String[] args = new String[]{String.valueOf(outsideId)};
+		
+		Cursor c = db.rawQuery(query, args);
+		
+		if (!c.moveToFirst()) {
+			// returning empty dataset
+			return result;
+		}
+		
+		do
+		{
+			result.add(new Liquid(
+					c.getInt(c.getColumnIndexOrThrow(DataContract.Liquids._ID)),
+					c.getString(c.getColumnIndexOrThrow(DataContract.Liquids.COLUMN_NAME_TYPE)),
+					c.getString(c.getColumnIndexOrThrow(DataContract.Liquids.COLUMN_NAME_NAME)),
+					c.getFloat(c.getColumnIndexOrThrow(DataContract.Liquids.COLUMN_NAME_VOLTAGE))
+					));
+			
+		} while (c.moveToNext());
+		
+		return result;
+	}
+	
+	public void removeOusideComponents(int outsideId) {
+		String where = DataContract.Slots.COLUMN_NAME_POSITION + "=?";
+		String[] args = new String[]{String.valueOf(outsideId)};
+		
+		db.delete(DataContract.Slots.TABLE_NAME, where, args);
 	}
 	
 	public void DeleteSlots()

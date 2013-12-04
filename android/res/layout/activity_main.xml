@@ -50,12 +50,6 @@
      		android:layout_width="wrap_content"
      		android:text="@string/make_button"
      		android:onClick="make" />
-        <TextView
-            android:id="@+id/sequence_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="30sp">
-        </TextView>
     </LinearLayout>
 
 </LinearLayout>

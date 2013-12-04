@@ -9,10 +9,13 @@ import com.barobot.UpdateActivity;
 import com.barobot.utils.Arduino;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class BarobotActivity extends Activity {
@@ -28,11 +31,17 @@ public class BarobotActivity extends Activity {
     public boolean onOptionsItemSelected(MenuItem item) {
     	Intent serverIntent = null;
     	switch (item.getItemId()) {
+    	case R.id.action_panic:
+    		ManagePanic();
+    		return false;
     	case R.id.main_feature:
     		serverIntent = new Intent(this, MainActivity.class);
     		break;
     	case R.id.action_bottles:
     		serverIntent = new Intent(this, BottleSetupActivity.class);
+    		break;
+    	case R.id.action_outside_components:
+    		serverIntent = new Intent(this, OutsideComponentActivity.class);
     		break;
     	case R.id.action_recipes:
     		serverIntent = new Intent(this, RecipeSetupActivity.class);
@@ -61,5 +70,30 @@ public class BarobotActivity extends Activity {
     	serverIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
     	startActivity(serverIntent);
     	return false;
+    }
+    
+    protected void ManagePanic()
+    {
+    	AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setTitle(R.string.panic_title);
+		builder.setMessage(R.string.panic_message);
+		builder.setPositiveButton(R.string.panic_button_ok, new DialogInterface.OnClickListener() {
+
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+
+				// do something to stop barobot
+			}
+		});
+		builder.setNegativeButton(R.string.panic_button_cancel, new DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				// do nothing
+			}
+		});
+		
+		AlertDialog ad = builder.create();
+		ad.show();
     }
 }

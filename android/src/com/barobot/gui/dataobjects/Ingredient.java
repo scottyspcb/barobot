@@ -14,7 +14,7 @@ public class Ingredient {
 		return what;
 	}
 	
-	public double getQuantity()
+	public int getQuantity()
 	{
 		return quantity;
 	}
