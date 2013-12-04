@@ -20,14 +20,11 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
 public class BarobotMain extends BarobotActivity {
-    // Layout Views
+    // Layout Viewsd
 	private static BarobotMain instance;
 	public CameraManager cm;
     public ArrayList<interval> inters = new ArrayList<interval>();    

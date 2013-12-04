@@ -127,13 +127,10 @@ public class virtualComponents {
 		return virtualComponents.getInt("BOTTLE_Y_" + i, b_pos_y[i]);
 	}
 	private static void update(String name, String value) {
-		
-		
 		final DebugActivity dialog = DebugActivity.getInstance();
 		if(dialog!=null){
 			dialog.update(name, value );
 		}
-
 	}
 	// zapisz ze tutaj jest butelka o danym numerze
 	public static void hereIsBottle(int i) {
@@ -174,8 +171,6 @@ public class virtualComponents {
 		ar.send(q);
 	}
 
-	
-	
 	public static void cancel_all() {
 		Arduino ar = Arduino.getInstance();
 		ar.clear();
@@ -260,14 +255,13 @@ public class virtualComponents {
 		q.add("GET CARRET", true);
 		ar.send( q );
 	}
-	
+
 	public static void enable_analog( Arduino ar, int pin, int time, int repeat) {
 		ar.send("LIVE A "+pin+","+time+","+repeat);		// repeat pomiary co time na porcie pin
 	}
 	public static void disable_analog(Arduino ar, int analogWaga) {
 		ar.send("LIVE A OFF");
 	}
-
 	public static void nalej(int time) {
 		Arduino ar = Arduino.getInstance();
 		ArduinoQueue q = new ArduinoQueue();
