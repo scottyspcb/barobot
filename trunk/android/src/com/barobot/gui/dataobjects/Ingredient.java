@@ -27,7 +27,7 @@ public class Ingredient {
 		{
 			result += quantity + " ml ";
 		}
-		result += what.type; 
+		result += what.toString(); 
 	
 		return result;
 	}
