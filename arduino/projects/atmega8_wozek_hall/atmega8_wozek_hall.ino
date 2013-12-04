@@ -13,8 +13,6 @@
 #define ANALOGS  5
 volatile int16_t ADCvalue[4][ANALOGS] = {{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0}};
 
-
-
 byte moving_x = DRIVER_DIR_STOP;      // informacja co robi główny silnik
 byte moving_y = DRIVER_DIR_STOP;      // informacja co robi silnik
 byte moving_z = DRIVER_DIR_STOP;      // informacja co robi silnik
@@ -112,11 +110,14 @@ boolean is_down  = false;
 boolean is_rising  = false;
 boolean is_falling  = false;
 
-#define HISTORY_LENGTH  3
-int16_t historyx[HISTORY_LENGTH]  = {typical_neutral,typical_neutral,typical_neutral};
-int8_t historyx_index  = 0;
+boolean send_min  = false;
+boolean send_max  = false;
 
-#define WAVING  7
+#define HISTORY_LENGTH  7
+#define ENDSTOP_DIFF  100
+#define WAVING  5
+int16_t historyx[HISTORY_LENGTH]  = {typical_neutral,typical_neutral,typical_neutral,typical_neutral,typical_neutral,typical_neutral,typical_neutral};
+int8_t historyx_index  = 0;
 
 int16_t cc = 0;
 
@@ -138,101 +139,133 @@ void loop() {
 	}
         // analizuj 
         // todo do znalezienia: local max, local min, global min, global max,
-        // send_x_pos( LOCAL_MAX )
-        // send_x_pos( LOCAL_MIN )
-        // send_x_pos( GLOBAL_MAX )
-        // send_x_pos( GLOBAL_MIN )
+              //      digitalWrite(_pwm_channels[6].pin, false);
+              //      digitalWrite(_pwm_channels[7].pin, false);    
         cc++;
-        cli();
-        int16_t val1 = ADCvalue[0][INNER_CODE_HALL_X];      // copy, look at the ISR
-        sei();
-        int16_t val = abs( val1 - typical_neutral );
-        if(cc>2000){
-              cc   = 0;
-              byte in = historyx_index + HISTORY_LENGTH;
-              int16_t b1 = historyx[ (in -1 )% HISTORY_LENGTH ];       // -1
-              int16_t b2 = historyx[ (in -2 )% HISTORY_LENGTH ];       // -2
-              int16_t b3 = historyx[ (in -3 )% HISTORY_LENGTH ];       // -3
+        if(cc>200){
+          cli();
+          int16_t val1 = ADCvalue[0][INNER_CODE_HALL_X];      // copy, look at the ISR
+          val1 += ADCvalue[1][INNER_CODE_HALL_X];
+          val1 += ADCvalue[2][INNER_CODE_HALL_X]; 
+          val1 += ADCvalue[3][INNER_CODE_HALL_X];
+          sei();
+          val1 = val1 >>2;    // div 4
 
-           //   int16_t diff = ((val1 + b1) -  (b2 + b3));
-              int16_t diff = val1 - b2 + b1 - b3;
+          int16_t val = abs( val1 - typical_neutral );
+          if( val1 > typical_neutral ){
+            is_up    = true;
+            is_down  = false;
+            send_min = false;
+          }else if( val1 < typical_neutral ){
+            is_up    = false;
+            is_down  = true;
+            send_max = false;
+          }
 
-              if( diff < WAVING && diff > -WAVING ){
+          cc   = 0;
+          byte in = historyx_index + HISTORY_LENGTH;
+          int16_t b1 = historyx[ (in -1 )% HISTORY_LENGTH ];       // -1      +
+          int16_t b2 = historyx[ (in -2 )% HISTORY_LENGTH ];       // -2      +
+          int16_t b3 = historyx[ (in -3 )% HISTORY_LENGTH ];       // -3      +
+          int16_t b4 = historyx[ (in -4 )% HISTORY_LENGTH ];       // -3      -
+          int16_t b5 = historyx[ (in -5 )% HISTORY_LENGTH ];       // -3      -
+          int16_t b6 = historyx[ (in -7 )% HISTORY_LENGTH ];       // -3      -
+          int16_t b7 = historyx[ (in -3 )% HISTORY_LENGTH ];       // -3      -
+          int16_t diff = val1 - b4 + b2 - b5  + b1 - b6+ b3 - b7 ;    // dodatnie gdy rosnie, ujemne gdy maleje
+
+            if( val > 10 ){    // warte analizy
+              digitalWrite(_pwm_channels[3].pin, true);
+              if( val > ENDSTOP_DIFF ){    // warte analizy
+                  digitalWrite(_pwm_channels[0].pin, true);      // red glass led
+             }else{
+                 digitalWrite(_pwm_channels[0].pin, false);      // red glass led
+             }
+             if( diff < WAVING && diff > -WAVING ){
                 // odczyt pływa
-              }else if( diff  < 0 ){          //rising
+             }else if( diff  < 0 ){          //rising
+                if(is_rising ){
+                  if( val > 100 ){
+                     if(is_up){
+                       if(!send_max){
+                         send_x_pos( HALL_GLOBAL_MAX, is_up, is_down );
+                         send_max = true;
+                       }
+                     }else if(is_down){
+                       DEBUG( "---" );
+                     }                
+                  }else{
+                     if(is_up){
+                       DEBUGLN( "IS_FALLING+" );        //  ok
+                       send_x_pos( HALL_LOCAL_MAX, is_up, is_down );
+                     }else if(is_down){
+                       DEBUGLN( "IS_FALLING-" );
+                     }                    
+                   //  send_x_pos( HALL_GLOBAL_MAX );
+                  }
+                }
                 DEBUG( "R" );
-                is_rising   = true;
-                is_falling  = false;
+                is_falling   = true;
+                is_rising  = false;
                 digitalWrite(_pwm_channels[6].pin, true);
                 digitalWrite(_pwm_channels[7].pin, false);
               }else if( diff > 0 ){
+                if(is_falling ){    // send message
+                  if( val > 100 ){    // diff > 100
+                     if(is_up){
+                       DEBUG( "+++" );
+                     }else if(is_down){
+                       if(!send_min){
+                         send_x_pos( HALL_GLOBAL_MIN, is_up, is_down );
+                         send_min = true;
+                       }
+                     }
+                  }else{
+                     if(is_up){
+                       DEBUGLN( "IS_RISING+" );
+                     }else if(is_down){
+                       DEBUGLN( "IS_RISING-" );      // ok
+                       send_x_pos( HALL_LOCAL_MIN, is_up, is_down );
+                     }
+                  }
+                }
                 DEBUG( "F" );
-                is_falling = true;
-                is_rising  = false;
+                is_rising  = true;
+                is_falling = false;
                 digitalWrite(_pwm_channels[6].pin, false);
                 digitalWrite(_pwm_channels[7].pin, true);
-              }else if( is_falling ){
-              }else if( is_rising ){
               }
           //    DEBUG( "\tin: " );    
           //    DEBUG( String(in) );
-              DEBUG( "\td: " );
-              DEBUG(  String(diff) );
+              if( mil > milis1000 ){    // debug, mrygaj co 1 sek
+                DEBUG( "\td: " );
+                DEBUG(  String(diff) );
 
-              DEBUG( "\tval: " );      
-              DEBUG( String(val1) );
-
-              DEBUG( "\tbA: " );
-              DEBUG( String( b1) );
-
-              DEBUG( "\tbB: " );
-              DEBUG( String( b2) );
-
-              DEBUG( "\tbC: " );
-              DEBUG( String( b3) );
-
-         //     DEBUG( String(val + b1) );
-          //    DEBUG( "\t" );
-          //    DEBUGLN( String(b2 + b3) );
-
-              DEBUGLN();
-
+                DEBUG( "\tval: " );      
+                DEBUG( String(val1) );
+  /*
+                DEBUG( "\tbA: " );
+                DEBUG( String( b1) );
+  
+                DEBUG( "\tbB: " );
+                DEBUG( String( b2) );
+  
+                DEBUG( "\tbC: " );
+                DEBUG( String( b3) );
+ */
+           //     DEBUG( String(val + b1) );
+            //    DEBUG( "\t" );
+            //    DEBUGLN( String(b2 + b3) );
+  
+                DEBUGLN();
+                milis1000 = mil + 150;
+              }
            //   digitalWrite(_pwm_channels[6].pin, false);
            //   digitalWrite(_pwm_channels[7].pin, false);
 
-          if( val > 10 ){    // warte analizy
-            digitalWrite(_pwm_channels[3].pin, true);
-            if( val1 > typical_neutral ){
-                is_up    = true;
-                is_down  = false;
-            }else if( val1 < typical_neutral ){
-              is_up = false;
-              is_down = true;
-            }else{
-            //      digitalWrite(_pwm_channels[6].pin, false);
-            //      digitalWrite(_pwm_channels[7].pin, false);              
-            }
-            if( val > 100 ){    // warte analizy
-                digitalWrite(_pwm_channels[0].pin, true);
-                if( val > typical_neutral ){
-                  is_up    = true;
-                  is_down  = false;
-                }else if( val < typical_neutral ){
-                  is_up    = false;
-                  is_down  = true;
-                }
-           }else{
-               digitalWrite(_pwm_channels[0].pin, false);
-               is_up    = false;
-               is_down  = false;
-           }
           }else{
             digitalWrite(_pwm_channels[0].pin, false);
             digitalWrite(_pwm_channels[3].pin, false);
-            is_up = false;
-            is_down = false;
           }
-          
            historyx[historyx_index]  = val1;   
            historyx_index            = (historyx_index+1)%HISTORY_LENGTH;
         }
@@ -303,15 +336,17 @@ void update_servo( byte index ) {           // synchroniczne
     servos[index].pos_changed = false;
     if( servos[index].last_pos == servos[index].target_pos){
       DEBUGLN( "-gotowe servo" );
-      uint16_t margin = servos[index].last_pos;    // odwrotnie do ostatniej komendy
-      if(  servos[index].delta_pos > 0 ){      // jechalem w gore
-        DEBUGLN( "- -10" );
-        margin -= 10;
-      }else if(  servos[index].delta_pos < 0){  // jechalem w dol
-        DEBUGLN( "- +10" );
-        margin += 10;      
+      if( index == INNER_SERVOY ){
+        uint16_t margin = servos[index].last_pos;    // odwrotnie do ostatniej komendy
+        if(  servos[index].delta_pos > 0 ){      // jechalem w gore
+          DEBUGLN( "- -10" );
+          margin -= 10;
+        }else if(  servos[index].delta_pos < 0){  // jechalem w dol
+          DEBUGLN( "- +10" );
+          margin += 10;      
+        }
+        servo_lib[index].writeMicroseconds(margin);
       }
-      servo_lib[index].writeMicroseconds(margin);
       send_servo(false, localToGlobal(index), servos[index].target_pos ); 
     }
   }
@@ -413,7 +448,7 @@ void proceed( volatile byte buffer[5] ){
         if( buffer[1] == DRIVER_X ){
           moving_x        = buffer[2];
         }
-        DEBUG("-driver X:");
+        DEBUG("-driver X moving:");
         DEBUGLN(String(buffer[2]));
   }else if( buffer[0] == METHOD_LIVE_ANALOG ){         // LIVE A 3,100,5 // TODO method byte
       if(buffer[1] < 8){
@@ -509,16 +544,16 @@ void receiveEvent(int howMany){
   }
   byte cnt = 0;
   volatile byte (*buffer) = 0;
-  DEBUG("-input " );
+//  DEBUG("-input " );
   for( byte a = 0; a < IPANEL_BUFFER_LENGTH; a++ ){
     if(input_buffer[a][0] == 0 ){
       buffer = (&input_buffer[a][0]); 
       while( Wire.available()){ // loop through all but the last
         byte w =  Wire.read(); // receive byte as a character
         *(buffer +(cnt++)) = w;
-        printHex(w, false ); 
+//        printHex(w, false ); 
       }
-      DEBUGLN(""); 
+//      DEBUGLN(""); 
       last_index = a;
       return;
     }
@@ -576,7 +611,16 @@ static void send_servo( boolean error, byte servo, uint16_t pos ){
  // DEBUGLN("-out "+ String( my_address ) +" / "+ String( pin ) +"/"+ String(value));
 }
 
-void send_x_pos( byte reason ) {
+void send_x_pos( byte reason, boolean is_up, boolean is_down ) {
+  if( reason == HALL_GLOBAL_MIN ){
+    DEBUGLN("-X HALL_GLOBAL_MIN");
+  }else if( reason == HALL_GLOBAL_MAX ){
+    DEBUGLN("-X HALL_GLOBAL_MAX");
+  }else if( reason == HALL_LOCAL_MAX ){
+    DEBUGLN("-X HALL_LOCAL_MAX");
+  }else if( reason == HALL_LOCAL_MIN ){
+    DEBUGLN("-X HALL_LOCAL_MIN");
+  }
   byte ttt[5] = {METHOD_IMPORTANT_ANALOG, INNER_HALL_X, reason, 0, 0 };    // pozycja nieznana - uzupelnij w mainboard
   send(ttt,5);
 }
@@ -660,6 +704,7 @@ ISR(ADC_vect){
    tmp          &= 0xF8;
    channel      = channel%3;
    ADCvalue[ row % 4 ][ channel ] = ADCL | (ADCH << 8);  //  read low first
+   row          = (row +1 % 4);
 //   ADCSRA |= (1 << ADSC);    // Start the ADC conversion
    ADMUX        = (tmp | channel);
    channel++;
