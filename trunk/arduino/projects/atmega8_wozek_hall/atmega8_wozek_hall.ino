@@ -11,7 +11,11 @@
 #include <avr/interrupt.h>
 
 #define ANALOGS  5
-volatile uint16_t ADCvalue[ANALOGS] = {0,0,0,0,0};
+volatile int16_t ADCvalue[ANALOGS] = {0,0,0,0,0};
+
+byte moving_x = DRIVER_DIR_STOP;      // informacja co robi główny silnik
+byte moving_y = DRIVER_DIR_STOP;      // informacja co robi silnik
+byte moving_z = DRIVER_DIR_STOP;      // informacja co robi silnik
 
 #define UNCONNECTED_LEVEL  3
 #define MIN_DELTA  20
@@ -87,16 +91,36 @@ void init_leds(){
      *_pwm_channels[i].outport &= ~(_pwm_channels[i].pinmask);             // turn off the channel (set VCC)
     #endif
   }
-  digitalWrite(PIN_PANEL_LED0_NUM, HIGH);
 }
 
 unsigned long milisAnalog = 0;
-unsigned long int mil = 0;
-long int milis1000 = 0;
-long int milis2000 = 0;
+unsigned long mil = 0;
+unsigned long milis1000 = 0;
+unsigned long milis2000 = 0;
 byte iii = 0;
+
+int16_t typical_neutral = 510;
+int16_t threshold       = 30;
+int16_t enstrop_max     = 510;
+int16_t enstrop_min     = 510;
+
+boolean is_up    = false;
+boolean neutral  = false;
+boolean is_down  = false;
+boolean is_rising  = false;
+boolean is_falling  = false;
+
+#define HISTORY_LENGTH  3
+int16_t historyx[HISTORY_LENGTH]  = {typical_neutral,typical_neutral,typical_neutral};
+int8_t historyx_index  = 0;
+
+#define WAVING  4
+
+byte cc = 0;
+
 void loop() {
-  mil = millis();
+        mil = millis();
+
 	if( analog_reading &&  mil > milisAnalog ){
 		milisAnalog = mil+ analog_speed;
 		if( analog_pos == analog_repeat ){			// wyślij
@@ -111,24 +135,116 @@ void loop() {
                 byte index      = (analog_num +ANALOGS -2 ) % ANALOGS;
     		analog_sum	+= ADCvalue[index];
 	}
-        update_servo( INNER_SERVOY );
-        update_servo( INNER_SERVOZ );
-  	if( mil > milis1000 ){    // debug, mrygaj co 1 sek
-          DEBUG( "-analog" );
-          DEBUG(" /t");
-          DEBUG( ADCvalue[0] );
-          DEBUG(" /t");
-          DEBUG( ADCvalue[1] );
-          DEBUG(" /t");
-          DEBUG( ADCvalue[2] );
-          DEBUG(" /t");
-          DEBUG( ADCvalue[4] );
-          DEBUG(" /t");
-          DEBUG( ADCvalue[5] );
-          DEBUGLN( );
-          milis1000 = mil + 500;
-      }
+        // analizuj 
+        // todo do znalezienia: local max, local min, global min, global max,
+        // send_x_pos( LOCAL_MAX )
+        // send_x_pos( LOCAL_MIN )
+        // send_x_pos( GLOBAL_MAX )
+        // send_x_pos( GLOBAL_MIN )
+        int val1 = ADCvalue[INNER_CODE_HALL_X];      // copy, look at the ISR
+        int val = abs( val1 - typical_neutral );
 
+        cc++;
+        if(cc>10){
+              cc = 0;
+              byte in = historyx_index + HISTORY_LENGTH;
+              byte b1 = historyx[ (in ) % HISTORY_LENGTH   ];       // -1
+              byte b2 = historyx[ (in -1 )% HISTORY_LENGTH ];       // -2
+              byte b3 = historyx[ (in -2 )% HISTORY_LENGTH ];       // -3
+
+              int diff = ((val + b1) -  (b2 + b3));
+              if( diff < WAVING && diff > -WAVING ){
+                // odczyt pływa
+              }else if( diff  < 0 ){          //rising
+                DEBUG( "R\t" );
+                is_rising   = true;
+                is_falling  = false;
+                digitalWrite(_pwm_channels[6].pin, true);
+                digitalWrite(_pwm_channels[7].pin, false);
+
+              }else if( diff > 0 ){
+                DEBUG( "F\t" );
+                is_falling  = true;
+                is_rising  = false;
+                digitalWrite(_pwm_channels[6].pin, false);
+                digitalWrite(_pwm_channels[7].pin, true);
+              }else if( is_falling ){
+              }else if( is_rising ){
+              }
+              DEBUG( String(val) );
+              DEBUG( "\t" );
+              DEBUG( String(diff) );
+              DEBUG( "\t" );
+              DEBUG( String(val + b1) );
+              DEBUG( "\t" );
+              DEBUGLN( String(b2 + b3) );
+
+           //   digitalWrite(_pwm_channels[6].pin, false);
+           //   digitalWrite(_pwm_channels[7].pin, false);
+
+          if( val > 10 ){    // warte analizy
+            digitalWrite(_pwm_channels[3].pin, true);
+            if( val1 > typical_neutral ){
+                is_up    = true;
+                is_down  = false;
+            }else if( val1 < typical_neutral ){
+              is_up = false;
+              is_down = true;
+            }else{
+            //      digitalWrite(_pwm_channels[6].pin, false);
+            //      digitalWrite(_pwm_channels[7].pin, false);              
+            }
+            if( val > 100 ){    // warte analizy
+                digitalWrite(_pwm_channels[0].pin, true);
+                if( val > typical_neutral ){
+                  is_up    = true;
+                  is_down  = false;
+                }else if( val < typical_neutral ){
+                  is_up    = false;
+                  is_down  = true;
+                }
+           }else{
+               digitalWrite(_pwm_channels[0].pin, false);
+               is_up    = false;
+               is_down  = false;
+           }
+          }else{
+            digitalWrite(_pwm_channels[0].pin, false);
+            digitalWrite(_pwm_channels[3].pin, false);
+            is_up = false;
+            is_down = false;
+          }
+
+        }
+       historyx[historyx_index]  = val1;   
+       historyx_index            = (historyx_index+1)%HISTORY_LENGTH;
+
+       // ADCvalue[INNER_CODE_HALL_X] -512;
+      //  typical_neutral
+        if(moving_x){
+      	  if( mil > milis1000 ){    // debug, mrygaj co 1 sek
+              DEBUG( "-analog" );
+              DEBUG(" \t");
+              DEBUG( ADCvalue[0] );
+              DEBUG(" \t");
+              DEBUG( ADCvalue[1] );
+              DEBUG(" \t");
+              DEBUG( ADCvalue[2] );
+              DEBUG(" \t");
+              DEBUG( ADCvalue[3] );
+              DEBUG(" \t");  
+              DEBUG( ADCvalue[4] );
+              DEBUG(" \t/");  
+              DEBUG( val ); 
+              DEBUGLN( );
+              milis1000 = mil + 150;
+          }
+        }
+      
+      update_servo( INNER_SERVOY );
+      update_servo( INNER_SERVOZ );
+        
+/*
   	if( mil > milis2000 ){    // debug, mrygaj co 1 sek
           uint8_t pin = _pwm_channels[iii].pin; 
           DEBUG( "-pin " );
@@ -144,11 +260,11 @@ void loop() {
           digitalWrite(_pwm_channels[6].pin, false);
           digitalWrite(_pwm_channels[7].pin, false);
           digitalWrite(pin, true);
-          milis2000 = mil + 4000;
+          milis2000 = mil + 500;
           iii++;
           iii = iii %COUNT_IPANEL_ONBOARD_LED;
   	}
-
+  */
 
   // analizuj bufor wejsciowy i2c
   for( byte i=0;i<IPANEL_BUFFER_LENGTH;i++){
@@ -180,8 +296,6 @@ void update_servo( byte index ) {           // synchroniczne
     }
   }
 }
-
-
 
 void reload_servo( byte index ){      // in interrupt
   volatile ServoChannel &ser = servos[index];
@@ -241,7 +355,7 @@ void timer(){  // in interrupt
   ticks++;
 //  digitalWrite(PIN_PANEL_LED7_NUM,  !digitalRead(PIN_PANEL_LED7_NUM));    // Toggle led. Read from register (not from pin)
   reload_servo(INNER_SERVOY);
-  reload_servo(INNER_SERVOZ);  
+  reload_servo(INNER_SERVOZ);
 }
 
 // czytaj komendy i2c
@@ -275,6 +389,12 @@ void proceed( volatile byte buffer[5] ){
   }else if( buffer[0] == METHOD_LIVE_OFF ){         // LIVE A OFF
 	analog_reading	= false;
 
+  }else if( buffer[0] == METHOD_STEPPER_MOVING ){
+        if( buffer[1] == DRIVER_X ){
+          moving_x        = buffer[2];
+        }
+        DEBUG("-driver X:");
+        DEBUGLN(String(buffer[2]));
   }else if( buffer[0] == METHOD_LIVE_ANALOG ){         // LIVE A 3,100,5 // TODO method byte
       if(buffer[1] < 8){
         analog_num = buffer[1];      // analog num
@@ -323,14 +443,14 @@ void proceed( volatile byte buffer[5] ){
       digitalWrite(led, LOW);
     }
   }else if( buffer[0] == METHOD_SETTIME ){
-    byte led   = buffer[1];
-    byte on    = buffer[2];
-    byte off   = buffer[2];
+  //  byte led   = buffer[1];
+  //  byte on    = buffer[2];
+ //   byte off   = buffer[2];
     
   }else if( buffer[0] == METHOD_SETFADING ){
-    byte led   = buffer[1];
-    byte on    = buffer[2];
-    byte off   = buffer[2];
+  //  byte led   = buffer[1];
+   // byte on    = buffer[2];
+   // byte off   = buffer[2];
 
   }else if( buffer[0] == METHOD_RESETCYCLES ){
     // resetuj cykl petli pwm
@@ -422,16 +542,32 @@ void requestEvent(){
     }
     input_buffer[last_index][0] = 0;
 }
+
 /*
 static void send_pin_value( byte pin, byte value ){
   byte ttt[5] = {METHOD_I2C_SLAVEMSG,RETURN_PIN_VALUE,my_address,pin,value};
   send(ttt,5);
  // DEBUGLN("-out "+ String( my_address ) +" / "+ String( pin ) +"/"+ String(value));
 }*/
+
 static void send_servo( boolean error, byte servo, uint16_t pos ){
   byte ttt[5] = {METHOD_I2C_SLAVEMSG, error ? RETURN_DRIVER_ERROR : RETURN_DRIVER_READY, servo, (pos & 0xFF), (pos >>8) };
   send(ttt,5);
  // DEBUGLN("-out "+ String( my_address ) +" / "+ String( pin ) +"/"+ String(value));
+}
+
+void send_x_pos( byte reason ) {
+  byte ttt[5] = {METHOD_IMPORTANT_ANALOG, INNER_HALL_X, reason, 0, 0 };    // pozycja nieznana - uzupelnij w mainboard
+  send(ttt,5);
+}
+
+void send_y_pos( byte reason) {
+  if( reason == HALL_GLOBAL_MIN ||  reason == HALL_GLOBAL_MIN ){    // zatrzymaj Y
+    servos[INNER_SERVOY].last_pos = servos[INNER_SERVOY].target_pos;
+  }
+  uint16_t pos = servos[INNER_SERVOY].last_pos;
+  byte ttt[5] = {METHOD_IMPORTANT_ANALOG, INNER_HALL_Y, reason, (pos & 0xFF), (pos >>8) };
+  send(ttt,5);
 }
 
 static void send_here_i_am(){
