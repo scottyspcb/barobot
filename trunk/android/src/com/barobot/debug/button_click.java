@@ -32,82 +32,83 @@ public class button_click implements OnClickListener{
 
 	@Override
 	public void onClick(View v) {
-		Arduino ar = Arduino.getInstance();
-		ArduinoQueue q = new ArduinoQueue();
+		Arduino ar		= Arduino.getInstance();
+		ArduinoQueue q	= new ArduinoQueue();
+		int posx		=  virtualComponents.getInt("POSX", 0 );
+		int posy		=  virtualComponents.getInt("POSY", 0 );
 
 		switch (v.getId()) {
 		case R.id.set_x_1000:
 			virtualComponents.moveZDown( q );
-			q.add("X" + ((-1000) * virtualComponents.mnoznikx), true);
+			q.add("X" + ( posx - (1000 * virtualComponents.mnoznikx)), true);
 			ar.send(q);
 			break;
 		case R.id.set_x_100:
 			virtualComponents.moveZDown( q );
-			q.add("X" + ((-100) * virtualComponents.mnoznikx), true );
+			q.add("X" + ( posx -(100 * virtualComponents.mnoznikx)), true );
 			ar.send(q);
 			break;
 		case R.id.set_x_10:
 			virtualComponents.moveZDown( q );
-			q.add("X" + ((-10) * virtualComponents.mnoznikx), true );
+			q.add("X" + ( posx -(10 * virtualComponents.mnoznikx)), true );
 			ar.send(q);
 			break;
 		case R.id.set_x10:
 			virtualComponents.moveZDown( q );
-			q.add("X+" + ((10) * virtualComponents.mnoznikx), true );
+			q.add("X" + (posx + (10 * virtualComponents.mnoznikx)), true );
 			ar.send(q);
 			break;
 		case R.id.set_x100:
 			virtualComponents.moveZDown( q );
-			q.add("X+" + ((100) * virtualComponents.mnoznikx), true );
+			q.add("X" + (posx +(100 * virtualComponents.mnoznikx)), true );
 			ar.send(q);
 			break;
 		case R.id.set_x1000:
 			virtualComponents.moveZDown( q );
-			q.add("X+" + ((1000) * virtualComponents.mnoznikx), true );
+			q.add("X" + (posx +(1000 * virtualComponents.mnoznikx)), true );
 			ar.send(q);
 			break;  
 		case R.id.set_y_600:
 			virtualComponents.moveZDown( q );
-			q.add("Y" + ((-1000) * virtualComponents.mnoznikx), true );
+			q.add("Y" + ( posy -(1000 * virtualComponents.mnoznikx)), true );
 			ar.send(q);
 			break;
 		case R.id.set_y_100:
 			virtualComponents.moveZDown( q );
-			q.add("Y" + ((-100) * virtualComponents.mnoznikx), true );
+			q.add("Y" + ( posy -(100 * virtualComponents.mnoznikx)), true );
 			ar.send(q);
 			break;
 		case R.id.set_y_10:
 			virtualComponents.moveZDown( q );
-			q.add("Y" + ((-10) * virtualComponents.mnozniky), true );
+			q.add("Y" + (posy - (10 * virtualComponents.mnozniky)), true );
 			ar.send(q);
 			break;
 		case R.id.set_y10:
 			virtualComponents.moveZDown( q );
-			q.add("Y+" + ((10) * virtualComponents.mnozniky), true );
+			q.add("Y" + (posy + (10 * virtualComponents.mnozniky)), true );
 			ar.send(q);
 			break;
 		case R.id.set_y100:
 			virtualComponents.moveZDown( q );
-			q.add("Y+" + ((100) * virtualComponents.mnozniky), true );
+			q.add("Y" + ( posy + (100 * virtualComponents.mnozniky)), true );
 			ar.send(q);
 			break;
 		case R.id.set_y600:
 			virtualComponents.moveZDown( q );
-			q.add("Y+" + ((1000) * virtualComponents.mnozniky), true );
+			q.add("Y" + ( posy + (1000 * virtualComponents.mnozniky)), true );
 			ar.send(q);
 			break;
 		case R.id.kalibrujx:
 			virtualComponents.moveZDown( q );
 			q.add("Y" + virtualComponents.get("NEUTRAL_POS_Y", "0" ), true );
 			long lengthx1	=  virtualComponents.getInt("LENGTHX", 600 ) * 10;
-			q.add("X-" + lengthx1, true );
-			q.add("X+" + lengthx1, true );
+			q.add("X" + (posx +lengthx1), true );
+			q.add("X-" + (lengthx1), true );
 			q.add("X0", true);
 			ar.send(q);
 			break;
 		case R.id.set_neutral_y:
-			String posy2		=  virtualComponents.get("POSY", "0" );
-			virtualComponents.set("NEUTRAL_POS_Y", ""+posy2 );
+			virtualComponents.set("NEUTRAL_POS_Y", ""+posy );
 			String nn = virtualComponents.get("NEUTRAL_POS_Y", "0" );
 			Toast.makeText(dbw, "To jest pozycja bezpieczna ("+nn+")...", Toast.LENGTH_LONG).show();
 			break;
@@ -118,10 +119,9 @@ public class button_click implements OnClickListener{
 		case R.id.kalibrujy:
 			this.setSpeed();		// jeśli mam szklankę to bardzo wolno
 			virtualComponents.moveZDown( q );
-			long lengthy1	=  virtualComponents.getInt("LENGTHY", 600 )  * 100;
-			q.add("Y-" + lengthy1, true );
-			q.add("Y+" + lengthy1, true );
-			q.add("Y0", true);
+			q.add("Y800" , true );
+			q.add("Y2400", true );
+			q.add("Y110", true);
 			ar.send(q);
 			break;
 		case R.id.kalibrujz:
@@ -196,8 +196,6 @@ public class button_click implements OnClickListener{
 			// przełącz okno na listę butelek, 
 			// zablokuj przyciski i po naciśnięciu ustaw w tym miejscu butelkę
 			Constant.log(Constant.TAG,"wybierz butelkę...");
-			String posx		=  virtualComponents.get("POSX", "0" );	
-			String posy		=  virtualComponents.get("POSY", "0" );
 			Constant.log(Constant.TAG,"wybierz butelkę3...");
 			Toast.makeText(dbw, "Wybierz butelkę do zapisania pozycji " + posx + "/" + posy, Toast.LENGTH_LONG).show();
 //			dbw.tabHost.setCurrentTabByTag("tab0");
@@ -234,7 +232,7 @@ public class button_click implements OnClickListener{
 		case R.id.max_x:
 			virtualComponents.moveZDown( q );
 			long lengthx2	=  virtualComponents.getInt("LENGTHX", 600 );
-			ar.send("X+" + lengthx2 );			
+			ar.send("X" + (posx +lengthx2) );			
 			break;
 
 		case R.id.max_y:
