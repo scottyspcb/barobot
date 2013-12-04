@@ -2,13 +2,23 @@
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <item 
+        android:id="@+id/action_panic"
+        android:title="@string/action_panic"
+        android:showAsAction="always"
+        
+        />
     <item android:id="@+id/main_feature"
           android:title="@string/action_main"
-          android:showAsAction="ifRoom" />
+          android:showAsAction="always" />
     <item
         android:id="@+id/action_bottles"
         android:title="@string/action_bottle_setup" 
         android:showAsAction="ifRoom" />
+    <item 
+        android:id="@+id/action_outside_components"
+        android:title="@string/title_activity_outside_component"
+        android:showAsAction="ifRoom"/>
     <item
         android:id="@+id/action_recipes"
         android:title="@string/action_recipe_setup" 

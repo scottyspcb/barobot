@@ -7,8 +7,9 @@
     <uses-sdk
         android:minSdkVersion="14"
         android:targetSdkVersion="14" />
- 
+
     <uses-feature android:name="android.hardware.usb.host" />
+
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -33,6 +34,7 @@
             <intent-filter>
                 <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
             </intent-filter>
+
             <meta-data
                 android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
                 android:resource="@xml/device_filter" />
@@ -72,14 +74,21 @@
             android:name="com.barobot.gui.MainActivity"
             android:label="@string/title_activity_barobot_main" >
         </activity>
-        <activity 
+        <activity
             android:name="com.barobot.gui.BottleSetupActivity"
             android:label="@string/title_activity_bottle_setup" >
         </activity>
         <activity
             android:name="com.barobot.gui.RecipeSetupActivity"
             android:label="@string/title_activity_recipe_setup" >
-            
+        </activity>
+        <activity
+            android:name="com.barobot.gui.OutsideComponentActivity"
+            android:label="@string/title_activity_outside_component" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.barobot.gui.BarobotActivity" />
         </activity>
     </application>
+
 </manifest>

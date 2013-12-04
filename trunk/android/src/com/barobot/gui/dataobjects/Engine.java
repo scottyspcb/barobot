@@ -5,9 +5,13 @@ import java.util.List;
 
 import android.content.Context;
 
+import com.barobot.gui.ArduinoListener;
 import com.barobot.gui.database.BarobotDB;
+import com.barobot.hardware.virtualComponents;
 
 public class Engine {
+	
+	private final int OUTSIDE_POSITION = 13;
 	
 	private static Engine instance;
 	
@@ -38,9 +42,8 @@ public class Engine {
 	}
 	//bottle configuration
 	private Bottle[] bottleSet;
+	;
 	private BarobotDB db;
-	
-	//cookbook
 	
 	private Engine(Context context)
 	{
@@ -101,11 +104,26 @@ public class Engine {
 				if (bottleSet[idx].getType().equalsIgnoreCase(i.getLiquid().type))
 				{
 					ingridientFound = true;
+					break;
 				}
 			}
 			if (!ingridientFound)
 			{
-				return false;
+				// Checking outside list
+				boolean foundOutside = false;
+				List<Liquid> outsideCompontents = getOutsideComponent();
+				for (Liquid liquid: outsideCompontents)
+				{
+					if (liquid.type.equalsIgnoreCase(i.getLiquid().type))
+					{
+						foundOutside = true;
+						break;
+					}
+				}
+				if (!foundOutside)
+				{
+					return false;
+				}
 			}
 		}
 		
@@ -117,7 +135,7 @@ public class Engine {
 	}
 	
 	public String Sequence;
-	public Boolean Prepare(Recipe recipe)
+	public Boolean Prepare(Recipe recipe, ArduinoListener mListener)
 	{
 		List<Integer> bottleSequence = new ArrayList<Integer>();
 		List<Ingredient> ingridients = recipe.getIngridients();
@@ -132,23 +150,45 @@ public class Engine {
 				}
 				if (bottleSet[idx].getType().equalsIgnoreCase(i.getLiquid().type))
 				{
-					bottleSequence.add(idx);
+					int num = (int) i.getQuantity()/20;
+					for (int iter = 1; iter <= num ; iter++){
+						bottleSequence.add(idx);
+					}
 					ingridientFound = true;
+					break;
 				}
 			}
 			if (!ingridientFound)
 			{
-				return false;
+				// Checking outside list
+				boolean foundOutside = false;
+				List<Liquid> outsideCompontents = getOutsideComponent();
+				for (Liquid liquid: outsideCompontents)
+				{
+					if (liquid.type.equalsIgnoreCase(i.getLiquid().type))
+					{
+						foundOutside = true;
+						break;
+					}
+				}
+				if (!foundOutside)
+				{
+					return false;
+				}
 			}
 		}
 		
-		// prepare
+		
 		Sequence = "";
 		for (Integer i : bottleSequence)
 		{
+			// this should contain calls to Arduino
+			virtualComponents.moveToBottle(i);
+			virtualComponents.nalej(0);
+			
 			Sequence += i + " ";
 		}
-		
+		mListener.onQueueFinished();
 		return true;
 	}
 	
@@ -172,6 +212,20 @@ public class Engine {
 	public void addIngredient(long recipeId, Ingredient ingredient)
 	{
 		db.InsertIngredient(recipeId, ingredient);
+	}
+	
+	public void addOutsideComponent(Liquid liquid)
+	{
+		db.InsertSlot(OUTSIDE_POSITION, new Bottle(liquid, 0));
+	}
+	
+	public void removeOutsideComponents()
+	{
+		db.removeOusideComponents(OUTSIDE_POSITION);
+	}
+	
+	public List<Liquid> getOutsideComponent() {
+		return db.getOutsideComponents(OUTSIDE_POSITION);
 	}
 	
 	private void setupDatabase()
@@ -201,6 +255,7 @@ public class Engine {
 			db.InsertRecipe(recipe);
 		}
 		
+		addOutsideComponent(Liquids.cocaCola);
 	}
 	
 	public static List<Recipe> PrepareTestRecipies()
@@ -211,20 +266,20 @@ public class Engine {
 		
 		List<Ingredient> cubaLibre = new ArrayList<Ingredient>();
 		cubaLibre.add(new Ingredient(Engine.Liquids.whiteRum, 60));
-		cubaLibre.add(new Ingredient(Engine.Liquids.cocaCola, 0));
+		cubaLibre.add(new Ingredient(Engine.Liquids.cocaCola, 160));
 		
 		result.add(new Recipe(1, "Cuba Libre", "Zajebisty drink", cubaLibre));
 		
 		// Mojito
 		List<Ingredient> mojito = new ArrayList<Ingredient>();
-		mojito.add(new Ingredient(Engine.Liquids.whiteRum, 50));
-		mojito.add(new Ingredient(Engine.Liquids.sparklingWater, 0));
+		mojito.add(new Ingredient(Engine.Liquids.whiteRum, 40));
+		mojito.add(new Ingredient(Engine.Liquids.sparklingWater, 200));
 		
 		result.add(new Recipe(2, "Mojito", "Zajebisty drink 2", mojito));
 		
 		// White russian
 		List<Ingredient> whiteRussian = new ArrayList<Ingredient>();
-		whiteRussian.add(new Ingredient(Engine.Liquids.whiteRum, 50));
+		whiteRussian.add(new Ingredient(Engine.Liquids.whiteRum, 60));
 		whiteRussian.add(new Ingredient(Engine.Liquids.coffeeLiquoir, 20));
 		
 		result.add(new Recipe(3, "White Russian", "Koledzy zza buga", whiteRussian));
