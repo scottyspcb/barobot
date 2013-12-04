@@ -50,6 +50,7 @@ public class BarobotDB {
 		
 		if (!c.moveToFirst()) {
 			// returning empty dataset
+			c.close();
 			return result;
 		}
 		
@@ -64,6 +65,7 @@ public class BarobotDB {
 			
 		} while (c.moveToNext());
 		
+		c.close();
 		return result;
 	}
 	
@@ -129,6 +131,7 @@ public class BarobotDB {
 		
 		if (!c.moveToFirst()) {
 			// returning empty dataset
+			c.close();
 			return result;
 		}
 		
@@ -145,6 +148,7 @@ public class BarobotDB {
 			
 		} while (c.moveToNext());
 		
+		c.close();
 		return result;
 	}
 	
@@ -164,6 +168,7 @@ public class BarobotDB {
 		
 		if (!c.moveToFirst()) {
 			// returning empty dataset
+			c.close();
 			return result;
 		}
 		
@@ -178,6 +183,7 @@ public class BarobotDB {
 			
 		} while (c.moveToNext());
 		
+		c.close();
 		return result;
 	}
 	
@@ -245,6 +251,7 @@ public class BarobotDB {
 		
 		if (!c.moveToFirst()) {
 			// returning empty dataset
+			c.close();
 			return result;
 		}
 		
@@ -258,6 +265,7 @@ public class BarobotDB {
 			
 		} while (c.moveToNext());
 		
+		c.close();
 		return result;
 	}
 	
@@ -292,6 +300,7 @@ public class BarobotDB {
 		
 		if (!c.moveToFirst()) {
 			// returning empty dataset
+			c.close();
 			return result;
 		}
 		
@@ -308,6 +317,7 @@ public class BarobotDB {
 			
 		} while (c.moveToNext());
 		
+		c.close();
 		return result;
 	}
 	

@@ -49,7 +49,7 @@ public class Engine {
 	{
 		db = new BarobotDB(context);
 		
-		setupDatabase();
+		//setupDatabase();
 		
 		refreshBottleSet();
 	}
@@ -183,11 +183,12 @@ public class Engine {
 		for (Integer i : bottleSequence)
 		{
 			// this should contain calls to Arduino
-			virtualComponents.moveToBottle(i);
-			virtualComponents.nalej(0);
+			//virtualComponents.moveToBottle(i);
+			//virtualComponents.nalej(0);
 			
 			Sequence += i + " ";
 		}
+		
 		mListener.onQueueFinished();
 		return true;
 	}
