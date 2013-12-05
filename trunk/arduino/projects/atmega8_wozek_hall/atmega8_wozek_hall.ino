@@ -112,10 +112,12 @@ boolean is_falling  = false;
 
 boolean send_min  = false;
 boolean send_max  = false;
+boolean send_lmin  = false;
+boolean send_lmax  = false;
 
 #define HISTORY_LENGTH  7
 #define ENDSTOP_DIFF  100
-#define WAVING  5
+#define WAVING  6
 int16_t historyx[HISTORY_LENGTH]  = {typical_neutral,typical_neutral,typical_neutral,typical_neutral,typical_neutral,typical_neutral,typical_neutral};
 int8_t historyx_index  = 0;
 
@@ -156,10 +158,12 @@ void loop() {
             is_up    = true;
             is_down  = false;
             send_min = false;
+            send_lmin = false;
           }else if( val1 < typical_neutral ){
             is_up    = false;
             is_down  = true;
             send_max = false;
+            send_lmax = false;
           }
 
           cc   = 0;
@@ -195,8 +199,11 @@ void loop() {
                      }                
                   }else{
                      if(is_up){
-                       DEBUGLN( "IS_FALLING+" );        //  ok
-                       send_x_pos( HALL_LOCAL_MAX, is_up, is_down );
+                       if(!send_lmax){
+//                         DEBUGLN( "IS_FALLING+" );        //  ok
+                         send_x_pos( HALL_LOCAL_MAX, is_up, is_down );
+                         send_lmax = true;
+                       }
                      }else if(is_down){
                        DEBUGLN( "IS_FALLING-" );
                      }                    
@@ -223,8 +230,11 @@ void loop() {
                      if(is_up){
                        DEBUGLN( "IS_RISING+" );
                      }else if(is_down){
-                       DEBUGLN( "IS_RISING-" );      // ok
-                       send_x_pos( HALL_LOCAL_MIN, is_up, is_down );
+                       if(!send_lmin){
+//                         DEBUGLN( "IS_RISING-" );      // ok
+                         send_x_pos( HALL_LOCAL_MIN, is_up, is_down );
+                         send_lmin = true;
+                       }
                      }
                   }
                 }
@@ -469,7 +479,8 @@ void proceed( volatile byte buffer[5] ){
     byte index = globalToLocal( buffer[1] );
     servos[index].enabled= false;
     servo_lib[index].detach();
-    pinMode(servos[index].pin, INPUT);
+    digitalWrite(servos[index].pin, HIGH);
+//    pinMode(servos[index].pin, INPUT);
     servos[index].pos_changed = false;
   }else if( buffer[0] == METHOD_GOTOSERVOYPOS ){
     // on wire: low_byte, high_byte, speed
@@ -524,15 +535,21 @@ void run_to(byte index, byte sspeed, uint16_t target){
     if(prog_mode){
       return;
     }
-    servos[index].target_pos     = target;
-    if( servos[index].target_pos < servos[index].last_pos ){    // jedz w dol
-      servos[index].delta_pos = -sspeed;
-      servos[index].last_distance = servos[index].last_pos - servos[index].target_pos;
-    }else if( servos[index].target_pos > servos[index].last_pos ){    // jedz w gore
-      servos[index].delta_pos = sspeed;
-      servos[index].last_distance = servos[index].target_pos - servos[index].last_pos;
+    if( servos[index].target_pos  == target && servos[index].last_pos == target ){      // the same pos
+      servo_lib[index].attach(servos[index].pin);
+      servo_lib[index].writeMicroseconds(servos[index].last_pos);
+      send_servo(false, localToGlobal(index), target );
+    }else{
+      servos[index].target_pos     = target;    
+      if( servos[index].target_pos < servos[index].last_pos ){    // jedz w dol
+        servos[index].delta_pos = -sspeed;
+        servos[index].last_distance = servos[index].last_pos - servos[index].target_pos;
+      }else if( servos[index].target_pos > servos[index].last_pos ){    // jedz w gore
+        servos[index].delta_pos = sspeed;
+        servos[index].last_distance = servos[index].target_pos - servos[index].last_pos;
+      }
     }
-    if(!servo_lib[index].attached()){
+    if(!servo_lib[index].attached()){            //  turn on even if the same target pos
       servo_lib[index].attach(servos[index].pin);
       servos[index].enabled = true;
     }
