@@ -10,15 +10,6 @@ byte in_buffer[7];
 volatile uint8_t input_buffer[MAINBOARD_BUFFER_LENGTH][7] = {{0,0,0,0,0,0,0},{0,0,0,0,0,0,0},{0,0,0,0,0,0,0}};
 volatile uint8_t buff_length[MAINBOARD_BUFFER_LENGTH] = {0,0,0};
 
-
-
-
-
-
-
-
-
-
 byte out_buffer[7];
 uint8_t serialBuff[130];
 uint8_t serialBuff_pos   = 0;
@@ -133,10 +124,10 @@ void loop(){
                 if(hbval>=10){
               //  2c_analog(I2C_ADR_IPANEL, 0);
                   hbval=0;
-                } 
-  		milis100 = mil + 3000;
-    DEBUG("-HELLO android ");
-    DEBUGLN(String(mil));
+                }
+  		milis100 = mil + 12000;
+                DEBUG("-HELLO android ");
+                DEBUGLN(String(mil));
   	}
 		if (Console0Complete) {
 			parseInput( serial0Buffer );				      // parsuj wejscie
@@ -222,45 +213,45 @@ void proceed( byte length,volatile uint8_t buffer[7] ){ // zrozum co przyszlo po
     i2c_device_found( buffer[1], buffer[2], buffer[3], pos );
 
   }else if(buffer[0] == METHOD_IMPORTANT_ANALOG){      // wyslij do androida pozycje bo trafiono na górkę hallem
-
-
     send2android("T");    // trigger
     if( buffer[1] == INNER_HALL_X){     
-      // is moving up or down
+      // is moving up or down      
+      boolean stop_moving = false;
       send2android("X,");
       send2android( String(buffer[2]) );                // reason
       send2android( "," );
-
       long int dis = stepperX.distanceToGo();
       if( dis < 0 && buffer[2] == HALL_GLOBAL_MIN ){    // moving down, min found
+        stop_moving = true;
         stepperX.stopNow();
       }else if( dis > 0 && buffer[2] == HALL_GLOBAL_MAX){    // moving up, max found
+        stop_moving = true;
         stepperX.stopNow();
       }
       if( dis > 0 ){
         send2android( String(DRIVER_DIR_FORWARD) );
       }else if( dis < 0 ){                
-
-
         send2android( String(DRIVER_DIR_BACKWARD) );
       }else{
-
-
         send2android( String(DRIVER_DIR_STOP) );
       }
       send2android( "," );      
       send2android( String(stepperX.currentPosition()) );
+      send2androidEnd();
+      if(stop_moving){
+          send2android("RPOSX");
+          send2android( String(stepperX.currentPosition()) );
+          send2androidEnd();
+      }
     }else if(buffer[1] == INNER_HALL_Y){
-
-
       send2android("Y");
       send2android( buffer[2] );                // reason
       send2android( "," );
       uint16_t pos = buffer[4];
       pos = pos<<8 | buffer[3];
       send2android( pos );
+      send2androidEnd();
     }
-    send2androidEnd();
     
 /*
     byte ttt[5] = {
@@ -439,46 +430,29 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
                 sendln2android("RPOSX" + String(pos));
 
 	}else if( input.startsWith("AX")) {    // AX10                  // ACCELERATION
-
-
         	String ss 	  = input.substring( 2 );		// 10
                 long unsigned val = decodeInt( ss, 0 );
                 val = val * 100;
                 stepperX.setAcceleration(val);
                 DEBUGLN("-setAcceleration: " + String(val) );
 	}else if( input.startsWith("X")) {    // X10,10,10              // TARGET,MAXSPEED
-
-
         	String ss 		= input.substring( 1 );
                 paserDeriver(DRIVER_X,ss);
-
+       		defaultResult = false;
 	}else if( input.startsWith("SX")) {    // X1000              // MAXSPEED
-
-
         	String ss 		= input.substring( 1 );
-        
                 paserDeriver(DRIVER_X,ss);
-
 	}else if( input.startsWith("Y")) {    // Y10,10                 // TARGET,ACCELERATION
-
-
         	String ss 		= input.substring( 1 );		// 10,10
                 paserDeriver(DRIVER_Y,ss);
-
+            	defaultResult = false;
 	}else if( input.startsWith("Z")) {    // Z10,10                 // TARGET,ACCELERATION
-
-
         	String ss 		= input.substring( 1 );		// 10,10
                 paserDeriver(DRIVER_Z,ss);
-
+		defaultResult = false;
 	}else if( input.equals("EX") ){
-
-
 		stepperX.enableOutputs();
-
 	}else if( input.equals("EY") ){
-
-
           out_buffer[0]  = METHOD_DRIVER_ENABLE;
           out_buffer[1]  = DRIVER_Y;
           writeRegisters(I2C_ADR_IPANEL, 2, false );
@@ -490,27 +464,19 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
           writeRegisters(I2C_ADR_IPANEL, 2, false );
 
 	}else if( input.equals("DX") ){
-
-
 		if(MAINBOARD_STEPPER_READY_DISABLE){
 			stepperX.disableOutputs();
 		}
 	}else if( input.equals("DY") ){
-
-
           out_buffer[0]  = METHOD_DRIVER_DISABLE;
           out_buffer[1]  = DRIVER_Y;
           writeRegisters(I2C_ADR_IPANEL, 2, false );
 	}else if( input.equals("DZ") ){
-
-
           out_buffer[0]  = METHOD_DRIVER_DISABLE;
           out_buffer[1]  = DRIVER_Z;
           writeRegisters(I2C_ADR_IPANEL, 2, false );
 	}else if( input.equals("RB") ){    // reset bus
-
-
-                get_order();
+               get_order();
 	}else if( input.equals("I2C") ){
 
 
@@ -525,7 +491,6 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
                   i2c_device_found(  addr2,(readed & 0xff),(readed>>8),  pos );
 		}
              }
-
 /*
         }else if ( input.startsWith("SET") ) {      // tutaj niektore beda synchroniczne inne asynchroniczne wiec czasem zwracaj R, a czasem dopiero po zakonczeniu
 		if( false){
@@ -556,21 +521,15 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 		defaultResult = false;
 */
 	}else if( input.equals( "PING2ANDROID") ){      // nic nie rob
-
-
 		defaultResult = false;
 	}else if( input.equals( "WAIT READY") ){      // tylko zwróc zwrotke
 	}else{
-
-
-
-
                 // nie rozumiem
 		sendln2android("ARDUINO NO COMMAND [" + input +"]");
 		defaultResult = false;  
 	}
 	if(defaultResult ){
-		sendln2android("R " + input );
+		sendln2android("R" + input );
 	}
 }
 byte read_can_fill(){
@@ -581,7 +540,6 @@ byte read_can_fill(){
   }
   readRegisters( I2C_ADR_IPANEL, 1 );
   return in_buffer[0]; // 0 jesli mozna, inna liczba jesli blad
-
 }
 
 void stepperReady( long int pos ){
@@ -605,8 +563,6 @@ void paserDeriver( byte driver, String input ){   // odczytaj komende silnika
   if( comma == -1 ){      // tylko jedna komenda
       target          = decodeInt( input, 0 );
   }else{
-
-
       String current  = input.substring(0, comma);
       input           = input.substring(comma + 1 );    // wytnij od tego znaku
       target          = decodeInt( current, 0 );
@@ -632,16 +588,12 @@ void paserDeriver( byte driver, String input ){   // odczytaj komende silnika
       }
 
   }else if( maxspeed > 0 && driver == DRIVER_Y ){            // stepper Y
-
-
       out_buffer[0]  = METHOD_GOTOSERVOYPOS;
       out_buffer[1]  = target & 0xff;            // low byte
       out_buffer[2]  = (target >> 8) & 0xff;     // high byte
       out_buffer[3]  = maxspeed & 0xff;
       writeRegisters(I2C_ADR_IPANEL, 4, false );
   }else if( maxspeed > 0 && driver == DRIVER_Z ){            // stepper Z
-
-
       out_buffer[0]  = METHOD_GOTOSERVOZPOS;
       out_buffer[1]  = target & 0xff;
       out_buffer[2]  = (target >> 8) & 0xff;
