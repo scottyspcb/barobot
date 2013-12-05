@@ -376,15 +376,14 @@
         android:textOff="Waga OFF"
         android:textOn="Waga ON" />
 
-    <ToggleButton
+    <Button
         android:id="@+id/set_bottle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/wagi_live"
         android:layout_toRightOf="@+id/wagi_live"
-        android:text="ToggleButton"
-        android:textOff="Tutaj jest butelka..."
-        android:textOn="Tutaj jest butelka..." />
+        android:text="Tutaj jest butelka..."
+        />
 
     <Button
         android:id="@+id/enabley"
@@ -467,5 +466,13 @@
         android:layout_alignBaseline="@+id/bottle_prev"
         android:layout_toRightOf="@+id/bottle_prev"
         android:text="Resetuj wozek" />
+
+    <Button
+        android:id="@+id/find_bottles"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/pacpac"
+        android:layout_toRightOf="@+id/pacpac"
+        android:text="Szukaj butelek" />
 
 </RelativeLayout>

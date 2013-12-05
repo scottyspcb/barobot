@@ -52,14 +52,15 @@ public class Arduino{
 		}
 		if( connection == null ){
 			AlertDialog.Builder builder = new AlertDialog.Builder(barobotMain);
-			String[] name = new String[2];
-			final Wire lowHardware[]=  new Wire[2];  
+			String[] name = new String[1];
+			final Wire lowHardware[]=  new Wire[1];  
 			lowHardware[0]	= new Serial_wire();
-			lowHardware[1]	= new BT_wire();
+			
+		//	lowHardware[1]	=
 			//		lowHardware[2]	= new ADB_wire();
 
 			name[0] = lowHardware[0].getName();
-			name[1] = lowHardware[1].getName();
+			//name[1] = lowHardware[1].getName();
 			//name[2] = lowHardware[2].getName();
 			builder.setTitle("Wybierz typ połączenia z robotem");
 			builder.setCancelable(false);
@@ -68,12 +69,12 @@ public class Arduino{
 		     	public void onClick(DialogInterface dialog, int which) {
 			          switch(which){
 			             case 0:
-			            	 prepareConnection(lowHardware[0], lowHardware[1]);
+			            	 prepareConnection(lowHardware[0],  new BT_wire());
 			            	 break;
-			             case 1:
+			            	 /*case 1:
 			            	 prepareConnection(lowHardware[1], lowHardware[1]);
 			            	 break;
-			            	 /*
+			            	
 			             case 2:
 			            	 prepareConnection(lowHardware[2], lowHardware[1]);
 			            	 break;*/
@@ -167,7 +168,11 @@ public class Arduino{
 		if(debugConnection!=null){
 			debugConnection.destroy();
 		}
-        Constant.log(Constant.TAG, "--- ON DESTROY ---");
+		output2.clear();
+		output2.clear();
+		wait_for = null;
+		mConversationHistory.clear();
+		Constant.log(Constant.TAG, "--- ON DESTROY ---");
 	}
 	public void resume() {
 		stopping = false;

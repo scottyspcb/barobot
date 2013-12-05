@@ -33,11 +33,11 @@ public class Driver {
 	-4000 = 0	-4000
 	*/
 	public long hard2soft( long pos2 ){
-		Log.w("MARGIN X1", "Margin: " + m1 + "  hard: " + pos2 + "=> soft " + (pos2 -m1) );
+	//	Log.w("MARGIN X1", "Margin: " + m1 + "  hard: " + pos2 + "=> soft " + (pos2 -m1) );
 		return pos2 - m1;
 	}
 	public long soft2hard( long pos3 ){
-		Log.w("MARGIN X2", "Margin: " + m1 + "  soft: " + pos3 + " => hard " + (pos3 -( -m1)));
+	//	Log.w("MARGIN X2", "Margin: " + m1 + "  soft: " + pos3 + " => hard " + (pos3 -( -m1)));
 		return pos3 - (- m1);
 	}
 }

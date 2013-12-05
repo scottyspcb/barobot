@@ -27,9 +27,6 @@ public class virtualComponents {
 	private static SharedPreferences.Editor config_editor;			// config systemu android
 	private static Map<String, String> hashmap = new HashMap<String, String>();
 	public static boolean is_ready = false;
-	// pozycje butelek, sa aktualizowane w trakcie
-	private static int[] b_pos_x = {207,207, 394,394,581,581,768,768, 955,955,1142,1142,1329,1329,1516,1516};
-	private static int[] b_pos_y = {90, 550, 90, 550, 90, 550, 90, 550, 90, 550, 90, 550, 90, 550, 90, 550};
 
 	// todo - porządek z tymi wartościami 
 	public static int mnoznikx = 1;
@@ -65,6 +62,29 @@ public class virtualComponents {
 	public static final int ANALOG_DIST2 = 21;
 	public static final int ANALOG_HALL = 10;
 
+	public static int margin_front = 0;
+	public static int margin_back = 0;
+	
+	// pozycje butelek, sa aktualizowane w trakcie
+	private static int[] b_pos_x = {207,207, 394,394,581,581,768,768, 955,955,1142,1142 };
+	public static int[] b_pos_y = { 
+		SERVOY_BACK_POS,					// 0, num 1
+		SERVOY_FRONT_POS,					// 1, num 2
+		SERVOY_BACK_POS,					// 2, num 3
+		SERVOY_FRONT_POS,					// 3, num 4
+		SERVOY_BACK_POS,					// 4, num 5
+		SERVOY_FRONT_POS,					// 5, num 6
+		SERVOY_BACK_POS,					// 6, num 7
+		SERVOY_FRONT_POS,					// 7, num 8
+		SERVOY_BACK_POS,					// 8, num 9
+		SERVOY_FRONT_POS,					// 9, num 10
+		SERVOY_BACK_POS,					// 10, num 11
+		SERVOY_FRONT_POS,					// 11, num 12
+	};
+	
+	public static int[] magnet_order = {0,2,1,4,3,6,5,8,7,10,9,11 };	// numer butelki, odjąc 1 aby numer ID
+
+
 	private static String[] persistant = {
 		"LENGTHX","LAST_BT_DEVICE",
 		"POS_START_X",
@@ -96,12 +116,18 @@ public class virtualComponents {
 	public static int graph_xsize	= 4;
 	public static int graph_fps		= 10;
 	public static Driver driver_x;
+	public static boolean scann_bottles = false;
+	public static int scann_num = 0;
+	public static boolean set_bottle_on = false;
 
 	public static void init( Activity app ){
 		application		= app;
 		myPrefs			= application.getSharedPreferences(Constant.SETTINGS_TAG, Context.MODE_PRIVATE);
 		config_editor	= myPrefs.edit();
 		driver_x		= new Driver();
+		
+		for(byte i=0;i<12;i++){
+		}
 	}
 	public static String get( String name, String def ){
 		String ret = hashmap.get(name);
@@ -122,7 +148,7 @@ public class virtualComponents {
 	}
 	public static void set( String name, String value ){
 		if(name == "POSX"){
-			Constant.log(Constant.TAG,"zapisuje posx:"+ value );	
+	//		Constant.log(Constant.TAG,"zapisuje posx:"+ value );	
 		}
 		hashmap.put(name, value );
 		virtualComponents.update( name, value );
@@ -156,11 +182,10 @@ public class virtualComponents {
 		}
 	}
 	// zapisz ze tutaj jest butelka o danym numerze
-	public static void hereIsBottle(int i, int posx, int posy) {
+	public static void hereIsBottle(int i, long posx, long posy) {
 		Constant.log(Constant.TAG,"zapisuje pozycje:"+ i + " " +posx+ " " + posy );
 		virtualComponents.set("BOTTLE_X_" + i, ""+posx );
 		virtualComponents.set("BOTTLE_Y_" + i, ""+posy );
-		Toast.makeText(application, "Zapisano ["+posx+"/"+posy+"] jako butelka " + (i+1), Toast.LENGTH_LONG).show();
 	}
 	// zapisz ze tutaj jest butelka o danym numerze
 	public static void hereIsBottle(int i) {
@@ -169,7 +194,6 @@ public class virtualComponents {
 		Constant.log(Constant.TAG,"zapisuje pozycje:"+ i + " " +posx+ " " + posy );
 		virtualComponents.set("BOTTLE_X_" + i, posx );
 		virtualComponents.set("BOTTLE_Y_" + i, posy );
-		Toast.makeText(application, "Zapisano ["+posx+"/"+posy+"] jako butelka " + (i+1), Toast.LENGTH_LONG).show();
 	}
 	public static boolean hasGlass() {
 		return false;
@@ -210,7 +234,7 @@ public class virtualComponents {
 		ar.clear();
 	}
 	public static void moveZDown( ArduinoQueue q ) {
-		moveZDown(q, false);
+		moveZDown(q, true);
 	}
 	private static void moveZDown(ArduinoQueue q, boolean b) {
 		int poszdown	=  virtualComponents.getInt("ENDSTOP_Z_MIN", SERVOZ_DOWN_POS );
@@ -220,7 +244,7 @@ public class virtualComponents {
 	}
 	
 	public static void moveZUp( ArduinoQueue q ) {
-		moveZUp(q,false);
+		moveZUp(q,true);
 	}
 	public static void moveZUp( ArduinoQueue q, boolean disableOnReady ) {
 //		q.add("EZ", true);
@@ -247,10 +271,9 @@ public class virtualComponents {
 				if(Long.parseLong(posx) != x || Long.parseLong(posy) != y ){		// musze jechac?
 					ArduinoQueue	q2	= new ArduinoQueue();
 					virtualComponents.moveZDown(q2);
-					virtualComponents.moveY( q2, virtualComponents.SERVOY_FRONT_POS);
+					virtualComponents.moveY( q2, virtualComponents.SERVOY_FRONT_POS, true);
 					virtualComponents.moveX( q2, x);
-					virtualComponents.moveY( q2, y);
-					q2.add("DY", true);
+					virtualComponents.moveY( q2, y, true);
 					return q2;
 				}
 				return null;
@@ -298,7 +321,6 @@ public class virtualComponents {
 	public static void disable_analog(Arduino ar, int analogWaga) {
 		ar.send("LIVE A OFF");
 	}
-	
 	public static void moveX( ArduinoQueue q, long pos ) {
 		pos = driver_x.soft2hard(pos);
 		q.add("X" + pos+ ","+virtualComponents.DRIVER_X_SPEED, true);	
@@ -306,8 +328,11 @@ public class virtualComponents {
 	public static void moveX( ArduinoQueue q, String pos ) {
 		moveX(q, toInt(pos));
 	}
-	public static void moveY( ArduinoQueue q, long pos ) {
-		q.add("Y" + pos+ ","+virtualComponents.DRIVER_Y_SPEED, true);	
+	public static void moveY( ArduinoQueue q, long pos, boolean disableOnReady ) {
+		q.add("Y" + pos+ ","+virtualComponents.DRIVER_Y_SPEED, true);
+		if(disableOnReady){
+			q.add("DY", true );
+		}
 	}
 	public static void moveY( ArduinoQueue q, String pos ) {
 		q.add("Y" + pos+ ","+virtualComponents.DRIVER_Y_SPEED, true);	
@@ -315,13 +340,10 @@ public class virtualComponents {
 	public static void nalej() {
 		virtualComponents.nalej(virtualComponents.SERVOZ_POUR_TIME);
 	}
-	public static void hereIsStart() {
-		String posx		=  virtualComponents.get("POSX", "0" );	
-		String posy		=  virtualComponents.get("POSY", "0" );
+	public static void hereIsStart( long posx, long posy) {
 		Constant.log(Constant.TAG,"zapisuje start:" +posx+ " " + posy );
 		virtualComponents.set("POS_START_X", posx );
 		virtualComponents.set("POS_START_Y", posy );
-		Toast.makeText(application, "Zapisano ["+posx+"/"+posy+"] jako butelka start", Toast.LENGTH_LONG).show();
 	}
 	public static void moveToStart() {
 		Arduino ar		= Arduino.getInstance();
@@ -333,7 +355,6 @@ public class virtualComponents {
 				this.name		= "check position";
 				long posx		= virtualComponents.getInt("POSX", 0 );		// czy ja juz jestem na tej pozycji?	
 				long posy		= virtualComponents.getInt("POSY", 0 );
-				
 				long sposx		= virtualComponents.getInt("POS_START_X", 0 );		// tu mam byc
 				long sposy		= virtualComponents.getInt("POS_START_X", 0 );
 
@@ -341,9 +362,9 @@ public class virtualComponents {
 					ArduinoQueue	q2	= new ArduinoQueue();
 					virtualComponents.moveZDown(q2);
 					//virtualComponents.moveY( q2, virtualComponents.get("NEUTRAL_POS_Y", "0" ));
-					virtualComponents.moveY( q2, virtualComponents.SERVOY_FRONT_POS );
+					virtualComponents.moveY( q2, virtualComponents.SERVOY_FRONT_POS, false );
 					virtualComponents.moveX( q2, sposx);
-					virtualComponents.moveY( q2, sposy);
+					virtualComponents.moveY( q2, sposy, true );
 					return q2;
 				}
 				return null;

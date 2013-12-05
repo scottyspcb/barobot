@@ -101,20 +101,17 @@ public class DeviceView extends BaseAdapter {
     public View getView(final int position, View convertView, ViewGroup parent) {
     	if(list[position] == null){
     		list[position] = createRow( position, parent);
-    		Constant.log("rysuje nowe", ""+position);
+    //		Constant.log("rysuje nowe", ""+position);
 	    }else{
-	    	Constant.log("rysuje stare", ""+position);
-	    	
+	 //   	Constant.log("rysuje stare", ""+position);   	
 	    }
     	String text = ""+  (position+1) +". "+ list[ position ].device.getName();
     	
     	list[ position ].tv.setText(text);
     	if(layoutId ==  R.layout.device){
-
     	}else if(layoutId==R.layout.device_led){
     		list[ position ].progress.setProgress( list[ position ].value);		// odpala tez onProgressChanged
     	}
-
 	    return list[position].row;
     }
 
