@@ -49,9 +49,11 @@ public class virtualComponents {
 	
 	public static final int SERVOZ_UP_POS = 900;
 	public static final int SERVOZ_DOWN_POS = 1600;
+	public static final int SERVOZ_TEST_POS = 1650;
 	
 	public static final int SERVOY_FRONT_POS = 800;
 	public static final int SERVOY_BACK_POS = 2080;
+	public static final int SERVOY_TEST_POS = 1000;
 
 	public static final int DRIVER_X_SPEED = 4000;
 	public static final int DRIVER_Y_SPEED = 30;
@@ -61,13 +63,45 @@ public class virtualComponents {
 	public static final int ANALOG_DIST1 = 20;
 	public static final int ANALOG_DIST2 = 21;
 	public static final int ANALOG_HALL = 10;
+	protected static final int SERVOY_REPEAT_TIME = 2000;
 
 	public static int margin_front = 0;
 	public static int margin_back = 0;
-	
+
 	// pozycje butelek, sa aktualizowane w trakcie
-	private static int[] b_pos_x = {207,207, 394,394,581,581,768,768, 955,955,1142,1142 };
-	public static int[] b_pos_y = { 
+	public static int[] times = {
+		SERVOZ_POUR_TIME,
+		SERVOZ_POUR_TIME, 
+		SERVOZ_POUR_TIME,
+		SERVOZ_POUR_TIME,
+		SERVOZ_POUR_TIME,
+		SERVOZ_POUR_TIME,
+		SERVOZ_POUR_TIME,
+		SERVOZ_POUR_TIME, 
+		SERVOZ_POUR_TIME,
+		SERVOZ_POUR_TIME,
+		SERVOZ_POUR_TIME*3,
+		SERVOZ_POUR_TIME
+	};
+
+
+	// pozycje butelek, sa aktualizowane w trakcie
+	public static int[] margin_x = {
+		10,
+		-10, 
+		10,
+		-10,
+		10,
+		-10,
+		10,
+		-10, 
+		10,
+		-10,
+		10,
+		-10
+	};
+	private static int[] b_pos_x = {207,207, 394,394,581,581,768,768, 955,955,1142,1142};
+	public static int[] b_pos_y = {
 		SERVOY_BACK_POS,					// 0, num 1
 		SERVOY_FRONT_POS,					// 1, num 2
 		SERVOY_BACK_POS,					// 2, num 3
@@ -81,11 +115,13 @@ public class virtualComponents {
 		SERVOY_BACK_POS,					// 10, num 11
 		SERVOY_FRONT_POS,					// 11, num 12
 	};
-	
+
 	public static int[] magnet_order = {0,2,1,4,3,6,5,8,7,10,9,11 };	// numer butelki, odjąc 1 aby numer ID
 
-
 	private static String[] persistant = {
+		"POSX","POSY","POSY",
+		"X_GLOBAL_MIN",
+		"X_GLOBAL_MAX",
 		"LENGTHX","LAST_BT_DEVICE",
 		"POS_START_X",
 		"POS_START_Y",
@@ -140,6 +176,13 @@ public class virtualComponents {
 		}
 		return ret; 
 	}
+	public static int getPourTime( int num ){
+		if( num > 0 && num < times.length){
+			return times[num];
+		}
+		return SERVOZ_POUR_TIME;
+	}
+	
 	public static int getInt( String name, int def ){
 		return virtualComponents.toInt(virtualComponents.get( name, ""+def ));
 	}
@@ -183,7 +226,7 @@ public class virtualComponents {
 	}
 	// zapisz ze tutaj jest butelka o danym numerze
 	public static void hereIsBottle(int i, long posx, long posy) {
-		Constant.log(Constant.TAG,"zapisuje pozycje:"+ i + " " +posx+ " " + posy );
+		//Constant.log(Constant.TAG,"zapisuje pozycje:"+ i + " " +posx+ " " + posy );
 		virtualComponents.set("BOTTLE_X_" + i, ""+posx );
 		virtualComponents.set("BOTTLE_Y_" + i, ""+posy );
 	}
@@ -191,7 +234,7 @@ public class virtualComponents {
 	public static void hereIsBottle(int i) {
 		String posx		=  virtualComponents.get("POSX", "0" );	
 		String posy		=  virtualComponents.get("POSY", "0" );
-		Constant.log(Constant.TAG,"zapisuje pozycje:"+ i + " " +posx+ " " + posy );
+	//	Constant.log(Constant.TAG,"zapisuje pozycje:"+ i + " " +posx+ " " + posy );
 		virtualComponents.set("BOTTLE_X_" + i, posx );
 		virtualComponents.set("BOTTLE_Y_" + i, posy );
 	}
@@ -228,7 +271,6 @@ public class virtualComponents {
 		ar.send("DZ");
 		ar.send("GPX");
 	}
-
 	public static void stop_all() {
 		Arduino ar = Arduino.getInstance();
 		ar.clear();
@@ -256,7 +298,7 @@ public class virtualComponents {
 		}
 	}
 
-	public static void moveToBottle(final int num ){
+	public static void moveToBottle(final int num, final boolean disableOnReady ){
 		Arduino ar			= Arduino.getInstance();
 		ArduinoQueue q		= new ArduinoQueue();
 		moveZDown( q );
@@ -270,22 +312,26 @@ public class virtualComponents {
 				long y  		= getBottlePosY( num );
 				if(Long.parseLong(posx) != x || Long.parseLong(posy) != y ){		// musze jechac?
 					ArduinoQueue	q2	= new ArduinoQueue();
-					virtualComponents.moveZDown(q2);
+					virtualComponents.moveZDown(q2, disableOnReady );
 					virtualComponents.moveY( q2, virtualComponents.SERVOY_FRONT_POS, true);
 					virtualComponents.moveX( q2, x);
-					virtualComponents.moveY( q2, y, true);
+					virtualComponents.moveY( q2, y, disableOnReady);
+					return q2;
+				}else{
+					ArduinoQueue	q2	= new ArduinoQueue();
+					q2.addWait( virtualComponents.SERVOY_REPEAT_TIME );
 					return q2;
 				}
-				return null;
 			}
 		} );
 		q.add("GPX", true);
 		ar.send( q );
 	}
 
-	public static void nalej(int time) {
+	public static void nalej(int num) {			// num 0-11
 		Arduino ar = Arduino.getInstance();
 		ArduinoQueue q = new ArduinoQueue();
+		int time = getPourTime(num);
 		q.addWaitGlass();
 		q.add("EX", true);
 //		q.add("EY", true);	
@@ -308,7 +354,7 @@ public class virtualComponents {
 				return null;
 			}
 		} );
-		q.add("DX", true);
+	//	q.add("DX", true);
 	    q.add("DY", true);
 	    q.add("DZ", true);
 	    q.add("GPX", true);
@@ -337,11 +383,8 @@ public class virtualComponents {
 	public static void moveY( ArduinoQueue q, String pos ) {
 		q.add("Y" + pos+ ","+virtualComponents.DRIVER_Y_SPEED, true);	
 	}
-	public static void nalej() {
-		virtualComponents.nalej(virtualComponents.SERVOZ_POUR_TIME);
-	}
 	public static void hereIsStart( long posx, long posy) {
-		Constant.log(Constant.TAG,"zapisuje start:" +posx+ " " + posy );
+		//Constant.log(Constant.TAG,"zapisuje start:" +posx+ " " + posy );
 		virtualComponents.set("POS_START_X", posx );
 		virtualComponents.set("POS_START_Y", posy );
 	}

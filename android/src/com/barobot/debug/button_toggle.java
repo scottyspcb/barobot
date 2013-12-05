@@ -99,7 +99,7 @@ public class button_toggle implements OnClickListener{
 					virtualComponents.need_glass_up = false;
 				}
 
-			case R.id.auto_fill:
+			case R.id.auto_fill_on_ready:
 		  	  	tb.setChecked(isChecked);		//tutaj jednak zmieniaj 
 				if(isChecked){
 					virtualComponents.set("AUTOFILL", "1" );

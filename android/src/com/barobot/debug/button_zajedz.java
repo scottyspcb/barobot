@@ -15,20 +15,18 @@ public class button_zajedz  implements OnClickListener {
 	@Override
 	public void onClick(View v) {
 		boolean setting_mode	= false;
-		String autofill			= virtualComponents.get("AUTOFILL", "0" );
-		BarobotMain bb		= BarobotMain.getInstance();
-
+		BarobotMain bb			= BarobotMain.getInstance();
+		boolean autofill		= ( virtualComponents.get("AUTOFILL", "1" )== "1");
+			
 		if(virtualComponents.set_bottle_on){
 			setting_mode = true;
 		}
-	
 		switch (v.getId()) {
 		  case R.id.start_pos:
 			  if(setting_mode){
 				int posx		=  virtualComponents.getInt("POSX", 0 );	
 				int posy		=  virtualComponents.getInt("POSY", 0 );
 				virtualComponents.hereIsStart(posx, posy);
-
 			  }else{
 				  virtualComponents.moveToStart();
 			  }
@@ -38,9 +36,9 @@ public class button_zajedz  implements OnClickListener {
 			  if(setting_mode){
 				  virtualComponents.hereIsBottle(0);
 			  }else{
-				  virtualComponents.moveToBottle(0);
-				  if( autofill== "1"){
-					  virtualComponents.nalej();
+				  virtualComponents.moveToBottle(0, !autofill);
+				  if( autofill){
+					  virtualComponents.nalej(0);
 				  }
 			  }
 		    break;
@@ -48,9 +46,9 @@ public class button_zajedz  implements OnClickListener {
 			  if(setting_mode){
 				  virtualComponents.hereIsBottle(1);
 			  }else{
-				  virtualComponents.moveToBottle(1);
-				  if( autofill== "1"){
-					  virtualComponents.nalej();
+				  virtualComponents.moveToBottle(1, !autofill);
+				  if( autofill){
+					  virtualComponents.nalej(1);
 				  }
 			  }	
 			  break;
@@ -59,20 +57,19 @@ public class button_zajedz  implements OnClickListener {
 				  virtualComponents.hereIsBottle(2);
 
 			  }else{
-				  virtualComponents.moveToBottle(2);
-				  if( autofill== "1"){
-					  virtualComponents.nalej();
+				  virtualComponents.moveToBottle(2, !autofill);
+				  if( autofill){
+					  virtualComponents.nalej(2);
 				  }
 			  }	    	  
 		      break;
 		  case R.id.nalej4:
 			  if(setting_mode){
 				  virtualComponents.hereIsBottle(3);
-
 			  }else{
-				  virtualComponents.moveToBottle(3);
-				  if( autofill== "1"){
-					  virtualComponents.nalej();
+				  virtualComponents.moveToBottle(3, !autofill);
+				  if( autofill){
+					  virtualComponents.nalej(3);
 				  }
 			  }
 		      break;
@@ -81,9 +78,9 @@ public class button_zajedz  implements OnClickListener {
 				  virtualComponents.hereIsBottle(4);
 
 			  }else{
-				  virtualComponents.moveToBottle(4);
-				  if( autofill== "1"){
-					  virtualComponents.nalej();
+				  virtualComponents.moveToBottle(4, !autofill);
+				  if( autofill){
+					  virtualComponents.nalej(4);
 				  }
 			  }
 		      break;
@@ -92,9 +89,9 @@ public class button_zajedz  implements OnClickListener {
 				  virtualComponents.hereIsBottle(5);
 
 			  }else{
-				  virtualComponents.moveToBottle(5);
-				  if( autofill== "1"){
-					  virtualComponents.nalej();
+				  virtualComponents.moveToBottle(5, !autofill);
+				  if( autofill){
+					  virtualComponents.nalej(5);
 				  }
 			  }
 		      break;
@@ -103,9 +100,9 @@ public class button_zajedz  implements OnClickListener {
 				  virtualComponents.hereIsBottle(6);
 
 			  }else{
-				  virtualComponents.moveToBottle(6);
-				  if( autofill== "1"){
-					  virtualComponents.nalej();
+				  virtualComponents.moveToBottle(6, !autofill);
+				  if( autofill){
+					  virtualComponents.nalej(6);
 				  }
 			  }
 		      break;
@@ -114,9 +111,9 @@ public class button_zajedz  implements OnClickListener {
 				  virtualComponents.hereIsBottle(7);
 
 			  }else{
-				  virtualComponents.moveToBottle(7);
-				  if( autofill== "1"){
-					  virtualComponents.nalej();
+				  virtualComponents.moveToBottle(7, !autofill);
+				  if( autofill){
+					  virtualComponents.nalej(7);
 				  }
 			  }	  
 		      break;
@@ -125,9 +122,9 @@ public class button_zajedz  implements OnClickListener {
 				  virtualComponents.hereIsBottle(8);
 
 			  }else{
-				  virtualComponents.moveToBottle(8);
-				  if( autofill== "1"){
-					  virtualComponents.nalej();
+				  virtualComponents.moveToBottle(8, !autofill);
+				  if( autofill){
+					  virtualComponents.nalej(8);
 				  }
 			  }
 			  break;
@@ -136,31 +133,29 @@ public class button_zajedz  implements OnClickListener {
 				  virtualComponents.hereIsBottle(9);
 
 			  }else{
-				  virtualComponents.moveToBottle(9);
-				  if( autofill== "1"){
-					  virtualComponents.nalej();
+				  virtualComponents.moveToBottle(9, !autofill);
+				  if( autofill){
+					  virtualComponents.nalej(9);
 				  }
 			  }
 		      break;
 	      case R.id.nalej11:
 			  if(setting_mode){
 				  virtualComponents.hereIsBottle(10);
-
 			  }else{
-				  virtualComponents.moveToBottle(10);
-				  if( autofill== "1"){
-					  virtualComponents.nalej();
+				  virtualComponents.moveToBottle(10, !autofill);
+				  if( autofill){
+					  virtualComponents.nalej(10);
 				  }
 			  }
 		      break;
 	      case R.id.nalej12:
 			  if(setting_mode){
 				  virtualComponents.hereIsBottle(11);
-
 			  }else{
-				  virtualComponents.moveToBottle(11);
-				  if( autofill== "1"){
-					  virtualComponents.nalej();
+				  virtualComponents.moveToBottle(11, !autofill);
+				  if( autofill){
+					  virtualComponents.nalej(11);
 				  }
 			  }	    	  
 		      break;

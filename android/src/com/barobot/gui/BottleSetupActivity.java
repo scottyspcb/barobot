@@ -3,6 +3,7 @@ package com.barobot.gui;
 import com.barobot.gui.dataobjects.Bottle;
 import com.barobot.gui.dataobjects.Engine;
 import com.barobot.gui.dataobjects.Liquid;
+import com.barobot.hardware.virtualComponents;
 import com.barobot.R;
 import android.os.Bundle;
 import android.app.Activity;
@@ -24,7 +25,7 @@ public class BottleSetupActivity extends BarobotActivity
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_bottle_setup);
-		
+
 		ids = new int[13];
 		ids[1] = R.id.bottle1;
 		ids[2] = R.id.bottle2;
@@ -48,11 +49,8 @@ public class BottleSetupActivity extends BarobotActivity
 
 		Log.w("BOTTLE_SETUP length",""+bottles.length);
 		
-		
 		for (int i = 1; i<=12 ; i++)
 		{
-			
-
 			TextView tview = (TextView) findViewById(ids[i]);
 			if (bottles[i] == null) {
 				tview.setText(R.string.empty_bottle_string);
@@ -74,10 +72,10 @@ public class BottleSetupActivity extends BarobotActivity
 				break;
 			}
 		}
-		
 		if (position != 0)
 		{
 			bottleClicked = position;
+			virtualComponents.moveToBottle(position-1, true);
 			showLiquidSelector();
 		}
 		else
@@ -102,7 +100,6 @@ public class BottleSetupActivity extends BarobotActivity
 
 	@Override
 	public void onDialogEnd(DialogFragment dialog, ReturnStatus status, Liquid liquid, int volume) {
-		
 		switch (status){
 			case OK:
 				Bottle bottle = null;

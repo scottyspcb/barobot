@@ -204,7 +204,7 @@ public class button_click implements OnClickListener{
 		    ar.send(q);
 			break;
 		case R.id.fill5000:
-			virtualComponents.nalej( 3000 );
+			virtualComponents.nalej( -1 );
 			break;
 		case R.id.set_bottle:
 			virtualComponents.set_bottle_on = true;
@@ -284,9 +284,33 @@ public class button_click implements OnClickListener{
 			virtualComponents.moveX( q, 0 );
 			ar.send(q);
 			break;
-
+		case R.id.enabley:
+	//		q.add("EY", true);
+			ar.send(q);
+			break;		
+		case R.id.disablez:
+			q.add("DZ", true);
+			ar.send(q);
+			break;		
+		case R.id.disabley:
+			q.add("DY", true);
+			ar.send(q);
+			break;	
+		case R.id.reset_carret:	
+			ar.send("RESETN 1");
+			break;	
+		case R.id.goto_max_x:
+			break;
+		case R.id.goto_min_x:
+			break;
+	
 		case R.id.find_bottles:
+			Constant.log("+find_bottles", "start");
+			q.add("EX", true );
 			virtualComponents.moveZDown( q );
+			q.add("Z" + virtualComponents.SERVOZ_TEST_POS + ","+virtualComponents.DRIVER_Z_SPEED , true );
+			virtualComponents.moveZDown( q );
+			virtualComponents.moveY( q, virtualComponents.SERVOY_TEST_POS, true);		
 			virtualComponents.moveY( q, virtualComponents.SERVOY_FRONT_POS, true);
 			long lengthx19	=  virtualComponents.getInt("LENGTHX", 60000 );	
 			virtualComponents.moveX( q, posx + 2000);
@@ -296,6 +320,11 @@ public class button_click implements OnClickListener{
 				@Override
 				public ArduinoQueue run() {
 					this.name		= "scanning up";
+					
+					
+					Constant.log("+find_bottles", "up");
+					
+					
 					virtualComponents.scann_bottles = true;
 					virtualComponents.scann_num = 0;
 					return null;
@@ -306,6 +335,7 @@ public class button_click implements OnClickListener{
 				@Override
 				public ArduinoQueue run() {
 					this.name		= "scanning back";
+					Constant.log("+find_bottles", "down");
 					virtualComponents.scann_num = 1;
 					return null;
 				}
@@ -315,6 +345,7 @@ public class button_click implements OnClickListener{
 				@Override
 				public ArduinoQueue run() {
 					this.name		= "end scanning";
+					Constant.log("+find_bottles", "end");
 					virtualComponents.scann_bottles = false;
 					return null;
 				}
@@ -342,25 +373,7 @@ public class button_click implements OnClickListener{
 			ard.send(q);
 */
 			break;	
-		case R.id.enabley:
-	//		q.add("EY", true);
-			ar.send(q);
-			break;		
-		case R.id.disablez:
-			q.add("DZ", true);
-			ar.send(q);
-			break;		
-		case R.id.disabley:
-			q.add("DY", true);
-			ar.send(q);
-			break;	
-		case R.id.reset_carret:	
-			ar.send("RESETN 1");
-			break;	
-		case R.id.goto_max_x:
-			break;
-		case R.id.goto_min_x:
-			break;
+
 	   }
 	}
 

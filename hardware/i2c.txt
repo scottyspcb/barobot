@@ -108,6 +108,9 @@ Tematy:
 - pullupy dla serv
 - pozycja max halla wyrażona w krokach steppera
 - pullup na enable pin X
+- reset master?
+- ping sprawdzający dostępnosc robota
+- ping sprawdzający dostępnosc androida
 
 Z1900,10
 

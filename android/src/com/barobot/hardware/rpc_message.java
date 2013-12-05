@@ -48,7 +48,6 @@ public class rpc_message extends History_item{
 			}
 			if( message.equals( "R" + this.command )){
 				ret = message;
-
 				return true;
 			}
 			if( message.equals( "E" + this.command)){
@@ -66,7 +65,7 @@ public class rpc_message extends History_item{
 			prefix = "--> ";
 		}
 		boolean blocing = this.isBlocing();
-		if( this.command == null){
+		if( this.command == null || this.command == "" ){
 			if( blocing ){
 				return prefix + "blocing logic ("+name+")\t\t\t\t" + ret;
 			}else{

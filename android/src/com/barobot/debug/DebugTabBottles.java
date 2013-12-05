@@ -25,14 +25,14 @@ public class DebugTabBottles extends Fragment {
 	private Activity cc;
 
     public DebugTabBottles(Activity debugActivity, int tabCommandsId) {
-    	Constant.log("DebugTabBottles", "init");
+    //	Constant.log("DebugTabBottles", "init");
     	this.tab_id = tabCommandsId;
     	this.cc=debugActivity;
 	}
 	@Override
     public void onActivityCreated(Bundle savedInstanceState) {
 		//Integer.toString(getArguments().getInt(DebugActivity.ARG_SECTION_NUMBER))
-    	Constant.log("DebugTabBottles", "onActivityCreated");
+    //	Constant.log("DebugTabBottles", "onActivityCreated");
         super.onActivityCreated(savedInstanceState);
     }
 	public Point getScreenSize( ) {
@@ -45,7 +45,7 @@ public class DebugTabBottles extends Fragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
-		Constant.log("DebugTabBottles", "onCreateView");
+		//Constant.log("DebugTabBottles", "onCreateView");
 		int lay = DebugActivity.layouts[tab_id];
 		//View rootView = inflater.inflate( R.layout.fragment_device_list_dummy, container, false);
 		View rootView = inflater.inflate( lay, container, false);
@@ -108,12 +108,21 @@ public class DebugTabBottles extends Fragment {
 			long x		=  virtualComponents.getBottlePosX( i );
 			long y		=  virtualComponents.getBottlePosY( i );
 			String pos = "" + x +"/"+ y;
-		//	waga1.setOnClickListener( list1 );	
-
+		//	waga1.setOnClickListener( list1 );
 			LinearLayout.LayoutParams params = (LayoutParams) waga1.getLayoutParams();
 			params.width = button_width;
 			waga1.setLayoutParams(params);
 			waga1.setText(pos);
+		}
+		int[] wagi2 = {
+				R.id.waga_start,
+				R.id.waga0,
+		};
+		for(int i =0; i<wagi2.length;i++){
+			TextView waga1 = (TextView) rootView.findViewById(wagi2[i]);
+			LinearLayout.LayoutParams params = (LayoutParams) waga1.getLayoutParams();
+			params.width = button_width;
+			waga1.setLayoutParams(params);
 		}
 		return rootView;
 	}

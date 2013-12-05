@@ -79,6 +79,17 @@
            android:layout_below="@+id/nalej_przod" >
 
            <TextView
+               android:id="@+id/waga0"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:lines="1"
+               android:linksClickable="false"
+               android:minWidth="100dp"
+               android:text=""
+               android:textSize="12sp" 
+               android:textAppearance="?android:attr/textAppearanceLarge" />
+           
+ <TextView
                android:id="@+id/waga1"
                android:layout_width="wrap_content"
                android:layout_height="wrap_content"
@@ -88,7 +99,8 @@
                android:text="1323ml"
                android:textSize="12sp" 
                android:textAppearance="?android:attr/textAppearanceLarge" />
-
+           
+ 
            <TextView
                android:id="@+id/waga3"
                android:layout_width="wrap_content"
@@ -152,6 +164,18 @@
            android:layout_alignParentBottom="true"
            android:layout_alignParentLeft="true" >
 
+			<TextView
+               android:id="@+id/waga_start"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:lines="1"
+               android:linksClickable="false"
+               android:minWidth="100dp"
+               android:text=""
+               android:textAppearance="?android:attr/textAppearanceLarge"
+               android:textSize="12sp" />
+           
+           
            <TextView
                android:id="@+id/waga2"
                android:layout_width="wrap_content"
