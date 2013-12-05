@@ -210,16 +210,6 @@
 #endif
 
 
-#define INNER_HALL_X 0
-#define INNER_HALL_Y 0
-#define INNER_WEIGHT 1
-
-
-#define HALL_GLOBAL_MIN 1
-#define HALL_GLOBAL_MAX 2
-#define HALL_LOCAL_MAX 4
-#define HALL_LOCAL_MIN 8
-
 
 
 
@@ -356,6 +346,17 @@
 #define DRIVER_X 	4
 #define DRIVER_Y 	8
 #define DRIVER_Z 	16
+
+
+#define INNER_HALL_X 0
+#define INNER_HALL_Y 0
+#define INNER_WEIGHT 1
+
+
+#define HALL_GLOBAL_MIN 1
+#define HALL_GLOBAL_MAX 2
+#define HALL_LOCAL_MAX 4
+#define HALL_LOCAL_MIN 8
 
 
 
