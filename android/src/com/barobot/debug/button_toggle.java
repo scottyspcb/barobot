@@ -90,9 +90,7 @@ public class button_toggle implements OnClickListener{
 	    	  	break;
 	    	 
 	    // ---------------------------------  	
-	    	  	
-	    	  	
-	    	  	
+
 			case R.id.need_glass:
 				tb.setChecked(isChecked);		//tutaj jednak zmieniaj
 				if(isChecked){
@@ -100,7 +98,7 @@ public class button_toggle implements OnClickListener{
 				}else{
 					virtualComponents.need_glass_up = false;
 				}
-				
+
 			case R.id.auto_fill:
 		  	  	tb.setChecked(isChecked);		//tutaj jednak zmieniaj 
 				if(isChecked){

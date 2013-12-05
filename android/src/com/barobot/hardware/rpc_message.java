@@ -27,29 +27,31 @@ public class rpc_message extends History_item{
 	public boolean isRet(String message) {	// czy to co przyszło jest zwrotką tej komendy
 		message =message.trim();
 		if( this.blocing){
-			if( message.startsWith("R READY AT ") ){	// np "R READY AT 0,0,0"
+			if( message.startsWith("RPOS") ){	// np "RPOSY" ready at
+				if( command.startsWith("X") ){
+					ret = message;
+					return true;
+				}
 				if( command.startsWith("Y") ){
 					ret = message;
 					return true;
 				}
-				if( command.startsWith("X") ){
+				if( command.startsWith("Z") ){
+					ret = message;
+					return true;
+				}
+				if( command.startsWith("GPX") || command.startsWith("GPY") || command.startsWith("GPZ") ){
 					ret = message;
 					return true;
 				}
 				return false;
 			}
-			if( message.startsWith("R POS ") ){	// np "POS 0,0,0"
-				if( command.startsWith("GET CARRET")){
-					ret = message;
-					return true;
-				}
-			}
-			if( message.equals( "R " + this.command )){
+			if( message.equals( "R" + this.command )){
 				ret = message;
 
 				return true;
 			}
-			if( message.equals("ERROR " + this.command)){
+			if( message.equals( "E" + this.command)){
 				ret = message;
 				return true;
 			}

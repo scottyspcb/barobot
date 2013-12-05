@@ -62,14 +62,11 @@ public class BarobotMain extends BarobotActivity {
 	    try {
 			Constant.log("DIR2", sdDir.getCanonicalPath() );
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	    Constant.log("DIR3", File.pathSeparator);
 	    Constant.log("DIR4", ""+sdDir.getFreeSpace() );
     }
-
-	
     @Override
     public void onStart() {
         super.onStart();
@@ -122,6 +119,7 @@ public class BarobotMain extends BarobotActivity {
             break;
         case BTListActivity.INTENT_NAME:
         	Constant.log(Constant.TAG, "REQUEST_CONNECT_DEVICE_SECURE");
+
             // When BTListActivity returns with a device to connect
             if (resultCode == Activity.RESULT_OK) {
                 String address = data.getExtras().getString(Constant.EXTRA_DEVICE_ADDRESS);           // Get the device MAC address

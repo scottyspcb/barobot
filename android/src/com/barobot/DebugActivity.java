@@ -227,16 +227,12 @@ public class DebugActivity extends FragmentActivity implements	ActionBar.TabList
 	public void update(String name, String value) {
 		if( "LENGTHX".equals(name)){
 			setText( R.id.dlugosc_x, value, false );
-		}else if( "LENGTHY".equals(name)){
-			setText( R.id.dlugosc_y, value, false );
-		}else if("LENGTHZ".equals(name)){
-			setText( R.id.dlugosc_z, value, false );
 		}else if("POSX".equals(name)){
 			setText( R.id.position_x, value, false );
 		}else if("POSY".equals(name) ){
 			setText( R.id.position_y, value, false );
 		}else if("POSZ".equals(name) ){
-			setText( R.id.position_z, value, false );		
+			setText( R.id.position_z, value, false );
 		}else if("LED1".equals(name) ){
 			setChecked( R.id.led1, "ON".equals(value) );
 		}else if("LED2".equals(name) ){

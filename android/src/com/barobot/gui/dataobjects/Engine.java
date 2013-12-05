@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
+import android.database.Cursor;
 
 import com.barobot.gui.ArduinoListener;
 import com.barobot.gui.database.BarobotDB;
+import com.barobot.gui.database.DataContract;
 import com.barobot.hardware.virtualComponents;
 
 public class Engine {
@@ -59,14 +61,19 @@ public class Engine {
 	}
 	
 	public Bottle[] getBottleSlots() {
+		refreshBottleSet();
 		return bottleSet;
 	}
 	
 	public void UpdateBottleSlot(int position, Bottle bottle){
 		if (position <= 0 || position >12)
 			throw new IllegalArgumentException("Position of the bottle is outside the set boundaries");
-		
-		db.UpdateSlot(position, bottle);
+
+		//if(){
+		//	db.InsertSlot(position, bottle);
+		//}else{
+			db.UpdateSlot(position, bottle);
+	//	}
 		refreshBottleSet();
 	}
 	

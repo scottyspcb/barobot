@@ -25,7 +25,7 @@ public class DebugTabBottles extends Fragment {
 	private Activity cc;
 
     public DebugTabBottles(Activity debugActivity, int tabCommandsId) {
-    	Constant.log("DebugTabBottles", "init");
+    //	Constant.log("DebugTabBottles", "init");
     	this.tab_id = tabCommandsId;
     	this.cc=debugActivity;
 	}
@@ -45,7 +45,7 @@ public class DebugTabBottles extends Fragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
-		Constant.log("DebugTabBottles", "onCreateView");
+	//	Constant.log("DebugTabBottles", "onCreateView");
 
 		int lay = DebugActivity.layouts[tab_id];
 		//View rootView = inflater.inflate( R.layout.fragment_device_list_dummy, container, false);
@@ -55,6 +55,7 @@ public class DebugTabBottles extends Fragment {
 
 		button_zajedz bz = new button_zajedz();
 		int[] nalejs = {
+				R.id.start_pos,
 				R.id.nalej1,
 				R.id.nalej2,
 				R.id.nalej3,
@@ -66,21 +67,13 @@ public class DebugTabBottles extends Fragment {
 				R.id.nalej9,
 				R.id.nalej10,
 				R.id.nalej11,
-				R.id.nalej12,
-				R.id.nalej13,
-				R.id.nalej14,
-				R.id.nalej15,
-				R.id.nalej16
+				R.id.nalej12
 				};
 		
-		int button_width = (size.x) / nalejs.length * 2;
+		int button_width = (size.x -100) / nalejs.length * 2;
 
 		for(int i =0; i<nalejs.length;i++){
 			View w = rootView.findViewById(nalejs[i]);
-			if( w == null){
-				Constant.log(Constant.TAG,"pomijam: "+ nalejs[i] + "/"  );
-				continue;
-			}
 			String classname = w.getClass().getName();
 			if( "android.widget.Button".equals( classname )){
 				Button xb1 = (Button) rootView.findViewById(nalejs[i]);	
@@ -90,10 +83,8 @@ public class DebugTabBottles extends Fragment {
 				xb1.setLayoutParams(params);
 			}
 		}
-		Button xb1 = (Button) rootView.findViewById(R.id.nalej_tutaj);	
-		xb1.setOnClickListener(bz);		
-
-		int[] wagi = {R.id.waga1,
+		int[] wagi = {
+				R.id.waga1,
 				R.id.waga2,
 				R.id.waga3,
 				R.id.waga4,
@@ -104,11 +95,7 @@ public class DebugTabBottles extends Fragment {
 				R.id.waga9,
 				R.id.waga10,
 				R.id.waga11,
-				R.id.waga12,
-				R.id.waga13,
-				R.id.waga14,
-				R.id.waga15,
-				R.id.waga16
+				R.id.waga12
 				};
 /*
 		OnClickListener list1 = new OnClickListener() {
@@ -145,11 +132,8 @@ public class DebugTabBottles extends Fragment {
 				R.id.waga9,
 				R.id.waga10,
 				R.id.waga11,
-				R.id.waga12,
-				R.id.waga13,
-				R.id.waga14,
-				R.id.waga15,
-				R.id.waga16};
+				R.id.waga12
+		};
 
 		for(int i =0; i<wagi.length;i++){
 			TextView waga1 = (TextView) cc.findViewById(wagi[i]);

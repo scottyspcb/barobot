@@ -78,11 +78,11 @@
     <string name="title_activity_recipe_setup">Recipe Setup</string>
     
     <!-- Panic -->
-    <string name="action_panic">STHAP!!!</string>
-    <string name="panic_title">STHAP!!!</string>
-    <string name="panic_message">Barobot! What are you doing?! Barobot! STHAP!!!</string>
-    <string name="panic_button_ok">STHAP IT!</string>
-    <string name="panic_button_cancel">Go on, oh you!</string>
+    <string name="action_panic">STOP!</string>
+    <string name="panic_title">STOP!</string>
+    <string name="panic_message">STOP barobot?</string>
+    <string name="panic_button_ok">Yes, STOP</string>
+    <string name="panic_button_cancel">No, back to drink</string>
     
     <!-- Main -->
     <string name="glass_reminder_title">Reminder</string>

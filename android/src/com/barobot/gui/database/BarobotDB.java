@@ -12,6 +12,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 public class BarobotDB {
 	
@@ -80,17 +81,18 @@ public class BarobotDB {
 	
 	public void InsertSlot(int position, Bottle bottle)
 	{
+		Log.w("InsertSlotPos",""+position);
 		ContentValues cv = new ContentValues();
 		cv.put(DataContract.Slots.COLUMN_NAME_POSITION, position);
 		long liquidId = 0;
-		if (bottle != null)
-		{
+		if (bottle == null){
+			Log.w("InsertSlot", "no bottle");
+			return;
+		}else{
 			liquidId = bottle.getLiquid().id;
 		}
-		
 		cv.put(DataContract.Slots.COLUMN_NAME_LIQUIDID, liquidId);
 		cv.put(DataContract.Slots.COLUMN_NAME_CAPACITY, 0);
-		
 		db.insert(DataContract.Slots.TABLE_NAME, null, cv);
 	}
 	
@@ -128,16 +130,17 @@ public class BarobotDB {
 		String[] args = new String[]{String.valueOf(NUMBER_OF_BOTTLES)};
 		
 		Cursor c = db.rawQuery(query, args);
-		
+
 		if (!c.moveToFirst()) {
 			// returning empty dataset
+			Log.w("BOTTLE_SETUP","empty");
 			c.close();
 			return result;
 		}
-		
 		do
 		{
 			int position = c.getInt(c.getColumnIndexOrThrow(DataContract.Slots.COLUMN_NAME_POSITION));
+			
 			
 			result[position] = new Bottle(new Liquid(
 					c.getInt(c.getColumnIndexOrThrow(DataContract.Liquids._ID)),

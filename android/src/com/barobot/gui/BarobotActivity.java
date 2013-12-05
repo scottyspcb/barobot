@@ -47,7 +47,6 @@ public class BarobotActivity extends Activity {
     		serverIntent = new Intent(this, RecipeSetupActivity.class);
     		break;
     	case R.id.secure_connect_scan:
-
     		if( Arduino.getInstance().checkBT() == false ){
     			Toast.makeText(this, "Bluetooth jest niedostępny", Toast.LENGTH_LONG).show();
     			finish();

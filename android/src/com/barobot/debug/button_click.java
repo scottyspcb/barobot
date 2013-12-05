@@ -16,6 +16,7 @@ import com.barobot.webview.AJS;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -34,77 +35,93 @@ public class button_click implements OnClickListener{
 	public void onClick(View v) {
 		Arduino ar		= Arduino.getInstance();
 		ArduinoQueue q	= new ArduinoQueue();
-		int posx		=  virtualComponents.getInt("POSX", 0 );
-		int posy		=  virtualComponents.getInt("POSY", 0 );
+		int posx		= virtualComponents.getInt("POSX", 0 );
+		int posy		= virtualComponents.getInt("POSY", 0 );
+		
+		Log.i("XXXX", ""+ posx);
 
 		switch (v.getId()) {
 		case R.id.set_x_1000:
+			Log.i("nextpos-10000", "old: "+posx + " next: "+ ( posx -10000));
 			virtualComponents.moveZDown( q );
-			q.add("X" + ( posx - (1000 * virtualComponents.mnoznikx)), true);
+			virtualComponents.moveX( q, ( posx -10000));
 			ar.send(q);
 			break;
 		case R.id.set_x_100:
+			
+			Log.i("nextpos-1000", "old: "+posx + " next: "+ ( posx -1000));
+			
 			virtualComponents.moveZDown( q );
-			q.add("X" + ( posx -(100 * virtualComponents.mnoznikx)), true );
+			virtualComponents.moveX( q, ( posx -1000));
 			ar.send(q);
 			break;
 		case R.id.set_x_10:
+			
+			Log.i("nextpos-100", "old: "+posx + " next: "+ ( posx -100)); 
+
 			virtualComponents.moveZDown( q );
-			q.add("X" + ( posx -(10 * virtualComponents.mnoznikx)), true );
+			virtualComponents.moveX( q, ( posx -100));
 			ar.send(q);
 			break;
 		case R.id.set_x10:
+			
+			Log.i("nextpos+100", "old: "+posx + " next: "+ ( posx +100)); 
+			
 			virtualComponents.moveZDown( q );
-			q.add("X" + (posx + (10 * virtualComponents.mnoznikx)), true );
+			virtualComponents.moveX( q, ( posx +100));
 			ar.send(q);
 			break;
 		case R.id.set_x100:
+			
+			Log.i("nextpos+1000", "old: "+posx + " next: "+ ( posx +1000));
+			
 			virtualComponents.moveZDown( q );
-			q.add("X" + (posx +(100 * virtualComponents.mnoznikx)), true );
+			virtualComponents.moveX( q, ( posx +1000));
 			ar.send(q);
 			break;
 		case R.id.set_x1000:
+			Log.i("nextpos+10000", "old: "+posx + " next: "+ ( posx +10000));
 			virtualComponents.moveZDown( q );
-			q.add("X" + (posx +(1000 * virtualComponents.mnoznikx)), true );
+			virtualComponents.moveX( q, ( posx +10000));
 			ar.send(q);
 			break;  
 		case R.id.set_y_600:
 			virtualComponents.moveZDown( q );
-			q.add("Y" + ( posy -(1000 * virtualComponents.mnoznikx)), true );
+			virtualComponents.moveY( q, ( posy -1000));
 			ar.send(q);
 			break;
 		case R.id.set_y_100:
 			virtualComponents.moveZDown( q );
-			q.add("Y" + ( posy -(100 * virtualComponents.mnoznikx)), true );
+			virtualComponents.moveY( q, ( posy -100));
 			ar.send(q);
 			break;
 		case R.id.set_y_10:
 			virtualComponents.moveZDown( q );
-			q.add("Y" + (posy - (10 * virtualComponents.mnozniky)), true );
+			virtualComponents.moveY( q, ( posy -10));
 			ar.send(q);
 			break;
 		case R.id.set_y10:
 			virtualComponents.moveZDown( q );
-			q.add("Y" + (posy + (10 * virtualComponents.mnozniky)), true );
+			virtualComponents.moveY( q, ( posy +10));
 			ar.send(q);
 			break;
 		case R.id.set_y100:
 			virtualComponents.moveZDown( q );
-			q.add("Y" + ( posy + (100 * virtualComponents.mnozniky)), true );
+			virtualComponents.moveY( q, ( posy +100));
 			ar.send(q);
 			break;
 		case R.id.set_y600:
 			virtualComponents.moveZDown( q );
-			q.add("Y" + ( posy + (1000 * virtualComponents.mnozniky)), true );
+			virtualComponents.moveY( q, ( posy +1000));
 			ar.send(q);
 			break;
 		case R.id.kalibrujx:
-			virtualComponents.moveZDown( q );
-			q.add("Y" + virtualComponents.get("NEUTRAL_POS_Y", "0" ), true );
-			long lengthx1	=  virtualComponents.getInt("LENGTHX", 600 ) * 10;
-			q.add("X" + (posx +lengthx1), true );
-			q.add("X-" + (lengthx1), true );
-			q.add("X0", true);
+			virtualComponents.moveZDown( q );			
+			virtualComponents.moveY( q, virtualComponents.SERVOY_FRONT_POS);
+			long lengthx1	=  virtualComponents.getInt("LENGTHX", 600 ) * 10;			
+			virtualComponents.moveX( q, (posx +lengthx1));
+			virtualComponents.moveX( q, -lengthx1);
+			virtualComponents.moveX( q, 0 );
 			ar.send(q);
 			break;
 		case R.id.set_neutral_y:
@@ -113,15 +130,15 @@ public class button_click implements OnClickListener{
 			Toast.makeText(dbw, "To jest pozycja bezpieczna ("+nn+")...", Toast.LENGTH_LONG).show();
 			break;
 		case R.id.goToNeutralY:
-			q.add("Y" + virtualComponents.get("NEUTRAL_POS_Y", "0" ), true );
+			virtualComponents.moveY( q, virtualComponents.get("NEUTRAL_POS_Y", "0" ));
 			ar.send(q);
 			break;
 		case R.id.kalibrujy:
 			this.setSpeed();		// jeśli mam szklankę to bardzo wolno
 			virtualComponents.moveZDown( q );
-			q.add("Y800" , true );
-			q.add("Y2400", true );
-			q.add("Y110", true);
+			q.add("Y900" , true );
+			q.add("Y2100", true );
+			q.add("Y900", true);
 			ar.send(q);
 			break;
 		case R.id.kalibrujz:
@@ -130,32 +147,31 @@ public class button_click implements OnClickListener{
 			break;
 		case R.id.machajx:
 			virtualComponents.moveZDown( q );
-			q.add("Y" + virtualComponents.get("NEUTRAL_POS_Y", "0" ), true );
+			virtualComponents.moveY( q, virtualComponents.SERVOY_FRONT_POS);
 			long lengthx4	=  virtualComponents.getInt("LENGTHX", 600 );
 			for( int i =0; i<10;i++){
-				//q.add("X" + (lengthx4/4), true );
-				//q.add("X" + (lengthx4/4 * 3) , true );
-				q.add("X0", true );
-				q.add("X" + (lengthx4) , true );
+			//	virtualComponents.moveX( q, (lengthx4/4) );
+				//virtualComponents.moveX( q, (lengthx4/4 * 3) );
+				
+				virtualComponents.moveX( q, 0 );
+				virtualComponents.moveX( q, lengthx4 );
 			}
+			q.add("DX", true);
 			ar.send(q);
 			break;
 		case R.id.machajy:
 			virtualComponents.moveZDown( q );
-			long lengthy4	=  virtualComponents.getInt("LENGTHY", 600 );
 			for( int i =0; i<10;i++){
-				q.add("Y" + (lengthy4/4), true );
-				q.add("Y" + (lengthy4/4 * 3) , true );
+				virtualComponents.moveY( q, virtualComponents.SERVOY_BACK_POS );
+				virtualComponents.moveY( q, virtualComponents.SERVOY_FRONT_POS );
 			}
+			q.add("DY", true);
 			ar.send(q);
 			break;
 		case R.id.machajz:
-			q.add("EZ", true);
 			for( int i =0; i<10;i++){
-				q.add("SET Z MAX", true);		// SET Z zwraca początek operacji a nie koniec
-				q.addWait( virtualComponents.SERVOZ_UP_TIME );	// wiec trzeba poczekać
-				q.add("SET Z MIN", true);		// SET Z zwraca początek operacji a nie koniec
-				q.addWait( virtualComponents.SERVOZ_DOWN_TIME );	// wiec trzeba poczekać
+				virtualComponents.moveZDown(q);
+				virtualComponents.moveZUp(q);
 			}
 			q.add("DZ", true);
 			ar.send(q);
@@ -163,14 +179,14 @@ public class button_click implements OnClickListener{
 		case R.id.losujx:
 			Random generator2 = new Random( 19580427 );
 			virtualComponents.moveZDown( q );
-			q.add("Y" + virtualComponents.get("NEUTRAL_POS_Y", "0" ), true );
+			virtualComponents.moveY( q, virtualComponents.SERVOY_FRONT_POS );
 			long lengthx5	=  virtualComponents.getInt("LENGTHX", 600 );
 		    for(int f = 0;f<20;){
 		    	int left = generator2.nextInt((int)(lengthx5/100 / 2));
 		    	int right =generator2.nextInt((int)(lengthx5/100 / 2));
 		    	right+= lengthx5/100 / 2;
-				q.add("X" + (left * 100), true );
-				q.add("X" + (right * 100), true );
+				virtualComponents.moveX( q, (left * 100) );
+				virtualComponents.moveX( q, (right * 100) );
 		        f=f+2;
 		      }
 		    ar.send(q);
@@ -178,15 +194,18 @@ public class button_click implements OnClickListener{
 		case R.id.losujy:
 			Random generator3 = new Random( 19580427 );
 			virtualComponents.moveZDown( q );
-			long lengthy5	=  virtualComponents.getInt("LENGTHY", 600 );
+
+/*
+			virtualComponents.SERVOY_BACK_POS
+			virtualComponents.SERVOY_FRONT_POS
 		    for(int f = 0;f<20;){
 		    	int left = generator3.nextInt((int)(lengthy5/100 / 2));
 		    	int right =generator3.nextInt((int)(lengthy5/100));
 		    	right+= lengthy5/100 / 2;
-				q.add("Y" + (left * 100), true );
-				q.add("Y" + (right * 100), true );
+				virtualComponents.moveY( q, (left * 100));
+				virtualComponents.moveY( q, (right * 100));
 		        f=f+2;
-		    }
+		    }*/
 		    ar.send(q);
 			break;
 		case R.id.fill5000:
@@ -196,7 +215,6 @@ public class button_click implements OnClickListener{
 			// przełącz okno na listę butelek, 
 			// zablokuj przyciski i po naciśnięciu ustaw w tym miejscu butelkę
 			Constant.log(Constant.TAG,"wybierz butelkę...");
-			Constant.log(Constant.TAG,"wybierz butelkę3...");
 			Toast.makeText(dbw, "Wybierz butelkę do zapisania pozycji " + posx + "/" + posy, Toast.LENGTH_LONG).show();
 //			dbw.tabHost.setCurrentTabByTag("tab0");
 //			dbw.tabHost.bringToFront();
@@ -208,47 +226,47 @@ public class button_click implements OnClickListener{
 				q.addWaitGlass();
 			}
 			q.add("EX", true);
-			q.add("EY", true);
-			q.add("EZ", true);		
-			q.add("SET Z MAX", true);
+		//	q.add("EY", true);		
+			virtualComponents.moveZUp(q);
 			q.add("DX", true);
 			q.add("DY", true);
-			q.add("DZ", true);
-			q.add("GET CARRET", true);
+			q.add("GPX", true);
 			ar.send(q);
 			break;
 		case R.id.min_z:
 			q.add("EX", true);
-			q.add("EY", true);
-			q.add("EZ", true);	
+		//	q.add("EY", true);
 			virtualComponents.moveZDown( q );
 			q.add("DX", true);
 			q.add("DY", true);
-			q.add("DZ", true);
-			q.add("GET CARRET", true);
+			q.add("GPX", true);
 			ar.send(q);
 			break;
 
 		case R.id.max_x:
 			virtualComponents.moveZDown( q );
 			long lengthx2	=  virtualComponents.getInt("LENGTHX", 600 );
-			ar.send("X" + (posx +lengthx2) );			
+			virtualComponents.moveX( q, posx +lengthx2 );
+			ar.send(q );
 			break;
 
 		case R.id.max_y:
 			virtualComponents.moveZDown( q );
-			long lengthy2	=  virtualComponents.getInt("LENGTHY", 600 );
-			ar.send("Y+" + lengthy2 );			
+			virtualComponents.moveY( q, virtualComponents.SERVOY_BACK_POS );
+			q.add("DY", true);
+			ar.send(q);	
 			break;
 		case R.id.min_x:
 			virtualComponents.moveZDown( q );
-			long lengthx3	=  virtualComponents.getInt("LENGTHY", 600 );
-			ar.send("X-" + lengthx3 );
+			long lengthx3	=  virtualComponents.getInt("LENGTHX", 600 );
+			virtualComponents.moveX( q, -lengthx3 );
+			ar.send(q );
 			break;
 		case R.id.min_y:
 			virtualComponents.moveZDown( q );
-			long lengthy3	=  virtualComponents.getInt("LENGTHY", 600 );
-			ar.send("Y-" + lengthy3 );
+			virtualComponents.moveY( q, virtualComponents.SERVOY_FRONT_POS );
+			q.add("DY", true);
+			ar.send(q);	
 			break;	
 		case R.id.unlock:
 			ar.unlock();
@@ -259,13 +277,10 @@ public class button_click implements OnClickListener{
 		case R.id.smile:
 			BarobotMain.getInstance().cm.doPhoto();
 			break;
-
 		case R.id.bottle_next:
 			break;	
 		case R.id.bottle_prev:
-			break;
-		case R.id.goto_max_y:
-
+			/*
 	  	  	final Button btn			= (Button) v;
 			final rpc_message m2 = new rpc_message( true ) {
 				@Override
@@ -282,14 +297,27 @@ public class button_click implements OnClickListener{
 			ArduinoQueue qq		= new ArduinoQueue();
 			qq.add( m2 );
 			ard.send(q);
-
-			break;
+*/
+			break;	
+		case R.id.enabley:
+	//		q.add("EY", true);
+			ar.send(q);
+			break;		
+		case R.id.disablez:
+			q.add("DZ", true);
+			ar.send(q);
+			break;		
+		case R.id.disabley:
+			q.add("DY", true);
+			ar.send(q);
+			break;	
+		case R.id.reset_carret:	
+			ar.send("RESETN 1");
+			break;	
 		case R.id.goto_max_x:
 			break;
 		case R.id.goto_min_x:
 			break;
-		case R.id.goto_min_y:
-			break;	
 	   }
 	}
 
@@ -304,10 +332,10 @@ public class button_click implements OnClickListener{
 	private void setSpeed(int withglass) {
 //		Arduino ar = Arduino.getInstance();
 /*
-		q.add("SET SPPEDX 400", true);
-		q.add("SET SPPEDY 400", true);	
-		q.add("SET SPPEDX 400", true);
-		q.add("SET SPPEDY 400", true);
+		q.add("SX 400", true);
+		q.add("SY 400", true);	
+		q.add("SX 400", true);
+		q.add("SY 400", true);
 	*/	
 	}
 }

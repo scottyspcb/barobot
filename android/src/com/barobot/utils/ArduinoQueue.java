@@ -1,6 +1,8 @@
 package com.barobot.utils;
 
 import java.util.LinkedList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import com.barobot.hardware.rpc_message;
 import com.barobot.hardware.virtualComponents;
@@ -28,14 +30,21 @@ public class ArduinoQueue {
 			public ArduinoQueue run() {
 				this.name				= "wait " + time;
 				final Arduino ar 		= Arduino.getInstance();
-				final Handler handler	= new Handler();
 				final rpc_message m3	= this;
+				/*
+				final Handler handler	= new Handler();
 				handler.postDelayed(new Runnable() {
 				  @Override
 				  public void run() {
 					  ar.unlock( m3 );
 				  }
-				}, time);			// odczekaj tyle czasu, odblokuj kolejkę i jedz dalej
+				}, time);			
+				*/
+				new Timer().schedule(new TimerTask() {          
+				    public void run() {
+				    	 ar.unlock( m3 );
+				    }
+				}, time);// odczekaj tyle czasu, odblokuj kolejkę i jedz dalej
 				return null;
 			}
 			public boolean isBlocing() {
@@ -103,7 +112,7 @@ public class ArduinoQueue {
 				ArduinoQueue q2	= new ArduinoQueue();
 				q2.add("LIVE WEIGHT ON", true);
 				q2.add("EX", true);
-				q2.add("EY", true);
+		//		q2.add("EY", true);
 				q2.addWait(10);
 		//		q2.add("SET LED5 ON", true);
 				q2.add( wait4glass );					// jest szklanka lub nie ma
@@ -117,7 +126,8 @@ public class ArduinoQueue {
 				return true;
 			}
 		};
-		output.add( m2 );
+		// narazie nie sprawdzamy wagi
+//		output.add( m2 );
 /*
 				
 		long unsigned waga = read_szklanka();

@@ -1,5 +1,7 @@
 package com.barobot.wire;
 
+import java.io.IOException;
+
 import com.barobot.BarobotMain;
 import com.barobot.hardware.virtualComponents;
 import com.barobot.utils.Arduino;
@@ -105,7 +107,7 @@ public class BT_wire implements Wire {
 	public boolean send(String command) {
 		if(mChatService!=null && mChatService.getState() == Constant.STATE_CONNECTED ) {
 //			Constant.log(Constant.TAG, "BT SEND:["+ command +"]");
-			String command2 = command + input_parser.separator;
+			String command2 = command;
         	byte[] send = command2.getBytes();
         	mChatService.write(send);
 		}
@@ -143,7 +145,13 @@ public class BT_wire implements Wire {
                 // construct a string from the valid bytes in the buffer
               //  String readMessage = new String(readBuf, 0, msg.arg1);
                 //Log.i(Constant.TAG, "buffer read " + readMessage );
-				input_parser.readInput((String) msg.obj);
+            	String input = (String) msg.obj;
+				input_parser.readInput(input);
+				try {
+					Arduino.getInstance().low_send(input);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
                 break;
         	case Constant.MESSAGE_STATE_CHANGE:
                 switch (msg.arg1) {
@@ -184,7 +192,10 @@ public class BT_wire implements Wire {
 	@Override
 	public boolean setAutoConnect(boolean active) {
 		if(active){
-	    	String bt_id = virtualComponents.get( "LAST_BT_DEVICE", "");
+	    	//String bt_id = virtualComponents.get( "LAST_BT_DEVICE", "");
+	    	String bt_id	= "00:12:09:29:51:76";
+	    	//String bt_id	= "00:12:09:29:52:22";
+	    	//String bt_id	= "00:12:09:29:51:76";
 		    if(bt_id!= null && !"".equals(bt_id) ){
 		    	mChatService.connectBTDeviceId(bt_id);
 		    	return true;

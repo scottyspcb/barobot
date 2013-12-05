@@ -3,6 +3,7 @@ import com.barobot.DebugActivity;
 import com.barobot.R;
 import com.barobot.R.id;
 import com.barobot.hardware.virtualComponents;
+import com.barobot.utils.Constant;
 
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -11,9 +12,13 @@ import android.widget.ToggleButton;
 public class button_zajedz  implements OnClickListener {
 	@Override
 	public void onClick(View v) {
-		boolean setting_mode	= false;	
+		boolean setting_mode	= false;
+		String autofill			= virtualComponents.get("AUTOFILL", "0" );
 		ToggleButton tb			= null;
 		DebugActivity bb		= DebugActivity.getInstance();
+
+	//	Constant.log("button_zajedz onClick", "id: "+v.getId());
+
 		if(bb!=null){
 			tb			= (ToggleButton) bb.findViewById(R.id.set_bottle);
 			if (tb != null) {
@@ -21,128 +26,153 @@ public class button_zajedz  implements OnClickListener {
 			}
 		}
 		switch (v.getId()) {
+		
+		  case R.id.start_pos:
+			  if(setting_mode){
+				  virtualComponents.hereIsStart();
+
+			  }else{
+				  virtualComponents.moveToStart();
+			  }
+			  break;
+		
 		  case R.id.nalej1:
+			  
 			  if(setting_mode){
 				  virtualComponents.hereIsBottle(0);
-				  bb.setChecked( R.id.set_bottle, false );
+
 			  }else{
 				  virtualComponents.moveToBottle(0);
+				  if( autofill== "1"){
+					  virtualComponents.nalej();
+				  }
 			  }
 		    break;
 		  case R.id.nalej2:
 			  if(setting_mode){
 				  virtualComponents.hereIsBottle(1);
-				  bb.setChecked( R.id.set_bottle, false );
+
 			  }else{
 				  virtualComponents.moveToBottle(1);
-			  }		      break;
+				  if( autofill== "1"){
+					  virtualComponents.nalej();
+				  }
+			  }	
+			  break;
 		  case R.id.nalej3:
 			  if(setting_mode){
 				  virtualComponents.hereIsBottle(2);
-				  bb.setChecked( R.id.set_bottle, false );
+
 			  }else{
 				  virtualComponents.moveToBottle(2);
+				  if( autofill== "1"){
+					  virtualComponents.nalej();
+				  }
 			  }	    	  
 		      break;
 		  case R.id.nalej4:
 			  if(setting_mode){
 				  virtualComponents.hereIsBottle(3);
-				  bb.setChecked( R.id.set_bottle, false );
+
 			  }else{
 				  virtualComponents.moveToBottle(3);
+				  if( autofill== "1"){
+					  virtualComponents.nalej();
+				  }
 			  }
 		      break;
 		  case R.id.nalej5:
 			  if(setting_mode){
 				  virtualComponents.hereIsBottle(4);
-				  bb.setChecked( R.id.set_bottle, false );
+
 			  }else{
 				  virtualComponents.moveToBottle(4);
+				  if( autofill== "1"){
+					  virtualComponents.nalej();
+				  }
 			  }
 		      break;
 		  case R.id.nalej6:
 			  if(setting_mode){
 				  virtualComponents.hereIsBottle(5);
-				  bb.setChecked( R.id.set_bottle, false );
+
 			  }else{
 				  virtualComponents.moveToBottle(5);
+				  if( autofill== "1"){
+					  virtualComponents.nalej();
+				  }
 			  }
 		      break;
 		  case R.id.nalej7:
 			  if(setting_mode){
 				  virtualComponents.hereIsBottle(6);
-				  bb.setChecked( R.id.set_bottle, false );
+
 			  }else{
 				  virtualComponents.moveToBottle(6);
+				  if( autofill== "1"){
+					  virtualComponents.nalej();
+				  }
 			  }
 		      break;
 		  case R.id.nalej8:
 			  if(setting_mode){
 				  virtualComponents.hereIsBottle(7);
-				  bb.setChecked( R.id.set_bottle, false );
+
 			  }else{
 				  virtualComponents.moveToBottle(7);
+				  if( autofill== "1"){
+					  virtualComponents.nalej();
+				  }
 			  }	  
 		      break;
 		  case R.id.nalej9:
 			  if(setting_mode){
 				  virtualComponents.hereIsBottle(8);
-				  bb.setChecked( R.id.set_bottle, false );
+
 			  }else{
 				  virtualComponents.moveToBottle(8);
+				  if( autofill== "1"){
+					  virtualComponents.nalej();
+				  }
 			  }
 			  break;
 	      case R.id.nalej10:
 			  if(setting_mode){
 				  virtualComponents.hereIsBottle(9);
-				  bb.setChecked( R.id.set_bottle, false );
+
 			  }else{
 				  virtualComponents.moveToBottle(9);
+				  if( autofill== "1"){
+					  virtualComponents.nalej();
+				  }
 			  }
 		      break;
 	      case R.id.nalej11:
 			  if(setting_mode){
 				  virtualComponents.hereIsBottle(10);
-				  bb.setChecked( R.id.set_bottle, false );
+
 			  }else{
 				  virtualComponents.moveToBottle(10);
+				  if( autofill== "1"){
+					  virtualComponents.nalej();
+				  }
 			  }
 		      break;
 	      case R.id.nalej12:
 			  if(setting_mode){
 				  virtualComponents.hereIsBottle(11);
-				  bb.setChecked( R.id.set_bottle, false );
+
 			  }else{
 				  virtualComponents.moveToBottle(11);
+				  if( autofill== "1"){
+					  virtualComponents.nalej();
+				  }
 			  }	    	  
 		      break;
-	      case R.id.nalej13:
-			  if(setting_mode){
-				  virtualComponents.hereIsBottle(12);
-				  bb.setChecked( R.id.set_bottle, false );
-			  }else{
-				  virtualComponents.moveToBottle(12);
-			  }    	  
-	          break;
-	      case R.id.nalej14:
-			  if(setting_mode){
-				  virtualComponents.hereIsBottle(13);
-				  bb.setChecked( R.id.set_bottle, false );
-			  }else{
-				  virtualComponents.moveToBottle(13);
-			  }
-	          break;
-	      case R.id.nalej15:
-			  if(setting_mode){
-				  virtualComponents.hereIsBottle(14);
-				  bb.setChecked( R.id.set_bottle, false );
-			  }else{
-				  virtualComponents.moveToBottle(14);
-			  }
-	          break;
-	      case R.id.nalej_tutaj:
-	    	  virtualComponents.nalej( 3000 );	// 5000 to czas - 5 sek
-	          break;
+
 		}
+	  if(setting_mode){
+		  bb.setChecked( R.id.set_bottle, false );
+	  }
 	}
 }

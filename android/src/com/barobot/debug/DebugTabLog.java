@@ -35,7 +35,10 @@ public class DebugTabLog extends Fragment {
     	this.tab_id = tabCommandsId;
     	this.cc		= debugActivity;
     	mConversation = new ArrayAdapter<History_item>(cc, R.layout.message);
-    	mConversation.addAll(Arduino.getInstance().getHistory());
+   
+    	Arduino.getInstance().getHistory( mConversation );
+
+    	
 	}
 	@Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -70,7 +73,7 @@ public class DebugTabLog extends Fragment {
 		});		
 	    mConversationView = (ListView) rootView.findViewById(R.id.led_list);
 	    mConversationView.setAdapter(mConversation);
-	    
+
 		ToggleButton xb7 = (ToggleButton) rootView.findViewById(R.id.logs_enable);
 		xb7.setChecked(true);
 		return rootView;

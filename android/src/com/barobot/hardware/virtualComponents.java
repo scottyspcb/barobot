@@ -30,34 +30,53 @@ public class virtualComponents {
 	// pozycje butelek, sa aktualizowane w trakcie
 	private static int[] b_pos_x = {207,207, 394,394,581,581,768,768, 955,955,1142,1142,1329,1329,1516,1516};
 	private static int[] b_pos_y = {90, 550, 90, 550, 90, 550, 90, 550, 90, 550, 90, 550, 90, 550, 90, 550};
-	
+
 	// todo - porządek z tymi wartościami 
-	public static int mnoznikx = 10;
-	public static int mnozniky = 10;
+	public static int mnoznikx = 1;
+	public static int mnozniky = 1;
 //	public static int neutral_pos_y = 200;
 	public static boolean need_glass_fill = false;
 	public static boolean need_glass_up = false;
 	public static int weigh_min_diff = 20;
-	public static boolean pac_enabled = true;
+	public static boolean pac_enabled = false;
 
 	//config
-	private static final int SERVOZ_DOWN_POS = 900;
-	private static final int SERVOZ_PAC_TIME_DOWN = 1000;
 	private static final int SERVOZ_PAC_TIME_UP = 600;
-	private static final int SERVOZ_PAC_POS = 1900;
+	private static final int SERVOZ_PAC_POS = 1400;
 	private static final int SERVOZ_PAC_TIME_WAIT = 400;
 
-	public static final int SERVOZ_UP_TIME = 700;
-	public static final int SERVOZ_DOWN_TIME = 600;
+	public static final int SERVOZ_POUR_TIME = 5000;
 	
+	public static final int SERVOZ_UP_TIME = 400;
+	public static final int SERVOZ_DOWN_TIME = 300;
+	
+	public static final int SERVOZ_UP_POS = 900;
+	public static final int SERVOZ_DOWN_POS = 1600;
+	
+	public static final int SERVOY_FRONT_POS = 800;
+	public static final int SERVOY_BACK_POS = 2080;
+
+	public static final int DRIVER_X_SPEED = 4000;
+	public static final int DRIVER_Y_SPEED = 30;
+	public static final int DRIVER_Z_SPEED = 200;
+
 	public static final int ANALOG_WAGA = 2;
 	public static final int ANALOG_DIST1 = 20;
 	public static final int ANALOG_DIST2 = 21;
 	public static final int ANALOG_HALL = 10;
 
 	private static String[] persistant = {
-		"LENGTHX","LENGTHY","LENGTHZ","LAST_BT_DEVICE",
+		"LENGTHX","LAST_BT_DEVICE",
+		"POS_START_X",
+		"POS_START_Y",
 		"NEUTRAL_POS_Y",
+		"NEUTRAL_POS_Z",
+		"ENDSTOP_X_MIN",
+		"ENDSTOP_X_MAX",
+		"ENDSTOP_Y_MIN",
+		"ENDSTOP_Y_MAX",
+		"ENDSTOP_Z_MIN",
+		"ENDSTOP_Z_MAX",
 		"BOTTLE_X_0","BOTTLE_Y_0",
 		"BOTTLE_X_1","BOTTLE_Y_1",
 		"BOTTLE_X_2","BOTTLE_Y_2",
@@ -70,21 +89,19 @@ public class virtualComponents {
 		"BOTTLE_X_9","BOTTLE_Y_9",
 		"BOTTLE_X_10","BOTTLE_Y_10",
 		"BOTTLE_X_11","BOTTLE_Y_11",
-		"BOTTLE_X_12","BOTTLE_Y_12",
-		"BOTTLE_X_13","BOTTLE_Y_13",
-		"BOTTLE_X_14","BOTTLE_Y_14",
-		"BOTTLE_X_15","BOTTLE_Y_15",
 	};
 	public static int graph_speed	= 20;
 	public static int graph_repeat	= 2;
 	public static int graph_source	= 2;
 	public static int graph_xsize	= 4;
 	public static int graph_fps		= 10;
+	public static Driver driver_x;
 
 	public static void init( Activity app ){
 		application		= app;
 		myPrefs			= application.getSharedPreferences(Constant.SETTINGS_TAG, Context.MODE_PRIVATE);
 		config_editor	= myPrefs.edit();
+		driver_x		= new Driver();
 	}
 	public static String get( String name, String def ){
 		String ret = hashmap.get(name);
@@ -100,7 +117,13 @@ public class virtualComponents {
 	public static int getInt( String name, int def ){
 		return virtualComponents.toInt(virtualComponents.get( name, ""+def ));
 	}
+	public static void set(String name, long value) {
+		virtualComponents.set(name, "" + value );
+	}
 	public static void set( String name, String value ){
+		if(name == "POSX"){
+			Constant.log(Constant.TAG,"zapisuje posx:"+ value );	
+		}
 		hashmap.put(name, value );
 		virtualComponents.update( name, value );
 
@@ -111,7 +134,7 @@ public class virtualComponents {
 		}
 	}
 	public static int toInt( String input ){
-		input = input.replaceAll( "[^\\d]", "" );
+		input = input.replaceAll( "[^-\\d]", "" );
 		int res;
 		try {
 			res = Integer.parseInt(input);
@@ -133,6 +156,13 @@ public class virtualComponents {
 		}
 	}
 	// zapisz ze tutaj jest butelka o danym numerze
+	public static void hereIsBottle(int i, int posx, int posy) {
+		Constant.log(Constant.TAG,"zapisuje pozycje:"+ i + " " +posx+ " " + posy );
+		virtualComponents.set("BOTTLE_X_" + i, ""+posx );
+		virtualComponents.set("BOTTLE_Y_" + i, ""+posy );
+		Toast.makeText(application, "Zapisano ["+posx+"/"+posy+"] jako butelka " + (i+1), Toast.LENGTH_LONG).show();
+	}
+	// zapisz ze tutaj jest butelka o danym numerze
 	public static void hereIsBottle(int i) {
 		String posx		=  virtualComponents.get("POSX", "0" );	
 		String posy		=  virtualComponents.get("POSY", "0" );
@@ -144,43 +174,35 @@ public class virtualComponents {
 	public static boolean hasGlass() {
 		return false;
 	}
-	
-	
-	
-	
-	
+
 	public static void pacpac() {
 		Arduino ar = Arduino.getInstance();
-		ArduinoQueue q = new ArduinoQueue();		
+		ArduinoQueue q = new ArduinoQueue();	
+
 		q.add("EX", true);
 //		q.add("EY", true);
-		q.add("EZ", true);
-		q.add("SET Z MAX", true);		// SET Z zwraca początek operacji a nie koniec
-		q.addWait( virtualComponents.SERVOZ_UP_TIME );	// wiec trzeba poczekać
-		q.addWait( virtualComponents.SERVOZ_PAC_TIME_WAIT );
-		q.add("SET Z " + virtualComponents.SERVOZ_PAC_POS, true);	
-		q.addWait( virtualComponents.SERVOZ_PAC_TIME_UP );
-		q.add("SET Z " + virtualComponents.SERVOZ_DOWN_POS, true);
-		q.addWait( virtualComponents.SERVOZ_PAC_TIME_DOWN );
-		q.add("SET Z MAX", true);		// SET Z zwraca początek operacji a nie koniec
-		q.addWait( virtualComponents.SERVOZ_UP_TIME );	// wiec trzeba poczekać
+//		q.add("EZ", true);
+		virtualComponents.moveZUp(q);
+		q.add("Z" + virtualComponents.SERVOZ_PAC_POS+","+virtualComponents.DRIVER_Z_SPEED, true);	
+		virtualComponents.moveZDown(q);
 		q.add("DX", true);
 //	    q.add("DY", true);
 	    q.add("DZ", true);
-	    q.add("GET CARRET", true);
-		ar.send(q);
+	    q.add("GPX", true);		// get pos
+	//	ar.send(q);
 	}
 
 	public static void cancel_all() {
 		Arduino ar = Arduino.getInstance();
 		ar.clear();
 		ar.send("LIVE A OFF");
-		ar.send("EZ");
-		ar.send("SET Z MAX");		// SET Z zwraca początek operacji a nie koniec
+//		ar.send("EZ");
+		int poszdown	=  virtualComponents.getInt("ENDSTOP_Z_MIN", SERVOZ_DOWN_POS );
+		ar.send("Z" + poszdown);		// zwraca początek operacji a nie koniec
 		ar.send("DX");
 	    ar.send("DY");
 		ar.send("DZ");
-		ar.send("GET CARRET");
+		ar.send("GPX");
 	}
 
 	public static void stop_all() {
@@ -188,18 +210,32 @@ public class virtualComponents {
 		ar.clear();
 	}
 	public static void moveZDown( ArduinoQueue q ) {
-		q.add("EZ", true);
-		q.add("SET Z MIN", true);		// SET Z zwraca początek operacji a nie koniec
-		q.addWait( virtualComponents.SERVOZ_DOWN_TIME );	// wiec trzeba poczekać
+		moveZDown(q, false);
+	}
+	private static void moveZDown(ArduinoQueue q, boolean b) {
+		int poszdown	=  virtualComponents.getInt("ENDSTOP_Z_MIN", SERVOZ_DOWN_POS );
+		q.add("Z" + poszdown+","+virtualComponents.DRIVER_Z_SPEED, true);
+	//	q.addWait( virtualComponents.SERVOZ_DOWN_TIME );	// wiec trzeba poczekać
 	    q.add("DZ", true);
 	}
-	public static void moveToBottle(final int num ) {
-		int time			= 2000;
+	
+	public static void moveZUp( ArduinoQueue q ) {
+		moveZUp(q,false);
+	}
+	public static void moveZUp( ArduinoQueue q, boolean disableOnReady ) {
+//		q.add("EZ", true);
+		int poszup	=  virtualComponents.getInt("ENDSTOP_Z_MAX", SERVOZ_UP_POS );
+		q.add("Z" + poszup+","+virtualComponents.DRIVER_Z_SPEED, true);
+	//	q.addWait( virtualComponents.SERVOZ_UP_TIME );	// wiec trzeba poczekać
+		if(disableOnReady){
+			q.add("DZ", true);
+		}
+	}
+
+	public static void moveToBottle(final int num ){
 		Arduino ar			= Arduino.getInstance();
 		ArduinoQueue q		= new ArduinoQueue();
-		String autofill		= virtualComponents.get("AUTOFILL", "0" );
 		moveZDown( q );
-
 		q.add( new rpc_message( true ) {
 			@Override
 			public ArduinoQueue run() {
@@ -208,52 +244,52 @@ public class virtualComponents {
 				String posy		= virtualComponents.get("POSY", "0" );
 				long x 			= getBottlePosX( num );
 				long y  		= getBottlePosY( num );
-				if(Long.parseLong(posx) != x || Long.parseLong(posy) != y ){		// musze jechac
+				if(Long.parseLong(posx) != x || Long.parseLong(posy) != y ){		// musze jechac?
 					ArduinoQueue	q2	= new ArduinoQueue();
-					q2.add("Y" + virtualComponents.get("NEUTRAL_POS_Y", "0" ), true );
-					q2.add("X" + x, true);
-					q2.add("Y" + y, true);
+					virtualComponents.moveZDown(q2);
+					virtualComponents.moveY( q2, virtualComponents.SERVOY_FRONT_POS);
+					virtualComponents.moveX( q2, x);
+					virtualComponents.moveY( q2, y);
+					q2.add("DY", true);
 					return q2;
 				}
 				return null;
 			}
 		} );
-
-		if( autofill== "1"){
-			q.add("EX", true);
-			q.add("EY", true);
-			q.add("EZ", true);
-			q.addWaitGlass();
-			q.add("SET Z MAX", true);		// SET Z zwraca początek operacji a nie koniec
-			q.addWait( virtualComponents.SERVOZ_UP_TIME );	// wiec trzeba poczekać
-
-			q.addWait( time );			// czekaj na nalanie
-			q.add("SET Z MIN", true);		// SET Z zwraca początek operacji a nie koniec
-			q.addWait( virtualComponents.SERVOZ_DOWN_TIME );	// wiec trzeba poczekać
-			q.add( new rpc_message( true ) {
-				@Override
-				public ArduinoQueue run() {
-					this.name		= "pacpac";
-					if(virtualComponents.pac_enabled){
-						ArduinoQueue	q2	= new ArduinoQueue();
-						q2.addWait( virtualComponents.SERVOZ_PAC_TIME_WAIT );
-						q2.add("SET Z " + virtualComponents.SERVOZ_PAC_POS, true);	
-						q2.addWait( virtualComponents.SERVOZ_PAC_TIME_UP );
-						q2.add("SET Z " + virtualComponents.SERVOZ_DOWN_POS, true);
-						q2.addWait( virtualComponents.SERVOZ_PAC_TIME_DOWN );
-						q2.add("SET Z MIN", true);		// SET Z zwraca początek operacji a nie koniec
-						q2.addWait( virtualComponents.SERVOZ_DOWN_TIME );	// wiec trzeba poczekać
-						return q2;
-					}
-					return null;
-				}
-			} );
-			q.add("DX", true);
-		    q.add("DY", true);
-		    q.add("DZ", true);
-		}
-		q.add("GET CARRET", true);
+		q.add("GPX", true);
 		ar.send( q );
+	}
+
+	public static void nalej(int time) {
+		Arduino ar = Arduino.getInstance();
+		ArduinoQueue q = new ArduinoQueue();
+		q.addWaitGlass();
+		q.add("EX", true);
+//		q.add("EY", true);	
+//		q.add("EZ", true);
+		virtualComponents.moveZUp(q, false);
+		q.addWait( time );
+		virtualComponents.moveZDown(q,false);
+		q.add( new rpc_message( true ) {
+			@Override
+			public ArduinoQueue run() {
+				this.name		= "pacpac";
+				if(virtualComponents.pac_enabled){
+					ArduinoQueue	q2	= new ArduinoQueue();	
+					q2.addWait( virtualComponents.SERVOZ_PAC_TIME_WAIT );
+					q2.add("Z " + virtualComponents.SERVOZ_PAC_POS+","+virtualComponents.DRIVER_Z_SPEED, true);	
+					q2.addWait( virtualComponents.SERVOZ_PAC_TIME_UP );
+					virtualComponents.moveZDown(q2);
+					return q2;
+				}
+				return null;
+			}
+		} );
+		q.add("DX", true);
+	    q.add("DY", true);
+	    q.add("DZ", true);
+	    q.add("GPX", true);
+	    ar.send(q);
 	}
 
 	public static void enable_analog( Arduino ar, int pin, int time, int repeat) {
@@ -262,41 +298,58 @@ public class virtualComponents {
 	public static void disable_analog(Arduino ar, int analogWaga) {
 		ar.send("LIVE A OFF");
 	}
-	public static void nalej(int time) {
-		Arduino ar = Arduino.getInstance();
-		ArduinoQueue q = new ArduinoQueue();
-		q.addWaitGlass();
-		q.add("EX", true);
-//		q.add("EY", true);	
-		q.add("EZ", true);
-		q.add("SET Z MAX", true);		// SET Z zwraca początek operacji a nie koniec
-		q.addWait( virtualComponents.SERVOZ_UP_TIME );	// wiec trzeba poczekać
-
-		q.addWait( time );
-		q.add("SET Z MIN", true);		// SET Z zwraca początek operacji a nie koniec
-		q.addWait( virtualComponents.SERVOZ_DOWN_TIME );	// wiec trzeba poczekać
+	
+	public static void moveX( ArduinoQueue q, long pos ) {
+		pos = driver_x.soft2hard(pos);
+		q.add("X" + pos+ ","+virtualComponents.DRIVER_X_SPEED, true);	
+	}
+	public static void moveX( ArduinoQueue q, String pos ) {
+		moveX(q, toInt(pos));
+	}
+	public static void moveY( ArduinoQueue q, long pos ) {
+		q.add("Y" + pos+ ","+virtualComponents.DRIVER_Y_SPEED, true);	
+	}
+	public static void moveY( ArduinoQueue q, String pos ) {
+		q.add("Y" + pos+ ","+virtualComponents.DRIVER_Y_SPEED, true);	
+	}
+	public static void nalej() {
+		virtualComponents.nalej(virtualComponents.SERVOZ_POUR_TIME);
+	}
+	public static void hereIsStart() {
+		String posx		=  virtualComponents.get("POSX", "0" );	
+		String posy		=  virtualComponents.get("POSY", "0" );
+		Constant.log(Constant.TAG,"zapisuje start:" +posx+ " " + posy );
+		virtualComponents.set("POS_START_X", posx );
+		virtualComponents.set("POS_START_Y", posy );
+		Toast.makeText(application, "Zapisano ["+posx+"/"+posy+"] jako butelka start", Toast.LENGTH_LONG).show();
+	}
+	public static void moveToStart() {
+		Arduino ar		= Arduino.getInstance();
+		ArduinoQueue q	= new ArduinoQueue();
+		moveZDown( q );
 		q.add( new rpc_message( true ) {
 			@Override
 			public ArduinoQueue run() {
-				this.name		= "pacpac";
-				if(virtualComponents.pac_enabled){
-					ArduinoQueue	q2	= new ArduinoQueue();	
-					q2.addWait( virtualComponents.SERVOZ_PAC_TIME_WAIT );
-					q2.add("SET Z " + virtualComponents.SERVOZ_PAC_POS, true);	
-					q2.addWait( virtualComponents.SERVOZ_PAC_TIME_UP );
-					q2.add("SET Z " + virtualComponents.SERVOZ_DOWN_POS, true);
-					q2.addWait( virtualComponents.SERVOZ_PAC_TIME_DOWN );
-					q2.add("SET Z MIN", true);		// SET Z zwraca początek operacji a nie koniec
-					q2.addWait( virtualComponents.SERVOZ_DOWN_TIME );	// wiec trzeba poczekać
+				this.name		= "check position";
+				long posx		= virtualComponents.getInt("POSX", 0 );		// czy ja juz jestem na tej pozycji?	
+				long posy		= virtualComponents.getInt("POSY", 0 );
+				
+				long sposx		= virtualComponents.getInt("POS_START_X", 0 );		// tu mam byc
+				long sposy		= virtualComponents.getInt("POS_START_X", 0 );
+
+				if(posx != sposx || posy != sposy ){		// musze jechac?
+					ArduinoQueue	q2	= new ArduinoQueue();
+					virtualComponents.moveZDown(q2);
+					//virtualComponents.moveY( q2, virtualComponents.get("NEUTRAL_POS_Y", "0" ));
+					virtualComponents.moveY( q2, virtualComponents.SERVOY_FRONT_POS );
+					virtualComponents.moveX( q2, sposx);
+					virtualComponents.moveY( q2, sposy);
 					return q2;
 				}
 				return null;
 			}
 		} );
-		q.add("DX", true);
-//	    q.add("DY", true);
-	    q.add("DZ", true);
-	    q.add("GET CARRET", true);
-	    ar.send(q);
+		q.add("GPX", true);
+		ar.send( q );
 	}
 }
