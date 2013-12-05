@@ -22,19 +22,19 @@ public class DebugTabCommands extends Fragment {
 	private DebugActivity cc;
 
     public DebugTabCommands(DebugActivity debugActivity, int tabCommandsId) {
-    	Constant.log("DebugTabCommands", "init");
+    //	Constant.log("DebugTabCommands", "init");
     	this.tab_id = tabCommandsId;
     	this.cc=debugActivity;
 	}
 	@Override
     public void onActivityCreated(Bundle savedInstanceState) {
 		//Integer.toString(getArguments().getInt(DebugActivity.ARG_SECTION_NUMBER))
-    	Constant.log("DebugTabCommands", "onActivityCreated");
+    //	Constant.log("DebugTabCommands", "onActivityCreated");
         super.onActivityCreated(savedInstanceState);
     }
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
-		Constant.log("DebugTabCommands", "onCreateView");
+	//	Constant.log("DebugTabCommands", "onCreateView");
 
 		int lay = DebugActivity.layouts[tab_id];
 		//View rootView = inflater.inflate( R.layout.fragment_device_list_dummy, container, false);
@@ -101,7 +101,7 @@ public class DebugTabCommands extends Fragment {
 		int[] togglers = {
 				R.id.wagi_live,
 				R.id.need_glass,
-				R.id.auto_fill
+				R.id.auto_fill_on_ready
 		};
 		for(int i =0; i<togglers.length;i++){
 			View w = rootView.findViewById(togglers[i]);
@@ -111,9 +111,21 @@ public class DebugTabCommands extends Fragment {
 				xb3.setOnClickListener(bt);
 			}	
 		}
-		cc.setText( R.id.position_z, virtualComponents.get( "POSZ","0"), true );
-		cc.setText( R.id.position_y, virtualComponents.get( "POSY","0"), true );
-		cc.setText( R.id.position_x, virtualComponents.get( "POSX","0"), true );
+		ToggleButton toggle = (ToggleButton)rootView.findViewById(R.id.auto_fill_on_ready);		
+		toggle.setChecked(true);
+
+		TextView ttt = (TextView)rootView.findViewById(R.id.position_z);	
+		if(ttt!=null){
+			ttt.setText(virtualComponents.get( "POSZ","0"));
+		}
+		ttt = (TextView)rootView.findViewById(R.id.position_y);
+		if(ttt!=null){
+			ttt.setText(virtualComponents.get( "POSY","0"))	;
+		}
+		ttt = (TextView)rootView.findViewById(R.id.position_x);
+		if(ttt!=null){
+			ttt.setText(virtualComponents.get( "POSX","0"));
+		}
 
 		return rootView;
 	}

@@ -1,7 +1,7 @@
 package com.barobot.utils;
 
 public class History_item{
-	public String command;
+	public String command="";
 	protected String ret;
 	public boolean direction;
 

@@ -33,8 +33,6 @@ public class RecipeSetupActivity extends BarobotActivity
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_recipe_setup);
-		
-		
 		Spinner spinner = (Spinner) findViewById(R.id.recipe_spinner);
 		
 		ArrayAdapter<Recipe> recipeAdapter = new ArrayAdapter<Recipe>(this, R.layout.spinner_layout);

@@ -10,6 +10,7 @@ import com.barobot.debug.DebugTabGraph;
 import com.barobot.debug.DebugTabLeds;
 import com.barobot.debug.DebugTabLog;
 import com.barobot.drinks.RunnableWithData;
+import com.barobot.hardware.virtualComponents;
 import com.barobot.utils.Constant;
 
 import android.app.ActionBar;
@@ -265,6 +266,8 @@ public class DebugActivity extends FragmentActivity implements	ActionBar.TabList
 			if(now){
 				if (text_field != null) {
 					text_field.setText(result);
+				}else{
+				//	Constant.log("nie ma setText",result + " / " +target) ;
 				}
 			}else{
 				if (text_field != null) {

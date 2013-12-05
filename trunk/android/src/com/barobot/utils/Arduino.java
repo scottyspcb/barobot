@@ -21,6 +21,7 @@ import com.barobot.wire.Serial_wire;
 import com.barobot.wire.Wire;
 
 public class Arduino{
+	private final Object lock = new Object();
 	private static Arduino instance = null;
 	private LinkedList<rpc_message> output2 = new LinkedList<rpc_message>();
 	private rpc_message wait_for = null;
@@ -170,7 +171,10 @@ public class Arduino{
 		}
 		output2.clear();
 		output2.clear();
-		wait_for = null;
+
+		synchronized (this.lock) {
+			wait_for = null;
+		}
 		mConversationHistory.clear();
 		Constant.log(Constant.TAG, "--- ON DESTROY ---");
 	}
@@ -242,60 +246,74 @@ public class Arduino{
 	}
 	public synchronized boolean read_ret(String retm) {	// czy moze to jest zwrotka
 		boolean is_ret = false;
-		if( this.wait_for != null){
-		//	Constant.log("isRet?", "["+retm+"][" +  this.wait_for.command+"]");
-			is_ret = true;
-			if(this.wait_for.isRet(retm)){
-				this.wait_for = null;
-				if(output2.isEmpty()){
-		           	addToList( "--------------------------------------------------", true );
-				}else{
-					exec();		// wyslij wszystko co jest dalej
-				}
-			}
-		}
+        synchronized (this.lock) {
+        	if( this.wait_for != null){
+        			Constant.log("isRet?", "["+retm+"][" +  this.wait_for.command+"]");
+        			is_ret = true;
+        			if(this.wait_for.isRet(retm)){
+        				Constant.log("unlock", wait_for.command);		
+        				this.wait_for = null;
+        				if(output2.isEmpty()){
+        		           	addToList( "--------------------------------------------------", true );
+        				}else{
+        					exec();		// wyslij wszystko co jest dalej
+        				}
+        			}
+        		}
+        }
 		return is_ret;
 	}
 	private synchronized void exec(){
-		if(this.wait_for != null){
-			return;		// jestem w trakcie oczekiwania
-		}
-		if(connection == null){
-			return;		// jestem w trakcie oczekiwania
-		}
-		try	{
-			boolean wasEmpty = output2.isEmpty();
-			while (!output2.isEmpty()) {
-				rpc_message m = output2.pop();
-				if( m.command == null){
-					m.start( this );
-				}else{
-		//			Constant.log("serial send", m.command);
-					String command = m.command+ input_parser.separator;	
-					connection.send(command);
-					debug(command);
+		synchronized (this.lock) {
+			if(this.wait_for != null){
+				Constant.log("wait_for1", wait_for.command);
+				return;		// jestem w trakcie oczekiwania
+			}
+			if(connection == null){
+				return;		// jestem w trakcie oczekiwania
+			}
+			try	{
+				boolean wasEmpty = output2.isEmpty();
+				while (!output2.isEmpty()) {
+					if(this.wait_for != null){
+						Constant.log("wait_for2", wait_for.command);
+						return;		// jestem w trakcie oczekiwania
+					}
+					rpc_message m = output2.pop();
+					if( m.command == null || m.command == "" ){
+						m.start( this );
+					}else{
+			//			Constant.log("serial send", m.command);
+						String command = m.command+ input_parser.separator;	
+						connection.send(command);
+						debug(command);
+					}
+			        addToList( m );
+					if(m.isBlocing()){		// czekam na zwrotkę tej komendy zanim wykonam coś dalej
+						m.send_timestamp	= System.nanoTime();
+	                	this.wait_for		= m;
+	                	return;				// przerwij do czasu otrzymania zwrotki lub odblokowania
+	                }else{
+	                	if(this.wait_for!=null){
+	                		Constant.log("wait!!!!", wait_for.command);
+	                		return;
+	                	}
+	                	this.wait_for		= null;
+	                }
 				}
-		        addToList( m );
-				if(m.isBlocing()){		// czekam na zwrotkę tej komendy zanim wykonam coś dalej
-					m.send_timestamp	= System.nanoTime();
-                	this.wait_for		= m;
-                	return;				// przerwij do czasu otrzymania zwrotki lub odblokowania
-                }else{
-                	this.wait_for = null;
-                }
+				if(!wasEmpty){
+	            	addToList( "--------------------------------------------------", true );
+				}
+			} catch (IOException e)	{
+				Constant.log(Constant.TAG, "problem sending TCP message",e);
 			}
-			if(!wasEmpty){
-            	addToList( "--------------------------------------------------", true );
-			}
-		} catch (IOException e)	{
-			Constant.log(Constant.TAG, "problem sending TCP message",e);
 		}
 	}
-	
     public synchronized void low_send( String command ) throws IOException {		// wyslij bez interpretacji
 		if(connection == null){
 			return;		// jestem w trakcie oczekiwania
 		}
+		Constant.log("low_send", command );
     	connection.send(command);
     }
     public synchronized void debug( String command ){		// wyslij bez interpretacji
@@ -307,23 +325,31 @@ public class Arduino{
 			}
 		}
     }
- 
+
     public void unlock() {
-    	if(wait_for!=null){
-    		Constant.log("+unlock", "czekalem na [" + wait_for.command+"] w kolejce: " +output2.size() );
-    		this.wait_for = null;
-    		this.exec();
+    	synchronized (this.lock) {
+	    	if(wait_for!=null){
+	    		Constant.log("+unlock", "czekalem na [" + wait_for.command+"] w kolejce: " +output2.size() );
+	    		this.wait_for = null;
+	    		this.exec();
+	    	}
     	}
     }
 	public void unlock(rpc_message m) {
-		if( this.wait_for != null && this.wait_for.equals(m)){
-			this.wait_for = null;
-			this.exec();
+		synchronized (this.lock) {		
+			if( this.wait_for != null && this.wait_for.equals(m)){
+				String cmd = wait_for.command;
+				Constant.log("unlock2", cmd );
+				this.wait_for = null;
+				this.exec();
+			}
 		}
 	}
     public void clear() {
-		this.output2.clear();
-		this.wait_for = null;
+    	synchronized (this.lock) {	
+    		this.wait_for = null;
+    	}
+    	this.output2.clear();
 	}
 
     public boolean log_active	= true;
@@ -376,8 +402,6 @@ public class Arduino{
 		if(debugConnection!=null){
 			debugConnection.connectToId(address);
 		}	
-		
-		
 	}
 	public void getHistory(ArrayAdapter<History_item> mConversation) {
 		this.mConversation = mConversation;

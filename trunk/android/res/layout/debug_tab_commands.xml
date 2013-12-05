@@ -319,48 +319,20 @@
         android:textStyle="bold" />
 
     <Button
-        android:id="@+id/smile"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/unlock"
-        android:layout_toRightOf="@+id/unlock"
-        android:text="smile" />
-
-    
-
-    <Button
-        android:id="@+id/unlock"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/set_neutral_y"
-        android:layout_alignBottom="@+id/set_neutral_y"
-        android:layout_toRightOf="@+id/set_neutral_y"
-        android:text="Odblokuj" />
-
-    <Button
         android:id="@+id/pacpac"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/smile"
-        android:layout_alignBottom="@+id/smile"
+        android:layout_alignBaseline="@+id/goToNeutralY"
         android:layout_toRightOf="@+id/smile"
         android:text="Pacnij" />
 
-    <ToggleButton
-        android:id="@+id/auto_fill"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/goToNeutralY"
-        android:text="ToggleButton"
-        android:textOff="Nie nalewaj od razu"
-        android:textOn="Nalewaj od razu" />
-
+   
     <ToggleButton
         android:id="@+id/need_glass"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/auto_fill"
-        android:layout_toRightOf="@+id/auto_fill"
+        android:layout_alignBaseline="@+id/auto_fill_on_ready"
+        android:layout_toRightOf="@+id/auto_fill_on_ready"
         android:text="ToggleButton"
         android:textOff="Nie wymagaj szklanki"
         android:textOn="Wymagaj szklanki" />
@@ -384,7 +356,15 @@
         android:layout_toRightOf="@+id/wagi_live"
         android:text="Tutaj jest butelka..."
         />
-
+ <ToggleButton
+        android:id="@+id/auto_fill_on_ready"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/goToNeutralY"
+        android:text="ToggleButton"
+        android:textOff="Nie nalewaj od razu"
+        android:textOn="Nalewaj od razu" />
+    
     <Button
         android:id="@+id/enabley"
         android:layout_width="wrap_content"
@@ -422,7 +402,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_below="@+id/auto_fill"
+        android:layout_below="@+id/auto_fill_on_ready"
         android:text="Następna butelka" />
 
     <Button
@@ -439,7 +419,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/goToNeutralY"
-        android:layout_alignBottom="@+id/goToNeutralY"
         android:layout_toRightOf="@+id/goToNeutralY"
         android:text="Tu jest neutralny Y" />
 
@@ -468,11 +447,30 @@
         android:text="Resetuj wozek" />
 
     <Button
+        android:id="@+id/unlock"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignRight="@+id/set_x_10"
+        android:layout_below="@+id/bottle_next"
+        android:text="Odblokuj" />
+
+    <Button
+        android:id="@+id/smile"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/goToNeutralY"
+        android:layout_toRightOf="@+id/set_neutral_y"
+        android:text="smile" />
+
+    <Button
         android:id="@+id/find_bottles"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/pacpac"
-        android:layout_toRightOf="@+id/pacpac"
+        android:layout_alignBaseline="@+id/unlock"
+        android:layout_alignBottom="@+id/unlock"
+        android:layout_alignRight="@+id/reset_carret"
+        android:layout_toRightOf="@+id/unlock"
         android:text="Szukaj butelek" />
 
 </RelativeLayout>

@@ -6,6 +6,7 @@ import com.barobot.DebugActivity;
 import com.barobot.MainSettingsActivity;
 import com.barobot.R;
 import com.barobot.UpdateActivity;
+import com.barobot.hardware.virtualComponents;
 import com.barobot.utils.Arduino;
 
 import android.app.Activity;
@@ -80,12 +81,10 @@ public class BarobotActivity extends Activity {
 
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-
-				// do something to stop barobot
+				virtualComponents.cancel_all();
 			}
 		});
 		builder.setNegativeButton(R.string.panic_button_cancel, new DialogInterface.OnClickListener() {
-			
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				// do nothing

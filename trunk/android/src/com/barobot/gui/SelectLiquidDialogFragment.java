@@ -29,7 +29,6 @@ public class SelectLiquidDialogFragment extends DialogFragment {
 	public static SelectLiquidDialogFragment newInstance()
 	{
 		SelectLiquidDialogFragment instance = new SelectLiquidDialogFragment();
-		
 		return instance;
 	}
 	

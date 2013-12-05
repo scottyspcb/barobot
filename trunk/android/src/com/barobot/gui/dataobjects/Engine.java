@@ -9,7 +9,11 @@ import android.database.Cursor;
 import com.barobot.gui.ArduinoListener;
 import com.barobot.gui.database.BarobotDB;
 import com.barobot.gui.database.DataContract;
+import com.barobot.hardware.rpc_message;
 import com.barobot.hardware.virtualComponents;
+import com.barobot.utils.Arduino;
+import com.barobot.utils.ArduinoQueue;
+import com.barobot.utils.Constant;
 
 public class Engine {
 	
@@ -19,11 +23,9 @@ public class Engine {
 	
 	public static Engine GetInstance(Context context)
 	{
-		if (instance == null)
-		{
+		if (instance == null){
 			instance = new Engine(context);
 		}
-		
 		return instance;
 	}
 	
@@ -142,7 +144,7 @@ public class Engine {
 	}
 	
 	public String Sequence;
-	public Boolean Prepare(Recipe recipe, ArduinoListener mListener)
+	public Boolean Prepare(Recipe recipe, final ArduinoListener mListener)
 	{
 		List<Integer> bottleSequence = new ArrayList<Integer>();
 		List<Ingredient> ingridients = recipe.getIngridients();
@@ -184,19 +186,29 @@ public class Engine {
 				}
 			}
 		}
-		
-		
 		Sequence = "";
-		for (Integer i : bottleSequence)
-		{
-			// this should contain calls to Arduino
-			//virtualComponents.moveToBottle(i);
-			//virtualComponents.nalej(0);
-			
+		for (Integer i : bottleSequence){
 			Sequence += i + " ";
 		}
-		
-		mListener.onQueueFinished();
+		Constant.log("Prepare Sequence:", Sequence );
+		for (Integer i : bottleSequence){
+			
+			Constant.log("Prepare", ""+i );
+			
+	//		virtualComponents.moveToBottle( i, false );
+	//		virtualComponents.nalej(i);
+		}
+		Arduino ar		= Arduino.getInstance();
+		ArduinoQueue q	= new ArduinoQueue();
+		q.add( new rpc_message( true ) {
+			@Override
+			public ArduinoQueue run() {
+				this.name		= "onQueueFinished";
+				mListener.onQueueFinished();
+				return null;
+			}
+		} );
+		ar.send(q);
 		return true;
 	}
 	

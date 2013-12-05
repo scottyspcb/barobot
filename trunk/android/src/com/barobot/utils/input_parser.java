@@ -41,10 +41,14 @@ public class input_parser {
 	}
 
 	private static void parseInput(String fromArduino) {
-	//	Log.i(Constant.TAG, "parse:[" + fromArduino +"]");
 		boolean is_ret = false;
 		if(fromArduino.length() == 0){
 			return;
+		}
+		Log.i(Constant.TAG, "parse:[" + fromArduino +"]");
+
+		if(fromArduino.startsWith("POS")){
+			fromArduino = "R" + fromArduino;			// VERY BAD HACK
 		}
 		char command = fromArduino.charAt(0);
 		if( command =='A' ){
@@ -75,6 +79,7 @@ public class input_parser {
 		}else if( command =='-' ){		// nic- to komentarz	
 			
 		}else if(command == 'R' ){		// na końcu bo to może odblokować wysyłanie i spowodować zapętlenie
+			/*
 			if(fromArduino.startsWith("R SET LED")){	
 				String fromArduino2 = fromArduino.replace("R SET LED", "");
 				String[] tokens = fromArduino2.split(" ");		// numer i wartosc
@@ -91,7 +96,9 @@ public class input_parser {
 				if(dialog!=null){
 					dialog.setChecked( R.id.wagi_live, !"OFF".equals(fromArduino2) );
 				}
-			}else if( fromArduino.equals("RREBOOT") ){		//  właśnie uruchomiłem arduino
+			}else
+				*/
+				if( fromArduino.equals("RREBOOT") ){		//  właśnie uruchomiłem arduino
 				Arduino q			= Arduino.getInstance();
 				q.clear();
 
@@ -159,6 +166,7 @@ public class input_parser {
 							}
 							int num = virtualComponents.magnet_order[ind];
 							int ypos	= virtualComponents.b_pos_y[ num ];
+							posx		+= virtualComponents.margin_x[ind];
 							Log.i("input_parser "+ virtualComponents.scann_num+" "+ypos, "butelka "+num+": " + posx+ " / " + direction );
 							
 							if(direction == Methods.DRIVER_DIR_BACKWARD){
@@ -180,6 +188,7 @@ public class input_parser {
 							}
 							int num		= virtualComponents.magnet_order[ind];							
 							int ypos	= virtualComponents.b_pos_y[ num ];
+							posx		+= virtualComponents.margin_x[ind];
 							if(direction == Methods.DRIVER_DIR_BACKWARD){
 								virtualComponents.hereIsBottle(num, posx, ypos );	
 							}
