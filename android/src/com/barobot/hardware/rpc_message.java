@@ -28,15 +28,15 @@ public class rpc_message extends History_item{
 		message =message.trim();
 		if( this.blocing){
 			if( message.startsWith("RPOS") ){	// np "RPOSY" ready at
-				if( command.startsWith("X") ){
+				if( message.startsWith("RPOSX") && command.startsWith("X") ){
 					ret = message;
 					return true;
 				}
-				if( command.startsWith("Y") ){
+				if( message.startsWith("RPOSY") && command.startsWith("Y") ){
 					ret = message;
 					return true;
 				}
-				if( command.startsWith("Z") ){
+				if( message.startsWith("RPOSZ") && command.startsWith("Z") ){
 					ret = message;
 					return true;
 				}

@@ -25,7 +25,7 @@ public class DebugTabBottles extends Fragment {
 	private Activity cc;
 
     public DebugTabBottles(Activity debugActivity, int tabCommandsId) {
-    //	Constant.log("DebugTabBottles", "init");
+    	Constant.log("DebugTabBottles", "init");
     	this.tab_id = tabCommandsId;
     	this.cc=debugActivity;
 	}
@@ -45,13 +45,11 @@ public class DebugTabBottles extends Fragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
-	//	Constant.log("DebugTabBottles", "onCreateView");
-
+		Constant.log("DebugTabBottles", "onCreateView");
 		int lay = DebugActivity.layouts[tab_id];
 		//View rootView = inflater.inflate( R.layout.fragment_device_list_dummy, container, false);
 		View rootView = inflater.inflate( lay, container, false);
 		Point size = getScreenSize();
-
 
 		button_zajedz bz = new button_zajedz();
 		int[] nalejs = {

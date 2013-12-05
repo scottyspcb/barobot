@@ -1,4 +1,5 @@
 package com.barobot.debug;
+import com.barobot.BarobotMain;
 import com.barobot.DebugActivity;
 import com.barobot.R;
 import com.barobot.R.id;
@@ -7,6 +8,7 @@ import com.barobot.utils.Constant;
 
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 public class button_zajedz  implements OnClickListener {
@@ -14,22 +16,18 @@ public class button_zajedz  implements OnClickListener {
 	public void onClick(View v) {
 		boolean setting_mode	= false;
 		String autofill			= virtualComponents.get("AUTOFILL", "0" );
-		ToggleButton tb			= null;
-		DebugActivity bb		= DebugActivity.getInstance();
+		BarobotMain bb		= BarobotMain.getInstance();
 
-	//	Constant.log("button_zajedz onClick", "id: "+v.getId());
-
-		if(bb!=null){
-			tb			= (ToggleButton) bb.findViewById(R.id.set_bottle);
-			if (tb != null) {
-				setting_mode		= tb.isChecked();
-			}
+		if(virtualComponents.set_bottle_on){
+			setting_mode = true;
 		}
+	
 		switch (v.getId()) {
-		
 		  case R.id.start_pos:
 			  if(setting_mode){
-				  virtualComponents.hereIsStart();
+				int posx		=  virtualComponents.getInt("POSX", 0 );	
+				int posy		=  virtualComponents.getInt("POSY", 0 );
+				virtualComponents.hereIsStart(posx, posy);
 
 			  }else{
 				  virtualComponents.moveToStart();
@@ -37,10 +35,8 @@ public class button_zajedz  implements OnClickListener {
 			  break;
 		
 		  case R.id.nalej1:
-			  
 			  if(setting_mode){
 				  virtualComponents.hereIsBottle(0);
-
 			  }else{
 				  virtualComponents.moveToBottle(0);
 				  if( autofill== "1"){
@@ -51,7 +47,6 @@ public class button_zajedz  implements OnClickListener {
 		  case R.id.nalej2:
 			  if(setting_mode){
 				  virtualComponents.hereIsBottle(1);
-
 			  }else{
 				  virtualComponents.moveToBottle(1);
 				  if( autofill== "1"){
@@ -169,10 +164,12 @@ public class button_zajedz  implements OnClickListener {
 				  }
 			  }	    	  
 		      break;
-
 		}
 	  if(setting_mode){
-		  bb.setChecked( R.id.set_bottle, false );
+		  virtualComponents.set_bottle_on= false;
+		int posx		=  virtualComponents.getInt("POSX", 0 );	
+		int posy		=  virtualComponents.getInt("POSY", 0 );
+		Toast.makeText(bb, "Zapisano ["+posx+"/"+posy+"] jako butelka", Toast.LENGTH_LONG).show();
 	  }
 	}
 }

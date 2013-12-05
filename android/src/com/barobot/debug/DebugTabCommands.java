@@ -78,6 +78,7 @@ public class DebugTabCommands extends Fragment {
 				R.id.enabley,
 				R.id.reset_carret,
 				R.id.smile,
+				R.id.find_bottles,
 				R.id.pacpac
 			};
 		for(int i =0; i<buttons.length;i++){

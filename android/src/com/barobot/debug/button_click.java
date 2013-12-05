@@ -38,18 +38,18 @@ public class button_click implements OnClickListener{
 		int posx		= virtualComponents.getInt("POSX", 0 );
 		int posy		= virtualComponents.getInt("POSY", 0 );
 		
-		Log.i("XXXX", ""+ posx);
+	//	Log.i("XXXX", ""+ posx);
 
 		switch (v.getId()) {
 		case R.id.set_x_1000:
-			Log.i("nextpos-10000", "old: "+posx + " next: "+ ( posx -10000));
+	//		Log.i("nextpos-10000", "old: "+posx + " next: "+ ( posx -10000));
 			virtualComponents.moveZDown( q );
 			virtualComponents.moveX( q, ( posx -10000));
 			ar.send(q);
 			break;
 		case R.id.set_x_100:
 			
-			Log.i("nextpos-1000", "old: "+posx + " next: "+ ( posx -1000));
+	//		Log.i("nextpos-1000", "old: "+posx + " next: "+ ( posx -1000));
 			
 			virtualComponents.moveZDown( q );
 			virtualComponents.moveX( q, ( posx -1000));
@@ -57,7 +57,7 @@ public class button_click implements OnClickListener{
 			break;
 		case R.id.set_x_10:
 			
-			Log.i("nextpos-100", "old: "+posx + " next: "+ ( posx -100)); 
+	//		Log.i("nextpos-100", "old: "+posx + " next: "+ ( posx -100)); 
 
 			virtualComponents.moveZDown( q );
 			virtualComponents.moveX( q, ( posx -100));
@@ -65,7 +65,7 @@ public class button_click implements OnClickListener{
 			break;
 		case R.id.set_x10:
 			
-			Log.i("nextpos+100", "old: "+posx + " next: "+ ( posx +100)); 
+		//	Log.i("nextpos+100", "old: "+posx + " next: "+ ( posx +100)); 
 			
 			virtualComponents.moveZDown( q );
 			virtualComponents.moveX( q, ( posx +100));
@@ -73,57 +73,49 @@ public class button_click implements OnClickListener{
 			break;
 		case R.id.set_x100:
 			
-			Log.i("nextpos+1000", "old: "+posx + " next: "+ ( posx +1000));
+		//	Log.i("nextpos+1000", "old: "+posx + " next: "+ ( posx +1000));
 			
 			virtualComponents.moveZDown( q );
 			virtualComponents.moveX( q, ( posx +1000));
 			ar.send(q);
 			break;
 		case R.id.set_x1000:
-			Log.i("nextpos+10000", "old: "+posx + " next: "+ ( posx +10000));
+		//	Log.i("nextpos+10000", "old: "+posx + " next: "+ ( posx +10000));
 			virtualComponents.moveZDown( q );
 			virtualComponents.moveX( q, ( posx +10000));
 			ar.send(q);
 			break;  
 		case R.id.set_y_600:
 			virtualComponents.moveZDown( q );
-			virtualComponents.moveY( q, ( posy -1000));
+			virtualComponents.moveY( q, ( posy -1000), true);
 			ar.send(q);
 			break;
 		case R.id.set_y_100:
 			virtualComponents.moveZDown( q );
-			virtualComponents.moveY( q, ( posy -100));
+			virtualComponents.moveY( q, ( posy -100), true);
 			ar.send(q);
 			break;
 		case R.id.set_y_10:
 			virtualComponents.moveZDown( q );
-			virtualComponents.moveY( q, ( posy -10));
+			virtualComponents.moveY( q, ( posy -10), true);
 			ar.send(q);
 			break;
 		case R.id.set_y10:
 			virtualComponents.moveZDown( q );
-			virtualComponents.moveY( q, ( posy +10));
+			virtualComponents.moveY( q, ( posy +10), true);
 			ar.send(q);
 			break;
 		case R.id.set_y100:
 			virtualComponents.moveZDown( q );
-			virtualComponents.moveY( q, ( posy +100));
+			virtualComponents.moveY( q, ( posy +100), true);
 			ar.send(q);
 			break;
 		case R.id.set_y600:
 			virtualComponents.moveZDown( q );
-			virtualComponents.moveY( q, ( posy +1000));
+			virtualComponents.moveY( q, ( posy +1000), true);
 			ar.send(q);
 			break;
-		case R.id.kalibrujx:
-			virtualComponents.moveZDown( q );			
-			virtualComponents.moveY( q, virtualComponents.SERVOY_FRONT_POS);
-			long lengthx1	=  virtualComponents.getInt("LENGTHX", 600 ) * 10;			
-			virtualComponents.moveX( q, (posx +lengthx1));
-			virtualComponents.moveX( q, -lengthx1);
-			virtualComponents.moveX( q, 0 );
-			ar.send(q);
-			break;
+
 		case R.id.set_neutral_y:
 			virtualComponents.set("NEUTRAL_POS_Y", ""+posy );
 			String nn = virtualComponents.get("NEUTRAL_POS_Y", "0" );
@@ -131,6 +123,7 @@ public class button_click implements OnClickListener{
 			break;
 		case R.id.goToNeutralY:
 			virtualComponents.moveY( q, virtualComponents.get("NEUTRAL_POS_Y", "0" ));
+			q.add("DY", true);
 			ar.send(q);
 			break;
 		case R.id.kalibrujy:
@@ -147,7 +140,7 @@ public class button_click implements OnClickListener{
 			break;
 		case R.id.machajx:
 			virtualComponents.moveZDown( q );
-			virtualComponents.moveY( q, virtualComponents.SERVOY_FRONT_POS);
+			virtualComponents.moveY( q, virtualComponents.SERVOY_FRONT_POS, true);
 			long lengthx4	=  virtualComponents.getInt("LENGTHX", 600 );
 			for( int i =0; i<10;i++){
 			//	virtualComponents.moveX( q, (lengthx4/4) );
@@ -162,9 +155,10 @@ public class button_click implements OnClickListener{
 		case R.id.machajy:
 			virtualComponents.moveZDown( q );
 			for( int i =0; i<10;i++){
-				virtualComponents.moveY( q, virtualComponents.SERVOY_BACK_POS );
-				virtualComponents.moveY( q, virtualComponents.SERVOY_FRONT_POS );
+				virtualComponents.moveY( q, virtualComponents.SERVOY_FRONT_POS, false );
+				virtualComponents.moveY( q, virtualComponents.SERVOY_BACK_POS, false );
 			}
+			virtualComponents.moveY( q, virtualComponents.SERVOY_FRONT_POS, false );
 			q.add("DY", true);
 			ar.send(q);
 			break;
@@ -173,13 +167,14 @@ public class button_click implements OnClickListener{
 				virtualComponents.moveZDown(q);
 				virtualComponents.moveZUp(q);
 			}
+			virtualComponents.moveZDown(q);
 			q.add("DZ", true);
 			ar.send(q);
 			break;
 		case R.id.losujx:
 			Random generator2 = new Random( 19580427 );
 			virtualComponents.moveZDown( q );
-			virtualComponents.moveY( q, virtualComponents.SERVOY_FRONT_POS );
+			virtualComponents.moveY( q, virtualComponents.SERVOY_FRONT_POS, true );
 			long lengthx5	=  virtualComponents.getInt("LENGTHX", 600 );
 		    for(int f = 0;f<20;){
 		    	int left = generator2.nextInt((int)(lengthx5/100 / 2));
@@ -212,6 +207,7 @@ public class button_click implements OnClickListener{
 			virtualComponents.nalej( 3000 );
 			break;
 		case R.id.set_bottle:
+			virtualComponents.set_bottle_on = true;
 			// przełącz okno na listę butelek, 
 			// zablokuj przyciski i po naciśnięciu ustaw w tym miejscu butelkę
 			Constant.log(Constant.TAG,"wybierz butelkę...");
@@ -252,8 +248,7 @@ public class button_click implements OnClickListener{
 
 		case R.id.max_y:
 			virtualComponents.moveZDown( q );
-			virtualComponents.moveY( q, virtualComponents.SERVOY_BACK_POS );
-			q.add("DY", true);
+			virtualComponents.moveY( q, virtualComponents.SERVOY_BACK_POS, true );
 			ar.send(q);	
 			break;
 		case R.id.min_x:
@@ -264,8 +259,7 @@ public class button_click implements OnClickListener{
 			break;
 		case R.id.min_y:
 			virtualComponents.moveZDown( q );
-			virtualComponents.moveY( q, virtualComponents.SERVOY_FRONT_POS );
-			q.add("DY", true);
+			virtualComponents.moveY( q, virtualComponents.SERVOY_FRONT_POS, true );
 			ar.send(q);	
 			break;	
 		case R.id.unlock:
@@ -279,6 +273,55 @@ public class button_click implements OnClickListener{
 			break;
 		case R.id.bottle_next:
 			break;	
+
+		case R.id.kalibrujx:
+			virtualComponents.moveZDown( q );			
+			virtualComponents.moveY( q, virtualComponents.SERVOY_FRONT_POS, true);
+			long lengthx1	=  virtualComponents.getInt("LENGTHX", 600 ) * 10;		
+			virtualComponents.moveX( q, (posx +lengthx1));
+			q.add("DY", false);
+			virtualComponents.moveX( q, -lengthx1);
+			virtualComponents.moveX( q, 0 );
+			ar.send(q);
+			break;
+
+		case R.id.find_bottles:
+			virtualComponents.moveZDown( q );
+			virtualComponents.moveY( q, virtualComponents.SERVOY_FRONT_POS, true);
+			long lengthx19	=  virtualComponents.getInt("LENGTHX", 60000 );	
+			virtualComponents.moveX( q, posx + 2000);
+			virtualComponents.moveX( q, -70000 );	// read margin
+			// scann Triggers
+			q.add( new rpc_message( true ) {
+				@Override
+				public ArduinoQueue run() {
+					this.name		= "scanning up";
+					virtualComponents.scann_bottles = true;
+					virtualComponents.scann_num = 0;
+					return null;
+				}
+			} );
+			virtualComponents.moveX( q, 70000 );
+			q.add( new rpc_message( true ) {
+				@Override
+				public ArduinoQueue run() {
+					this.name		= "scanning back";
+					virtualComponents.scann_num = 1;
+					return null;
+				}
+			} );
+			virtualComponents.moveX( q, -lengthx19);	
+			q.add( new rpc_message( true ) {
+				@Override
+				public ArduinoQueue run() {
+					this.name		= "end scanning";
+					virtualComponents.scann_bottles = false;
+					return null;
+				}
+			} );
+			ar.send(q);
+
+			break;			
 		case R.id.bottle_prev:
 			/*
 	  	  	final Button btn			= (Button) v;

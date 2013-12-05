@@ -135,13 +135,61 @@ public class input_parser {
 
 					long posx = virtualComponents.driver_x.hard2soft(pos);
 					virtualComponents.set( "POSX","" + posx);
-					Log.i("input_parser", "jestm w: " + posx );
+					Log.i("input_parser", "jestem w: " + posx );
+					if(virtualComponents.scann_bottles == true){
+						virtualComponents.hereIsStart(posx, virtualComponents.SERVOY_FRONT_POS );
+					}
 
 				}else if(reason == Methods.HALL_GLOBAL_MAX){		// endstop MAX
-					virtualComponents.set( "LENGTHX", "" + pos);
-					virtualComponents.set( "X_GLOBAL_MAX", "" + pos );
+					long posx = virtualComponents.driver_x.hard2soft(pos);
+					
+					virtualComponents.set( "LENGTHX", "" + posx);
+					virtualComponents.set( "X_GLOBAL_MAX", "" + posx );
+					if(virtualComponents.scann_bottles == true){
+						virtualComponents.hereIsBottle(11, posx, virtualComponents.SERVOY_FRONT_POS );
+					}
+
 				}else if(reason == Methods.HALL_LOCAL_MAX){			// butelka
+					if(virtualComponents.scann_bottles == true){
+						long posx = virtualComponents.driver_x.hard2soft(pos);
+						if(virtualComponents.scann_num < 12 && virtualComponents.scann_num >= 0 ){
+							int ind	= virtualComponents.scann_num;
+							if(direction == Methods.DRIVER_DIR_BACKWARD){
+								ind	= 11-virtualComponents.scann_num;
+							}
+							int num = virtualComponents.magnet_order[ind];
+							int ypos	= virtualComponents.b_pos_y[ num ];
+							Log.i("input_parser "+ virtualComponents.scann_num+" "+ypos, "butelka "+num+": " + posx+ " / " + direction );
+							
+							if(direction == Methods.DRIVER_DIR_BACKWARD){
+								virtualComponents.hereIsBottle(num, posx, ypos );	
+							}
+							virtualComponents.scann_num++;							
+						}else{
+							Log.i("input_parser BACK", "za duzo butelek" );								
+						}
+					}
 				}else if(reason == Methods.HALL_LOCAL_MIN){			// butelka
+					if(virtualComponents.scann_bottles == true){
+						long posx = virtualComponents.driver_x.hard2soft(pos);
+
+						if(virtualComponents.scann_num < 12 && virtualComponents.scann_num >= 0 ){
+							int ind	= virtualComponents.scann_num;
+							if(direction == Methods.DRIVER_DIR_BACKWARD){
+								ind	= 11-virtualComponents.scann_num;
+							}
+							int num		= virtualComponents.magnet_order[ind];							
+							int ypos	= virtualComponents.b_pos_y[ num ];
+							if(direction == Methods.DRIVER_DIR_BACKWARD){
+								virtualComponents.hereIsBottle(num, posx, ypos );	
+							}
+							Log.i("input_parser "+ virtualComponents.scann_num+" "+ypos, "butelka "+num+": " + posx+ " / " + direction );
+							
+							virtualComponents.scann_num++;							
+						}else{
+							Log.i("input_parser MIN", "za duzo butelek" );								
+						}
+					}
 				}
 			}else if( axis == 'Y'){
 			}else if( axis == 'Z'){
@@ -159,7 +207,7 @@ public class input_parser {
 			String fromArduino2 = fromArduino.replace("VAL A0 ", "");			
 			virtualComponents.set( "A0",fromArduino2);
 
-		}else if(fromArduino.startsWith("LENGTHX")){	
+		}else if(fromArduino.startsWith("LENGTHX")){
 			String fromArduino2 = fromArduino.replace("LENGTHX ", "");
 			virtualComponents.set( "LENGTHX",fromArduino2);
 
@@ -172,10 +220,10 @@ public class input_parser {
 		}else if(fromArduino.startsWith("PING")){
 //			toSend.add("PONG");
 		}
-        if( !is_ret ){ // jesli nie jest zwrotka
+     //   if( !is_ret ){ // jesli nie jest zwrotka
 			Arduino q			= Arduino.getInstance();
         	q.addToList(fromArduino, false );
-        }
+      //  }
 	}
 	private static void handleError(String fromArduino) {	
 	}
