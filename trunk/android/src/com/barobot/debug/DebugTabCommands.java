@@ -3,6 +3,7 @@ package com.barobot.debug;
 import com.barobot.DebugActivity;
 import com.barobot.R;
 import com.barobot.R.id;
+import com.barobot.hardware.virtualComponents;
 import com.barobot.utils.Constant;
 
 import android.app.Activity;
@@ -13,13 +14,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.ToggleButton;
 
 public class DebugTabCommands extends Fragment {
 	public int tab_id	= -1 ;
-	private Activity cc;
+	private DebugActivity cc;
 
-    public DebugTabCommands(Activity debugActivity, int tabCommandsId) {
+    public DebugTabCommands(DebugActivity debugActivity, int tabCommandsId) {
     	Constant.log("DebugTabCommands", "init");
     	this.tab_id = tabCommandsId;
     	this.cc=debugActivity;
@@ -71,6 +73,10 @@ public class DebugTabCommands extends Fragment {
 				R.id.set_neutral_y,
 				R.id.goToNeutralY,
 				R.id.unlock,
+				R.id.disablez,
+				R.id.disabley,
+				R.id.enabley,
+				R.id.reset_carret,
 				R.id.smile,
 				R.id.pacpac
 			};
@@ -101,9 +107,13 @@ public class DebugTabCommands extends Fragment {
 			String classname = w.getClass().getName();
 			if( "android.widget.ToggleButton".equals( classname )){
 				Button xb3 = (ToggleButton) rootView.findViewById(togglers[i]);	
-				xb3.setOnClickListener(bt);			
+				xb3.setOnClickListener(bt);
 			}	
-		}	
+		}
+		cc.setText( R.id.position_z, virtualComponents.get( "POSZ","0"), true );
+		cc.setText( R.id.position_y, virtualComponents.get( "POSY","0"), true );
+		cc.setText( R.id.position_x, virtualComponents.get( "POSX","0"), true );
+
 		return rootView;
 	}
 }

@@ -18,9 +18,7 @@ import android.widget.TextView;
 
 public class BottleSetupActivity extends BarobotActivity 
 									implements NoticeDialogListener {
-
 	private int[] ids;
-	
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -40,29 +38,30 @@ public class BottleSetupActivity extends BarobotActivity
 		ids[10] = R.id.bottle10;
 		ids[11] = R.id.bottle11;
 		ids[12] = R.id.bottle12;
-		
 		UpdateBottlesState();
-		 
 	}
-	
 	private void UpdateBottlesState() {
 		
 		Engine engine = Engine.GetInstance(this);
 		
 		Bottle[] bottles = engine.getBottleSlots();
+
+		Log.w("BOTTLE_SETUP length",""+bottles.length);
+		
 		
 		for (int i = 1; i<=12 ; i++)
 		{
+			
+
 			TextView tview = (TextView) findViewById(ids[i]);
 			if (bottles[i] == null) {
 				tview.setText(R.string.empty_bottle_string);
 			} else {
 				tview.setText(bottles[i].toString());	
 			}
-			
 		}
 	}
-		
+
 	public void onBottleClicked(View view)
 	{
 		int viewID = view.getId();
@@ -94,9 +93,8 @@ public class BottleSetupActivity extends BarobotActivity
 	    DialogFragment newFragment = SelectLiquidDialogFragment.newInstance();
 	    newFragment.show(ft, "dialog");
 	}
-	
+
 	private int bottleClicked;
-	
 	/*@Override
 	public void onDialogEnd(DialogFragment dialog) {
 		UpdateBottlesState();
@@ -113,6 +111,7 @@ public class BottleSetupActivity extends BarobotActivity
 					bottle = new Bottle(liquid, 0);
 				}
 				Engine.GetInstance(this).UpdateBottleSlot(bottleClicked, bottle);
+
 				break;
 			case NewLiquid:
 				Engine engine = Engine.GetInstance(this);

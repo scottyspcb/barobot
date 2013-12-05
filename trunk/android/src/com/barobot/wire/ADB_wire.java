@@ -85,7 +85,7 @@ public class ADB_wire implements Wire, ServerListener{
 	public boolean send(String command) throws IOException {
 		if( this.adb_connected){
 //			Constant.log(Constant.TAG, "+ trysend ADB: " + command);
-			server.send(command + input_parser.separator);		
+			server.send(command);		
 		}
 		return false;
 	}

@@ -10,6 +10,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.util.Log;
 import android.widget.ArrayAdapter;
+import android.widget.TextView;
 
 import com.barobot.BarobotMain;
 import com.barobot.R;
@@ -27,11 +28,11 @@ public class Arduino{
 	//private ArrayList <message> output3 = new ArrayList <message>();
 	//private static Queue<String> input = new LinkedList<String>();
 	Wire connection = null;
+	Wire debugConnection = null;
 	public boolean stop_autoconnect = false;
 	public List<History_item> mConversationHistory;
 	public static Arduino getInstance(){
-		if (instance == null)
-		{
+		if (instance == null){
 			instance = new Arduino();
 		}
 		return instance;
@@ -43,17 +44,23 @@ public class Arduino{
 		//mConversationArrayAdapter = new ArrayAdapter<History_item>(barobotMain, R.layout.message);
 	}
 	public void onStart(final BarobotMain barobotMain) {
+
+		if( connection != null ){
+			connection.disconnect();
+			connection.destroy();
+			connection = null;
+		}
 		if( connection == null ){
 			AlertDialog.Builder builder = new AlertDialog.Builder(barobotMain);
-			String[] name = new String[3];
-			final Wire lowHardware[]=  new Wire[3];  
+			String[] name = new String[2];
+			final Wire lowHardware[]=  new Wire[2];  
 			lowHardware[0]	= new Serial_wire();
-			lowHardware[1]	= new ADB_wire();
-			lowHardware[2]	= new BT_wire();
-	
+			lowHardware[1]	= new BT_wire();
+			//		lowHardware[2]	= new ADB_wire();
+
 			name[0] = lowHardware[0].getName();
 			name[1] = lowHardware[1].getName();
-			name[2] = lowHardware[2].getName();
+			//name[2] = lowHardware[2].getName();
 			builder.setTitle("Wybierz typ połączenia z robotem");
 			builder.setCancelable(false);
 			builder.setItems(name, new DialogInterface.OnClickListener() {
@@ -61,34 +68,42 @@ public class Arduino{
 		     	public void onClick(DialogInterface dialog, int which) {
 			          switch(which){
 			             case 0:
-			            	 prepareConnection(lowHardware[0]);
+			            	 prepareConnection(lowHardware[0], lowHardware[1]);
 			            	 break;
 			             case 1:
-			            	 prepareConnection(lowHardware[1]);
+			            	 prepareConnection(lowHardware[1], lowHardware[1]);
 			            	 break;
+			            	 /*
 			             case 2:
-			            	 prepareConnection(lowHardware[2]);
-			            	 break;
+			            	 prepareConnection(lowHardware[2], lowHardware[1]);
+			            	 break;*/
 			             default:
 			            	 barobotMain.finish();
 			            	 break;
 			          }
 			      }
 			});
-			builder.show();        
+			builder.show();
 		}
 	}
 
-    protected void prepareConnection(Wire lowHardware) {
+    protected void prepareConnection(Wire lowHardware, Wire lowHardware2) {
     	if(connection !=null){
     		connection.destroy();
     	}
    	 	connection = lowHardware;
     	connection.init();
-       	if( connection.implementAutoConnect()){
-        	this.runTimer();
+
+       	
+    	if(debugConnection !=null){
+    		debugConnection.destroy();
+    	}	
+		debugConnection = lowHardware2;
+		debugConnection.init();
+       	if( debugConnection.implementAutoConnect()){
+        	this.runTimer(debugConnection);
         }
-       	this.sendSomething();
+    //   	this.sendSomething();
 	}
 
    	private boolean stopping = false;
@@ -101,15 +116,17 @@ public class Arduino{
 	        public void run() {
 	            Random generator = new Random( 19580427 );
 	            Log.d("serial", "Start writter");
-	            while(!stopping && connection != null && connection.isConnected() ){
-	                int r = generator.nextInt();
-	                String test = "hello arduino "+ r + "\n";
-	                send(test);
-	                try {
-	                    Thread.sleep(500);
-	                } catch (InterruptedException e) {
-	                    e.printStackTrace();
-	                }
+	            while(!stopping && connection != null ){
+	            	if( connection.isConnected()){
+		                int r = generator.nextInt();
+		                String test = "hello arduino "+ r + "\n";
+		                send(test);
+		                try {
+		                    Thread.sleep(500);
+		                } catch (InterruptedException e) {
+		                    e.printStackTrace();
+		                }
+	            	}
 	            }
 	            Log.d("serial", "koniec writter");
 	        }};
@@ -117,7 +134,7 @@ public class Arduino{
 	        writer.start();
     }
 
-    private void runTimer() {
+    private void runTimer( final Wire connection ) {
 //    	interval inn = new interval();
 //   	inn.run(1000,5000);
 //    	this.inters.add(inn);
@@ -147,6 +164,9 @@ public class Arduino{
 		if(connection!=null){
 			connection.destroy();
 		}
+		if(debugConnection!=null){
+			debugConnection.destroy();
+		}
         Constant.log(Constant.TAG, "--- ON DESTROY ---");
 	}
 	public void resume() {
@@ -154,21 +174,25 @@ public class Arduino{
 		if(connection!=null){
 			connection.resume();
 		}
+		if(debugConnection!=null){
+			debugConnection.resume();
+		}
 	}
+	/*
 	public Wire getConnection() {
 		return connection;
 	}
-	
+*/
 	public boolean allowAutoconnect() {
-		if( connection.isConnected() ){
+		if( debugConnection.isConnected() ){
 		//	Constant.log(Constant.TAG, "nie autoconnect bo juz połączony");
 			return false;
 		}
-		if( !connection.implementAutoConnect() ){
+		if( !debugConnection.implementAutoConnect() ){
 			Constant.log(Constant.TAG, "nie autoconnect bo !canAutoConnect");
 			return false;
 		}
-		if( !connection.canConnect() ){
+		if( !debugConnection.canConnect() ){
 			Constant.log(Constant.TAG, "nie autoconnect bo !canConnect");
 			return false;
 		}
@@ -180,13 +204,20 @@ public class Arduino{
 	}
 
     public boolean checkBT() {
-    	return connection.canConnect();
+    	return debugConnection.canConnect();
     }
 	public void setupBT(BarobotMain barobotMain) {
+		/*
 		if(connection!=null){
 			connection.setup();
 			if(this.allowAutoconnect()){
 				connection.setAutoConnect( true ); 
+			}
+		}*/
+		if(debugConnection!=null){
+			debugConnection.setup();
+			if(this.allowAutoconnect()){
+				debugConnection.setAutoConnect( true ); 
 			}
 		}
 	}
@@ -197,17 +228,17 @@ public class Arduino{
 	}
 	public void sendFirst(ArduinoQueue q2) {
 		this.output2.addAll( 0, q2.output);		// dodja na począku, reszte przesun dalej
-		exec();		
+		exec();
 	}
 	public void send(ArduinoQueue q) {
 		this.output2.addAll(q.output);
 		BarobotMain.getInstance().cm.doPhoto();
 		exec();
 	}
-	public boolean read_ret(String retm) {	// czy moze to jest zwrotka
+	public synchronized boolean read_ret(String retm) {	// czy moze to jest zwrotka
 		boolean is_ret = false;
 		if( this.wait_for != null){
-			//Constant.log("isRet?", "["+message+"][" +  this.wait_for.command+"]");
+		//	Constant.log("isRet?", "["+retm+"][" +  this.wait_for.command+"]");
 			is_ret = true;
 			if(this.wait_for.isRet(retm)){
 				this.wait_for = null;
@@ -234,13 +265,16 @@ public class Arduino{
 				if( m.command == null){
 					m.start( this );
 				}else{
-					connection.send(m.command);
+		//			Constant.log("serial send", m.command);
+					String command = m.command+ input_parser.separator;	
+					connection.send(command);
+					debug(command);
 				}
 		        addToList( m );
 				if(m.isBlocing()){		// czekam na zwrotkę tej komendy zanim wykonam coś dalej
 					m.send_timestamp	= System.nanoTime();
                 	this.wait_for		= m;
-                	return;					// przerwij do czasu otrzymania zwrotki lub odblokowania
+                	return;				// przerwij do czasu otrzymania zwrotki lub odblokowania
                 }else{
                 	this.wait_for = null;
                 }
@@ -252,6 +286,23 @@ public class Arduino{
 			Constant.log(Constant.TAG, "problem sending TCP message",e);
 		}
 	}
+	
+    public synchronized void low_send( String command ) throws IOException {		// wyslij bez interpretacji
+		if(connection == null){
+			return;		// jestem w trakcie oczekiwania
+		}
+    	connection.send(command);
+    }
+    public synchronized void debug( String command ){		// wyslij bez interpretacji
+		if(debugConnection!=null ){
+			try {
+				debugConnection.send(command);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+    }
+ 
     public void unlock() {
     	if(wait_for!=null){
     		Constant.log("+unlock", "czekalem na [" + wait_for.command+"] w kolejce: " +output2.size() );
@@ -271,17 +322,34 @@ public class Arduino{
 	}
 
     public boolean log_active	= true;
-
+	private ArrayAdapter<History_item> mConversation;
 	public void addToList(final rpc_message m) {
 		if(log_active){
 			mConversationHistory.add( m );
+			if(this.mConversation !=null){
+				BarobotMain.getInstance().runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						if(Arduino.this.mConversation !=null){
+				 			Arduino.this.mConversation.add(m);
+				 			Arduino.this.mConversation.notifyDataSetChanged();
+						}
+					}
+				});
+			}
 		}
 	}
 	public void addToList(final String string, final boolean direction ) {
 		if(log_active){
 			BarobotMain.getInstance().runOnUiThread(new Runnable() {
 			     public void run() {
-			    	 mConversationHistory.add( new History_item( string.trim(), direction) );
+			//    	 Log.i(Constant.TAG, "addtohist:[" + string +"]"); 
+			    	 History_item hi = new History_item( string.trim(), direction);
+			    	 mConversationHistory.add( hi );
+			 		if(Arduino.this.mConversation !=null){
+			 			Arduino.this.mConversation.add(hi);
+			 			Arduino.this.mConversation.notifyDataSetChanged();
+					} 
 			    }
 			});
 			
@@ -290,17 +358,25 @@ public class Arduino{
 	public void clearHistory() {
 		if(log_active){
 			mConversationHistory.clear();
+			if(this.mConversation !=null){
+				this.mConversation.clear();
+			}
 		}
 	}
-	
 	public List<History_item> getHistory(){
 		return mConversationHistory;
 	}
 	public void connectId(String address) {
 		Constant.log(Constant.TAG, "autoconnect z: " +address);
-		if(connection!=null){
-			connection.connectToId(address);
-		}
+		if(debugConnection!=null){
+			debugConnection.connectToId(address);
+		}	
+		
+		
+	}
+	public void getHistory(ArrayAdapter<History_item> mConversation) {
+		this.mConversation = mConversation;
+		this.mConversation.addAll(mConversationHistory);
 	}
 }
 

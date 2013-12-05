@@ -100,7 +100,7 @@ public class Serial_wire implements Wire {
 	public boolean send(String message) {
         if(mSerialIoManager!=null){
             byte data[] = message.getBytes(); 
-            mSerialIoManager.writeAsync(data);
+     //       mSerialIoManager.writeAsync(data);
             try {
                 mSerialIoManager.writeSync(data);
             } catch (IOException e) {
@@ -191,10 +191,12 @@ public class Serial_wire implements Wire {
 //                       result.add(new DeviceEntry(device, null, 0));
                     } else {
         //                Log.d(TAG, "  + " + driver + ", " + driver.getPortCount() + " ports.");
-                        mPermissionReceiver_activated = true;
-                        BarobotMain.getInstance().registerReceiver(mPermissionReceiver, new IntentFilter(
-                                ACTION_USB_PERMISSION));
 
+                        Intent tt = BarobotMain.getInstance().registerReceiver(mPermissionReceiver, new IntentFilter(
+                                ACTION_USB_PERMISSION));
+                        mPermissionReceiver_activated = true;
+   
+                        
                         if (!mUsbManager.hasPermission(device)){
                             final PendingIntent pi = PendingIntent.getBroadcast(BarobotMain.getInstance(), 0, new Intent(
                                     ACTION_USB_PERMISSION), 0);
@@ -248,6 +250,8 @@ public class Serial_wire implements Wire {
 	            Log.e("Serial", "Error setting up device: " + e.getMessage(), e);
 	            try {
 	                sPort.close();
+	            } catch (IllegalStateException e2) {
+	            	Log.e("Serial", "IllegalStateException", e2);
 	            } catch (IOException e2) {
 	                // Ignore.
 	            }
@@ -300,7 +304,7 @@ public class Serial_wire implements Wire {
 	    @Override
 	    public void onNewData(final byte[] data) {
 	    	String message = new String(data);
-	    	Log.e("Serial input", message);
+	  //  	Log.e("Serial input", message);
 	    	input_parser.readInput(message);
 	    }
 	};

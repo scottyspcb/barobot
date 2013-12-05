@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.barobot.DebugActivity;
 import com.barobot.R;
+import com.barobot.hardware.Methods;
 import com.barobot.hardware.virtualComponents;
 import com.barobot.webview.AJS;
 
@@ -28,8 +29,10 @@ public class input_parser {
 				//	Log.i(Constant.TAG, "zostalo [" + input_parser.buffer +"]");
 					if("".equals(command)){
 						Log.i(Constant.TAG, "posta komenda!!!]");
+					}else{
+						parseInput(command);
+						Arduino.getInstance().debug(command+"\n");
 					}
-					parseInput(command);
 					end		= input_parser.buffer.indexOf(separator);
 				//	
 				}
@@ -38,9 +41,11 @@ public class input_parser {
 	}
 
 	private static void parseInput(String fromArduino) {
-		//Log.i(Constant.TAG, "parse:[" + fromArduino +"]");
+	//	Log.i(Constant.TAG, "parse:[" + fromArduino +"]");
 		boolean is_ret = false;
-
+		if(fromArduino.length() == 0){
+			return;
+		}
 		char command = fromArduino.charAt(0);
 		if( command =='A' ){
 			AJS aa = AJS.getInstance();
@@ -67,6 +72,8 @@ public class input_parser {
 				} catch ( java.lang.NumberFormatException e2) {
 				}
 			}
+		}else if( command =='-' ){		// nic- to komentarz	
+			
 		}else if(command == 'R' ){		// na końcu bo to może odblokować wysyłanie i spowodować zapętlenie
 			if(fromArduino.startsWith("R SET LED")){	
 				String fromArduino2 = fromArduino.replace("R SET LED", "");
@@ -84,44 +91,61 @@ public class input_parser {
 				if(dialog!=null){
 					dialog.setChecked( R.id.wagi_live, !"OFF".equals(fromArduino2) );
 				}
-			}else if( fromArduino.equals("R REBOOT") ){		//  właśnie uruchomiłem arduino
+			}else if( fromArduino.equals("RREBOOT") ){		//  właśnie uruchomiłem arduino
 				Arduino q			= Arduino.getInstance();
 				q.clear();
 
-			}else if(fromArduino.startsWith("POSX")){
-				String fromArduino2 = fromArduino.replace("POSX", "");
-				virtualComponents.set( "POSX",fromArduino2);
-				long posx = Long.parseLong(fromArduino2);
+			}else if(fromArduino.startsWith("RPOSX")){
+				String fromArduino2 = fromArduino.replace("RPOSX", "");	
+				long posx = virtualComponents.toInt(fromArduino2);	// hardware pos
+				posx = virtualComponents.driver_x.hard2soft(posx);
+				virtualComponents.set( "POSX",posx);
 				long lx	=  virtualComponents.getInt("LENGTHX", 600 );
 				if( posx > lx){		// Pozycja wieksza niz długosc? Zwieksz długosc
 					virtualComponents.set( "LENGTHX", "" + posx);
 				}
-			}else if(fromArduino.startsWith("POSY")){
-				String fromArduino2 = fromArduino.replace("POSY", "");
+			}else if(fromArduino.startsWith("RPOSY")){
+				String fromArduino2 = fromArduino.replace("RPOSY", "");
 				virtualComponents.set( "POSY",fromArduino2);
-				long posy = Long.parseLong(fromArduino2);
-				long ly	=  virtualComponents.getInt("LENGTHY", 600 );
-				if( posy > ly){		// Pozycja wieksza niz długosc? Zwieksz długosc
-					virtualComponents.set( "LENGTHY", "" + posy);
-				}
-			}else if(fromArduino.startsWith("POSZ")){
-				String fromArduino2 = fromArduino.replace("POSZ", "");
-				virtualComponents.set( "POSZ",fromArduino2);
-				long posz = Long.parseLong(fromArduino2);
-				long lz	=  virtualComponents.getInt("LENGTHZ", 600 );
-				if( posz > lz){		// Pozycja wieksza niz długosc? Zwieksz długosc
-					virtualComponents.set( "LENGTHZ", "" + posz);
-				}				
 
+			}else if(fromArduino.startsWith("RPOSZ")){
+				String fromArduino2 = fromArduino.replace("RPOSZ", "");
+				virtualComponents.set( "POSZ",fromArduino2);
+/*
 			}else if(fromArduino.startsWith("R READY ")){	
 				String fromArduino2 = fromArduino.replace("R READY AT ", "");
 				String[] tokens = fromArduino2.split(",");
 				virtualComponents.is_ready = true;
 				virtualComponents.set( "POSX",tokens[0]);
 				virtualComponents.set( "POSY",tokens[1]);
-				virtualComponents.set( "POSZ",tokens[2]);
+				virtualComponents.set( "POSZ",tokens[2]);*/
 			}
 			is_ret = Arduino.getInstance().read_ret( fromArduino );		// zapisuj zwrotki
+	
+		}else if(command == 'T' ){  // trigger	
+			String[] tokens = fromArduino.split(",");
+			char axis		= fromArduino.charAt(1);
+			int reason		= virtualComponents.toInt(tokens[1]);	// reason, 
+			int direction	= virtualComponents.toInt(tokens[2]);	// direction,					       
+			long pos		= virtualComponents.toInt(tokens[3]);	// pos
+			if( axis == 'X'){
+				if(reason == Methods.HALL_GLOBAL_MIN){				// endstop MIN
+					virtualComponents.set( "X_GLOBAL_MIN", "" + pos );
+					virtualComponents.driver_x.setM(pos);
+
+					long posx = virtualComponents.driver_x.hard2soft(pos);
+					virtualComponents.set( "POSX","" + posx);
+					Log.i("input_parser", "jestm w: " + posx );
+
+				}else if(reason == Methods.HALL_GLOBAL_MAX){		// endstop MAX
+					virtualComponents.set( "LENGTHX", "" + pos);
+					virtualComponents.set( "X_GLOBAL_MAX", "" + pos );
+				}else if(reason == Methods.HALL_LOCAL_MAX){			// butelka
+				}else if(reason == Methods.HALL_LOCAL_MIN){			// butelka
+				}
+			}else if( axis == 'Y'){
+			}else if( axis == 'Z'){
+			}
 		
 		}else if(command == 'E' ){  //error	
 			input_parser.handleError( fromArduino );			// analizuj błędy
@@ -135,18 +159,9 @@ public class input_parser {
 			String fromArduino2 = fromArduino.replace("VAL A0 ", "");			
 			virtualComponents.set( "A0",fromArduino2);
 
-		}else if(fromArduino.startsWith("IRR ")){
 		}else if(fromArduino.startsWith("LENGTHX")){	
 			String fromArduino2 = fromArduino.replace("LENGTHX ", "");
 			virtualComponents.set( "LENGTHX",fromArduino2);
-			
-		}else if(fromArduino.startsWith("LENGTHY")){	
-			String fromArduino2 = fromArduino.replace("LENGTHY ", "");
-			virtualComponents.set( "LENGTHY",fromArduino2);
-
-		}else if(fromArduino.startsWith("LENGTHZ")){
-			String fromArduino2 = fromArduino.replace("LENGTHZ ", "");
-			virtualComponents.set( "LENGTHZ",fromArduino2);
 
 		}else if(fromArduino.startsWith("WEIGHT")){	
 			String fromArduino2 = fromArduino.replace("WEIGHT ", "");

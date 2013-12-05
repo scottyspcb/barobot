@@ -106,7 +106,7 @@
         android:layout_alignBaseline="@+id/kalibrujz"
         android:layout_alignRight="@+id/min_y"
         android:layout_toRightOf="@+id/max_z"
-        android:text="MIN Z" />
+        android:text="DOWN" />
 
     <Button
         android:id="@+id/kalibrujx"
@@ -150,7 +150,7 @@
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/kalibrujz"
         android:layout_toRightOf="@+id/kalibrujz"
-        android:text="MAX Z" />
+        android:text="UP" />
 
     <Button
         android:id="@+id/min_y"
@@ -158,16 +158,16 @@
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/kalibrujy"
         android:layout_toRightOf="@+id/max_y"
-        android:text="MIN Y" />
+        android:text="FRONT" />
 
     <Button
         android:id="@+id/max_y"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/kalibrujy"
-        android:layout_alignRight="@+id/max_z"
+        android:layout_alignRight="@+id/max_x"
         android:layout_toRightOf="@+id/kalibrujy"
-        android:text="MAX Y" />
+        android:text="BACK" />
 
     <Button
         android:id="@+id/machajz"
@@ -387,20 +387,20 @@
         android:textOn="Tutaj jest butelka..." />
 
     <Button
-        android:id="@+id/goto_min_y"
+        android:id="@+id/enabley"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/losujy"
-        android:layout_toRightOf="@+id/goto_max_y"
-        android:text="Znajdź MIN STOP" />
+        android:layout_toRightOf="@+id/disabley"
+        android:text="EY" />
 
     <Button
-        android:id="@+id/goto_max_y"
+        android:id="@+id/disabley"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/losujy"
         android:layout_toRightOf="@+id/losujy"
-        android:text="Znajdź MAX STOP" />
+        android:text="DY" />
 
     <Button
         android:id="@+id/goto_min_x"
@@ -451,5 +451,21 @@
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/position_z"
         android:text="Idź do neutral Y" />
+
+    <Button
+        android:id="@+id/disablez"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/kalibrujz"
+        android:layout_toRightOf="@+id/fill5000"
+        android:text="DZ" />
+
+    <Button
+        android:id="@+id/reset_carret"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/bottle_prev"
+        android:layout_toRightOf="@+id/bottle_prev"
+        android:text="Resetuj wozek" />
 
 </RelativeLayout>
