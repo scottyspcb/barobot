@@ -192,12 +192,12 @@ public class Engine {
 		}
 		Constant.log("Prepare Sequence:", Sequence );
 		for (Integer i : bottleSequence){
-			
 			Constant.log("Prepare", ""+i );
-			
-	//		virtualComponents.moveToBottle( i, false );
-	//		virtualComponents.nalej(i);
+			virtualComponents.moveToBottle( i-1, false );
+			virtualComponents.nalej(i);
 		}
+		virtualComponents.moveToStart();
+
 		Arduino ar		= Arduino.getInstance();
 		ArduinoQueue q	= new ArduinoQueue();
 		q.add( new rpc_message( true ) {

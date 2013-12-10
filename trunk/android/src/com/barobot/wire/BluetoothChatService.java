@@ -217,12 +217,15 @@ public class BluetoothChatService {
      */
     private void connectionFailed() {
         // Send a failure message back to the Activity
+    	 /*
         Message msg = mHandler.obtainMessage(Constant.MESSAGE_TOAST);
+        
+       
         Bundle bundle = new Bundle();
         bundle.putString(Constant.TOAST, "Nie dało się połączyć");
         msg.setData(bundle);
         mHandler.sendMessage(msg);
-
+*/
         // Start the service over to restart listening mode
         BluetoothChatService.this.start();
     }
@@ -232,12 +235,13 @@ public class BluetoothChatService {
      */
     private void connectionLost() {
         // Send a failure message back to the Activity
+    	/*
         Message msg = mHandler.obtainMessage(Constant.MESSAGE_TOAST);
         Bundle bundle = new Bundle();
         bundle.putString(Constant.TOAST, "Device connection was lost");
         msg.setData(bundle);
         mHandler.sendMessage(msg);
-
+*/
         bt_connected_device			= null;
         is_connected				= false;
 

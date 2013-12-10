@@ -210,15 +210,6 @@
         android:text="LOSUJ" />
 
     <Button
-        android:id="@+id/fill5000"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/kalibrujz"
-        android:layout_centerVertical="false"
-        android:layout_toRightOf="@+id/machajz"
-        android:text="FILL 5000" />
-
-    <Button
         android:id="@+id/set_x_1000"
         style="android:buttonStyle"
         android:layout_width="wrap_content"
@@ -431,14 +422,6 @@
         android:text="Idź do neutral Y" />
 
     <Button
-        android:id="@+id/disablez"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/kalibrujz"
-        android:layout_toRightOf="@+id/fill5000"
-        android:text="DZ" />
-
-    <Button
         android:id="@+id/reset_carret"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -472,5 +455,23 @@
         android:layout_alignRight="@+id/reset_carret"
         android:layout_toRightOf="@+id/unlock"
         android:text="Szukaj butelek" />
+
+    <Button
+        android:id="@+id/disablez"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/pacpac"
+        android:layout_alignBottom="@+id/pacpac"
+        android:layout_toRightOf="@+id/pacpac"
+        android:text="DZ" />
+
+    <Button
+        android:id="@+id/fill5000"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/find_bottles"
+        android:layout_alignRight="@+id/set_y_600"
+        android:layout_toRightOf="@+id/find_bottles"
+        android:text="Nalej tutaj" />
 
 </RelativeLayout>

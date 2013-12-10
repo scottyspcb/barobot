@@ -19,6 +19,16 @@
         android:id="@+id/action_outside_components"
         android:title="@string/title_activity_outside_component"
         android:showAsAction="ifRoom"/>
+    
+   <item android:id="@+id/kalibracja"
+          android:title="Kalibracja"
+          android:showAsAction="ifRoom" />
+   
+   
+    <item android:id="@+id/unlock_menu"
+          android:title="Unlock"
+          android:showAsAction="ifRoom" />
+   
     <item
         android:id="@+id/action_recipes"
         android:title="@string/action_recipe_setup" 
