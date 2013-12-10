@@ -479,6 +479,9 @@ void proceed( volatile byte buffer[5] ){
     byte index = globalToLocal( buffer[1] );
     servos[index].enabled= false;
     servo_lib[index].detach();
+    if( servos[index].target_pos != servos[index].last_pos ){    //  wyłączyłem w trakcie jechania
+    
+    }
     digitalWrite(servos[index].pin, HIGH);
 //    pinMode(servos[index].pin, INPUT);
     servos[index].pos_changed = false;
