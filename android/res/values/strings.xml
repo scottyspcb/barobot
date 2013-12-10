@@ -86,7 +86,8 @@
     
     <!-- Main -->
     <string name="glass_reminder_title">Reminder</string>
-    <string name="glass_reminder_message">Place glass into the tray</string>
+    <string name="glass_reminder_message1">Place glass into the tray</string>
+    <string name="glass_reminder_message">Prosze upewnic sie ze na podstawce znajduje sie szklanka</string>
     <string name="glass_reminder_button_ok">OK</string>
     <string name="glass_reminder_button_cancel">Cancel</string>
     
@@ -96,6 +97,7 @@
 
     <!-- Bottle Setup -->
     <string name="empty_bottle_string">Empty</string>
+    
 
     <!-- Recipe Setup -->
     <string name="add_recipe">Add new recipe</string>
@@ -105,5 +107,5 @@
     <string name="recipe_name">Recipe Name</string>
     <string name="recipe_description">Recipe Description</string>
     <string name="title_activity_outside_component">Outside Components</string>
-
+  	
 </resources>

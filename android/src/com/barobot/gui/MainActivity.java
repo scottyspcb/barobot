@@ -22,6 +22,7 @@ import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 public class MainActivity extends BarobotActivity 
 							implements ArduinoListener {
@@ -121,6 +122,20 @@ public class MainActivity extends BarobotActivity
 	@Override
 	public void onQueueFinished() {
 		
+		
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				Button makeButton = (Button) findViewById(R.id.make_button);
+				if(makeButton!=null){
+					makeButton.setEnabled(true);
+				}
+			}
+		});
+		
+		
+		/*
+		
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setTitle(R.string.pour_finished_title);
 		//builder.setMessage(R.string.pour_finished_message);
@@ -130,12 +145,10 @@ public class MainActivity extends BarobotActivity
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 
-				Button makeButton = (Button) findViewById(R.id.make_button);
-				makeButton.setEnabled(true);
 			}
 		});
 		
 		AlertDialog ad = builder.create();
-		ad.show();
+		ad.show();*/
 	}
 }

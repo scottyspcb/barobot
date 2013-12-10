@@ -35,14 +35,14 @@ public class virtualComponents {
 	public static boolean need_glass_fill = false;
 	public static boolean need_glass_up = false;
 	public static int weigh_min_diff = 20;
-	public static boolean pac_enabled = false;
+	public static boolean pac_enabled = true;
 
 	//config
 	private static final int SERVOZ_PAC_TIME_UP = 600;
-	private static final int SERVOZ_PAC_POS = 1400;
+	private static final int SERVOZ_PAC_POS = 1100;
 	private static final int SERVOZ_PAC_TIME_WAIT = 400;
 
-	public static final int SERVOZ_POUR_TIME = 5000;
+	public static final int SERVOZ_POUR_TIME = 4000;
 	
 	public static final int SERVOZ_UP_TIME = 400;
 	public static final int SERVOZ_DOWN_TIME = 300;
@@ -80,24 +80,23 @@ public class virtualComponents {
 		SERVOZ_POUR_TIME, 
 		SERVOZ_POUR_TIME,
 		SERVOZ_POUR_TIME,
-		SERVOZ_POUR_TIME*3,
+		SERVOZ_POUR_TIME*2,
 		SERVOZ_POUR_TIME
 	};
 
-
 	// pozycje butelek, sa aktualizowane w trakcie
 	public static int[] margin_x = {
-		10,
+		0,
 		-10, 
-		10,
+		0,
 		-10,
-		10,
+		0,
 		-10,
-		10,
+		0,
 		-10, 
-		10,
+		0,
 		-10,
-		10,
+		0,
 		-10
 	};
 	private static int[] b_pos_x = {207,207, 394,394,581,581,768,768, 955,955,1142,1142};
@@ -246,17 +245,19 @@ public class virtualComponents {
 		Arduino ar = Arduino.getInstance();
 		ArduinoQueue q = new ArduinoQueue();	
 
+		Constant.log(Constant.TAG,"pac");
+
 		q.add("EX", true);
 //		q.add("EY", true);
 //		q.add("EZ", true);
-		virtualComponents.moveZUp(q);
-		q.add("Z" + virtualComponents.SERVOZ_PAC_POS+","+virtualComponents.DRIVER_Z_SPEED, true);	
+		q.add("Z" + virtualComponents.SERVOZ_PAC_POS+","+virtualComponents.DRIVER_Z_SPEED, true);
+		
+		Constant.log("pacpac","Z" + virtualComponents.SERVOZ_PAC_POS+","+virtualComponents.DRIVER_Z_SPEED);
+
 		virtualComponents.moveZDown(q);
 		q.add("DX", true);
-//	    q.add("DY", true);
-	    q.add("DZ", true);
-	    q.add("GPX", true);		// get pos
-	//	ar.send(q);
+		q.add("DZ", true);
+		ar.send(q);
 	}
 
 	public static void cancel_all() {
@@ -346,8 +347,7 @@ public class virtualComponents {
 				if(virtualComponents.pac_enabled){
 					ArduinoQueue	q2	= new ArduinoQueue();	
 					q2.addWait( virtualComponents.SERVOZ_PAC_TIME_WAIT );
-					q2.add("Z " + virtualComponents.SERVOZ_PAC_POS+","+virtualComponents.DRIVER_Z_SPEED, true);	
-					q2.addWait( virtualComponents.SERVOZ_PAC_TIME_UP );
+					q2.add("Z " + virtualComponents.SERVOZ_PAC_POS+",250", true);	
 					virtualComponents.moveZDown(q2);
 					return q2;
 				}
@@ -415,5 +415,55 @@ public class virtualComponents {
 		} );
 		q.add("GPX", true);
 		ar.send( q );
+	}
+	public static void kalibrcja() {
+		
+		Arduino ar		= Arduino.getInstance();
+		ArduinoQueue q	= new ArduinoQueue();
+		int posx		= virtualComponents.getInt("POSX", 0 );
+		int posy		= virtualComponents.getInt("POSY", 0 );
+
+		Constant.log("+find_bottles", "start");
+		q.add("EX", true );
+		virtualComponents.moveZDown( q );
+		q.add("Z" + virtualComponents.SERVOZ_TEST_POS + ","+virtualComponents.DRIVER_Z_SPEED , true );
+		virtualComponents.moveZDown( q );
+		virtualComponents.moveY( q, virtualComponents.SERVOY_TEST_POS, true);		
+		virtualComponents.moveY( q, virtualComponents.SERVOY_FRONT_POS, true);
+		long lengthx19	=  virtualComponents.getInt("LENGTHX", 60000 );	
+		virtualComponents.moveX( q, posx + 2000);
+		virtualComponents.moveX( q, -70000 );	// read margin
+		// scann Triggers
+		q.add( new rpc_message( true ) {
+			@Override
+			public ArduinoQueue run() {
+				this.name		= "scanning up";
+				Constant.log("+find_bottles", "up");
+				virtualComponents.scann_bottles = true;
+				virtualComponents.scann_num = 0;
+				return null;
+			}
+		} );
+		virtualComponents.moveX( q, 70000 );
+		q.add( new rpc_message( true ) {
+			@Override
+			public ArduinoQueue run() {
+				this.name		= "scanning back";
+				Constant.log("+find_bottles", "down");
+				virtualComponents.scann_num = 1;
+				return null;
+			}
+		} );
+		virtualComponents.moveX( q, -lengthx19);	
+		q.add( new rpc_message( true ) {
+			@Override
+			public ArduinoQueue run() {
+				this.name		= "end scanning";
+				Constant.log("+find_bottles", "end");
+				virtualComponents.scann_bottles = false;
+				return null;
+			}
+		} );
+		ar.send(q);
 	}
 }

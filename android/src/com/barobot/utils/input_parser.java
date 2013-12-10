@@ -166,8 +166,8 @@ public class input_parser {
 							}
 							int num = virtualComponents.magnet_order[ind];
 							int ypos	= virtualComponents.b_pos_y[ num ];
-							posx		+= virtualComponents.margin_x[ind];
-							Log.i("input_parser "+ virtualComponents.scann_num+" "+ypos, "butelka "+num+": " + posx+ " / " + direction );
+							posx		+= virtualComponents.margin_x[num];
+							Log.i("input_parser "+ virtualComponents.scann_num+" "+ypos, "butelka "+num+": " + posx+ " / " + virtualComponents.margin_x[num] );
 							
 							if(direction == Methods.DRIVER_DIR_BACKWARD){
 								virtualComponents.hereIsBottle(num, posx, ypos );	
@@ -188,11 +188,11 @@ public class input_parser {
 							}
 							int num		= virtualComponents.magnet_order[ind];							
 							int ypos	= virtualComponents.b_pos_y[ num ];
-							posx		+= virtualComponents.margin_x[ind];
+							posx		+= virtualComponents.margin_x[num];
 							if(direction == Methods.DRIVER_DIR_BACKWARD){
 								virtualComponents.hereIsBottle(num, posx, ypos );	
 							}
-							Log.i("input_parser "+ virtualComponents.scann_num+" "+ypos, "butelka "+num+": " + posx+ " / " + direction );
+							Log.i("input_parser "+ virtualComponents.scann_num+" "+ypos, "butelka "+num+": " + posx+ " / " + virtualComponents.margin_x[num] );
 							
 							virtualComponents.scann_num++;							
 						}else{

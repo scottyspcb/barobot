@@ -305,53 +305,8 @@ public class button_click implements OnClickListener{
 			break;
 	
 		case R.id.find_bottles:
-			Constant.log("+find_bottles", "start");
-			q.add("EX", true );
-			virtualComponents.moveZDown( q );
-			q.add("Z" + virtualComponents.SERVOZ_TEST_POS + ","+virtualComponents.DRIVER_Z_SPEED , true );
-			virtualComponents.moveZDown( q );
-			virtualComponents.moveY( q, virtualComponents.SERVOY_TEST_POS, true);		
-			virtualComponents.moveY( q, virtualComponents.SERVOY_FRONT_POS, true);
-			long lengthx19	=  virtualComponents.getInt("LENGTHX", 60000 );	
-			virtualComponents.moveX( q, posx + 2000);
-			virtualComponents.moveX( q, -70000 );	// read margin
-			// scann Triggers
-			q.add( new rpc_message( true ) {
-				@Override
-				public ArduinoQueue run() {
-					this.name		= "scanning up";
-					
-					
-					Constant.log("+find_bottles", "up");
-					
-					
-					virtualComponents.scann_bottles = true;
-					virtualComponents.scann_num = 0;
-					return null;
-				}
-			} );
-			virtualComponents.moveX( q, 70000 );
-			q.add( new rpc_message( true ) {
-				@Override
-				public ArduinoQueue run() {
-					this.name		= "scanning back";
-					Constant.log("+find_bottles", "down");
-					virtualComponents.scann_num = 1;
-					return null;
-				}
-			} );
-			virtualComponents.moveX( q, -lengthx19);	
-			q.add( new rpc_message( true ) {
-				@Override
-				public ArduinoQueue run() {
-					this.name		= "end scanning";
-					Constant.log("+find_bottles", "end");
-					virtualComponents.scann_bottles = false;
-					return null;
-				}
-			} );
-			ar.send(q);
-
+			virtualComponents.kalibrcja();
+			
 			break;			
 		case R.id.bottle_prev:
 			/*

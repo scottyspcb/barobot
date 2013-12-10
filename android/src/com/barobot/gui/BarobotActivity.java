@@ -16,6 +16,7 @@ import android.content.Intent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -54,12 +55,32 @@ public class BarobotActivity extends Activity {
     		}
     		serverIntent = new Intent(this, BTListActivity.class);
     		break;
+    		
+       	case R.id.kalibracja:
+
+       		virtualComponents.kalibrcja();
+    		break;	
+
     	case R.id.update_drinks:
     		serverIntent = new Intent(this, UpdateActivity.class);
     		break;
     	case R.id.about_item:
     		serverIntent = new Intent(this, AboutActivity.class);
     		break;   
+    		
+    	case R.id.unlock_menu:
+    		runOnUiThread(new Runnable() {
+    			@Override
+    			public void run() {
+    				Button makeButton = (Button) findViewById(R.id.make_button);
+    				if(makeButton!=null){
+    					makeButton.setEnabled(true);
+    				}
+    			}
+    		});
+    		Arduino.getInstance().unlock();
+    		break;    		
+    		
     	case R.id.menu_debug_window:
     		serverIntent = new Intent(this, DebugActivity.class);
     		break;
@@ -67,8 +88,10 @@ public class BarobotActivity extends Activity {
     		serverIntent = new Intent(this, MainSettingsActivity.class);
     		break;
     	}
-    	serverIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-    	startActivity(serverIntent);
+    	if(serverIntent!=null){
+    		serverIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+    		startActivity(serverIntent);
+    	}
     	return false;
     }
     

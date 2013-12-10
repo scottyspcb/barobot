@@ -169,14 +169,14 @@ public class BT_wire implements Wire {
                 // save the connected device's name
             	mChatService.bt_connected_device = msg.getData().getString(Constant.DEVICE_NAME);
             	mChatService.is_connected		= true;
-            	Activity act1 = BarobotMain.getInstance();
-            	Toast.makeText( act1.getApplicationContext(), "Connected to "
-                               + mChatService.bt_connected_device, Toast.LENGTH_SHORT).show();
+           // 	Activity act1 = BarobotMain.getInstance();
+           // 	Toast.makeText( act1.getApplicationContext(), "Connected to "
+           //                    + mChatService.bt_connected_device, Toast.LENGTH_SHORT).show();
                 break;
             case Constant.MESSAGE_TOAST:
             	Activity act2 = BarobotMain.getInstance();
-                Toast.makeText( act2.getApplicationContext(), msg.getData().getString(Constant.TOAST),
-                               Toast.LENGTH_SHORT).show();
+             //   Toast.makeText( act2.getApplicationContext(), msg.getData().getString(Constant.TOAST),
+             //                  Toast.LENGTH_SHORT).show();
                 break;
             }
         }
