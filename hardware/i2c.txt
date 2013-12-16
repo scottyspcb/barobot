@@ -9,9 +9,7 @@ MESSAGES 2 ANDROID
 0x21	Important pin value
 
 
-
-
-									
+					
 ----------------------------------------------------------------------
 Silnik
 
@@ -37,26 +35,6 @@ avrdude -P COM7 -c arduino -p atmega8 -v -v -v -v -v -i 100 -b 38400
 		
 		
 		
-		
-		
-		
-		
-Kody błedów:
-
-0x10	I2C HANGS
-0x11	WATCHDOG ALERT
-0x12	DONT UNDERSTAND
-0x14	INPUT OUT OF RANGE
-0x15	SENSOR VALUE OUT OD RANGE 
-0x16	SENSOR DISCONNECTED
-0x17	MOVE ERROR
-0x18	STOP EVERYTHING
-0x19
-0x1A
-0x1B
-0x1C
-
-
 
 
 
@@ -68,13 +46,8 @@ cat /sdcard/android.hardware.usb.host.xml > /system/etc/permissions/android.hard
 
 
 
-
-
-
 https://libusb.org/wiki/libusb-1.0
-
 http://android.serverbox.ch/?p=151
-
 http://www.recursion.jp/avrcdc/
 http://www.fourwalledcubicle.com/LUFA.php
 micropendous 
@@ -87,10 +60,7 @@ http://android.serverbox.ch/?p=370
 
 
 
-ERROR_CANT_MOVE_X
-ERROR_CANT_MOVE_Y
-ERROR_CANT_MOVE_Z
-ERROR_NO_GLASS
+
 
 
 
@@ -105,7 +75,7 @@ Tematy:
 - policzyć zużycie prądu
 - zobaczyć przebiegi dla silnika x
 - procedura wyłączania zasilania
-- pullupy dla serv
+- pullupy dla serv?
 - pozycja max halla wyrażona w krokach steppera
 - pullup na enable pin X
 - reset master?

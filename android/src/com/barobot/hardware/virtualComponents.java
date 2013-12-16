@@ -116,7 +116,6 @@ public class virtualComponents {
 	};
 
 	public static int[] magnet_order = {0,2,1,4,3,6,5,8,7,10,9,11 };	// numer butelki, odjąc 1 aby numer ID
-
 	private static String[] persistant = {
 		"POSX","POSY","POSY",
 		"X_GLOBAL_MIN",
@@ -160,9 +159,7 @@ public class virtualComponents {
 		myPrefs			= application.getSharedPreferences(Constant.SETTINGS_TAG, Context.MODE_PRIVATE);
 		config_editor	= myPrefs.edit();
 		driver_x		= new Driver();
-		
-		for(byte i=0;i<12;i++){
-		}
+
 	}
 	public static String get( String name, String def ){
 		String ret = hashmap.get(name);
