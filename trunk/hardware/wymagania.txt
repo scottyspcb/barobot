@@ -1,4 +1,43 @@
 
+getSlot( signed int moveForward );
+getPosition( signed int moveForward );
+
+
+nextFrontSlot()
+nextBackSlot()
+
+prevFrontSlot()
+prevBackSlot()
+
+
+nextSlotInCurrentDirection()
+prevSlotInCurrentDirection()
+
+lastCheckedSlot()
+lastCheckedPosition()
+
+targetSlot()
+targetPosition()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 1. Dorobiæ config LEDow
 2. Dorobiæ parent dla urzadzen
 3. Dorobiæ config ON/OFF  dla LEDow

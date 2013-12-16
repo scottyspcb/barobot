@@ -53,11 +53,7 @@ Limity:
 Wygl¹d
 	
 	
-	
-	
-ADB server
-	Startuj serwer przy starcie aplikacji	boolean
-	Wy³¹cz gdy po³¹czono poprzez BT			boolean
+
 
 Bluetooth server
 	Po³¹cz automatycznie z robotem przy starcie aplikacji		boolean
@@ -98,7 +94,7 @@ Dok³adnoœæ nalewania
 	Czas szturchniêcia	(ms)				int
 	Pozycja szturchniêcia (%)				int
 
-	
+
 Gdy beczynny
 	Wy³¹cz silniki po czasie					int (default 10 sek)
 	Wygaszacz ekranu po czasie					int (default 0)
