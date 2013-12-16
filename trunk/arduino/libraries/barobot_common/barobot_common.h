@@ -326,7 +326,7 @@
 #define METHOD_STEPPER_MOVING 	222
 #define METHOD_IMPORTANT_ANALOG 	224
 #define METHOD_DEVICE_FOUND		220
-#define METHOD_CAN_FILL 	120
+#define METHOD_CARRET_CAN_FILL 	120
 
 #define RETURN_PIN_VALUE 		211
 #define RETURN_ANALOG_CHANGE 	111
@@ -617,10 +617,7 @@ Master:
 - X
 	enable X
 	disable X
-
 	move Z
-
-
 
 
 Carret:
