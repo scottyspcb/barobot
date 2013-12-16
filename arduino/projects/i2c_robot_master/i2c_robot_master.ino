@@ -264,6 +264,13 @@ void proceed( byte length,volatile uint8_t buffer[7] ){ // zrozum co przyszlo po
     send2android(ttt,5);
     send2androidEnd();*/
 
+  }else if(buffer[0] == METHOD_CAN_FILL ){
+    byte res = read_can_fill();          // if 0 = ready
+    if( res == 0 ){
+      sendln2android("RCAN_FILL" );
+    }else{                      // ERROR
+      sendln2android("ERCAN_FILL" );
+    }
   }else if(buffer[0] == METHOD_I2C_SLAVEMSG){      // wyslij do androida
         if( buffer[1] == RETURN_DRIVER_READY ){
           uint16_t pos = buffer[4];     // little endian
@@ -336,63 +343,44 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
             for(byte i =0; i<count;i++){
               out_buffer[i]      = input.charAt( i - 3 );      // piewszy bajt komendy jest w czwartym bajcie (na pozycji 3 licząc od 0)
             }
-            byte error = writeRegisters(slave_address, count, true );
-            if( error ){
-              DEBUGLN("-!A2S"); 
-              byte ttt[3] = {METHOD_I2C_ERROR, slave_address, error};              // ERROR command
-
-
-              send2android(ttt,3);
-              send2androidEnd();
+            if(slave_address == I2C_ADR_MAINBOARD ){          // to jest komunikat do mnie?
+              proceed( count,out_buffer );                    // analizuj komende i wyślij odpowiedź
             }else{
-
-
-              if( needs > 0){                // moge chcieć 0 bajtów
-                readRegisters( slave_address, needs );
-                // wynik w in_buffer;
-                byte ttt[2] = {METHOD_RET_FROM_SLAVE,slave_address}; 
-
-
-                send2android(ttt,2);
-                send2android(in_buffer,needs);
+              byte error = writeRegisters(slave_address, count, true );
+              if( error ){
+                DEBUGLN("-!A2S"); 
+                byte ttt[3] = {METHOD_I2C_ERROR, slave_address, error};              // ERROR command
+                send2android(ttt,3);
                 send2androidEnd();
               }else{
-
-
-                //koniec komendy
+                if( needs > 0){                // moge chcieć 0 bajtów
+                  readRegisters( slave_address, needs );
+                  // wynik w in_buffer;
+                  byte ttt[2] = {METHOD_RET_FROM_SLAVE,slave_address}; 
+                  send2android(ttt,2);
+                  send2android(in_buffer,needs);
+                  send2androidEnd();
+                }else{
+                  //koniec komendy
+                }
               }
             }
           }else{  // nic nie wysyłaj bo nie ma co
-
-
             // wrong_call++
           }
 //	}else if( input.charAt( 0 ) == 0x11 ){      // wyślij przez i2c do slave
           // np 0x11 0x0A 0x11 0x22 0x33      // wyślij po i2c do slave numer 0x0A bajty: 0x11 0x22 0x33
 
 	}else if( input.startsWith("PROG ")) {    // PROG 0A,1    // PROG 0A,0   - programuj urzadzenie 0x0A z prędkosca 19200, PROG 0,0 - force first, PROG 0A,0 - wozek
-
-
                 read_prog_settings(input, 1);
                 defaultResult = false;
                 return;
 	}else if( input.startsWith("PROGN ")) {    // PROGN 0,0,0   - programuj urzadzenie podłączone do 0x0C (number 0 )
-
-
                 read_prog_settings(input, 2 );
                 defaultResult = false;
                 return;
 
-	}else if( input.startsWith("CANFILL")) {
-
-
-                byte res = read_can_fill();          // if 0 = ready
-                if( res != 0 ){            // ERROR
-                  defaultResult = false;
-                }
 	}else if( input.startsWith("RESET ")) {    // RESET 0A - resetuj urzadzenie 0x0A
-
-
                 String digits     = input.substring( 6 );
                 char charBuf[20];
                 digits.toCharArray(charBuf,20);
@@ -453,33 +441,26 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 	}else if( input.equals("EX") ){
 		stepperX.enableOutputs();
 	}else if( input.equals("EY") ){
-          out_buffer[0]  = METHOD_DRIVER_ENABLE;
-          out_buffer[1]  = DRIVER_Y;
-          writeRegisters(I2C_ADR_IPANEL, 2, false );
+              out_buffer[0]  = METHOD_DRIVER_ENABLE;
+              out_buffer[1]  = DRIVER_Y;
+              writeRegisters(I2C_ADR_IPANEL, 2, false );
 	}else if( input.equals("EZ") ){
-
-
-          out_buffer[0]  = METHOD_DRIVER_ENABLE;
-          out_buffer[1]  = DRIVER_Z;
-          writeRegisters(I2C_ADR_IPANEL, 2, false );
-
+              out_buffer[0]  = METHOD_DRIVER_ENABLE;
+              out_buffer[1]  = DRIVER_Z;
+              writeRegisters(I2C_ADR_IPANEL, 2, false );
 	}else if( input.equals("DX") ){
-		if(MAINBOARD_STEPPER_READY_DISABLE){
-			stepperX.disableOutputs();
-		}
+	      stepperX.disableOutputs();
 	}else if( input.equals("DY") ){
-          out_buffer[0]  = METHOD_DRIVER_DISABLE;
-          out_buffer[1]  = DRIVER_Y;
-          writeRegisters(I2C_ADR_IPANEL, 2, false );
+              out_buffer[0]  = METHOD_DRIVER_DISABLE;
+              out_buffer[1]  = DRIVER_Y;
+              writeRegisters(I2C_ADR_IPANEL, 2, false );
 	}else if( input.equals("DZ") ){
-          out_buffer[0]  = METHOD_DRIVER_DISABLE;
-          out_buffer[1]  = DRIVER_Z;
-          writeRegisters(I2C_ADR_IPANEL, 2, false );
+              out_buffer[0]  = METHOD_DRIVER_DISABLE;
+              out_buffer[1]  = DRIVER_Z;
+              writeRegisters(I2C_ADR_IPANEL, 2, false );
 	}else if( input.equals("RB") ){    // reset bus
                get_order();
 	}else if( input.equals("I2C") ){
-
-
               byte nDevices=0;
               byte error=0;
               for(byte addr2 = 1; addr2 < 20; addr2++ )   {
@@ -533,7 +514,7 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 	}
 }
 byte read_can_fill(){
-  out_buffer[0]  = METHOD_CAN_FILL;
+  out_buffer[0]  = METHOD_CARRET_CAN_FILL;
   byte error = writeRegisters(I2C_ADR_IPANEL, 1, true );
   if( error ){
    return error;

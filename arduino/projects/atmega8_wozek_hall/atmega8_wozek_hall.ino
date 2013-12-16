@@ -306,28 +306,6 @@ void loop() {
       */
       update_servo( INNER_SERVOY );
       update_servo( INNER_SERVOZ );
-        
-/*
-  	if( mil > milis2000 ){    // debug, mrygaj co 1 sek
-          uint8_t pin = _pwm_channels[iii].pin; 
-          DEBUG( "-pin " );
-          DEBUG( iii );
-          DEBUG( "/" );
-          DEBUGLN( pin );
-          digitalWrite(_pwm_channels[0].pin, false);
-          digitalWrite(_pwm_channels[1].pin, false);
-          digitalWrite(_pwm_channels[2].pin, false);
-          digitalWrite(_pwm_channels[3].pin, false);
-          digitalWrite(_pwm_channels[4].pin, false);
-          digitalWrite(_pwm_channels[5].pin, false);       
-          digitalWrite(_pwm_channels[6].pin, false);
-          digitalWrite(_pwm_channels[7].pin, false);
-          digitalWrite(pin, true);
-          milis2000 = mil + 500;
-          iii++;
-          iii = iii %COUNT_IPANEL_ONBOARD_LED;
-  	}
-  */
 
   // analizuj bufor wejsciowy i2c
   for( byte i=0;i<IPANEL_BUFFER_LENGTH;i++){
@@ -485,7 +463,7 @@ void proceed( volatile byte buffer[5] ){
     digitalWrite(servos[index].pin, HIGH);
 //    pinMode(servos[index].pin, INPUT);
     servos[index].pos_changed = false;
-  }else if( buffer[0] == METHOD_GOTOSERVOYPOS ){
+  }else if( buffer[0] == METHOD_SET_Y_POS ){
     // on wire: low_byte, high_byte, speed
     // in memory: 1=low_byte, 2=high_byte, 3=speed
     byte sspeed    = buffer[3];
@@ -497,7 +475,7 @@ void proceed( volatile byte buffer[5] ){
     DEBUG(" target:");
     DEBUGLN(String(target));
     run_to(INNER_SERVOY,sspeed,target);
-  }else if( buffer[0] == METHOD_GOTOSERVOZPOS ){
+  }else if( buffer[0] == METHOD_SET_Z_POS ){
     byte sspeed    = buffer[3];
     uint16_t target= buffer[2];           // little endian
     target= (target << 8);
@@ -588,11 +566,11 @@ void requestEvent(){
         byte ttt[2] = {IPANEL_DEVICE_TYPE,IPANEL_VERSION};
         Wire.write(ttt,2);
         
-    }else if( command == METHOD_GETSERVOYPOS ){         // getServoYPos
+    }else if( command == METHOD_GET_Y_POS ){         // getServoYPos
         byte ttt[2] = {(servos[INNER_SERVOY].last_pos & 0xFF),(servos[INNER_SERVOY].last_pos >>8)};
         Wire.write(ttt,2);
 
-    }else if( command == METHOD_GETSERVOZPOS ){         // getServoZPos  
+    }else if( command == METHOD_GET_Z_POS ){         // getServoZPos  
         byte ttt[2] = {(servos[INNER_SERVOZ].last_pos & 0xFF),(servos[INNER_SERVOZ].last_pos >>8)};
         Wire.write(ttt,2);
 
@@ -729,4 +707,26 @@ ISR(ADC_vect){
    ADMUX        = (tmp | channel);
    channel++;
 }
+
+/*
+  	if( mil > milis2000 ){    // debug, mrygaj co 1 sek
+          uint8_t pin = _pwm_channels[iii].pin; 
+          DEBUG( "-pin " );
+          DEBUG( iii );
+          DEBUG( "/" );
+          DEBUGLN( pin );
+          digitalWrite(_pwm_channels[0].pin, false);
+          digitalWrite(_pwm_channels[1].pin, false);
+          digitalWrite(_pwm_channels[2].pin, false);
+          digitalWrite(_pwm_channels[3].pin, false);
+          digitalWrite(_pwm_channels[4].pin, false);
+          digitalWrite(_pwm_channels[5].pin, false);       
+          digitalWrite(_pwm_channels[6].pin, false);
+          digitalWrite(_pwm_channels[7].pin, false);
+          digitalWrite(pin, true);
+          milis2000 = mil + 500;
+          iii++;
+          iii = iii %COUNT_IPANEL_ONBOARD_LED;
+  	}
+  */
 
