@@ -117,3 +117,8 @@ LIVE A OFF
 
 
 usprawnienia.gmail.com
+
+
+
+UPDATE `i2c_method` a SET `num_params` = (SELECT count(1) from `i2c_method_param` b WHERE a.id = b.method_id);
+UPDATE `i2c_method` a SET `num_return` = (SELECT count(1) from `i2c_method_return` b WHERE a.id = b.method_id);
