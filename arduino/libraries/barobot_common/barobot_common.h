@@ -293,6 +293,9 @@
 #define DEBUGLN(sth)
 #endif
 
+// tyle dodaæ aby liczby bajtowe z zakresu 0-50 by³y widoczne w podgl¹dzie magistrali UART.
+#define VISIBLER A
+
 #define METHOD_GETVERSION 	5
 #define METHOD_PROG_MODE_ON 	10
 #define METHOD_PROG_MODE_OFF 	14
@@ -335,7 +338,6 @@
 #define RETURN_DRIVER_READY 	182
 
 // inne
-
 #define DRIVER_DIR_FORWARD 	32
 #define DRIVER_DIR_BACKWARD 64
 #define DRIVER_DIR_STOP		0
@@ -347,17 +349,14 @@
 #define DRIVER_Y 	8
 #define DRIVER_Z 	16
 
-
 #define INNER_HALL_X 0
 #define INNER_HALL_Y 0
 #define INNER_WEIGHT 1
-
 
 #define HALL_GLOBAL_MIN 1
 #define HALL_GLOBAL_MAX 2
 #define HALL_LOCAL_MAX 4
 #define HALL_LOCAL_MIN 8
-
 
 
 #if HAS_LEDS
@@ -386,7 +385,6 @@
 	};
 	boolean prog_mode  = false;    // czy magistrala jest w trybie programowania?
 	boolean prog_me    = false;    // czymam zamiar programowaæ mnie?
-	
 #endif
 
 
@@ -508,12 +506,6 @@ TQFP32
 /*
 
 
-
-
-
-
-
-
 boolean i2c_getValue(  byte slave_address, byte pin ){      // zwraca 2 bajty. typ na m³odszych bitach, versja na starszych
   out_buffer[0]  = METHOD_GETVALUE;
   out_buffer[1]  = pin;
@@ -533,8 +525,6 @@ boolean i2c_getValue(  byte slave_address, byte pin ){      // zwraca 2 bajty. t
   return false;
 }
 
-
-
 void i2c_reloadAddress( byte slave_address, byte new_addr ){			// Zmieñ adres I2c, musi byæ podane co najmniej 4 razy zeby zadzia³a³o. (2 bajty)
   out_buffer[0]  = METHOD_RESETSLAVEADDRESS;
   out_buffer[1]  = new_addr;
@@ -544,7 +534,6 @@ void i2c_reloadAddress( byte slave_address, byte new_addr ){			// Zmieñ adres I2
   writeRegisters(slave_address, 2, true );
   writeRegisters(slave_address, 2, true );
 }
-
 
 
 void i2c_resetCycles( byte slave_address ){
@@ -604,12 +593,6 @@ CARRET:
 	- android
 	- mainboard
 	- upanel
-
-
-
-
-
-
 
 
 
