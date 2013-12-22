@@ -154,11 +154,17 @@ public class input_parser {
 					virtualComponents.set( "X_GLOBAL_MAX", "" + posx );
 					if(virtualComponents.scann_bottles == true){
 						virtualComponents.hereIsBottle(11, posx, virtualComponents.SERVOY_FRONT_POS );
+						Log.i("input_parser "+ virtualComponents.scann_num+" "+virtualComponents.SERVOY_FRONT_POS, "butelka 11: " + posx );
 					}
 
 				}else if(reason == Methods.HALL_LOCAL_MAX){			// butelka
+					long posx = virtualComponents.driver_x.hard2soft(pos);
+					
+					if(direction == Methods.DRIVER_DIR_BACKWARD){
+					//	Log.i("FINDER+", "Znalazlem cos pod adresem: "+ virtualComponents.scann_num+" "+posx);	
+					}				
+
 					if(virtualComponents.scann_bottles == true){
-						long posx = virtualComponents.driver_x.hard2soft(pos);
 						if(virtualComponents.scann_num < 12 && virtualComponents.scann_num >= 0 ){
 							int ind	= virtualComponents.scann_num;
 							if(direction == Methods.DRIVER_DIR_BACKWARD){
@@ -166,21 +172,25 @@ public class input_parser {
 							}
 							int num = virtualComponents.magnet_order[ind];
 							int ypos	= virtualComponents.b_pos_y[ num ];
-							posx		+= virtualComponents.margin_x[num];
+							posx		= posx + virtualComponents.margin_x[num];
 							Log.i("input_parser "+ virtualComponents.scann_num+" "+ypos, "butelka "+num+": " + posx+ " / " + virtualComponents.margin_x[num] );
-							
+
 							if(direction == Methods.DRIVER_DIR_BACKWARD){
 								virtualComponents.hereIsBottle(num, posx, ypos );	
 							}
 							virtualComponents.scann_num++;							
 						}else{
-							Log.i("input_parser BACK", "za duzo butelek" );								
+							Log.i("input_parser BACK", "za duzo butelek" + virtualComponents.scann_num );								
 						}
 					}
 				}else if(reason == Methods.HALL_LOCAL_MIN){			// butelka
-					if(virtualComponents.scann_bottles == true){
-						long posx = virtualComponents.driver_x.hard2soft(pos);
+					long posx = virtualComponents.driver_x.hard2soft(pos);
+					
+					if(direction == Methods.DRIVER_DIR_BACKWARD){
+				//	Log.i("FINDER-", "Znalazlem cos pod adresem: "+ virtualComponents.scann_num+" "+posx);	
+					}				
 
+					if(virtualComponents.scann_bottles == true){
 						if(virtualComponents.scann_num < 12 && virtualComponents.scann_num >= 0 ){
 							int ind	= virtualComponents.scann_num;
 							if(direction == Methods.DRIVER_DIR_BACKWARD){
@@ -188,7 +198,7 @@ public class input_parser {
 							}
 							int num		= virtualComponents.magnet_order[ind];							
 							int ypos	= virtualComponents.b_pos_y[ num ];
-							posx		+= virtualComponents.margin_x[num];
+							posx		= posx + virtualComponents.margin_x[num];
 							if(direction == Methods.DRIVER_DIR_BACKWARD){
 								virtualComponents.hereIsBottle(num, posx, ypos );	
 							}

@@ -275,6 +275,8 @@ public class button_click implements OnClickListener{
 			break;	
 
 		case R.id.kalibrujx:
+			virtualComponents.kalibrcja();
+			/*
 			virtualComponents.moveZDown( q );			
 			virtualComponents.moveY( q, virtualComponents.SERVOY_FRONT_POS, true);
 			long lengthx1	=  virtualComponents.getInt("LENGTHX", 600 ) * 10;		
@@ -282,7 +284,7 @@ public class button_click implements OnClickListener{
 			q.add("DY", false);
 			virtualComponents.moveX( q, -lengthx1);
 			virtualComponents.moveX( q, 0 );
-			ar.send(q);
+			ar.send(q);*/
 			break;
 		case R.id.enabley:
 	//		q.add("EY", true);

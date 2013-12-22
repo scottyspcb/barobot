@@ -128,16 +128,14 @@ public class Serial_wire implements Wire {
 		mHandler.removeMessages(MESSAGE_REFRESH);
         if(mPermissionReceiver_activated){
             mPermissionReceiver_activated = false;
-            BarobotMain.getInstance().unregisterReceiver(mPermissionReceiver);
+            try {
+				BarobotMain.getInstance().unregisterReceiver(
+						mPermissionReceiver);
+			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
+			}
         }
-        if (sPort != null && sPort.isOpen()) {
-		    try {
-		        sPort.close();
-		    } catch (IOException e) {
-		        // Ignore.
-		    }
-		    sPort = null;
-		}
+        closePort();
 	}
 
 	@Override
@@ -248,20 +246,28 @@ public class Serial_wire implements Wire {
 	            Log.i("Serial", "opened 115200");
 	        } catch (IOException e) {
 	            Log.e("Serial", "Error setting up device: " + e.getMessage(), e);
-	            try {
-	                sPort.close();
-	            } catch (IllegalStateException e2) {
-	            	Log.e("Serial", "IllegalStateException", e2);
-	            } catch (IOException e2) {
-	                // Ignore.
-	            }
-	            sPort = null;
+	            closePort();
 	            return;
 	        }
     	}
         Log.i("Serial", "Type:"+ sPort.getClass().getSimpleName());
 	}
-
+    public void closePort() {
+    	if( sPort!= null ){
+	        try {
+	        	if(sPort.isOpen()){
+	        		sPort.close();
+	        	}
+	        } catch (IllegalStateException e2) {
+	        	Log.e("Serial", "IllegalStateException", e2);
+	        } catch (IOException e2) {
+	            // Ignore.
+	        }
+	        sPort = null;
+    	}
+    }
+    
+    
     private final Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
