@@ -337,11 +337,11 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
       //    DEBUGLN("-A2S");
           // np 0x14 0x0A 0x02 0x11 0x22 0x33            // wyślij po i2c do slave numer 0x0A bajty: 0x11 0x22 0x33  i spodziewaj się 2 bajtów wyniku
           byte count          = input.length() - 3;      // tyle do wysłania
-          byte slave_address  = input.charAt( 1 ); 
+          byte slave_address  = input.charAt( 1 );       // 0 = command, 1 = address, 2 = needs
           byte needs          = input.charAt( 2 );
           if( count > 0){
             for(byte i =0; i<count;i++){
-              out_buffer[i]      = input.charAt( i - 3 );      // piewszy bajt komendy jest w czwartym bajcie (na pozycji 3 licząc od 0)
+              out_buffer[i]      = input.charAt( i + 3 );      // piewszy bajt komendy jest w czwartym bajcie (na pozycji 3 licząc od 0)
             }
             if(slave_address == I2C_ADR_MAINBOARD ){          // to jest komunikat do mnie?
               proceed( count,out_buffer );                    // analizuj komende i wyślij odpowiedź
@@ -379,7 +379,6 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
                 read_prog_settings(input, 2 );
                 defaultResult = false;
                 return;
-
 	}else if( input.startsWith("RESET ")) {    // RESET 0A - resetuj urzadzenie 0x0A
                 String digits     = input.substring( 6 );
                 char charBuf[20];
@@ -427,9 +426,6 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
         	String ss 		= input.substring( 1 );
                 paserDeriver(DRIVER_X,ss);
        		defaultResult = false;
-	}else if( input.startsWith("SX")) {    // X1000              // MAXSPEED
-        	String ss 		= input.substring( 1 );
-                paserDeriver(DRIVER_X,ss);
 	}else if( input.startsWith("Y")) {    // Y10,10                 // TARGET,ACCELERATION
         	String ss 		= input.substring( 1 );		// 10,10
                 paserDeriver(DRIVER_Y,ss);
@@ -440,6 +436,10 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 		defaultResult = false;
 	}else if( input.equals("EX") ){
 		stepperX.enableOutputs();
+	}else if( input.equals("DX") ){
+	      stepperX.disableOutputs();
+
+
 	}else if( input.equals("EY") ){
               out_buffer[0]  = METHOD_DRIVER_ENABLE;
               out_buffer[1]  = DRIVER_Y;
@@ -448,8 +448,6 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
               out_buffer[0]  = METHOD_DRIVER_ENABLE;
               out_buffer[1]  = DRIVER_Z;
               writeRegisters(I2C_ADR_IPANEL, 2, false );
-	}else if( input.equals("DX") ){
-	      stepperX.disableOutputs();
 	}else if( input.equals("DY") ){
               out_buffer[0]  = METHOD_DRIVER_DISABLE;
               out_buffer[1]  = DRIVER_Y;
@@ -460,6 +458,8 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
               writeRegisters(I2C_ADR_IPANEL, 2, false );
 	}else if( input.equals("RB") ){    // reset bus
                get_order();
+
+
 	}else if( input.equals("I2C") ){
               byte nDevices=0;
               byte error=0;
@@ -473,15 +473,6 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 		}
              }
 /*
-        }else if ( input.startsWith("SET") ) {      // tutaj niektore beda synchroniczne inne asynchroniczne wiec czasem zwracaj R, a czasem dopiero po zakonczeniu
-		if( false){
-		}else{
-			sendln2android("ARDUINO NO COMMAND [" + input +"]");
-			defaultResult = false;
-		}
-	}else if( input.startsWith("GET")) {
-		defaultResult = false;
-
 	}else if( input.startsWith("I2C ") ){			// wyślij komendę do urządzenia i2c o podanym numerze
 		byte address	= input.charAt( 4 );		// adres i2c
 		String ss 		= input.substring( 5 );		// "I2C " 4 znaki, 5 to adres więc podaj od szóstego
@@ -492,18 +483,12 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 		for(byte a; a<ss.length(); a++){
 			send2debuger( "I2C PARAM", ""+String(c[a]) );
 		}	
-		defaultResult = false; 
 	}else if( input.equals("PING2ARDUINO") ){        // odeslij PONG
-		sendln2android("PONG");
-		defaultResult = false;
-	}else if( input.startsWith("ANDROID ") ){    // zwrotka, nic nie rób
-		defaultResult = false;
 	}else if( input.equals( "PONG" )){			// nic, to byla odpowiedz na moje PING
-		defaultResult = false;
 */
 	}else if( input.equals( "PING2ANDROID") ){      // nic nie rob
 		defaultResult = false;
-	}else if( input.equals( "WAIT READY") ){      // tylko zwróc zwrotke
+	}else if( input.equals( "WR") ){      // tylko zwróc zwrotke
 	}else{
                 // nie rozumiem
 		sendln2android("ARDUINO NO COMMAND [" + input +"]");
@@ -639,21 +624,15 @@ void i2c_test_slaves(){
       if( (readed>>8) > 0 && ((readed & 0xff) >0)){
         test_slave( aaa );
       }else{
-
-
         printHex( aaa, false );
         DEBUG("-! to nie jest urzadzenie i2c: ret 0x");
         printHex( (readed>>8), false );
         printHex( (readed & 0xff) );
       }
     } else if (error==4){
-
-
       DEBUG("-!Unknow error at address 0x");
       printHex(aaa );
     }else{
-
-
 //      DEBUG("-!error " +String(error)  +" at address 0x");
 //      printHex(aaa);
     }
@@ -666,23 +645,15 @@ boolean reset_device_num( byte num, boolean pin_value ){
   if( num == 0x00 ){                        // master 
 //    tri_state( PIN_PROGRAMMER_RESET_MASTER, pin_value );
   }else if( num == 0x01 ){                        // wozek 
-
-
     tri_state( PIN_PROGRAMMER_RESET_IPANEL, pin_value );
   }else if( num == 0x05 ){                  // pierwszy upanel
-
-
       tri_state( PIN_PROGRAMMER_RESET_UPANEL, pin_value );
   }else if( num == 0xff ){          // reset after last
-
-
       if(nextpos == 0 || order[ nextpos - 1] == 0 ){    // nie ma zadnego urzadzenia lub przedostatni nie istenieje
         return false;
       }
       i2c_reset_next( order[ nextpos - 1], pin_value );              // HIGH value = run
   }else{    // other position, num >= 6
-
-
       if( num == 0xfe ){          // reset last known
         num = nextpos;
       }
@@ -706,8 +677,6 @@ void read_prog_settings( String input, byte ns ){
     if(ns == 1){            // PROG - podanu adres, znajdz numer
       reprogramm_index    = getResetOrder(target);
     }else if(ns == 2){     // PROGN
-
-
       reprogramm_index    = target;
     }
     DEBUG("-ISP PROG START");
@@ -720,8 +689,6 @@ void i2c_reset_next( byte slave_address, boolean pin_value ){
     out_buffer[0]  = METHOD_RUN_NEXT;
     writeRegisters(slave_address, 1, true );  
   }else{	                    // Resetuj urządzenie obok urządzenia adresowego, stan niski na wyjściu resetuje tego obok
-
-
     out_buffer[0]  = METHOD_RESET_NEXT;
     writeRegisters(slave_address, 1, true );
   }
@@ -864,7 +831,6 @@ void receiveEvent(int howMany){
       return;
     }
   }
-  DEBUGLN(" - pelno"); 
 }
 
 // znajdz kod resetu
@@ -906,8 +872,6 @@ byte readRegisters(byte deviceAddress, byte length){
   if( count == length){
     last_i2c_read_error = false;
   }else{
-
-
     last_i2c_read_error = true;
     if(!prog_mode){
       DEBUGLN("-!Odebralem liczb:" + String(count) );
