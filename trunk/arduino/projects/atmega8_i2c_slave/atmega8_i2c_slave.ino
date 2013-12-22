@@ -82,6 +82,15 @@ void loop() {
           prog_me = false;
         }
         prog_mode = true;
+      }else if( command == METHOD_GETANALOGVALUE ){  // get analog value
+    /*
+        uint16_t value = analogRead(in_buffer1[1]);
+        byte ttt[2]    = {value>>8, value & 0xff };
+        Wire.write(ttt,2);*/
+  //  }else if( command == 0x28 ){  // get digital value
+      /*  boolean value  = digitalRead(in_buffer1[1]);
+        byte ttt[1]    = {value ? 0xff:0xff};
+        Wire.write(ttt,1);*/
       }else if( command == METHOD_PROG_MODE_OFF ){         // i2c in prog mode off
         digitalWrite(LED_TOP_RED, LOW);
         prog_mode = false;
@@ -131,7 +140,8 @@ void receiveEvent(int howMany){
     in_buffer1[cntr] = aa;
     cntr++;
   }
-  if ( bit_is_clear( in_buffer1[0], 0 ) ){      // IF like: xxxx xxx1 - run in main loop, else in requestEvent
+  //if ( bit_is_clear( in_buffer1[0], 0 ) ){      // IF like: xxxx xxx1 - run in main loop, else in requestEvent
+   if( in_buffer1[0] != METHOD_GETVERSION &&  in_buffer1[0] != METHOD_TEST_SLAVE ){
       use_local = true;
   }
   // w tym miejscu jednynie bardzo proste komendy nie wymagające zwrotek pracujące w funkcji obsługi przerwania, pamietac o volatile
@@ -139,20 +149,10 @@ void receiveEvent(int howMany){
 
 void requestEvent(){ 
   // w in_buffer jest polecenie
-    byte command = in_buffer1[0];
-    if( command == METHOD_GETANALOGVALUE ){  // get analog value
-    /*
-        uint16_t value = analogRead(in_buffer1[1]);
-        byte ttt[2]    = {value>>8, value & 0xff };
-        Wire.write(ttt,2);*/
-  //  }else if( command == 0x28 ){  // get digital value
-      /*  boolean value  = digitalRead(in_buffer1[1]);
-        byte ttt[1]    = {value ? 0xff:0xff};
-        Wire.write(ttt,1);*/
-    }else if( command == METHOD_GETVERSION ){          // TEPE + VERSION       3 bajty
+    if( in_buffer1[0] == METHOD_GETVERSION ){          // TEPE + VERSION       3 bajty
         byte ttt[2] = {UPANEL_DEVICE_TYPE,UPANEL_VERSION};
         Wire.write(ttt,2);
-    }else if( command == METHOD_TEST_SLAVE ){    // return xor
+    }else if( in_buffer1[0] == METHOD_TEST_SLAVE ){    // return xor
         byte res = in_buffer1[1] ^ in_buffer1[2];
         Wire.write(res);
         if( res & 0x01 ){    // ustawiony najmlodzzy bit
@@ -172,6 +172,7 @@ static void send_here_i_am(){
   byte ttt[4] = {METHOD_HERE_I_AM,my_address,UPANEL_DEVICE_TYPE,UPANEL_VERSION};
   send(ttt,4);
 }
+
 void send( byte buffer[], byte ss ){
   if(prog_mode){
     return;

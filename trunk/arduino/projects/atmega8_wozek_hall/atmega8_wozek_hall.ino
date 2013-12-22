@@ -309,9 +309,12 @@ void loop() {
 
   // analizuj bufor wejsciowy i2c
   for( byte i=0;i<IPANEL_BUFFER_LENGTH;i++){
-    if( input_buffer[i][0] >0 && bit_is_clear(input_buffer[i][0], 0 )){    // bez xxxx xxx1 b
-      proceed( input_buffer[i] );
-      input_buffer[i][0] = 0;
+//    if( input_buffer[i][0] >0 && bit_is_clear(input_buffer[i][0], 0 )){    // bez xxxx xxx1 b
+    if( input_buffer[i][0] >0 ){    // bez xxxx xxx1 b
+      if( input_buffer[i][0] != METHOD_GETVERSION &&  input_buffer[i][0] != METHOD_TEST_SLAVE ){
+        proceed( input_buffer[i] );
+        input_buffer[i][0] = 0;
+      }
     }
   }
 }
@@ -489,6 +492,19 @@ void proceed( volatile byte buffer[5] ){
     }else{
       digitalWrite(led, LOW);
     }
+  }else if( buffer[0] == METHOD_GET_Y_POS ){         // getServoYPos
+      byte ttt[2] = {(servos[INNER_SERVOY].last_pos & 0xFF),(servos[INNER_SERVOY].last_pos >>8)};
+      Wire.write(ttt,2);
+
+  }else if( buffer[0] == METHOD_GET_Z_POS ){         // getServoZPos  
+      byte ttt[2] = {(servos[INNER_SERVOZ].last_pos & 0xFF),(servos[INNER_SERVOZ].last_pos >>8)};
+      Wire.write(ttt,2);
+
+  }else if( command == METHOD_GETANALOGVALUE ){
+  }else if( command == METHOD_GETVALUE ){
+  }else if( command == METHOD_RESET_NEXT ){
+  }else if( command == METHOD_RUN_NEXT ){
+
   }else if( buffer[0] == METHOD_SETTIME ){
   //  byte led   = buffer[1];
   //  byte on    = buffer[2];
@@ -565,14 +581,6 @@ void requestEvent(){
     if( command == METHOD_GETVERSION ){          // getVersion       3 bajty
         byte ttt[2] = {IPANEL_DEVICE_TYPE,IPANEL_VERSION};
         Wire.write(ttt,2);
-        
-    }else if( command == METHOD_GET_Y_POS ){         // getServoYPos
-        byte ttt[2] = {(servos[INNER_SERVOY].last_pos & 0xFF),(servos[INNER_SERVOY].last_pos >>8)};
-        Wire.write(ttt,2);
-
-    }else if( command == METHOD_GET_Z_POS ){         // getServoZPos  
-        byte ttt[2] = {(servos[INNER_SERVOZ].last_pos & 0xFF),(servos[INNER_SERVOZ].last_pos >>8)};
-        Wire.write(ttt,2);
 
     }else if( command == METHOD_TEST_SLAVE ){    // return xor
         byte res = input_buffer[last_index][1] ^ input_buffer[last_index][2];
@@ -581,10 +589,6 @@ void requestEvent(){
           diddd = !diddd;
           digitalWrite(PIN_PANEL_LED1_NUM, diddd);
         }
-    }else if( command == METHOD_GETANALOGVALUE ){
-    }else if( command == METHOD_GETVALUE ){
-    }else if( command == METHOD_RESET_NEXT ){
-    }else if( command == METHOD_RUN_NEXT ){
     }else if(!prog_mode){
       DEBUG("-requestEvent unknown - ");
       printHex(input_buffer[last_index][0], false);
