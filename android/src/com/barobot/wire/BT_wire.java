@@ -131,8 +131,10 @@ public class BT_wire implements Wire {
         return true;
 	}
 	public void stateHasChanged() {
-		Arduino ar =  Arduino.getInstance();
-		ar.clear();
+		if(isMainConnection){
+			Arduino ar =  Arduino.getInstance();
+			ar.clear();
+		}
 	}
 	
 	// The Handler that gets information back from the BluetoothChatService
@@ -156,7 +158,6 @@ public class BT_wire implements Wire {
         	case Constant.MESSAGE_STATE_CHANGE:
                 switch (msg.arg1) {
                 case Constant.STATE_CONNECTED:
-                	Arduino.getInstance().clear();
                 	stateHasChanged();
                     break;
             //    case Constant.STATE_CONNECTING:

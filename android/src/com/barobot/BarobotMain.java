@@ -66,11 +66,11 @@ public class BarobotMain extends BarobotActivity {
 		}
 	    Constant.log("DIR3", File.pathSeparator);
 	    Constant.log("DIR4", ""+sdDir.getFreeSpace() );
+	    Arduino.getInstance().onStart( this );
     }
     @Override
     public void onStart() {
         super.onStart();
-        Arduino.getInstance().onStart( this );
     }
 
 	@Override

@@ -52,11 +52,12 @@ public class virtualComponents {
 	public static final int SERVOZ_TEST_POS = 1650;
 	
 	public static final int SERVOY_FRONT_POS = 800;
-	public static final int SERVOY_BACK_POS = 2080;
+	public static final int SERVOY_BACK_POS = 2010;
 	public static final int SERVOY_TEST_POS = 1000;
-
+	public static final int SERVOY_BACK_NEUTRAL = 1800;
+	
 	public static final int DRIVER_X_SPEED = 4000;
-	public static final int DRIVER_Y_SPEED = 30;
+	public static final int DRIVER_Y_SPEED = 40;
 	public static final int DRIVER_Z_SPEED = 200;
 
 	public static final int ANALOG_WAGA = 2;
@@ -86,19 +87,20 @@ public class virtualComponents {
 
 	// pozycje butelek, sa aktualizowane w trakcie
 	public static int[] margin_x = {
+		300,
 		0,
-		-10, 
+		300,
 		0,
-		-10,
+		300,
 		0,
-		-10,
+		300,
+		0, 
+		300,
 		0,
-		-10, 
-		0,
-		-10,
-		0,
-		-10
+		300,
+		0
 	};
+	
 	private static int[] b_pos_x = {207,207, 394,394,581,581,768,768, 955,955,1142,1142};
 	public static int[] b_pos_y = {
 		SERVOY_BACK_POS,					// 0, num 1
@@ -253,6 +255,7 @@ public class virtualComponents {
 
 		virtualComponents.moveZDown(q);
 		q.add("DX", true);
+		q.addWait(200);
 		q.add("DZ", true);
 		ar.send(q);
 	}
@@ -280,6 +283,7 @@ public class virtualComponents {
 		int poszdown	=  virtualComponents.getInt("ENDSTOP_Z_MIN", SERVOZ_DOWN_POS );
 		q.add("Z" + poszdown+","+virtualComponents.DRIVER_Z_SPEED, true);
 	//	q.addWait( virtualComponents.SERVOZ_DOWN_TIME );	// wiec trzeba poczekać
+		q.addWait(100);
 	    q.add("DZ", true);
 	}
 	
@@ -292,6 +296,7 @@ public class virtualComponents {
 		q.add("Z" + poszup+","+virtualComponents.DRIVER_Z_SPEED, true);
 	//	q.addWait( virtualComponents.SERVOZ_UP_TIME );	// wiec trzeba poczekać
 		if(disableOnReady){
+			q.addWait(100);
 			q.add("DZ", true);
 		}
 	}
@@ -306,18 +311,32 @@ public class virtualComponents {
 				this.name		= "check position";
 				String posx		= virtualComponents.get("POSX", "0" );		// czy ja juz jestem na tej pozycji?	
 				String posy		= virtualComponents.get("POSY", "0" );
-				long x 			= getBottlePosX( num );
-				long y  		= getBottlePosY( num );
-				if(Long.parseLong(posx) != x || Long.parseLong(posy) != y ){		// musze jechac?
+				long tx 		= getBottlePosX( num );
+				long ty  		= getBottlePosY( num );
+				long cx  		= Long.parseLong(posx);
+				long cy  		= Long.parseLong(posy);
+
+				if(cx == tx && cy == ty ){		// nie musze jechac
+					ArduinoQueue	q2	= new ArduinoQueue();
+					q2.addWait( virtualComponents.SERVOY_REPEAT_TIME );
+					return q2;
+				}else if(cx != tx && cy == ty ){		// jade tylem lub przodem
+					ArduinoQueue	q2	= new ArduinoQueue();
+					virtualComponents.moveZDown(q2, disableOnReady );
+					if( cy > virtualComponents.SERVOY_BACK_NEUTRAL ){
+						virtualComponents.moveY( q2, virtualComponents.SERVOY_BACK_NEUTRAL, true);
+					}else{
+						virtualComponents.moveY( q2, virtualComponents.SERVOY_FRONT_POS, true);	
+					}
+					virtualComponents.moveX( q2, tx);
+					virtualComponents.moveY( q2, ty, disableOnReady);
+					return q2;		
+				}else{
 					ArduinoQueue	q2	= new ArduinoQueue();
 					virtualComponents.moveZDown(q2, disableOnReady );
 					virtualComponents.moveY( q2, virtualComponents.SERVOY_FRONT_POS, true);
-					virtualComponents.moveX( q2, x);
-					virtualComponents.moveY( q2, y, disableOnReady);
-					return q2;
-				}else{
-					ArduinoQueue	q2	= new ArduinoQueue();
-					q2.addWait( virtualComponents.SERVOY_REPEAT_TIME );
+					virtualComponents.moveX( q2, tx);
+					virtualComponents.moveY( q2, ty, disableOnReady);
 					return q2;
 				}
 			}
@@ -353,6 +372,7 @@ public class virtualComponents {
 		} );
 	//	q.add("DX", true);
 	    q.add("DY", true);
+	    q.addWait(100);
 	    q.add("DZ", true);
 	    q.add("GPX", true);
 	    ar.send(q);
@@ -446,7 +466,8 @@ public class virtualComponents {
 			@Override
 			public ArduinoQueue run() {
 				this.name		= "scanning back";
-				Constant.log("+find_bottles", "down");
+
+				Constant.log("+find_bottles", "down na:" + virtualComponents.scann_num);
 				virtualComponents.scann_num = 1;
 				return null;
 			}
@@ -456,7 +477,7 @@ public class virtualComponents {
 			@Override
 			public ArduinoQueue run() {
 				this.name		= "end scanning";
-				Constant.log("+find_bottles", "end");
+				Constant.log("+find_bottles", "koniec na:" + virtualComponents.scann_num);
 				virtualComponents.scann_bottles = false;
 				return null;
 			}

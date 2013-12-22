@@ -45,18 +45,19 @@ public class Arduino{
 		//mConversationArrayAdapter = new ArrayAdapter<History_item>(barobotMain, R.layout.message);
 	}
 	public void onStart(final BarobotMain barobotMain) {
-
 		if( connection != null ){
 			connection.disconnect();
 			connection.destroy();
 			connection = null;
 		}
 		if( connection == null ){
-			AlertDialog.Builder builder = new AlertDialog.Builder(barobotMain);
-			String[] name = new String[1];
 			final Wire lowHardware[]=  new Wire[1];  
 			lowHardware[0]	= new Serial_wire();
-			
+			prepareConnection(lowHardware[0],  new BT_wire());
+
+			/*
+			AlertDialog.Builder builder = new AlertDialog.Builder(barobotMain);
+			String[] name = new String[1];
 		//	lowHardware[1]	=
 			//		lowHardware[2]	= new ADB_wire();
 
@@ -72,20 +73,21 @@ public class Arduino{
 			             case 0:
 			            	 prepareConnection(lowHardware[0],  new BT_wire());
 			            	 break;
-			            	 /*case 1:
+			            case 1:
 			            	 prepareConnection(lowHardware[1], lowHardware[1]);
 			            	 break;
 			            	
 			             case 2:
 			            	 prepareConnection(lowHardware[2], lowHardware[1]);
-			            	 break;*/
-			             default:
+			            	 break;
+			           	default:
 			            	 barobotMain.finish();
 			            	 break;
 			          }
 			      }
 			});
 			builder.show();
+			*/
 		}
 	}
 
@@ -95,7 +97,6 @@ public class Arduino{
     	}
    	 	connection = lowHardware;
     	connection.init();
-
        	
     	if(debugConnection !=null){
     		debugConnection.destroy();
@@ -248,7 +249,7 @@ public class Arduino{
 		boolean is_ret = false;
         synchronized (this.lock) {
         	if( this.wait_for != null){
-        			Constant.log("isRet?", "["+retm+"][" +  this.wait_for.command+"]");
+        	//		Constant.log("isRet?", "["+retm+"][" +  this.wait_for.command+"]");
         			is_ret = true;
         			if(this.wait_for.isRet(retm)){
         				Constant.log("unlock", wait_for.command);		
