@@ -2,13 +2,11 @@
 getSlot( signed int moveForward );
 getPosition( signed int moveForward );
 
-
 nextFrontSlot()
 nextBackSlot()
 
 prevFrontSlot()
 prevBackSlot()
-
 
 nextSlotInCurrentDirection()
 prevSlotInCurrentDirection()
@@ -21,22 +19,65 @@ targetPosition()
 
 
 
+---------------------------------------------
 
 
+Splash screen przy uruchamianiu
 
 
+1. G³ówne funkcje programu
+	1 - Nalej wybrany popularny drink
+	2 - Skomponuj w³asny drink
+	3 - Ustawienia butelek
+	4 - Pomoc i obs³uga techniczna
+	5 - O programie i autorach
+	6 - Tryb serwisowy
+	7 - Tryb promocyjny
+	8 - Wy³¹cz robota
+
+1. Nalewanie drinka:
+
+2. Komponowanie drinka
+	Lista 12 prostok¹tów reprezentuj¹cych butelki w uk³adzie jak w robocie. 
+	Na dole du¿y przycisk "Gotowe"
+
+	Ka¿da posiada:
+		- Nazwa sk³adnika
+		- Szacowana iloœc pozosta³¹ w butelce (ma³ymi literami)
+		- Wyra¿enie "N (+P)" gdzie N to liczba nalanych sk³adników, P liczba do nalania, gdy P=0 nie pokazuj "(+P)"
+
+	Ka¿dy prostok¹t posiada przycisk "Nalej to"
+	Z boku lista dodanych i skolejkowanych sk³adników, na zielono zaznaczone nalane sk³adniki.
+	Pod list¹ podsumowanie iloœci alkoholu i mililitrów.
+
+	
+3. Ustawienia butelek
+	12 x pole w uk³adzie jak w robocie z konfiguracj¹ strony zamontowania tabletu (ty³,przód, lewy bok, prawy bok)
+
+	Po klikniêciu butelki:
+		3.1.1 - Zmieñ za³adowany produkt (sok jab³kowy)
+		3.1.2 - Nie u¿ywaj tego nalewaka / Aktywuj ten nalewak
+		3.1.3 - PodjedŸ pod nalewak
+		3.1.4 - Nalej z tego nalewaka
+		3.1.5 - Zapal œwiat³o w górê
+		3.1.6 - Zapal œwiat³o w dó³
+		3.1.7 - Zaawansowana Konfiguracja
+
+	3.1.1 Zmiana za³adowanego produktu:
+		Lista zawieraj¹ca wszystkie mozliwe sk³adniki	
+		Opcje sortowania: Alfabetycznie, popularnoœæ, 
+		Dodany ju¿ sk³adnik ma w nazwie numer pozycji "(pozycja X)"
+	
+		Po wyborze sk³adnika pojawia siê okno:
+			Wybór pojemnoœci butelki
+
+		Po wyborze pojemnoœci pojawia siê okno:
+			- Wstawiono pe³n¹ butelkê
+			- Wstawiono niepe³n¹ butelkê
+		Jeœli wybrano niepe³n¹: Wybór ile jest lub ile odlano (todo)
 
 
-
-
-
-
-
-
-
-
-
-
+	
 
 1. Dorobiæ config LEDow
 2. Dorobiæ parent dla urzadzen
@@ -87,7 +128,6 @@ Security ( œrodowisko pracy nie wp³ywa na pracê robota )
 
 
 
-Splash screen przy uruchamianiu
 Sposoby wyboru drinka:
 	- Ulubione
 	- Wszystkie alfabetycznie
