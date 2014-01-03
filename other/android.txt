@@ -12,8 +12,20 @@ insmod pl2303.ko
 
 
 
-
-
-
-
 cat /proc/tty/drivers
+
+
+	
+	
+C:\Program Files\Android\android-sdk\platform-tools
+adb devices
+
+
+
+
+avrdude -P COM7 -c arduino -p atmega8 -v -v -v -v -v -i 100 -b 38400
+avrdude -P COM40 -c stk500v1 -p m328p -v -v -v -v -v -i 100 -b 57600
+
+
+cat /sdcard/android.hardware.usb.host.xml > /system/etc/permissions/android.hardware.usb.host.xml
+
