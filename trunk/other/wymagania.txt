@@ -19,217 +19,13 @@ targetPosition()
 
 
 
----------------------------------------------
-
-
-Splash screen przy uruchamianiu
-
-
-1. G³ówne funkcje programu
-	1 - Nalej wybrany popularny drink
-	2 - Skomponuj w³asny drink
-	3 - Ustawienia butelek
-	4 - Pomoc i obs³uga techniczna
-	5 - O programie i autorach
-	6 - Tryb serwisowy
-	7 - Tryb promocyjny
-	8 - Wy³¹cz robota
-
-1. Nalewanie drinka:
-
-2. Komponowanie drinka
-	Lista 12 prostok¹tów reprezentuj¹cych butelki w uk³adzie jak w robocie. 
-	Na dole du¿y przycisk "Gotowe"
-
-	Ka¿da posiada:
-		- Nazwa sk³adnika
-		- Szacowana iloœc pozosta³¹ w butelce (ma³ymi literami)
-		- Wyra¿enie "N (+P)" gdzie N to liczba nalanych sk³adników, P liczba do nalania, gdy P=0 nie pokazuj "(+P)"
-
-	Ka¿dy prostok¹t posiada przycisk "Nalej to"
-	Z boku lista dodanych i skolejkowanych sk³adników, na zielono zaznaczone nalane sk³adniki.
-	Pod list¹ podsumowanie iloœci alkoholu i mililitrów.
-
-	
-3. Ustawienia butelek
-	12 x pole w uk³adzie jak w robocie z konfiguracj¹ strony zamontowania tabletu (ty³,przód, lewy bok, prawy bok)
-
-	Po klikniêciu butelki:
-		3.1.1 - Zmieñ za³adowany produkt (sok jab³kowy)
-		3.1.2 - Nie u¿ywaj tego nalewaka / Aktywuj ten nalewak
-		3.1.3 - PodjedŸ pod nalewak
-		3.1.4 - Nalej z tego nalewaka
-		3.1.5 - Zapal œwiat³o w górê
-		3.1.6 - Zapal œwiat³o w dó³
-		3.1.7 - Zaawansowana Konfiguracja
-
-	3.1.1 Zmiana za³adowanego produktu:
-		Lista zawieraj¹ca wszystkie mozliwe sk³adniki	
-		Opcje sortowania: Alfabetycznie, popularnoœæ, 
-		Dodany ju¿ sk³adnik ma w nazwie numer pozycji "(pozycja X)"
-	
-		Po wyborze sk³adnika pojawia siê okno:
-			Wybór pojemnoœci butelki
-
-		Po wyborze pojemnoœci pojawia siê okno:
-			- Wstawiono pe³n¹ butelkê
-			- Wstawiono niepe³n¹ butelkê
-		Jeœli wybrano niepe³n¹: Wybór ile jest lub ile odlano (todo)
-
-
----------------------------------------------
-
-Metody:
-
-
-
-
-
-
-
-
-
-
-
-
-
----------------------------------------------
-
-1. Dorobiæ config LEDow
-2. Dorobiæ parent dla urzadzen
-3. Dorobiæ config ON/OFF  dla LEDow
-4. Dorobiæ funkce skladajaca komendy dla LEDa
-5. Optymalizowaæ wysy³anie
-
-
-
-Safety	( robot jest bezpieczny dla œwodowiska pracy )
-	Zasilacz z cet. CE
-	Ekrany poch³aniaj¹ce magnetyzm z robota
-	Ekrany poch³aniaj¹ce elektromagnetyzm z robota
-	http://www.forum.invisionresources.pl/topic/299-ekranowanie-aparatury-elektronicznej/
-
-
-Security ( œrodowisko pracy nie wp³ywa na pracê robota )
-	Ekrany poch³aniaj¹ce magnetyzm z zewnêtrz
-	Ekrany poch³aniaj¹ce elektromagnetyzm  z zewnêtrz
-	Kontrola pozycji XYZ
-	Sprawdzenie po³¹czeñ elektronicznych
-	Wolne piny w uC po³¹czone do masy.
-	
-	T³umienie zak³óceñ w zasilaniu:
-	http://4.bp.blogspot.com/-tft2F8-bB0I/TrEQZGhcgyI/AAAAAAAABgc/yRPGoECsLF4/s1600/lekcewazyc_czy_nie_sch01.gif
-	- 100nF na wejœciu VCC
-	- 100nF AREF do GND
-	- AVCC przez d³awik do VCC oraz 100 nF równolegle do GND
-
-
-
-	Je¿eli u¿ywasz piny ADC4-ADC5 jako interfejs TWI (I2C) wp³ywaj¹
-	one (zak³ócaj¹) na pomiary kana³ów ADC4-ADC5, ale nie zak³ócaj¹ pomiarów na pozosta³ych kana³ach ADC.
-	
-	
-	
-
-
-1. Tryb nalewania drinków
-2. Tyb serwisowy
-3. Ustawienia
-4. Informacje
-5. Autualizacja bazy drinków
-
-2. Wszystkie opcje, które moga byc pomocne podczas serwisowania urzadzenia
-
-
-
-
-
-Sposoby wyboru drinka:
-	- Ulubione
-	- Wszystkie alfabetycznie
-	- Kategoriami
-	- Losowo
-
-
-Kategorie g³ówne:
-	- po nazwie
-	- po g³ównym sk³adniku alkoholowym
-	- po g³ównym sk³adniku bezalkoholowym
-	- po typie
-		- Klasyczne
-		- Popularne
-		- Bezalkoholowe
-		
-	- po kolorze
-		- R
-		- G
-		- B
-		- W
-		- Pink
-		- Yellow
-		- Brown
-		
-	- po typie
-	
-	
-	
-Sposób wyœwietlania:
-	- pó³ka z butelkami
-	- lista
-
-
-Kategorie:
-	- P³yn
-		- alkoholowy
-			- wódka
-			- piwo			// co z piwem?
-			- 
-
-		- bezalkoholowy
-			- sok
-			- syrop
-			- herbata
-			- kawa			// co z temperatur¹?
-			- woda (soda)
-			- piwo
-	- Owoce
-	- Lód
-	- Cukier
-	- Przyprawy
-	- Inne
-	- Szklanki
-	- Dekoracje
-	- S³omki
-
-	
-	
-	
-Jeœli jest mo¿liwe zrobienie mniej ni¿ 10 ró¿nych drinków to ekran domyœlny zawiera je wszystkie
-
-
-Co ze szklankami? Wybór co wk³adam? 
-Ostrze¿enie o alkoholu? 
-Abuse of alkohol is dangerous for your health use with moderation
-
-Tryb czyszczenia nalewaków? - wstaw wodê do ka¿dego nalewaka a robot bedzie jechal az napelni kubek
-
-"Czy utworzyæ skrót do aplikacji na pulpicie?"
-Lista zakupów
-
-
-
-
 
 
 Tematy:
 
 
-- zasilanie 5V z 6V lub 6V z 5V
-- zamiennik INA 125
-- Ÿród³o prezyzyjnego napiêcia do pomiarów
 - opkreslenie optymalnych napiêæ i pr¹dów dla steppera x
-- pomiar pr¹du u¿ywanego przez servo y i z
-- policzyæ zu¿ycie pr¹du
+
 - zobaczyæ przebiegi dla silnika x
 - procedura wy³¹czania zasilania
 - pullupy dla serv?
@@ -251,121 +47,14 @@ TODO:
 	
 	Podajnik do szklanek
 	Miejsce na lód i owoce
-	LEDY na obudowie
-	LEDY na wózku
 	Sygna³ koñca nalewania
 	Przycisk ANULUJ zatrzymuj¹cy kolejkê nalewania
 	Przycisk STOP zatrzymuj¹cy wszystko jak jest (bez wy³¹czania silników jeœli s¹ w³¹czone)
-	Miejsce odbioru szklanki
-	Arduino pod wózkiem
 	Tryb reklamowy
 
 
 
-	
-	
 
-
-Przepisy
-	G³ówny serwer pobierania przepisów
-	Sprawdzaj aktualizaje przepisów			Przy ka¿dym w³¹czeniu/ raz dziennie/raz na tydzieñ/ raz na miesi¹c /rêcznie
-	Pozwalaj na tworzenie w³asnych przepisów w aplikacji
-	Pozwalaj na zapisywanie przepisów na serwerze
-	Dane konta pozwalaj¹ce na zapisywanie w³asnych przepisów
-		Login
-		Has³o
-
-	Pozwalaj na do³o¿enie do przepisu innego sk³adnika alkoholowego przy nalewaniu		boolean
-	Pozwalaj na do³o¿enie do przepisu innego sk³adnika bezalkoholowego przy nalewaniu	boolean
-
-	Jeœli dostêpny jest podobny sk³adnik to pokazuj przepis			boolean
-	Pokazuj wszystkie przepisy, do których nie ma sk³adników		boolean
-	
-	Gdy sk³adnik nie jest w wystarczaj¹cej iloœci
-		proponuj mniejszy drink
-		proponuj zmieszanie z podobnym sk³adnikiem
-		nie pozwól na wybanie przepisu
-
-	Zapisuj pliki przepisów w folderze....
-		
-		
-Limity:
-	Maksymalna iloœæ drinków na dzieñ		int (default 0)
-	Maksymalna iloœæ drinków na godzinê		int (default 0)
-	Has³o wynagane do tworzenia drinka		string 4 znaki
-	Oszczêdzaj pr¹d w tablecie				boolean
-	Oszczêdzaj pr¹d w barobocie				boolean
-
-Wygl¹d
-	
-	
-
-
-Bluetooth server
-	Po³¹cz automatycznie z robotem przy starcie aplikacji		boolean
-	Urz¹dzenie BT...											activity...
-	Automatcznie próbuj wznowiæ po³¹czenie gdy je utracono		boolean
-	
-Maksymalne prêdkoœci
-	Prêdkoœæ X ze szklank¹			int
-	Prêdkoœæ Y ze szklank¹			int
-	Przyœpieszenie X ze szklank¹	int
-	Przyœpieszenie Y ze szklank¹	int
-
-	Prêdkoœæ X bez szklanki			int
-	Prêdkoœæ Y bez szklanki			int
-	Przyœpieszenie X bez szklanki	int
-	Przyœpieszenie Y bez szklanki	int
-
-	2 razy wolniej gdy wykryto plastikowy kubeczek	boolean
-	2 razy wolniej gdy wykryto kieliszek do wódki	boolean
-
-Limity techniczne:
-	Czas oczekiwania na szklankê zanim zg³osi b³¹d		int
-	Iloœæ prób podjechania do pozycji					int (default 5)
-	Kalibracja co ile drinków							int (default 1)
-	Trzymaj pozycjê aktywnie, bez przerwy				boolean
-	Iloœæ odczytów wagi do ujednolicenia
-	
-	Iloœæ nalewaków w rzêdzie przednim (oznaczonych magnesami)
-	Iloœæ nalewaków w rzêdzie tylnim (oznaczonych magnesami)
-	Wspó³czynnik detekcji magnesów pod nalewakami
-	
-	
-	
-
-Dok³adnoœæ nalewania	
-	Szturchaj nalewak po nalaniu			boolean
-	Odczekaj przed szturchniêciem (ms)		int
-	Czas szturchniêcia	(ms)				int
-	Pozycja szturchniêcia (%)				int
-
-
-Gdy beczynny
-	Wy³¹cz silniki po czasie					int (default 10 sek)
-	Wygaszacz ekranu po czasie					int (default 0)
-	Zgaœ tablet po czasie						int (default 0)
-	Tryb reklamowy po czasie					int (default 60 sek)
-	Tryb reklamowy+ po czasie					int (default 120 sek)
-	Wy³¹cz wszystko po czasie					int (default 3600 sek)
-	
-Kamera
-	Rób zjêcie przy odbiorze drinka			boolean
-	Miejsce przechowywania zdjêæ			string
-	
-Inne:
-	Dok³adnie sprawdzaj obecnoœæ szklanki przed nalaniem	boolean
-	Pozycja tabletu			przód,ty³
-	Mrygaj podœwietleniem 1
-	Mrygaj podœwietleniem 2
-	Mrygaj podœwietleniem 3
-	
-Komunikacja
-
-
-
-
-	
 
 sterowniki LED
 http://www.ti.com/product/tlc59116#buy
@@ -389,32 +78,11 @@ narastanie / opadanie wype³nienia 12 pinów
 
 
 
-
-
-
-Kategorie
-
-	Alkoholowe
-
-	Bez alkoholowe
-
-	Damskie
-	Mêskie
-
-	Na bazie:
-		- wódki
-		- wina
-		- rumu
-		- dzinu
-		- likieru
-		- whiskey
-		- piwa
-		- coli
-		- soku
-
+	Je¿eli u¿ywasz piny ADC4-ADC5 jako interfejs TWI (I2C) wp³ywaj¹
+	one (zak³ócaj¹) na pomiary kana³ów ADC4-ADC5, ale nie zak³ócaj¹ pomiarów na pozosta³ych kana³ach ADC.
 	
 	
-	
+
 
 http://www.fourwalledcubicle.com/LUFA.php
 micropendous 
@@ -449,16 +117,9 @@ X1000,6000
 
 Y2200,40
 
-
-
 LIVE A 0,10,1
-
 LIVE A 0,5,10
-
 LIVE A OFF
-
-
-
 
 
 UPDATE `i2c_method` a SET `num_params` = (SELECT count(1) from `i2c_method_param` b WHERE a.id = b.method_id);

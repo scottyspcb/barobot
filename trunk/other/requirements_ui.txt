@@ -1,0 +1,251 @@
+Splash screen przy uruchamianiu??
+
+
+1. G³ówne funkcje programu (kolejnoœæ do zastanowienia)
+	1 - Nalej wybrany popularny drink
+	2 - Skomponuj w³asny drink
+	3 - Ustawienia butelek
+	4 - Pomoc i obs³uga techniczna
+	5 - O programie i autorach
+	6 - Tryb serwisowy
+	7 - Tryb promocyjny
+	8 - Wy³¹cz robota
+
+1. Nalewanie drinka
+
+2. Komponowanie drinka
+	Lista 12 prostok¹tów reprezentuj¹cych butelki w uk³adzie jak w robocie. 
+	Na dole du¿y przycisk typu "Gotowe"
+
+	Ka¿da butelka posiada:
+		- Nazwa sk³adnika
+		- Szacowan¹ iloœc pozosta³¹ w butelce (ma³ymi literami)
+		- Wyra¿enie "N (+P)" gdzie N to liczba nalanych sk³adników, P liczba do nalania, gdy P=0 nie pokazuj "(+P)" lub graficzny odpowiednik.
+
+	Ka¿dy prostok¹t posiada przycisk "Nalej to"
+	Z boku lista dodanych i skolejkowanych sk³adników.
+	Pod list¹ podsumowanie iloœci alkoholu i mililitrów i innych statystyk.
+
+3. Ustawienia butelek
+	12 x pole w uk³adzie jak w robocie z konfiguracj¹ strony zamontowania tabletu (ty³, przód, lewy bok, prawy bok)
+
+	Po klikniêciu butelki (to samo co po wciœniêciu przyciku na upanelu):
+		3.1.1 - Zmieñ za³adowany produkt (sok jab³kowy)
+		3.1.2 - Nie u¿ywaj tego nalewaka / Aktywuj ten nalewak
+		3.1.3 - PodjedŸ pod nalewak
+		3.1.4 - Nalej z tego nalewaka
+		3.1.5 - Zapal œwiat³o w górê
+		3.1.6 - Zapal œwiat³o w dó³
+		3.1.7 - Zaawansowana Konfiguracja
+
+	3.1.1 Zmiana za³adowanego produktu:
+		Lista zawieraj¹ca wszystkie mozliwe sk³adniki	
+		Opcje sortowania: Alfabetycznie, popularnoœæ, 
+		Na liœcie dodany ju¿ sk³adnik ma w nazwie numer pozycji "(pozycja X)"
+	
+		Po wyborze sk³adnika pojawia siê okno:
+			Wybór pojemnoœci butelki ( z listy predefiniowanych)
+
+		Po wyborze pojemnoœci pojawia siê okno:
+			- Wstawiono pe³n¹ butelkê
+			- Wstawiono niepe³n¹ butelkê
+		Jeœli wybrano niepe³n¹: Wybór ile jest lub ile odlano (todo)
+
+
+
+Kategorie
+	Alkoholowe
+	Bez alkoholowe
+
+	Damskie
+	Mêskie
+
+	Na bazie:		(pokazuje wszystkie dostêpne sk³adniki)
+		- wódki
+		- wina
+		- rumu
+		- dzinu
+		- likieru
+		- whiskey
+		- piwa
+		- coli
+		- soku
+
+Sposoby wyboru drinka:
+	- Ulubione
+	- Wszystkie alfabetycznie
+	- Kategoriami
+	- Losowo
+
+
+Kategorie g³ówne:
+	- po nazwie
+	- po g³ównym sk³adniku
+	- po typie
+		- Klasyczne
+		- Popularne
+		- Bezalkoholowe
+		
+	- po kolorze
+		- R
+		- G
+		- B
+		- W
+		- Pink
+		- Yellow
+		- Brown
+		
+	- po typie
+	
+Sposób wyœwietlania sk³adników:
+	- pó³ka z butelkami?
+	- lista?
+
+Kategorie:
+	- P³yn
+		- alkoholowy
+			- wódka
+			- piwo			// co z piwem?
+			- gin
+			- wino
+
+		- bezalkoholowy
+			- sok
+			- syrop
+			- herbata
+			- kawa			// co z temperatur¹?
+			- woda (soda)
+			- piwo
+	- Owoce
+	- Lód
+	- Cukier
+	- Przyprawy
+	- Inne
+	- Szklanki
+	- Dekoracje
+	- S³omki
+
+	
+	
+	
+Jeœli jest mo¿liwe zrobienie mniej ni¿ 10 ró¿nych drinków to ekran domyœlny zawiera je wszystkie
+
+
+Co ze szklankami? Wybór co wk³adam? 
+Ostrze¿enie o alkoholu? 
+Abuse of alkohol is dangerous for your health use with moderation
+
+Tryb czyszczenia nalewaków? - wstaw wodê do ka¿dego nalewaka a robot bedzie jechal az napelni kubek
+
+"Czy utworzyæ skrót do aplikacji na pulpicie?"
+Lista zakupów
+
+
+
+KONFIGURACJA:
+
+Przepisy
+	G³ówny serwer pobierania przepisów
+	Sprawdzaj aktualizaje przepisów			Przy ka¿dym w³¹czeniu/ raz dziennie/raz na tydzieñ/ raz na miesi¹c /rêcznie
+	Pozwalaj na tworzenie w³asnych przepisów w aplikacji
+	Pozwalaj na zapisywanie przepisów na serwerze
+	Dane konta pozwalaj¹ce na zapisywanie w³asnych przepisów
+		Login
+		Has³o
+
+	Pozwalaj na do³o¿enie do przepisu innego sk³adnika alkoholowego przy nalewaniu		boolean
+	Pozwalaj na do³o¿enie do przepisu innego sk³adnika bezalkoholowego przy nalewaniu	boolean
+
+	Jeœli dostêpny jest podobny sk³adnik to pokazuj przepis			boolean
+	Pokazuj wszystkie przepisy, do których nie ma sk³adników		boolean
+	
+	Gdy sk³adnik nie jest w wystarczaj¹cej iloœci
+		proponuj mniejszy drink
+		proponuj zmieszanie z podobnym sk³adnikiem
+		nie pozwól na wybanie przepisu
+
+	Zapisuj pliki przepisów w folderze....
+		
+		
+Limity:
+	Maksymalna iloœæ drinków na dzieñ		int (default 0)
+	Maksymalna iloœæ drinków na godzinê		int (default 0)
+	Has³o wynagane do tworzenia drinka		string 4 znaki
+	Oszczêdzaj pr¹d w tablecie				boolean
+	Oszczêdzaj pr¹d w barobocie				boolean
+
+Wygl¹d
+	
+
+
+Bluetooth server
+	Po³¹cz automatycznie z robotem przy starcie aplikacji		boolean
+	Urz¹dzenie BT...											activity...
+	Automatcznie próbuj wznowiæ po³¹czenie gdy je utracono		boolean
+	
+Maksymalne prêdkoœci
+	Prêdkoœæ X ze szklank¹			int
+	Prêdkoœæ Y ze szklank¹			int
+	Przyœpieszenie X ze szklank¹	int
+	Przyœpieszenie Y ze szklank¹	int
+
+	Prêdkoœæ X bez szklanki			int
+	Prêdkoœæ Y bez szklanki			int
+	Przyœpieszenie X bez szklanki	int
+	Przyœpieszenie Y bez szklanki	int
+
+	2 razy wolniej gdy wykryto plastikowy kubeczek	boolean
+	2 razy wolniej gdy wykryto kieliszek do wódki	boolean
+
+Limity techniczne:
+	Czas oczekiwania na szklankê zanim zg³osi b³¹d		int
+	Iloœæ prób podjechania do pozycji					int (default 5)
+	Kalibracja co ile drinków							int (default 1)
+	Trzymaj pozycjê aktywnie, bez przerwy				boolean
+	Iloœæ odczytów wagi do ujednolicenia				int
+	
+	Iloœæ nalewaków w rzêdzie przednim (oznaczonych magnesami)
+	Iloœæ nalewaków w rzêdzie tylnim (oznaczonych magnesami)
+	Wspó³czynnik detekcji magnesów pod nalewakami
+	
+	
+	
+
+Dok³adnoœæ nalewania	
+	Szturchaj nalewak po nalaniu			boolean
+	Odczekaj przed szturchniêciem (ms)		int
+	Czas szturchniêcia	(ms)				int
+	Pozycja szturchniêcia (%)				int
+
+
+Gdy beczynny
+	Wy³¹cz silniki po czasie					int (default 10 sek)
+	Wygaszacz ekranu po czasie					int (default 0)
+	Zgaœ tablet po czasie						int (default 0)
+	Tryb reklamowy po czasie					int (default 60 sek)
+	Tryb reklamowy+ po czasie					int (default 360 sek)
+	Wy³¹cz wszystko po czasie					int (default 3600 sek)
+	
+	( 0 =  wy³¹czone )
+	
+Kamera
+	Rób zjêcie przy odbiorze drinka			boolean
+	Miejsce przechowywania zdjêæ			string
+	
+Inne:
+	Dok³adnie sprawdzaj obecnoœæ szklanki przed nalaniem	boolean
+	Pozycja tabletu			przód,ty³
+	Mrygaj podœwietleniem 1
+	Mrygaj podœwietleniem 2
+	Mrygaj podœwietleniem 3
+	
+Komunikacja
+
+---------------------------------------------
+1. Dorobiæ config LEDow
+2. Dorobiæ parent dla urzadzen
+3. Dorobiæ config ON/OFF  dla LEDow
+4. Dorobiæ funkce skladajaca komendy dla LEDa
+5. Optymalizowaæ wysy³anie do robota
+
+
