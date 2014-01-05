@@ -5,6 +5,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+
+import com.barobot.activity.AboutActivity;
+import com.barobot.activity.BTListActivity;
+import com.barobot.activity.DebugActivity;
+import com.barobot.activity.MainSettingsActivity;
+import com.barobot.activity.UpdateActivity;
 import com.barobot.gui.BarobotActivity;
 import com.barobot.hardware.DeviceSet;
 import com.barobot.hardware.virtualComponents;
@@ -12,93 +18,63 @@ import com.barobot.utils.CameraManager;
 import com.barobot.utils.Constant;
 import com.barobot.utils.interval;
 import com.barobot.utils.Arduino;
+import com.barobot.web.server.SofaServer;
+import com.x5.template.providers.AndroidTemplates;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.PowerManager;
+import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
 public class BarobotMain extends BarobotActivity {
     // Layout Viewsd
 	private static BarobotMain instance;
-	public CameraManager cm;
-    public ArrayList<interval> inters = new ArrayList<interval>();    
-
+ 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
 		instance = this;	        // Set up the window layout
+		AppInvoker.createInstance( this ).onCreate();
+
+		if (getIntent().hasExtra("bundle") && savedInstanceState==null){
+		   savedInstanceState = getIntent().getExtras().getBundle("bundle");
+		}
+//		requestWindowFeature(Window.FEATURE_NO_TITLE);
+//		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+	    int mUIFlag = View.SYSTEM_UI_FLAG_LOW_PROFILE | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+	    getWindow().getDecorView().setSystemUiVisibility(mUIFlag);       
+
+        super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         virtualComponents.init( this );
-        // Initialize the compose field with a listener for the return key
-        /*
-        mOutEditText = (EditText) findViewById(R.id.edit_text_out);
-        mOutEditText.setOnEditorActionListener( new TextView.OnEditorActionListener() {
-	        public boolean onEditorAction(TextView view, int actionId, KeyEvent event) {
-	            // If the action is a key-up event on the return key, send the message
-		            if (actionId == EditorInfo.IME_NULL && event.getAction() == KeyEvent.ACTION_UP) {
-		            	Constant.log(Constant.TAG, "END onEditorAction+++");
-		                String message = view.getText().toString();
-		                Arduino.getInstance().send(message);
-		            }
-		            Constant.log(Constant.TAG, "END onEditorAction");
-	            return true;
-	        }
-	    });
-	    */
-
-		cm = new CameraManager( this );
-		cm.findCameras();
-
-	    DeviceSet.loadXML(this, R.raw.devices);
-
-	    File sdDir = Environment.getExternalStorageDirectory();
-	    Constant.log("DIR1", sdDir.getAbsolutePath() );
-	    try {
-			Constant.log("DIR2", sdDir.getCanonicalPath() );
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	    Constant.log("DIR3", File.pathSeparator);
-	    Constant.log("DIR4", ""+sdDir.getFreeSpace() );
-	    Arduino.getInstance().onStart( this );
     }
     @Override
     public void onStart() {
         super.onStart();
     }
-
 	@Override
 	protected void onPause() {
-		Constant.log("MAINWINDOW", "onPause");
-		cm.onPause();
+		AppInvoker.getInstance().onPause();
 		super.onPause();
 	}
     @Override
     public synchronized void onResume() {
-    	Constant.log("MAINWINDOW", "onResume");
         super.onResume();
-		if(cm!=null){
-			cm.onResume();
-		}
-        Arduino.getInstance().resume();
+        AppInvoker.getInstance().onResume();
     }
-    
     @Override
     public void onDestroy() {
-    	Constant.log("MAINWINDOW", "onDestroy");
-        Arduino.getInstance().destroy();
-    	DeviceSet.clear();
-    	Iterator<interval> it = this.inters.iterator();
-    	while(it.hasNext()){
-    		it.next().cancel();
-    	}
-        cm.onDestroy();
+    	AppInvoker.getInstance().onDestroy();
         super.onDestroy();
     }
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -110,7 +86,6 @@ public class BarobotMain extends BarobotActivity {
         case AboutActivity.INTENT_NAME:
         	Constant.log(Constant.TAG, "END OF AboutActivity");
             break;
-  
         case MainSettingsActivity.INTENT_NAME:
         	Constant.log(Constant.TAG, "END OF SETTINGS");
             break;
@@ -119,7 +94,6 @@ public class BarobotMain extends BarobotActivity {
             break;
         case BTListActivity.INTENT_NAME:
         	Constant.log(Constant.TAG, "REQUEST_CONNECT_DEVICE_SECURE");
-
             // When BTListActivity returns with a device to connect
             if (resultCode == Activity.RESULT_OK) {
                 String address = data.getExtras().getString(Constant.EXTRA_DEVICE_ADDRESS);           // Get the device MAC address

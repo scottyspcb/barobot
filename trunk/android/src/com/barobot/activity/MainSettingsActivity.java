@@ -1,4 +1,4 @@
-package com.barobot;
+package com.barobot.activity;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -22,6 +22,10 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import java.util.List;
+
+import com.barobot.R;
+import com.barobot.R.string;
+import com.barobot.R.xml;
 
 /**
  * A {@link PreferenceActivity} that presents a set of application settings. On

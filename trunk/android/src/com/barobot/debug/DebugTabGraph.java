@@ -1,12 +1,13 @@
 package com.barobot.debug;
 
-import com.barobot.DebugActivity;
 import com.barobot.R;
-import com.barobot.drinks.RunnableWithData;
+import com.barobot.activity.DebugActivity;
 import com.barobot.hardware.virtualComponents;
 import com.barobot.utils.Arduino;
 import com.barobot.utils.Constant;
-import com.barobot.webview.AJS;
+import com.barobot.utils.RunnableWithData;
+import com.barobot.web.server.AJS;
+
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;

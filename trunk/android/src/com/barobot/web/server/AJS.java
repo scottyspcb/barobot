@@ -1,4 +1,4 @@
-package com.barobot.webview;
+package com.barobot.web.server;
 
 import java.util.HashMap;
 import java.util.Map;

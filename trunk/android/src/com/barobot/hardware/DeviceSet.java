@@ -1,5 +1,6 @@
 package com.barobot.hardware;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import com.barobot.utils.Constant;
 import android.content.Context;
+import android.os.Environment;
 import android.util.Xml;
 
 public class DeviceSet {
@@ -50,6 +52,21 @@ public class DeviceSet {
 	}
 	
 	public static void loadXML( Context ctx, int resId ){
+		
+		
+		/*
+	    File sdDir = Environment.getExternalStorageDirectory();
+	    Constant.log("DIR1", sdDir.getAbsolutePath() );
+	    try {
+			Constant.log("DIR2", sdDir.getCanonicalPath() );
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	    Constant.log("DIR3", File.pathSeparator);
+	    Constant.log("DIR4", ""+sdDir.getFreeSpace() );	
+		
+		*/
+		
 	    InputStream inputStream			= ctx.getResources().openRawResource(resId);
 	//    Constant.log("loadXML", "----------------------------" );
 	    try {

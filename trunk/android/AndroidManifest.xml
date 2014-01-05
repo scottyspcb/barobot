@@ -39,7 +39,7 @@
                 android:resource="@xml/device_filter" />
         </activity>
         <activity
-            android:name="com.barobot.BTListActivity"
+            android:name="com.barobot.activity.BTListActivity"
             android:configChanges="orientation|keyboardHidden"
             android:label="@string/select_device"
             android:screenOrientation="sensorLandscape" />
@@ -49,24 +49,24 @@
             android:screenOrientation="sensorLandscape" >
         </activity>
         <activity
-            android:name="com.barobot.MainSettingsActivity"
+            android:name="com.barobot.activity.MainSettingsActivitysActivity"
             android:label="@string/title_activity_main_settings" >
         </activity>
         <activity
-            android:name="com.barobot.UpdateActivity"
+            android:name="com.barobot.activity.UpdateActivityeActivity"
             android:label="@string/title_activity_update" >
         </activity>
         <activity
-            android:name="com.barobot.AboutActivity"
+            android:name="com.barobot.activity.AboutActivity"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
             android:label="@string/title_activity_about" >
         </activity>
         <activity
-            android:name="com.barobot.WebActivity"
+            android:name="com.barobot.activity.WebActivitybActivity"
             android:configChanges="keyboard|keyboardHidden|screenSize|orientation"
             android:label="@string/title_activity_web" >
         </activity>
-        <activity
-            android:name="com.barobot.DebugActivity"
+        <activity			android:name="com.barobot.activity.DebugActivity"
             android:label="@string/title_activity_device_list" >
         </activity>
         <activity

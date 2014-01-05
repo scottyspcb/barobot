@@ -106,7 +106,7 @@ public class BT_wire implements Wire {
 	@Override
 	public boolean send(String command) {
 		if(mChatService!=null && mChatService.getState() == Constant.STATE_CONNECTED ) {
-//			Constant.log(Constant.TAG, "BT SEND:["+ command +"]");
+			Constant.log(Constant.TAG, "BT SEND:["+ command +"]");
 			String command2 = command;
         	byte[] send = command2.getBytes();
         	mChatService.write(send);

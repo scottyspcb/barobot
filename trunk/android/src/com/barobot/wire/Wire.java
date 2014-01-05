@@ -3,7 +3,6 @@ package com.barobot.wire;
 import java.io.IOException;
 
 public interface Wire {
-
 	public boolean init();
 	public String getName();
 	public boolean isMainConnection = false;
@@ -21,5 +20,4 @@ public interface Wire {
 	public void destroy();
 	public void setup();
 	public void connectToId(String address);
-
 }

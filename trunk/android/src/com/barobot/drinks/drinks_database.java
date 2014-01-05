@@ -11,7 +11,7 @@ import java.net.URLConnection;
 
 import com.barobot.BarobotMain;
 import com.barobot.R;
-import com.barobot.UpdateActivity;
+import com.barobot.activity.UpdateActivity;
 import com.barobot.utils.Constant;
 import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;

@@ -6,6 +6,5 @@
 	<classpathentry kind="lib" path="C:/Program Files/Android/android-sdk/platforms/android-15/android.jar"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
-	<classpathentry exported="true" kind="lib" path="C:/workspace/Barobot/android/libs/velocity-1.7-dep.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

@@ -2,7 +2,7 @@ package com.barobot.hardware;
 
 import android.util.Log;
 
-public class Driver {
+public class MotorDriver {
 	long hardware_pos = 0;
 	long software_pos = 0;
 

@@ -73,6 +73,7 @@ public class Serial_wire implements Wire {
         	Log.e("Serial","No serial device.");
         	mHandler.sendEmptyMessage(MESSAGE_REFRESH);
         } else {
+        	Log.e("Serial", "Resumed openPort");
         	openPort();
         }
 	}
@@ -223,6 +224,7 @@ public class Serial_wire implements Wire {
             Log.d("serial", "No port.");
         }else{
         	sPort = port;
+        	Log.w("Serial", "openPort connectWith");
         	openPort();
         }
 		return false;

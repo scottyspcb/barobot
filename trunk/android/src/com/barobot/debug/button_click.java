@@ -2,17 +2,18 @@ package com.barobot.debug;
 
 import java.util.Random;
 
+import com.barobot.AppInvoker;
 import com.barobot.BarobotMain;
 import com.barobot.R;
 import com.barobot.R.id;
 import com.barobot.R.layout;
-import com.barobot.drinks.RunnableWithData;
 import com.barobot.hardware.rpc_message;
 import com.barobot.hardware.virtualComponents;
 import com.barobot.utils.ArduinoQueue;
 import com.barobot.utils.Constant;
 import com.barobot.utils.Arduino;
-import com.barobot.webview.AJS;
+import com.barobot.utils.RunnableWithData;
+import com.barobot.web.server.AJS;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -26,7 +27,6 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 public class button_click implements OnClickListener{
 	private Context dbw;
-	
 	public button_click(Context debugWindow){
 		dbw = debugWindow;
 	}
@@ -269,7 +269,7 @@ public class button_click implements OnClickListener{
 			virtualComponents.pacpac();
 			break;
 		case R.id.smile:
-			BarobotMain.getInstance().cm.doPhoto();
+			AppInvoker.getInstance().cm.doPhoto();
 			break;
 		case R.id.bottle_next:
 			break;	

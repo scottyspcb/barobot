@@ -1,4 +1,4 @@
-package com.barobot;
+package com.barobot.activity;
 
 import android.app.Activity;
 import android.content.res.Configuration;
@@ -16,10 +16,14 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.Toast;
 
+import com.barobot.R;
+import com.barobot.R.id;
+import com.barobot.R.layout;
+import com.barobot.R.menu;
 import com.barobot.hardware.virtualComponents;
 import com.barobot.utils.Arduino;
-import com.barobot.webview.AJS;
-import com.barobot.webview.htmlBrowser;
+import com.barobot.web.server.AJS;
+import com.barobot.web.server.htmlBrowser;
 
 public class WebActivity extends Activity {
 
