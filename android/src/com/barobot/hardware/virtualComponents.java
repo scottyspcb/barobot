@@ -3,9 +3,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.barobot.DebugActivity;
 import com.barobot.R;
 import com.barobot.R.id;
+import com.barobot.activity.DebugActivity;
 import com.barobot.utils.ArduinoQueue;
 import com.barobot.utils.Constant;
 import com.barobot.utils.Arduino;
@@ -52,7 +52,7 @@ public class virtualComponents {
 	public static final int SERVOZ_TEST_POS = 1650;
 	
 	public static final int SERVOY_FRONT_POS = 800;
-	public static final int SERVOY_BACK_POS = 2010;
+	public static final int SERVOY_BACK_POS = 2090;
 	public static final int SERVOY_TEST_POS = 1000;
 	public static final int SERVOY_BACK_NEUTRAL = 1800;
 	
@@ -64,7 +64,7 @@ public class virtualComponents {
 	public static final int ANALOG_DIST1 = 20;
 	public static final int ANALOG_DIST2 = 21;
 	public static final int ANALOG_HALL = 10;
-	protected static final int SERVOY_REPEAT_TIME = 2000;
+	public static final int SERVOY_REPEAT_TIME = 2000;
 
 	public static int margin_front = 0;
 	public static int margin_back = 0;
@@ -151,7 +151,7 @@ public class virtualComponents {
 	public static int graph_source	= 2;
 	public static int graph_xsize	= 4;
 	public static int graph_fps		= 10;
-	public static Driver driver_x;
+	public static MotorDriver driver_x;
 	public static boolean scann_bottles = false;
 	public static int scann_num = 0;
 	public static boolean set_bottle_on = false;
@@ -160,7 +160,7 @@ public class virtualComponents {
 		application		= app;
 		myPrefs			= application.getSharedPreferences(Constant.SETTINGS_TAG, Context.MODE_PRIVATE);
 		config_editor	= myPrefs.edit();
-		driver_x		= new Driver();
+		driver_x		= new MotorDriver();
 
 	}
 	public static String get( String name, String def ){
@@ -172,7 +172,7 @@ public class virtualComponents {
 				ret = def;
 			}
 		}
-		return ret; 
+		return ret;
 	}
 	public static int getPourTime( int num ){
 		if( num > 0 && num < times.length){

@@ -2,11 +2,11 @@ package com.barobot.utils;
 
 import android.util.Log;
 
-import com.barobot.DebugActivity;
 import com.barobot.R;
+import com.barobot.activity.DebugActivity;
 import com.barobot.hardware.Methods;
 import com.barobot.hardware.virtualComponents;
-import com.barobot.webview.AJS;
+import com.barobot.web.server.AJS;
 
 public class input_parser {
 	private static String buffer = "";

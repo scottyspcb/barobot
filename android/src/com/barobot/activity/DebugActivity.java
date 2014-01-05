@@ -1,17 +1,22 @@
-package com.barobot;
+package com.barobot.activity;
 
 import java.util.Locale;
 import java.util.Vector;
 
+import com.barobot.R;
+import com.barobot.R.id;
+import com.barobot.R.layout;
+import com.barobot.R.menu;
+import com.barobot.R.string;
 import com.barobot.debug.DebugTabBottles;
 import com.barobot.debug.DebugTabCommands;
 import com.barobot.debug.DebugTabDevices;
 import com.barobot.debug.DebugTabGraph;
 import com.barobot.debug.DebugTabLeds;
 import com.barobot.debug.DebugTabLog;
-import com.barobot.drinks.RunnableWithData;
 import com.barobot.hardware.virtualComponents;
 import com.barobot.utils.Constant;
+import com.barobot.utils.RunnableWithData;
 
 import android.app.ActionBar;
 import android.app.Dialog;
@@ -28,6 +33,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -83,17 +90,25 @@ public class DebugActivity extends FragmentActivity implements	ActionBar.TabList
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		
+		
+    	
+    	
+   	 if (getIntent().hasExtra("bundle") && savedInstanceState==null){
+   	        savedInstanceState = getIntent().getExtras().getBundle("bundle");
+   	 }	
+   	  setTheme(android.R.style.Theme_Holo_Light);
+		
+		
+		
 		objVector.add(DebugActivity.TAB_COMMANDS_ID,  	new DebugTabCommands( this, DebugActivity.TAB_COMMANDS_ID ));
 		objVector.add(DebugActivity.TAB_DEVICES_ID,  	new DebugTabDevices( this, DebugActivity.TAB_DEVICES_ID ));
 		objVector.add(DebugActivity.TAB_LEDS_ID,  		new DebugTabLeds( this, DebugActivity.TAB_LEDS_ID ));
 		objVector.add(DebugActivity.TAB_BOTTLES_ID,  	new DebugTabBottles( this, DebugActivity.TAB_BOTTLES_ID ));
 		objVector.add(DebugActivity.TAB_GRAPH_ID,  		new DebugTabGraph( this, DebugActivity.TAB_GRAPH_ID ));
 		objVector.add(DebugActivity.TAB_LOG_ID,  		new DebugTabLog( this, DebugActivity.TAB_LOG_ID ));
-		
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_debug);
 		DebugActivity.instance = this;
-
 		// Set up the action bar.
 		final ActionBar actionBar = getActionBar();
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);

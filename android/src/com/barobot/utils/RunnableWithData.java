@@ -1,4 +1,4 @@
-package com.barobot.drinks;
+package com.barobot.utils;
 
 public abstract class RunnableWithData implements Runnable{
 	protected String data="";

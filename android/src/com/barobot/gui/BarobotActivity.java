@@ -1,11 +1,11 @@
 package com.barobot.gui;
 
-import com.barobot.AboutActivity;
-import com.barobot.BTListActivity;
-import com.barobot.DebugActivity;
-import com.barobot.MainSettingsActivity;
 import com.barobot.R;
-import com.barobot.UpdateActivity;
+import com.barobot.activity.AboutActivity;
+import com.barobot.activity.BTListActivity;
+import com.barobot.activity.DebugActivity;
+import com.barobot.activity.MainSettingsActivity;
+import com.barobot.activity.UpdateActivity;
 import com.barobot.hardware.virtualComponents;
 import com.barobot.utils.Arduino;
 

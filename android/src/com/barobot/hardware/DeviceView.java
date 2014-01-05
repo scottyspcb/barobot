@@ -57,7 +57,6 @@ public class DeviceView extends BaseAdapter {
     }
 
     public ViewHolderPattern createRow(final int position, ViewGroup parent) {
-
     	Device dd				= this.data.getItem(position);
     	LayoutInflater inflater	= (LayoutInflater) ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     	View convertView		= inflater.inflate( this.layoutId, parent, false);

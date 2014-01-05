@@ -1,5 +1,8 @@
-package com.barobot;
+package com.barobot.activity;
 
+import com.barobot.R;
+import com.barobot.R.layout;
+import com.barobot.R.menu;
 import com.barobot.drinks.drinks_database;
 
 import android.os.Bundle;

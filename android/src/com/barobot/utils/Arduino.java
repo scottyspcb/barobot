@@ -12,10 +12,10 @@ import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import com.barobot.AppInvoker;
 import com.barobot.BarobotMain;
 import com.barobot.R;
 import com.barobot.hardware.rpc_message;
-import com.barobot.wire.ADB_wire;
 import com.barobot.wire.BT_wire;
 import com.barobot.wire.Serial_wire;
 import com.barobot.wire.Wire;
@@ -100,12 +100,14 @@ public class Arduino{
        	
     	if(debugConnection !=null){
     		debugConnection.destroy();
-    	}	
+    	}
+    	
+    	/*
 		debugConnection = lowHardware2;
 		debugConnection.init();
        	if( debugConnection.implementAutoConnect()){
         	this.runTimer(debugConnection);
-        }
+        }*/
     //   	this.sendSomething();
 	}
 
@@ -158,7 +160,7 @@ public class Arduino{
 		});
     	inn.run(1000,5000);
     	inn.pause();
-    	BarobotMain.getInstance().inters.add(inn);
+    	AppInvoker.getInstance().inters.add(inn);
 	}
 
 	public void destroy() {
@@ -194,6 +196,10 @@ public class Arduino{
 	}
 */
 	public boolean allowAutoconnect() {
+		if( debugConnection == null ){
+			//	Constant.log(Constant.TAG, "nie autoconnect bo juz połączony");
+				return false;
+		}
 		if( debugConnection.isConnected() ){
 		//	Constant.log(Constant.TAG, "nie autoconnect bo juz połączony");
 			return false;
@@ -242,7 +248,7 @@ public class Arduino{
 	}
 	public void send(ArduinoQueue q) {
 		this.output2.addAll(q.output);
-		BarobotMain.getInstance().cm.doPhoto();
+		AppInvoker.getInstance().cm.doPhoto();
 		exec();
 	}
 	public synchronized boolean read_ret(String retm) {	// czy moze to jest zwrotka

@@ -1,26 +1,25 @@
-package com.barobot.webview;
+package com.barobot.web.server;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
-
+/*
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
 import org.apache.velocity.exception.MethodInvocationException;
 import org.apache.velocity.exception.ParseErrorException;
 import org.apache.velocity.exception.ResourceNotFoundException;
-
-import com.barobot.WebActivity;
+*/
+import com.barobot.activity.WebActivity;
 
 import android.content.Context;
 import android.webkit.WebViewClient;
 
 public class htmlBrowser {
 	private WebActivity m	=null;
-
 	public htmlBrowser(WebActivity mainActivity) {
 		// TODO Auto-generated constructor stub
 		this.m=mainActivity;
@@ -34,7 +33,7 @@ public class htmlBrowser {
 	//	String aa = htmlBrowser.readRawTextFile(this.m, R.raw.main_page);
 		//String tplcc = this.fetchTpl();
 		//String tplcc = this.fetchTpl5();
-		VelocityContext context = new VelocityContext();
+	//	VelocityContext context = new VelocityContext();
 		/*
         ArrayList<String> list = new ArrayList<String>();
         list.add("ArrayList element 1");
@@ -70,7 +69,7 @@ public class htmlBrowser {
 	//	Log.d("+HTML",tplcc);
 //		this.m.webview.loadDataWithBaseURL("file:///android_asset/", tplcc, "text/html", "UTF-8", null );
 	}
-
+/*
 	private void VelocityInit(){
 		Velocity.setProperty(Velocity.RUNTIME_LOG_LOGSYSTEM_CLASS, "com.collector.main.VelocityLogger");
 		Velocity.setProperty("resource.loader", "android");
@@ -99,7 +98,7 @@ public class htmlBrowser {
 			e.printStackTrace();
 		}
 	    return "";
-	}
+	}*/
 	/*
 	private static Engine smartyEngine = new Engine();
 	private String fetchTpl(){

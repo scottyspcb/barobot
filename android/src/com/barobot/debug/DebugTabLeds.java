@@ -1,7 +1,7 @@
 package com.barobot.debug;
 
-import com.barobot.DebugActivity;
 import com.barobot.R;
+import com.barobot.activity.DebugActivity;
 import com.barobot.hardware.DeviceSet;
 import com.barobot.hardware.DeviceView;
 import com.barobot.utils.Constant;

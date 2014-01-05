@@ -8,9 +8,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import com.barobot.BarobotMain;
-import com.barobot.drinks.RunnableWithData;
 import com.barobot.hardware.virtualComponents;
 import com.barobot.utils.Constant;
+import com.barobot.utils.RunnableWithData;
 import com.barobot.utils.input_parser;
 
 
@@ -103,13 +103,19 @@ public class BluetoothChatService {
      * Start the chat service. Specifically start AcceptThread to begin a
      * session in listening (server) mode. Called by the Activity onResume() */
     public synchronized void start() {
-      //  if (Constant.D) Log.d(Constant.TAG2, "start");
+        if (Constant.D) Log.d(Constant.TAG2, "synchronized start");
 
         // Cancel any thread attempting to make a connection
-        if (mConnectThread != null) {mConnectThread.cancel(); mConnectThread = null;}
+        if (mConnectThread != null) {
+        	mConnectThread.cancel(); 
+        	mConnectThread = null;
+        }
 
         // Cancel any thread currently running a connection
-        if (mConnectedThread != null) {mConnectedThread.destroy(); mConnectedThread = null;}
+        if (mConnectedThread != null) {
+        	mConnectedThread.destroy();
+        	mConnectedThread = null;
+        }
         setState(Constant.STATE_LISTEN);
     }
 
@@ -120,10 +126,19 @@ public class BluetoothChatService {
      */
     public synchronized void connect(BluetoothDevice device) {
         if (mState == Constant.STATE_CONNECTING) {        // Cancel any thread attempting to make a connection
-            if (mConnectThread != null) {mConnectThread.cancel(); mConnectThread = null;}
+            if (mConnectThread != null) {
+            	Constant.log(Constant.TAG, "force connect - STATE_CONNECTING");
+            	return;
+            	//mConnectThread.cancel();
+            	//mConnectThread = null;
+            }
         }
         // Cancel any thread currently running a connection
-        if (mConnectedThread != null) {mConnectedThread.destroy(); mConnectedThread = null;}
+        if (mConnectedThread != null) {
+        	mConnectedThread.destroy();
+        	Constant.log(Constant.TAG, "force connect - make new2");
+        	mConnectedThread = null;
+        }
 
         mConnectThread = new ConnectThread(device);        // Start the thread to connect with the given device
         mConnectThread.start();
@@ -140,10 +155,16 @@ public class BluetoothChatService {
         if (Constant.D) Log.d(Constant.TAG2, "connected, Socket Type:" + socketType);
         
         // Cancel the thread that completed the connection
-        if (mConnectThread != null) {mConnectThread.cancel(); mConnectThread = null;}
+        if (mConnectThread != null) {
+        	mConnectThread.cancel(); 
+        	mConnectThread = null;
+        }
 
         // Cancel any thread currently running a connection
-        if (mConnectedThread != null) {mConnectedThread.destroy(); mConnectedThread = null;}
+        if (mConnectedThread != null) {
+        	mConnectedThread.destroy();
+        	mConnectedThread = null;
+        }
 
         // Start the thread to manage the connection and perform transmissions
         mConnectedThread = new ConnectedThread(socket, socketType);
@@ -217,16 +238,15 @@ public class BluetoothChatService {
      */
     private void connectionFailed() {
         // Send a failure message back to the Activity
-    	 /*
+/*
         Message msg = mHandler.obtainMessage(Constant.MESSAGE_TOAST);
-        
-       
         Bundle bundle = new Bundle();
         bundle.putString(Constant.TOAST, "Nie dało się połączyć");
         msg.setData(bundle);
         mHandler.sendMessage(msg);
 */
         // Start the service over to restart listening mode
+        Constant.log(Constant.TAG, "connectionFailed2");
         BluetoothChatService.this.start();
     }
 
@@ -245,6 +265,7 @@ public class BluetoothChatService {
         bt_connected_device			= null;
         is_connected				= false;
 
+        Constant.log(Constant.TAG, "connectionLost2");
         // Start the service over to restart listening mode
         BluetoothChatService.this.start();
     }
@@ -299,6 +320,7 @@ public class BluetoothChatService {
                             " socket during connection failure", e2);
                 }
                 connectionFailed();
+                e.printStackTrace();
                 return;
             }
 
@@ -336,40 +358,45 @@ public class BluetoothChatService {
             Log.d(Constant.TAG, "create ConnectedThread: " + socketType);
             mmSocket = socket;
             InputStream tmpIn = null;
-            OutputStream tmpOut = null;
-
+            OutputStream tmpOut = null;        
             // Get the BluetoothSocket input and output streams
             try {
                 tmpIn = socket.getInputStream();
                 tmpOut = socket.getOutputStream();
             } catch (IOException e) {
                 Constant.log(Constant.TAG, "temp sockets not created", e);
+                is_connected = false;
             }
             mmInStream = tmpIn;
             mmOutStream = tmpOut;
+            if( socket.isConnected()){
+            	is_connected = false;
+            }
         }
         public void run() {
-            synchronized (ConnectedThread.this) {
-	        	Log.i(Constant.TAG, "BEGIN mConnectedThread");
-	            // Keep listening to the InputStream while connected
-	            while (reading) {
-	                try {
-	                    byte[] buffer = new byte[ 512 ];
-	                    int bytes = mmInStream.read(buffer);
-	                    // construct a string from the valid bytes in the buffer
-	                    String readMessage = new String(buffer, 0, bytes);
-	                    //Log.i(Constant.TAG, "buffer read " + readMessage );
-	    				//input_parser.readInput(readMessage);
-	                 //   mReader.sendData(readMessage);
-	                 //   mReader.run();
-	                    mHandler.obtainMessage(Constant.MESSAGE_READ, bytes, -1, readMessage).sendToTarget();   // Send the obtained bytes to the UI Activity
-	                } catch (IOException e) {
-	                    Constant.log(Constant.TAG, "disconnected", e);
-	                    connectionLost();
-	                    BluetoothChatService.this.start();    // Start the service over to restart listening mode
-	                    break;
-	                }
-	            }
+        	while (reading){
+        		synchronized (ConnectedThread.this) {
+        		if(is_connected){
+		        	Log.i(Constant.TAG, "BEGIN mConnectedThread");
+		            // Keep listening to the InputStream while connected
+		                try {
+		                    byte[] buffer = new byte[ 512 ];
+		                    int bytes = mmInStream.read(buffer);
+		                    // construct a string from the valid bytes in the buffer
+		                    String readMessage = new String(buffer, 0, bytes);
+		                    //Log.i(Constant.TAG, "buffer read " + readMessage );
+		    				//input_parser.readInput(readMessage);
+		                 //   mReader.sendData(readMessage);
+		                 //   mReader.run();
+		                    mHandler.obtainMessage(Constant.MESSAGE_READ, bytes, -1, readMessage).sendToTarget();   // Send the obtained bytes to the UI Activity
+		                } catch (IOException e) {
+		                    Constant.log(Constant.TAG, "disconnected", e);
+		                    connectionLost();
+		                    BluetoothChatService.this.start();    // Start the service over to restart listening mode
+		                    break;
+		                }
+		            }
+        		}
             }
         }
         /**
