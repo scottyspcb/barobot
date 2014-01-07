@@ -141,13 +141,6 @@ public class DebugTabGraph extends Fragment {
 		super.onCreate(savedInstanceState);
 	}
 	@Override
-	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		Constant.log("DebugTabGraph", "onCreateOptionsMenu");
-		super.onCreateOptionsMenu(menu, inflater);
-		cc.getMenuInflater().inflate(R.menu.web, menu);
-
-	}
-	@Override
 	public void onDestroyOptionsMenu() {
 		Constant.log("DebugTabGraph", "onDestroyOptionsMenu");
 		super.onDestroyOptionsMenu();

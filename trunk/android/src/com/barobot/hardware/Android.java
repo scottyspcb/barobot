@@ -12,11 +12,9 @@ import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
 public class Android {
-	
 	public void powerOff( Context c ){
 		PowerManager powerManager = (PowerManager)c.getSystemService(Context.POWER_SERVICE);
 		powerManager.reboot(null);
-
 		// if doesn't work
 		try {
 		    Process proc = Runtime.getRuntime().exec(new String[]{ "su", "-c", "reboot -p" });
@@ -78,5 +76,30 @@ public class Android {
 	    	return false;
 	    }
 	    return bAssetOk;
+	}
+
+	public static String readRawTextFile(Context ctx, int resId){
+	    InputStream inputStream			= ctx.getResources().openRawResource(resId);
+	    InputStreamReader inputreader	= new InputStreamReader(inputStream);
+	    BufferedReader buffreader		= new BufferedReader(inputreader);
+	    String line;
+	    StringBuilder text				= new StringBuilder();
+	    try {
+	        while (( line = buffreader.readLine()) != null) {
+	            text.append(line);
+	            text.append('\n');
+	        }
+	    } catch (IOException e) {
+	        return null;
+	    }
+	    return text.toString();
+	}
+	
+	public static void prepareSleep(Context ctx){
+		PowerManager pm = (PowerManager) ctx.getSystemService(Context.POWER_SERVICE); 
+		PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Tag"); 
+		wl.acquire();
+		//do what you need to do
+		wl.release();
 	}
 }

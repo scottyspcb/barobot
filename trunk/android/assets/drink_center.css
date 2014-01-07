@@ -1,0 +1,228 @@
+.tabs-below > .nav-tabs > li {
+  margin-top: -1px;
+  margin-bottom: 0;
+}
+.tabs-below > .nav-tabs > li > a {
+  -webkit-border-radius: 0 0 4px 4px;
+     -moz-border-radius: 0 0 4px 4px;
+          border-radius: 0 0 4px 4px;
+}
+
+.tabs-below > .nav-tabs > li > a:hover,
+.tabs-below > .nav-tabs > li > a:focus {
+  border-top-color: #ddd;
+  border-bottom-color: transparent;
+}
+
+.tabs-below > .nav-tabs > .active > a,
+.tabs-below > .nav-tabs > .active > a:hover,
+.tabs-below > .nav-tabs > .active > a:focus {
+  border-color: transparent #ddd #ddd #ddd;
+}
+
+.tabs-left > .nav-tabs > li,
+.tabs-right > .nav-tabs > li {
+  float: none;
+}
+
+.tabs-left > .nav-tabs > li > a,
+.tabs-right > .nav-tabs > li > a {
+  min-width: 74px;
+  margin-right: 0;
+  margin-bottom: 3px;
+}
+
+.tabs-left > .nav-tabs {
+  float: left;
+  margin-right: 19px;
+  border-right: 1px solid #ddd;
+}
+
+.tabs-left > .nav-tabs > li > a {
+  margin-right: -1px;
+  -webkit-border-radius: 4px 0 0 4px;
+     -moz-border-radius: 4px 0 0 4px;
+          border-radius: 4px 0 0 4px;
+}
+
+.tabs-left > .nav-tabs > li > a:hover,
+.tabs-left > .nav-tabs > li > a:focus {
+  border-color: #eeeeee #dddddd #eeeeee #eeeeee;
+}
+
+.tabs-left > .nav-tabs .active > a,
+.tabs-left > .nav-tabs .active > a:hover,
+.tabs-left > .nav-tabs .active > a:focus {
+  border-color: #ddd transparent #ddd #ddd;
+  *border-right-color: #ffffff;
+}
+
+.tabs-right > .nav-tabs {
+  float: right;
+  border-left: 1px solid #ddd;
+}
+
+.tabs-right > .nav-tabs > li > a {
+  margin-left: -1px;
+  -webkit-border-radius: 0 4px 4px 0;
+     -moz-border-radius: 0 4px 4px 0;
+          border-radius: 0 4px 4px 0;
+}
+.tabs-right > .nav-tabs > li > a:hover,
+.tabs-right > .nav-tabs > li > a:focus {
+  border-color: #eeeeee #eeeeee #eeeeee #dddddd;
+}
+.tabs-right > .nav-tabs .active > a,
+.tabs-right > .nav-tabs .active > a:hover,
+.tabs-right > .nav-tabs .active > a:focus {
+  border-color: #ddd #ddd #ddd transparent;
+  *border-left-color: #ffffff;
+}
+.nav-tabs > li.active > a,
+.nav-tabs > li.active > a:hover,
+.nav-tabs > li.active > a:focus {
+	background-color:black;
+}
+
+#frontslider .owl-item{
+	margin: 3px;
+}
+
+#frontslider .owl-item img{
+ display: block;
+ width: 500px;
+ height: auto;
+}
+
+body{
+	background-color:black;
+}
+.tabs-right .nav > li > a {
+    padding: 10px 1px;
+}
+
+::-moz-selection { background:none; color:none; }
+::selection { background:none; color:none; }
+
+.badge, .dropdown-menu {
+  	font-size: inherit;
+}
+:hover, :focus {
+   color: none !important;
+   background-image:none !important;
+}
+.collapsing{
+    -webkit-transition: none;
+     transition: none;
+}
+#main_tabs{
+	width:260px;
+	position: fixed;
+	right: 0px;
+	height:100%;
+}
+
+.list_level2_parent{
+	overflow:auto;
+	height:100%;
+	float:right;
+}
+.list_level2{}
+.details_level2_parent{
+	float:right;
+}
+
+#drink_list_parent{}
+#drink_list{}
+
+
+
+
+.vmargin{
+	margin-top:10px;
+	margin-bottom:10px;
+}
+.vmargin2{
+	margin-top:20px;
+	margin-bottom:20px;
+}
+.hmargin{
+	margin-left:10px;
+	margin-right:10px;
+}
+.my_nav_item{
+	font-size: 20px;
+}
+
+@media (min-width: 800px) {
+	body{
+		font-size: 24px;
+		color:red !important;
+	}
+	.badge {
+	  	font-size: 16px;
+	}
+	#main_tabs{
+		width:260px;
+	}
+}
+@media (min-width: 900px) {
+	body{
+		font-size: 30px;
+		color:blue !important;
+	}
+	.badge {
+	  	font-size: 26px;
+	}
+	#main_tabs{
+		width:270px;
+	}
+}
+@media (min-width: 1100px) {
+	body{
+		font-size: 38px;
+		color:green !important;
+	}
+	.badge {
+	  	font-size: 30px;
+	}
+	#main_tabs{
+		width:380px;
+	}
+}
+
+.icon1{
+	font-size: 70%;
+	color:#bbbbbb;
+} 
+.icon2{
+	font-size: 90%;
+	color:#ffff00;
+}
+
+.tab-pane .slot{
+	border:1px solid #777777s;
+	float:left;
+	margin:3px;
+	padding:5px;
+	text-align:center;
+	width:14%;
+	height:60px;
+	background-color:#AAAAAA;
+}
+
+.progress.vertical {
+    position: relative;
+    width: 20px;
+    min-height: 240px;
+    float: left;
+    margin-right: 20px;
+    background: none;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+    border: none;
+}
+.progress.vertical .progress-bar {
+	width:100%;
+}

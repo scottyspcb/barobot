@@ -51,6 +51,9 @@ private int suffix;
 
   private File getDir() {
     File sdDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+    if (!sdDir.exists()) {
+    	 sdDir.mkdirs();
+    }
     return new File(sdDir, "BarobotImages");
   }
 } 

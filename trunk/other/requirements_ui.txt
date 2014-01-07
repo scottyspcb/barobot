@@ -1,6 +1,5 @@
 Splash screen przy uruchamianiu??
 
-
 1. G³ówne funkcje programu (kolejnoœæ do zastanowienia)
 	1 - Nalej wybrany popularny drink
 	2 - Skomponuj w³asny drink

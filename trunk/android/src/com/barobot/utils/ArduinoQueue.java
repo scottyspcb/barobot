@@ -98,7 +98,7 @@ public class ArduinoQueue {
 					}else{			// wyświetl komunikat i poproś jeszcze raz
 					}
 				}
-				final rpc_message m3	= this;
+			//	final rpc_message m3	= this;
 				return null;
 			}
 			public boolean isBlocing() {

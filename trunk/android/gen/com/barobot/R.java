@@ -66,12 +66,12 @@ public final class R {
         public static final int TextView02=0x7f0b009e;
         public static final int TextView03=0x7f0b00ac;
         public static final int TextView04=0x7f0b00a7;
-        public static final int about_item=0x7f0b00c5;
-        public static final int action_bottles=0x7f0b00bc;
-        public static final int action_outside_components=0x7f0b00bd;
-        public static final int action_panic=0x7f0b00ba;
-        public static final int action_recipes=0x7f0b00c0;
-        public static final int action_settings=0x7f0b00b9;
+        public static final int about_item=0x7f0b00c4;
+        public static final int action_bottles=0x7f0b00bb;
+        public static final int action_outside_components=0x7f0b00bc;
+        public static final int action_panic=0x7f0b00b9;
+        public static final int action_recipes=0x7f0b00bf;
+        public static final int action_settings=0x7f0b00b8;
         public static final int add_ingredient_button=0x7f0b001a;
         public static final int add_outside_ingredient_button=0x7f0b0013;
         public static final int add_recipe_button=0x7f0b0018;
@@ -97,7 +97,7 @@ public final class R {
         public static final int current_drink_description=0x7f0b000f;
         public static final int current_drink_name=0x7f0b000e;
         public static final int current_ingridient_list=0x7f0b0010;
-        public static final int detailed_description=0x7f0b00b7;
+        public static final int detailed_description=0x7f0b00b6;
         public static final int device_active=0x7f0b0095;
         public static final int device_filter=0x7f0b0074;
         public static final int device_list=0x7f0b0075;
@@ -109,7 +109,7 @@ public final class R {
         public static final int dlugosc_x=0x7f0b0055;
         public static final int dlugosc_y=0x7f0b0057;
         public static final int dlugosc_z=0x7f0b0058;
-        public static final int do_update=0x7f0b00c7;
+        public static final int do_update=0x7f0b00c6;
         public static final int enabley=0x7f0b0068;
         public static final int fill5000=0x7f0b0072;
         public static final int find_bottles=0x7f0b0071;
@@ -131,7 +131,7 @@ public final class R {
         public static final int graph_xsize=0x7f0b007b;
         public static final int gridview_recipe=0x7f0b000d;
         public static final int imageView1=0x7f0b0092;
-        public static final int kalibracja=0x7f0b00be;
+        public static final int kalibracja=0x7f0b00bd;
         public static final int kalibrujx=0x7f0b004f;
         public static final int kalibrujy=0x7f0b0056;
         public static final int kalibrujz=0x7f0b0053;
@@ -154,14 +154,14 @@ public final class R {
         public static final int machajx=0x7f0b005c;
         public static final int machajy=0x7f0b005b;
         public static final int machajz=0x7f0b005a;
-        public static final int main_feature=0x7f0b00bb;
-        public static final int main_feature2=0x7f0b00c6;
+        public static final int main_feature=0x7f0b00ba;
+        public static final int main_feature2=0x7f0b00c5;
         public static final int make_button=0x7f0b0011;
         public static final int max_x=0x7f0b0051;
         public static final int max_y=0x7f0b0059;
         public static final int max_z=0x7f0b0054;
-        public static final int menu_debug_window=0x7f0b00c3;
-        public static final int menu_settings=0x7f0b00c4;
+        public static final int menu_debug_window=0x7f0b00c2;
+        public static final int menu_settings=0x7f0b00c3;
         public static final int min_x=0x7f0b004e;
         public static final int min_y=0x7f0b0050;
         public static final int min_z=0x7f0b0052;
@@ -197,7 +197,7 @@ public final class R {
         public static final int remove_recipe_button=0x7f0b0019;
         public static final int reset_carret=0x7f0b006f;
         public static final int scrollView2=0x7f0b001e;
-        public static final int secure_connect_scan=0x7f0b00c1;
+        public static final int secure_connect_scan=0x7f0b00c0;
         public static final int set_bottle=0x7f0b0067;
         public static final int set_neutral_y=0x7f0b006e;
         public static final int set_x10=0x7f0b0045;
@@ -213,16 +213,15 @@ public final class R {
         public static final int set_y_100=0x7f0b0046;
         public static final int set_y_600=0x7f0b0047;
         public static final int smile=0x7f0b0063;
-        public static final int standard_spinner_format=0x7f0b00b8;
+        public static final int standard_spinner_format=0x7f0b00b7;
         public static final int start_pos=0x7f0b003a;
         public static final int tab3=0x7f0b008f;
         public static final int textView1=0x7f0b0073;
-        public static final int textView1045=0x7f0b00b6;
         public static final int textView_item_custom=0x7f0b0093;
         public static final int toggleButton2=0x7f0b0096;
         public static final int unlock=0x7f0b0070;
-        public static final int unlock_menu=0x7f0b00bf;
-        public static final int update_drinks=0x7f0b00c2;
+        public static final int unlock_menu=0x7f0b00be;
+        public static final int update_drinks=0x7f0b00c1;
         public static final int update_message=0x7f0b001c;
         public static final int waga0=0x7f0b002a;
         public static final int waga1=0x7f0b002b;
@@ -277,8 +276,7 @@ public final class R {
         public static final int device_list=0x7f0a0001;
         public static final int option_menu=0x7f0a0002;
         public static final int update=0x7f0a0003;
-        public static final int web=0x7f0a0004;
-        public static final int wire_source=0x7f0a0005;
+        public static final int wire_source=0x7f0a0004;
     }
     public static final class raw {
         public static final int devices=0x7f050000;

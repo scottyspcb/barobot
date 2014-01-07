@@ -3,10 +3,10 @@ package com.barobot.debug;
 import java.util.Random;
 
 import com.barobot.AppInvoker;
-import com.barobot.BarobotMain;
 import com.barobot.R;
 import com.barobot.R.id;
 import com.barobot.R.layout;
+import com.barobot.activity.BarobotMain;
 import com.barobot.hardware.rpc_message;
 import com.barobot.hardware.virtualComponents;
 import com.barobot.utils.ArduinoQueue;

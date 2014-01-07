@@ -12,14 +12,14 @@ public class AboutActivity extends Activity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-	   	 if (getIntent().hasExtra("bundle") && savedInstanceState==null){
-	   	        savedInstanceState = getIntent().getExtras().getBundle("bundle");
-	   	 }
+	   	if (getIntent().hasExtra("bundle") && savedInstanceState==null){
+	   	       savedInstanceState = getIntent().getExtras().getBundle("bundle");
+	   	}
 	   	setTheme(android.R.style.Theme_Holo_Light);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, 
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
-		
+
 	    int mUIFlag = View.SYSTEM_UI_FLAG_LOW_PROFILE | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
 	    getWindow().getDecorView().setSystemUiVisibility(mUIFlag);
 
