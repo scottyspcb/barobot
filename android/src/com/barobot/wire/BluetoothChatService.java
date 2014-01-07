@@ -7,7 +7,7 @@ import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import com.barobot.BarobotMain;
+import com.barobot.activity.BarobotMain;
 import com.barobot.hardware.virtualComponents;
 import com.barobot.utils.Constant;
 import com.barobot.utils.RunnableWithData;

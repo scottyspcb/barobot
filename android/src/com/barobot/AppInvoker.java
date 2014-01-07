@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import com.barobot.activity.BarobotMain;
 import com.barobot.hardware.DeviceSet;
 import com.barobot.utils.Arduino;
 import com.barobot.utils.CameraManager;
@@ -65,6 +66,4 @@ public class AppInvoker {
     	}
         cm.onDestroy();	
 	}
-
-
 }

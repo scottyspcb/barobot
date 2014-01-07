@@ -45,7 +45,7 @@ public class input_parser {
 		if(fromArduino.length() == 0){
 			return;
 		}
-		Log.i(Constant.TAG, "parse:[" + fromArduino +"]");
+	//	Log.i(Constant.TAG, "parse:[" + fromArduino +"]");
 
 		if(fromArduino.startsWith("POS")){
 			fromArduino = "R" + fromArduino;			// VERY BAD HACK

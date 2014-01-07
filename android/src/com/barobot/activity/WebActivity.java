@@ -26,24 +26,19 @@ import com.barobot.web.server.AJS;
 import com.barobot.web.server.htmlBrowser;
 
 public class WebActivity extends Activity {
-
-	public static final int INTENT_NAME = 11;
-
 	htmlBrowser wb =null;
 	public WebView webview	=null;
 	private FrameLayout webViewPlaceholder;
 	private int live_analog_num		= 0;
-	private int live_analog_time	= 10;
-	private int live_analog_repeat	= 2;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 	//	getWindow().requestFeature(Window.FEATURE_PROGRESS);
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_web);
+		 super.onCreate(savedInstanceState);
+		 setContentView(R.layout.activity_web);
 	//	StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
 	//	StrictMode.setThreadPolicy(policy); 
-		initUI();
+		initUI( savedInstanceState);
 	}
 
 	  @Override
@@ -55,7 +50,7 @@ public class WebActivity extends Activity {
 		  super.onResume();
 	  }
 
-	protected void initUI() {
+	protected void initUI(Bundle savedInstanceState) {
 	    // Retrieve UI elements
 	    this.webViewPlaceholder = ((FrameLayout)findViewById(R.id.webViewPlaceholder));
 	    // Initialize the WebView if necessary
@@ -118,18 +113,18 @@ public class WebActivity extends Activity {
 	   		   }
 	   		});
 	   		webview.addJavascriptInterface(new AJS(this, this.webview), "AJS");
-
-	   		wb = new htmlBrowser( this );
-   			wb.startPage();	        // Load a page
+   			this.webview.loadUrl("file:///android_asset/oscyloskop.htm");
+   			
+	    }else{
+			 if (savedInstanceState == null){
+				 Log.d("+NEW2", "webview" );
+			//	 webview.loadUrl(URLData);
+			 } else{// nowy
+				 webview.restoreState(savedInstanceState);
+			 //  
+			 }	
 	    }
 	    this.webViewPlaceholder.addView(this.webview);// Attach the WebView to its placeholder
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.web, menu);
-		return true;
 	}
 
 	@Override
@@ -149,7 +144,7 @@ public class WebActivity extends Activity {
 	        Toast.makeText(this, "portrait", Toast.LENGTH_SHORT).show();
 	    }
 		// Reinitialize the UI
-		initUI();
+		initUI(null);
 	}
 
 	public void onBackPressed() {
@@ -170,10 +165,5 @@ public class WebActivity extends Activity {
 	    super.onRestoreInstanceState(savedInstanceState);
 	    // Restore the state of the WebView
 	    webview.restoreState(savedInstanceState);
-	  }	
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        return false;
-    }
+	  }
 }

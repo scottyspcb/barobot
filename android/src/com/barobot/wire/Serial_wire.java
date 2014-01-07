@@ -3,7 +3,6 @@ package com.barobot.wire;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -19,7 +18,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
-import com.barobot.BarobotMain;
+import com.barobot.activity.BarobotMain;
 import com.barobot.utils.Arduino;
 import com.barobot.utils.input_parser;
 import com.hoho.android.usbserial.driver.UsbSerialDriver;
@@ -29,7 +28,7 @@ import com.hoho.android.usbserial.util.SerialInputOutputManager;
 
 public class Serial_wire implements Wire {
 	private static final int MESSAGE_REFRESH = 101;
-    private static final long REFRESH_TIMEOUT_MILLIS = 5000;
+    private static final long REFRESH_TIMEOUT_MILLIS = 10000;
 	protected static final String ACTION_USB_PERMISSION = "com.hoho.android.usbserial.USB";
 
     private UsbManager mUsbManager;
@@ -181,7 +180,7 @@ public class Serial_wire implements Wire {
         new AsyncTask<Void, Void, List<String>>() {
             @Override
             protected List<String> doInBackground(Void... params) {   
-                Log.d("serial", "Refreshing device list ...");
+      //          Log.d("serial", "Refreshing device list ...");
    
                 for (final UsbDevice device : mUsbManager.getDeviceList().values()) {
                     final UsbSerialDriver driver =  UsbSerialProber.probeSingleDevice(device);
@@ -194,8 +193,7 @@ public class Serial_wire implements Wire {
                         Intent tt = BarobotMain.getInstance().registerReceiver(mPermissionReceiver, new IntentFilter(
                                 ACTION_USB_PERMISSION));
                         mPermissionReceiver_activated = true;
-   
-                        
+                          
                         if (!mUsbManager.hasPermission(device)){
                             final PendingIntent pi = PendingIntent.getBroadcast(BarobotMain.getInstance(), 0, new Intent(
                                     ACTION_USB_PERMISSION), 0);
@@ -276,6 +274,7 @@ public class Serial_wire implements Wire {
             switch (msg.what) {
                 case MESSAGE_REFRESH:
                     refreshDeviceList();
+                    mHandler.removeMessages(MESSAGE_REFRESH);		// usun duplikaty
                     mHandler.sendEmptyMessageDelayed(MESSAGE_REFRESH, REFRESH_TIMEOUT_MILLIS);
                     break;
                 default:

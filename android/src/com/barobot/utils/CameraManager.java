@@ -1,6 +1,6 @@
 package com.barobot.utils;
 
-import com.barobot.BarobotMain;
+import com.barobot.activity.BarobotMain;
 
 import android.content.pm.PackageManager;
 import android.hardware.Camera;

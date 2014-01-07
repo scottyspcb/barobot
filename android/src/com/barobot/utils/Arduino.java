@@ -6,15 +6,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.util.Log;
 import android.widget.ArrayAdapter;
-import android.widget.TextView;
 
 import com.barobot.AppInvoker;
-import com.barobot.BarobotMain;
-import com.barobot.R;
+import com.barobot.activity.BarobotMain;
 import com.barobot.hardware.rpc_message;
 import com.barobot.wire.BT_wire;
 import com.barobot.wire.Serial_wire;
@@ -110,8 +106,9 @@ public class Arduino{
         }*/
     //   	this.sendSomething();
 	}
+    private boolean stopping = false;
+/*
 
-   	private boolean stopping = false;
     private void sendSomething(){
    		stopping = false;
 
@@ -162,7 +159,7 @@ public class Arduino{
     	inn.pause();
     	AppInvoker.getInstance().inters.add(inn);
 	}
-
+*/
 	public void destroy() {
 		this.clear();
 	   	stopping = true;
