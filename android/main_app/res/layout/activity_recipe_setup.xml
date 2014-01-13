@@ -1,0 +1,81 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:baselineAligned="true"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context=".RecipeSetupActivity" >
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="2"
+        android:orientation="vertical" >
+
+        <Spinner
+            android:id="@+id/recipe_spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/recipe_description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Test"
+            android:textSize="30sp" />
+
+        <ListView
+            android:id="@+id/recipe_ingridient_list"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+             >
+
+            <Button
+                android:id="@+id/add_recipe_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="addRecipe"
+                android:text="@string/add_recipe" />
+
+            <Button
+                android:id="@+id/remove_recipe_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="removeRecipe"
+                android:text="@string/remove_recipe" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/add_ingredient_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="addIngredient"
+                android:text="@string/add_ingredient" />
+            
+            <Button
+                android:id="@+id/remove_ingredients_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="removeIngredients"
+                android:text="@string/remove_ingredients" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>
