@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.barobot"
+    android:versionCode="1"
+    android:versionName="1.0" >
+    <uses-sdk
+        android:minSdkVersion="14"
+        android:targetSdkVersion="14" />
+    <uses-feature android:name="android.hardware.usb.host" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <application
+        android:icon="@drawable/app_icon"
+        android:label="@string/app_name" >
+        <activity
+            android:name="com.barobot.activity.BarobotMain"
+            android:configChanges="orientation"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+            android:label="@string/app_name"
+            android:screenOrientation="sensorLandscape" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+				<category android:name="android.intent.category.DEFAULT" />  
+				<category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
+                android:resource="@xml/device_filter" />
+        </activity>
+        <activity
+            android:name="com.barobot.activity.BTListActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:label="@string/select_device"
+            android:screenOrientation="sensorLandscape" />
+        <activity
+            android:name="com.barobot.DebugWindow"
+            android:label="@string/debug_window"
+            android:screenOrientation="sensorLandscape" >
+        </activity>
+        <activity
+            android:name="com.barobot.activity.MainSettingsActivitysActivity"
+            android:label="@string/title_activity_main_settings" >
+        </activity>
+        <activity
+            android:name="com.barobot.activity.UpdateActivityeActivity"
+            android:label="@string/title_activity_update" >
+        </activity>
+        <activity
+            android:name="com.barobot.activity.AboutActivity"
+            android:label="@string/title_activity_about" >
+        </activity>
+        <activity
+            android:name="com.barobot.activity.WebActivitybActivity"
+            android:configChanges="keyboard|keyboardHidden|screenSize|orientation"
+            android:label="@string/title_activity_web" >
+        </activity>
+        <activity			android:name="com.barobot.activity.DebugActivity"
+            android:label="@string/title_activity_device_list" >
+        </activity>
+        <activity
+            android:name="com.barobot.gui.MainActivity"
+            android:label="@string/title_activity_barobot_main" >
+        </activity>
+        <activity
+            android:name="com.barobot.gui.BottleSetupActivity"
+            android:label="@string/title_activity_bottle_setup" >
+        </activity>
+        <activity
+            android:name="com.barobot.gui.RecipeSetupActivity"
+            android:label="@string/title_activity_recipe_setup" >
+        </activity>
+        <activity
+            android:name="com.barobot.gui.OutsideComponentActivity"
+            android:label="@string/title_activity_outside_component" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.barobot.gui.BarobotActivity" />
+        </activity>
+    </application>
+
+</manifest>
