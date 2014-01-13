@@ -1,0 +1,16 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+  
+    <item android:id="@+id/main_feature2"
+          android:icon="@android:drawable/ic_menu_revert"
+          android:title="@string/back_to_main_feature"
+          android:enabled="true"
+          android:checkable="false"
+           />
+    <item
+        android:id="@+id/do_update"
+        android:orderInCategory="100"
+        android:showAsAction="never"
+        android:title="@string/do_update"/>
+
+    
+</menu>

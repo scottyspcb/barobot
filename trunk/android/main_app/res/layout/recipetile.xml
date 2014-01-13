@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="300dp"
+    android:orientation="vertical" >
+    
+    <TextView android:id="@+id/detailed_description"
+        android:textSize="@dimen/recipe_box_text_size"
+        android:layout_width="@dimen/recipe_box_width"
+        android:layout_height="@dimen/recipe_box_height"
+        android:layout_gravity="center"
+		android:gravity="center"
+        android:background="@drawable/back"
+        android:textColor="@color/recipe_box_text_color" />    
+</RelativeLayout>
