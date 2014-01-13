@@ -1,0 +1,260 @@
+{#header}
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="pl" lang="pl" dir="ltr">
+	<head>
+	 	<base href="{$host}" />
+	 	<meta name="viewport" content="width=device-width, height=device-height,  initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+	 	
+	 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<link rel="shortcut icon" href="favicon.png" type="image/png" />
+		<link rel="apple-touch-icon" href="favicon.png" type="image/png" />		
+		<link rel="icon" type="image/png" href="favicon.png" />
+		<link rel="stylesheet" type="text/css" href="css/bootstrap.css?a=3">
+	    <link rel="stylesheet" type="text/css" href="drink_center.css?a=3">
+	    
+		<script src="jquery-2.0.3.min.js?a=2" type="text/javascript"></script>
+	    <script src="drink_center.js?a=2" type="text/javascript"></script>
+	    <script type="text/javascript" src="/js/touche.js"></script>
+	    <!--script type="text/javascript" src="/js/scrollbutton.js"></script-->
+		<title>Barobot Drink Center</title>
+		<!--script src="js/bootstrap.min.js?a=3" type="text/javascript"></script-->
+	</head>
+	<body>
+	{$body}
+	</body>
+</html>
+{#}
+{#body}
+      <div>
+        <div class="tab-content">
+			<div class="tab-pane active">
+				<div class="tabs-right max_height" id="main_tabs_parent">
+					<ul class="nav nav-tabs inner_scroll" id="main_tabs">
+					  <li><a href="javascript:void(0)" tab="tab_fav" 		data-toggle="tab" class="nav_menu_item"><span class="icon1 glyphicon glyphicon-chevron-left"></span> <span class="icon2 glyphicon glyphicon-heart-empty"></span><span class="btn_title">Try favorites</span></a></li>
+					  <li><a href="javascript:void(0)" tab="tab_choose" 	data-toggle="tab" class="nav_menu_item"><span class="icon1 glyphicon glyphicon-chevron-left"></span> <span class="icon2 glyphicon glyphicon-folder-open"></span><span class="btn_title">Choose by type</span></a></li>
+					  <li><a href="javascript:void(0)" tab="tab_history" 	data-toggle="tab" class="nav_menu_item"><span class="icon1 glyphicon glyphicon-chevron-left"></span> <span class="icon2 glyphicon glyphicon-tag"></span><span class="btn_title">Browse history</span></a></li>
+					  <li><a href="javascript:void(0)" tab="tab_lucky" 		data-toggle="tab" class="nav_menu_item"><span class="icon1 glyphicon glyphicon-chevron-left"></span> <span class="icon2 glyphicon glyphicon-record"></span><span class="btn_title">I feel lucky</span></a></li>
+					  <li><a href="javascript:void(0)" tab="tab_create"		data-toggle="tab" class="nav_menu_item"><span class="icon1 glyphicon glyphicon-chevron-left"></span> <span class="icon2 glyphicon glyphicon-glass"></span><span class="btn_title">Create own drink</span></a></li>
+					  <li><a href="javascript:void(0)" tab="tab_settings" 	data-toggle="tab" class="nav_menu_item"><span class="icon1 glyphicon glyphicon-chevron-left"></span> <span class="icon2 glyphicon glyphicon-align-justify"></span><span class="btn_title">Settings</span></a></li>
+					  <li><a href="javascript:void(0)" tab="tab_off"		data-toggle="tab" class="nav_menu_item"><span class="icon1 glyphicon glyphicon-chevron-left"></span> <span class="icon2 glyphicon glyphicon-off"></span><span class="btn_title">Turn Off</span></a></li>
+					</ul>
+				</div>        
+			</div>
+			<div id="tab_choose" class="tab-pane max_height">
+				<div id="type_list_parent" class="tabs-right list_level2_parent">
+					<ul class="nav nav-tabs list_level2 inner_scroll" id="type_list" >
+						{.loop in $types as $item}
+							<li><a tab="tab_fav" href="javascript:void(0)" num="{$item}" data-toggle="tab" class="nav_menu_item"><span class="icon1 glyphicon glyphicon-chevron-left"></span> <span class="icon2 glyphicon glyphicon-list"></span><span class="btn_title">Type {$item}</span></a></li>
+						{/loop}
+					</ul>
+				</div>
+			</div>
+			<div id="tab_fav" class="tab-pane list_level2_parent tabs-right max_height">
+				<ul class="nav nav-tabs list_level2 inner_scroll" id="fav_list" >
+					{.loop in $nums as $item}
+						<li><a tab="fav_item" href="javascript:void(0)" num="{$item}" data-toggle="tab" class="nav_menu_item"><span class="icon1 glyphicon glyphicon-chevron-left"></span> <span class="icon2 glyphicon glyphicon-glass"></span><span class="btn_title">Favorite drink {$item}</span></a></li>
+					{/loop}
+				</ul>
+			</div>
+			<div id="tab_history" class="tab-pane max_height">
+				<div id="history_list_parent" class="list_level2_parent tabs-right">
+					<ul class="nav nav-tabs list_level2 inner_scroll" id="history_list" >
+						{.loop in $nums as $item}
+							<li><a tab="history_item"  href="javascript:void(0)" num="{$item}" data-toggle="tab" class="nav_menu_item"><span class="icon1 glyphicon glyphicon-chevron-left"></span> <span class="icon2 glyphicon glyphicon-glass"></span><span class="btn_title">Drink numer {$item}</span></a></li>
+						{/loop}
+					</ul>
+				</div>
+			</div>
+			<div id="history_item" class="tab-pane details_level2_parent fill_parent max_height">
+				<div id="drink_details" style="padding:0px 5px" class="inner_scroll">
+					<h2 class="drink_name">Drink name</h2>
+					<div class="progress prog1">
+					  <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 40%">
+					    <span class="sr-only"></span>
+					  </div>
+					</div>
+					<div class="progress prog2">
+					  <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100" style="width: 20%">
+					    <span class="sr-only"></span>
+					  </div>
+					</div>
+					<div class="progress prog3">
+					  <div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 40%">
+					    <span class="sr-only"></span>
+					  </div>
+					</div>
+					<div>
+						<center>
+						<img id="main_image" src="images/2.jpg" alt="Image" style="height:160px;border:1px solid #222222;margin:5px 5px">
+						<br />
+						<div class="btn-group" style="width:100%">
+						  <button type="button" class="btn btn-default menu_prev" style="font-size:23px;width: 20%;" parent="#history_list"><span class="glyphicon glyphicon-chevron-left"></span></button>
+						  <button type="button" class="btn btn-success menu_pour" style="font-size:23px;width: 60%;" parent="#history_list"><span class="glyphicon glyphicon-glass"></span> Pour now</button>
+						  <button type="button" class="btn btn-default menu_next" style="font-size:23px;width: 20%;" parent="#history_list"><span class="glyphicon glyphicon-chevron-right"></span></button>
+						</div>
+						</center>
+					</div>
+				</div>
+			</div>
+			<div id="fav_item" class="tab-pane details_level2_parent fill_parent max_height">
+				<div id="fav_details" style="padding:0px 5px" class="inner_scroll">
+					<h2 class="drink_name">Drink name</h2>
+					<div class="progress prog1">
+					  <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 40%">
+					    <span class="sr-only"></span>
+					  </div>
+					</div>
+					<div class="progress prog2">
+					  <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100" style="width: 20%">
+					    <span class="sr-only"></span>
+					  </div>
+					</div>
+					<div class="progress prog3">
+					  <div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 40%">
+					    <span class="sr-only"></span>
+					  </div>
+					</div>
+					<div class="progress">
+					  <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100" style="width: 80%">
+					    <span class="sr-only">80% Complete</span>
+					  </div>
+					</div>
+					<div class="progress">
+					  <div class="progress-bar progress-bar-success" style="width: 40%">
+					    <span class="sr-only">40% Complete (success)</span>
+					  </div>
+					  <div class="progress-bar progress-bar-warning" style="width: 20%">
+					    <span class="sr-only">20% Complete (warning)</span>
+					  </div>
+					  <div class="progress-bar progress-bar-info" style="width: 30%">
+					    <span class="sr-only">30% Complete (info)</span>
+					  </div>
+					  <div class="progress-bar progress-bar-danger" style="width: 10%">
+					    <span class="sr-only">10% Complete (danger)</span>
+					  </div>
+					</div>
+					<div class="btn-group" style="width:100%">
+					  <button type="button" class="btn btn-default menu_prev" style="font-size:23px;width: 20%;" parent="#fav_list"><span class="glyphicon glyphicon-chevron-left"></span></button>
+					  <button type="button" class="btn btn-success menu_pour" style="font-size:23px;width: 60%;" parent="#fav_list"><span class="glyphicon glyphicon-glass"></span> Pour now</button>
+					  <button type="button" class="btn btn-default menu_next" style="font-size:23px;width: 20%;" parent="#fav_list"><span class="glyphicon glyphicon-chevron-right"></span></button>
+					</div>
+				</div>
+			</div>
+			<div id="tab_lucky" class="tab-pane fill_parent max_height">
+				<button class="btn btn-default" type="button">Default</button>
+				<button class="btn btn-primary" type="button">Primary</button>
+				<a class="btn btn-primary btn-lg" href="javascript:void(0)" onclick="x10()" >X +100</a>
+				<a class="btn btn-danger btn-lg" href="javascript:void(0)" onclick="x010()" >X -100</a>
+				<button class="btn btn-success" type="button">Success</button>
+				<button class="btn btn-info" type="button">Info</button>
+				<button class="btn btn-warning" type="button">Warning</button>
+				{$body2}
+			 </div>
+			 <div id="tab_create" class="tab-pane fill_parent max_height">
+				<div class="inner_scroll">
+					<div class="slot" id="slot0">1</div>
+					<div class="slot" id="slot1">2</div>
+					<div class="slot" id="slot2">3</div>
+					<div class="slot" id="slot3">4</div>
+					<div class="slot" id="slot4">5</div>
+					<div class="slot" id="slot5">6</div>
+		
+					<div style="clear:left"></div>
+		
+					<div class="slot" id="slot6" style="margin-left:7%">7</div>
+					<div class="slot" id="slot7">8</div>
+					<div class="slot" id="slot8">9</div>
+					<div class="slot" id="slot9">10</div>
+					<div class="slot" id="slot10">11</div>
+					<div class="slot" id="slot11">12</div>
+		
+					<div style="clear:left"></div>
+					<button class="btn btn-success" style="font-size:40px" type="button">Pour now</button>
+				</div>	
+			 </div>
+			<div id="tab_settings" class="tab-pane max_height">
+				<div id="settings_list_parent" class="list_level2_parent tabs-right">
+					<ul class="nav nav-tabs list_level2 off_list" id="settings_list">
+						<li><a href="javascript:void(0)" tab="setup_bottle"		num="1" data-toggle="tab" class="nav_menu_item"><span class="icon1 glyphicon glyphicon-chevron-left"></span> <span class="icon2 glyphicon glyphicon-glass"></span> Bottle setup</a></li>
+						<li><a href="javascript:void(0)" tab="setup_light"		num="2" data-toggle="tab" class="nav_menu_item"><span class="icon1 glyphicon glyphicon-chevron-left"></span> <span class="icon2 glyphicon glyphicon-adjust"></span> Light setup</a></li>
+						<li><a href="javascript:void(0)" tab="setup_sound"		num="3" data-toggle="tab" class="nav_menu_item"><span class="icon1 glyphicon glyphicon-chevron-left"></span> <span class="icon2 glyphicon glyphicon-music"></span> Sound setup</a></li>
+						<li><a href="javascript:void(0)" tab="demo_mode"		num="4" data-toggle="tab" class="nav_menu_item"><span class="icon1 glyphicon glyphicon glyphicon-asterisk"></span> <span class="icon2 glyphicon glyphicon-eye-open"></span> Start Demo mode</a></li>
+						<li><a href="javascript:void(0)" tab="setup_advanced"	num="5" data-toggle="tab" class="nav_menu_item"><span class="icon1 glyphicon glyphicon-chevron-left"></span> <span class="icon2 glyphicon glyphicon-cog"></span> Advanded options</a></li>
+						<li><a href="javascript:void(0)" tab="setup_calibrate"	num="6" data-toggle="tab" class="nav_menu_item"><span class="icon1 glyphicon glyphicon-chevron-left"></span> <span class="icon2 glyphicon glyphicon-screenshot"></span> Automatic calibration</a></li>
+						<li><a href="javascript:void(0)" tab="goto_shop"		num="7" data-toggle="tab" class="nav_menu_item"><span class="icon1 glyphicon glyphicon-new-window"></span> <span class="icon2 glyphicon glyphicon-info-sign"></span> Buy a robot</a></li>
+						<li><a href="javascript:void(0)" tab="goto_www"			num="8" data-toggle="tab" class="nav_menu_item"><span class="icon1 glyphicon glyphicon-new-window"></span> <span class="icon2 glyphicon glyphicon-info-sign"></span> Go to Barobot WWW </a></li>
+						<li><a href="javascript:void(0)" tab="goto_contrib"		num="9" data-toggle="tab" class="nav_menu_item"><span class="icon1 glyphicon glyphicon-new-window"></span> <span class="icon2 glyphicon glyphicon-info-sign"></span> Barobot contributors </a></li>
+						<li><a href="javascript:void(0)" tab="goto_about"		num="10" data-toggle="tab" class="nav_menu_item"><span class="icon1 glyphicon glyphicon-chevron-left"></span> <span class="icon2 glyphicon glyphicon-info-sign"></span> About Barobot project</a></li>
+					</ul>
+				</div>
+			</div>
+			<div id="tab_off" class="tab-pane max_height">
+				<div id="off_list_parent" class="list_level2_parent tabs-right">
+					<ul class="nav nav-tabs list_level2 inner_scroll" id="off_list" >
+						<li><a href="javascript:void(0)" tab="off_stop"	num="1" data-toggle="tab" class="nav_menu_item"><span class="icon1 glyphicon glyphicon-asterisk"></span> <span class="icon2 glyphicon glyphicon-off"></span> STOP now</a></li>
+						<li><a href="javascript:void(0)" tab="off_app"		num="2" data-toggle="tab" class="nav_menu_item"><span class="icon1 glyphicon glyphicon-asterisk"></span> <span class="icon2 glyphicon glyphicon-off"></span> Turn off application</a></li>
+						<li><a href="javascript:void(0)" tab="off_robot"	num="3" data-toggle="tab" class="nav_menu_item"><span class="icon1 glyphicon glyphicon-asterisk"></span> <span class="icon2 glyphicon glyphicon-off"></span> Turn off Barobot</a></li>
+						<li><a href="javascript:void(0)" tab="off_all"		num="4" data-toggle="tab" class="nav_menu_item"><span class="icon1 glyphicon glyphicon-asterisk"></span> <span class="icon2 glyphicon glyphicon-off"></span> Turn off all</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+      </div>
+      <div id="touch_ui" style="display:none;position:relative;top:0px;left:0px;background-color:blue;width:5px;height:5px;"></div>
+      <div id="full_box" style="">
+      	<div class="navigation" style="padding:10px;border-bottom: 1px solid #666666;">
+      		<h2 style="margin:0px;float:left;color:white" class="fl_nav_title"></h2>
+      		<button class="btn btn-default fl_nav_back pull-right btn-lg" type="button"><span class="glyphicon glyphicon-chevron-left"></span> Back</button>
+      		<div style="clear:both"></div>	
+      	</div>
+      	<div style="clear:both"></div>
+      	<div class="in_data" style="overflow:auto">
+      	</div>
+      </div>
+      <div id="other_dialogs" style="display:none;">
+		<div id="contribs">
+			<h2>Contributors</h2>
+      		<ul>
+      			<li>Artur Formella</li>
+      			<li>Konrad Klepacki</li>
+      			<li>Klaudia Mróz</li>
+      			<li>Hanna Żyznowska</li>
+      			<li>Piotr 'Raven' Wisniewski</li>
+      			<li>Krzysztof Kossak</li>
+      		</ul>
+      		<h5>Do you want do <a href="mailto:artur@barobot.com">contribute the Barobot Project?</a></h5>
+      	</div>
+		<div id="buy_robot">
+      		<h2>Barobot project</h2>
+      		<img src="/images/barobot.jpg" style="width:300px">
+		</div>
+      	<div id="buy_robot222">
+      		<h2>Barobot project</h2>
+      		<img src="/images/barobot.jpg" style="width:300px">
+		</div>
+      	<div id="authors">
+      		<h2>Authors</h2>
+      		<ul>
+      			<li>Artur Formella</li>
+      			<li>Konrad Klepacaki</li>
+      			<li>Klaudia Mróz</li>
+      			<li>Hanna Żyznowska</li>
+      			<li>Piotr 'Raven' Wisniewski</li>
+      			<li>Krzysztof Kossak</li>
+      		</ul>
+      		<h2>Included open source software</h2>
+      		<ul>
+      			<li>Android API</li>
+      			<li>Twitter Bootstrap 3</li>
+      			<li><a href="http://www.x5software.com">Chunk Templates for Java</a></li>
+      			<li>NanoHTTPD - Android HTTP Server</li>
+      			<li>usb-serial-for-android</li>
+      			<li>com.eclipsesource.json</li>
+      		</ul>
+      		<h5>Missing name or project? <a href="mailto:authors@barobot.com">Report your work</a></h5>
+		</div>
+      </div>
+{#}
+
