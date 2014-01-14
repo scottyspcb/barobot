@@ -101,28 +101,7 @@ public class BarobotWebMain extends Activity {
 
 	protected void initUI(Bundle savedInstanceState) {
 		this.webview = (WebView) findViewById(R.id.webview);
-        /*
-        webview.setWebChromeClient(new WebChromeClient() {
-			public boolean onConsoleMessage(ConsoleMessage cm) {
-				String sourceID = cm.sourceId();
-				if(sourceID == null || sourceID.startsWith("data:text/html")){
-					sourceID ="raw source";
-				}
-				Log.d("CONSOL E.LOG", cm.message() + " -- From line "+ cm.lineNumber() + " of "+ sourceID );
-				return true;
-			}
-		});*/
-
-   //		final Activity activity = this;
-   //		webview.setWebViewClient(new MyWebViewClient());
-   	//	webview.setWebViewClient(new WebViewClient());
-   /*
-	   		webview.setWebViewClient(new WebViewClient() {
-				public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
-					Log.d("CONSOLE.LOG", description + " -- in "+ failingUrl );
-				}
-		   		});	    	
-*/
+       
 		webview.setWebViewClient(new WebViewClient() {
 			public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
 				Log.d("CONSOLE.LOG", description + " -- in "+ failingUrl );
@@ -166,12 +145,11 @@ public class BarobotWebMain extends Activity {
 	*/
 
 		//webview.setBackgroundColor(0x00000000);
-	//	webview.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+		webview.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
 
-		
     	webview.loadUrl("http://localhost:8000");
     	WebSettings webSettings = this.webview.getSettings();
- //   	webSettings.setRenderPriority(WebSettings.RenderPriority.HIGH); 
+    	webSettings.setRenderPriority(WebSettings.RenderPriority.HIGH); 
     //	webSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
 
 //    	webSettings.setLoadsImagesAutomatically(true);
