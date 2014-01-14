@@ -1,5 +1,13 @@
 function pre(){
-	//console.log.apply( window, arguments );
+	if(arguments.length == 0){
+		return console.log( arguments[0] );
+	}
+	if(arguments.length == 1){
+		return console.log( arguments[0],arguments[1]  );
+	}
+	if(arguments.length == 2){
+		return console.log( arguments[0],arguments[1],arguments[2] );
+	}
 }
 
 var tab_def_list = {
@@ -74,7 +82,11 @@ var tab_def_list = {
 		color		: "#552244",
 		on_load		: function( swidth, sheight ){},
 		on_init		: function( num, tab_btn, tab, twidth, theight ){},
-		on_show		: function( num, tab_btn, tab, twidth, theight ){},
+		on_show		: function( num, tab_btn, tab, twidth, theight ){
+			var h = theight - $(".item_buttons:first").height();
+			console.log(theight, $(".item_buttons:first") );
+			$("#fav_details_parent").height( h - 10 );
+		},
 		on_hide		: function( num, tab_btn, tab ){},
 		on_scroll	: function( num, tab_btn, tab, top, left ){},
 	},
@@ -340,11 +352,11 @@ $(document).ready(function() {
 							lwidth += parseInt($(this).outerWidth(), 10);
 							pre($(this), $(this).outerWidth(), parseInt($(this).outerWidth(), 10));	
 						});
-						/*
+					
 						pre("outerWidth: " + lwidth);
 						pre(swidth, $("body").innerWidth());
 						pre("res: " +  Math.floor( $("body").innerWidth() - lwidth -1 ) );
-						new_tab.width( Math.floor( $("body").innerWidth() - lwidth -5 ) );*/
+						new_tab.width( Math.floor( $("body").innerWidth() - lwidth -1 ) );
 					}
 					new_btn.addClass("active");
 					new_tab.addClass("active");			
