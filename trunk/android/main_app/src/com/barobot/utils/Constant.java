@@ -44,7 +44,27 @@ public class Constant {
 
     // Debugging
     public static final String TAG3 = "BTListActivity";
+    
+    
+    // commands
+	public static final byte TRIGGER = 'T';
+	public static final byte RET = 'R';
+	public static final byte ERROR = 'R';
+	public static final byte ANALOG = 'A';
+	public static final byte COMMENT = '-';
+    
+	public static final String GETXPOS = "x";
+	public static final String GETYPOS = "y";
+	public static final String GETZPOS = "z";
+	public static final String REBOOT = "REBOOT";
 
+	
+	
+	public static final String PING = "PING";
+	public static final String PONG = "PONG";
+	
+
+	
     // Return Intent extra
     public static String EXTRA_DEVICE_ADDRESS = "device_address";
 

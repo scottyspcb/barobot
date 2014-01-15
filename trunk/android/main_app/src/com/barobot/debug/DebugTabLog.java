@@ -23,7 +23,6 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ToggleButton;
 
-@SuppressLint("ValidFragment")
 public class DebugTabLog extends Fragment {
 	public int tab_id	= -1 ;
 	private Activity cc;

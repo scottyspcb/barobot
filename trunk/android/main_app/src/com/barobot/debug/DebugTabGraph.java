@@ -42,6 +42,13 @@ import android.widget.ToggleButton;
  */
 public class DebugTabGraph extends Fragment {
 
+	public static int graph_speed	= 20;
+	public static int graph_repeat	= 2;
+	public static int graph_source	= 2;
+	public static int graph_xsize	= 4;
+	public static int graph_fps		= 10;
+	
+	
 	public int tab_id	= -1 ;
 	private Activity cc;
 	private WebView webview	=null;
@@ -360,13 +367,13 @@ public class DebugTabGraph extends Fragment {
 			switch (v.getId()) {
 			case R.id.graph_source:
 	  	  		((ToggleButton) rootView.findViewById(R.id.graph_active)).setChecked(true);
-				int graph_source	= virtualComponents.graph_source;
+				int graph_source	= DebugTabGraph.graph_source;
 				show_dialog( new RunnableWithData(){
 					@Override
 					public void run() {
-						virtualComponents.graph_source		= toInt(this.data,0);	
+						DebugTabGraph.graph_source		= toInt(this.data,0);	
 						Arduino ar							= Arduino.getInstance();
-						virtualComponents.enable_analog(ar, virtualComponents.graph_source, virtualComponents.graph_speed, virtualComponents.graph_repeat);	
+						virtualComponents.enable_analog(ar, DebugTabGraph.graph_source, DebugTabGraph.graph_speed, DebugTabGraph.graph_repeat);	
 					}
 	        	}, ""+graph_source);
 
@@ -385,11 +392,11 @@ public class DebugTabGraph extends Fragment {
 				show_dialog( new RunnableWithData(){
 					@Override
 					public void run() {
-						virtualComponents.graph_speed		= toInt(this.data, 50 );
+						DebugTabGraph.graph_speed		= toInt(this.data, 50 );
 						Arduino ar							= Arduino.getInstance();
-						virtualComponents.enable_analog(ar, virtualComponents.graph_source, virtualComponents.graph_speed, virtualComponents.graph_repeat);
+						virtualComponents.enable_analog(ar, DebugTabGraph.graph_source, DebugTabGraph.graph_speed, DebugTabGraph.graph_repeat);
 					}
-	        	}, ""+virtualComponents.graph_speed);
+	        	}, ""+DebugTabGraph.graph_speed);
 
 				break;
 			case R.id.graph_repeat:
@@ -399,11 +406,11 @@ public class DebugTabGraph extends Fragment {
 						@Override
 						public void run() {
 
-							virtualComponents.graph_repeat	= toInt(this.data, 1 );
+							DebugTabGraph.graph_repeat	= toInt(this.data, 1 );
 							Arduino ar						= Arduino.getInstance();
-				        	virtualComponents.enable_analog(ar, virtualComponents.graph_source, virtualComponents.graph_speed, virtualComponents.graph_repeat);	
+				        	virtualComponents.enable_analog(ar, DebugTabGraph.graph_source, DebugTabGraph.graph_speed, DebugTabGraph.graph_repeat);	
 						}
-		        	}, ""+virtualComponents.graph_repeat);
+		        	}, ""+DebugTabGraph.graph_repeat);
 				}
 				break;
 			case R.id.graph_xsize:
@@ -411,10 +418,10 @@ public class DebugTabGraph extends Fragment {
 					show_dialog( new RunnableWithData(){
 						@Override
 						public void run() {
-							virtualComponents.graph_xsize		= toInt(this.data, 4);
-							jsInterface.runJs("changex", ""+virtualComponents.graph_xsize);
+							DebugTabGraph.graph_xsize		= toInt(this.data, 4);
+							jsInterface.runJs("changex", ""+DebugTabGraph.graph_xsize);
 						}
-		        	}, ""+virtualComponents.graph_xsize);
+		        	}, ""+DebugTabGraph.graph_xsize);
 				}
 				break;
 
@@ -423,10 +430,10 @@ public class DebugTabGraph extends Fragment {
 					show_dialog( new RunnableWithData(){
 						@Override
 						public void run() {
-							virtualComponents.graph_fps		= toInt(this.data,10);
-							jsInterface.runJs("changefps", ""+virtualComponents.graph_fps);
+							DebugTabGraph.graph_fps		= toInt(this.data,10);
+							jsInterface.runJs("changefps", ""+DebugTabGraph.graph_fps);
 						}
-		        	}, ""+virtualComponents.graph_fps);
+		        	}, ""+DebugTabGraph.graph_fps);
 				}
 				break;
 			}
@@ -443,7 +450,7 @@ public class DebugTabGraph extends Fragment {
 					enableUI(true);
 				}else{
 					enableUI(false);
-					int graph_source9	= virtualComponents.graph_source;
+					int graph_source9	= DebugTabGraph.graph_source;
 					virtualComponents.disable_analog(ar, graph_source9 );
 					if(jsInterface!=null){
 						jsInterface.runJs("show_random", "0");
@@ -455,9 +462,9 @@ public class DebugTabGraph extends Fragment {
 	  	  		ToggleButton xb1 = (ToggleButton) rootView.findViewById(R.id.graph_active);
 		  	  	if(isChecked){
 		  	  		xb1.setChecked(true);
-					int graph_source5	= virtualComponents.graph_source;
+					int graph_source5	= DebugTabGraph.graph_source;
 					virtualComponents.disable_analog(ar, graph_source5 );
-					int graph_speed2 = virtualComponents.graph_speed;
+					int graph_speed2 = DebugTabGraph.graph_speed;
 					if(jsInterface!=null){
 						jsInterface.runJs("show_random", ""+graph_speed2);	
 					}

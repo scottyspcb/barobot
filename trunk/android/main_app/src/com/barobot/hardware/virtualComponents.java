@@ -146,11 +146,7 @@ public class virtualComponents {
 		"BOTTLE_X_10","BOTTLE_Y_10",
 		"BOTTLE_X_11","BOTTLE_Y_11",
 	};
-	public static int graph_speed	= 20;
-	public static int graph_repeat	= 2;
-	public static int graph_source	= 2;
-	public static int graph_xsize	= 4;
-	public static int graph_fps		= 10;
+
 	public static MotorDriver driver_x;
 	public static boolean scann_bottles = false;
 	public static int scann_num = 0;
@@ -270,35 +266,11 @@ public class virtualComponents {
 		ar.send("DX");
 	    ar.send("DY");
 		ar.send("DZ");
-		ar.send("GPX");
+		ar.send(Constant.GETXPOS);
 	}
 	public static void stop_all() {
 		Arduino ar = Arduino.getInstance();
 		ar.clear();
-	}
-	public static void moveZDown( ArduinoQueue q ) {
-		moveZDown(q, true);
-	}
-	private static void moveZDown(ArduinoQueue q, boolean b) {
-		int poszdown	=  virtualComponents.getInt("ENDSTOP_Z_MIN", SERVOZ_DOWN_POS );
-		q.add("Z" + poszdown+","+virtualComponents.DRIVER_Z_SPEED, true);
-	//	q.addWait( virtualComponents.SERVOZ_DOWN_TIME );	// wiec trzeba poczekać
-		q.addWait(100);
-	    q.add("DZ", true);
-	}
-	
-	public static void moveZUp( ArduinoQueue q ) {
-		moveZUp(q,true);
-	}
-	public static void moveZUp( ArduinoQueue q, boolean disableOnReady ) {
-//		q.add("EZ", true);
-		int poszup	=  virtualComponents.getInt("ENDSTOP_Z_MAX", SERVOZ_UP_POS );
-		q.add("Z" + poszup+","+virtualComponents.DRIVER_Z_SPEED, true);
-	//	q.addWait( virtualComponents.SERVOZ_UP_TIME );	// wiec trzeba poczekać
-		if(disableOnReady){
-			q.addWait(100);
-			q.add("DZ", true);
-		}
 	}
 
 	public static void moveToBottle(final int num, final boolean disableOnReady ){
@@ -341,7 +313,7 @@ public class virtualComponents {
 				}
 			}
 		} );
-		q.add("GPX", true);
+		q.add(Constant.GETXPOS, true);
 		ar.send( q );
 	}
 
@@ -374,7 +346,7 @@ public class virtualComponents {
 	    q.add("DY", true);
 	    q.addWait(100);
 	    q.add("DZ", true);
-	    q.add("GPX", true);
+	    q.add(Constant.GETXPOS, true);
 	    ar.send(q);
 	}
 
@@ -405,6 +377,29 @@ public class virtualComponents {
 		virtualComponents.set("POS_START_X", posx );
 		virtualComponents.set("POS_START_Y", posy );
 	}
+	public static void moveZDown( ArduinoQueue q ) {
+		moveZDown(q, true);
+	}
+	private static void moveZ(ArduinoQueue q, int pos) {
+		q.add("Z" + pos +","+virtualComponents.DRIVER_Z_SPEED, true);
+		q.addWait(100);
+	}
+	private static void moveZDown(ArduinoQueue q, boolean b) {
+		int poszdown	=  virtualComponents.getInt("ENDSTOP_Z_MIN", SERVOZ_DOWN_POS );
+		moveZ(q, poszdown );
+	    q.add("DZ", true);
+	}
+	public static void moveZUp( ArduinoQueue q, boolean disableOnReady ) {
+//		q.add("EZ", true);
+		int poszup	=  virtualComponents.getInt("ENDSTOP_Z_MAX", SERVOZ_UP_POS );
+		q.add("Z" + poszup+","+virtualComponents.DRIVER_Z_SPEED, true);
+	//	q.addWait( virtualComponents.SERVOZ_UP_TIME );	// wiec trzeba poczekać
+		if(disableOnReady){
+			q.addWait(100);
+			q.add("DZ", true);
+		}
+	}
+
 	public static void moveToStart() {
 		Arduino ar		= Arduino.getInstance();
 		ArduinoQueue q	= new ArduinoQueue();
@@ -430,11 +425,10 @@ public class virtualComponents {
 				return null;
 			}
 		} );
-		q.add("GPX", true);
+		q.add(Constant.GETXPOS, true);
 		ar.send( q );
 	}
 	public static void kalibrcja() {
-		
 		Arduino ar		= Arduino.getInstance();
 		ArduinoQueue q	= new ArduinoQueue();
 		int posx		= virtualComponents.getInt("POSX", 0 );
@@ -443,7 +437,7 @@ public class virtualComponents {
 		Constant.log("+find_bottles", "start");
 		q.add("EX", true );
 		virtualComponents.moveZDown( q );
-		q.add("Z" + virtualComponents.SERVOZ_TEST_POS + ","+virtualComponents.DRIVER_Z_SPEED , true );
+		virtualComponents.moveZ( q, virtualComponents.SERVOZ_TEST_POS );
 		virtualComponents.moveZDown( q );
 		virtualComponents.moveY( q, virtualComponents.SERVOY_TEST_POS, true);		
 		virtualComponents.moveY( q, virtualComponents.SERVOY_FRONT_POS, true);
