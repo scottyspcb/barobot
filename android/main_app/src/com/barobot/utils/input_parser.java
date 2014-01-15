@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.barobot.R;
 import com.barobot.activity.DebugActivity;
+import com.barobot.debug.DebugTabGraph;
 import com.barobot.hardware.Methods;
 import com.barobot.hardware.virtualComponents;
 import com.barobot.web.server.AJS;
@@ -47,18 +48,15 @@ public class input_parser {
 		}
 	//	Log.i(Constant.TAG, "parse:[" + fromArduino +"]");
 
-		if(fromArduino.startsWith("POS")){
-			fromArduino = "R" + fromArduino;			// VERY BAD HACK
-		}
 		char command = fromArduino.charAt(0);
-		if( command =='A' ){
+		if( command == Constant.ANALOG ){
 			AJS aa = AJS.getInstance();
 			if(aa!=null){
 				String[] tokens = fromArduino.split(" ");
 				if(tokens.length > 1 ){
 					try {
 						int e = Integer.parseInt( tokens[1] );
-						e	= e / virtualComponents.graph_repeat;		// podziel przez liczbe powtorzen
+						e	= e / DebugTabGraph.graph_repeat;		// podziel przez liczbe powtorzen
 						aa.oscyloskop( e );
 					} catch ( java.lang.NumberFormatException e2) {
 					}
@@ -76,9 +74,10 @@ public class input_parser {
 				} catch ( java.lang.NumberFormatException e2) {
 				}
 			}
-		}else if( command =='-' ){		// nic- to komentarz	
-			
-		}else if(command == 'R' ){		// na końcu bo to może odblokować wysyłanie i spowodować zapętlenie
+		}else if( command == Constant.COMMENT ){		// nic- to komentarz	
+
+		}else if(command == Constant.RET ){		// na końcu bo to może odblokować wysyłanie i spowodować zapętlenie
+			fromArduino = fromArduino.substring(1);
 			/*
 			if(fromArduino.startsWith("R SET LED")){	
 				String fromArduino2 = fromArduino.replace("R SET LED", "");
@@ -98,12 +97,12 @@ public class input_parser {
 				}
 			}else
 				*/
-				if( fromArduino.equals("RREBOOT") ){		//  właśnie uruchomiłem arduino
+			if( fromArduino.equals(Constant.REBOOT ) ){		//  właśnie uruchomiłem arduino
 				Arduino q			= Arduino.getInstance();
 				q.clear();
 
-			}else if(fromArduino.startsWith("RPOSX")){
-				String fromArduino2 = fromArduino.replace("RPOSX", "");	
+			}else if(fromArduino.startsWith(Constant.GETXPOS)){
+				String fromArduino2 = fromArduino.replace(Constant.GETXPOS, "");	
 				long posx = virtualComponents.toInt(fromArduino2);	// hardware pos
 				posx = virtualComponents.driver_x.hard2soft(posx);
 				virtualComponents.set( "POSX",posx);
@@ -111,25 +110,17 @@ public class input_parser {
 				if( posx > lx){		// Pozycja wieksza niz długosc? Zwieksz długosc
 					virtualComponents.set( "LENGTHX", "" + posx);
 				}
-			}else if(fromArduino.startsWith("RPOSY")){
-				String fromArduino2 = fromArduino.replace("RPOSY", "");
+			}else if(fromArduino.startsWith(Constant.GETYPOS)){
+				String fromArduino2 = fromArduino.replace(Constant.GETYPOS, "");
 				virtualComponents.set( "POSY",fromArduino2);
 
-			}else if(fromArduino.startsWith("RPOSZ")){
-				String fromArduino2 = fromArduino.replace("RPOSZ", "");
+			}else if(fromArduino.startsWith(Constant.GETZPOS)){
+				String fromArduino2 = fromArduino.replace(Constant.GETZPOS, "");
 				virtualComponents.set( "POSZ",fromArduino2);
-/*
-			}else if(fromArduino.startsWith("R READY ")){	
-				String fromArduino2 = fromArduino.replace("R READY AT ", "");
-				String[] tokens = fromArduino2.split(",");
-				virtualComponents.is_ready = true;
-				virtualComponents.set( "POSX",tokens[0]);
-				virtualComponents.set( "POSY",tokens[1]);
-				virtualComponents.set( "POSZ",tokens[2]);*/
 			}
 			is_ret = Arduino.getInstance().read_ret( fromArduino );		// zapisuj zwrotki
 	
-		}else if(command == 'T' ){  // trigger	
+		}else if(command == Constant.TRIGGER ){  // trigger	
 			String[] tokens = fromArduino.split(",");
 			char axis		= fromArduino.charAt(1);
 			int reason		= virtualComponents.toInt(tokens[1]);	// reason, 
@@ -162,7 +153,7 @@ public class input_parser {
 					
 					if(direction == Methods.DRIVER_DIR_BACKWARD){
 					//	Log.i("FINDER+", "Znalazlem cos pod adresem: "+ virtualComponents.scann_num+" "+posx);	
-					}				
+					}		
 
 					if(virtualComponents.scann_bottles == true){
 						if(virtualComponents.scann_num < 12 && virtualComponents.scann_num >= 0 ){
@@ -213,8 +204,8 @@ public class input_parser {
 			}else if( axis == 'Y'){
 			}else if( axis == 'Z'){
 			}
-		
-		}else if(command == 'E' ){  //error	
+
+		}else if(command == Constant.ERROR ){  //error	
 			input_parser.handleError( fromArduino );			// analizuj błędy
 
 		}else if(fromArduino.startsWith("INTERVAL")){
@@ -226,18 +217,13 @@ public class input_parser {
 			String fromArduino2 = fromArduino.replace("VAL A0 ", "");			
 			virtualComponents.set( "A0",fromArduino2);
 
-		}else if(fromArduino.startsWith("LENGTHX")){
-			String fromArduino2 = fromArduino.replace("LENGTHX ", "");
-			virtualComponents.set( "LENGTHX",fromArduino2);
+		}else if(fromArduino.equals(Constant.PONG)){
 
-		}else if(fromArduino.startsWith("WEIGHT")){	
-			String fromArduino2 = fromArduino.replace("WEIGHT ", "");
-			virtualComponents.set( "WEIGHT",fromArduino2);
-
-		}else if(fromArduino.equals("PONG")){
-
-		}else if(fromArduino.startsWith("PING")){
-//			toSend.add("PONG");
+		}else if(fromArduino.startsWith(Constant.PING)){
+			Arduino ar		= Arduino.getInstance();
+			ArduinoQueue q	= new ArduinoQueue();
+			q.add("PONG", false);
+			ar.send(q);
 		}
      //   if( !is_ret ){ // jesli nie jest zwrotka
 			Arduino q			= Arduino.getInstance();
@@ -258,7 +244,6 @@ public class input_parser {
 			}
 			return inputs[0];
 		}
-
 		// Called when there's a status to be updated
 		@Override
 		protected void onProgressUpdate(Integer... values) {

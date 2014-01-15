@@ -2,6 +2,7 @@ package com.barobot.hardware;
 
 import com.barobot.utils.Arduino;
 import com.barobot.utils.ArduinoQueue;
+import com.barobot.utils.Constant;
 import com.barobot.utils.History_item;
 
 
@@ -40,7 +41,7 @@ public class rpc_message extends History_item{
 					ret = message;
 					return true;
 				}
-				if( command.startsWith("GPX") || command.startsWith("GPY") || command.startsWith("GPZ") ){
+				if( command.startsWith(Constant.GETXPOS) || command.startsWith("GPY") || command.startsWith("GPZ") ){
 					ret = message;
 					return true;
 				}

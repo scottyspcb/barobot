@@ -129,9 +129,9 @@ public class button_click implements OnClickListener{
 		case R.id.kalibrujy:
 			this.setSpeed();		// jeśli mam szklankę to bardzo wolno
 			virtualComponents.moveZDown( q );
-			q.add("Y900" , true );
-			q.add("Y2100", true );
-			q.add("Y900", true);
+			virtualComponents.moveY(q, 900, false );
+			virtualComponents.moveY(q, 2100, false );
+			virtualComponents.moveY(q, 900, false );
 			ar.send(q);
 			break;
 		case R.id.kalibrujz:
@@ -165,7 +165,7 @@ public class button_click implements OnClickListener{
 		case R.id.machajz:
 			for( int i =0; i<10;i++){
 				virtualComponents.moveZDown(q);
-				virtualComponents.moveZUp(q);
+				virtualComponents.moveZUp(q,true);
 			}
 			virtualComponents.moveZDown(q);
 			q.add("DZ", true);
@@ -223,10 +223,10 @@ public class button_click implements OnClickListener{
 			}
 			q.add("EX", true);
 		//	q.add("EY", true);		
-			virtualComponents.moveZUp(q);
+			virtualComponents.moveZUp(q,true);
 			q.add("DX", true);
 			q.add("DY", true);
-			q.add("GPX", true);
+			q.add(Constant.GETXPOS, true);
 			ar.send(q);
 			break;
 		case R.id.min_z:
@@ -235,7 +235,7 @@ public class button_click implements OnClickListener{
 			virtualComponents.moveZDown( q );
 			q.add("DX", true);
 			q.add("DY", true);
-			q.add("GPX", true);
+			q.add(Constant.GETXPOS, true);
 			ar.send(q);
 			break;
 
@@ -272,8 +272,7 @@ public class button_click implements OnClickListener{
 			AppInvoker.getInstance().cm.doPhoto();
 			break;
 		case R.id.bottle_next:
-			break;	
-
+			break;
 		case R.id.kalibrujx:
 			virtualComponents.kalibrcja();
 			/*
@@ -305,10 +304,8 @@ public class button_click implements OnClickListener{
 			break;
 		case R.id.goto_min_x:
 			break;
-	
 		case R.id.find_bottles:
 			virtualComponents.kalibrcja();
-			
 			break;			
 		case R.id.bottle_prev:
 			/*
@@ -323,14 +320,12 @@ public class button_click implements OnClickListener{
 					return true;
 				}
 			};
-
 			Arduino ard			= Arduino.getInstance();
 			ArduinoQueue qq		= new ArduinoQueue();
 			qq.add( m2 );
 			ard.send(q);
 */
-			break;	
-
+			break;
 	   }
 	}
 
