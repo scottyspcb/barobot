@@ -1,0 +1,73 @@
+Przypadki użycia:
+
+- nalewanie drinka z gotowych przepisów
+- nalewanie drinka z listy poprzednio nalanych
+- nalewanie drinka z własnego przepisu
+- dodawanie własnego drinka
+- usuwanie drinka
+- update bazy danych dinków z serwera
+- wysyłanie swojego drinka na serwer
+- tłumaczenie nazwy drinka na swój język
+- pokazanie demo mode
+
+- pierwsze uruchomienie
+
+- włączenie robota
+- wyłączenie robota
+- wyłączenie aplikacji nalewającej aby użyć tabletu w innym celu
+- włączenie aplikacji nalewającej by powrócić do nalewania
+
+
+- ustawienie wstawionej butelki
+- wymiana butelki
+- "nalej z tej butelki"
+- wysłanie raportu o błędzie
+- odczytanie raportu o błędzie
+
+
+Informacje serwisowe:
+- temperatura
+- stan butelek
+- wersja software
+- wersja hardware
+- Przebieg maszyny
+
+
+
+Wydarzenia inicjowane przez system:
+- koniec płynu
+- błąd techniczny
+	- szklanka znikneła
+	- nie udało sę osiągnąć punku docelowego X
+	- nie udało sę osiągnąć punku docelowego Y
+	- nie udało sę osiągnąć punku docelowego Z
+	- nie nalano
+	- błąd magistrali i2c
+	- brak modułu wykonawczego
+	- Błędna komenda
+
+	
+- błąd programowy
+- "Jesteś następny w kolejce" - gdy jest lista zadań zdalnych a twoje jest następne
+- Oscyloskop
+- Brak szklanki
+- 
+
+
+
+Uruchamiane przez system:
+- ważenie podstawki
+- mierzenie temeratury
+
+
+
+
+
+
+
+
+
+
+
+
+
