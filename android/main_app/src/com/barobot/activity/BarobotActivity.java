@@ -1,11 +1,10 @@
-package com.barobot.gui;
+package com.barobot.activity;
 
 import com.barobot.R;
-import com.barobot.activity.AboutActivity;
-import com.barobot.activity.BTListActivity;
-import com.barobot.activity.DebugActivity;
-import com.barobot.activity.MainSettingsActivity;
-import com.barobot.activity.UpdateActivity;
+import com.barobot.gui.BottleSetupActivity;
+import com.barobot.gui.MainActivity;
+import com.barobot.gui.OutsideComponentActivity;
+import com.barobot.gui.RecipeSetupActivity;
 import com.barobot.hardware.virtualComponents;
 import com.barobot.utils.Arduino;
 
@@ -34,7 +33,7 @@ public class BarobotActivity extends Activity {
     	Intent serverIntent = null;
     	switch (item.getItemId()) {
     	case R.id.action_panic:
-    		ManagePanic();
+    		virtualComponents.cancel_all();
     		return false;
     	case R.id.main_feature:
     		serverIntent = new Intent(this, MainActivity.class);
@@ -93,28 +92,5 @@ public class BarobotActivity extends Activity {
     		startActivity(serverIntent);
     	}
     	return false;
-    }
-    
-    protected void ManagePanic()
-    {
-    	AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setTitle(R.string.panic_title);
-		builder.setMessage(R.string.panic_message);
-		builder.setPositiveButton(R.string.panic_button_ok, new DialogInterface.OnClickListener() {
-
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				virtualComponents.cancel_all();
-			}
-		});
-		builder.setNegativeButton(R.string.panic_button_cancel, new DialogInterface.OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				// do nothing
-			}
-		});
-		
-		AlertDialog ad = builder.create();
-		ad.show();
     }
 }

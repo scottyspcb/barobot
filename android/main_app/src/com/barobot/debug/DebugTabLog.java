@@ -1,27 +1,22 @@
 package com.barobot.debug;
 
-import com.barobot.R;
-import com.barobot.R.id;
-import com.barobot.activity.DebugActivity;
-import com.barobot.hardware.rpc_message;
-import com.barobot.utils.Arduino;
-import com.barobot.utils.ArduinoQueue;
-import com.barobot.utils.Constant;
-import com.barobot.utils.History_item;
-
-import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ToggleButton;
+
+import com.barobot.R;
+import com.barobot.activity.DebugActivity;
+import com.barobot.utils.Arduino;
+import com.barobot.utils.Constant;
+import com.barobot.utils.History_item;
 
 public class DebugTabLog extends Fragment {
 	public int tab_id	= -1 ;

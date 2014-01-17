@@ -26,12 +26,13 @@ import android.widget.LinearLayout.LayoutParams;
 
 import com.barobot.AppInvoker;
 import com.barobot.R;
-import com.barobot.gui.BarobotActivity;
 import com.barobot.hardware.virtualComponents;
 import com.barobot.utils.Arduino;
 import com.barobot.utils.Constant;
 import com.barobot.web.server.AJS;
 import com.barobot.web.server.htmlBrowser;
+
+// android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
 
 public class BarobotMain extends BarobotActivity {
     // Layout Viewsd
@@ -46,14 +47,13 @@ public class BarobotMain extends BarobotActivity {
 		if (getIntent().hasExtra("bundle") && savedInstanceState==null){
 		   savedInstanceState = getIntent().getExtras().getBundle("bundle");
 		}
-		this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-		this.getWindow().setType(WindowManager.LayoutParams.TYPE_KEYGUARD);
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		
-//		requestWindowFeature(Window.FEATURE_NO_TITLE);
+	//	this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+	//	this.getWindow().setType(WindowManager.LayoutParams.TYPE_KEYGUARD);
+	//	requestWindowFeature(Window.FEATURE_NO_TITLE);
+
 //		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
+        setContentView(R.layout.barobot_main);
         AppInvoker.createInstance( this ).onCreate();
         virtualComponents.init( this );
 
@@ -280,12 +280,7 @@ public class BarobotMain extends BarobotActivity {
 	    // Restore the state of the WebView
 	    webview.restoreState(savedInstanceState);
 	  }	
-	
-	
-	
-	
-	
-	
+
 }
 
 /*
