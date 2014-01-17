@@ -22,7 +22,7 @@
         <activity
             android:name="com.barobot.activity.BarobotMain"
             android:configChanges="orientation"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+            
             android:label="@string/app_name"
             android:screenOrientation="sensorLandscape" >
             <intent-filter>
