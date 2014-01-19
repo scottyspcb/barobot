@@ -12,6 +12,7 @@ String serial0Buffer = "";
 boolean Console0Complete = false;   // This will be set to true once we have a full string
 boolean dir = true;
 long unsigned target = 00;
+int speed_mul = 3;
 
 void setup(){
   Serial.begin(115200); 
@@ -30,7 +31,6 @@ void setup(){
 }
 int last = 0;
 int in = 0;
-byte multip = 5;
 byte index = 0;
 void loop(){
 //  if( (--index) == 0 ){
@@ -43,12 +43,12 @@ void loop(){
         Serial.println("stop");
         last = in;
       }
-    }else if( abs(last - in) > 6 ){
+    }else if( abs(last - in) > 10 ){
   //    Serial.println("analog: " + String(in) );
       Serial.print("in= " + String(in) );
       unsigned long sp= abs( in - 512 );
       Serial.print("sp= " + String(sp) );
-      sp = sp * 30;
+      sp = sp * speed_mul;
       stepper.setMaxSpeed( sp );
       last = in;
       if (in > 512){
