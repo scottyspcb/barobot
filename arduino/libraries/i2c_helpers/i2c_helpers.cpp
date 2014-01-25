@@ -47,8 +47,28 @@ byte writeRegisters(int deviceAddress, byte length, boolean wait) {
     }
     return 0;
 }
-
 */
+
+void printHex2(volatile uint8_t data){
+	if (data<0x10) {
+		Serial.print("0");
+	}
+	Serial.print(data,HEX); 
+	Serial.print(" "); 
+
+}
+
+void printHex8(uint8_t *data, uint8_t length){ // prints 8-bit data in hex with leading zeroes
+	for (int i=0; i<length; i++) { 
+	  printHex2(data[i]);
+	}
+}
+
+void printHex8(volatile uint8_t *data, uint8_t length){ // prints 8-bit data in hex with leading zeroes
+	for (int i=0; i<length; i++) { 
+		printHex2(data[i]);
+	}
+}
 
 void printHex(byte val){
   int temp =  val;
