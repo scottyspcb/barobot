@@ -87,6 +87,14 @@
 	#define PIN_MAINBOARD_SCK SCK			// 13
 	#define PIN_MAINBOARD_MISO MISO			// 11
 	#define PIN_MAINBOARD_MOSI MOSI			// 12
+	
+	
+	
+	#define PIN_MAINBOARD_CURRENT_X	A3
+	#define PIN_MAINBOARD_TABLET_PWR	A6
+	#define VPIN_TEMP_MB	8
+	
+	
 
 	#define PIN_MAINBOARD_SDA SDA			// arduino 18
 	#define PIN_MAINBOARD_SCL SCL			// arduino 19
@@ -113,7 +121,7 @@
 		#define PIN_PROGRAMMER_LED_ERROR   	6		// PWM dip ??		Lights up if something goes wrong (use red if that makes sense)
 		#define PIN_PROGRAMMER_LED_ACTIVE	9		// PWM dip ??		shows the programmer is running
 		#define PIN_PROGRAMMER_LED_STATE    10		// PWM dip ??		In communication with the slave
-		
+
 		#define PIN_PROGRAMMER_RESET_UPANEL 7		// dip ??
 		#define PIN_PROGRAMMER_RESET_IPANEL 8		// dip ??
 		#define PIN_PROGRAMMER_RESET_MASTER 15		// dip ??
@@ -164,6 +172,9 @@
 	#define PIN_IPANEL_HALL_X A0		// dip pin 23 A0,	Q 23
 	#define PIN_IPANEL_HALL_Y A1		// dip pin 24 A1,	Q 24
 	#define PIN_IPANEL_WEIGHT A2		// dip pin 25 A2,	Q 25
+
+	#define PIN_IPANEL_CURRENTY A6		// dip pin ?? A6,	Q 19
+	#define PIN_IPANEL_CURRENTZ A7		// dip pin ?? A7,	Q 22
 
 	#define INNER_CODE_HALL_X 2
 	#define INNER_CODE_HALL_Y 3
@@ -233,10 +244,10 @@
 
 	#define PIN_UPANEL_LEFT_RESET 14		// dip pin 23
 	#define PIN_UPANEL_POKE 3				// dip pin 5
-		
+
 	#define PIN_UPANEL_SDA SDA
 	#define PIN_UPANEL_SCL SCL
-	
+
 	#define PIN_PANEL_LED0_NUM	4		// dip pin 6,		Q 2
 	#define PIN_PANEL_LED1_NUM	5		// dip pin 11,		Q 9
 	#define PIN_PANEL_LED2_NUM	6		// dip pin 12,		Q 10
@@ -263,7 +274,6 @@
 	#define LED_BOTTOM_BLUE				PIN_PANEL_LED5_NUM
 	#define LED_BOTTOM_GREEN			PIN_PANEL_LED6_NUM
 	#define LED_BOTTOM_WHITE			PIN_PANEL_LED7_NUM
-	
 
 	// EEPROM content:
 	/*
@@ -296,6 +306,11 @@
 // tyle dodaæ aby liczby bajtowe z zakresu 0-50 by³y widoczne w podgl¹dzie magistrali UART.
 #define VISIBLER A
 
+
+
+
+
+
 #define METHOD_GETVERSION 	5
 #define METHOD_PROG_MODE_ON 	10
 #define METHOD_PROG_MODE_OFF 	14
@@ -309,33 +324,47 @@
 #define METHOD_GETVALUE 	55
 #define METHOD_RESET_NEXT 	58
 #define METHOD_RUN_NEXT 	62
-#define METHOD_GETSERVOYPOS 	65
-#define METHOD_GOTOSERVOYPOS 	66
-#define METHOD_GETSERVOZPOS 	69
-#define METHOD_GOTOSERVOZPOS 	70
-#define METHOD_HERE_I_AM 	114
-#define METHOD_SEND_PIN_VALUE 	118
-#define METHOD_I2C_SLAVEMSG 	122
-#define METHOD_LIVE_ANALOG 	74
+#define METHOD_GET_Y_POS 	65
+#define METHOD_SET_Y_POS 	66
+#define METHOD_GET_Z_POS 	69
+#define METHOD_SET_Z_POS 	70
 #define METHOD_LIVE_OFF 	72
-#define METHOD_SEND2SLAVE 	127
+#define METHOD_LIVE_ANALOG 	74
 #define METHOD_DRIVER_ENABLE 	82
 #define METHOD_DRIVER_DISABLE 	86
-
-#define METHOD_RET_FROM_SLAVE 	88
-#define METHOD_I2C_ERROR 		90
-#define METHOD_RET_FROM_SLAVE2 	92
-
-#define METHOD_STEPPER_MOVING 	222
-#define METHOD_IMPORTANT_ANALOG 	224
-#define METHOD_DEVICE_FOUND		220
-#define METHOD_CARRET_CAN_FILL 	120
-
-#define RETURN_PIN_VALUE 		211
-#define RETURN_ANALOG_CHANGE 	111
-
+#define METHOD_HERE_I_AM 	114
+#define METHOD_SEND_PIN_VALUE 	118
+#define METHOD_CAN_FILL 	120
+#define METHOD_I2C_SLAVEMSG 	122
 #define RETURN_DRIVER_ERROR 	180
 #define RETURN_DRIVER_READY 	182
+#define RETURN_PIN_VALUE 	211
+#define METHOD_STEPPER_MOVING 	222
+#define METHOD_IMPORTANT_ANALOG 	224
+#define RETURN_I2C_ERROR 	53
+#define METHOD_EXEC_ERROR 	22
+#define METHOD_DEVICE_FOUND 	12
+
+
+#define METHOD_SET_X_ACCELERATION 	"AX"
+#define METHOD_MASTER_CAN_FILL 	"CF"
+#define METHOD_SET_X_DISABLE 	"DX"
+#define METHOD_ERROR 	'E'
+#define METHOD_SET_X_ENABLE 	"EX"
+#define METHOD_GET_X_POSITION 	"GPX"
+#define METHOD_POING 	"POING"
+#define METHOD_PONG 	"PONG"
+#define METHOD_PROG 	"PROG"
+#define METHOD_PROGN 	"PROGN"
+#define METHOD_RESET_BUS 	"RB"
+#define METHOD_RESET 	"RESET"
+#define METHOD_RESETN 	"RESETN"
+#define METHOD_RWIRE 	"RWIRE"
+#define METHOD_SEND2SLAVE 	'S'
+#define METHOD_TRIGGER 	'T'
+#define METHOD_WAIT_READY 	"WR"
+#define METHOD_SET_X_POS 	'X'
+
 
 // inne
 #define DRIVER_DIR_FORWARD 	32
