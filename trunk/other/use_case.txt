@@ -45,12 +45,18 @@ Wydarzenia inicjowane przez system:
 	- błąd magistrali i2c
 	- brak modułu wykonawczego
 	- Błędna komenda
-
 	
 - błąd programowy
+
+- błąd funkcyjny
+	- Brak szklanki wymaganej do rozpoczęcia
+	- Butelka niezaincjowana
+	- Brak butelek
+	- Nie istnieje żaden drink z podanych składników
+
 - "Jesteś następny w kolejce" - gdy jest lista zadań zdalnych a twoje jest następne
 - Oscyloskop
-- Brak szklanki
+
 - 
 
 
@@ -63,6 +69,11 @@ Uruchamiane przez system:
 
 
 
+Błędy techniczne:
+	- wypadła sprężynka nalewaka
+	- nie da się zamontować nalewaka
+	- trzymacz tabeltu wypadł
+	
 
 
 
@@ -71,3 +82,10 @@ Uruchamiane przez system:
 
 
 
+
+	
+	
+	
+	
+	
+	

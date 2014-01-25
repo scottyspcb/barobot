@@ -9,6 +9,7 @@ function pre(){
 		return console.log( arguments[0],arguments[1],arguments[2] );
 	}
 }
+if(typeof console === "undefined"){ console = {}; }
 
 var tab_def_list = {
 	tab_fav:{

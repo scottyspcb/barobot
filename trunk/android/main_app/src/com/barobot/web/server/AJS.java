@@ -22,7 +22,6 @@ public class AJS {
 	public static void clearInstance() {
 		inst = null;
 	}
-
     public AJS(Context c, WebView w) {
         mContext = c;
         webview = w;
@@ -31,7 +30,6 @@ public class AJS {
     public void showToast(String toast) {
         Toast.makeText(mContext, toast, Toast.LENGTH_SHORT).show();
     }
-
     public String getReady(String index) {
        if(ready2send.containsKey(index)){
     	   String s =  ready2send.get(index);

@@ -14,18 +14,20 @@ public class ArduinoQueue {
 
 //	public void add(Runnable runnable ) {
 //	}
-	public void add( String message, boolean doWwait ){
-		if( message == null || message== ""){
-			return;
+	public rpc_message add( String message, boolean doWwait ){
+		if( message == null || message== "" ){
+			return null;
 		}
-		rpc_message m = new rpc_message( message, true, doWwait );
+		rpc_message m = new rpc_message( true, message, doWwait );
 		output.add( m );
+		return m;
 	}
-	public void add(rpc_message rpcLogic) {
-		output.add( rpcLogic );		
+	public rpc_message add(rpc_message rpcLogic) {
+		output.add( rpcLogic );	
+		return rpcLogic;
 	}
 	public void addWait(final int time) {
-		final rpc_message m2 = new rpc_message( true ) {
+		final rpc_message m2 = new rpc_message( true, true ) {
 			@Override
 			public ArduinoQueue run() {
 				this.name				= "wait " + time;
@@ -47,14 +49,23 @@ public class ArduinoQueue {
 				}, time);// odczekaj tyle czasu, odblokuj kolejkę i jedz dalej
 				return null;
 			}
-			public boolean isBlocing() {
-				return true;
-			}
 		};
 		output.add( m2 );		
 	}
+
+	public void addThrow(final String string) {		// throw exception in this moment
+		final rpc_message m2 = new rpc_message( true, false) {
+			@Override
+			public ArduinoQueue run() {
+				Arduino.getInstance().throwError(string);
+				return null;
+			}
+		};
+		output.add( m2 );
+	}
+
 	public void addWaitGlass() {
-		final rpc_message wait4glass = new rpc_message( true ) {
+		final rpc_message wait4glass = new rpc_message( true, true ) {
 			@Override
 			public ArduinoQueue run() {
 				this.name				= "wait glass 2";
@@ -79,11 +90,8 @@ public class ArduinoQueue {
 					return false;
 				}
 			}
-			public boolean isBlocing() {
-				return true;
-			}
 		};
-		final rpc_message finishGlass = new rpc_message( true ) {
+		final rpc_message finishGlass = new rpc_message( true, false ) {
 			@Override
 			public ArduinoQueue run() {
 				this.name				= "finish glass";
@@ -101,11 +109,9 @@ public class ArduinoQueue {
 			//	final rpc_message m3	= this;
 				return null;
 			}
-			public boolean isBlocing() {
-				return false;
-			}};
-		
-		final rpc_message m2 = new rpc_message( true ) {
+		};
+
+		final rpc_message m2 = new rpc_message( true, true ) {
 			@Override
 			public ArduinoQueue run() {
 				this.name		= "wait glass";
@@ -122,15 +128,12 @@ public class ArduinoQueue {
 				q2.add( finishGlass );					// jest szklanka lub nie ma
 				return q2;
 			}
-			public boolean isBlocing() {
-				return true;
-			}
 		};
 		// narazie nie sprawdzamy wagi
 //		output.add( m2 );
 /*
 				
-		long unsigned waga = read_szklanka();
+		int unsigned waga = read_szklanka();
 		send2android("GLASS " + String(waga));
 		if( waga < waga_zero + min_diff ){          // rozni się o mniej niż WAGA_MIN_DIFF
 			unsigned int repeat = 0;
@@ -148,8 +151,21 @@ public class ArduinoQueue {
 				return 0;
 			}
 		}
-	*/	
-		
+	*/
+	}
+	public void addWait(final rpc_message waitx) {	
+		// czekaj na wykonanie tej komendy
+		final rpc_message m2 = new rpc_message( true, true ) {
+			@Override
+			public ArduinoQueue run() {
+				ArduinoQueue q2	= new ArduinoQueue();
+				this.name		= "wait for " + waitx.toString();
+			//	if(waitx){
+			//	}
+				return q2;
+			}
+		};
+		output.add( m2 );
 	}
 
 }

@@ -25,19 +25,19 @@ public class DebugTabLeds extends Fragment {
 	private Activity cc;
 
     public DebugTabLeds(Activity debugActivity, int tabCommandsId) {
-    	Constant.log("DebugTabLeds", "init");
+    //	Constant.log("DebugTabLeds", "init");
     	this.tab_id = tabCommandsId;
     	this.cc=debugActivity;
 	}
 	@Override
     public void onActivityCreated(Bundle savedInstanceState) {
 		//Integer.toString(getArguments().getInt(DebugActivity.ARG_SECTION_NUMBER))
-    	Constant.log("DebugTabLeds", "onActivityCreated");
+   // 	Constant.log("DebugTabLeds", "onActivityCreated");
         super.onActivityCreated(savedInstanceState);
     }
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
-		Constant.log("DebugTabLeds", "onCreateView");
+	//	Constant.log("DebugTabLeds", "onCreateView");
 
 		int lay = DebugActivity.layouts[tab_id];
 		//View rootView = inflater.inflate( R.layout.fragment_device_list_dummy, container, false);
@@ -66,7 +66,7 @@ public class DebugTabLeds extends Fragment {
 		}
 		ListView  led_list_box = (ListView ) rootView.findViewById(R.id.led_list);
 		if( led_list_box == null){
-			Constant.log("DebugTabDevices", "null2");
+	//		Constant.log("DebugTabDevices", "null2");
 		}
 		DeviceSet ss = DeviceSet.byFeature("IS_RGBW_LED");
 	    DeviceView adapter_listy = new DeviceView(this.cc, ss,  R.layout.device_led);

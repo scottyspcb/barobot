@@ -19,7 +19,7 @@ public class input_parser {
 		//}
 		synchronized (input_parser.class) {
 			input_parser.buffer = input_parser.buffer + in;
-			//Log.i(Constant.TAG, "input [" + input_parser.buffer+"]" );
+		//	Log.v(Constant.TAG, "input [" + input_parser.buffer+"]" );
 			int end = input_parser.buffer.indexOf(separator);
 			if( end!=-1){
 				while( end != -1 ){		// podziel to na kawalki
@@ -46,8 +46,11 @@ public class input_parser {
 		if(fromArduino.length() == 0){
 			return;
 		}
-	//	Log.i(Constant.TAG, "parse:[" + fromArduino +"]");
-
+		if(fromArduino.startsWith("x")){		// bad hack
+			fromArduino = "R" + fromArduino;
+			Log.e(Constant.TAG, "poprawiam:[" + fromArduino +"]");
+		}
+		Log.i(Constant.TAG, "parse:[" + fromArduino +"]");
 		char command = fromArduino.charAt(0);
 		if( command == Constant.ANALOG ){
 			AJS aa = AJS.getInstance();
@@ -75,9 +78,72 @@ public class input_parser {
 				}
 			}
 		}else if( command == Constant.COMMENT ){		// nic- to komentarz	
+		}else if( fromArduino.startsWith( "" + Constant.METHOD_I2C_SLAVEMSG) ){		// msg od slave
+			int[] parts = decodeBytes( fromArduino );
+/*
+			parts[0]	= METHOD_I2C_SLAVEMSG
+			parts[1]	= my_address
+			parts[2]	= METHOD_GET_Y_POS (WHY_CODE)
+			parts[3]	- param 0
+*/
+			String retLike	 = fromArduino;
+			if( parts[2] == Constant.METHOD_GET_Y_POS ){
+				int pos = parts[3] + (parts[4] << 8); 
+				virtualComponents.set( "POSY",""+pos);
+				retLike = "Ry";
+			}else if( parts[2] == Constant.METHOD_GET_Z_POS ){
+				int pos = parts[3] + (parts[4] << 8); 
+				virtualComponents.set( "POSZ",""+pos);
+				retLike = "Rz";
+			}else if( parts[2] == Constant.METHOD_GET_X_POS ){
+				int hpos = parts[3] + (parts[4] << 8); 
+				int posx = virtualComponents.driver_x.hard2soft(hpos);
+				virtualComponents.set( "POSX",posx);
+				int lx	=  virtualComponents.getInt("LENGTHX", 600 );
+				if( posx > lx){		// Pozycja wieksza niz długosc? Zwieksz długosc
+					virtualComponents.set( "LENGTHX", "" + posx);
+				}
+				retLike = "Ry";
+			}else if( parts[2] == Constant.RETURN_DRIVER_READY ){
+				int pos = parts[4] + (parts[5] << 8); 
+				if( parts[3] == Constant.DRIVER_Y){
+				}else if( parts[3] == Constant.DRIVER_Z){
+				}
+				//parts[4]	- DRIVER_X
+				//parts[5]	- pos low
+				//parts[6]	- pos high
+				retLike = "Rx";
+			}else{
+				Log.e("FINDER", "no METHOD_I2C_SLAVEMSG");
+			}
+			Log.i("retLike", retLike);
+			is_ret = Arduino.getInstance().read_ret( retLike );		// zapisuj zwrotki
+		}else if( fromArduino.startsWith( "" + Constant.METHOD_DEVICE_FOUND) ){
+			// byte ttt[5] = {METHOD_DEVICE_FOUND,addr,type,ver,pos};
+			// byte ttt[5] = {METHOD_DEVICE_FOUND,I2C_ADR_MAINBOARD,MAINBOARD_DEVICE_TYPE,MAINBOARD_VERSION,0};
+			int[] parts = decodeBytes( fromArduino );
+			if(parts[2] == Constant.MAINBOARD_DEVICE_TYPE ){
+				Arduino q	= Arduino.getInstance();
+				int cx		= virtualComponents.getInt("POSX", 0 );
+				virtualComponents.driver_x.setM(cx);	// ostatnia znana pozycja jest marginesem
+				q.clear();
+			}else if(parts[2] == Constant.UPANEL_DEVICE_TYPE ){		// upanel
 
+			}else if(parts[2] == Constant.IPANEL_DEVICE_TYPE ){		// wozek
+			}
+
+		}else if( fromArduino.startsWith( "" + Constant.METHOD_EXEC_ERROR) ){		// msg od slave		
+			int[] parts = decodeBytes( fromArduino );
+			String retLike = "Rx";
+			if( parts[3] == Constant.DRIVER_Y){
+			}else if( parts[3] == Constant.DRIVER_Z){
+				
+			}else if( parts[3] == Constant.DRIVER_X){
+				
+			}
+			is_ret = Arduino.getInstance().read_ret( retLike );		// zapisuj zwrotki
 		}else if(command == Constant.RET ){		// na końcu bo to może odblokować wysyłanie i spowodować zapętlenie
-			fromArduino = fromArduino.substring(1);
+			String fromArduino2 = fromArduino.substring(1);
 			/*
 			if(fromArduino.startsWith("R SET LED")){	
 				String fromArduino2 = fromArduino.replace("R SET LED", "");
@@ -95,62 +161,55 @@ public class input_parser {
 				if(dialog!=null){
 					dialog.setChecked( R.id.wagi_live, !"OFF".equals(fromArduino2) );
 				}
-			}else
+			}else{}
 				*/
-			if( fromArduino.equals(Constant.REBOOT ) ){		//  właśnie uruchomiłem arduino
-				Arduino q			= Arduino.getInstance();
-				q.clear();
-
-			}else if(fromArduino.startsWith(Constant.GETXPOS)){
-				String fromArduino2 = fromArduino.replace(Constant.GETXPOS, "");	
-				long posx = virtualComponents.toInt(fromArduino2);	// hardware pos
+			if(fromArduino2.startsWith(Constant.GETXPOS)){
+				String fromArduino3 = fromArduino2.replace(Constant.GETXPOS, "");	
+				int posx = input_parser.toInt(fromArduino3);	// hardware pos
 				posx = virtualComponents.driver_x.hard2soft(posx);
 				virtualComponents.set( "POSX",posx);
-				long lx	=  virtualComponents.getInt("LENGTHX", 600 );
+				int lx	=  virtualComponents.getInt("LENGTHX", 600 );
 				if( posx > lx){		// Pozycja wieksza niz długosc? Zwieksz długosc
 					virtualComponents.set( "LENGTHX", "" + posx);
 				}
-			}else if(fromArduino.startsWith(Constant.GETYPOS)){
-				String fromArduino2 = fromArduino.replace(Constant.GETYPOS, "");
-				virtualComponents.set( "POSY",fromArduino2);
+			}else if(fromArduino2.startsWith(Constant.GETYPOS)){
+				String fromArduino3 = fromArduino2.replace(Constant.GETYPOS, "");
+				virtualComponents.set( "POSY",fromArduino3);
 
-			}else if(fromArduino.startsWith(Constant.GETZPOS)){
-				String fromArduino2 = fromArduino.replace(Constant.GETZPOS, "");
-				virtualComponents.set( "POSZ",fromArduino2);
+			}else if(fromArduino2.startsWith(Constant.GETZPOS)){
+				String fromArduino3 = fromArduino2.replace(Constant.GETZPOS, "");
+				virtualComponents.set( "POSZ",fromArduino3);
 			}
 			is_ret = Arduino.getInstance().read_ret( fromArduino );		// zapisuj zwrotki
 	
 		}else if(command == Constant.TRIGGER ){  // trigger	
 			String[] tokens = fromArduino.split(",");
 			char axis		= fromArduino.charAt(1);
-			int reason		= virtualComponents.toInt(tokens[1]);	// reason, 
-			int direction	= virtualComponents.toInt(tokens[2]);	// direction,					       
-			long pos		= virtualComponents.toInt(tokens[3]);	// pos
+			int reason		= input_parser.toInt(tokens[1]);	// reason, 
+			int direction	= input_parser.toInt(tokens[2]);	// direction,					       
+			int pos			= input_parser.toInt(tokens[3]);	// pos
 			if( axis == 'X'){
 				if(reason == Methods.HALL_GLOBAL_MIN){				// endstop MIN
 					virtualComponents.set( "X_GLOBAL_MIN", "" + pos );
-					virtualComponents.driver_x.setM(pos);
-
-					long posx = virtualComponents.driver_x.hard2soft(pos);
+					int posx = virtualComponents.driver_x.hard2soft(pos);
 					virtualComponents.set( "POSX","" + posx);
-					Log.i("input_parser", "jestem w: " + posx );
+					virtualComponents.driver_x.setM(pos);
 					if(virtualComponents.scann_bottles == true){
+						Log.i("input_parser", "jestem w: " + posx );
 						virtualComponents.hereIsStart(posx, virtualComponents.SERVOY_FRONT_POS );
 					}
 
 				}else if(reason == Methods.HALL_GLOBAL_MAX){		// endstop MAX
-					long posx = virtualComponents.driver_x.hard2soft(pos);
-					
-					virtualComponents.set( "LENGTHX", "" + posx);
-					virtualComponents.set( "X_GLOBAL_MAX", "" + posx );
+					int posx = virtualComponents.driver_x.hard2soft(pos);
 					if(virtualComponents.scann_bottles == true){
+						virtualComponents.set( "LENGTHX", "" + posx);
+						virtualComponents.set( "X_GLOBAL_MAX", "" + posx );
 						virtualComponents.hereIsBottle(11, posx, virtualComponents.SERVOY_FRONT_POS );
 						Log.i("input_parser "+ virtualComponents.scann_num+" "+virtualComponents.SERVOY_FRONT_POS, "butelka 11: " + posx );
 					}
 
 				}else if(reason == Methods.HALL_LOCAL_MAX){			// butelka
-					long posx = virtualComponents.driver_x.hard2soft(pos);
-					
+					int posx = virtualComponents.driver_x.hard2soft(pos);
 					if(direction == Methods.DRIVER_DIR_BACKWARD){
 					//	Log.i("FINDER+", "Znalazlem cos pod adresem: "+ virtualComponents.scann_num+" "+posx);	
 					}		
@@ -175,7 +234,7 @@ public class input_parser {
 						}
 					}
 				}else if(reason == Methods.HALL_LOCAL_MIN){			// butelka
-					long posx = virtualComponents.driver_x.hard2soft(pos);
+					int posx = virtualComponents.driver_x.hard2soft(pos);
 					
 					if(direction == Methods.DRIVER_DIR_BACKWARD){
 				//	Log.i("FINDER-", "Znalazlem cos pod adresem: "+ virtualComponents.scann_num+" "+posx);	
@@ -206,7 +265,8 @@ public class input_parser {
 			}
 
 		}else if(command == Constant.ERROR ){  //error	
-			input_parser.handleError( fromArduino );			// analizuj błędy
+			Arduino a			= Arduino.getInstance();
+			a.throwError(fromArduino);
 
 		}else if(fromArduino.startsWith("INTERVAL")){
 			AJS aa = AJS.getInstance();
@@ -230,9 +290,30 @@ public class input_parser {
         	q.addToList(fromArduino, false );
       //  }
 	}
-	private static void handleError(String fromArduino) {	
+
+	private static int[] decodeBytes(String fromArduino) {
+		String[] parts = fromArduino.split(",");
+		int[] iparts = new int[parts.length];
+		for(byte i=0;i<parts.length;i++){
+			iparts[ i ] = toInt(parts[i]);
+		}
+		return iparts;
 	}
+
+	public static int toInt( String input ){
+		input	= input.replaceAll( "[^-\\d]", "" );
+		int res = 0;
+		try {
+			res = Integer.parseInt(input);
+		} catch (NumberFormatException e) {
+			return 0;
+		}
+	//	Constant.log(Constant.TAG,"toInt:"+ input + "/ "+ res );
+		return res;
+	}
+	
 	/*
+	 * 
 	// UpdateData Asynchronously sends the value received from ADK Main Board. 
 	// This is triggered by onReceive()
 	public static class UpdateData extends AsyncTask<String, Integer, String> {

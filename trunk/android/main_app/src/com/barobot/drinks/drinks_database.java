@@ -112,7 +112,7 @@ public class drinks_database {
                     OutputStream output	= new FileOutputStream(dir+"/"+fileName);
                     byte data[]			= new byte[1024];
                     String strFileContents="";
-                    long total			= 0;
+                    int total			= 0;
                     int count;
                     while ((count = input.read(data)) != -1) {
                         total += count;

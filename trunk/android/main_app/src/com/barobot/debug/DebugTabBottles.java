@@ -105,8 +105,8 @@ public class DebugTabBottles extends Fragment {
 
 		for(int i =0; i<wagi.length;i++){
 			TextView waga1 = (TextView) rootView.findViewById(wagi[i]);
-			long x		=  virtualComponents.getBottlePosX( i );
-			long y		=  virtualComponents.getBottlePosY( i );
+			int x		=  virtualComponents.getBottlePosX( i );
+			int y		=  virtualComponents.getBottlePosY( i );
 			String pos = "" + x +"/"+ y;
 		//	waga1.setOnClickListener( list1 );
 			LinearLayout.LayoutParams params = (LayoutParams) waga1.getLayoutParams();
@@ -144,8 +144,8 @@ public class DebugTabBottles extends Fragment {
 
 		for(int i =0; i<wagi.length;i++){
 			TextView waga1 = (TextView) cc.findViewById(wagi[i]);
-			long x	=  virtualComponents.getBottlePosX( i );
-			long y	=  virtualComponents.getBottlePosY( i );
+			int x	=  virtualComponents.getBottlePosX( i );
+			int y	=  virtualComponents.getBottlePosY( i );
 			String pos = "" + x +"/"+ y;			
 			waga1.setText(pos);
 		}

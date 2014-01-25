@@ -51,28 +51,23 @@ public class BT_wire implements Wire {
         }
 		return false;
 	}
-
 	@Override
 	public void setup() {
 		Constant.log(Constant.TAG, "setupBT()");
         // Initialize the BluetoothChatService to perform bluetooth connections
-
 	}
 	@Override
 	public void setOnReceive() {
 		// TODO Auto-generated method stub
 
 	}
-
 	@Override
 	public void setSearching(boolean active) {
 		// TODO Auto-generated method stub
 	}
-
 	@Override
 	public void pause() {
 	}
-
 	@Override
 	public void resume() {
         Constant.log(Constant.TAG, "+ ON RESUME +");

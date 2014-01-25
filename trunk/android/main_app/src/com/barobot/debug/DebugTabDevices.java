@@ -45,7 +45,7 @@ public class DebugTabDevices extends Fragment {
 
 		final ListView device_list_box = (ListView) rootView.findViewById(R.id.device_list);
 		if( device_list_box == null){
-			Constant.log("DebugTabDevices", "null2");
+		//	Constant.log("DebugTabDevices", "null2");
 		}
 
 		// show device list width filter (spinner)

@@ -5826,7 +5826,7 @@ drill 1.1 mm</description>
 <part name="GND3" library="supply1" deviceset="GND" device=""/>
 <part name="CON_104_STEP_RIGHT" library="con-lsta" deviceset="FE08-1" device=""/>
 <part name="CON_105_STEP_LEFT" library="con-lsta" deviceset="FE08-1" device=""/>
-<part name="SUPPLY1" library="supply2" deviceset="VCC" device="" value="VCC 9V"/>
+<part name="SUPPLY1" library="supply2" deviceset="VCC" device="" value="VCC 12V"/>
 <part name="GND4" library="supply1" deviceset="GND" device=""/>
 <part name="GND5" library="supply1" deviceset="GND" device=""/>
 <part name="P+3" library="supply1" deviceset="VCC" device=""/>
@@ -5838,7 +5838,7 @@ drill 1.1 mm</description>
 <part name="P+6" library="supply1" deviceset="VCC" device=""/>
 <part name="GND8" library="supply1" deviceset="GND" device=""/>
 <part name="CON_102_CARRET" library="con-lsta" deviceset="FE06-2" device=""/>
-<part name="SUPPLY2" library="supply2" deviceset="VCC" device="" value="VCC 6V"/>
+<part name="SUPPLY2" library="supply2" deviceset="VCC" device="" value="VCC 12V"/>
 <part name="ARK101" library="con-ptr500" deviceset="AK300/4" device=""/>
 <part name="JUMPER_101" library="con-lstb" deviceset="MA03-2" device=""/>
 <part name="P+7" library="supply1" deviceset="VCC" device=""/>
@@ -5854,6 +5854,8 @@ drill 1.1 mm</description>
 <part name="SP2" library="solpad" deviceset="LSP11" device=""/>
 <part name="GND9" library="supply1" deviceset="GND" device=""/>
 <part name="R1" library="resistor" deviceset="R-EU_" device="0613/15" value="?"/>
+<part name="D2" library="diode" deviceset="1N5060GP" device="" value=""/>
+<part name="D1" library="diode" deviceset="1N5060GP" device="" value=""/>
 </parts>
 <sheets>
 <sheet>
@@ -5900,8 +5902,8 @@ drill 1.1 mm</description>
 <text x="-53.34" y="-53.34" size="1.778" layer="91">6 SDA</text>
 <text x="-53.34" y="-50.8" size="1.778" layer="91">7 VCC</text>
 <text x="-53.34" y="-48.26" size="1.778" layer="91">8 GND</text>
-<text x="-30.48" y="-78.74" size="1.778" layer="91">1 6V</text>
-<text x="-30.48" y="-81.28" size="1.778" layer="91">2 6V</text>
+<text x="-30.48" y="-78.74" size="1.778" layer="91">1 12V</text>
+<text x="-30.48" y="-81.28" size="1.778" layer="91">2 12V</text>
 <text x="-30.48" y="-83.82" size="1.778" layer="91">3 </text>
 <text x="-30.48" y="-86.36" size="1.778" layer="91">4 MOSI</text>
 <text x="-30.48" y="-88.9" size="1.778" layer="91">5 MISO</text>
@@ -5942,8 +5944,8 @@ drill 1.1 mm</description>
 <instance part="GND3" gate="1" x="73.66" y="106.68"/>
 <instance part="CON_104_STEP_RIGHT" gate="G$1" x="124.46" y="43.18" rot="R180"/>
 <instance part="CON_105_STEP_LEFT" gate="G$1" x="111.76" y="81.28" rot="R180"/>
-<instance part="SUPPLY1" gate="G$1" x="106.68" y="53.34"/>
-<instance part="GND4" gate="1" x="99.06" y="55.88" rot="R180"/>
+<instance part="SUPPLY1" gate="G$1" x="101.6" y="58.42"/>
+<instance part="GND4" gate="1" x="93.98" y="55.88" rot="R180"/>
 <instance part="GND5" gate="1" x="96.52" y="33.02"/>
 <instance part="P+3" gate="VCC" x="104.14" y="33.02" rot="R90"/>
 <instance part="CON_103_UPANEL" gate="G$1" x="-27.94" y="-58.42"/>
@@ -5954,7 +5956,7 @@ drill 1.1 mm</description>
 <instance part="P+6" gate="VCC" x="38.1" y="-93.98"/>
 <instance part="GND8" gate="1" x="2.54" y="-124.46"/>
 <instance part="CON_102_CARRET" gate="G$1" x="2.54" y="-99.06"/>
-<instance part="SUPPLY2" gate="G$1" x="2.54" y="-114.3"/>
+<instance part="SUPPLY2" gate="G$1" x="43.18" y="-111.76"/>
 <instance part="ARK101" gate="-1" x="76.2" y="48.26"/>
 <instance part="ARK101" gate="-2" x="76.2" y="43.18"/>
 <instance part="ARK101" gate="-3" x="76.2" y="38.1"/>
@@ -5973,6 +5975,8 @@ drill 1.1 mm</description>
 <instance part="SP2" gate="1" x="88.9" y="-22.86" rot="R180"/>
 <instance part="GND9" gate="1" x="96.52" y="-22.86"/>
 <instance part="R1" gate="G$1" x="55.88" y="-58.42" rot="R90"/>
+<instance part="D2" gate="1" x="106.68" y="50.8"/>
+<instance part="D1" gate="1" x="30.48" y="-119.38" rot="R180"/>
 </instances>
 <busses>
 </busses>
@@ -5999,12 +6003,6 @@ drill 1.1 mm</description>
 <pinref part="LED_102_WHITE" gate="G$1" pin="C"/>
 <pinref part="LED_103_GREEN" gate="G$1" pin="C"/>
 <pinref part="GND3" gate="1" pin="GND"/>
-</segment>
-<segment>
-<wire x1="116.84" y1="48.26" x2="99.06" y2="48.26" width="0.1524" layer="91"/>
-<wire x1="99.06" y1="48.26" x2="99.06" y2="53.34" width="0.1524" layer="91"/>
-<pinref part="CON_104_STEP_RIGHT" gate="G$1" pin="2"/>
-<pinref part="GND4" gate="1" pin="GND"/>
 </segment>
 <segment>
 <wire x1="96.52" y1="35.56" x2="116.84" y2="35.56" width="0.1524" layer="91"/>
@@ -6069,6 +6067,12 @@ drill 1.1 mm</description>
 <wire x1="96.52" y1="-15.24" x2="88.9" y2="-15.24" width="0.1524" layer="91"/>
 <wire x1="88.9" y1="-15.24" x2="88.9" y2="-20.32" width="0.1524" layer="91"/>
 </segment>
+<segment>
+<pinref part="CON_104_STEP_RIGHT" gate="G$1" pin="2"/>
+<pinref part="GND4" gate="1" pin="GND"/>
+<wire x1="116.84" y1="48.26" x2="93.98" y2="48.26" width="0.1524" layer="91"/>
+<wire x1="93.98" y1="48.26" x2="93.98" y2="53.34" width="0.1524" layer="91"/>
+</segment>
 </net>
 <net name="VCC" class="0">
 <segment>
@@ -6079,11 +6083,6 @@ drill 1.1 mm</description>
 <segment>
 <pinref part="P+2" gate="VCC" pin="VCC"/>
 <pinref part="R105" gate="G$1" pin="2"/>
-</segment>
-<segment>
-<wire x1="116.84" y1="50.8" x2="106.68" y2="50.8" width="0.1524" layer="91"/>
-<pinref part="CON_104_STEP_RIGHT" gate="G$1" pin="1"/>
-<pinref part="SUPPLY1" gate="G$1" pin="VCC"/>
 </segment>
 <segment>
 <wire x1="106.68" y1="33.02" x2="116.84" y2="33.02" width="0.1524" layer="91"/>
@@ -6126,17 +6125,6 @@ drill 1.1 mm</description>
 <pinref part="CON_102_CARRET" gate="G$1" pin="8"/>
 </segment>
 <segment>
-<wire x1="2.54" y1="-116.84" x2="-5.08" y2="-116.84" width="0.1524" layer="91"/>
-<wire x1="-5.08" y1="-116.84" x2="-5.08" y2="-104.14" width="0.1524" layer="91"/>
-<wire x1="2.54" y1="-116.84" x2="12.7" y2="-116.84" width="0.1524" layer="91"/>
-<wire x1="12.7" y1="-116.84" x2="12.7" y2="-104.14" width="0.1524" layer="91"/>
-<wire x1="12.7" y1="-104.14" x2="10.16" y2="-104.14" width="0.1524" layer="91"/>
-<junction x="2.54" y="-116.84"/>
-<pinref part="SUPPLY2" gate="G$1" pin="VCC"/>
-<pinref part="CON_102_CARRET" gate="G$1" pin="1"/>
-<pinref part="CON_102_CARRET" gate="G$1" pin="2"/>
-</segment>
-<segment>
 <wire x1="73.66" y1="81.28" x2="66.04" y2="81.28" width="0.1524" layer="91"/>
 <wire x1="66.04" y1="83.82" x2="73.66" y2="83.82" width="0.1524" layer="91"/>
 <wire x1="66.04" y1="88.9" x2="66.04" y2="86.36" width="0.1524" layer="91"/>
@@ -6155,6 +6143,18 @@ drill 1.1 mm</description>
 <wire x1="-5.08" y1="129.54" x2="-2.54" y2="129.54" width="0.1524" layer="91"/>
 <pinref part="P+8" gate="VCC" pin="VCC"/>
 <pinref part="CON_106_ULTRASOUND" gate="1" pin="1"/>
+</segment>
+<segment>
+<pinref part="D2" gate="1" pin="A"/>
+<pinref part="SUPPLY1" gate="G$1" pin="VCC"/>
+<wire x1="104.14" y1="50.8" x2="101.6" y2="50.8" width="0.1524" layer="91"/>
+<wire x1="101.6" y1="50.8" x2="101.6" y2="55.88" width="0.1524" layer="91"/>
+</segment>
+<segment>
+<pinref part="SUPPLY2" gate="G$1" pin="VCC"/>
+<wire x1="43.18" y1="-114.3" x2="43.18" y2="-119.38" width="0.1524" layer="91"/>
+<pinref part="D1" gate="1" pin="A"/>
+<wire x1="43.18" y1="-119.38" x2="33.02" y2="-119.38" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$4" class="0">
@@ -6523,6 +6523,26 @@ drill 1.1 mm</description>
 <pinref part="R1" gate="G$1" pin="1"/>
 <wire x1="58.42" y1="-76.2" x2="55.88" y2="-76.2" width="0.1524" layer="91"/>
 <wire x1="55.88" y1="-76.2" x2="55.88" y2="-63.5" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="N$22" class="0">
+<segment>
+<pinref part="CON_104_STEP_RIGHT" gate="G$1" pin="1"/>
+<pinref part="D2" gate="1" pin="C"/>
+<wire x1="116.84" y1="50.8" x2="109.22" y2="50.8" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="N$23" class="0">
+<segment>
+<pinref part="CON_102_CARRET" gate="G$1" pin="2"/>
+<wire x1="12.7" y1="-119.38" x2="12.7" y2="-104.14" width="0.1524" layer="91"/>
+<wire x1="12.7" y1="-104.14" x2="10.16" y2="-104.14" width="0.1524" layer="91"/>
+<pinref part="D1" gate="1" pin="C"/>
+<wire x1="27.94" y1="-119.38" x2="12.7" y2="-119.38" width="0.1524" layer="91"/>
+<wire x1="-5.08" y1="-119.38" x2="-5.08" y2="-104.14" width="0.1524" layer="91"/>
+<pinref part="CON_102_CARRET" gate="G$1" pin="1"/>
+<wire x1="12.7" y1="-119.38" x2="-5.08" y2="-119.38" width="0.1524" layer="91"/>
+<junction x="12.7" y="-119.38"/>
 </segment>
 </net>
 </nets>
