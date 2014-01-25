@@ -60,7 +60,7 @@ public class BarobotMain extends BarobotActivity {
     	//	getWindow().requestFeature(Window.FEATURE_PROGRESS);
 	//	StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
 	//	StrictMode.setThreadPolicy(policy); 
-		initUI( savedInstanceState);  
+	//	initUI( savedInstanceState);  
 		int mUIFlag = View.SYSTEM_UI_FLAG_LOW_PROFILE | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
 	    getWindow().getDecorView().setSystemUiVisibility(mUIFlag);
     }
@@ -250,7 +250,7 @@ public class BarobotMain extends BarobotActivity {
 	}
 	@Override
 	public void onConfigurationChanged(Configuration newConfig){
-		if (webview != null)	{
+		if (webview != null){
 		  // Remove the WebView from the old placeholder
 			webViewPlaceholder.removeView(webview);
 		}
@@ -265,22 +265,53 @@ public class BarobotMain extends BarobotActivity {
 	        Toast.makeText(this, "portrait", Toast.LENGTH_SHORT).show();
 	    }
 		// Reinitialize the UI
-		initUI(null);
+		//initUI(null);
 	}
 
 	@Override
 	  protected void onSaveInstanceState(Bundle outState){
 	    super.onSaveInstanceState(outState);
 	    // Save the state of the WebView
-	    webview.saveState(outState);
+	    if(webview != null){
+	    	webview.saveState(outState);
+	    }
 	  }
 	  @Override
 	  protected void onRestoreInstanceState(Bundle savedInstanceState) {
 	    super.onRestoreInstanceState(savedInstanceState);
 	    // Restore the state of the WebView
-	    webview.restoreState(savedInstanceState);
-	  }	
+	    if(webview != null){
+	    	webview.restoreState(savedInstanceState);
+	    }
+	  }
 
+	  public void showError(){  
+		  
+			runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					 AlertDialog show = new AlertDialog.Builder(BarobotMain.this)
+					    .setTitle("Kalibracja")
+					    .setMessage("Kalibracja się nie udała. Czy spróbować ponownie?")
+					    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+					        public void onClick(DialogInterface dialog, int which) { 
+					            // continue with delete
+					        	virtualComponents.kalibrcja();
+					        }
+					     })
+					    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+					        public void onClick(DialogInterface dialog, int which) { 
+					            // do nothing
+					        }
+					     })
+					     .show();
+				}
+			});
+		  
+		  
+		 
+	  }
+	  
 }
 
 /*

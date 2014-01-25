@@ -25,7 +25,7 @@ public class DebugTabLog extends Fragment {
     private ArrayAdapter<History_item> mConversation;
 
     public DebugTabLog(Activity debugActivity, int tabCommandsId) {
-    	Constant.log("DebugTabLog", "init");
+   // 	Constant.log("DebugTabLog", "init");
     	this.tab_id = tabCommandsId;
     	this.cc		= debugActivity;
     	mConversation = new ArrayAdapter<History_item>(cc, R.layout.message);
@@ -37,12 +37,12 @@ public class DebugTabLog extends Fragment {
 	@Override
     public void onActivityCreated(Bundle savedInstanceState) {
 		//Integer.toString(getArguments().getInt(DebugActivity.ARG_SECTION_NUMBER))
-    	Constant.log("DebugTabLog", "onActivityCreated");
+    //	Constant.log("DebugTabLog", "onActivityCreated");
         super.onActivityCreated(savedInstanceState);
     }
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
-		Constant.log("DebugTabLog", "onCreateView");
+	//	Constant.log("DebugTabLog", "onCreateView");
 
 		int lay = DebugActivity.layouts[tab_id];
 		//View rootView = inflater.inflate( R.layout.fragment_device_list_dummy, container, false);
@@ -55,6 +55,7 @@ public class DebugTabLog extends Fragment {
 			};			
 		});
 		
+		
 		ToggleButton xb2 = (ToggleButton) rootView.findViewById(R.id.logs_enable);
 		xb2.setOnClickListener( new OnClickListener(){
 			@Override
@@ -64,7 +65,16 @@ public class DebugTabLog extends Fragment {
 		  	  	enableLogs( isChecked );
 
 			};			
-		});		
+		});	
+
+		Button xb3 = (Button) rootView.findViewById(R.id.unlock_log);
+		xb3.setOnClickListener( new OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				Arduino.getInstance().unlock();
+			};			
+		});
+
 	    mConversationView = (ListView) rootView.findViewById(R.id.led_list);
 	    mConversationView.setAdapter(mConversation);
 
@@ -74,7 +84,7 @@ public class DebugTabLog extends Fragment {
 	}
 	protected void enableLogs(boolean isChecked) {
   	  	if(isChecked){
-  	  		Constant.log("DebugTabLog", "enable");		  	  		
+  	//  		Constant.log("DebugTabLog", "enable");		  	  		
   	  	}
   	  	Arduino.getInstance().log_active = isChecked;
 	}

@@ -24,8 +24,6 @@ targetPosition()
 Tematy:
 
 
-- opkreslenie optymalnych napiêæ i pr¹dów dla steppera x
-
 - zobaczyæ przebiegi dla silnika x
 - procedura wy³¹czania zasilania
 - pullupy dla serv?
@@ -39,12 +37,11 @@ TODO:
 	Nalewanie gazowanego
 	Animowana pomoc w wymianie butelki
 	Nózki pod robotem (np gumowe)
-	Lepsze wykrywanie rozmiaru i wagi szklanki
 	Wykrywanie koñca napoju:
 		- p³ywak
 		- laser
 		- waga
-	
+
 	Podajnik do szklanek
 	Miejsce na lód i owoce
 	Sygna³ koñca nalewania

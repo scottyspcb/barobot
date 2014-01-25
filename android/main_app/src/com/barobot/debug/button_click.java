@@ -141,7 +141,7 @@ public class button_click implements OnClickListener{
 		case R.id.machajx:
 			virtualComponents.moveZDown( q );
 			virtualComponents.moveY( q, virtualComponents.SERVOY_FRONT_POS, true);
-			long lengthx4	=  virtualComponents.getInt("LENGTHX", 600 );
+			int lengthx4	=  virtualComponents.getInt("LENGTHX", 600 );
 			for( int i =0; i<10;i++){
 			//	virtualComponents.moveX( q, (lengthx4/4) );
 				//virtualComponents.moveX( q, (lengthx4/4 * 3) );
@@ -175,7 +175,7 @@ public class button_click implements OnClickListener{
 			Random generator2 = new Random( 19580427 );
 			virtualComponents.moveZDown( q );
 			virtualComponents.moveY( q, virtualComponents.SERVOY_FRONT_POS, true );
-			long lengthx5	=  virtualComponents.getInt("LENGTHX", 600 );
+			int lengthx5	=  virtualComponents.getInt("LENGTHX", 600 );
 		    for(int f = 0;f<20;){
 		    	int left = generator2.nextInt((int)(lengthx5/100 / 2));
 		    	int right =generator2.nextInt((int)(lengthx5/100 / 2));
@@ -241,7 +241,7 @@ public class button_click implements OnClickListener{
 
 		case R.id.max_x:
 			virtualComponents.moveZDown( q );
-			long lengthx2	=  virtualComponents.getInt("LENGTHX", 600 );
+			int lengthx2	=  virtualComponents.getInt("LENGTHX", 600 );
 			virtualComponents.moveX( q, posx +lengthx2 );
 			ar.send(q );
 			break;
@@ -253,7 +253,7 @@ public class button_click implements OnClickListener{
 			break;
 		case R.id.min_x:
 			virtualComponents.moveZDown( q );
-			long lengthx3	=  virtualComponents.getInt("LENGTHX", 600 );
+			int lengthx3	=  virtualComponents.getInt("LENGTHX", 600 );
 			virtualComponents.moveX( q, -lengthx3 );
 			ar.send(q );
 			break;
@@ -278,7 +278,7 @@ public class button_click implements OnClickListener{
 			/*
 			virtualComponents.moveZDown( q );			
 			virtualComponents.moveY( q, virtualComponents.SERVOY_FRONT_POS, true);
-			long lengthx1	=  virtualComponents.getInt("LENGTHX", 600 ) * 10;		
+			int lengthx1	=  virtualComponents.getInt("LENGTHX", 600 ) * 10;		
 			virtualComponents.moveX( q, (posx +lengthx1));
 			q.add("DY", false);
 			virtualComponents.moveX( q, -lengthx1);

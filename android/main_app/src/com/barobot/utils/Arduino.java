@@ -235,16 +235,20 @@ public class Arduino{
 		}
 	}
 	public void send( String message ){
-		rpc_message m = new rpc_message( message, true, false );
+		rpc_message m = new rpc_message( true, message, false );
 		output2.add( m );
 		exec();
 	}
 	public void sendFirst(ArduinoQueue q2) {
-		this.output2.addAll( 0, q2.output);		// dodja na począku, reszte przesun dalej
+		synchronized (this.lock) {
+			this.output2.addAll( 0, q2.output);		// dodja na począku, reszte przesun dalej		
+		}
 		exec();
 	}
 	public void send(ArduinoQueue q) {
-		this.output2.addAll(q.output);
+		synchronized (this.lock) {
+			this.output2.addAll(q.output);
+		}
 		AppInvoker.getInstance().cm.doPhoto();
 		exec();
 	}
@@ -252,10 +256,10 @@ public class Arduino{
 		boolean is_ret = false;
         synchronized (this.lock) {
         	if( this.wait_for != null){
-        	//		Constant.log("isRet?", "["+retm+"][" +  this.wait_for.command+"]");
+        			Constant.log("isRet?", "["+retm+"][" +  this.wait_for.command+"]");
         			is_ret = true;
         			if(this.wait_for.isRet(retm)){
-        				Constant.log("unlock", wait_for.command);		
+        				Constant.log("unlock", wait_for.command + ": " + retm );		
         				this.wait_for = null;
         				if(output2.isEmpty()){
         		           	addToList( "--------------------------------------------------", true );
@@ -287,14 +291,15 @@ public class Arduino{
 					if( m.command == null || m.command == "" ){
 						m.start( this );
 					}else{
-			//			Constant.log("serial send", m.command);
+						Constant.log("serial send", m.command);
 						String command = m.command+ input_parser.separator;	
 						connection.send(command);
 						debug(command);
 					}
 			        addToList( m );
 					if(m.isBlocing()){		// czekam na zwrotkę tej komendy zanim wykonam coś dalej
-						m.send_timestamp	= System.nanoTime();
+						m.send_timestamp	= System.currentTimeMillis();
+						m.wait_until		= m.send_timestamp + m.timeout;
 	                	this.wait_for		= m;
 	                	return;				// przerwij do czasu otrzymania zwrotki lub odblokowania
 	                }else{
@@ -306,6 +311,7 @@ public class Arduino{
 	                }
 				}
 				if(!wasEmpty){
+					Constant.log("queue", "--------------------------------------------------");
 	            	addToList( "--------------------------------------------------", true );
 				}
 			} catch (IOException e)	{
@@ -334,6 +340,7 @@ public class Arduino{
     	synchronized (this.lock) {
 	    	if(wait_for!=null){
 	    		Constant.log("+unlock", "czekalem na [" + wait_for.command+"] w kolejce: " +output2.size() );
+	    		this.wait_for.unlock( "unlock" );
 	    		this.wait_for = null;
 	    		this.exec();
 	    	}
@@ -342,8 +349,8 @@ public class Arduino{
 	public void unlock(rpc_message m) {
 		synchronized (this.lock) {		
 			if( this.wait_for != null && this.wait_for.equals(m)){
-				String cmd = wait_for.command;
-				Constant.log("unlock2", cmd );
+				this.wait_for.unlock( m.command );
+				Constant.log("unlock2", wait_for.command );
 				this.wait_for = null;
 				this.exec();
 			}
@@ -351,16 +358,18 @@ public class Arduino{
 	}
     public void clear() {
     	synchronized (this.lock) {	
-    		this.wait_for = null;
+    		this.wait_for = null;   
+    		this.output2.clear();
     	}
-    	this.output2.clear();
 	}
 
     public boolean log_active	= true;
 	private ArrayAdapter<History_item> mConversation;
 	public void addToList(final rpc_message m) {
 		if(log_active){
-			mConversationHistory.add( m );
+			synchronized (this.lock) {
+				mConversationHistory.add( m );
+			}
 			if(this.mConversation !=null){
 				BarobotMain.getInstance().runOnUiThread(new Runnable() {
 					@Override
@@ -378,9 +387,9 @@ public class Arduino{
 		if(log_active){
 			BarobotMain.getInstance().runOnUiThread(new Runnable() {
 			     public void run() {
-			//    	 Log.i(Constant.TAG, "addtohist:[" + string +"]"); 
-			    	 History_item hi = new History_item( string.trim(), direction);
-			    	 mConversationHistory.add( hi );
+			//    	Log.i(Constant.TAG, "addtohist:[" + string +"]"); 
+			    	History_item hi = new History_item( string.trim(), direction);
+		    		mConversationHistory.add( hi );
 			 		if(Arduino.this.mConversation !=null){
 			 			Arduino.this.mConversation.add(hi);
 			 			Arduino.this.mConversation.notifyDataSetChanged();
@@ -410,6 +419,23 @@ public class Arduino{
 	public void getHistory(ArrayAdapter<History_item> mConversation) {
 		this.mConversation = mConversation;
 		this.mConversation.addAll(mConversationHistory);
+	}
+
+	public void throwError(String fromArduino) {
+		// czysc komendy w kolejce az do znalezienia handlera lub konca kolejki
+		synchronized (this.lock) {
+			while (!output2.isEmpty()) {
+				if(this.wait_for != null){
+					this.wait_for = null;
+				}
+				rpc_message m = output2.pop();
+				if( m.handle( fromArduino ) ){	// zatrzymało kasowanie kolejki
+
+					break;
+				}else{		// usuwa wszystkie ktore nie obsługują tego zapytania
+				}
+			}
+		}
 	}
 }
 

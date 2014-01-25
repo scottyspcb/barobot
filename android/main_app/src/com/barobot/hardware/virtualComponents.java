@@ -3,21 +3,16 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.barobot.R;
-import com.barobot.R.id;
+import com.barobot.activity.BarobotMain;
 import com.barobot.activity.DebugActivity;
 import com.barobot.utils.ArduinoQueue;
 import com.barobot.utils.Constant;
 import com.barobot.utils.Arduino;
+import com.barobot.utils.input_parser;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.widget.ProgressBar;
-import android.widget.SeekBar;
-import android.widget.TextView;
-import android.widget.Toast;
-
 public class virtualComponents {
 	public static final int WITHGLASS = 111;
 	public static final int WITHOUTGLASS = 222;
@@ -88,14 +83,14 @@ public class virtualComponents {
 	// pozycje butelek, sa aktualizowane w trakcie
 	public static int[] margin_x = {
 		300,
+		-100,
+		200,
 		0,
-		300,
+		200,
 		0,
-		300,
-		0,
-		300,
+		200,
 		0, 
-		300,
+		200,
 		0,
 		300,
 		0
@@ -178,14 +173,14 @@ public class virtualComponents {
 	}
 	
 	public static int getInt( String name, int def ){
-		return virtualComponents.toInt(virtualComponents.get( name, ""+def ));
+		return input_parser.toInt(virtualComponents.get( name, ""+def ));
 	}
 	public static void set(String name, long value) {
 		virtualComponents.set(name, "" + value );
 	}
 	public static void set( String name, String value ){
 		if(name == "POSX"){
-	//		Constant.log(Constant.TAG,"zapisuje posx:"+ value );	
+			Constant.log(Constant.TAG,"zapisuje posx:"+ value );	
 		}
 		hashmap.put(name, value );
 		virtualComponents.update( name, value );
@@ -196,20 +191,10 @@ public class virtualComponents {
 			config_editor.commit();
 		}
 	}
-	public static int toInt( String input ){
-		input = input.replaceAll( "[^-\\d]", "" );
-		int res;
-		try {
-			res = Integer.parseInt(input);
-		} catch (NumberFormatException e) {
-			return 0;
-		}
-		return res;
-	}
-	public static long getBottlePosX( int i ) {
+	public static int getBottlePosX( int i ) {
 		return virtualComponents.getInt("BOTTLE_X_" + i, b_pos_x[i]);
 	}
-	public static long getBottlePosY( int i ) {
+	public static int getBottlePosY( int i ) {
 		return virtualComponents.getInt("BOTTLE_Y_" + i, b_pos_y[i]);
 	}
 	private static void update(String name, String value) {
@@ -219,7 +204,7 @@ public class virtualComponents {
 		}
 	}
 	// zapisz ze tutaj jest butelka o danym numerze
-	public static void hereIsBottle(int i, long posx, long posy) {
+	public static void hereIsBottle(int i, int posx, int posy) {
 		//Constant.log(Constant.TAG,"zapisuje pozycje:"+ i + " " +posx+ " " + posy );
 		virtualComponents.set("BOTTLE_X_" + i, ""+posx );
 		virtualComponents.set("BOTTLE_Y_" + i, ""+posy );
@@ -280,14 +265,11 @@ public class virtualComponents {
 		q.add( new rpc_message( true ) {
 			@Override
 			public ArduinoQueue run() {
-				this.name		= "check position";
-				String posx		= virtualComponents.get("POSX", "0" );		// czy ja juz jestem na tej pozycji?	
-				String posy		= virtualComponents.get("POSY", "0" );
-				long tx 		= getBottlePosX( num );
-				long ty  		= getBottlePosY( num );
-				long cx  		= Long.parseLong(posx);
-				long cy  		= Long.parseLong(posy);
-
+				this.name	= "check position";
+				int cx		= virtualComponents.getInt("POSX", 0 );		// czy ja juz jestem na tej pozycji?	
+				int cy		= virtualComponents.getInt("POSY", 0 );
+				int tx 	= getBottlePosX( num );
+				int ty  	= getBottlePosY( num );
 				if(cx == tx && cy == ty ){		// nie musze jechac
 					ArduinoQueue	q2	= new ArduinoQueue();
 					q2.addWait( virtualComponents.SERVOY_REPEAT_TIME );
@@ -313,7 +295,9 @@ public class virtualComponents {
 				}
 			}
 		} );
-		q.add(Constant.GETXPOS, true);
+	    q.add(Constant.GETXPOS, true);
+	    q.add(Constant.GETYPOS, true);
+	    q.add(Constant.GETZPOS, true);
 		ar.send( q );
 	}
 
@@ -347,6 +331,8 @@ public class virtualComponents {
 	    q.addWait(100);
 	    q.add("DZ", true);
 	    q.add(Constant.GETXPOS, true);
+	    q.add(Constant.GETYPOS, true);
+	    q.add(Constant.GETZPOS, true);
 	    ar.send(q);
 	}
 
@@ -356,14 +342,14 @@ public class virtualComponents {
 	public static void disable_analog(Arduino ar, int analogWaga) {
 		ar.send("LIVE A OFF");
 	}
-	public static void moveX( ArduinoQueue q, long pos ) {
+	public static void moveX( ArduinoQueue q, int pos ) {
 		pos = driver_x.soft2hard(pos);
 		q.add("X" + pos+ ","+virtualComponents.DRIVER_X_SPEED, true);	
 	}
 	public static void moveX( ArduinoQueue q, String pos ) {
-		moveX(q, toInt(pos));
+		moveX(q, input_parser.toInt(pos));
 	}
-	public static void moveY( ArduinoQueue q, long pos, boolean disableOnReady ) {
+	public static void moveY( ArduinoQueue q, int pos, boolean disableOnReady ) {
 		q.add("Y" + pos+ ","+virtualComponents.DRIVER_Y_SPEED, true);
 		if(disableOnReady){
 			q.add("DY", true );
@@ -372,7 +358,7 @@ public class virtualComponents {
 	public static void moveY( ArduinoQueue q, String pos ) {
 		q.add("Y" + pos+ ","+virtualComponents.DRIVER_Y_SPEED, true);	
 	}
-	public static void hereIsStart( long posx, long posy) {
+	public static void hereIsStart( int posx, int posy) {
 		//Constant.log(Constant.TAG,"zapisuje start:" +posx+ " " + posy );
 		virtualComponents.set("POS_START_X", posx );
 		virtualComponents.set("POS_START_Y", posy );
@@ -408,10 +394,10 @@ public class virtualComponents {
 			@Override
 			public ArduinoQueue run() {
 				this.name		= "check position";
-				long posx		= virtualComponents.getInt("POSX", 0 );		// czy ja juz jestem na tej pozycji?	
-				long posy		= virtualComponents.getInt("POSY", 0 );
-				long sposx		= virtualComponents.getInt("POS_START_X", 0 );		// tu mam byc
-				long sposy		= virtualComponents.getInt("POS_START_X", 0 );
+				int posx		= virtualComponents.getInt("POSX", 0 );		// czy ja juz jestem na tej pozycji?	
+				int posy		= virtualComponents.getInt("POSY", 0 );
+				int sposx		= virtualComponents.getInt("POS_START_X", 0 );		// tu mam byc
+				int sposy		= virtualComponents.getInt("POS_START_X", 0 );
 
 				if(posx != sposx || posy != sposy ){		// musze jechac?
 					ArduinoQueue	q2	= new ArduinoQueue();
@@ -425,9 +411,54 @@ public class virtualComponents {
 				return null;
 			}
 		} );
-		q.add(Constant.GETXPOS, true);
+	    q.add(Constant.GETXPOS, true);
+	    q.add(Constant.GETYPOS, true);
+	    q.add(Constant.GETZPOS, true);
 		ar.send( q );
 	}
+	
+	
+	public static void test( final int dest_x, final int dest_y) {
+
+		final rpc_message moveit = new rpc_message( true ){
+			int tryis = 3;
+			public ArduinoQueue run(){
+				ArduinoQueue q2 = new ArduinoQueue();
+				int posx		= virtualComponents.getInt("POSX", 0 );		// czy ja juz jestem na tej pozycji?	
+				int posy		= virtualComponents.getInt("POSY", 0 );
+				rpc_message waitx = null;
+				rpc_message waity = null;	
+				if( posx != dest_x ){
+					waitx = q2.add( "X" + dest_x, false );
+				}
+				if( posy != dest_y ){
+					waity = q2.add( "Y" + dest_y, false );
+				}
+				if( waitx != null || waity != null ){
+					q2.addWait( waitx );
+					q2.addWait( waity );
+					q2.add( new rpc_message( true ){
+						public boolean handle( String command ){
+							if (command == "CANT_Y"){
+								ArduinoQueue q3 = new ArduinoQueue();
+								if( tryis-- > 0){
+						//			q3.add( moveit );
+								}else{
+									q3.addThrow("cant_move" );
+								}
+							}
+							return true;
+						}
+						public ArduinoQueue run(){
+							return null;
+						}
+					});
+				}
+				return q2;
+			}
+		};
+	}
+	
 	public static void kalibrcja() {
 		Arduino ar		= Arduino.getInstance();
 		ArduinoQueue q	= new ArduinoQueue();
@@ -439,13 +470,13 @@ public class virtualComponents {
 		virtualComponents.moveZDown( q );
 		virtualComponents.moveZ( q, virtualComponents.SERVOZ_TEST_POS );
 		virtualComponents.moveZDown( q );
-		virtualComponents.moveY( q, virtualComponents.SERVOY_TEST_POS, true);		
+		virtualComponents.moveY( q, virtualComponents.SERVOY_TEST_POS, true);
 		virtualComponents.moveY( q, virtualComponents.SERVOY_FRONT_POS, true);
-		long lengthx19	=  virtualComponents.getInt("LENGTHX", 60000 );	
+		int lengthx19	=  virtualComponents.getInt("LENGTHX", 60000 );	
 		virtualComponents.moveX( q, posx + 2000);
 		virtualComponents.moveX( q, -70000 );	// read margin
 		// scann Triggers
-		q.add( new rpc_message( true ) {
+		q.add( new rpc_message( true ) {			// go up
 			@Override
 			public ArduinoQueue run() {
 				this.name		= "scanning up";
@@ -455,24 +486,27 @@ public class virtualComponents {
 				return null;
 			}
 		} );
-		virtualComponents.moveX( q, 70000 );
+		virtualComponents.moveX( q, 70000 );		// go down
+		
 		q.add( new rpc_message( true ) {
 			@Override
 			public ArduinoQueue run() {
 				this.name		= "scanning back";
-
 				Constant.log("+find_bottles", "down na:" + virtualComponents.scann_num);
 				virtualComponents.scann_num = 1;
 				return null;
 			}
 		} );
-		virtualComponents.moveX( q, -lengthx19);	
+		virtualComponents.moveX( q, -lengthx19);			// down to 0
 		q.add( new rpc_message( true ) {
 			@Override
 			public ArduinoQueue run() {
 				this.name		= "end scanning";
 				Constant.log("+find_bottles", "koniec na:" + virtualComponents.scann_num);
 				virtualComponents.scann_bottles = false;
+				if( virtualComponents.scann_num != 12 ){
+					BarobotMain.getInstance().showError();
+				}
 				return null;
 			}
 		} );

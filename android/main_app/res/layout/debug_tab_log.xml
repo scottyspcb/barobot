@@ -33,4 +33,14 @@
         android:layout_below="@+id/logs_enable"
         android:text="Wyczyść" />
 
+    <Button
+        android:id="@+id/unlock_log"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/clear_history"
+        android:layout_toRightOf="@+id/led_list"
+        android:text="Unlock" />
+
 </RelativeLayout>

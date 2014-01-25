@@ -2,7 +2,7 @@ package com.barobot.utils;
 
 public class History_item{
 	public String command="";
-	protected String ret;
+	protected String unlocking_command;
 	public boolean direction;
 
 	public History_item() {
@@ -18,9 +18,9 @@ public class History_item{
 		}else{
 			prefix = "--> ";
 		}
-		if(ret==null){
+		if(unlocking_command==null){
 			return prefix + command;
 		}
-		return prefix + command +"\t\t\t\t" + ret; 
+		return prefix + command +"\t\t\t\t" + unlocking_command; 
 	}
 }
