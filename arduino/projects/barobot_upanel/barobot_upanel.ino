@@ -10,14 +10,12 @@ long int milis1 = 0;
 long int milis4 = 0;
 boolean diddd = false;
 
-
 volatile uint8_t _isr_count = 0xff;
 volatile boolean pwmnow= false;
 volatile uint16_t timertime = 100;
 volatile unsigned long _nanotime = 0;
 volatile uint8_t _timediv= 0;
 volatile uint8_t checktime= 0;
-
 
 void setup(){
   DEBUGINIT();
@@ -35,7 +33,7 @@ void setup(){
   DDRD |= _BV(PD4) | _BV(PD5) | _BV(PD6) | _BV(PD7);
   digitalWrite(PIN_PANEL_LED7_NUM, HIGH );      // debug, oczekiwanie na adres
   if(!init_i2c()){
-    {INTERVAL
+    {
       check_i2c_valid();
     } while( !init_i2c() );
   }
@@ -43,22 +41,6 @@ void setup(){
   Wire.onReceive(receiveEvent);
   Wire.onRequest(requestEvent);
   send_here_i_am();  // wyslij po i2c ze oto jestem
-
-
-/*
-  uint8_t i=LEDS;
-  while(i--){
-    uint8_t pin = _pwm_channels[i].pin;
-    _pwm_channels[i].outport = portOutputRegister(digitalPinToPort(pin));
-    _pwm_channels[i].pinmask = digitalPinToBitMask(pin);
-//  pinMode(pin, OUTPUT);
-    #if UPANEL_COMMON_ANODE
-     *_pwm_channels[i].outport &= ~(_pwm_channels[i].pinmask);          // turn off the channel (set GND)
-    #else
-     *_pwm_channels[i].outport |= _pwm_channels[i].pinmask;              // turn off the channel (set VCC)
-    #endif
-  }
-     */ 
 
   for (uint8_t i = 0; i < COUNT_UPANEL_ONBOARD_LED; ++i){
     uint8_t pin = _pwm_channels[i].pin;
@@ -92,7 +74,7 @@ void setup(){
 
   PWM( 1, 0,0,0,0,0,0);
   PWM( -1, 0,0,0,0,0,0);
- 
+
   PWMSetFadeTime(-1, 1, 1);
   
   PWMSetFadeTime(0, 1, 1);
@@ -116,6 +98,7 @@ void setup(){
 byte button_down = 0;
 
 void loop() {
+  /*
    unsigned long mil = millis();
     // debug:
   	if( mil > milis1 + 1000 ){    // debug, mrygaj co 1 sek
@@ -127,17 +110,30 @@ void loop() {
                 send_pin_value( PIN_UPANEL_POKE, diddd ? 1 : 0 );
   		milis4 = mil;
   	}
-
+*/
     if( use_local&& in_buffer1[0] ){          // komendy bez wymaganej odpowiedzi do mastera obsluguj tutaj:
       byte command = in_buffer1[0];
       if( command == METHOD_SETPWM ){                // PWM     3 bajty
            // setPWM(in_buffer1[1],in_buffer1[2]);
  //           leds[in_buffer1[1]].wypelnienie = in_buffer1[2];
-      }else if( command == METHOD_RESETCYCLES ){         // reset
-      }else if( command == METHOD_SETTIME ){         // set time
-      }else if( command == METHOD_SETFADING ){         // fadein out
-//      }else if( command == 0x14 ){         // set dir
-//      }else if( command == 0x15 ){         // set output
+
+      }else if( command ==  METHOD_SETLED ){         // 
+        byte settings = in_buffer1[1];    // 8 bits = 8 leds
+        
+        
+        boolean a0 = bitRead(in_buffer1[0], 0);
+        boolean a1 = bitRead(in_buffer1[1], 0);
+        boolean a2 = bitRead(in_buffer1[2], 0);
+        boolean a3 = bitRead(in_buffer1[3], 0);
+        boolean a4 = bitRead(in_buffer1[5], 0);
+        boolean a5 = bitRead(in_buffer1[6], 0);
+        boolean a6 = bitRead(in_buffer1[7], 0);
+        
+
+
+//      }else if( command == METHOD_RESETCYCLES ){         // reset
+//      }else if( command == METHOD_SETTIME ){         // set time
+//      }else if( command == METHOD_SETFADING ){         // fadein out
       }else if( command == METHOD_PROG_MODE_ON ){         // i2c in prog mode (master programuje jakis slave, ale nie mnie)
         digitalWrite(LED_TOP_RED, HIGH);
         if(in_buffer1[1] == my_address){
@@ -148,7 +144,7 @@ void loop() {
           prog_me = false;
         }
         prog_mode = true;
-      }else if( command == METHOD_GETANALOGVALUE ){  // get analog value
+//      }else if( command == METHOD_GETANALOGVALUE ){  // get analog value
     /*
         uint16_t value = analogRead(in_buffer1[1]);
         byte ttt[2]    = {value>>8, value & 0xff };
@@ -182,7 +178,6 @@ void loop() {
      }
      button_down = 0;
    }
-   
 }
 
 void reset_next(boolean value){
@@ -222,10 +217,11 @@ void requestEvent(){
     }else if( in_buffer1[0] == METHOD_TEST_SLAVE ){    // return xor
         byte res = in_buffer1[1] ^ in_buffer1[2];
         Wire.write(res);
+        /*
         if( res & 0x01 ){    // ustawiony najmlodzzy bit
           diddd = !diddd;
           digitalWrite(PIN_PANEL_LED4_NUM, diddd);
-        }
+        }*/
     }
 }
 
@@ -267,21 +263,20 @@ void check_i2c_valid(){
   }
 }
 
-
-/*
-void show_error( byte error_code ){    // mrygaj czerwonym tyle razy
-  while(true){
-    while(--error_code){
-      digitalWrite(LED_TOP_RED, 1);
-      digitalWrite(LED_BOTTOM_RED, 1);
-      delay2(100);    
-      digitalWrite(LED_TOP_RED, 0);
-      digitalWrite(LED_BOTTOM_RED, 0);
-      delay2(100);
-    }
-  }
-}*/
-
+void digitalWrite2(uint8_t pin, uint8_t val){
+        uint8_t bit = digitalPinToBitMask(pin);
+        uint8_t port = digitalPinToPort(pin);
+        if (port == NOT_A_PIN){
+          return;
+      }
+      volatile uint8_t *out;
+      out = portOutputRegister(port);
+      if (val == LOW) {
+              *out &= ~bit;
+      } else {
+              *out |= bit;
+      }
+}
 
 
 
