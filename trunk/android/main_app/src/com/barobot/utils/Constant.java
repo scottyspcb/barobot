@@ -76,7 +76,7 @@ public class Constant {
 		if(Constant.D) {
 			Log.w(tag22,string,e);
 		}		
-	}    
+	}
 	
 	public static final int DRIVER_X 		= 4;
 	public static final int DRIVER_Y 		= 8;
@@ -120,9 +120,8 @@ public class Constant {
 	public static final int METHOD_GET_X_POS 		= 57;
 	public static final int METHOD_EXEC_ERROR		= 22;
 	public static final int METHOD_DEVICE_FOUND		= 12;
+	public static final int METHOD_SETLED			= 40;
 
-	
-	
 	
 	
 }
