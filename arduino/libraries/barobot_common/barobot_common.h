@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include <constants.h>
 
 /*------------------------------    i2c     ------------------------------*/
 //#define I2C_ADR_MASTER 0x01
@@ -175,12 +176,15 @@
 
 	#define PIN_IPANEL_CURRENTY A6		// dip pin ?? A6,	Q 19
 	#define PIN_IPANEL_CURRENTZ A7		// dip pin ?? A7,	Q 22
+	#define PIN_IPANEL_TEMP A8		// interanl, no pin
 
-	#define INNER_CODE_HALL_X 2
-	#define INNER_CODE_HALL_Y 3
-	#define INNER_CODE_WEIGHT 4
-	#define INNER_CODE_CURRENT_X 0
-	#define INNER_CODE_CURRENT_Y 1
+	
+	#define INNER_CODE_HALL_X 0
+	#define INNER_CODE_HALL_Y 1
+	#define INNER_CODE_WEIGHT 2
+	#define INNER_CODE_CURRENT_X 3
+	#define INNER_CODE_CURRENT_Y 4
+	#define INNER_CODE_TEMP 5
 
 	#define PIN_IPANEL_SERVO_Y 5		// dip pin 11,	Q 9
 	#define PIN_IPANEL_SERVO_Z 6		// dip pin 12,	Q 10
@@ -344,7 +348,7 @@
 #define RETURN_I2C_ERROR 	53
 #define METHOD_EXEC_ERROR 	22
 #define METHOD_DEVICE_FOUND 	12
-
+#define METHOD_SETLED 	40
 
 #define METHOD_SET_X_ACCELERATION 	"AX"
 #define METHOD_MASTER_CAN_FILL 	"CF"
@@ -364,6 +368,25 @@
 #define METHOD_TRIGGER 	'T'
 #define METHOD_WAIT_READY 	"WR"
 #define METHOD_SET_X_POS 	'X'
+
+
+ 
+
+
+
+
+//24 * 2^0  + 252* 2^1 + 255* 2^2 + 255* 2^3
+
+
+
+
+
+// typy b³êdów:
+#define 	T_UNKNOWN_E		0x05
+#define 	T_ENGINE_E		0x06
+#define 	T_WRITE_I2C_E	0x07	
+#define 	T_READ_I2C_E	0x08
+
 
 
 // inne

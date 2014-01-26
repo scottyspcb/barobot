@@ -108,14 +108,13 @@ void AccelStepper::computeNewSpeed()
 
     long stepsToStop = (long)((_speed * _speed) / (2.0 * _acceleration)); // Equation 16
 
-    if (distanceTo == 0 && stepsToStop <= 1)
-    {
-	// We are at the target and its time to stop
-	_stepInterval = 0;
-	_speed = 0.0;
-	_n = 0;
-	onReady();
-	return;
+    if (distanceTo == 0 && stepsToStop <= 1){
+		// We are at the target and its time to stop
+		_stepInterval = 0;
+		_speed = 0.0;
+		_n = 0;
+		onReady();
+		return;
     }
 
     if (distanceTo > 0)
@@ -309,17 +308,17 @@ float AccelStepper::getAcceleration(){
 }
 void AccelStepper::setAcceleration(float acceleration)
 {
-    if (acceleration == 0.0)
-	return;
-    if (_acceleration != acceleration)
-    {
-	// Recompute _n per Equation 17
-	_n = _n * (_acceleration / acceleration);
-	// New c0 per Equation 7
-	_c0 = sqrt(2.0 / acceleration) * 1000000.0;
-	_acceleration = acceleration;
-	computeNewSpeed();
-    }
+    if (acceleration == 0.0){
+		return;
+	}
+    if (_acceleration != acceleration) {
+		// Recompute _n per Equation 17
+		_n = _n * (_acceleration / acceleration);
+		// New c0 per Equation 7
+		_c0 = sqrt(2.0 / acceleration) * 1000000.0;
+		_acceleration = acceleration;
+		//computeNewSpeed(); // todo
+	}
 }
 
 void AccelStepper::setSpeed(float speed)
