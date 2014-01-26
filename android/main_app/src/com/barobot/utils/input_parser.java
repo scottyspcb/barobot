@@ -80,22 +80,14 @@ public class input_parser {
 		}else if( command == Constant.COMMENT ){		// nic- to komentarz	
 		}else if( fromArduino.startsWith( "" + Constant.METHOD_I2C_SLAVEMSG) ){		// msg od slave
 			int[] parts = decodeBytes( fromArduino );
+			String retLike = fromArduino;
 /*
 			parts[0]	= METHOD_I2C_SLAVEMSG
 			parts[1]	= my_address
 			parts[2]	= METHOD_GET_Y_POS (WHY_CODE)
 			parts[3]	- param 0
 */
-			String retLike	 = fromArduino;
-			if( parts[2] == Constant.METHOD_GET_Y_POS ){
-				int pos = parts[3] + (parts[4] << 8); 
-				virtualComponents.set( "POSY",""+pos);
-				retLike = "Ry";
-			}else if( parts[2] == Constant.METHOD_GET_Z_POS ){
-				int pos = parts[3] + (parts[4] << 8); 
-				virtualComponents.set( "POSZ",""+pos);
-				retLike = "Rz";
-			}else if( parts[2] == Constant.METHOD_GET_X_POS ){
+			if( parts[2] == Constant.METHOD_GET_X_POS ){
 				int hpos = parts[3] + (parts[4] << 8); 
 				int posx = virtualComponents.driver_x.hard2soft(hpos);
 				virtualComponents.set( "POSX",posx);
@@ -103,16 +95,42 @@ public class input_parser {
 				if( posx > lx){		// Pozycja wieksza niz długosc? Zwieksz długosc
 					virtualComponents.set( "LENGTHX", "" + posx);
 				}
-				retLike = "Ry";
-			}else if( parts[2] == Constant.RETURN_DRIVER_READY ){
-				int pos = parts[4] + (parts[5] << 8); 
-				if( parts[3] == Constant.DRIVER_Y){
-				}else if( parts[3] == Constant.DRIVER_Z){
-				}
-				//parts[4]	- DRIVER_X
-				//parts[5]	- pos low
-				//parts[6]	- pos high
 				retLike = "Rx";
+			}else if( parts[2] == Constant.METHOD_GET_Y_POS ){
+				int pos = parts[3] + (parts[4] << 8); 
+				virtualComponents.set( "POSY",""+pos);
+				retLike = "Ry";
+			}else if( parts[2] == Constant.METHOD_GET_Z_POS ){
+				int pos = parts[3] + (parts[4] << 8); 
+				virtualComponents.set( "POSZ",""+pos);
+				retLike = "Rz";
+			}else if( parts[2] == Constant.METHOD_DRIVER_DISABLE ){
+				if( parts[3] == Constant.DRIVER_X){
+					retLike = "RDX";
+				}else if( parts[3] == Constant.DRIVER_Y){
+					retLike = "RDY";
+				}else if( parts[3] == Constant.DRIVER_Z){
+					retLike = "RDZ";
+				}
+			}else if( parts[2] == Constant.METHOD_DRIVER_ENABLE ){
+				if( parts[3] == Constant.DRIVER_X){
+					retLike = "REX";
+				}else if( parts[3] == Constant.DRIVER_Y){
+					retLike = "REY";
+				}else if( parts[3] == Constant.DRIVER_Z){
+					retLike = "REZ";
+				}
+			}else if( parts[2] == Constant.RETURN_DRIVER_READY ){
+				int pos = parts[4] + (parts[5] << 8);
+				if( parts[3] == Constant.DRIVER_X){
+					pos = pos + (parts[6] << 16 + (parts[7] << 24));
+					retLike = "Rx";
+				}else if( parts[3] == Constant.DRIVER_Y){
+					retLike = "Ry";
+				}else if( parts[3] == Constant.DRIVER_Z){
+					retLike = "Rz";
+				}
+				virtualComponents.set( "POSX",pos);
 			}else{
 				Log.e("FINDER", "no METHOD_I2C_SLAVEMSG");
 			}
@@ -123,23 +141,30 @@ public class input_parser {
 			// byte ttt[5] = {METHOD_DEVICE_FOUND,I2C_ADR_MAINBOARD,MAINBOARD_DEVICE_TYPE,MAINBOARD_VERSION,0};
 			int[] parts = decodeBytes( fromArduino );
 			if(parts[2] == Constant.MAINBOARD_DEVICE_TYPE ){
-				Arduino q	= Arduino.getInstance();
+				Arduino a	= Arduino.getInstance();
 				int cx		= virtualComponents.getInt("POSX", 0 );
 				virtualComponents.driver_x.setM(cx);	// ostatnia znana pozycja jest marginesem
-				q.clear();
+				a.clear();
 			}else if(parts[2] == Constant.UPANEL_DEVICE_TYPE ){		// upanel
 
 			}else if(parts[2] == Constant.IPANEL_DEVICE_TYPE ){		// wozek
 			}
 
+		}else if( fromArduino.startsWith( "" + Constant.RETURN_I2C_ERROR) ){
+			// byte ttt[4] = {RETURN_I2C_ERROR,my_address, deviceAddress,length, command }
+			// Urządzenie 'my_address' wysyłało do 'deviceAddress' bajtów length
+			Arduino.getInstance().unlock();
+			// todo, obsłużyc to lepiej
+
 		}else if( fromArduino.startsWith( "" + Constant.METHOD_EXEC_ERROR) ){		// msg od slave		
 			int[] parts = decodeBytes( fromArduino );
-			String retLike = "Rx";
-			if( parts[3] == Constant.DRIVER_Y){
+			String retLike = fromArduino;
+			if( parts[3] == Constant.DRIVER_X){
+				retLike = "Rx";
+			}else if( parts[3] == Constant.DRIVER_Y){
+				retLike = "Ry";
 			}else if( parts[3] == Constant.DRIVER_Z){
-				
-			}else if( parts[3] == Constant.DRIVER_X){
-				
+				retLike = "Rz";
 			}
 			is_ret = Arduino.getInstance().read_ret( retLike );		// zapisuj zwrotki
 		}else if(command == Constant.RET ){		// na końcu bo to może odblokować wysyłanie i spowodować zapętlenie
@@ -181,7 +206,7 @@ public class input_parser {
 				virtualComponents.set( "POSZ",fromArduino3);
 			}
 			is_ret = Arduino.getInstance().read_ret( fromArduino );		// zapisuj zwrotki
-	
+
 		}else if(command == Constant.TRIGGER ){  // trigger	
 			String[] tokens = fromArduino.split(",");
 			char axis		= fromArduino.charAt(1);
@@ -260,9 +285,17 @@ public class input_parser {
 						}
 					}
 				}
-			}else if( axis == 'Y'){
-			}else if( axis == 'Z'){
 			}
+		}else if( fromArduino.startsWith( "" + Constant.METHOD_IMPORTANT_ANALOG) ){		// msg od slave		
+			/*
+			byte ttt[5] = {
+			  METHOD_IMPORTANT_ANALOG,
+			  buffer[1],                        // analog num
+			  buffer[2],                        // reason
+			  buffer[2],                        // pos low byte
+			  buffer[2]                         // pos high byte
+			};
+			*/
 
 		}else if(command == Constant.ERROR ){  //error	
 			Arduino a			= Arduino.getInstance();

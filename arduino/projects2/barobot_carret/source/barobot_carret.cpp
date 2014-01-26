@@ -12,7 +12,7 @@
 #include <stdint.h>       // needed for uint8_t
 #include <avr/interrupt.h>
  
-#define ANALOGS  5
+#define ANALOGS  6
 #define ANALOG_TRIES  4
 
 volatile uint16_t checks = 0;
@@ -24,7 +24,7 @@ volatile uint8_t row = 0;
 byte moving_x = DRIVER_DIR_STOP;      // informacja co robi główny silnik
 byte moving_y = DRIVER_DIR_STOP;      // informacja co robi silnik
 byte moving_z = DRIVER_DIR_STOP;      // informacja co robi silnik
- 
+
 #define UNCONNECTED_LEVEL  3
 #define MIN_DELTA  20
 //unsigned int typical_zero = 512;
@@ -139,7 +139,7 @@ int16_t historyx[HISTORY_LENGTH]  = {typical_neutral,typical_neutral,typical_neu
 int8_t historyx_index  = 0;
  
 int16_t cc = 0;
- 
+
 void loop() {
 	mil = millis();
 	if( analog_reading &&  mil > milisAnalog ){
@@ -310,73 +310,73 @@ void loop() {
 				}
 			}
 		}
-	}
-	 
-	void update_servo( byte index ) {           // synchroniczne
-		if( servos[index].pos_changed == true && !prog_mode){  // mam byc gdzie indziej
-			//    DEBUG( "-przesuwam Y " );
-			//    DEBUGLN( String(servos[index].last_pos) );
-			servo_lib[index].writeMicroseconds(servos[index].last_pos);
-			servos[index].pos_changed = false;
-			if( servos[index].last_pos == servos[index].target_pos){
-				DEBUGLN( "-gotowe servo" );
-				if( index == INNER_SERVOY ){
-					uint16_t margin = servos[index].last_pos;    // odwrotnie do ostatniej komendy
-					if(  servos[index].delta_pos > 0 ){      // jechalem w gore
-						DEBUGLN( "- -10" );
-						margin -= 10;
-					}else if(  servos[index].delta_pos < 0){  // jechalem w dol
-						DEBUGLN( "- +10" );
-						margin += 10;
-					}
-					servo_lib[index].writeMicroseconds(margin);
+}
+ 
+void update_servo( byte index ) {           // synchroniczne
+	if( servos[index].pos_changed == true && !prog_mode){  // mam byc gdzie indziej
+		//    DEBUG( "-przesuwam Y " );
+		//    DEBUGLN( String(servos[index].last_pos) );
+		servo_lib[index].writeMicroseconds(servos[index].last_pos);
+		servos[index].pos_changed = false;
+		if( servos[index].last_pos == servos[index].target_pos){
+			DEBUGLN( "-gotowe servo" );
+			if( index == INNER_SERVOY ){
+				uint16_t margin = servos[index].last_pos;    // odwrotnie do ostatniej komendy
+				if(  servos[index].delta_pos > 0 ){      // jechalem w gore
+					DEBUGLN( "- -10" );
+					margin -= 10;
+				}else if(  servos[index].delta_pos < 0){  // jechalem w dol
+					DEBUGLN( "- +10" );
+					margin += 10;
 				}
-				send_servo(false, localToGlobal(index), servos[index].target_pos );
+				servo_lib[index].writeMicroseconds(margin);
 			}
+			send_servo(false, localToGlobal(index), servos[index].target_pos );
 		}
 	}
-	 
-	void reload_servo( byte index ){      // in interrupt
-		volatile ServoChannel &ser = servos[index];
-		if( servo_lib[index].attached() && ser.last_pos != ser.target_pos ){
-			long int this_distance =0;
-			long int delta = 0;
-			if( ser.last_pos > ser.target_pos ){
-				this_distance  = ser.last_pos - ser.target_pos;
-			}else if( ser.last_pos < ser.target_pos ){
-				this_distance  = ser.target_pos - ser.last_pos;
+}
+ 
+void reload_servo( byte index ){      // in interrupt
+	volatile ServoChannel &ser = servos[index];
+	if( servo_lib[index].attached() && ser.last_pos != ser.target_pos ){
+		long int this_distance =0;
+		long int delta = 0;
+		if( ser.last_pos > ser.target_pos ){
+			this_distance  = ser.last_pos - ser.target_pos;
+		}else if( ser.last_pos < ser.target_pos ){
+			this_distance  = ser.target_pos - ser.last_pos;
+		}
+		int quoter = (ser.last_distance >> 2);                // this_distance zawsze sie zmiejsza
+		if( this_distance < quoter){                      // ostatnia cwiatrka = zwalniaj
+			delta = (ser.delta_pos * this_distance);
+			delta = delta /quoter;
+			//      DEBUG("delta4 = " );
+		}else if( this_distance > (ser.last_distance - quoter)){        // pierwsza cwiatrka = przyspieszaj. tu zawsze this_distance > 3/4 * last_distance
+			delta = (ser.delta_pos * (ser.last_distance - this_distance ) );      // tu zawsze (last_distance - this_distance ) < quoter
+			delta = delta /quoter;
+			//      DEBUG("delta1 = " );
+		}else{  // na maxa
+			//      DEBUG("delta2 = " );
+			delta = ser.delta_pos;
+		}
+		if(ser.delta_pos > 0){
+			if( delta < MIN_DELTA){
+				delta = MIN_DELTA;
 			}
-			int quoter = (ser.last_distance >> 2);                // this_distance zawsze sie zmiejsza
-			if( this_distance < quoter){                      // ostatnia cwiatrka = zwalniaj
-				delta = (ser.delta_pos * this_distance);
-				delta = delta /quoter;
-				//      DEBUG("delta4 = " );
-			}else if( this_distance > (ser.last_distance - quoter)){        // pierwsza cwiatrka = przyspieszaj. tu zawsze this_distance > 3/4 * last_distance
-				delta = (ser.delta_pos * (ser.last_distance - this_distance ) );      // tu zawsze (last_distance - this_distance ) < quoter
-				delta = delta /quoter;
-				//      DEBUG("delta1 = " );
-			}else{  // na maxa
-				//      DEBUG("delta2 = " );
-				delta = ser.delta_pos;
+		}else{
+			if( delta > -MIN_DELTA){
+				delta = -MIN_DELTA;
 			}
-			if(ser.delta_pos > 0){
-				if( delta < MIN_DELTA){
-					delta = MIN_DELTA;
-				}
-			}else{
-				if( delta > -MIN_DELTA){
-					delta = -MIN_DELTA;
-				}
-			}
-			ser.last_pos = ser.last_pos + delta;
-			if( ser.delta_pos > 0 && ser.last_pos > ser.target_pos ){        // nie przekraczaj docelowej pozycji
-				ser.last_pos = ser.target_pos;
-				//     DEBUGLN("gotowe1");
-			}else if( ser.delta_pos < 0 && ser.last_pos < ser.target_pos ){
-				//      DEBUGLN("gotowe2");
-				ser.last_pos = ser.target_pos;
-			}
-			ser.pos_changed = true;
+		}
+		ser.last_pos = ser.last_pos + delta;
+		if( ser.delta_pos > 0 && ser.last_pos > ser.target_pos ){        // nie przekraczaj docelowej pozycji
+			ser.last_pos = ser.target_pos;
+			//     DEBUGLN("gotowe1");
+		}else if( ser.delta_pos < 0 && ser.last_pos < ser.target_pos ){
+			//      DEBUGLN("gotowe2");
+			ser.last_pos = ser.target_pos;
+		}
+		ser.pos_changed = true;
     /*
     if(ser.pos_changed){
       DEBUG(String(delta));
@@ -448,17 +448,24 @@ void proceed( volatile byte buffer[5] ){
 		byte index = globalToLocal( buffer[1] );
 		servo_lib[index].attach(servos[index].pin);
 		servos[index].enabled= true;
-		 
+
+		byte ttt[4] = {METHOD_I2C_SLAVEMSG, my_address, METHOD_DRIVER_ENABLE, index };
+		send(ttt,4);
+ 
 	}else if( buffer[0] == METHOD_DRIVER_DISABLE ){
 		byte index = globalToLocal( buffer[1] );
 		servos[index].enabled= false;
 		servo_lib[index].detach();
+
 		if( servos[index].target_pos != servos[index].last_pos ){    //  wyłączyłem w trakcie jechania
-			 
+			 send_servo(false, localToGlobal(index), servos[index].target_pos );
 		}
 		digitalWrite(servos[index].pin, HIGH);
 		//    pinMode(servos[index].pin, INPUT);
 		servos[index].pos_changed = false;
+
+		byte ttt[4] = {METHOD_I2C_SLAVEMSG, my_address, METHOD_DRIVER_DISABLE, index };
+		send(ttt,4);
 
 	}else if( buffer[0] == METHOD_SET_Y_POS ){
 		// on wire: low_byte, high_byte, speed
@@ -607,8 +614,8 @@ void send_servo( boolean error, byte servo, uint16_t pos ){
 	if(error){
 		byte ttt[6] = {METHOD_I2C_SLAVEMSG, my_address, RETURN_DRIVER_READY, servo, (pos & 0xFF), (pos >>8) };
 		send(ttt,6);
-		byte ttt[4] = {METHOD_EXEC_ERROR, my_address, RETURN_DRIVER_ERROR, servo};
-		send(ttt,4);
+		byte ttt2[4] = {METHOD_EXEC_ERROR, my_address, RETURN_DRIVER_ERROR, servo};
+		send(ttt2,4);
 	}else{
 		byte ttt[6] = {METHOD_I2C_SLAVEMSG, my_address, RETURN_DRIVER_READY, servo, (pos & 0xFF), (pos >>8) };
 		send(ttt,6);
@@ -686,45 +693,19 @@ byte localToGlobal( byte ind ){      // get global device index used in android
 //  analogRead(PIN_IPANEL_HALL_X );    // often
 //  analogRead(PIN_IPANEL_WEIGHT );    // sometimes
 
-double GetTemp(void){
-	unsigned int wADC;
-	double t;
-
-	// The internal temperature has to be used
-	// with the internal reference of 1.1V.
-	// Channel 8 can not be selected with
-	// the analogRead function yet.
-
-	// Set the internal reference and mux.
-	ADMUX = (_BV(REFS1) | _BV(REFS0) | _BV(MUX3));
-	ADCSRA |= _BV(ADEN);  // enable the ADC
-
-	delay(20);            // wait for voltages to become stable.
-
-	ADCSRA |= _BV(ADSC);  // Start the ADC
-
-	// Detect end-of-conversion
-	while (bit_is_set(ADCSRA,ADSC));
-
-	// Reading register "ADCW" takes care of how to read ADCL and ADCH.
-	wADC = ADCW;
-
-	t = (wADC - 324.31 ) / 1.22;
-	return (t);
-} 
- 
 void init_analogs(){
-	ADMUX = 0;                // use ADC0
-	ADMUX |= (1 << REFS0);    // use AVcc as the reference
-	ADCSRA |= (1 << ADPS0);// 128 prescale
-	ADCSRA |= (1 << ADPS1);
-	ADCSRA |= (1 << ADPS2);
-	ADCSRA |= (1 << ADATE);   // Set ADC Auto Trigger Enable
-	ADCSRB = 0;               // 0 for free running mode
-	ADCSRA |= (1 << ADEN);    // Enable the ADC
-	ADCSRA |= (1 << ADIE);    // Enable Interrupts
-	ADCSRA |= (1 << ADSC);    // Start the ADC conversion
-	sei();
+    ADMUX = 0;                // use ADC0
+    ADMUX |= _BV(REFS1);      
+    ADMUX |= (1 << REFS0);    // REFS1 + REFS0 = Internal 1.1V (ATmega168/328) or  2.56V on (ATmega8)
+    ADCSRA |= (1 << ADPS0);  // 128 prescale  
+    ADCSRA |= (1 << ADPS1);
+    ADCSRA |= (1 << ADPS2);
+    ADCSRA |= (1 << ADATE);   // Set ADC Auto Trigger Enable
+    ADCSRB = 0;               // 0 for free running mode
+    ADCSRA |= (1 << ADEN);    // Enable the ADC
+    ADCSRA |= (1 << ADIE);    // Enable Interrupts 
+    ADCSRA |= (1 << ADSC);    // Start the ADC conversion
+    sei();
 }
  
 ISR(ADC_vect){
@@ -733,11 +714,10 @@ ISR(ADC_vect){
   channel      = (channel + 1)%ANALOGS;
   ADMUX        = (tmp | ADCport[channel]);
   ADCvalue[ row ][ channel ] = ADCL | (ADCH << 8);  //  read low first
-  //   ADCSRA |= (1 << ADSC);    // Start the ADC conversion
   if( channel == 0 ){
     row          = ((row+1) % ANALOG_TRIES);
   }
-  checks++;
+  //checks++;
 }
  
 /*

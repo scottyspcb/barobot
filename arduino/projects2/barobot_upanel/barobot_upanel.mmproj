@@ -1,7 +1,7 @@
-<mm_project serial_port="COM7" board="!Arduino Pro or Pro Mini (5V, 16 MHz) w/ ATmega328" programmer="" includePaths="" libPaths="" libs="" default="no" useCodeAutomation="yes" linkPrintfVersion="1" serialPortSpeed="" >
+<mm_project serial_port="COM3" board="!FULL ATmega8-noxtal" programmer="Arduino as ISP" includePaths="" libPaths="" libs="" default="yes" useCodeAutomation="yes" linkPrintfVersion="1" serialPortSpeed="" >
   <files>
-    <file name="barobot_mainboard_main.h" open="no" />
-    <file name="barobot_mainboard.cpp" open="yes" />
+    <file name="barobot_upanel_main.h" open="yes" />
+    <file name="barobot_upanel.cpp" open="yes" />
   </files>
   <extras>
   </extras>
@@ -11,10 +11,7 @@
     <external name="D:\PROG\arduino-1.0.5\libraries\i2c_helpers\i2c_helpers.h" />
     <external name="D:\PROG\arduino-1.0.5\libraries\i2c_helpers\i2c_helpers.cpp" />
     <external name="D:\PROG\arduino-1.0.5\libraries\barobot_common\barobot_common.h" />
-    <external name="D:\PROG\arduino-1.0.5\libraries\Servo\Servo.cpp" />
-    <external name="D:\PROG\arduino-1.0.5\libraries\Servo\Servo.h" />
     <external name="D:\PROG\arduino-1.0.5\libraries\FlexiTimer2\FlexiTimer2.h" />
     <external name="D:\PROG\arduino-1.0.5\libraries\FlexiTimer2\FlexiTimer2.cpp" />
-    <external name="D:\PROG\arduino-1.0.5\libraries\AccelStepper\AccelStepper.cpp" />
   </externals>
 </mm_project>

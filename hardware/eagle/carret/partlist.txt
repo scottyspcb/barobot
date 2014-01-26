@@ -1,0 +1,69 @@
+Partlist
+
+Exported from carret.brd at 2014-01-20 23:54:31
+
+EAGLE Version 6.5.0 Copyright (c) 1988-2013 CadSoft
+
+Assembly variant: 
+
+Part     Value          Package    Library   Position (inch)       Orientation
+C1                      C0805K     rcl       (2.425 0.45)          MR90
+C2                      C0805K     rcl       (1.875 0.35)          MR90
+C3       100n           C0805K     rcl       (1.2 -0.15)           MR0
+C4       100n           C0805K     rcl       (1.75 0.5375)         MR90
+C201                    C0805K     rcl       (0.775 0.65)          MR270
+C202                    C0805K     rcl       (0.775 0.8)           MR90
+C204     100n           C0805K     rcl       (0.975 0.5)           MR90
+D201                    SOD80C     diode     (2.7 0.175)           MR90
+D202                    SOD80C     diode     (2.8 0.175)           MR270
+D203                    SOD80C     diode     (2.9 0.175)           MR90
+IC1      LM358D         SO08       linear    (2.15 0.45)           MR90
+IC2      LM358D         SO08       linear    (2.15 0.9)            MR90
+IC202    OP07           SO08       linear    (2.8 0.7)             MR270
+IC203    OP07           SO08       linear    (2.8 0.4)             MR270
+IC205    ULN2003        SO16       uln-udn   (1.25 0.95)           MR0
+IC207    ATMEGA8        TQFP32-08  atmel     (1.275 0.5)           MR180
+J201     22-23-2041     22-23-2041 con-molex (2.15 1.45)           R0
+J202                    22-23-2031 con-molex (0.6 1.45)            R180
+J203     ARK?           22-23-2031 con-molex (0.125 0.4875)        R270
+J204                    22-23-2031 con-molex (4.55 0.8)            R90
+J205                    FE06-2     con-lsta  (2.55 -0.525)         R0
+J206                    22-23-2031 con-molex (0.125 0.8)           R270
+JP1                     1X04       pinhead   (1.275 0.175)         R180
+LED202                  LED5MM     led       (0.925 0.2)           R180
+PAD1                    1,6/0,8    wirepad   (0.45 0.2)            R0
+PAD2                    1,6/0,8    wirepad   (0.5 0.15)            R0
+PAD3                    1,6/0,8    wirepad   (0.55 0.2)            R0
+PAD4                    1,6/0,8    wirepad   (0.6 0.15)            R0
+Q201     16 MHz         HC49UP     crystal   (0.85 0.725)          MR270
+Q202     16 MHz         HC49U-V    crystal   (0.925 0.725)         R270
+R1                      R1206      resistor  (0.3 0.7)             MR180
+R2                      R1206      resistor  (4.375 0.9)           MR0
+R3       10k            R0805      resistor  (1.95 0.35)           MR90
+R4       10k            R0805      resistor  (1.8 0.35)            MR270
+R5       10k            R0805      resistor  (2.35 0.45)           MR90
+R6       10k            R0805      resistor  (2.35 0.3125)         MR90
+R7                      R0805      rcl       (2.4875 0.1375)       MR0
+R8       10k            R0805      resistor  (1.5625 0.675)        MR90
+R9                      R0805      rcl       (2.15 1.05)           MR180
+R10                     R0805      rcl       (2.2625 1.1375)       MR90
+R201                    R0805      rcl       (2.8375 1.1875)       MR180
+R202                    R0805      rcl       (2.7 1.1875)          MR180
+R204                    R0805      rcl       (3 0.5375)            MR90
+R205                    R0805      rcl       (2.5 1.075)           MR90
+R209                    R0805      rcl       (3 0.675)             MR270
+R210                    R0805      rcl       (2.8 0.85)            MR180
+R211                    R0805      rcl       (2.8 0.525)           MR0
+R212                    R0805      rcl       (3 0.4)               MR90
+R213                    R0805      rcl       (3 0.175)             MR90
+R214                    R1206      resistor  (1.6 1.275)           MR90
+R215                    R1206      resistor  (1.5 1.275)           MR90
+R216                    R1206      resistor  (1.4 1.275)           MR90
+R217                    R1206      resistor  (1.3 1.275)           MR90
+R219                    R1206      resistor  (0.45 0.375)          MR270
+R220                    R1206      resistor  (0.5375 0.375)        MR270
+R221                    R1206      resistor  (0.625 0.375)         MR270
+R222                    R0805      resistor  (0.9875 0.275)        MR0
+R223     10k            R0805      resistor  (2.7 -0.6625)         MR180
+U$1      TL431          SO08       0alib     (2.7 1.05)            MR270
+X1       22-23-2051     22-23-2051 con-molex (1.4 1.45)            R180

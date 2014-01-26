@@ -86,6 +86,7 @@ byte read_can_fill();
 void parseInput( String input );
 void i2c_device_found( byte addr,byte type,byte ver, byte pos );
 void proceed( byte length,volatile uint8_t buffer[7] );
+void reset_wire();
 void check_i2c();
 void loop();
 void timer();

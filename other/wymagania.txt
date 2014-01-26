@@ -74,10 +74,6 @@ narastanie / opadanie wype³nienia 12 pinów
 512 bajtów;
 
 
-
-	Je¿eli u¿ywasz piny ADC4-ADC5 jako interfejs TWI (I2C) wp³ywaj¹
-	one (zak³ócaj¹) na pomiary kana³ów ADC4-ADC5, ale nie zak³ócaj¹ pomiarów na pozosta³ych kana³ach ADC.
-	
 	
 
 
@@ -86,9 +82,8 @@ micropendous
 https://instruct1.cit.cornell.edu/courses/ee476/FinalProjects/s2007/blh36_cdl28_dct23/blh36_cdl28_dct23/index.html
 
 http://www.cesko.host.sk/IgorPlugUSB/IgorPlug-USB%20%28AVR%29_eng.htm
-http://dicks.home.xs4all.nl/avr/usbtiny/
 
-http://android.serverbox.ch/?p=370
+
 
 
 
