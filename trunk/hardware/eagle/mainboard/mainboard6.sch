@@ -6512,18 +6512,6 @@ XTAL2  8 PB7 XTAL
 11 SCL
 12 CARRET_RESET
 (digital)</text>
-<text x="-180.34" y="-88.9" size="1.778" layer="91">Wymagania elementów wykonawczych:
-Reset_Carret	 - digital out
-Reset_Upanel_front	 - digital out
-Reset_Upanel_back	 - digital out
-Czujnik tabletu	- analog in
-Ultrasonic TRIG	- digital in
-Ultrasonic ECHO	- digital out
-LEDY - digital out
-Tablet - RX, TX
-Stepper driver enable - digital out
-Stepper driver step - digital out
-Stepper driver dir - digital out</text>
 </plain>
 <instances>
 <instance part="Q101" gate="G$1" x="-116.84" y="-17.78"/>
