@@ -52,31 +52,16 @@ public class input_parser {
 		}
 		Log.i(Constant.TAG, "parse:[" + fromArduino +"]");
 		char command = fromArduino.charAt(0);
-		if( command == Constant.ANALOG ){
+		if( command == Constant.METHOD_LIVE_ANALOG ){		// analog na zywo
+			int[] parts = decodeBytes( fromArduino );
+			int value = parts[4] + (parts[5] << 8) + (parts[6] << 16 + (parts[7] << 24));	
+			value	= value / DebugTabGraph.graph_repeat;		// podziel przez liczbe powtorzen
 			AJS aa = AJS.getInstance();
 			if(aa!=null){
-				String[] tokens = fromArduino.split(" ");
-				if(tokens.length > 1 ){
-					try {
-						int e = Integer.parseInt( tokens[1] );
-						e	= e / DebugTabGraph.graph_repeat;		// podziel przez liczbe powtorzen
-						aa.oscyloskop( e );
-					} catch ( java.lang.NumberFormatException e2) {
-					}
-				}
+				aa.oscyloskop( value );
 			}
-			if(fromArduino.startsWith("A2 ")){			// analog2
-				String fromArduino21 = fromArduino.replace("A2 ", "");
-				virtualComponents.set( "GLASS_WEIGHT", fromArduino21);
-				int noglass_weight = virtualComponents.getInt( "NOGLASS_WEIGHT", 0 );
-				try {
-					int e = Integer.parseInt(fromArduino21);
-					if( e < noglass_weight ){		// jesli jest lżej od tego ile powinno byc
-						virtualComponents.set( "NOGLASS_WEIGHT", fromArduino21);
-					}
-				} catch ( java.lang.NumberFormatException e2) {
-				}
-			}
+			
+			
 		}else if( command == Constant.COMMENT ){		// nic- to komentarz	
 		}else if( fromArduino.startsWith( "" + Constant.METHOD_I2C_SLAVEMSG) ){		// msg od slave
 			int[] parts = decodeBytes( fromArduino );
@@ -131,6 +116,12 @@ public class input_parser {
 					retLike = "Rz";
 				}
 				virtualComponents.set( "POSX",pos);
+			}else if( parts[2] == Constant.RETURN_PIN_VALUE ){
+				//{METHOD_I2C_SLAVEMSG,my_address, RETURN_PIN_VALUE,my_address,pin,value}
+				byte my_address = (byte) parts[3];
+				byte pin		= (byte) parts[4];
+				byte value		= (byte) parts[5];
+				Log.e("POKE-BUTTON", "Address:" + my_address + ", pin: " + pin+ ", value: " + value );
 			}else{
 				Log.e("FINDER", "no METHOD_I2C_SLAVEMSG");
 			}
@@ -260,7 +251,6 @@ public class input_parser {
 					}
 				}else if(reason == Methods.HALL_LOCAL_MIN){			// butelka
 					int posx = virtualComponents.driver_x.hard2soft(pos);
-					
 					if(direction == Methods.DRIVER_DIR_BACKWARD){
 				//	Log.i("FINDER-", "Znalazlem cos pod adresem: "+ virtualComponents.scann_num+" "+posx);	
 					}				
@@ -278,7 +268,6 @@ public class input_parser {
 								virtualComponents.hereIsBottle(num, posx, ypos );	
 							}
 							Log.i("input_parser "+ virtualComponents.scann_num+" "+ypos, "butelka "+num+": " + posx+ " / " + virtualComponents.margin_x[num] );
-							
 							virtualComponents.scann_num++;							
 						}else{
 							Log.i("input_parser MIN", "za duzo butelek" );								

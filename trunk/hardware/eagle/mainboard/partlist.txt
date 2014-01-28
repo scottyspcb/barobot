@@ -1,0 +1,48 @@
+Partlist
+
+Exported from mainboard.sch at 2014-01-28 18:36:04
+
+EAGLE Version 5.6.0 Copyright (c) 1988-2009 CadSoft
+
+Part                 Value          Device          Package      Library        Sheet
+
+ARK101                              AK300/4         AK300/4      con-ptr500     1
+ATMEGA328P-A                        MEGA8-MI        MLF32-TH     atmel          1
+BUTTON_101           SKHMPSE010     SKHMPSE010      SKHMPXE010   switch         1
+C2                   100n           C5/5            C5B5         capacitor-wima 1
+C3                   100n           C5/5            C5B5         capacitor-wima 1
+C101                 27pF           C5/5            C5B5         capacitor-wima 1
+C102                 27pF           C5/5            C5B5         capacitor-wima 1
+C103                 100nF          C5/5            C5B5         capacitor-wima 1
+CON_101_PL2303                      MA04-1          MA04-1       con-lstb       1
+CON_102_CARRET                      FE06-2          FE06-2       con-lsta       1
+CON_103_UPANEL_BACK                 FE08-1          FE08         con-lsta       1
+CON_103_UPANEL_FRONT                FE08-1          FE08         con-lsta       1
+CON_104_STEP_RIGHT                  FE08-1          FE08         con-lsta       1
+CON_105_STEP_LEFT                   FE08-1          FE08         con-lsta       1
+CON_106_ULTRASOUND                  MA04-1          MA04-1       con-lstb       1
+D1                   2A             BYS10           SOD106A      telefunken     1
+D2                                  BYS10           SOD106A      telefunken     1
+D3                                  BYS10           SOD106A      telefunken     1
+IC1                  LM358D         LM358D          SO08         linear         1
+JP1                                 JP1E            JP1          jumper         1
+JUMPER_101                          MA03-2          MA03-2       con-lstb       1
+LED_101_RED                         LEDCHIPLED_1206 CHIPLED_1206 led            1
+LED_102_WHITE                       LEDCHIPLED_1206 CHIPLED_1206 led            1
+LED_103_GREEN                       LEDCHIPLED_1206 CHIPLED_1206 led            1
+LED_104_YELLOW                      LEDCHIPLED_1206 CHIPLED_1206 led            1
+Q101                 16MHz          XTAL/S          QS           special        1
+R1                   ?              R-EU_0613/15    P0613/15     resistor       1
+R2                   0R047 1%       R-EU_R1206      R1206        resistor       1
+R6                   100k 1%        R-EU_R0805      R0805        resistor       1
+R7                   1k 1%          R-EU_R0805      R0805        resistor       1
+R101                 330            R-EU_M0805      M0805        resistor       1
+R102                 330            R-EU_M0805      M0805        resistor       1
+R103                 330            R-EU_M0805      M0805        resistor       1
+R104                 330            R-EU_M0805      M0805        resistor       1
+R105                 ?              R-EU_0613/15    P0613/15     resistor       1
+R106                 10k            R-EU_M3516      M3516        resistor       1
+SP1                  LSP11          LSP11           LSP11        solpad         1
+SP2                  LSP11          LSP11           LSP11        solpad         1
+SP101                LSP11          LSP11           LSP11        solpad         1
+U$3                  GND-CON        GND-CON         GND-CON      0alib2         1
