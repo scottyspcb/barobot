@@ -1,5 +1,5 @@
 #include "barobot_carret_main.h"
- 
+
 #define IS_IPANEL true
 #define HAS_LEDS true
 #include <WSWire.h>
@@ -11,7 +11,7 @@
 #include <avr/io.h>
 #include <stdint.h>       // needed for uint8_t
 #include <avr/interrupt.h>
- 
+
 #define ANALOGS  6
 #define ANALOG_TRIES  4
 
@@ -20,7 +20,7 @@ volatile int8_t ADCport[ANALOGS] = {2,6,7,5,0,1};
 volatile int16_t ADCvalue[ANALOG_TRIES][ANALOGS] = {{0,0,0,0,0,0},{0,0,0,0,0,0},{0,0,0,0,0,0},{0,0,0,0,0,0}};
 volatile uint8_t channel = 0;
 volatile uint8_t row = 0;
- 
+
 byte moving_x = DRIVER_DIR_STOP;      // informacja co robi główny silnik
 byte moving_y = DRIVER_DIR_STOP;      // informacja co robi silnik
 byte moving_z = DRIVER_DIR_STOP;      // informacja co robi silnik
@@ -33,7 +33,16 @@ byte moving_z = DRIVER_DIR_STOP;      // informacja co robi silnik
 volatile byte input_buffer[IPANEL_BUFFER_LENGTH][5] = {{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0}};      // 6 buforow po 5 bajtów
 volatile byte last_index     = 0;
 volatile unsigned int ticks  = 0;
- 
+
+union byteint{
+    byte bytes[4];
+    int i;
+};
+union byteword{
+    byte bytes[2];
+    word i;
+};
+
 struct ServoChannel {
 	uint8_t pin;
 	int16_t delta_pos;
@@ -42,7 +51,7 @@ struct ServoChannel {
 	int16_t last_distance;
 	volatile boolean pos_changed;
 	volatile boolean enabled;
-} ;
+};
 
 Servo servo_lib[2];
 volatile ServoChannel servos[2]= {
@@ -50,18 +59,17 @@ volatile ServoChannel servos[2]= {
 	{PIN_IPANEL_SERVO_Z,0,0,0,0,false,false},
 };
 
- 
 // oscyloskop
 boolean analog_reading = false;
 byte analog_num = 0;
 unsigned int analog_speed = 0;
 byte analog_repeat = 0;
 byte analog_pos = 0;
-unsigned long analog_sum = 0;
+byteint analog_sum;
 // koniec oscyloskop
  
 boolean diddd = false;
- 
+
 void setup(){
 	pinMode(PIN_IPANEL_SCK, INPUT );         // stan wysokiej impedancji
 	pinMode(PIN_IPANEL_MISO, INPUT );        // stan wysokiej impedancji
@@ -74,11 +82,10 @@ void setup(){
 	pinMode(PIN_IPANEL_HALL_Y, INPUT);
 	pinMode(PIN_IPANEL_WEIGHT, INPUT);
 	
-//	pinMode(PIN_IPANEL_CURRENTY, INPUT);
-//	pinMode(PIN_IPANEL_CURRENTZ, INPUT);
+	pinMode(PIN_IPANEL_CURRENTY, INPUT);
+	pinMode(PIN_IPANEL_CURRENTZ, INPUT);
 
 	init_leds();
-
 
 	DEBUGINIT();
 	DEBUGLN("-wozek start");
@@ -92,8 +99,8 @@ void setup(){
 	FlexiTimer2::start();
 	init_analogs();
 
-	digitalWrite(_pwm_channels[0].pin, false);
-	digitalWrite(_pwm_channels[1].pin, true);	
+	DW(_pwm_channels[0].pin, 0 );
+	DW(_pwm_channels[1].pin, 1 );	
 }
  
 void init_leds(){
@@ -109,7 +116,7 @@ void init_leds(){
 		#endif
 	}
 }
- 
+
 unsigned long milisAnalog = 0;
 unsigned long mil = 0;
 unsigned long milis1000 = 0;
@@ -132,12 +139,13 @@ boolean send_max  = false;
 boolean send_lmin  = false;
 boolean send_lmax  = false;
  
+
 #define HISTORY_LENGTH  7
 #define ENDSTOP_DIFF  100
 #define WAVING  6
+
 int16_t historyx[HISTORY_LENGTH]  = {typical_neutral,typical_neutral,typical_neutral,typical_neutral,typical_neutral,typical_neutral,typical_neutral};
 int8_t historyx_index  = 0;
- 
 int16_t cc = 0;
 
 void loop() {
@@ -145,21 +153,34 @@ void loop() {
 	if( analog_reading &&  mil > milisAnalog ){
 		milisAnalog = mil+ analog_speed;
 		if( analog_pos == analog_repeat ){			// wyślij
+		/*
 			Serial.print( "A" );
 			Serial.print( analog_num );
 			Serial.print( " " );
 			Serial.println( analog_sum );
+*/
+			byte ttt[8] = {
+				METHOD_I2C_SLAVEMSG,
+				my_address, 
+				METHOD_LIVE_ANALOG, 
+				analog_num, 
+				analog_sum.bytes[3],		// bits 0-7
+				analog_sum.bytes[2],		// bits 8-15
+				analog_sum.bytes[1],		// bits 16-23
+				analog_sum.bytes[0]		// bits 24-32
+			};
+			send(ttt,8);
+
 			analog_pos = 0;
-			analog_sum = 0;
+			analog_sum.i = 0;
 		}
 		analog_pos++;
-		byte index      = (analog_num +ANALOGS -2 ) % ANALOGS;
-		analog_sum		+= ADCvalue[0][index];
+		analog_sum.i	+= ADCvalue[0][analog_num];
 	}
 	// analizuj
 	// todo do znalezienia: local max, local min, global min, global max,
-	//      digitalWrite(_pwm_channels[6].pin, false);
-	//      digitalWrite(_pwm_channels[7].pin, false);
+	//      DW(_pwm_channels[6].pin, false);
+	//      DW(_pwm_channels[7].pin, false);
 	cc++;
 	if(cc>200){
 		cli();
@@ -182,7 +203,7 @@ void loop() {
 			send_max = false;
 			send_lmax = false;
 		}
-		 
+
 		cc   = 0;
 		byte in = historyx_index + HISTORY_LENGTH;
 		int16_t b1 = historyx[ (in -1 )% HISTORY_LENGTH ];       // -1      +
@@ -195,11 +216,11 @@ void loop() {
 		int16_t diff = val1 - b4 + b2 - b5  + b1 - b6+ b3 - b7 ;    // dodatnie gdy rosnie, ujemne gdy maleje
 		 
 		if( val > 10 ){    // warte analizy
-			digitalWrite(_pwm_channels[3].pin, true);
+			DW(_pwm_channels[3].pin, true);
 			if( val > ENDSTOP_DIFF ){    // warte analizy
-				digitalWrite(_pwm_channels[0].pin, true);      // red glass led
+				DW(_pwm_channels[0].pin, true);      // red glass led
 			}else{
-				digitalWrite(_pwm_channels[0].pin, false);      // red glass led
+				DW(_pwm_channels[0].pin, false);     // red glass led
 			}
 			if( diff < WAVING && diff > -WAVING ){
 				// odczyt pływa
@@ -230,8 +251,8 @@ void loop() {
 				DEBUG( "R" );
 				is_falling   = true;
 				is_rising  = false;
-				digitalWrite(_pwm_channels[6].pin, true);
-				digitalWrite(_pwm_channels[7].pin, false);
+				DW(_pwm_channels[6].pin, true);
+				DW(_pwm_channels[7].pin, false);
 			}else if( diff > 0 ){
 				if(is_falling ){    // send message
 					if( val > 100 ){    // diff > 100
@@ -258,8 +279,8 @@ void loop() {
 				DEBUG( "F" );
 				is_rising  = true;
 				is_falling = false;
-				digitalWrite(_pwm_channels[6].pin, false);
-				digitalWrite(_pwm_channels[7].pin, true);
+				DW(_pwm_channels[6].pin, false);
+				DW(_pwm_channels[7].pin, true);
 			}
 			//    DEBUG( "\tin: " );
 			//    DEBUG( String(in) );
@@ -286,12 +307,12 @@ void loop() {
 				DEBUGLN();
 				milis1000 = mil + 150;
 			}
-			//   digitalWrite(_pwm_channels[6].pin, false);
-			//   digitalWrite(_pwm_channels[7].pin, false);
+			//   DW(_pwm_channels[6].pin, false);
+			//   DW(_pwm_channels[7].pin, false);
 			 
 		}else{
-			digitalWrite(_pwm_channels[0].pin, false);
-			digitalWrite(_pwm_channels[3].pin, false);
+			DW(_pwm_channels[0].pin, false);
+			DW(_pwm_channels[3].pin, false);
 		}
 		historyx[historyx_index]  = val1;
 		historyx_index            = (historyx_index+1)%HISTORY_LENGTH;
@@ -302,14 +323,14 @@ void loop() {
 	 
 	// analizuj bufor wejsciowy i2c
 	for( byte i=0;i<IPANEL_BUFFER_LENGTH;i++){
-		//    if( input_buffer[i][0] >0 && bit_is_clear(input_buffer[i][0], 0 )){    // bez xxxx xxx1 b
-			if( input_buffer[i][0] >0 ){    // bez xxxx xxx1 b
-				if( input_buffer[i][0] != METHOD_GETVERSION &&  input_buffer[i][0] != METHOD_TEST_SLAVE ){
-					proceed( input_buffer[i] );
-					input_buffer[i][0] = 0;
-				}
+	//    if( input_buffer[i][0] >0 && bit_is_clear(input_buffer[i][0], 0 )){    // bez xxxx xxx1 b
+		if( input_buffer[i][0] >0 ){    // bez xxxx xxx1 b
+			if( input_buffer[i][0] != METHOD_GETVERSION &&  input_buffer[i][0] != METHOD_TEST_SLAVE ){
+				proceed( input_buffer[i] );
+				input_buffer[i][0] = 0;
 			}
 		}
+	}
 }
  
 void update_servo( byte index ) {           // synchroniczne
@@ -335,7 +356,7 @@ void update_servo( byte index ) {           // synchroniczne
 		}
 	}
 }
- 
+
 void reload_servo( byte index ){      // in interrupt
 	volatile ServoChannel &ser = servos[index];
 	if( servo_lib[index].attached() && ser.last_pos != ser.target_pos ){
@@ -392,7 +413,7 @@ void reload_servo( byte index ){      // in interrupt
  
 void timer(){  // in interrupt
 	ticks++;
-	//  digitalWrite(PIN_PANEL_LED7_NUM,  !digitalRead(PIN_PANEL_LED7_NUM));    // Toggle led. Read from register (not from pin)
+	//  DW(PIN_PANEL_LED7_NUM,  !digitalRead(PIN_PANEL_LED7_NUM));    // Toggle led. Read from register (not from pin)
 	reload_servo(INNER_SERVOY);
 	reload_servo(INNER_SERVOZ);
 }
@@ -411,37 +432,39 @@ void proceed( volatile byte buffer[5] ){
 	printHex(buffer[4]);
 	 
 	if( buffer[0] == METHOD_PROG_MODE_ON ){         // prog mode on
-		digitalWrite(PIN_PANEL_LED1_NUM, HIGH);
+		DW(PIN_PANEL_LED1_NUM, HIGH);
 		if(buffer[1] == my_address){
 			prog_me = true;
-			digitalWrite(LED_TOP_RED, HIGH);
-			digitalWrite(LED_BOTTOM_RED, HIGH);
+			DW(LED_TOP_RED, HIGH);
+			DW(LED_BOTTOM_RED, HIGH);
 		}else{
 			prog_me = false;
 		}
 		prog_mode = true;
 	}else if( buffer[0] == METHOD_PROG_MODE_OFF ){         // prog mode off
-		digitalWrite(PIN_PANEL_LED1_NUM, LOW);
+		DW(PIN_PANEL_LED1_NUM, LOW);
 		prog_mode = false;
 		prog_me = false;
-		 
+
 	}else if( buffer[0] == METHOD_LIVE_OFF ){         // LIVE A OFF
 		analog_reading	= false;
-		 
+
 	}else if( buffer[0] == METHOD_STEPPER_MOVING ){
 		if( buffer[1] == DRIVER_X ){
-			moving_x        = buffer[2];
+			moving_x = buffer[2];
 		}
 		DEBUG("-driver X moving:");
 		DEBUGLN(String(buffer[2]));
 	}else if( buffer[0] == METHOD_LIVE_ANALOG ){         // LIVE A 3,100,5 // TODO method byte
 		if(buffer[1] < 8){
-			analog_num = buffer[1];      // analog num
-			analog_speed = buffer[2];    // speed
-			analog_repeat = buffer[3];   // repeat
-			analog_pos = 0;
-			analog_sum = 0;
-			pinMode( A0 + analog_num, INPUT);      // numer portu analoga to nie numer pinu (w mega A0 to 54)
+			analog_num		= buffer[1];   // analog num
+			analog_speed	= buffer[2];   // speed
+			analog_repeat	= buffer[3];   // repeat
+			analog_pos		= 0;
+			analog_sum.i	= 0;
+		//	if( analog_num < 8){
+		//		pinMode( A0 + analog_num, INPUT);      // numer portu analoga to nie numer pinu (w mega A0 to 54)
+		//	}
 			analog_reading	= true;
 		}
 	}else if( buffer[0] == METHOD_DRIVER_ENABLE ){
@@ -451,7 +474,7 @@ void proceed( volatile byte buffer[5] ){
 
 		byte ttt[4] = {METHOD_I2C_SLAVEMSG, my_address, METHOD_DRIVER_ENABLE, index };
 		send(ttt,4);
- 
+
 	}else if( buffer[0] == METHOD_DRIVER_DISABLE ){
 		byte index = globalToLocal( buffer[1] );
 		servos[index].enabled= false;
@@ -460,12 +483,18 @@ void proceed( volatile byte buffer[5] ){
 		if( servos[index].target_pos != servos[index].last_pos ){    //  wyłączyłem w trakcie jechania
 			 send_servo(false, localToGlobal(index), servos[index].target_pos );
 		}
-		digitalWrite(servos[index].pin, HIGH);
+		DW(servos[index].pin, HIGH);
 		//    pinMode(servos[index].pin, INPUT);
 		servos[index].pos_changed = false;
 
 		byte ttt[4] = {METHOD_I2C_SLAVEMSG, my_address, METHOD_DRIVER_DISABLE, index };
 		send(ttt,4);
+
+	}else if( buffer[0] == METHOD_SETLED ){
+      byte i = 8;
+      while(i--){
+        _pwm_channels[i].pwmup =   bitRead(buffer[1], i) ? 255 : 0;
+      }
 
 	}else if( buffer[0] == METHOD_SET_Y_POS ){
 		// on wire: low_byte, high_byte, speed
@@ -491,14 +520,14 @@ void proceed( volatile byte buffer[5] ){
 		byte led    = buffer[1];
 		byte level  = buffer[2];
 		if( level > 127){
-			digitalWrite(led, HIGH);
+			DW(led, HIGH);
 		}else{
-			digitalWrite(led, LOW);
+			DW(led, LOW);
 		}
 	}else if( buffer[0] == METHOD_GET_Y_POS ){
 		byte ttt[5] = {METHOD_I2C_SLAVEMSG, my_address, METHOD_GET_Y_POS, (servos[INNER_SERVOY].last_pos & 0xFF),(servos[INNER_SERVOY].last_pos >>8) };
 		send(ttt,5);
-		 
+
 	}else if( buffer[0] == METHOD_GET_Z_POS ){
 		byte ttt[5] = {METHOD_I2C_SLAVEMSG, my_address, METHOD_GET_Z_POS, (servos[INNER_SERVOZ].last_pos & 0xFF),(servos[INNER_SERVOZ].last_pos >>8) };
 		send(ttt,5);
@@ -590,7 +619,7 @@ void requestEvent(){
 		Wire.write(res);
 		if( res & 1 ){    // ustawiony najmlodzszy bit
 			diddd = !diddd;
-			digitalWrite(PIN_PANEL_LED1_NUM, diddd);
+			DW(PIN_PANEL_LED1_NUM, diddd);
 		}
 	}else if(!prog_mode){
 		DEBUG("-requestEvent unknown - ");
@@ -727,15 +756,15 @@ ISR(ADC_vect){
           DEBUG( iii );
           DEBUG( "/" );
           DEBUGLN( pin );
-          digitalWrite(_pwm_channels[0].pin, false);
-          digitalWrite(_pwm_channels[1].pin, false);
-          digitalWrite(_pwm_channels[2].pin, false);
-          digitalWrite(_pwm_channels[3].pin, false);
-          digitalWrite(_pwm_channels[4].pin, false);
-          digitalWrite(_pwm_channels[5].pin, false);
-          digitalWrite(_pwm_channels[6].pin, false);
-          digitalWrite(_pwm_channels[7].pin, false);
-          digitalWrite(pin, true);
+          DW(_pwm_channels[0].pin, false);
+          DW(_pwm_channels[1].pin, false);
+          DW(_pwm_channels[2].pin, false);
+          DW(_pwm_channels[3].pin, false);
+          DW(_pwm_channels[4].pin, false);
+          DW(_pwm_channels[5].pin, false);
+          DW(_pwm_channels[6].pin, false);
+          DW(_pwm_channels[7].pin, false);
+          DW(pin, true);
           milis2000 = mil + 500;
           iii++;
           iii = iii %COUNT_IPANEL_ONBOARD_LED;

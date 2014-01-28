@@ -55,7 +55,6 @@ public class BarobotMain extends BarobotActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.barobot_main);
         AppInvoker.createInstance( this ).onCreate();
-        virtualComponents.init( this );
 
     	//	getWindow().requestFeature(Window.FEATURE_PROGRESS);
 	//	StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
@@ -284,9 +283,7 @@ public class BarobotMain extends BarobotActivity {
 	    	webview.restoreState(savedInstanceState);
 	    }
 	  }
-
 	  public void showError(){  
-		  
 			runOnUiThread(new Runnable() {
 				@Override
 				public void run() {
@@ -307,11 +304,7 @@ public class BarobotMain extends BarobotActivity {
 					     .show();
 				}
 			});
-		  
-		  
-		 
-	  }
-	  
+	  } 
 }
 
 /*

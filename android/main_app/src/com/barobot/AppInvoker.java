@@ -6,6 +6,7 @@ import java.util.Iterator;
 
 import com.barobot.activity.BarobotMain;
 import com.barobot.hardware.DeviceSet;
+import com.barobot.hardware.virtualComponents;
 import com.barobot.utils.Arduino;
 import com.barobot.utils.CameraManager;
 import com.barobot.utils.Constant;
@@ -28,9 +29,9 @@ public class AppInvoker {
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
-
 		cm = new CameraManager( main );
 		cm.findCameras();
+		virtualComponents.init( main );
 
 	    DeviceSet.loadXML(main, R.raw.devices);
 	    Arduino.getInstance().onStart( main );	

@@ -14,7 +14,7 @@ volatile uint8_t buff_length[MAINBOARD_BUFFER_LENGTH] = {0,0,0};
 
 void (*spi_init)();
 uint8_t (*spi_send)(uint8_t);
- 
+
 byte out_buffer[7];
 uint8_t serialBuff[130];
 uint8_t serialBuff_pos   = 0;
@@ -43,23 +43,24 @@ PROG 0x0A    - carret
 PROG 0x0E    - upanel...
 PROG 0xFF    - after last known device
 
-PROGN, RESETN    - programm after number
+PROGN, RESETN  - programm after number
 
 00  reset by master     reset master
 01  reset by master     programm carret
 
-05  reset by master     programm upanel 0 (index 0)
-06  reset by upanel-0   programm upanel 1 (index 1)
-07  reset by upanel-1   programm upanel 2 (index 2)
-08  reset by upanel-2   programm upanel 3 (index 3)
-09  reset by upanel-3   programm upanel 4 (index 4)
-0A  reset by upanel-4   programm upanel 5 (index 5)
-0B  reset by upanel-5   programm upanel 6 (index 6)
-0C  reset by upanel-6   programm upanel 7 (index 7)
-0D  reset by upanel-7   programm upanel 8 (index 8)
-0E  reset by upanel-8   programm upanel 9 (index 9)
-0F  reset by upanel-9   programm upanel 10 (index 10)
-10  reset by upanel-10  programm upanel 11 (index 11)
+05  reset by master_back	programm upanel 0 (index 0)
+06  reset by upanel-0   	programm upanel 1 (index 1)
+07  reset by upanel-1   	programm upanel 2 (index 2)
+08  reset by upanel-2   	programm upanel 3 (index 3)
+09  reset by upanel-3   	programm upanel 4 (index 4)
+0A  reset by upanel-4   	programm upanel 5 (index 5)
+
+0B  reset by master_front	programm upanel 6 (index 6)
+0C  reset by upanel-6   	programm upanel 7 (index 7)
+0D  reset by upanel-7   	programm upanel 8 (index 8)
+0E  reset by upanel-8   	programm upanel 9 (index 9)
+0F  reset by upanel-9   	programm upanel 10 (index 10)
+10  reset by upanel-10  	programm upanel 11 (index 11)
 ...
 
 SPECIAL
@@ -71,7 +72,6 @@ void disableWd(){
 	//    WDTCSR |= _BV(WDCE) | _BV(WDE);
 	//    WDTCSR = 0;
 	wdt_disable();
-	 
 }
 void setup(){
 	//disableWd();
@@ -88,9 +88,12 @@ void setup(){
 	digitalWrite(PIN_PROGRAMMER_LED_ERROR, LOW);
 	digitalWrite(PIN_PROGRAMMER_LED_STATE, LOW);
 	 
+	digitalWrite(PIN_PROGRAMMER_LED_ERROR, LOW);
+	digitalWrite(PIN_PROGRAMMER_LED_STATE, LOW);
+
 	Wire.begin(I2C_ADR_MAINBOARD);
-	digitalWrite(SDA, 1);    // disable pullups
-	digitalWrite(SCL, 1);    // disable pullups
+	digitalWrite(SDA, 1);
+	digitalWrite(SCL, 1);
 	Wire.onReceive(receiveEvent);
 	setupStepper();
 
@@ -400,8 +403,16 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 		defaultResult = false;
 	}else if( input.equals("EX") ){
 		stepperX.enableOutputs();
+		byte ttt[4] = {METHOD_I2C_SLAVEMSG, my_address, METHOD_DRIVER_ENABLE, DRIVER_X };
+		send2android(ttt,4);
+		send2androidEnd();
+		defaultResult = false;	
 	}else if( input.equals("DX") ){
 		stepperX.disableOutputs();
+		byte ttt[4] = {METHOD_I2C_SLAVEMSG, my_address, METHOD_DRIVER_ENABLE, DRIVER_X };
+		send2android(ttt,4);
+		send2androidEnd();
+		defaultResult = false;
 	}else if( input.equals("EY") ){
 		out_buffer[0]  = METHOD_DRIVER_ENABLE;
 		out_buffer[1]  = DRIVER_Y;
@@ -468,6 +479,11 @@ byte read_can_fill(){
 	return in_buffer[0]; // 0 jesli mozna, inna liczba jesli blad
 }
 
+union byteint{
+    byte bytes[4];
+    int i;
+};
+
 void stepperReady( long int pos ){
 	sendln2android("Rx" + String(pos));
 	out_buffer[0]  = METHOD_STEPPER_MOVING;           // wyslij do wozka ze jade
@@ -475,38 +491,21 @@ void stepperReady( long int pos ){
 	out_buffer[2]  = DRIVER_DIR_STOP;
 	writeRegisters(I2C_ADR_IPANEL, 3, false );        // send to carret*/
 
+	byteint value;
+	value.i= pos;
+
 	byte ttt[8] = {
 		METHOD_I2C_SLAVEMSG,
 		my_address, 
 		RETURN_DRIVER_READY, 
 		DRIVER_X, 
-		(byte) pos,				// bits 0-7
-		pos >> 8,				// bits 8-15
-		0,						// bits 16-23
-		0						// bits 24-32
+		value.bytes[3],				// bits 0-7
+		value.bytes[2],				// bits 8-15
+		value.bytes[1],				// bits 16-23
+		value.bytes[0]				// bits 24-32
 	};
-	pos = pos >> 16;
-	ttt[6] = (byte) pos;
-	pos = pos >> 24;
-	ttt[7] = (byte) pos;
 	send2android(ttt,8);
 	send2androidEnd();
-	/*
-	buf[0] = (byte) pos;
-	buf[1] = (byte) pos >> 8;
-	buf[2] = (byte) pos >> 16;
-	buf[3] = (byte) pos >> 24;
-	byte ttt[8] = {
-		METHOD_I2C_SLAVEMSG,
-		my_address, 
-		RETURN_DRIVER_READY, 
-		DRIVER_X, 
-
-		(byte) pos,				// bits 0-7
-		(byte) pos >> 8,		// bits 8-15
-		(byte) pos >> 16,
-		(byte) pos >> 24	
-	};*/
 }
 void paserDeriver( byte driver, String input ){   // odczytaj komende silnika
 	input.trim();
