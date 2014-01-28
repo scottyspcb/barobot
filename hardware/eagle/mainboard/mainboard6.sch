@@ -6409,7 +6409,6 @@ Source: AVX .. aphvc.pdf</description>
 <part name="GND11" library="supply1" deviceset="GND" device=""/>
 <part name="D3" library="diode" deviceset="1N5060GP" device="" value="2A?"/>
 <part name="C1" library="eagle-ltspice" deviceset="C" device="" value="100uF"/>
-<part name="C2" library="eagle-ltspice" deviceset="C" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -6456,32 +6455,32 @@ Source: AVX .. aphvc.pdf</description>
 <text x="-53.34" y="-12.7" size="1.778" layer="91">8 GND</text>
 <text x="-83.82" y="-33.02" size="1.778" layer="91">Kolejność dowolna  - byle spójna z upanelem</text>
 <text x="-81.28" y="-68.58" size="1.778" layer="91">Kolejność dowolna  - byle spójna z upanelem</text>
-<text x="-152.4" y="73.66" size="1.778" layer="91" font="fixed">Arduino		TQFP32	Port	
-0		30	PD0	RX
-1		31	PD1	TX
-2		32	PD2	INT0
-3		1	PD3	INT1 PWM
-4		2	PD4	XCK
-5		9	PD5	PWM	
-6		10	PD6	AIN0 PWM
-7		11	PD7	AIN1
-8		12	PB0	
-9		13	PB1	PWM
-10		14	PB2	SS PWM
-11		15	PB3	MOSI PWM
-12		16	PB4	MISO
-13		17	PB5	SCK
-14	A0	23	PC0	ADC0
-15	A1	24	PC1	ADC1
-16	A2	25	PC2	ADC2
-17	A3	26	PC3	ADC3
-18	A4	27	PC4	ADC4 SDA
-19	A5	28	PC5	ADC5 SCL
-RESET		29	PC6
-XTAL1		7	PB6	XTAL
-XTAL2		8	PB7	XTAL
--	A6	19		ADC6
--	A7	22		ADC7
+<text x="-152.4" y="73.66" size="1.778" layer="91" font="fixed">Arduino  TQFP32 Port 
+0  30 PD0 RX
+1  31 PD1 TX
+2  32 PD2 INT0
+3  1 PD3 INT1 PWM
+4  2 PD4 XCK
+5  9 PD5 PWM 
+6  10 PD6 AIN0 PWM
+7  11 PD7 AIN1
+8  12 PB0 
+9  13 PB1 PWM
+10  14 PB2 SS PWM
+11  15 PB3 MOSI PWM
+12  16 PB4 MISO
+13  17 PB5 SCK
+14 A0 23 PC0 ADC0
+15 A1 24 PC1 ADC1
+16 A2 25 PC2 ADC2
+17 A3 26 PC3 ADC3
+18 A4 27 PC4 ADC4 SDA
+19 A5 28 PC5 ADC5 SCL
+RESET  29 PC6
+XTAL1  7 PB6 XTAL
+XTAL2  8 PB7 XTAL
+- A6 19  ADC6
+- A7 22  ADC7
 </text>
 <text x="144.78" y="71.12" size="1.778" layer="91">1 ENABLE (digital)
 2 MS1
@@ -6513,6 +6512,18 @@ XTAL2		8	PB7	XTAL
 11 SCL
 12 CARRET_RESET
 (digital)</text>
+<text x="-180.34" y="-88.9" size="1.778" layer="91">Wymagania elementów wykonawczych:
+Reset_Carret	 - digital out
+Reset_Upanel_front	 - digital out
+Reset_Upanel_back	 - digital out
+Czujnik tabletu	- analog in
+Ultrasonic TRIG	- digital in
+Ultrasonic ECHO	- digital out
+LEDY - digital out
+Tablet - RX, TX
+Stepper driver enable - digital out
+Stepper driver step - digital out
+Stepper driver dir - digital out</text>
 </plain>
 <instances>
 <instance part="Q101" gate="G$1" x="-116.84" y="-17.78"/>
@@ -6574,7 +6585,6 @@ XTAL2		8	PB7	XTAL
 <instance part="GND11" gate="1" x="-15.24" y="-5.08" rot="R180"/>
 <instance part="D3" gate="1" x="96.52" y="48.26"/>
 <instance part="C1" gate="G$1" x="134.62" y="45.72"/>
-<instance part="C2" gate="G$1" x="109.22" y="0"/>
 </instances>
 <busses>
 </busses>
