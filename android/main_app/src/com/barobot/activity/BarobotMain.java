@@ -37,7 +37,6 @@ import com.barobot.web.server.htmlBrowser;
 public class BarobotMain extends BarobotActivity {
     // Layout Viewsd
 	private static BarobotMain instance;
-
 	htmlBrowser wb =null;
 	public WebView webview	=null;
 	private FrameLayout webViewPlaceholder;
@@ -59,11 +58,10 @@ public class BarobotMain extends BarobotActivity {
     	//	getWindow().requestFeature(Window.FEATURE_PROGRESS);
 	//	StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
 	//	StrictMode.setThreadPolicy(policy); 
-	//	initUI( savedInstanceState);  
+		initUI( savedInstanceState);  
 		int mUIFlag = View.SYSTEM_UI_FLAG_LOW_PROFILE | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
 	    getWindow().getDecorView().setSystemUiVisibility(mUIFlag);
     }
-    
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
        if(keyCode == KeyEvent.KEYCODE_HOME){
@@ -264,7 +262,7 @@ public class BarobotMain extends BarobotActivity {
 	        Toast.makeText(this, "portrait", Toast.LENGTH_SHORT).show();
 	    }
 		// Reinitialize the UI
-		//initUI(null);
+		initUI(null);
 	}
 
 	@Override

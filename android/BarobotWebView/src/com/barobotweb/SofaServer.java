@@ -14,6 +14,10 @@ import java.util.StringTokenizer;
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.util.Log;
+import com.barobot.hardware.Android;
+import com.barobot.web.route.EmptyRoute;
+import com.barobot.web.route.MainPage;
+import com.barobot.web.route.RPCPage;
 import com.x5.template.Chunk;
 import com.x5.template.Theme;
 import com.x5.template.providers.AndroidTemplates;
@@ -56,21 +60,25 @@ public class SofaServer extends NanoHTTPD {
 	        	String ext = path.substring(dotpos+1);
 	        	if(MIME_TYPES.containsKey(ext)){
 	        		String mime = MIME_TYPES.get(ext) + ";encoding=utf-8;charset=UTF-8";
-
-					Response r	= new NanoHTTPD.Response(Status.OK, mime, mbuffer);
-//					r.addHeader("Cache-Control", "no-transform,public,max-age=3000,s-maxage=900");
-			//		r.addHeader("Expires", "Thu, 03 Jan 2019 14:42:16 GMT");
-	    	//		r.addHeader("Age", "10000");
-	    	//		r.addHeader("Connection", "keep-alive");
-	    	//		r.addHeader("Keep-Alive", "timeout=2, max=99");
-	    	//		r.addHeader("Vary", "Accept-Encoding,User-Agent");
-	    			r.addHeader("Server", "Apache/2.2.16");
-	    			r.addHeader("X-Cache", "HIT");
-//	    			r.addHeader("Last-Modified", "Wed, 05 Dec 2012 13:23:44 GMT");
-	    	//		Log.i("etag :", path +" " + etag );
-	    			r.addHeader("Etag", "\""+ etag + "\"");	
-					return r;
-
+	        		InputStream mbuffer = null;
+	        		try {
+						mbuffer		= am.open(uri.substring(1));
+						Response r	= new NanoHTTPD.Response(Status.OK, mime, mbuffer);
+	//					r.addHeader("Cache-Control", "no-transform,public,max-age=3000,s-maxage=900");
+				//		r.addHeader("Expires", "Thu, 03 Jan 2019 14:42:16 GMT");
+				//		r.addHeader("Age", "10000");
+				//		r.addHeader("Connection", "keep-alive");
+				//		r.addHeader("Keep-Alive", "timeout=2, max=99");
+				//		r.addHeader("Vary", "Accept-Encoding,User-Agent");
+						r.addHeader("Server", "Apache/2.2.16");
+						r.addHeader("X-Cache", "HIT");
+	//	    			r.addHeader("Last-Modified", "Wed, 05 Dec 2012 13:23:44 GMT");
+				//		Log.i("etag :", path +" " + etag );
+						r.addHeader("Etag", "\""+ etag + "\"");	
+						return r;
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
 	    		//	Response r = new NanoHTTPD.Response(Status.OK, mime, data);
 	    		//	Response r = new NanoHTTPD.Response(data);
 	    		//	return r;
@@ -150,14 +158,25 @@ public class SofaServer extends NanoHTTPD {
 		private static final long serialVersionUID = -5637166427995938617L;
 	{
         put("css", "text/css");
+        put("htm", "text/html");
+        put("html", "text/html");
+        put("xml", "text/xml");
+        put("java", "text/x-java-source, text/java");
+        put("md", "text/plain");
+        put("txt", "text/plain");
+        put("asc", "text/plain");
+        put("gif", "image/gif");
+        put("ttf", "application/octet-stream");
+        put("woff", "application/font-woff");
+        put("ico", "image/x-icon");
         put("js", "text/javascript");
         put("jpg", "image/jpeg");
         put("jpeg", "image/jpeg");
         put("png", "image/png");
         put("ttf", "application/octet-stream");
         put("woff", "application/font-woff");
-        put("gif", "image/gif");
         put("ico", "image/x-icon");
+		put("m3u", "audio/mpeg-url");
         put("mp4", "video/mp4");
         put("ogv", "video/ogg");
         put("flv", "video/x-flv");
@@ -170,10 +189,6 @@ public class SofaServer extends NanoHTTPD {
         put("exe", "application/octet-stream");
         put("class", "application/octet-stream");
         put("mp3", "audio/mpeg");
-        put("htm", "text/html");
-        put("html", "text/html");
-        put("xml", "text/xml");
-        put("java", "text/x-java-source, text/java");
         put("md", "text/plain");
         put("txt", "text/plain");
         put("asc", "text/plain");

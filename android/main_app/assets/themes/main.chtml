@@ -21,7 +21,7 @@
 		<title>Barobot Drink Center</title>
 		<!--script src="js/bootstrap.min.js?a=3" type="text/javascript"></script-->
 	</head>
-	<body>
+	<body class="change_height">
 	{$body}
 	</body>
 </html>
@@ -47,6 +47,7 @@
 					<ul class="nav nav-tabs list_level2 inner_scroll" id="type_list" >
 						{.loop in $types as $item}
 							<li><a tab="tab_fav" href="javascript:void(0)" num="{$item}" class="nav_menu_item"><span class="icon1 glyphicon glyphicon-chevron-left"></span><span class="icon2 glyphicon glyphicon-list"></span><span class="btn_title">Type {$item}</span></a></li>
+						{.onEmpty}
 						{/loop}
 					</ul>
 				</div>
@@ -55,6 +56,7 @@
 				<ul class="nav nav-tabs list_level2 inner_scroll" id="fav_list" >
 					{.loop in $nums as $item}
 						<li><a tab="fav_item" href="javascript:void(0)" num="{$item}" class="nav_menu_item"><span class="icon1 glyphicon glyphicon-chevron-left"></span><span class="icon2 glyphicon glyphicon-glass"></span><span class="btn_title">Favorite drink {$item}</span></a></li>
+					{.onEmpty}
 					{/loop}
 				</ul>
 			</div>
@@ -63,11 +65,12 @@
 					<ul class="nav nav-tabs list_level2 inner_scroll" id="history_list" >
 						{.loop in $nums as $item}
 							<li><a tab="history_item"  href="javascript:void(0)" num="{$item}" class="nav_menu_item"><span class="icon1 glyphicon glyphicon-chevron-left"></span><span class="icon2 glyphicon glyphicon-glass"></span><span class="btn_title">Drink numer {$item}</span></a></li>
+						{.onEmpty}
 						{/loop}
 					</ul>
 				</div>
 			</div>
-			<div id="history_item" class="tab-pane details_level2_parent fill_parent max_height">
+			<div id="history_item" class="tab-pane details_level2_parent fill_parent_width max_height">
 				<div id="drink_details" style="padding:0px 5px" class="inner_scroll">
 					<h2 class="drink_name">Drink name</h2>
 					<div class="progress prog1">
@@ -95,7 +98,7 @@
 					</div>
 				</div>
 			</div>
-			<div id="fav_item" class="tab-pane details_level2_parent fill_parent max_height">
+			<div id="fav_item" class="tab-pane details_level2_parent fill_parent_width max_height">
 				<div style="overflow:auto" id="fav_details_parent">
 					<div id="fav_details" style="padding:0px 5px" class="">
 						<h2 class="drink_name">Drink name</h2>
@@ -115,41 +118,13 @@
 						  <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100" style="width: 80%">
 						  </div>
 						</div>
-1<br>
-2<br>
-3<br>
-4<br>
-5<br>
-6<br>
-7<br>
-8<br>
-9<br>
-0<br>
-1<br>
-2<br>
-3<br>
-4<br>
-5<br>
-6<br>
-7<br>
-8<br>
-9<br>
-0<br>
-1<br>
-2<br>
-3<br>
-4<br>
-5<br>
-6<br>
-7<br>
-8<br>
-9<br>
-0<br>
-1<br>
-2<br>
-3<br>
-4<br>
-
+						<div class="drink_desc">
+							1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>
+							9<br>0<br>1<br>2<br>3<br>4<br>5<br>6<br>
+							7<br>8<br>9<br>0<br>1<br>2<br>3<br>4<br>
+							5<br>6<br>7<br>8<br>9<br>0<br>1<br>2<br>
+							3<br>4<br>
+						</div>
 						<div class="progress">
 						  <div class="progress-bar progress-bar-success" style="width: 40%">
 						  </div>
@@ -170,7 +145,18 @@
 					</div>
 				</div>
 			</div>
-			<div id="tab_lucky" class="tab-pane fill_parent max_height">
+			<div id="tab_lucky" class="tab-pane fill_parent_width max_height">
+			
+
+				<div id="lucky_list_parent" class="list_level2_parent tabs-right">
+					<ul class="nav nav-tabs list_level2 inner_scroll" id="lucky_list" >
+						{.loop in $lucky_item as $item}
+							<li><a tab="lucky_item"  href="javascript:void(0)" num="{$item}" class="nav_menu_item"><span class="icon1 glyphicon glyphicon-chevron-left"></span><span class="icon2 glyphicon glyphicon-glass"></span><span class="btn_title">{$item}</span></a></li>
+						{.onEmpty}
+						{/loop}
+					</ul>
+				</div>
+
 				<button class="btn btn-default" type="button">Default</button>
 				<button class="btn btn-primary" type="button">Primary</button>
 				<a class="btn btn-primary btn-lg" href="javascript:void(0)" onclick="x10()" >X +100</a>
@@ -180,86 +166,198 @@
 				<button class="btn btn-warning" type="button">Warning</button>
 				{$body2}
 			 </div>
-			 <div id="tab_create" class="tab-pane fill_parent max_height">
+			 <div id="tab_create" class="tab-pane fill_parent_width max_height">
 				<div class="inner_scroll">
-					<div class="slot" id="slot0">1</div>
-					<div class="slot" id="slot1">2</div>
-					<div class="slot" id="slot2">3</div>
-					<div class="slot" id="slot3">4</div>
-					<div class="slot" id="slot4">5</div>
-					<div class="slot" id="slot5">6</div>
+					<div class="slot" id="slot0">Orange <br>(Juice)
+						<div>
+							<input type="button" class="sum btn" value="" />
+							<input type="button" class="remove btn" value="-" />
+						</div>
+					</div>
+					<div class="slot" id="slot1">Apple <br>(Juice)
+						<div>
+							<input type="button" class="sum btn" value="" />
+							<input type="button" class="remove btn" value="-" />
+						</div>
+					</div>
+					<div class="slot" id="slot2">
+						
+						Banana <br>(Juice)
+						<div>
+							<input type="button" class="sum btn" value="20ml" />
+							<input type="button" class="remove btn" value="-" />
+						</div>
+					</div>
+					<div class="slot" id="slot3">Martini Bianco <br>(Wermuth)
+						<div>
+							<input type="button" class="sum btn" value="60ml" />
+							<input type="button" class="remove btn" value="-" />
+						</div>
+					</div>
+					<div class="slot" id="slot4">Bacardi <br>(Rum)
+						<div>
+							<input type="button" class="sum btn" value="" />
+							<input type="button" class="remove btn" value="-" />
+						</div>
+					</div>
+					<div class="slot" id="slot5">Tonic <br>
+						<div>
+							<input type="button" class="sum btn" value="" />
+							<input type="button" class="remove btn" value="-" />
+						</div>
+					</div>
 		
 					<div style="clear:left"></div>
-		
-					<div class="slot" id="slot6" style="margin-left:7%">7</div>
-					<div class="slot" id="slot7">8</div>
-					<div class="slot" id="slot8">9</div>
-					<div class="slot" id="slot9">10</div>
-					<div class="slot" id="slot10">11</div>
-					<div class="slot" id="slot11">12</div>
-		
+					<div class="slot" id="slot6">Jim Bin <br>(Bourbon)
+						<div>
+							<input type="button" class="sum btn" value="" />
+							<input type="button" class="remove btn" value="-" />
+						</div>
+					</div>
+					<div class="slot" id="slot7">Tequila <br>
+						<div>
+							<input type="button" class="sum btn" value="" />
+							<input type="button" class="remove btn" value="-" />
+						</div>
+					</div>
+					<div class="slot" id="slot8">Dry Wine <br>
+						<div>
+							<input type="button" class="sum btn" value="20ml" />
+							<input type="button" class="remove btn" value="-" />
+						</div>
+					</div>
+					<div class="slot" id="slot9">Sobieski <br>(Vodka)
+						<div>
+							<input type="button" class="sum btn" value="" />
+							<input type="button" class="remove btn" value="-" />
+						</div>
+					</div>
+					<div class="slot" id="slot10">Żubrówka <br>(Vodka)
+						<div>
+							<input type="button" class="sum btn" value="" />
+							<input type="button" class="remove btn" value="-" />
+						</div>
+					</div>
+					<div class="slot" id="slot11">Red Label <br>(Whiskey)
+						<div>
+							<input type="button" class="sum btn" value="" />
+							<input type="button" class="remove btn" value="-" />
+						</div>
+					</div>
 					<div style="clear:left"></div>
-					<button class="btn btn-success" style="font-size:40px" type="button">Pour now</button>
+
+					<center>
+						<button class="btn btn-success" style="font-size:40px" type="button">Pour now</button>
+					</center>
 				</div>	
 			 </div>
 			<div id="tab_settings" class="tab-pane max_height">
 				<div id="settings_list_parent" class="list_level2_parent tabs-right">
-					<ul class="nav nav-tabs list_level2 off_list" id="settings_list">
-						<li><a href="javascript:void(0)" tab="setup_bottle"		num="1" class="nav_menu_item"><span class="icon1 glyphicon glyphicon-chevron-left"></span> <span class="icon2 glyphicon glyphicon-glass"></span> Bottle setup</a></li>
-						<li><a href="javascript:void(0)" tab="setup_light"		num="2" class="nav_menu_item"><span class="icon1 glyphicon glyphicon-chevron-left"></span> <span class="icon2 glyphicon glyphicon-adjust"></span> Light setup</a></li>
-						<li><a href="javascript:void(0)" tab="setup_sound"		num="3" class="nav_menu_item"><span class="icon1 glyphicon glyphicon-chevron-left"></span> <span class="icon2 glyphicon glyphicon-music"></span> Sound setup</a></li>
+					<ul class="nav nav-tabs list_level2 inner_scroll off_list" id="settings_list">
+						<li><a href="javascript:void(0)" tab="setup_bottle"		num="1" class="nav_menu_item noactive"><span class="icon1 glyphicon glyphicon-chevron-left"></span> <span class="icon2 glyphicon glyphicon-glass"></span> Bottle setup</a></li>
+						<li><a href="javascript:void(0)" tab="setup_light"		num="2" class="nav_menu_item noactive"><span class="icon1 glyphicon glyphicon-chevron-left"></span> <span class="icon2 glyphicon glyphicon-adjust"></span> Light setup</a></li>
+						<li><a href="javascript:void(0)" tab="setup_sound"		num="3" class="nav_menu_item noactive"><span class="icon1 glyphicon glyphicon-chevron-left"></span> <span class="icon2 glyphicon glyphicon-music"></span> Sound setup</a></li>
 						<li><a href="javascript:void(0)" tab="demo_mode"		num="4" class="nav_menu_item"><span class="icon1 glyphicon glyphicon glyphicon-asterisk"></span> <span class="icon2 glyphicon glyphicon-eye-open"></span> Start Demo mode</a></li>
-						<li><a href="javascript:void(0)" tab="setup_advanced"	num="5" class="nav_menu_item"><span class="icon1 glyphicon glyphicon-chevron-left"></span> <span class="icon2 glyphicon glyphicon-cog"></span> Advanced options</a></li>
+						<li><a href="javascript:void(0)" tab="setup_advanced"	num="5" class="nav_menu_item noactive"><span class="icon1 glyphicon glyphicon-chevron-left"></span> <span class="icon2 glyphicon glyphicon-cog"></span> Advanced options</a></li>
 						<li><a href="javascript:void(0)" tab="setup_calibrate"	num="6" class="nav_menu_item"><span class="icon1 glyphicon glyphicon-chevron-left"></span> <span class="icon2 glyphicon glyphicon-screenshot"></span> Automatic calibration</a></li>
-						<li><a href="javascript:void(0)" tab="goto_shop"		num="7" class="nav_menu_item"><span class="icon1 glyphicon glyphicon-new-window"></span> <span class="icon2 glyphicon glyphicon-info-sign"></span> Buy a robot</a></li>
-						<li><a href="javascript:void(0)" tab="goto_www"			num="8" class="nav_menu_item"><span class="icon1 glyphicon glyphicon-new-window"></span> <span class="icon2 glyphicon glyphicon-info-sign"></span> Go to Barobot WWW </a></li>
-						<li><a href="javascript:void(0)" tab="goto_contrib"		num="9" class="nav_menu_item"><span class="icon1 glyphicon glyphicon-new-window"></span> <span class="icon2 glyphicon glyphicon-info-sign"></span> Barobot contributors </a></li>
-						<li><a href="javascript:void(0)" tab="goto_about"		num="10" class="nav_menu_item"><span class="icon1 glyphicon glyphicon-chevron-left"></span> <span class="icon2 glyphicon glyphicon-info-sign"></span> About Barobot project</a></li>
+						<li><a href="javascript:void(0)" tab="goto_shop"		num="7" class="nav_menu_item noactive"><span class="icon1 glyphicon glyphicon-new-window"></span> <span class="icon2 glyphicon glyphicon-info-sign"></span> Buy a Robot</a></li>
+						<li><a href="javascript:void(0)" tab="goto_www"			num="8" class="nav_menu_item noactive"><span class="icon1 glyphicon glyphicon-new-window"></span> <span class="icon2 glyphicon glyphicon-info-sign"></span> Go to Barobot WWW </a></li>
+						<li><a href="javascript:void(0)" tab="goto_contrib"		num="9" class="nav_menu_item noactive"><span class="icon1 glyphicon glyphicon-new-window"></span> <span class="icon2 glyphicon glyphicon-info-sign"></span> Barobot Contributors </a></li>
+						<li><a href="javascript:void(0)" tab="goto_about"		num="10" class="nav_menu_item noactive"><span class="icon1 glyphicon glyphicon-chevron-left"></span> <span class="icon2 glyphicon glyphicon-info-sign"></span> About Barobot project</a></li>
+						<li><a href="javascript:void(0)" tab="send_opinion"		num="11" class="nav_menu_item noactive"><span class="icon1 glyphicon glyphicon-chevron-left"></span> <span class="icon2 glyphicon glyphicon-info-sign"></span> Send your opinion</a></li>
 					</ul>
 				</div>
 			</div>
 			<div id="tab_off" class="tab-pane max_height">
 				<div id="off_list_parent" class="list_level2_parent tabs-right">
 					<ul class="nav nav-tabs list_level2 inner_scroll" id="off_list" >
-						<li><a href="javascript:void(0)" tab="off_stop"		num="1" class="nav_menu_item"><span class="icon1 glyphicon glyphicon-asterisk"></span> <span class="icon2 glyphicon glyphicon-off"></span> STOP now</a></li>
-						<li><a href="javascript:void(0)" tab="off_app"		num="2" class="nav_menu_item"><span class="icon1 glyphicon glyphicon-asterisk"></span> <span class="icon2 glyphicon glyphicon-off"></span> Turn off application</a></li>
-						<li><a href="javascript:void(0)" tab="off_robot"	num="3" class="nav_menu_item"><span class="icon1 glyphicon glyphicon-asterisk"></span> <span class="icon2 glyphicon glyphicon-off"></span> Turn off Barobot</a></li>
-						<li><a href="javascript:void(0)" tab="off_all"		num="4" class="nav_menu_item"><span class="icon1 glyphicon glyphicon-asterisk"></span> <span class="icon2 glyphicon glyphicon-off"></span> Turn off all</a></li>
+						<li><a href="javascript:void(0)" tab="off_stop"		num="1" class="nav_menu_item noactive"><span class="icon1 glyphicon glyphicon-asterisk"></span> <span class="icon2 glyphicon glyphicon-off"></span> STOP now</a></li>
+						<li><a href="javascript:void(0)" tab="off_app"		num="2" class="nav_menu_item noactive"><span class="icon1 glyphicon glyphicon-asterisk"></span> <span class="icon2 glyphicon glyphicon-off"></span> Turn off application</a></li>
+						<li><a href="javascript:void(0)" tab="off_robot"	num="3" class="nav_menu_item noactive"><span class="icon1 glyphicon glyphicon-asterisk"></span> <span class="icon2 glyphicon glyphicon-off"></span> Turn off Barobot</a></li>
+						<li><a href="javascript:void(0)" tab="off_all"		num="4" class="nav_menu_item noactive"><span class="icon1 glyphicon glyphicon-asterisk"></span> <span class="icon2 glyphicon glyphicon-off"></span> Turn off all</a></li>
 					</ul>
 				</div>
 			</div>
 		</div>
       </div>
       <div id="full_box" style="">
-      	<div class="navigation" style="padding:10px;border-bottom: 1px solid #666666;">
+      	<div class="navigation" style="padding:10px 10px 8px;border-bottom: 1px solid #666666;">
       		<h2 style="margin:0px;float:left;color:white" class="fl_nav_title"></h2>
       		<button class="btn btn-default fl_nav_back pull-right btn-lg" type="button"><span class="glyphicon glyphicon-chevron-left"></span> Back</button>
       		<div style="clear:both"></div>	
       	</div>
       	<div style="clear:both"></div>
-      	<div class="in_data" style="overflow:auto">
+      	<div class="in_data change_height" style="overflow:auto">
       	</div>
       </div>
       <div id="other_dialogs" style="display:none;">
+		<img src="/images/7172836245_0ccd57e4f5.jpg" style="float:right">
 		<div id="contribs">
-			<h2>Contributors</h2>
-      		<ul>
-      			<li>Artur Formella</li>
-      			<li>Konrad Klepacki</li>
-      			<li>Klaudia Mróz</li>
-      			<li>Hanna Żyznarska</li>
-      			<li>Piotr 'Raven' Wisniewski</li>
-      			<li>Krzysztof Kossak</li>
-      		</ul>
-      		<h5>Do you want do <a href="mailto:artur@barobot.com">contribute the Barobot Project?</a></h5>
+			<div style="padding:10px">
+				<div class="pull-left">
+					<ul>
+						<li>This</li>
+						<li>is</li>
+						<li>place</li>
+						<li>for</li>
+						<li>your</li>
+						<li>name</li>
+					</ul>
+				</div>
+				<div class="pull-right">
+					<img src="/images/7172836245_0ccd57e4f5.jpg">
+				</div>
+				<div style="clear:both"></div>
+				<h5>Do you want do <a href="mailto:artur@barobot.com">contribute the Barobot Project?</a> Watch us on  <a href="mailto:artur@barobot.com">Kickstarter.com</a></h5>
+			</div>
       	</div>
 		<div id="buy_robot">
       		<h2>Barobot project</h2>
       		<img src="/images/barobot.jpg" style="width:300px">
 		</div>
-      	<div id="buy_robot222">
-      		<h2>Barobot project</h2>
-      		<img src="/images/barobot.jpg" style="width:300px">
+      	<div id="device_settings">
+			<div id="type_list_parent" class="tabs-right list_level2_parent">
+				<ul class="nav nav-tabs list_level2 inner_scroll" id="device_list">
+					{.loop in $devices as $item}
+						<li><a tab="tab_device" href="javascript:void(0)" num="{$item}" class="nav_menu_item"><span class="icon1 glyphicon glyphicon-chevron-left"></span><span class="icon2 glyphicon glyphicon-list"></span><span class="btn_title">{$item}</span></a></li>
+					{.onEmpty}
+					{/loop}
+				</ul>
+			</div>
+		</div>
+      	<div id="opinion_form">
+			<form class="form-horizontal" role="form">
+			  <div class="form-group">
+				<label class="col-sm-2 control-label">Application</label>
+				<div class="col-sm-4">
+				  <p class="form-control-static">Barobot Drink Center Version 2.1</p>
+				</div>
+			  </div>
+			  <div class="form-group">
+				<label for="inputEmail1" class="col-sm-2 control-label">Reason</label>
+				<div class="col-sm-4">
+					<select class="form-control"  id="inputReason">
+						<option>Error</option>
+						<option>Suggestion</option>
+						<option>New feature</option>
+						<option>Other</option>
+					</select>
+				</div>
+			  </div>  
+			  <div class="form-group">
+				<label for="inputEmail1" class="col-sm-2 control-label">Your email</label>
+				<div class="col-sm-4">
+				   <input type="email" class="form-control" id="inputEmail1" placeholder="Enter email">
+				</div>
+			  </div>
+			  <div class="form-group">
+				<label for="inputOpinion" class="col-sm-2 control-label">Opinion</label>
+				<div class="col-sm-4">
+				  <textarea class="form-control"id="inputOpinion"  rows="3"></textarea>
+				</div>
+			  </div>
+			  <button type="submit" class="btn btn-primary">Submit</button>
+			</form>	
 		</div>
       	<div id="authors">
       		<h2>Authors</h2>

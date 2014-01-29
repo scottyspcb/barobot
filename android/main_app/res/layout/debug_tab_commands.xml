@@ -115,7 +115,7 @@
         android:layout_alignParentLeft="false"
         android:layout_below="@+id/set_x_1000"
         android:layout_toRightOf="@+id/dlugosc_x"
-        android:text="Kalibruj X" />
+        android:text="Kalibruj" />
 
     <Button
         android:id="@+id/kalibrujy"
@@ -124,7 +124,7 @@
         android:layout_alignParentLeft="false"
         android:layout_below="@+id/kalibrujx"
         android:layout_toRightOf="@+id/dlugosc_y"
-        android:text="Kalibruj Y" />
+        android:text="Kalibruj" />
 
     <Button
         android:id="@+id/kalibrujz"
@@ -134,7 +134,7 @@
         android:layout_alignParentLeft="false"
         android:layout_below="@+id/kalibrujy"
         android:layout_toRightOf="@+id/dlugosc_z"
-        android:text="Kalibruj Z" />
+        android:text="Kalibruj" />
 
     <Button
         android:id="@+id/max_x"
@@ -175,7 +175,7 @@
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/kalibrujz"
         android:layout_toRightOf="@+id/min_z"
-        android:text="MACHAJZ" />
+        android:text="MACHAJ" />
 
     <Button
         android:id="@+id/machajy"
@@ -457,15 +457,6 @@
         android:text="Szukaj butelek" />
 
     <Button
-        android:id="@+id/disablez"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/pacpac"
-        android:layout_alignBottom="@+id/pacpac"
-        android:layout_toRightOf="@+id/pacpac"
-        android:text="DZ" />
-
-    <Button
         android:id="@+id/fill5000"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -473,5 +464,14 @@
         android:layout_alignRight="@+id/set_y_600"
         android:layout_toRightOf="@+id/find_bottles"
         android:text="Nalej tutaj" />
+
+    <Button
+        android:id="@+id/disablez"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/machajz"
+        android:layout_alignBottom="@+id/machajz"
+        android:layout_toRightOf="@+id/machajz"
+        android:text="DZ" />
 
 </RelativeLayout>

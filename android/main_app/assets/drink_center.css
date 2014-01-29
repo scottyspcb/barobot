@@ -253,15 +253,38 @@ h2.drink_name{
 	float:right;	
 }
 .tab-pane .slot{
-	border:1px solid #777777;
+	border:1px solid #FFFFFF;
 	float:left;
 	margin:3px;
-	padding:5px;
 	text-align:center;
-	width:12%;
-	height:60px;
-	background-color:#AAAAAA;
+	width:15%;
+	min-height:120px;
+	font-size:22px;
+	position:relative;
+	background-color:#e5e5e5;
 }
+.tab-pane .slot .add{
+	float:left;
+	height:30px;
+	width:32%;
+}
+.tab-pane .slot .sum{
+	height:50px;
+	width:50px;
+	color:#11ff11;
+	position:absolute;
+	bottom:0px;
+	left:0px;
+}
+
+.tab-pane .slot .remove{
+	height:50px;
+	width:50px;
+	bottom:0px;
+	right:0px;
+}
+
+
 
 #full_box{
 	display:none;
