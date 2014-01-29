@@ -4,7 +4,6 @@ public class History_item{
 	public String command="";
 	protected String unlocking_command;
 	public boolean direction;
-
 	public History_item() {
 	}
 	public History_item(String cmd, boolean dir) {

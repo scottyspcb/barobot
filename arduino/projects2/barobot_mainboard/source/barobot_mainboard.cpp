@@ -183,7 +183,6 @@ void scann_i2c(){
     }
   }
 }*/
-
 void check_i2c(){
 	Wire.beginTransmission(I2C_ADR_RESERVED);
 	byte ee = Wire.endTransmission();     // czy linia jest drozna
@@ -196,10 +195,13 @@ void reset_wire(){
 	//    pinMode(PIN_MAINBOARD_SDA, INPUT );
 	//    pinMode(PIN_MAINBOARD_SCL, INPUT );
 	Wire.begin(I2C_ADR_MAINBOARD);
-	tri_state( PIN_PROGRAMMER_RESET_IPANEL, false );      // pin w stanie niskim = reset
-	tri_state( PIN_PROGRAMMER_RESET_UPANEL, false );      // pin w stanie niskim = reset
-	tri_state( PIN_PROGRAMMER_RESET_IPANEL, true );       // pin w stanie niskim = reset
-	tri_state( PIN_PROGRAMMER_RESET_UPANEL, true );       // pin w stanie niskim = reset
+	tri_state( PIN_PROGRAMMER_RESET_IPANEL, false );		// pin w stanie niskim = reset
+	tri_state( PIN_PROGRAMMER_RESET_UPANEL_FRONT, false );	// pin w stanie niskim = reset
+	tri_state( PIN_PROGRAMMER_RESET_UPANEL_BACK, false );	// pin w stanie niskim = reset
+	
+	tri_state( PIN_PROGRAMMER_RESET_IPANEL, true );			// pin w stanie niskim = reset
+	tri_state( PIN_PROGRAMMER_RESET_UPANEL_FRONT, true );   // pin w stanie niskim = reset
+	tri_state( PIN_PROGRAMMER_RESET_UPANEL_BACK, true );	// pin w stanie niskim = reset
 }
 
 void proceed( byte length,volatile uint8_t buffer[7] ){ // zrozum co przyszlo po i2c
@@ -627,7 +629,9 @@ boolean reset_device_num( byte num, boolean pin_value ){
 	}else if( num == 0x01 ){                        // wozek
 		tri_state( PIN_PROGRAMMER_RESET_IPANEL, pin_value );
 	}else if( num == 0x05 ){                  // pierwszy upanel
-		tri_state( PIN_PROGRAMMER_RESET_UPANEL, pin_value );
+		tri_state( PIN_PROGRAMMER_RESET_UPANEL_BACK, pin_value );
+	}else if( num == 0x0B ){                  // pierwszy upanel
+		tri_state( PIN_PROGRAMMER_RESET_UPANEL_FRONT, pin_value );
 	}else if( num == 0xff ){          // reset after last
 		if(nextpos == 0 || order[ nextpos - 1] == 0 ){    // nie ma zadnego urzadzenia lub przedostatni nie istenieje
 			return false;
@@ -696,18 +700,25 @@ void i2c_prog_mode( boolean active, byte slave_address ){                  // To
 		writeRegisters(slave_address, 1, false );
 	}
 }
- 
-void get_order(){      // pobierz kolejnosc elementów
+
+
+void get_order(){      // pobierz kolejnosc elementow
 	DEBUGLN("-Resetuje");
-	pinMode(PIN_PROGRAMMER_RESET_UPANEL, OUTPUT);
-	digitalWrite(PIN_PROGRAMMER_RESET_UPANEL, LOW);
+
 	tri_state( PIN_PROGRAMMER_RESET_IPANEL, false );       // pin w stanie niskim = reset
 	tri_state( PIN_PROGRAMMER_RESET_IPANEL, true );        // end reset = start first slave
-	tri_state( PIN_PROGRAMMER_RESET_UPANEL, false );       // pin w stanie niskim = reset
-	tri_state( PIN_PROGRAMMER_RESET_UPANEL, true );        // end reset = start first slave
+
+	tri_state( PIN_PROGRAMMER_RESET_UPANEL_FRONT, false );       // pin w stanie niskim = reset
+	tri_state( PIN_PROGRAMMER_RESET_UPANEL_FRONT, true );        // end reset = start first slave
+	
+	tri_state( PIN_PROGRAMMER_RESET_UPANEL_BACK, false );       // pin w stanie niskim = reset
+	tri_state( PIN_PROGRAMMER_RESET_UPANEL_BACK, true );        // end reset = start first slave	
 	nextpos = 0;
 	scann_order = true;
 }
+
+
+
 uint16_t i2c_getVersion( byte slave_address ){      // zwraca 2 bajty. typ na młodszych bitach, versja na starszych
 	out_buffer[0]  = METHOD_GETVERSION;
 	byte error = writeRegisters(slave_address, 1, true );
