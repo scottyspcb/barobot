@@ -130,6 +130,24 @@ public class input_parser {
 		}else if( fromArduino.startsWith( "" + Constant.METHOD_DEVICE_FOUND) ){
 			// byte ttt[5] = {METHOD_DEVICE_FOUND,addr,type,ver,pos};
 			// byte ttt[5] = {METHOD_DEVICE_FOUND,I2C_ADR_MAINBOARD,MAINBOARD_DEVICE_TYPE,MAINBOARD_VERSION,0};
+
+			boolean scanning = true;
+			if( scanning ){
+/*
+				byte pos = getResetOrder(buffer[1]);
+				i2c_reset_next( buffer[1], false );       // reset next (next to slave)
+				i2c_reset_next( buffer[1], true );
+				}else if( scann_order ){ 
+					if( pos == 0xff ){        // nie ma na liscie?
+						order[nextpos++]  = buffer[1];            // na tm miejscu slave o tym adresie
+						pos = getResetOrder(buffer[1]);
+					}else{
+						scann_order  =  false;
+					}
+				}
+			*/
+			}
+
 			int[] parts = decodeBytes( fromArduino );
 			if(parts[2] == Constant.MAINBOARD_DEVICE_TYPE ){
 				Arduino a	= Arduino.getInstance();

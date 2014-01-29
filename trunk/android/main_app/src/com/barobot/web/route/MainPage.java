@@ -55,7 +55,33 @@ public class MainPage extends EmptyRoute{
         action_chunk.set("types", new String[]{
         		"1","2","3","4","5","6","7","8","9","10",      		
         } );
-        
+        action_chunk.set("devices", new String[]{
+        		"Carret",
+        		"Mainboard",
+        		"Upanel",
+        		"Load Cell",
+        		"Stepper X",
+        		"Servo Y",
+        		"Servo Z",
+        		"Hall X",
+        		"Hall Y",
+        		"Main Temp sensor",
+        		"Carret Temp sensor",
+        		"Temp sensor",
+        		"Current Sensor X",
+        		"Current Sensor Y",
+        		"Current Sensor Z",	
+        });
+        action_chunk.set("lucky_item", new String[]{
+        		"Gimme anything",
+        		"Classical",
+        		"Popular",
+        		"By main ingredient",
+        		"By sweetness",
+        		"By color",
+        		"By strength",
+        		"Non-alcoholic"
+        } ); 
         action_chunk.set("body2", sb.toString() );
     	return action_chunk.toString();
 	}

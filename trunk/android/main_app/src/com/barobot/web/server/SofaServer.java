@@ -1,5 +1,6 @@
 package com.barobot.web.server;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.MessageDigest;
@@ -35,22 +36,30 @@ public class SofaServer extends NanoHTTPD {
 	public static void main(String[] args) {
         ServerRunner.run(SofaServer.class);
     }
+	public static InputStream assetExists(AssetManager am, String path) {
+	    try {
+	        InputStream stream = am.open(path);
+		    return stream;
+	    } catch (FileNotFoundException e) {
+	    	return null;
+	    } catch (IOException e) {
+	    	return null;
+	    }
+	}
     @Override public Response serve(IHTTPSession session) {
 		String uri					= session.getUri();
 		//Log.i("---otwieram--- ", uri );
 		EmptyRoute route = doRoutes( uri );
 		if( route == null ){
 			String path				= uri.substring(1);
-			if(Android.assetExists(am, path)){
+			InputStream mbuffer		= assetExists(am, path);
+			if( mbuffer != null ){
 	//			String data =Android.readAsset(am, path);
 				String etag = getEtag(path);
 				int dotpos = path.lastIndexOf(".");
 	        	String ext = path.substring(dotpos+1);
 	        	if(MIME_TYPES.containsKey(ext)){
 	        		String mime = MIME_TYPES.get(ext) + ";encoding=utf-8;charset=UTF-8";
-	        		InputStream mbuffer = null;
-	        		try {
-						mbuffer		= am.open(uri.substring(1));
 						Response r	= new NanoHTTPD.Response(Status.OK, mime, mbuffer);
 	//					r.addHeader("Cache-Control", "no-transform,public,max-age=3000,s-maxage=900");
 				//		r.addHeader("Expires", "Thu, 03 Jan 2019 14:42:16 GMT");
@@ -64,9 +73,7 @@ public class SofaServer extends NanoHTTPD {
 		    	//		Log.i("etag :", path +" " + etag );
 		    			r.addHeader("Etag", "\""+ etag + "\"");	
 						return r;
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
+
 	    		//	Response r = new NanoHTTPD.Response(Status.OK, mime, data);
 	    		//	Response r = new NanoHTTPD.Response(data);
 	    		//	return r;
@@ -154,10 +161,13 @@ public class SofaServer extends NanoHTTPD {
         put("txt", "text/plain");
         put("asc", "text/plain");
         put("gif", "image/gif");
+        put("ttf", "application/octet-stream");
+        put("woff", "application/font-woff");
+        put("ico", "image/x-icon");
+        put("js", "text/javascript");
         put("jpg", "image/jpeg");
         put("jpeg", "image/jpeg");
         put("png", "image/png");
-        put("mp3", "audio/mpeg");
         put("ttf", "application/octet-stream");
         put("woff", "application/font-woff");
         put("ico", "image/x-icon");
@@ -167,13 +177,16 @@ public class SofaServer extends NanoHTTPD {
         put("flv", "video/x-flv");
         put("mov", "video/quicktime");
         put("swf", "application/x-shockwave-flash");
-        put("js", "text/javascript");
         put("pdf", "application/pdf");
         put("doc", "application/msword");
         put("ogg", "application/x-ogg");
         put("zip", "application/octet-stream");
         put("exe", "application/octet-stream");
         put("class", "application/octet-stream");
+        put("mp3", "audio/mpeg");
+        put("md", "text/plain");
+        put("txt", "text/plain");
+        put("asc", "text/plain");
     }};
 
 	public static SofaServer getInstance() {

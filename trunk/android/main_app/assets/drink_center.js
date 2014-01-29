@@ -85,8 +85,8 @@ var tab_def_list = {
 		on_init		: function( num, tab_btn, tab, twidth, theight ){},
 		on_show		: function( num, tab_btn, tab, twidth, theight ){
 			var h = theight - $(".item_buttons:first").height();
-			console.log(theight, $(".item_buttons:first") );
-			$("#fav_details_parent").height( h - 10 );
+			console.log("theight "+ theight, $(".item_buttons:first") );
+			$("#fav_details_parent").css( "height", h - 10 );	
 		},
 		on_hide		: function( num, tab_btn, tab ){},
 		on_scroll	: function( num, tab_btn, tab, top, left ){},
@@ -166,7 +166,10 @@ var tab_def_list = {
 	setup_advanced:{
 		on_load		: function( swidth, sheight ){},
 		on_init		: function( num, tab_btn, tab, twidth, theight ){},
-		on_show		: function( num, tab_btn, tab, twidth, theight ){},
+		on_show		: function( num, tab_btn, tab, twidth, theight ){
+			var data = $("#device_settings").html();
+			fullscreen( tab_btn.text(), data);
+		},
 		on_hide		: function( num, tab_btn, tab ){},
 		on_scroll	: function( num, tab_btn, tab, top, left ){},
 	},
@@ -215,6 +218,17 @@ var tab_def_list = {
 		on_hide		: function( num, tab_btn, tab ){},
 		on_scroll	: function( num, tab_btn, tab, top, left ){},
 	},
+	send_opinion:{
+		on_load		: function( swidth, sheight ){},
+		on_init		: function( num, tab_btn, tab, twidth, theight ){},
+		on_show		: function( num, tab_btn, tab, twidth, theight ){
+			var data = $("#opinion_form").html();
+			fullscreen( tab_btn.text(), data);
+		},
+		on_hide		: function( num, tab_btn, tab ){},
+		on_scroll	: function( num, tab_btn, tab, top, left ){},
+	},
+
 	off_stop:{
 		on_load		: function( swidth, sheight ){},
 		on_init		: function( num, tab_btn, tab, twidth, theight ){},
@@ -242,7 +256,14 @@ var tab_def_list = {
 		on_show		: function( num, tab_btn, tab, twidth, theight ){},
 		on_hide		: function( num, tab_btn, tab ){},
 		on_scroll	: function( num, tab_btn, tab, top, left ){},
-	}
+	},
+	tab_device:{
+		on_load		: function( swidth, sheight ){},
+		on_init		: function( num, tab_btn, tab, twidth, theight ){},
+		on_show		: function( num, tab_btn, tab, twidth, theight ){},
+		on_hide		: function( num, tab_btn, tab ){},
+		on_scroll	: function( num, tab_btn, tab, top, left ){},
+	},
 };
 
 function closeTab( old_name, old_btn ){
@@ -265,7 +286,7 @@ var scrollElementTo	= function( parent, inner_btn ){
 	var pos2 	= inner_btn.position().top + inner_btn.height()/2;
 	//pos2 = Math.round(pos2);
 	//pre(pos2+ "/" +Math.round(max) );
-	if( pos2 < 0 || pos2 > max){
+//	if( pos2 < 0 || pos2 > max){
 		var pos = parent.scrollTop() + inner_btn.position().top - parent.height()/2 + inner_btn.height()/2;
 		pos = Math.round(pos);
 		pre("scroll " + pos );
@@ -274,19 +295,19 @@ var scrollElementTo	= function( parent, inner_btn ){
 		parent.animate({scrollTop: pos}, 300, function(){
 			//parent.css("overflow","auto");
 		});
-	}
+//	}
 };
 		
 		
 $(document).ready(function() {
 	window.scrollTo(0, 1);
-	
 	var mt		= $("#main_tabs");
     var pb		= $('#animated');
 	var swidth	= $(window).innerWidth();
 	var sheight	= $(window).height();
 	mt.css( "min-height", sheight );
 	$("#main_tabs_parent").css( "height", sheight );
+	$("body").css( "height", sheight );
 	//var w = swidth - $("#main_tabs").outerWidth() - 20;
 	pre("screen: " + $(document).width() + "/" + $(document).height() );
 	//$(".tab-content").css( "width", w );
@@ -347,23 +368,24 @@ $(document).ready(function() {
 						$("#main_tabs").removeClass("hide_title");
 					}
 
-					if( new_tab.is(".fill_parent")){
+					if( new_tab.is(".fill_parent_width")){
 						var lwidth = 0;
-						$(".tab-pane.active:not(.fill_parent)").each(function(index) {
+						$(".tab-pane.active:not(.fill_parent_width)").each(function(index) {
 							lwidth += parseInt($(this).outerWidth(), 10);
 							pre($(this), $(this).outerWidth(), parseInt($(this).outerWidth(), 10));	
 						});
-					
 						pre("outerWidth: " + lwidth);
 						pre(swidth, $("body").innerWidth());
 						pre("res: " +  Math.floor( $("body").innerWidth() - lwidth -1 ) );
 						new_tab.width( Math.floor( $("body").innerWidth() - lwidth -1 ) );
 					}
-					new_btn.addClass("active");
+					if( !new_tab_btn.is(".noactive")){
+						new_btn.addClass("active");
+					}
 					new_tab.addClass("active");			
 
 					var parent		= nav_root.closest(".list_level2_parent");
-					var theight		= sheight;
+					var theight		= new_tab.closest(".change_height").height();
 					scrollElementTo( parent, new_btn );
 
 					var item		= tab_def_list[ new_name ];
@@ -380,6 +402,15 @@ $(document).ready(function() {
 		}, 2 );
 	};
 
+	/*
+	
+	fill_parent_width - 
+	inner_scroll - powoduje, ze element mozna scrollować wewnątrz jego parenta
+	hide_title - ukrywa nazwy w menu
+	
+	*/
+	
+	
 	var eventHandler = function( ev ){
 		var btn			= $(this);
 		setActive( btn );
