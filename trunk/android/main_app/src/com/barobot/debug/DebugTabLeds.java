@@ -2,9 +2,9 @@ package com.barobot.debug;
 
 import com.barobot.R;
 import com.barobot.activity.DebugActivity;
+import com.barobot.constant.Constant;
 import com.barobot.hardware.DeviceSet;
 import com.barobot.hardware.DeviceView;
-import com.barobot.utils.Constant;
 
 import android.app.Activity;
 import android.os.Bundle;

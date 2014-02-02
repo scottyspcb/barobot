@@ -200,6 +200,16 @@ public class SofaServer extends NanoHTTPD {
         AndroidTemplates loader = new AndroidTemplates(baseContext);
         am = baseContext.getAssets();
 		theme = new Theme(loader);
+		theme.registerFilter( new LeftTrimFilter() );
+
+		theme.setLocale("pl_PL");
+		Chunk c = theme.makeChunk();
+		
+		
+		
+		c.append("_[That's it!]  _[Localization].");
+		
+		
 	}
 }
 /*

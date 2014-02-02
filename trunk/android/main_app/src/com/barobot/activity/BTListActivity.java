@@ -5,7 +5,7 @@ import com.barobot.R;
 import com.barobot.R.id;
 import com.barobot.R.layout;
 import com.barobot.R.string;
-import com.barobot.utils.Constant;
+import com.barobot.constant.Constant;
 import com.barobot.utils.Arduino;
 
 import android.app.Activity;

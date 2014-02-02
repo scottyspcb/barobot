@@ -26,6 +26,10 @@ public class ArduinoQueue {
 		output.add( rpcLogic );	
 		return rpcLogic;
 	}
+	public void add(ArduinoQueue list) {
+		output.addAll(list.output);
+	}
+
 	public void addWait(final int time) {
 		final rpc_message m2 = new rpc_message( true, true ) {
 			@Override
@@ -167,5 +171,4 @@ public class ArduinoQueue {
 		};
 		output.add( m2 );
 	}
-
 }

@@ -5,8 +5,8 @@ import java.util.Map;
 
 import com.barobot.activity.BarobotMain;
 import com.barobot.activity.DebugActivity;
+import com.barobot.constant.Constant;
 import com.barobot.utils.ArduinoQueue;
-import com.barobot.utils.Constant;
 import com.barobot.utils.Arduino;
 import com.barobot.utils.input_parser;
 
@@ -439,7 +439,7 @@ public class virtualComponents {
 					q2.addWait( waity );
 					q2.add( new rpc_message( true ){
 						public boolean handle( String command ){
-							if (command == "CANT_Y"){
+							if (command == "ECANT_Y"){
 								ArduinoQueue q3 = new ArduinoQueue();
 								if( tryis-- > 0){
 						//			q3.add( moveit );

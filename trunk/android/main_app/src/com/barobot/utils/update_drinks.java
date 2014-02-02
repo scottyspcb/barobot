@@ -1,4 +1,4 @@
-package com.barobot.drinks;
+package com.barobot.utils;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -12,7 +12,7 @@ import java.net.URLConnection;
 import com.barobot.R;
 import com.barobot.activity.BarobotMain;
 import com.barobot.activity.UpdateActivity;
-import com.barobot.utils.Constant;
+import com.barobot.constant.Constant;
 import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonObject.Member;
@@ -22,7 +22,7 @@ import android.app.ProgressDialog;
 import android.util.Log;
 import android.widget.TextView;
 
-public class drinks_database {
+public class update_drinks {
 	private String metadata	= "http://strych.arczi.info/barobot/database.json";
 	private String drinks	= "http://strych.arczi.info/barobot/drinks.json";	
 	private String errorlog	= "http://strych.arczi.info/barobot/error.php";

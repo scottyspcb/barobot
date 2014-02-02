@@ -1,4 +1,4 @@
-package com.barobot.hardware;
+package com.barobot.constant;
 
 public class Methods {
 	public static int METHOD_GETVERSION =	5;
@@ -34,8 +34,7 @@ public class Methods {
 	public static int METHOD_DEVICE_FOUND	=	220;
 	public static int RETURN_PIN_VALUE =		211;
 	public static int RETURN_ANALOG_CHANGE =	111;
-	
-	
+
 	public static int DRIVER_DIR_FORWARD	= 32;
 	public static int DRIVER_DIR_BACKWARD	= 64;
 	public static int DRIVER_DIR_STOP		= 0;
@@ -44,9 +43,8 @@ public class Methods {
 	public static int DRIVER_Y	= 8;
 	public static int DRIVER_Z	= 16;
 	
-
 	public static int HALL_GLOBAL_MIN	 	= 1;
-	public static int HALL_GLOBAL_MAX 	= 2;
+	public static int HALL_GLOBAL_MAX 		= 2;
 	public static int HALL_LOCAL_MAX		= 4;
 	public static int HALL_LOCAL_MIN 		= 8;
 

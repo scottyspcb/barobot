@@ -8,6 +8,7 @@ import com.barobot.R.id;
 import com.barobot.R.layout;
 import com.barobot.R.menu;
 import com.barobot.R.string;
+import com.barobot.constant.Constant;
 import com.barobot.debug.DebugTabBottles;
 import com.barobot.debug.DebugTabCommands;
 import com.barobot.debug.DebugTabDevices;
@@ -15,7 +16,6 @@ import com.barobot.debug.DebugTabGraph;
 import com.barobot.debug.DebugTabLeds;
 import com.barobot.debug.DebugTabLog;
 import com.barobot.hardware.virtualComponents;
-import com.barobot.utils.Constant;
 import com.barobot.utils.RunnableWithData;
 
 import android.app.ActionBar;

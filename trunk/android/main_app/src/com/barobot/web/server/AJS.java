@@ -3,7 +3,7 @@ package com.barobot.web.server;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.barobot.utils.Constant;
+import com.barobot.constant.Constant;
 
 import android.content.Context;
 import android.util.Log;

@@ -2,9 +2,9 @@ package com.barobot.debug;
 
 import com.barobot.R;
 import com.barobot.activity.DebugActivity;
+import com.barobot.constant.Constant;
 import com.barobot.hardware.virtualComponents;
 import com.barobot.utils.Arduino;
-import com.barobot.utils.Constant;
 import com.barobot.utils.RunnableWithData;
 import com.barobot.web.server.AJS;
 

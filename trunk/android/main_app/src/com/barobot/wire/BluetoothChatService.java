@@ -8,8 +8,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import com.barobot.activity.BarobotMain;
+import com.barobot.constant.Constant;
 import com.barobot.hardware.virtualComponents;
-import com.barobot.utils.Constant;
 import com.barobot.utils.RunnableWithData;
 import com.barobot.utils.input_parser;
 

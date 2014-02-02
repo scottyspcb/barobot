@@ -3,9 +3,9 @@ package com.barobot.wire;
 import java.io.IOException;
 
 import com.barobot.activity.BarobotMain;
+import com.barobot.constant.Constant;
 import com.barobot.hardware.virtualComponents;
 import com.barobot.utils.Arduino;
-import com.barobot.utils.Constant;
 import com.barobot.utils.input_parser;
 
 import android.app.Activity;
