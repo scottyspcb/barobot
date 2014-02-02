@@ -6,6 +6,7 @@ import java.util.List;
 import android.content.Context;
 import android.database.Cursor;
 
+import com.barobot.constant.Constant;
 import com.barobot.gui.ArduinoListener;
 import com.barobot.gui.database.BarobotDB;
 import com.barobot.gui.database.DataContract;
@@ -13,7 +14,6 @@ import com.barobot.hardware.rpc_message;
 import com.barobot.hardware.virtualComponents;
 import com.barobot.utils.Arduino;
 import com.barobot.utils.ArduinoQueue;
-import com.barobot.utils.Constant;
 
 public class Engine {
 	

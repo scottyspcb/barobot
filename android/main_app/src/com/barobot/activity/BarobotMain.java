@@ -26,9 +26,9 @@ import android.widget.LinearLayout.LayoutParams;
 
 import com.barobot.AppInvoker;
 import com.barobot.R;
+import com.barobot.constant.Constant;
 import com.barobot.hardware.virtualComponents;
 import com.barobot.utils.Arduino;
-import com.barobot.utils.Constant;
 import com.barobot.web.server.AJS;
 import com.barobot.web.server.htmlBrowser;
 

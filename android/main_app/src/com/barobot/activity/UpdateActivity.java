@@ -3,7 +3,7 @@ package com.barobot.activity;
 import com.barobot.R;
 import com.barobot.R.layout;
 import com.barobot.R.menu;
-import com.barobot.drinks.drinks_database;
+import com.barobot.utils.update_drinks;
 
 import android.os.Bundle;
 import android.app.Activity;
@@ -12,14 +12,14 @@ import android.widget.TextView;
 
 public class UpdateActivity extends Activity {
 	public static final int INTENT_NAME = 5;
-	private drinks_database ddb;
+	private update_drinks ddb;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_update);
 
-		ddb = new drinks_database();
+		ddb = new update_drinks();
 		ddb.setActivity(this);
 		ddb.load();
 	}

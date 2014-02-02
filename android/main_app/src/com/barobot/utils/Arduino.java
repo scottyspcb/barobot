@@ -11,6 +11,7 @@ import android.widget.ArrayAdapter;
 
 import com.barobot.AppInvoker;
 import com.barobot.activity.BarobotMain;
+import com.barobot.constant.Constant;
 import com.barobot.hardware.rpc_message;
 import com.barobot.wire.BT_wire;
 import com.barobot.wire.Serial_wire;
@@ -241,7 +242,7 @@ public class Arduino{
 	}
 	public void sendFirst(ArduinoQueue q2) {
 		synchronized (this.lock) {
-			this.output2.addAll( 0, q2.output);		// dodja na począku, reszte przesun dalej		
+			this.output2.addAll( 0, q2.output);		// dodaj na począku, reszte przesun dalej		
 		}
 		exec();
 	}
@@ -430,7 +431,6 @@ public class Arduino{
 				}
 				rpc_message m = output2.pop();
 				if( m.handle( fromArduino ) ){	// zatrzymało kasowanie kolejki
-
 					break;
 				}else{		// usuwa wszystkie ktore nie obsługują tego zapytania
 				}

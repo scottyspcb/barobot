@@ -13,7 +13,8 @@ import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import com.barobot.R;
-import com.barobot.utils.Constant;
+import com.barobot.constant.Constant;
+
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.content.Context;
 

@@ -4,8 +4,9 @@ import android.util.Log;
 
 import com.barobot.R;
 import com.barobot.activity.DebugActivity;
+import com.barobot.constant.Constant;
+import com.barobot.constant.Methods;
 import com.barobot.debug.DebugTabGraph;
-import com.barobot.hardware.Methods;
 import com.barobot.hardware.virtualComponents;
 import com.barobot.web.server.AJS;
 
@@ -304,7 +305,7 @@ public class input_parser {
 			};
 			*/
 
-		}else if(command == Constant.ERROR ){  //error	
+		}else if(command == Constant.ERROR ){  //error
 			Arduino a			= Arduino.getInstance();
 			a.throwError(fromArduino);
 

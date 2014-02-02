@@ -5,11 +5,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import com.barobot.activity.BarobotMain;
+import com.barobot.constant.Constant;
 import com.barobot.hardware.DeviceSet;
 import com.barobot.hardware.virtualComponents;
 import com.barobot.utils.Arduino;
 import com.barobot.utils.CameraManager;
-import com.barobot.utils.Constant;
 import com.barobot.utils.interval;
 import com.barobot.web.server.SofaServer;
 

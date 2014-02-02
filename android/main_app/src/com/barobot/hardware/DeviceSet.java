@@ -12,7 +12,9 @@ import java.util.Set;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
-import com.barobot.utils.Constant;
+
+import com.barobot.constant.Constant;
+
 import android.content.Context;
 import android.os.Environment;
 import android.util.Xml;

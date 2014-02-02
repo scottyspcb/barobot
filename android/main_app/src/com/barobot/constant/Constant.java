@@ -1,4 +1,4 @@
-package com.barobot.utils;
+package com.barobot.constant;
 
 
 import java.util.UUID;
@@ -60,9 +60,7 @@ public class Constant {
 
 	public static final String PING = "PING";
 	public static final String PONG = "PONG";
-	
 
-	
     // Return Intent extra
     public static String EXTRA_DEVICE_ADDRESS = "device_address";
 
@@ -77,7 +75,7 @@ public class Constant {
 			Log.w(tag22,string,e);
 		}		
 	}
-	
+
 	public static final int DRIVER_X 		= 4;
 	public static final int DRIVER_Y 		= 8;
 	public static final int DRIVER_Z 		= 16;
@@ -85,43 +83,5 @@ public class Constant {
 	public static final int MAINBOARD_DEVICE_TYPE 	= 0x10;
 	public static final int IPANEL_DEVICE_TYPE 		= 0x11;
 	public static final int UPANEL_DEVICE_TYPE 		= 0x13;
-
-	public static final int METHOD_GETVERSION 		= 5;
-	public static final int METHOD_PROG_MODE_ON 	= 10;
-	public static final int METHOD_PROG_MODE_OFF 	= 14;
-	public static final int METHOD_TEST_SLAVE 		= 19;
-	public static final int METHOD_RESETCYCLES 		= 20;
-	public static final int METHOD_SETPWM 			= 38;
-	public static final int METHOD_SETTIME 			= 42;
-	public static final int METHOD_SETFADING 		= 46;
-	public static final int METHOD_RESETSLAVEADDRESS= 50;
-	public static final int METHOD_GETANALOGVALUE 	= 51;
-	public static final int METHOD_GETVALUE 		= 55;
-	public static final int METHOD_RESET_NEXT 		= 58;
-	public static final int METHOD_RUN_NEXT 		= 62;
-	public static final int METHOD_GET_Y_POS 		= 65;
-	public static final int METHOD_SET_Y_POS 		= 66;
-	public static final int METHOD_GET_Z_POS 		= 69;
-	public static final int METHOD_SET_Z_POS 		= 70;
-	public static final int METHOD_LIVE_OFF 		= 72;
-	public static final int METHOD_LIVE_ANALOG 		= 74;
-	public static final int METHOD_DRIVER_ENABLE 	= 82;
-	public static final int METHOD_DRIVER_DISABLE 	= 86;
-	public static final int METHOD_HERE_I_AM 		= 114;
-	public static final int METHOD_SEND_PIN_VALUE 	= 118;
-	public static final int METHOD_CAN_FILL 		= 120;
-	public static final int METHOD_I2C_SLAVEMSG 	= 122;
-	public static final int RETURN_DRIVER_ERROR 	= 180;
-	public static final int RETURN_DRIVER_READY 	= 182;
-	public static final int RETURN_PIN_VALUE 		= 211;
-	public static final int METHOD_STEPPER_MOVING 	= 222;
-	public static final int METHOD_IMPORTANT_ANALOG = 224;
-	public static final int RETURN_I2C_ERROR 		= 53;
-	public static final int METHOD_GET_X_POS 		= 57;
-	public static final int METHOD_EXEC_ERROR		= 22;
-	public static final int METHOD_DEVICE_FOUND		= 12;
-	public static final int METHOD_SETLED			= 40;
-
-	
 	
 }
