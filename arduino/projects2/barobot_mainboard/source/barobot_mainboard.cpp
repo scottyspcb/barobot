@@ -135,7 +135,7 @@ void loop(){
 		check_i2c();    // czy linia jest drozna?
 		hbval++;
 		if(hbval>=10){
-			//  2c_analog(I2C_ADR_IPANEL, 0);
+			//  2c_analog(I2C_ADR_CARRET, 0);
 			hbval=0;
 		}
 		milis100 = mil + 12000;
@@ -195,11 +195,11 @@ void reset_wire(){
 	//    pinMode(PIN_MAINBOARD_SDA, INPUT );
 	//    pinMode(PIN_MAINBOARD_SCL, INPUT );
 	Wire.begin(I2C_ADR_MAINBOARD);
-	tri_state( PIN_PROGRAMMER_RESET_IPANEL, false );		// pin w stanie niskim = reset
+	tri_state( PIN_PROGRAMMER_RESET_CARRET, false );		// pin w stanie niskim = reset
 	tri_state( PIN_PROGRAMMER_RESET_UPANEL_FRONT, false );	// pin w stanie niskim = reset
 	tri_state( PIN_PROGRAMMER_RESET_UPANEL_BACK, false );	// pin w stanie niskim = reset
 	
-	tri_state( PIN_PROGRAMMER_RESET_IPANEL, true );			// pin w stanie niskim = reset
+	tri_state( PIN_PROGRAMMER_RESET_CARRET, true );			// pin w stanie niskim = reset
 	tri_state( PIN_PROGRAMMER_RESET_UPANEL_FRONT, true );   // pin w stanie niskim = reset
 	tri_state( PIN_PROGRAMMER_RESET_UPANEL_BACK, true );	// pin w stanie niskim = reset
 }
@@ -210,7 +210,7 @@ void proceed( byte length,volatile uint8_t buffer[7] ){ // zrozum co przyszlo po
 	}
 	if(buffer[0] == METHOD_HERE_I_AM){         //  here_i_am {METHOD_HERE_I_AM,my_address,type,ver}
 		byte pos = getResetOrder(buffer[1]);
-		if( buffer[2] == IPANEL_DEVICE_TYPE ){
+		if( buffer[2] == CARRET_DEVICE_TYPE ){
 			DEBUGLN("-Wozek! ");
 		}else if( scann_order ){ 
 			if( pos == 0xff ){        // nie ma na liscie?
@@ -397,11 +397,11 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 		defaultResult = false;
 	}else if( input.equals("y")) {    // pobierz pozycje
 		out_buffer[0]  = METHOD_GET_Y_POS;
-		writeRegisters(I2C_ADR_IPANEL, 1, false );
+		writeRegisters(I2C_ADR_CARRET, 1, false );
 		defaultResult = false;
 	}else if( input.equals("z")) {    // pobierz pozycje
 		out_buffer[0]  = METHOD_GET_Z_POS;
-		writeRegisters(I2C_ADR_IPANEL, 1, false );
+		writeRegisters(I2C_ADR_CARRET, 1, false );
 		defaultResult = false;
 	}else if( input.equals("EX") ){
 		stepperX.enableOutputs();
@@ -418,25 +418,25 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 	}else if( input.equals("EY") ){
 		out_buffer[0]  = METHOD_DRIVER_ENABLE;
 		out_buffer[1]  = DRIVER_Y;
-		writeRegisters(I2C_ADR_IPANEL, 2, false );
+		writeRegisters(I2C_ADR_CARRET, 2, false );
 		defaultResult = false;
 	}else if( input.equals("EZ") ){
 		out_buffer[0]  = METHOD_DRIVER_ENABLE;
 		out_buffer[1]  = DRIVER_Z;
-		writeRegisters(I2C_ADR_IPANEL, 2, false );
+		writeRegisters(I2C_ADR_CARRET, 2, false );
 		defaultResult = false;
 	}else if( input.equals("DY") ){
 		out_buffer[0]  = METHOD_DRIVER_DISABLE;
 		out_buffer[1]  = DRIVER_Y;
-		writeRegisters(I2C_ADR_IPANEL, 2, false );
+		writeRegisters(I2C_ADR_CARRET, 2, false );
 		defaultResult = false;
 	}else if( input.equals("DZ") ){
 		out_buffer[0]  = METHOD_DRIVER_DISABLE;
 		out_buffer[1]  = DRIVER_Z;
-		writeRegisters(I2C_ADR_IPANEL, 2, false );
+		writeRegisters(I2C_ADR_CARRET, 2, false );
 		defaultResult = false;
-	}else if( input.equals(METHOD_RESET_BUS) ){    // reset bus
-		get_order();
+//	}else if( input.equals(METHOD_RESET_BUS) ){    // reset bus
+//		get_order();
 	}else if( input.equals("I2C") ){
 		byte nDevices=0;
 		byte error=0;
@@ -451,7 +451,7 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 			}
 		}
 		if( nDevices == 0 ){
-			sendln2android("RI2Cnd");
+			sendln2android("EI2C");
 			defaultResult = false;
 		}
 /*
@@ -473,11 +473,11 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 }
 byte read_can_fill(){
 	out_buffer[0]  = METHOD_CAN_FILL;
-	byte error = writeRegisters(I2C_ADR_IPANEL, 1, true );
+	byte error = writeRegisters(I2C_ADR_CARRET, 1, true );
 	if( error ){
 		return error;
 	}
-	readRegisters( I2C_ADR_IPANEL, 1 );
+	readRegisters( I2C_ADR_CARRET, 1 );
 	return in_buffer[0]; // 0 jesli mozna, inna liczba jesli blad
 }
 
@@ -491,7 +491,7 @@ void stepperReady( long int pos ){
 	out_buffer[0]  = METHOD_STEPPER_MOVING;           // wyslij do wozka ze jade
 	out_buffer[1]  = DRIVER_X;
 	out_buffer[2]  = DRIVER_DIR_STOP;
-	writeRegisters(I2C_ADR_IPANEL, 3, false );        // send to carret*/
+	writeRegisters(I2C_ADR_CARRET, 3, false );        // send to carret*/
 
 	byteint value;
 	value.i= pos;
@@ -538,20 +538,20 @@ void paserDeriver( byte driver, String input ){   // odczytaj komende silnika
 			out_buffer[0]  = METHOD_STEPPER_MOVING;
 			out_buffer[1]  = DRIVER_X;
 			out_buffer[2]  = ( dis > 0 ) ? DRIVER_DIR_FORWARD : DRIVER_DIR_BACKWARD;        // forward?
-			writeRegisters(I2C_ADR_IPANEL, 3, false );        // send to carret
+			writeRegisters(I2C_ADR_CARRET, 3, false );        // send to carret
 		}
 	}else if( maxspeed > 0 && driver == DRIVER_Y ){            // stepper Y
 		out_buffer[0]  = METHOD_SET_Y_POS;
 		out_buffer[1]  = target & 0xff;            // low byte
 		out_buffer[2]  = (target >> 8) & 0xff;     // high byte
 		out_buffer[3]  = maxspeed & 0xff;
-		writeRegisters(I2C_ADR_IPANEL, 4, false );
+		writeRegisters(I2C_ADR_CARRET, 4, false );
 	}else if( maxspeed > 0 && driver == DRIVER_Z ){            // stepper Z
 		out_buffer[0]  = METHOD_SET_Z_POS;
 		out_buffer[1]  = target & 0xff;
 		out_buffer[2]  = (target >> 8) & 0xff;
 		out_buffer[3]  = maxspeed & 0xff;
-		writeRegisters(I2C_ADR_IPANEL, 4, false );
+		writeRegisters(I2C_ADR_CARRET, 4, false );
 	}
 }
  
@@ -627,7 +627,7 @@ boolean reset_device_num( byte num, boolean pin_value ){
 			pulse(PIN_PROGRAMMER_LED_ACTIVE, 2);
 		};
 	}else if( num == 0x01 ){                        // wozek
-		tri_state( PIN_PROGRAMMER_RESET_IPANEL, pin_value );
+		tri_state( PIN_PROGRAMMER_RESET_CARRET, pin_value );
 	}else if( num == 0x05 ){                  // pierwszy upanel
 		tri_state( PIN_PROGRAMMER_RESET_UPANEL_BACK, pin_value );
 	}else if( num == 0x0B ){                  // pierwszy upanel
@@ -701,12 +701,11 @@ void i2c_prog_mode( boolean active, byte slave_address ){                  // To
 	}
 }
 
-
 void get_order(){      // pobierz kolejnosc elementow
 	DEBUGLN("-Resetuje");
 
-	tri_state( PIN_PROGRAMMER_RESET_IPANEL, false );       // pin w stanie niskim = reset
-	tri_state( PIN_PROGRAMMER_RESET_IPANEL, true );        // end reset = start first slave
+	tri_state( PIN_PROGRAMMER_RESET_CARRET, false );       // pin w stanie niskim = reset
+	tri_state( PIN_PROGRAMMER_RESET_CARRET, true );        // end reset = start first slave
 
 	tri_state( PIN_PROGRAMMER_RESET_UPANEL_FRONT, false );       // pin w stanie niskim = reset
 	tri_state( PIN_PROGRAMMER_RESET_UPANEL_FRONT, true );        // end reset = start first slave
@@ -824,7 +823,7 @@ byte getResetOrder( byte i2c_address ){
 	if( i2c_address == I2C_ADR_MAINBOARD ){       // wozek
 		return 0;
 	}
-	if( i2c_address == I2C_ADR_IPANEL ){       // wozek
+	if( i2c_address == I2C_ADR_CARRET ){       // wozek
 		return 1;
 	}
 	for(byte i =0; i<nextpos;i++){

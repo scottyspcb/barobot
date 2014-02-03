@@ -1,6 +1,6 @@
 #include "barobot_carret_main.h"
 
-#define IS_IPANEL true
+#define IS_CARRET true
 #define HAS_LEDS true
 #include <WSWire.h>
 #include <i2c_helpers.h>
@@ -30,7 +30,7 @@ byte moving_z = DRIVER_DIR_STOP;      // informacja co robi silnik
 //unsigned int typical_zero = 512;
 //unsigned int last_max = 0;
 //unsigned int last_min = 0;
-volatile byte input_buffer[IPANEL_BUFFER_LENGTH][5] = {{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0}};      // 6 buforow po 5 bajtów
+volatile byte input_buffer[CARRET_BUFFER_LENGTH][5] = {{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0}};      // 6 buforow po 5 bajtów
 volatile byte last_index     = 0;
 volatile unsigned int ticks  = 0;
 
@@ -55,8 +55,8 @@ struct ServoChannel {
 
 Servo servo_lib[2];
 volatile ServoChannel servos[2]= {
-	{PIN_IPANEL_SERVO_Y,0,0,0,0,false,false},
-	{PIN_IPANEL_SERVO_Z,0,0,0,0,false,false},
+	{PIN_CARRET_SERVO_Y,0,0,0,0,false,false},
+	{PIN_CARRET_SERVO_Z,0,0,0,0,false,false},
 };
 
 // oscyloskop
@@ -71,26 +71,26 @@ byteint analog_sum;
 boolean diddd = false;
 
 void setup(){
-	pinMode(PIN_IPANEL_SCK, INPUT );         // stan wysokiej impedancji
-	pinMode(PIN_IPANEL_MISO, INPUT );        // stan wysokiej impedancji
-	pinMode(PIN_IPANEL_MOSI, INPUT );        // stan wysokiej impedancji
+	pinMode(PIN_CARRET_SCK, INPUT );         // stan wysokiej impedancji
+	pinMode(PIN_CARRET_MISO, INPUT );        // stan wysokiej impedancji
+	pinMode(PIN_CARRET_MOSI, INPUT );        // stan wysokiej impedancji
 
-	pinMode(PIN_IPANEL_SERVO_Y, INPUT);      // nie pozwalaj na przypadkowe machanie na starcie
-	pinMode(PIN_IPANEL_SERVO_Z, INPUT);      // nie pozwalaj na przypadkowe machanie na starcie
+	pinMode(PIN_CARRET_SERVO_Y, INPUT);      // nie pozwalaj na przypadkowe machanie na starcie
+	pinMode(PIN_CARRET_SERVO_Z, INPUT);      // nie pozwalaj na przypadkowe machanie na starcie
 
-	pinMode(PIN_IPANEL_HALL_X, INPUT);
-	pinMode(PIN_IPANEL_HALL_Y, INPUT);
-	pinMode(PIN_IPANEL_WEIGHT, INPUT);
+	pinMode(PIN_CARRET_HALL_X, INPUT);
+	pinMode(PIN_CARRET_HALL_Y, INPUT);
+	pinMode(PIN_CARRET_WEIGHT, INPUT);
 	
-	pinMode(PIN_IPANEL_CURRENTY, INPUT);
-	pinMode(PIN_IPANEL_CURRENTZ, INPUT);
+	pinMode(PIN_CARRET_CURRENTY, INPUT);
+	pinMode(PIN_CARRET_CURRENTZ, INPUT);
 
 	init_leds();
 
 	DEBUGINIT();
 	DEBUGLN("-wozek start");
-	my_address = I2C_ADR_IPANEL;
-	Wire.begin(I2C_ADR_IPANEL);
+	my_address = I2C_ADR_CARRET;
+	Wire.begin(I2C_ADR_CARRET);
 	Wire.onReceive(receiveEvent);
 	Wire.onRequest(requestEvent);
 	send_here_i_am();  // wyslij ze oto jestem
@@ -104,7 +104,7 @@ void setup(){
 }
  
 void init_leds(){
-	for (uint8_t i = 0; i < COUNT_IPANEL_ONBOARD_LED; ++i){
+	for (uint8_t i = 0; i < COUNT_CARRET_ONBOARD_LED; ++i){
 		uint8_t pin = _pwm_channels[i].pin;
 		_pwm_channels[i].outport = portOutputRegister(digitalPinToPort(pin));
 		_pwm_channels[i].pinmask = digitalPinToBitMask(pin);
@@ -322,7 +322,7 @@ void loop() {
 	update_servo( INNER_SERVOZ );
 	 
 	// analizuj bufor wejsciowy i2c
-	for( byte i=0;i<IPANEL_BUFFER_LENGTH;i++){
+	for( byte i=0;i<CARRET_BUFFER_LENGTH;i++){
 	//    if( input_buffer[i][0] >0 && bit_is_clear(input_buffer[i][0], 0 )){    // bez xxxx xxx1 b
 		if( input_buffer[i][0] >0 ){    // bez xxxx xxx1 b
 			if( input_buffer[i][0] != METHOD_GETVERSION &&  input_buffer[i][0] != METHOD_TEST_SLAVE ){
@@ -591,7 +591,7 @@ void receiveEvent(int howMany){
 	byte cnt = 0;
 	volatile byte (*buffer) = 0;
 	//  DEBUG("-input " );
-	for( byte a = 0; a < IPANEL_BUFFER_LENGTH; a++ ){
+	for( byte a = 0; a < CARRET_BUFFER_LENGTH; a++ ){
 		if(input_buffer[a][0] == 0 ){
 			buffer = (&input_buffer[a][0]);
 			while( Wire.available()){ // loop through all but the last
@@ -611,7 +611,7 @@ void requestEvent(){
 	// w in_buffer jest polecenie
 	byte command = input_buffer[last_index][0];
 	if( command == METHOD_GETVERSION ){          // getVersion       3 bajty
-		byte ttt[2] = {IPANEL_DEVICE_TYPE,IPANEL_VERSION};
+		byte ttt[2] = {CARRET_DEVICE_TYPE,CARRET_VERSION};
 		Wire.write(ttt,2);
 		 
 	}else if( command == METHOD_TEST_SLAVE ){    // return xor
@@ -675,7 +675,7 @@ void send_y_pos( byte reason) {
 }
  
 void send_here_i_am(){
-	byte ttt[4] = {METHOD_HERE_I_AM,my_address,IPANEL_DEVICE_TYPE,IPANEL_VERSION};
+	byte ttt[4] = {METHOD_HERE_I_AM,my_address,CARRET_DEVICE_TYPE,CARRET_VERSION};
 	DEBUGLN("-hello "+ String( my_address ));
 	send(ttt,4);
 }
@@ -718,9 +718,9 @@ byte localToGlobal( byte ind ){      // get global device index used in android
 	}
 	return DRIVER_Z;  // INNER_SERVOZ
 }
-//  analogRead(PIN_IPANEL_HALL_Y );    // very often
-//  analogRead(PIN_IPANEL_HALL_X );    // often
-//  analogRead(PIN_IPANEL_WEIGHT );    // sometimes
+//  analogRead(PIN_CARRET_HALL_Y );    // very often
+//  analogRead(PIN_CARRET_HALL_X );    // often
+//  analogRead(PIN_CARRET_WEIGHT );    // sometimes
 
 void init_analogs(){
     ADMUX = 0;                // use ADC0
@@ -767,7 +767,7 @@ ISR(ADC_vect){
           DW(pin, true);
           milis2000 = mil + 500;
           iii++;
-          iii = iii %COUNT_IPANEL_ONBOARD_LED;
+          iii = iii %COUNT_CARRET_ONBOARD_LED;
   	}
 */
  
