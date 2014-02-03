@@ -4,12 +4,12 @@
 #include <avr/io.h>
 //#include <stdint.h>       // needed for uint8_t
 
-#define ANALOGS  9
+#define ANALOGS  6
 #define ANALOG_TRIES  2
 
 volatile uint16_t checks = 0;
-volatile int8_t ADCport[ANALOGS] = {2,3,4,5,6,7,8,0,1};
-volatile int16_t ADCvalue[ANALOG_TRIES][ANALOGS] = {{0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0}};
+volatile int8_t ADCport[ANALOGS] = {2,3,4,5,0,1};
+volatile int16_t ADCvalue[ANALOG_TRIES][ANALOGS] = {{0,0,0,0,0,0},{0,0,0,0,0,0}};
 volatile uint8_t channel = 0;
 volatile uint8_t row = 0;
 
@@ -22,7 +22,7 @@ void setup(){
   pinMode(A5, INPUT);
   DEBUGINIT();
   DEBUGLN("-start"); 
-  init_analog();
+  init_analogs();
 }
 
 ISR(ADC_vect){
@@ -32,7 +32,7 @@ ISR(ADC_vect){
   ADMUX        = (tmp | ADCport[channel]);
   ADCvalue[ row ][ channel ] = ADCL | (ADCH << 8);  //  read low first
   if( channel == 0 ){
-    row          = ((row+1) % ANALOG_TRIES);
+    //row          = ((row+1) % ANALOG_TRIES);
   }
   checks++;
 }
@@ -45,25 +45,27 @@ byte iii = 0;
 void loop() {
   mil = millis();
   	if( mil > milis1000 ){    // debug, mrygaj co 1 sek
-          DEBUG( "-analog " );
+       //   DEBUG( "-analog " );
           DEBUG( checks );
           DEBUG(":\t\t");
           DEBUG( ADCvalue[0][0] );          DEBUG(" ");
           DEBUG( ADCvalue[0][1] );          DEBUG(" ");
           DEBUG( ADCvalue[0][2] );          DEBUG(" ");
           DEBUG( ADCvalue[0][3] );          DEBUG(" ");
-          DEBUG( ADCvalue[0][4] );          DEBUG(" ");
-          DEBUG( ADCvalue[0][5] );          DEBUG(" ");
-          DEBUG( ADCvalue[0][6] );          DEBUG(" ");
-          DEBUG( ADCvalue[0][7] );          DEBUG(" ");
-          DEBUG( ADCvalue[0][8] );          DEBUG(" ");
+       //   DEBUG( ADCvalue[0][4] );          DEBUG(" ");
+        //  DEBUG( ADCvalue[0][5] );          DEBUG(" ");
+       //   DEBUG( ADCvalue[0][6] );          DEBUG(" ");
+       //   DEBUG( ADCvalue[0][7] );          DEBUG(" ");
+ 
+      //    DEBUG( ADCvalue[0][8] );          DEBUG(" ");
           DEBUGLN( );
           milis1000 = mil + 100;
           checks = 0;
          // Serial.println(GetTemp());
       }
 }
-void init_analog(){
+
+void init_analogs(){
     ADMUX = 0;                // use ADC0
     ADMUX |= _BV(REFS1);      
     ADMUX |= (1 << REFS0);    // REFS1 + REFS0 = Internal 1.1V (ATmega168/328) or  2.56V on (ATmega8)
@@ -77,5 +79,3 @@ void init_analog(){
     ADCSRA |= (1 << ADSC);    // Start the ADC conversion
     sei();
 }
-
-

@@ -27,7 +27,7 @@ void setup(){
 
 ISR(ADC_vect){
   uint8_t tmp  = ADMUX;            // read the value of ADMUX register
-  tmp          &= 0xF8;            // starsze bity
+  tmp          &= 0xF0;            // starsze bity
   channel      = (channel + 1)%ANALOGS;
   ADMUX        = (tmp | ADCport[channel]);
   ADCvalue[ row ][ channel ] = ADCL | (ADCH << 8);  //  read low first
