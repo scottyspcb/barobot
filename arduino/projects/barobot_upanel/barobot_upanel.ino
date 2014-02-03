@@ -17,6 +17,14 @@ volatile unsigned long _nanotime = 0;
 volatile uint8_t _timediv= 0;
 volatile uint8_t checktime= 0;
 
+// debouncing
+boolean buttonState;
+boolean lastButtonState = LOW;
+unsigned long lastDebounceTime = 0;  // the last time the output pin was toggled
+unsigned long const debounceDelay = 30;    // the debounce time; increase if the output flickers
+
+
+
 void setup(){
   DEBUGINIT();
   pinMode(PIN_UPANEL_SCK, INPUT );         // stan wysokiej impedancji
@@ -25,13 +33,15 @@ void setup(){
   pinMode(PIN_UPANEL_LEFT_RESET, INPUT);   // stan wysokiej impedancji
   pinMode(PIN_UPANEL_POKE, INPUT);
 
-  digitalWrite(PIN_UPANEL_POKE, LOW);      // enable pullup, poke-switch
+  DW(PIN_UPANEL_POKE, LOW);      // enable pullup, poke-switch
 
   // pootwieraj porty:
   DDRC |= _BV(PC2) | _BV(PC3);      // wyjscie
   DDRB |= _BV(PB0) | _BV(PB1);
   DDRD |= _BV(PD4) | _BV(PD5) | _BV(PD6) | _BV(PD7);
-  digitalWrite(PIN_PANEL_LED7_NUM, HIGH );      // debug, oczekiwanie na adres
+
+  DW(PIN_PANEL_LED7_NUM, HIGH );      // debug, oczekiwanie na adres
+
   if(!init_i2c()){
     {
       check_i2c_valid();
@@ -58,9 +68,10 @@ void setup(){
     TCCR2 &= ~(1 << CS20);
     TCCR2 &= ~(1 << CS21);
     TCCR2 &= ~(1 << CS22); 
-//    TCCR2 |= (1 << CS21);
     TCCR2 |= (1 << CS20);
+//    TCCR2 |= (1 << CS21);
 //    TCCR2 |= (1 << CS22);  
+
 //    20        = 8640   us
 //    21        = 65792  us
 //    21,20     = 262144  us
@@ -71,7 +82,7 @@ void setup(){
 
   TCCR2 |= (1 << WGM21);    // Set to CTC Mode
   TIMSK |= (1 << OCIE2);    // Set interrupt on compare match
-
+/*
   PWM( 1, 0,0,0,0,0,0);
   PWM( -1, 0,0,0,0,0,0);
 
@@ -86,108 +97,99 @@ void setup(){
   PWMSetFadeTime(5, 6, 6);
   PWMSetFadeTime(6, 7, 7);
   PWMSetFadeTime(7, 0, 0);
-
+*/
   sei();    // enable interrupts
-
-  digitalWrite(PIN_PANEL_LED2_NUM, HIGH );
-  digitalWrite(PIN_PANEL_LED3_NUM, HIGH );
-
-//  attachInterrupt(0, button_down, FALLING);
+  DW(PIN_PANEL_LED2_NUM, HIGH );
+  DW(PIN_PANEL_LED3_NUM, HIGH );
 }
-
-byte button_down = 0;
-
 void loop() {
-  /*
-   unsigned long mil = millis();
+  unsigned long mil = millis();
     // debug:
   	if( mil > milis1 + 1000 ){    // debug, mrygaj co 1 sek
                 diddd = !diddd;
   		milis1 = mil;
-                digitalWrite(PIN_PANEL_LED3_NUM, diddd);
+                DW(PIN_PANEL_LED3_NUM, diddd);
   	}
   	if( mil > milis4 + 4000 ){    // co 4 sek
                 send_pin_value( PIN_UPANEL_POKE, diddd ? 1 : 0 );
   		milis4 = mil;
   	}
-*/
-    if( use_local&& in_buffer1[0] ){          // komendy bez wymaganej odpowiedzi do mastera obsluguj tutaj:
-      byte command = in_buffer1[0];
-      if( command == METHOD_SETPWM ){                // PWM     3 bajty
-           // setPWM(in_buffer1[1],in_buffer1[2]);
- //           leds[in_buffer1[1]].wypelnienie = in_buffer1[2];
 
-      }else if( command ==  METHOD_SETLED ){         // 
-        byte settings = in_buffer1[1];    // 8 bits = 8 leds
-        
-        
-        boolean a0 = bitRead(in_buffer1[0], 0);
-        boolean a1 = bitRead(in_buffer1[1], 0);
-        boolean a2 = bitRead(in_buffer1[2], 0);
-        boolean a3 = bitRead(in_buffer1[3], 0);
-        boolean a4 = bitRead(in_buffer1[5], 0);
-        boolean a5 = bitRead(in_buffer1[6], 0);
-        boolean a6 = bitRead(in_buffer1[7], 0);
-        
-
-
-//      }else if( command == METHOD_RESETCYCLES ){         // reset
-//      }else if( command == METHOD_SETTIME ){         // set time
-//      }else if( command == METHOD_SETFADING ){         // fadein out
-      }else if( command == METHOD_PROG_MODE_ON ){         // i2c in prog mode (master programuje jakis slave, ale nie mnie)
-        digitalWrite(LED_TOP_RED, HIGH);
-        if(in_buffer1[1] == my_address){
-          prog_me = true;
-          digitalWrite(LED_TOP_RED, HIGH);
-          digitalWrite(LED_BOTTOM_RED, HIGH);
-        }else{
-          prog_me = false;
-        }
-        prog_mode = true;
-//      }else if( command == METHOD_GETANALOGVALUE ){  // get analog value
-    /*
-        uint16_t value = analogRead(in_buffer1[1]);
-        byte ttt[2]    = {value>>8, value & 0xff };
-        Wire.write(ttt,2);*/
-  //  }else if( command == 0x28 ){  // get digital value
-      /*  boolean value  = digitalRead(in_buffer1[1]);
-        byte ttt[1]    = {value ? 0xff:0xff};
-        Wire.write(ttt,1);*/
-      }else if( command == METHOD_PROG_MODE_OFF ){         // i2c in prog mode off
-        digitalWrite(LED_TOP_RED, LOW);
-        prog_mode = false;
-      }else if( command == METHOD_RESET_NEXT ){         // Resetuj urządzenie obok
-        reset_next( LOW );
-      }else if( command == METHOD_RUN_NEXT ){          // Koniec resetu urządzenia obok, ustaw pin w stan wysokiej impedancji
-        reset_next( HIGH );
-      }else if( command == METHOD_RESETSLAVEADDRESS ){          // zmien address
+// Debouncing
+  boolean reading = digitalRead(PIN_UPANEL_POKE);
+  if (reading != lastButtonState) {
+    lastDebounceTime =mil;
+  }else if( lastDebounceTime > 0 ){
+    if (reading != buttonState) {
+      long unsigned now = mil;
+      if ((now - lastDebounceTime) > debounceDelay) {
+        buttonState = reading;
+        send_pin_value( PIN_UPANEL_POKE, buttonState );
+        lastDebounceTime = 0;
       }
-      in_buffer1[0] = 0;
-      use_local = false;
-   }
-
-   // todo, zrobić jakiś prosty debouncing (zeby drganie styków przycisku nie miało aż takiego wpływu)
-   if( digitalRead(PIN_UPANEL_POKE) ){    // wcisnieto poke-switch
-     button_down++;
-   }else if( button_down > 2 ){    // filter errors
-     if( button_down > 200 ){
-        // long press
-        send_pin_value( PIN_UPANEL_POKE, 1 );
-     }else if( button_down > 100 ){  // short press
-        send_pin_value( PIN_UPANEL_POKE, 0 );
-     }
-     button_down = 0;
-   }
+    }
+  }
+  lastButtonState = reading;
+// koniec Debouncing
+  read_i2c();
 }
+
+static void read_i2c(){
+  if( use_local&& in_buffer1[0] ){          // komendy bez wymaganej odpowiedzi do mastera obsluguj tutaj:
+    byte command = in_buffer1[0];
+    if( command == METHOD_SETPWM ){                // PWM     3 bajty
+   //         PWMSet(in_buffer1[1],in_buffer1[2]);
+   //           leds[in_buffer1[1]].wypelnienie = in_buffer1[2];
+    }else if( command ==  METHOD_SETLED ){
+      byte i = 8;
+      while(i--){
+        _pwm_channels[i].pwmup =   bitRead(in_buffer1[1], i) ? 250 : 0;
+      }
+  //      }else if( command == METHOD_RESETCYCLES ){         // reset
+  //      }else if( command == METHOD_SETTIME ){         // set time
+  //      }else if( command == METHOD_SETFADING ){         // fadein out
+    }else if( command == METHOD_PROG_MODE_ON ){         // i2c in prog mode (master programuje jakis slave, ale nie mnie)
+      DW(LED_TOP_RED, HIGH);
+      if(in_buffer1[1] == my_address){
+        prog_me = true;
+        DW(LED_TOP_RED, HIGH);
+        DW(LED_BOTTOM_RED, HIGH);
+      }else{
+        prog_me = false;
+      }
+      prog_mode = true;
+  //      }else if( command == METHOD_GETANALOGVALUE ){  // get analog value
+  /*
+      uint16_t value = analogRead(in_buffer1[1]);
+      byte ttt[2]    = {value>>8, value & 0xff };
+      Wire.write(ttt,2);*/
+  //  }else if( command == 0x28 ){  // get digital value
+    /*  boolean value  = digitalRead(in_buffer1[1]);
+      byte ttt[1]    = {value ? 0xff:0xff};
+      Wire.write(ttt,1);*/
+    }else if( command == METHOD_PROG_MODE_OFF ){         // i2c in prog mode off
+      DW(LED_TOP_RED, LOW);
+      prog_mode = false;
+    }else if( command == METHOD_RESET_NEXT ){         // Resetuj urządzenie obok
+      reset_next( LOW );
+    }else if( command == METHOD_RUN_NEXT ){          // Koniec resetu urządzenia obok, ustaw pin w stan wysokiej impedancji
+      reset_next( HIGH );
+    }else if( command == METHOD_RESETSLAVEADDRESS ){          // zmien address
+    }
+    in_buffer1[0] = 0;
+    use_local = false;
+  }
+}
+
 
 void reset_next(boolean value){
   if( value == HIGH){    // run device
-    digitalWrite(PIN_UPANEL_LEFT_RESET, HIGH);     // set pin to input
+    DW(PIN_UPANEL_LEFT_RESET, HIGH);     // set pin to input
     pinMode(PIN_UPANEL_LEFT_RESET, INPUT);
-    digitalWrite(PIN_UPANEL_LEFT_RESET, LOW);      // disable pullup
+    DW(PIN_UPANEL_LEFT_RESET, LOW);      // disable pullup
   }else if( value == LOW ){    // reset device
     pinMode(PIN_UPANEL_LEFT_RESET, OUTPUT); 
-    digitalWrite(PIN_UPANEL_LEFT_RESET, LOW );
+    DW(PIN_UPANEL_LEFT_RESET, LOW );
   }
 }
 
@@ -202,8 +204,7 @@ void receiveEvent(int howMany){
     in_buffer1[cntr] = aa;
     cntr++;
   }
-  //if ( bit_is_clear( in_buffer1[0], 0 ) ){      // IF like: xxxx xxx1 - run in main loop, else in requestEvent
-   if( in_buffer1[0] != METHOD_GETVERSION &&  in_buffer1[0] != METHOD_TEST_SLAVE ){
+  if( in_buffer1[0] != METHOD_GETVERSION &&  in_buffer1[0] != METHOD_TEST_SLAVE ){
       use_local = true;
   }
   // w tym miejscu jednynie bardzo proste komendy nie wymagające zwrotek pracujące w funkcji obsługi przerwania, pamietac o volatile
@@ -220,14 +221,14 @@ void requestEvent(){
         /*
         if( res & 0x01 ){    // ustawiony najmlodzzy bit
           diddd = !diddd;
-          digitalWrite(PIN_PANEL_LED4_NUM, diddd);
+          DW(PIN_PANEL_LED4_NUM, diddd);
         }*/
     }
 }
 
-static void send_pin_value( byte pin, byte value ){
-  byte ttt[5] = {METHOD_I2C_SLAVEMSG,RETURN_PIN_VALUE,my_address,pin,value};
-  send(ttt,5);
+void send_pin_value( byte pin, byte value ){
+  byte ttt[6] = {METHOD_I2C_SLAVEMSG,my_address, RETURN_PIN_VALUE,my_address,pin,value};
+  send(ttt,6);
  // Serial.println("out "+ String( my_address ) +" / "+ String( pin ) +"/"+ String(value));
 }
 
@@ -236,7 +237,7 @@ static void send_here_i_am(){
   send(ttt,4);
 }
 
-void send( byte buffer[], byte ss ){
+void send( byte buffer[], byte length ){
   if(prog_mode){
     return;
   }
@@ -244,7 +245,7 @@ void send( byte buffer[], byte ss ){
   byte licznik = 250;
   while( ret && licznik++ ){    // prubuj 5 razy, zakoncz gdy error = 0;
     Wire.beginTransmission(I2C_ADR_MAINBOARD);  
-    Wire.write(buffer,ss);
+    Wire.write(buffer,length);
     ret = Wire.endTransmission();
 //    Serial.print("send"+String(licznik) +": " + String( my_address ) +": ");
 //    printHex(buffer[0], false ); 
@@ -261,21 +262,6 @@ void check_i2c_valid(){
     reset_next(LOW);
     reset_next(HIGH);
   }
-}
-
-void digitalWrite2(uint8_t pin, uint8_t val){
-        uint8_t bit = digitalPinToBitMask(pin);
-        uint8_t port = digitalPinToPort(pin);
-        if (port == NOT_A_PIN){
-          return;
-      }
-      volatile uint8_t *out;
-      out = portOutputRegister(port);
-      if (val == LOW) {
-              *out &= ~bit;
-      } else {
-              *out |= bit;
-      }
 }
 
 

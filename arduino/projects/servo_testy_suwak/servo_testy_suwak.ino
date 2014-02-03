@@ -1,7 +1,7 @@
 #include <FlexiTimer2.h>
 #include <Servo.h>
 
-#if 0
+#if 1
 #define DEBUG(sth) (Serial.print(String(sth)))
 #define DEBUGLN(sth) (Serial.println(String(sth)))
 #else
@@ -15,8 +15,6 @@ boolean dir = true;
 Servo servoZ;
 int last_in = 0;
 int in = 0;
-byte multip = 5;
-byte index = 0;
 #define STEPPER_Z_PWM 6
 #define SEPARATOR_CHAR '\n'
 boolean enabled = false;
@@ -33,7 +31,6 @@ volatile long unsigned target_pos = 0;
 void setup(){
   Serial.begin(115200); 
   DEBUG("HELLO");
-
   pinMode( A0, INPUT);
   pinMode( 13, OUTPUT);
   enabled = false;
@@ -42,12 +39,14 @@ void setup(){
   // FlexiTimer2::set(500, flash); // MsTimer2 style is also supported
   FlexiTimer2::start();
   in = analogRead(A0);
-//  target_pos = map(in, 0, 1023, SERVO_MIN_POS,  SERVO_MAX_POS);
-//  last_pos = target_pos;
-//  pos = target_pos;
+  target_pos = map(in, 0, 1023, SERVO_MIN_POS,  SERVO_MAX_POS);
+  last_pos = target_pos;
+  pos = target_pos;
+  servoZ.attach(STEPPER_Z_PWM);
 }
 
-byte sp = 1;
+byte sp = 200;
+
 void flash(){
   static boolean output = HIGH;
   if(pos != target_pos ){
@@ -93,22 +92,33 @@ void flash(){
 }
 
 void loop(){
+  in = analogRead(A0); 
+  
+  if( abs(in - last_in) > 2 ){
+    DEBUGLN("\tIN= " + String(in) );
+    target_pos = map(in, 0, 1023, SERVO_MIN_POS,  SERVO_MAX_POS);
+    if( target_pos == pos ){  // rowne? nigdzie nie jedz
+    }else if( target_pos < pos ){    // jedz w dol
+      delta_pos = -sp;
+      last_distance = pos - target_pos;
+    }else if( target_pos > pos ){    // jedz w gore
+      delta_pos = sp;
+      last_distance = target_pos - pos;
+    }
+ //   DEBUGLN("\tTpos= " + String(target_pos) );
+    last_in =in; 
+  }
+
   if(pos != last_pos){  // mam byc gdzie indziej
-    DEBUG("\tpos= " + String(pos) );
-    DEBUG("\tlast_pos= " + String(last_pos) );
-    DEBUG("\ttarget_pos= " + String(target_pos) );
-    DEBUGLN();
+ //   DEBUG("\tpos= " + String(pos) );
+//    DEBUG("\tlast_pos= " + String(last_pos) );
+ //   DEBUG("\ttarget_pos= " + String(target_pos) );
+//    DEBUGLN();
     last_pos = pos;
     if( pos == target_pos){
       DEBUGLN( "gotowe" ); 
     }else{
       servoZ.writeMicroseconds(pos);
-    }
-  }
-  if( in <=1 ){
-    if(last_in != in){
-      DEBUGLN("stop");
-      last_in = in;
     }
   }
   if (Console0Complete) {
@@ -156,7 +166,7 @@ void setValue(byte byte_pos, String value ){
       last_distance = target_pos - pos;
     }
     if(!enabled){
-      servoZ.attach(STEPPER_Z_PWM);
+      enabled = true;
     }
     DEBUGLN("\tmoveTo: " + String(target_pos) );
     DEBUGLN("\tpos: " + String(pos) );
