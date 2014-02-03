@@ -7,6 +7,7 @@ import java.util.Iterator;
 import com.barobot.activity.BarobotMain;
 import com.barobot.constant.Constant;
 import com.barobot.hardware.DeviceSet;
+import com.barobot.hardware.I2C;
 import com.barobot.hardware.virtualComponents;
 import com.barobot.utils.Arduino;
 import com.barobot.utils.CameraManager;
@@ -29,6 +30,8 @@ public class AppInvoker {
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
+		I2C.init();
+
 		cm = new CameraManager( main );
 		cm.findCameras();
 		virtualComponents.init( main );
@@ -47,7 +50,6 @@ public class AppInvoker {
 	public void onPause() {
 		Constant.log("MAINWINDOW", "onPause");
 		cm.onPause();
-		
 	}
 	public void onResume() {
 		Constant.log("MAINWINDOW", "onResume");     
@@ -65,6 +67,7 @@ public class AppInvoker {
     	while(it.hasNext()){
     		it.next().cancel();
     	}
+		I2C.destroy();
         cm.onDestroy();	
 	}
 }
