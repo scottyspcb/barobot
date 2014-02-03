@@ -23,7 +23,6 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <compat/twi.h>
-#include "Arduino.h" // for digitalWrite
 
 #ifndef cbi
 #define cbi(sfr, bit) (_SFR_BYTE(sfr) &= ~_BV(bit))
@@ -67,10 +66,6 @@ void twi_init(void)
 {
   // initialize state
   twi_state = TWI_READY;
-  
-  // DEactivate internal pullups for twi.
-  digitalWrite(SDA, 0);
-  digitalWrite(SCL, 0);
 
   // initialize twi prescaler and bit rate
   cbi(TWSR, TWPS0);
