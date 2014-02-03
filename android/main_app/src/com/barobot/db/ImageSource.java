@@ -13,7 +13,7 @@ public class ImageSource {
     public ImageSource(Context context) {
     //    super(context);
     }
-
+/*
     protected InputStream getStreamFromOtherSource(String imageUri, Object extra) throws IOException {
         if (imageUri.startsWith(DB_URI_PREFIX)) {
             String path = imageUri.substring(DB_URI_PREFIX.length());
@@ -25,7 +25,7 @@ public class ImageSource {
         } else {
             return super.getStreamFromOtherSource(imageUri, extra);
         }
-    }
+    }*/
 }
 
 /*
