@@ -136,9 +136,30 @@ void delay2( word ww ){
     }
 }
 
+void DW(uint8_t pin, uint8_t val){
+      uint8_t bit  = digitalPinToBitMask(pin);
+      uint8_t port = digitalPinToPort(pin);
+      if (port == NOT_A_PIN){
+        return;
+      }
+      volatile uint8_t *out;
+      out = portOutputRegister(port);
+      if (val == LOW) {
+              *out &= ~bit;
+      } else {
+              *out |= bit;
+      }
+}
+
 byte my_address = 0x00;
 boolean init_i2c(){
+
 	Wire.begin();    // chwilowo jako master
+
+	// DEactivate internal pullups for twi.
+	DW(SDA, 0);
+	DW(SCL, 0);
+
 	byte ad1 = eeprom_read_byte((unsigned char *) 0x00);
 	byte ad2 = eeprom_read_byte((unsigned char *) 0x01);  
 	byte ad3 = eeprom_read_byte((unsigned char *) 0x02);  
@@ -178,6 +199,13 @@ boolean init_i2c(){
 	save_i2c_address( 0x00, my_address, ad1 );    // zapisuje gdy my_address != oa
 	return true;
 }
+
+
+
+
+
+
+
 
 /*
     * Output   0 .. success

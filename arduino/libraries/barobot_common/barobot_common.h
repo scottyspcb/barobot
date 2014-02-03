@@ -7,7 +7,7 @@
 #define I2C_ADR_RESERVED 0x06
 #define I2C_ADR_PROGRAMMER 0x07
 //#define I2C_ADR_TROLLEY 0x09
-#define I2C_ADR_IPANEL 0x0A
+#define I2C_ADR_CARRET 0x0A
 #define I2C_ADR_USTART 0x0B
 #define I2C_ADR_UEND 0x70
 
@@ -19,12 +19,12 @@
 #define MAINBOARD_SERIAL0_BOUND 115200
 
 
-/*------------------------------ IPANEL (carret)    ------------------------------*/
-#define IPANEL_DEVICE_TYPE 0x11
-#define IPANEL_VERSION 0x01
-#define IPANEL_F_CPU == 16000000
-#define IPANEL_CPU "atmega328"
-#define IPANEL_SERIAL0_BOUND 115200
+/*------------------------------ CARRET (carret)    ------------------------------*/
+#define CARRET_DEVICE_TYPE 0x11
+#define CARRET_VERSION 0x01
+#define CARRET_F_CPU 16000000
+#define CARRET_CPU "atmega328"
+#define CARRET_SERIAL0_BOUND 115200
 
 
 /*------------------------------ PROGRAMMER ------------------------------*/
@@ -37,8 +37,8 @@
 /*------------------------------ OTHER ------------------------------*/
 #define COUNT_UPANEL 12
 #define COUNT_UPANEL_ONBOARD_LED 8
-#define COUNT_IPANEL 1
-#define COUNT_IPANEL_ONBOARD_LED 8
+#define COUNT_CARRET 1
+#define COUNT_CARRET_ONBOARD_LED 8
 
 
 /*------------------ MAINBOARD -------------------*/
@@ -119,12 +119,13 @@
 		//#define PIN_PROGRAMMER_RESET_MAINBOARD 7
 
 		#define PIN_PROGRAMMER_LED_OTHER   	3		// PWM dip ??
-		#define PIN_PROGRAMMER_LED_ERROR   	6		// PWM dip ??		Lights up if something goes wrong (use red if that makes sense)
-		#define PIN_PROGRAMMER_LED_ACTIVE	9		// PWM dip ??		shows the programmer is running
-		#define PIN_PROGRAMMER_LED_STATE    10		// PWM dip ??		In communication with the slave
+		#define PIN_PROGRAMMER_LED_ERROR   	2		// PWM dip ??		Lights up if something goes wrong (use red if that makes sense)
+		#define PIN_PROGRAMMER_LED_ACTIVE	6		// PWM dip ??		shows the programmer is running
+		#define PIN_PROGRAMMER_LED_STATE    9		// PWM dip ??		In communication with the slave
 
-		#define PIN_PROGRAMMER_RESET_UPANEL 7		// dip ??
-		#define PIN_PROGRAMMER_RESET_IPANEL 8		// dip ??
+		#define PIN_PROGRAMMER_RESET_UPANEL_FRONT 7		// dip ??
+		#define PIN_PROGRAMMER_RESET_UPANEL_BACK 10		// dip ??
+		#define PIN_PROGRAMMER_RESET_CARRET 8		// dip ??
 		#define PIN_PROGRAMMER_RESET_MASTER 15		// dip ??
 
 		#define PROGRAMMER_METHOD_PIN	true
@@ -134,8 +135,8 @@
 
 #endif
 
-/*------------------ IPANEL -------------------*/
-#if IS_IPANEL
+/*------------------ CARRET -------------------*/
+#if IS_CARRET
 
 	/*
 		Komponenty:
@@ -151,32 +152,32 @@
 		I2C				getValue, test_slave
 	*/
 
-	#define IPANEL_COMMON_ANODE false		// sterowanie plusem? false gdy sterowaniem minusem
-	#define IPANEL_BUFFER_LENGTH 6			// i2c input buffer
+	#define CARRET_COMMON_ANODE false		// sterowanie plusem? false gdy sterowaniem minusem
+	#define CARRET_BUFFER_LENGTH 6			// i2c input buffer
 	#define SERIAL0_BOUND MAINBOARD_SERIAL0_BOUND
 		
 	// domyslen ustawienie mocy silnika Z
 	// pozycja jechania do góry i czas jechania
-	#define IPANEL_SERVOZ_UP_POS 2200
+	#define CARRET_SERVOZ_UP_POS 2200
 
 	// pozycja jechania w dó³ i czas jechania
-	#define IPANEL_SERVOZ_DOWN_POS 900
+	#define CARRET_SERVOZ_DOWN_POS 900
 
-	#define PIN_IPANEL_SDA SDA
-	#define PIN_IPANEL_SCL SCL
+	#define PIN_CARRET_SDA SDA
+	#define PIN_CARRET_SCL SCL
 	
 	// set as INPUT to allow programming over ISP
-	#define PIN_IPANEL_SCK 13			// dip pin 17,
-	#define PIN_IPANEL_MISO 11			// dip pin 18,
-	#define PIN_IPANEL_MOSI 12			// dip pin 19,
+	#define PIN_CARRET_SCK 13			// dip pin 17,
+	#define PIN_CARRET_MISO 11			// dip pin 18,
+	#define PIN_CARRET_MOSI 12			// dip pin 19,
 
-	#define PIN_IPANEL_HALL_X A0		// dip pin 23 A0,	Q 23
-	#define PIN_IPANEL_HALL_Y A1		// dip pin 24 A1,	Q 24
-	#define PIN_IPANEL_WEIGHT A2		// dip pin 25 A2,	Q 25
+	#define PIN_CARRET_HALL_X A0		// dip pin 23 A0,	Q 23
+	#define PIN_CARRET_HALL_Y A1		// dip pin 24 A1,	Q 24
+	#define PIN_CARRET_WEIGHT A2		// dip pin 25 A2,	Q 25
 
-	#define PIN_IPANEL_CURRENTY A6		// dip pin ?? A6,	Q 19
-	#define PIN_IPANEL_CURRENTZ A7		// dip pin ?? A7,	Q 22
-	#define PIN_IPANEL_TEMP A8		// interanl, no pin
+	#define PIN_CARRET_CURRENTY A6		// dip pin ?? A6,	Q 19
+	#define PIN_CARRET_CURRENTZ A7		// dip pin ?? A7,	Q 22
+	#define PIN_CARRET_TEMP A8			// interanl, no pin
 
 	
 	#define INNER_CODE_HALL_X 0
@@ -186,8 +187,8 @@
 	#define INNER_CODE_CURRENT_Y 4
 	#define INNER_CODE_TEMP 5
 
-	#define PIN_IPANEL_SERVO_Y 5		// dip pin 11,	Q 9
-	#define PIN_IPANEL_SERVO_Z 6		// dip pin 12,	Q 10
+	#define PIN_CARRET_SERVO_Y 5		// dip pin 11,	Q 9
+	#define PIN_CARRET_SERVO_Z 6		// dip pin 12,	Q 10
 
 	#define PIN_PANEL_LED0_NUM	2		// dip pin 4		Q 32
 	#define PIN_PANEL_LED1_NUM	3		// dip pin 5		Q 1
@@ -313,70 +314,7 @@
 
 
 
-
-
-#define METHOD_GETVERSION 	5
-#define METHOD_PROG_MODE_ON 	10
-#define METHOD_PROG_MODE_OFF 	14
-#define METHOD_TEST_SLAVE 	19
-#define METHOD_RESETCYCLES 	20
-#define METHOD_SETPWM 	38
-#define METHOD_SETTIME 	42
-#define METHOD_SETFADING 	46
-#define METHOD_RESETSLAVEADDRESS 	50
-#define METHOD_GETANALOGVALUE 	51
-#define METHOD_GETVALUE 	55
-#define METHOD_RESET_NEXT 	58
-#define METHOD_RUN_NEXT 	62
-#define METHOD_GET_Y_POS 	65
-#define METHOD_SET_Y_POS 	66
-#define METHOD_GET_Z_POS 	69
-#define METHOD_SET_Z_POS 	70
-#define METHOD_LIVE_OFF 	72
-#define METHOD_LIVE_ANALOG 	74
-#define METHOD_DRIVER_ENABLE 	82
-#define METHOD_DRIVER_DISABLE 	86
-#define METHOD_HERE_I_AM 	114
-#define METHOD_SEND_PIN_VALUE 	118
-#define METHOD_CAN_FILL 	120
-#define METHOD_I2C_SLAVEMSG 	122
-#define RETURN_DRIVER_ERROR 	180
-#define RETURN_DRIVER_READY 	182
-#define RETURN_PIN_VALUE 	211
-#define METHOD_STEPPER_MOVING 	222
-#define METHOD_IMPORTANT_ANALOG 	224
-#define RETURN_I2C_ERROR 	53
-#define METHOD_EXEC_ERROR 	22
-#define METHOD_DEVICE_FOUND 	12
-#define METHOD_SETLED 	40
-
-#define METHOD_SET_X_ACCELERATION 	"AX"
-#define METHOD_MASTER_CAN_FILL 	"CF"
-#define METHOD_SET_X_DISABLE 	"DX"
-#define METHOD_ERROR 	'E'
-#define METHOD_SET_X_ENABLE 	"EX"
-#define METHOD_GET_X_POSITION 	"GPX"
-#define METHOD_POING 	"POING"
-#define METHOD_PONG 	"PONG"
-#define METHOD_PROG 	"PROG"
-#define METHOD_PROGN 	"PROGN"
-#define METHOD_RESET_BUS 	"RB"
-#define METHOD_RESET 	"RESET"
-#define METHOD_RESETN 	"RESETN"
-#define METHOD_RWIRE 	"RWIRE"
-#define METHOD_SEND2SLAVE 	'S'
-#define METHOD_TRIGGER 	'T'
-#define METHOD_WAIT_READY 	"WR"
-#define METHOD_SET_X_POS 	'X'
-
-
- 
-
-
-
-
 //24 * 2^0  + 252* 2^1 + 255* 2^2 + 255* 2^3
-
 
 
 
@@ -492,31 +430,34 @@ ATMEGA8 / ARDUINO
 
 
 ARDUINO DIP to TQFP
-PIN			DIP		TQFP
-0			2		30		PD0
-1			3		31		PD1
-2			4		32		PD2
-3			5		1		PD3
-4			6		2		PD4
-5			11		9		PD5
-6			12		10		PD6
-7			13		11		PD7
-8			14		12		PB0
-9			15		13		PB1
-10			16		14		PB2
-11			17		15		PB3
-12			18		16		PB4
-13			19		17		PB5
-14	A0		23		23		PC0
-15	A1		24		24		PC1
-16	A2		25		25		PC2
-17	A3		26		26		PC3
-18	A4		27		27		PC4
-19	A5		28		28		PC5
-
+Arduino		DIP		TQFP32	Port	
+0			2		30		PD0		RX
+1			3		31		PD1		TX
+2			4		32		PD2		INT0
+3			5		1		PD3		INT1 PWM
+4			6		2		PD4		XCK
+5			11		9		PD5		PWM
+6			12		10		PD6		AIN0 PWM
+7			13		11		PD7		AIN1
+8			14		12		PB0		
+9			15		13		PB1		PWM
+10			16		14		PB2		SS PWM
+11			17		15		PB3		MOSI PWM
+12			18		16		PB4		MISO
+13			19		17		PB5		SCK
+14	A0		23		23		PC0		ADC0
+15	A1		24		24		PC1		ADC1
+16	A2		25		25		PC2		ADC2
+17	A3		26		26		PC3		ADC3
+18	A4		27		27		PC4		ADC4 SDA
+19	A5		28		28		PC5		ADC5 SCL
 RESET		1		29		PC6
-XTAL1		9		7		PB6
-XTAL2		10		8		PB7
+XTAL1		9		7		PB6		XTAL
+XTAL2		10		8		PB7		XTAL
+-	A6		-		19				ADC6
+-	A7		-		22				ADC7
+
+
 
 TQFP32
 	pin01	PD3	arduino 03	PWM	- CONN1
