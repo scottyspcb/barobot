@@ -19,7 +19,6 @@ public class LowHardware {
 	public static final String MAINBOARD_CPU = "atmega328";
 	public static final int MAINBOARD_SERIAL0_BOUND = 115200;
 
-
 	/*------------------------------ CARRET (carret)    ------------------------------*/
 	public static final int CARRET_DEVICE_TYPE = 0x11;
 	public static final int CARRET_VERSION = 0x01;

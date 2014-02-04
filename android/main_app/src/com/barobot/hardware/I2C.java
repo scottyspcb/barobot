@@ -11,8 +11,7 @@ import com.barobot.utils.ArduinoQueue;
 public class I2C{
 	static List<I2C_device> lista = new ArrayList<I2C_device>();
 	boolean inScanning = false;
-	
-	
+
 	public static void init(){
 		I2C_device MainBoard= new I2C_device( LowHardware.MAINBOARD_DEVICE_TYPE, "Mainboard ");
 		I2C_device Carret	= new I2C_device( LowHardware.CARRET_DEVICE_TYPE, "Carret");
@@ -29,22 +28,32 @@ public class I2C{
 		I2C_device UpanelB4 = new I2C_device( LowHardware.UPANEL_DEVICE_TYPE, "Upanel 8");
 		I2C_device UpanelB5 = new I2C_device( LowHardware.UPANEL_DEVICE_TYPE, "Upanel 10");
 
+		MainBoard.hasResetCode( 1 );
+		Carret.hasResetCode( 2 );
+		UpanelB0.hasResetCode( 3 );
+		UpanelF0.hasResetCode( 4 );
+
 		MainBoard.hasResetTo( Carret );
 		MainBoard.hasResetTo( UpanelF0 );
 		MainBoard.hasResetTo( UpanelB0 );
 		MainBoard.hasResetTo( MainBoard );
 
+		
+		UpanelB0.hasResetTo( UpanelB1 );
+		UpanelB1.hasResetTo( UpanelB2 );
+		UpanelB2.hasResetTo( UpanelB3 );
+		UpanelB3.hasResetTo( UpanelB4 );
+		UpanelB4.hasResetTo( UpanelB5 );
+
+
+		
 		UpanelF0.hasResetTo( UpanelF1 );
 		UpanelF1.hasResetTo( UpanelF2 );
 		UpanelF2.hasResetTo( UpanelF3 );
 		UpanelF3.hasResetTo( UpanelF4 );
 		UpanelF4.hasResetTo( UpanelF5 );
 
-		UpanelB0.hasResetTo( UpanelB1 );
-		UpanelB1.hasResetTo( UpanelB2 );
-		UpanelB2.hasResetTo( UpanelB3 );
-		UpanelB3.hasResetTo( UpanelB4 );
-		UpanelB4.hasResetTo( UpanelB5 );
+
 
 		lista.add( MainBoard );
 		lista.add( Carret );
@@ -116,27 +125,27 @@ public class I2C{
 	public static void findNodesOrder(){
 		// resetuj wózek
 		Arduino ar		= Arduino.getInstance();
-		ArduinoQueue q	= new ArduinoQueue();
-		q.add( I2C.findNodes() );
-		q.add( "RESETN 1", true );		// Reset Carret
-
-		q.add( "RESETN 1", true );		// Reset Carret
-
-		q.add( I2C.send( LowHardware.I2C_ADR_MAINBOARD, 0x11, new byte[]{1,2,3} ));
-
-		// Reset Upanel Back 0
-
-		// Reset Upanel Front 0
-
-		q.add( I2C.send( 0x12, 0x11, new byte[]{1,2,3} ));
+		ArduinoQueue q = new ArduinoQueue();
+	//	q.add( lista.get(0).resetCommand(), true );			// Reset first back upanel
+		//q.add( lista.get(0).resetCommand(), true );			// Reset first f upanel
 		ar.send( q );
 	}
+
+	
+	
+	
 	public static void temp(){
-		// resetuj wózek
 		Arduino ar		= Arduino.getInstance();
 		ArduinoQueue q = new ArduinoQueue();
+		q.add( I2C.send( LowHardware.I2C_ADR_MAINBOARD, 0x11, new byte[]{1,2,3} ));
+		q.add( I2C.send( 0x12, 0x11, new byte[]{1,2,3} ));
 		q.add( I2C.findNodes() );
+		// q.add( "RESETN 1", true );		// Reset Carret
+		// czekam na zwrotkę
+		// q.add( "RESETN 1", true );		// Reset Carret
+
 		q.add( I2C.send( 0x12, 0x11, new byte[]{1,2,3} ));
 		ar.send( q );
 	}
+
 }

@@ -23,55 +23,21 @@ boolean error=0;
 volatile boolean stepper_now = false;
 int here;
 uint8_t hbval            = 128;
-byte nextpos             = 0;
-boolean scann_order      = false;
-byte order[COUNT_UPANEL] = {0,0,0,0,0,0,0,0,0,0,0,0};
 
 boolean prog_mode        = false;
 String serial0Buffer     = "";
 boolean Console0Complete = false;   // This will be set to true once we have a full string
 boolean last_i2c_read_error = false;
 
-byte reprogramm_index = 0;
-long unsigned milis100 = 0;
-boolean diddd = false;
+byte reprogramm_index	= 0;
+byte reprogramm_address = 0;
+long unsigned milis100	= 0;
 
-/*
-PROG, RESET  - programm specific device by i2c address
-PROG 0       - first upanel
-PROG 0x0A    - carret
-PROG 0x0E    - upanel...
-PROG 0xFF    - after last known device
-
-PROGN, RESETN  - programm after number
-
-00  reset by master     reset master
-01  reset by master     programm carret
-
-05  reset by master_back	programm upanel 0 (index 0)
-06  reset by upanel-0   	programm upanel 1 (index 1)
-07  reset by upanel-1   	programm upanel 2 (index 2)
-08  reset by upanel-2   	programm upanel 3 (index 3)
-09  reset by upanel-3   	programm upanel 4 (index 4)
-0A  reset by upanel-4   	programm upanel 5 (index 5)
-
-0B  reset by master_front	programm upanel 6 (index 6)
-0C  reset by upanel-6   	programm upanel 7 (index 7)
-0D  reset by upanel-7   	programm upanel 8 (index 8)
-0E  reset by upanel-8   	programm upanel 9 (index 9)
-0F  reset by upanel-9   	programm upanel 10 (index 10)
-10  reset by upanel-10  	programm upanel 11 (index 11)
-...
-
-SPECIAL
-fe  send to last known device
-ff  send to device AFTER last known device
-*/
 void disableWd(){
 	// Disable the WDT
 	//    WDTCSR |= _BV(WDCE) | _BV(WDE);
 	//    WDTCSR = 0;
-	wdt_disable();
+	//wdt_disable();
 }
 void setup(){
 	//disableWd();
@@ -96,8 +62,7 @@ void setup(){
 	digitalWrite(SCL, 1);
 	Wire.onReceive(receiveEvent);
 	setupStepper();
-
-	i2c_device_found(I2C_ADR_MAINBOARD, MAINBOARD_DEVICE_TYPE,MAINBOARD_VERSION, 0 );
+	i2c_device_found(I2C_ADR_MAINBOARD, MAINBOARD_DEVICE_TYPE,MAINBOARD_VERSION);
 }
 
 #if MAINBOARD_SERVO_4PIN==true
@@ -173,9 +138,6 @@ void scann_i2c(){
       printHex( readed>>8, false );        // starsze bity = typ
       DEBUG(" ver: ");
       printHex( readed & 0xff, false );    // młodsze bity = ver
-      DEBUG(" pos: ");
-      byte pos = getResetOrder(addr2);
-      printHex( pos, false );
       DEBUGLN("");
       nDevices++;
     }else{
@@ -198,7 +160,7 @@ void reset_wire(){
 	tri_state( PIN_PROGRAMMER_RESET_CARRET, false );		// pin w stanie niskim = reset
 	tri_state( PIN_PROGRAMMER_RESET_UPANEL_FRONT, false );	// pin w stanie niskim = reset
 	tri_state( PIN_PROGRAMMER_RESET_UPANEL_BACK, false );	// pin w stanie niskim = reset
-	
+
 	tri_state( PIN_PROGRAMMER_RESET_CARRET, true );			// pin w stanie niskim = reset
 	tri_state( PIN_PROGRAMMER_RESET_UPANEL_FRONT, true );   // pin w stanie niskim = reset
 	tri_state( PIN_PROGRAMMER_RESET_UPANEL_BACK, true );	// pin w stanie niskim = reset
@@ -209,22 +171,7 @@ void proceed( byte length,volatile uint8_t buffer[7] ){ // zrozum co przyszlo po
 		return;
 	}
 	if(buffer[0] == METHOD_HERE_I_AM){         //  here_i_am {METHOD_HERE_I_AM,my_address,type,ver}
-		byte pos = getResetOrder(buffer[1]);
-		if( buffer[2] == CARRET_DEVICE_TYPE ){
-			DEBUGLN("-Wozek! ");
-		}else if( scann_order ){ 
-			if( pos == 0xff ){        // nie ma na liscie?
-				//       DEBUGLN("-Upanel pod " + String(nextpos));
-				order[nextpos++]  = buffer[1];            // na tm miejscu slave o tym adresie
-				i2c_reset_next( buffer[1], false );       // reset next (next to slave)
-				i2c_reset_next( buffer[1], true );
-				pos = getResetOrder(buffer[1]);
-			}else{    //      if(nextpos >= COUNT_UPANEL ){ 
-				scann_order  =  false;
-				DEBUGLN("-koniec order");
-			}
-		}
-		i2c_device_found( buffer[1], buffer[2], buffer[3], pos );
+		i2c_device_found( buffer[1], buffer[2], buffer[3] );
 	}else if(buffer[0] == METHOD_IMPORTANT_ANALOG){      // wyslij do androida pozycje bo trafiono na górkę hallem
 		if( buffer[1] == INNER_HALL_X){
 			boolean stop_moving = false;// is moving up or down
@@ -286,9 +233,9 @@ void proceed( byte length,volatile uint8_t buffer[7] ){ // zrozum co przyszlo po
 	buffer[0] = 0;  //ready
 }
  
-void i2c_device_found( byte addr,byte type,byte ver, byte pos ){
-	byte ttt[5] = {METHOD_DEVICE_FOUND,addr,type,ver,pos};
-	send2android(ttt,5);
+void i2c_device_found( byte addr,byte type,byte ver ){
+	byte ttt[4] = {METHOD_DEVICE_FOUND,addr,type,ver};
+	send2android(ttt,4);
 	send2androidEnd();
 }
 
@@ -325,23 +272,22 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 				writeRegisters(slave_address, count, true );	// powt�rz w razie czego
 			}
 		}
-	}else if( input.startsWith("PROG ")) {    // PROG 0A,1    // PROG 0A,0   - programuj urzadzenie 0x0A z prędkosca 19200, PROG 0,0 - force first, PROG 0A,0 - wozek
-		read_prog_settings(input, 1);
-		defaultResult = false;
-		return;
-	}else if( input.startsWith("PROGN ")) {    // PROGN 0,0,0   - programuj urzadzenie podłączone do 0x0C (number 0 )
+
+	}else if( input.startsWith("PROG_NEXT ")) {    // PROGN 0x0C,0,0   - programuj urzadzenie podlaczone resetem do 0x0C
 		read_prog_settings(input, 2 );
 		defaultResult = false;
 		return;
-	}else if( input.equals("RB")) {	// resetuj magistral� i2c
-		reset_wire();
-	}else if( input.startsWith("RESET ")) {    // RESET 0A - resetuj urzadzenie 0x0A
+	}else if( input.startsWith("PROG ")) {    	// PROG 1; PROG 2,0; PROG 3,1; PROG 4,1;   - programuj urzadzenie 0x0A z prędkosca 19200, PROG 0,0 - force first, PROG 0A,0 - wozek
+		read_prog_settings(input, 1);
+		defaultResult = false;
+		return;
+
+	}else if( input.startsWith("RESET ")) {    // RESET 0, RESET 1, RESET 2 
 		String digits     = input.substring( 6 );
-		char charBuf[20];
-		digits.toCharArray(charBuf,20);
-		unsigned int i2c_address    = 0x00;
-		sscanf(charBuf,"%x", &i2c_address );
-		byte num	= getResetOrder(i2c_address);
+		char charBuf[10];
+		digits.toCharArray(charBuf,10);
+		unsigned int num    = 0;
+		sscanf(charBuf,"%x", &num );
 		delay(200);
 		boolean ret = reset_device_num(num, LOW);
 		if(ret){
@@ -351,22 +297,8 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 			defaultResult = false;
 			sendln2android("E " + input );
 		}
-	}else if( input.startsWith(METHOD_RESETN)) {    // RESETN n - resetuj upanel pod numerem n, 0 - pierwszy, ff- po ostatnim wykrytym (np gdy nie da się wykryć)
-		String digits     = input.substring( 6 );
-		char charBuf[20];
-		digits.toCharArray(charBuf,20);
-		unsigned int target    = 0x00;
-		sscanf(charBuf,"%x", &target );
-		delay(200);
-		reset_device_num(target, LOW);
-		boolean ret = reset_device_num(target, LOW);
-		if(ret){
-			delay(1000);
-			reset_device_num(target, HIGH);
-		}else{
-			defaultResult = false;
-			sendln2android("E " + input );
-		}
+	}else if( input.equals("RB")) {	// resetuj magistral� i2c
+		reset_wire();
 
 	}else if( input.startsWith("x")) {
 		long int pos = stepperX.currentPosition();
@@ -445,8 +377,7 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 			error = Wire.endTransmission();
 			if (error == 0){
 				uint16_t readed = i2c_getVersion(addr2);
-				byte pos        = getResetOrder(addr2);
-				i2c_device_found(  addr2,(readed & 0xff),(readed>>8),  pos );
+				i2c_device_found(  addr2,(readed & 0xff),(readed>>8) );
 				nDevices++;
 			}
 		}
@@ -620,34 +551,22 @@ void i2c_test_slaves(){
 }
 
 boolean reset_device_num( byte num, boolean pin_value ){
-	if( num == 0x00 ){                        // master
+	if( num == 0x01 ){                        // master
 		//tri_state( PIN_PROGRAMMER_RESET_MASTER, pin_value );		// to generalnie przerywa prace i resetuje procesor
 		wdt_enable(WDTO_8S);
 		while(1){
 			pulse(PIN_PROGRAMMER_LED_ACTIVE, 2);
 		};
-	}else if( num == 0x01 ){                        // wozek
+	}else if( num == 0x02 ){                        // wozek
 		tri_state( PIN_PROGRAMMER_RESET_CARRET, pin_value );
-	}else if( num == 0x05 ){                  // pierwszy upanel
+	}else if( num == 0x03 ){                  // pierwszy upanel
 		tri_state( PIN_PROGRAMMER_RESET_UPANEL_BACK, pin_value );
-	}else if( num == 0x0B ){                  // pierwszy upanel
+	}else if( num == 0x04 ){                  // pierwszy upanel
 		tri_state( PIN_PROGRAMMER_RESET_UPANEL_FRONT, pin_value );
 	}else if( num == 0xff ){          // reset after last
-		if(nextpos == 0 || order[ nextpos - 1] == 0 ){    // nie ma zadnego urzadzenia lub przedostatni nie istenieje
-			return false;
-		}
-		i2c_reset_next( order[ nextpos - 1], pin_value );              // HIGH value = run
-	}else{    // other position, num >= 6
-		if( num == 0xfe ){          // reset last known
-			num = nextpos;
-		}
-		num = num -6;
-		if( nextpos == 0 || num >= nextpos || order[ num ] ==0 ){   // nie ma urzadzenia
-			return false;
-		}
-		i2c_reset_next( order[ num ], pin_value );
+		return false;
 	}
-	return true;
+	return false;
 }
  
 void read_prog_settings( String input, byte ns ){
@@ -658,17 +577,19 @@ void read_prog_settings( String input, byte ns ){
 	char charBuf[10];
 	digits.toCharArray(charBuf, 10);
 	sscanf(charBuf,"%x,%x,%i", &target, &serial_baud_num, &slow_sck );
-	if(ns == 1){            // PROG - podanu adres, znajdz numer
-		reprogramm_index    = getResetOrder(target);
-	}else if(ns == 2){     // PROGN
+	if(ns == 1){            // PROG - podany numer 0,1,2 lub 3
 		reprogramm_index    = target;
+		reprogramm_address  = 0;
+	}else if(ns == 2){     // PROG_NEXT, parametr to adres poprzedniego
+		reprogramm_index    = 0;
+		reprogramm_address  = target;
 	}
 	DEBUG("-ISP PROG START");
 	DEBUGLN(reprogramm_index);
 	programmer_mode(true, serial_baud_num, slow_sck );
 }
  
-void i2c_reset_next( byte slave_address, boolean pin_value ){
+void reset_device_next_to( byte slave_address, boolean pin_value ){
 	if( pin_value ){                  // Koniec resetu urządzenia obok urządzenia adresowego, stan wysokiej impedancji na wyjściu
 		out_buffer[0]  = METHOD_RUN_NEXT;
 		writeRegisters(slave_address, 1, true );
@@ -689,34 +610,6 @@ void i2c_analog_off( byte slave_address, byte analog ){
 	out_buffer[0]  = METHOD_LIVE_OFF;
 	writeRegisters(slave_address, 1, false );
 }
- 
-void i2c_prog_mode( boolean active, byte slave_address ){                  // Toggle programm mode in slave
-	if(active){
-		out_buffer[0]  = METHOD_PROG_MODE_ON;    // ON
-		out_buffer[1]  = slave_address;
-		writeRegisters(slave_address, 2, false );
-	}else{
-		out_buffer[0]  = METHOD_PROG_MODE_OFF;    // OFF
-		writeRegisters(slave_address, 1, false );
-	}
-}
-
-void get_order(){      // pobierz kolejnosc elementow
-	DEBUGLN("-Resetuje");
-
-	tri_state( PIN_PROGRAMMER_RESET_CARRET, false );       // pin w stanie niskim = reset
-	tri_state( PIN_PROGRAMMER_RESET_CARRET, true );        // end reset = start first slave
-
-	tri_state( PIN_PROGRAMMER_RESET_UPANEL_FRONT, false );       // pin w stanie niskim = reset
-	tri_state( PIN_PROGRAMMER_RESET_UPANEL_FRONT, true );        // end reset = start first slave
-	
-	tri_state( PIN_PROGRAMMER_RESET_UPANEL_BACK, false );       // pin w stanie niskim = reset
-	tri_state( PIN_PROGRAMMER_RESET_UPANEL_BACK, true );        // end reset = start first slave	
-	nextpos = 0;
-	scann_order = true;
-}
-
-
 
 uint16_t i2c_getVersion( byte slave_address ){      // zwraca 2 bajty. typ na młodszych bitach, versja na starszych
 	out_buffer[0]  = METHOD_GETVERSION;
@@ -813,25 +706,6 @@ void receiveEvent(int howMany){
 			return;
 		}
 	}
-}
- 
-// znajdz kod resetu
-byte getResetOrder( byte i2c_address ){
-	if( i2c_address == 0 ){
-		return 0;
-	}
-	if( i2c_address == I2C_ADR_MAINBOARD ){       // wozek
-		return 0;
-	}
-	if( i2c_address == I2C_ADR_CARRET ){       // wozek
-		return 1;
-	}
-	for(byte i =0; i<nextpos;i++){
-		if(order[i] == i2c_address){
-			return i + 5;                  // na pozcji 0 zwracaj 5, na pozycji 1 zwracaj 6
-		}
-	}
-	return 0xFF;
 }
  
 // Funkcja odczytywania N rejestrow
@@ -968,15 +842,7 @@ parameter param;
  
 void programmer_mode( boolean active, byte serial_baud_num, boolean slow_sck ) {
 	if(active){
-		byte error;
 		prog_mode = true;
-		for(byte aaa = I2C_ADR_MAINBOARD; aaa < 20; aaa++ ) {
-			Wire.beginTransmission(aaa);
-			error = Wire.endTransmission();
-			if (error == 0){
-				i2c_prog_mode(true, reprogramm_index );
-			}
-		}
 		// disable stepper
 		stepperX.disableOutputs();
 
@@ -1009,7 +875,11 @@ void programmer_mode( boolean active, byte serial_baud_num, boolean slow_sck ) {
 		pinMode(MISO, INPUT);
 		pinMode(MOSI, INPUT);
 		pinMode(SCK, INPUT);
-		reset_device_num( reprogramm_index, HIGH);
+		if(reprogramm_address){
+			reset_device_next_to( reprogramm_address, HIGH);		
+		}else if(reprogramm_index){
+			reset_device_num( reprogramm_index, HIGH);
+		}
 		prog_mode = false;
 		delay(2000);
 		Serial.begin(MAINBOARD_SERIAL0_BOUND);
@@ -1019,13 +889,24 @@ void start_pmode() {
 	spi_init();
 	error = false;
 	digitalWrite(PIN_PROGRAMMER_LED_ACTIVE, LOW);
-	reset_device_num( reprogramm_index, LOW);
-	reset_device_num( reprogramm_index, HIGH);
-	reset_device_num( reprogramm_index, LOW);
+	if(reprogramm_address){
+		reset_device_next_to( reprogramm_address, LOW);
+		reset_device_next_to( reprogramm_address, HIGH);
+		reset_device_next_to( reprogramm_address, LOW);
+	}else if(reprogramm_index){
+		reset_device_num( reprogramm_index, LOW);
+		reset_device_num( reprogramm_index, HIGH);
+		reset_device_num( reprogramm_index, LOW);
+	}
 	pinMode(SCK, OUTPUT);
 	digitalWrite(SCK, LOW);
 	delay(50);
-	reset_device_num( reprogramm_index, LOW);
+	if(reprogramm_address){
+		reset_device_next_to( reprogramm_address, LOW);		
+	}else if(reprogramm_index){
+		reset_device_num( reprogramm_index, LOW);
+	}
+	
 	delay(50);
 	pinMode(MISO, INPUT);
 	pinMode(MOSI, OUTPUT);

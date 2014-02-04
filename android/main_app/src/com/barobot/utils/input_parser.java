@@ -129,8 +129,8 @@ public class input_parser {
 			Log.i("retLike", retLike);
 			is_ret = Arduino.getInstance().read_ret( retLike );		// zapisuj zwrotki
 		}else if( fromArduino.startsWith( "" + Methods.METHOD_DEVICE_FOUND) ){
-			// byte ttt[5] = {METHOD_DEVICE_FOUND,addr,type,ver,pos};
-			// byte ttt[5] = {METHOD_DEVICE_FOUND,I2C_ADR_MAINBOARD,MAINBOARD_DEVICE_TYPE,MAINBOARD_VERSION,0};
+			// byte ttt[4] = {METHOD_DEVICE_FOUND,addr,type,ver};
+			// byte ttt[4] = {METHOD_DEVICE_FOUND,I2C_ADR_MAINBOARD,MAINBOARD_DEVICE_TYPE,MAINBOARD_VERSION};
 
 			boolean scanning = true;
 			if( scanning ){
@@ -141,7 +141,6 @@ public class input_parser {
 				}else if( scann_order ){ 
 					if( pos == 0xff ){        // nie ma na liscie?
 						order[nextpos++]  = buffer[1];            // na tm miejscu slave o tym adresie
-						pos = getResetOrder(buffer[1]);
 					}else{
 						scann_order  =  false;
 					}

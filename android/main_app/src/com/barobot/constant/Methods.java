@@ -50,16 +50,14 @@ public class Methods {
 	public static String METHOD_PROG =	"PROG";
 	public static String METHOD_PROGN =	"PROGN";
 	public static String METHOD_RESET_BUS =	"RB";
-	public static String METHOD_RESET =	"RESET";
-	public static String METHOD_RESETN =	"RESETN";
+	public static String METHOD_RESET	=	"RESET";
 	public static String METHOD_RWIRE =	"RWIRE";
 	public static String METHOD_SEND2SLAVE =	"S";
 	public static String METHOD_TRIGGER =	"T";
 	public static String METHOD_WAIT_READY =	"WR";
 	public static String METHOD_SET_X_POS =	"X";
 	
-	
-	
+
 	/*
 	public static int METHOD_GOTOSERVOZPOS =	70;
 	public static int METHOD_SEND2SLAVE =	127;
