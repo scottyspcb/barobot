@@ -1,8 +1,10 @@
 Partlist
 
-Exported from mainboard.sch at 2014-01-28 18:36:04
+Exported from mainboard.sch at 2014-02-04 11:29:47
 
-EAGLE Version 5.6.0 Copyright (c) 1988-2009 CadSoft
+EAGLE Version 6.5.0 Copyright (c) 1988-2013 CadSoft
+
+Assembly variant: 
 
 Part                 Value          Device          Package      Library        Sheet
 

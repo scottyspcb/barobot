@@ -1,0 +1,53 @@
+Partlist
+
+Exported from upanel.sch at 2014-02-04 11:30:14
+
+EAGLE Version 6.5.0 Copyright (c) 1988-2013 CadSoft
+
+Assembly variant: 
+
+Part                   Value          Device            Package    Library                 Sheet
+
+C1                                    C-EUC0805K        C0805K     rcl                     1
+C2                                    C-EUC0805K        C0805K     rcl                     1
+C3                                    C-EUC0805K        C0805K     rcl                     1
+C4                                    CPOL-EUC/6032-28R C/6032-28R rcl                     1
+C5                                    C-EUC0805K        C0805K     rcl                     1
+CON_301_UPANEL_MALE                   MA08-1W           MA08-1W    con-lstb                1
+CON_302_UPANEL_FEMALE1                FE08W             FE08W      con-lsta                1
+J1                     22-27-2041-04  22-27-2041-04     6410-04    con-molex               1
+LD3                                   LED-RGB-CA        LED-5-RGB  0alib2                  1
+LD4                                   LED-RGB-CA        LED-5-RGB  0alib2                  1
+LED1                                  TOPLED-3          P-LCC-4-3  led3                    1
+LED2                                  LED5MM            LED5MM     led                     1
+LED3                                  TOPLED-3          P-LCC-4-3  led3                    1
+LED7                                  LED5MM            LED5MM     led                     1
+Q1                     BSS84          BSS84             SOT23      transistor-small-signal 1
+Q2                     BSS84          BSS84             SOT23      transistor-small-signal 1
+Q3                     BSS84          BSS84             SOT23      transistor-small-signal 1
+Q4                     BSS84          BSS84             SOT23      transistor-small-signal 1
+Q5                     BSS84          BSS84             SOT23      transistor-small-signal 1
+R1                     10k            R-EU_R0805        R0805      resistor                1
+R3                                    RES0805-MIN       0805-MIN   barobot                 1
+R4                                    RES0805-MIN       0805-MIN   barobot                 1
+R5                                    RES0805-MIN       0805-MIN   barobot                 1
+R6                                    RES0805-MIN       0805-MIN   barobot                 1
+R7                                    RES0805-MIN       0805-MIN   barobot                 1
+R308W1                                R-EU_R0805        R0805      resistor                1
+R308W2                                R-EU_R0805        R0805      resistor                1
+R308W3                                R-EU_R0805        R0805      resistor                1
+R308W4                                R-EU_R0805        R0805      resistor                1
+R308W5                                R-EU_R0805        R0805      resistor                1
+R308W6                                R-EU_R0805        R0805      resistor                1
+R308W7                                R-EU_R0805        R0805      resistor                1
+R308W8                                R-EU_R0805        R0805      resistor                1
+R308W12                               R-EU_R0805        R0805      resistor                1
+R308W13                               R-EU_R0805        R0805      resistor                1
+R308W14                               R-EU_R0805        R0805      resistor                1
+R308W15                               R-EU_R0805        R0805      resistor                1
+R308W16                               R-EU_R0805        R0805      resistor                1
+R308W17                               R-EU_R0805        R0805      resistor                1
+R309                   10k            R-EU_R0805        R0805      resistor                1
+S2                     DTSM-6         DTSM-6            DTSM-6     switch-tact             1
+SV1                                   ML10E             ML10       con-ml                  1
+U1                     MEGA8-AI       MEGA8-AI          TQFP32-08  atmel                   1
