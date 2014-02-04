@@ -170,7 +170,6 @@ void loop() {
 				analog_sum.bytes[0]		// bits 24-32
 			};
 			send(ttt,8);
-
 			analog_pos = 0;
 			analog_sum.i = 0;
 		}

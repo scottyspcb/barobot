@@ -13,6 +13,8 @@
 // Put yout declarations here
  long unsigned decodeInt(String input, int odetnij );
 boolean reset_device_num( byte num, boolean pin_value );
+
+boolean reset_device_num2( byte num, boolean pin_value );
 uint16_t i2c_getVersion( byte slave_address );
 unsigned int test_slave(byte slave_address);
 uint8_t spi_transaction(uint8_t a, uint8_t b, uint8_t c, uint8_t d);
@@ -68,15 +70,12 @@ void send2androidEnd();
 void send2debuger( String ns, String logstr );
 byte writeRegisters(int deviceAddress, byte length, boolean wait);
 byte readRegisters(byte deviceAddress, byte length);
-byte getResetOrder( byte i2c_address );
 void receiveEvent(int howMany);
 byte i2c_test_slave( byte slave_address, byte num1, byte num2 );
 void i2c_stop( byte slave_address );
-void get_order();
-void i2c_prog_mode( boolean active, byte slave_address );
 void i2c_analog_off( byte slave_address, byte analog );
 void i2c_analog( byte slave_address, byte analog );
-void i2c_reset_next( byte slave_address, boolean pin_value );
+void reset_device_next_to( byte slave_address, boolean pin_value );
 void read_prog_settings( String input, byte ns );
 void i2c_test_slaves();
 void tri_state( byte pin_num, boolean pin_value );
@@ -84,7 +83,7 @@ void paserDeriver( byte driver, String input );
 void stepperReady( long int pos );
 byte read_can_fill();
 void parseInput( String input );
-void i2c_device_found( byte addr,byte type,byte ver, byte pos );
+void i2c_device_found( byte addr,byte type,byte ver );
 void proceed( byte length,volatile uint8_t buffer[7] );
 void reset_wire();
 void check_i2c();

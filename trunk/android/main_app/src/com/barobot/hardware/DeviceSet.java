@@ -24,7 +24,6 @@ public class DeviceSet {
 	private static LinkedList<Device> fullSet = new LinkedList<Device>();
 	private static List<Device> entries = new ArrayList<Device>();
     private static final String ns = null;	// We don't use namespaces
-
     private LinkedList<Device> set = new LinkedList<Device>();
 
 	public DeviceSet(LinkedList<Device> linkedList){

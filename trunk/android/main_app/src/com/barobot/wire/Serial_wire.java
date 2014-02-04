@@ -190,7 +190,7 @@ public class Serial_wire implements Wire {
                     } else {
         //                Log.d(TAG, "  + " + driver + ", " + driver.getPortCount() + " ports.");
 
-                        Intent tt = BarobotMain.getInstance().registerReceiver(mPermissionReceiver, new IntentFilter(
+                        BarobotMain.getInstance().registerReceiver(mPermissionReceiver, new IntentFilter(
                                 ACTION_USB_PERMISSION));
                         mPermissionReceiver_activated = true;
                           
