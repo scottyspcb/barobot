@@ -1,69 +1,97 @@
 Partlist
 
-Exported from carret.brd at 2014-01-20 23:54:31
+Exported from carret.sch at 2014-02-04 11:29:29
 
 EAGLE Version 6.5.0 Copyright (c) 1988-2013 CadSoft
 
 Assembly variant: 
 
-Part     Value          Package    Library   Position (inch)       Orientation
-C1                      C0805K     rcl       (2.425 0.45)          MR90
-C2                      C0805K     rcl       (1.875 0.35)          MR90
-C3       100n           C0805K     rcl       (1.2 -0.15)           MR0
-C4       100n           C0805K     rcl       (1.75 0.5375)         MR90
-C201                    C0805K     rcl       (0.775 0.65)          MR270
-C202                    C0805K     rcl       (0.775 0.8)           MR90
-C204     100n           C0805K     rcl       (0.975 0.5)           MR90
-D201                    SOD80C     diode     (2.7 0.175)           MR90
-D202                    SOD80C     diode     (2.8 0.175)           MR270
-D203                    SOD80C     diode     (2.9 0.175)           MR90
-IC1      LM358D         SO08       linear    (2.15 0.45)           MR90
-IC2      LM358D         SO08       linear    (2.15 0.9)            MR90
-IC202    OP07           SO08       linear    (2.8 0.7)             MR270
-IC203    OP07           SO08       linear    (2.8 0.4)             MR270
-IC205    ULN2003        SO16       uln-udn   (1.25 0.95)           MR0
-IC207    ATMEGA8        TQFP32-08  atmel     (1.275 0.5)           MR180
-J201     22-23-2041     22-23-2041 con-molex (2.15 1.45)           R0
-J202                    22-23-2031 con-molex (0.6 1.45)            R180
-J203     ARK?           22-23-2031 con-molex (0.125 0.4875)        R270
-J204                    22-23-2031 con-molex (4.55 0.8)            R90
-J205                    FE06-2     con-lsta  (2.55 -0.525)         R0
-J206                    22-23-2031 con-molex (0.125 0.8)           R270
-JP1                     1X04       pinhead   (1.275 0.175)         R180
-LED202                  LED5MM     led       (0.925 0.2)           R180
-PAD1                    1,6/0,8    wirepad   (0.45 0.2)            R0
-PAD2                    1,6/0,8    wirepad   (0.5 0.15)            R0
-PAD3                    1,6/0,8    wirepad   (0.55 0.2)            R0
-PAD4                    1,6/0,8    wirepad   (0.6 0.15)            R0
-Q201     16 MHz         HC49UP     crystal   (0.85 0.725)          MR270
-Q202     16 MHz         HC49U-V    crystal   (0.925 0.725)         R270
-R1                      R1206      resistor  (0.3 0.7)             MR180
-R2                      R1206      resistor  (4.375 0.9)           MR0
-R3       10k            R0805      resistor  (1.95 0.35)           MR90
-R4       10k            R0805      resistor  (1.8 0.35)            MR270
-R5       10k            R0805      resistor  (2.35 0.45)           MR90
-R6       10k            R0805      resistor  (2.35 0.3125)         MR90
-R7                      R0805      rcl       (2.4875 0.1375)       MR0
-R8       10k            R0805      resistor  (1.5625 0.675)        MR90
-R9                      R0805      rcl       (2.15 1.05)           MR180
-R10                     R0805      rcl       (2.2625 1.1375)       MR90
-R201                    R0805      rcl       (2.8375 1.1875)       MR180
-R202                    R0805      rcl       (2.7 1.1875)          MR180
-R204                    R0805      rcl       (3 0.5375)            MR90
-R205                    R0805      rcl       (2.5 1.075)           MR90
-R209                    R0805      rcl       (3 0.675)             MR270
-R210                    R0805      rcl       (2.8 0.85)            MR180
-R211                    R0805      rcl       (2.8 0.525)           MR0
-R212                    R0805      rcl       (3 0.4)               MR90
-R213                    R0805      rcl       (3 0.175)             MR90
-R214                    R1206      resistor  (1.6 1.275)           MR90
-R215                    R1206      resistor  (1.5 1.275)           MR90
-R216                    R1206      resistor  (1.4 1.275)           MR90
-R217                    R1206      resistor  (1.3 1.275)           MR90
-R219                    R1206      resistor  (0.45 0.375)          MR270
-R220                    R1206      resistor  (0.5375 0.375)        MR270
-R221                    R1206      resistor  (0.625 0.375)         MR270
-R222                    R0805      resistor  (0.9875 0.275)        MR0
-R223     10k            R0805      resistor  (2.7 -0.6625)         MR180
-U$1      TL431          SO08       0alib     (2.7 1.05)            MR270
-X1       22-23-2051     22-23-2051 con-molex (1.4 1.45)            R180
+Part     Value          Device         Package    Library          Sheet
+
+C201     100n           CAP            0805       barobot          1
+C202     C298           CPOL-EUE3.5-8  E3,5-8     rcl              1
+C203     100n           CAP            0805       barobot          1
+C204     100n           CAP            0805       barobot          1
+C205     100n           CAP            0805       barobot          1
+C206     22p            CAP            0805       barobot          1
+C207     22p            CAP            0805       barobot          1
+C208     100n           CAP            0805       barobot          1
+C209     100n           CAP            0805       barobot          1
+C210     100n           CAP            0805       barobot          1
+C211     100n           CAP            0805       barobot          1
+C212                    CPOL-EUE3.5-8  E3,5-8     rcl              1
+C213                    CAP            0805       barobot          1
+C214                    CPOL-EUE3.5-8  E3,5-8     rcl              1
+D201     LRD RGB CA     LED-RGB-CA     LED-5-RGB  0alib2           1
+D202     1N4148         DIODE-SOD80C   SOD80C     diode            1
+D203     1N4148         DIODE-SOD80C   SOD80C     diode            1
+D204     1N4148         DIODE-SOD80C   SOD80C     diode            1
+D205     LED WHT        LED5MM         LED5MM     led              1
+D206     LED GRN        LED            0805_DIODE barobot          1
+D207     LED GRN        LED            0805_DIODE barobot          1
+D208     LED YEL        LED            0805_DIODE barobot          1
+D209     SK36           DIODE-SMC      SMC        diode            1
+D210     SS20           DIODE-DO214AA  DO214AA    diode            1
+D211     LED GRN        LED            0805_DIODE barobot          1
+D212                    DIODE-SMB      SMB        diode            1
+IC201    LM358D         LM358D         SO08       linear           1
+IC202    TL431          TL431          SO08       0alib            1
+IC203    ULN2003        ULN2003AD      SO16       uln-udn          1
+IC204    OP07           OP07CR         SO08       linear           1
+IC205    OP07           OP07CR         SO08       linear           1
+IC206    ATMEGA328      MEGA8-AI       TQFP32-08  atmel            1
+IC207    LM358D         LM358D         SO08       linear           1
+IC208    MC34063AD      MC34063AD      SOIC8      mc34063          1
+J201     22-27-2051-05  22-27-2051-05  6410-05    con-molex        1
+J202                    AK300/4        AK300/4    con-ptr500       1
+J203     WF04-S         22-27-2041-04  6410-04    con-molex        1
+J204     WF03-S         22-27-2031-03  6410-03    con-molex        1
+J205     WF03-S         22-27-2031-03  6410-03    con-molex        1
+J206     WF03-S         22-27-2031-03  6410-03    con-molex        1
+J207     WF03-S         22-27-2031-03  6410-03    con-molex        1
+J208     BH14S          ML14           ML14       con-ml           1
+J209     WF02-S         22-27-2021-02  6410-02    con-molex        1
+L201                    BS75           BS75       inductor-neosid  1
+PAD201                  3,81/1,1       3,81/1,1   wirepad          1
+PAD202                  3,81/1,1       3,81/1,1   wirepad          1
+PAD203                  3,81/1,1       3,81/1,1   wirepad          1
+PAD204                  3,81/1,1       3,81/1,1   wirepad          1
+Q201     16 MHz         CRYSTALHC49UP  HC49UP     crystal          1
+Q202     16 MHz         CRYSTALHC49U-V HC49U-V    crystal          1
+Q203     TIP42C         TIP42C         TO220AV    transistor-power 1
+R201     82R            RES0805        0805       barobot          1
+R202     3k 1%          RES0805        0805       barobot          1
+R203     3k 1%          RES0805        0805       barobot          1
+R204     TBD            RES0805        0805       barobot          1
+R205     TBD            RES0805        0805       barobot          1
+R206     8k2            RES0805        0805       barobot          1
+R207     TBD            RES0805        0805       barobot          1
+R208     1k 1%          RES0805        0805       barobot          1
+R209     TBD            RES0805        0805       barobot          1
+R210     TBD            RES0805        0805       barobot          1
+R211     330k 1%        RES0805        0805       barobot          1
+R212     1k 1%          RES0805        0805       barobot          1
+R213     1k 1%          RES0805        0805       barobot          1
+R214     330k 1%        RES0805        0805       barobot          1
+R215     TBD            RES0805        0805       barobot          1
+R216     TBD            RES0805        0805       barobot          1
+R217     3k 1%          RES0805        0805       barobot          1
+R218     470R           RES0805        0805       barobot          1
+R219     TBD            RES0805        0805       barobot          1
+R220     470R           RES0805        0805       barobot          1
+R221     470R           RES0805        0805       barobot          1
+R222     470R           RES0805        0805       barobot          1
+R223     10k            RES0805        0805       barobot          1
+R224     82R            RES0805        0805       barobot          1
+R225     0R047 1%       R-EU_R1206     R1206      resistor         1
+R226     0R047 1%       R-EU_R1206     R1206      resistor         1
+R227     100k 1%        RES0805        0805       barobot          1
+R228     470R           RES0805        0805       barobot          1
+R229     1k 1%          RES0805        0805       barobot          1
+R230     100k 1%        RES0805        0805       barobot          1
+R231     1k 1%          RES0805        0805       barobot          1
+R232                    RES0805        0805       barobot          1
+R233                    RES0805        0805       barobot          1
+R234                    RES0805        0805       barobot          1
+R235                    RES0805        0805       barobot          1
+R236                    RES0805        0805       barobot          1
