@@ -47,6 +47,7 @@ void setup(){
   */
   DW(PIN_PANEL_LED0_NUM, HIGH );
   DW(PIN_PANEL_LED1_NUM, HIGH );
+  delay(500); 
   byte tries = 0;
   if(!init_i2c()){
     {
@@ -55,7 +56,7 @@ void setup(){
   //     show_error(5 );
   //    }        
     } while( !init_i2c() );
-  }  
+  }
   Wire.onReceive(receiveEvent);
   Wire.onRequest(requestEvent);
   delay(500);
@@ -96,7 +97,6 @@ void setup(){
   PWM( -1, 0,0,0,0,0,0);
 
   PWMSetFadeTime(-1, 1, 1);
-  
   PWMSetFadeTime(0, 1, 1);
   PWMSetFadeTime(1, 2, 2);
   PWMSetFadeTime(2, 3, 3);
@@ -153,20 +153,23 @@ static void read_i2c(){
     if( command == METHOD_SETPWM ){                // PWM     3 bajty
    //         PWMSet(in_buffer1[1],in_buffer1[2]);
    //           leds[in_buffer1[1]].wypelnienie = in_buffer1[2];
-    }else if( command ==  METHOD_SETLED ){
-      byte i = 8;
+    }else if( command ==  METHOD_SETLEDS ){
+      byte i = COUNT_UPANEL_ONBOARD_LED;
       while(i--){
-        _pwm_channels[i].pwmup =   bitRead(in_buffer1[1], i) ? in_buffer1[2] : 0;
+        if( bitRead(in_buffer1[1], i) ){
+          _pwm_channels[i].pwmup = in_buffer1[2];
+        }
       }
   //      }else if( command == METHOD_RESETCYCLES ){         // reset
   //      }else if( command == METHOD_SETTIME ){         // set time
   //      }else if( command == METHOD_SETFADING ){         // fadein out
     }else if( command == METHOD_PROG_MODE_ON ){         // i2c in prog mode (master programuje jakis slave, ale nie mnie)
-      DW(LED_TOP_RED, HIGH);
+      byte i = COUNT_UPANEL_ONBOARD_LED;
+      while(i--){
+          _pwm_channels[i].pwmup = 0;
+      }
       if(in_buffer1[1] == my_address){
         prog_me = true;
-        DW(LED_TOP_RED, HIGH);
-        DW(LED_BOTTOM_RED, HIGH);
       }else{
         prog_me = false;
       }
@@ -210,19 +213,9 @@ void reset_next(boolean value){
     DW(PIN_UPANEL_LEFT_RESET, HIGH);     // set pin to input
     pinMode(PIN_UPANEL_LEFT_RESET, INPUT);
     DW(PIN_UPANEL_LEFT_RESET, LOW);      // disable pullup
-    
-    
-   //     DW(PIN_PANEL_LED3_NUM, value );   
-    //    DW(PIN_PANEL_LED6_NUM, value );  
-    
-        
   }else if( value == LOW ){    // reset device
     pinMode(PIN_UPANEL_LEFT_RESET, OUTPUT); 
     DW(PIN_UPANEL_LEFT_RESET, LOW );
-    
-    
-     //   DW(PIN_PANEL_LED3_NUM, value );
-     //   DW(PIN_PANEL_LED6_NUM, value );  
   }
 }
 void receiveEvent(int howMany){
