@@ -6,7 +6,8 @@
 //AccelStepper stepper(4, 46,47,48,49 );
 //AccelStepper stepper(4, 40,41,42,43 );
 //AccelStepper stepper(1, 8,9,10,11);
-AccelStepper stepper(1, 2, 3 );
+AccelStepper stepper(8, 10,12,11,13);
+//AccelStepper stepper(1, 2, 3 );
 
 String serial0Buffer = "";
 boolean Console0Complete = false;   // This will be set to true once we have a full string

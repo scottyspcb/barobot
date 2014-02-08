@@ -19,38 +19,47 @@ volatile uint8_t checktime= 0;
 
 // debouncing
 boolean buttonState;
-boolean lastButtonState = LOW;
-unsigned long lastDebounceTime = 0;  // the last time the output pin was toggled
-unsigned long const debounceDelay = 30;    // the debounce time; increase if the output flickers
-
-
+boolean lastButtonState = HIGH;            // default pull-up
+unsigned long lastDebounceTime = 0;
+unsigned long const debounceDelay = 30;
 
 void setup(){
   DEBUGINIT();
-  pinMode(PIN_UPANEL_SCK, INPUT );         // stan wysokiej impedancji
-  pinMode(PIN_UPANEL_MISO, INPUT );        // stan wysokiej impedancji
-  pinMode(PIN_UPANEL_MOSI, INPUT );        // stan wysokiej impedancji
-  pinMode(PIN_UPANEL_LEFT_RESET, INPUT);   // stan wysokiej impedancji
-  pinMode(PIN_UPANEL_POKE, INPUT);
-
-  DW(PIN_UPANEL_POKE, LOW);      // enable pullup, poke-switch
+  pinMode(PIN_UPANEL_SCK, INPUT );         // high impedance
+  pinMode(PIN_UPANEL_MISO, INPUT );        // high impedance
+  pinMode(PIN_UPANEL_MOSI, INPUT );        // high impedance
+  pinMode(PIN_UPANEL_LEFT_RESET, INPUT);   // high impedance
+  pinMode(PIN_UPANEL_POKE, INPUT_PULLUP);
 
   // pootwieraj porty:
-  DDRC |= _BV(PC2) | _BV(PC3);      // wyjscie
+  DDRC |= _BV(PC3);
   DDRB |= _BV(PB0) | _BV(PB1);
-  DDRD |= _BV(PD4) | _BV(PD5) | _BV(PD6) | _BV(PD7);
-
-  DW(PIN_PANEL_LED7_NUM, HIGH );      // debug, oczekiwanie na adres
-
+  DDRD |= _BV(PD3) | _BV(PD4) | _BV(PD5) | _BV(PD6) | _BV(PD7);
+  /*
+  pd6    06     
+  pd7    07     
+  pb0    08     
+  pb1    09     
+  pd3    03      
+  pd4    04      
+  pd5    05     
+  pc3    17     
+  */
+  DW(PIN_PANEL_LED0_NUM, HIGH );
+  DW(PIN_PANEL_LED1_NUM, HIGH );
+  byte tries = 0;
   if(!init_i2c()){
     {
       check_i2c_valid();
+  //    if(tries ++ > 2){
+  //     show_error(5 );
+  //    }        
     } while( !init_i2c() );
-  }
-//    show_error(5 );
+  }  
   Wire.onReceive(receiveEvent);
   Wire.onRequest(requestEvent);
-  send_here_i_am();  // wyslij po i2c ze oto jestem
+  delay(500);
+  send_here_i_am();  // send I'am, and I'am ready
 
   for (uint8_t i = 0; i < COUNT_UPANEL_ONBOARD_LED; ++i){
     uint8_t pin = _pwm_channels[i].pin;
@@ -98,22 +107,25 @@ void setup(){
   PWMSetFadeTime(6, 7, 7);
   PWMSetFadeTime(7, 0, 0);
 */
+  DW(PIN_PANEL_LED2_NUM, LOW );
+  DW(PIN_PANEL_LED3_NUM, LOW );
   sei();    // enable interrupts
-  DW(PIN_PANEL_LED2_NUM, HIGH );
-  DW(PIN_PANEL_LED3_NUM, HIGH );
+//  DW(PIN_PANEL_LED2_NUM, HIGH );
+//  DW(PIN_PANEL_LED3_NUM, HIGH );
 }
 void loop() {
   unsigned long mil = millis();
     // debug:
+/*
   	if( mil > milis1 + 1000 ){    // debug, mrygaj co 1 sek
                 diddd = !diddd;
-  		milis1 = mil;
                 DW(PIN_PANEL_LED3_NUM, diddd);
+  		milis1 = mil;
   	}
-  	if( mil > milis4 + 4000 ){    // co 4 sek
-                send_pin_value( PIN_UPANEL_POKE, diddd ? 1 : 0 );
-  		milis4 = mil;
-  	}
+  */
+  //	if( mil > milis4 + 4000 ){    // co 4 sek
+  //		milis4 = mil;
+  //	}
 
 // Debouncing
   boolean reading = digitalRead(PIN_UPANEL_POKE);
@@ -125,12 +137,13 @@ void loop() {
       if ((now - lastDebounceTime) > debounceDelay) {
         buttonState = reading;
         send_pin_value( PIN_UPANEL_POKE, buttonState );
+        DW(PIN_PANEL_LED4_NUM, buttonState );
         lastDebounceTime = 0;
       }
     }
   }
   lastButtonState = reading;
-// koniec Debouncing
+// end Debouncing
   read_i2c();
 }
 
@@ -143,7 +156,7 @@ static void read_i2c(){
     }else if( command ==  METHOD_SETLED ){
       byte i = 8;
       while(i--){
-        _pwm_channels[i].pwmup =   bitRead(in_buffer1[1], i) ? 250 : 0;
+        _pwm_channels[i].pwmup =   bitRead(in_buffer1[1], i) ? in_buffer1[2] : 0;
       }
   //      }else if( command == METHOD_RESETCYCLES ){         // reset
   //      }else if( command == METHOD_SETTIME ){         // set time
@@ -180,19 +193,38 @@ static void read_i2c(){
     use_local = false;
   }
 }
-
-
+/*
+void show_error(byte value){
+   while( (value--) > 0 ){
+        DW(LED_BOTTOM_RED, HIGH );
+        DW(LED_TOP_RED, HIGH );
+        delay(500);
+        DW(LED_BOTTOM_RED, LOW );
+        DW(LED_TOP_RED, LOW );
+        delay(700);
+   }
+}
+*/
 void reset_next(boolean value){
   if( value == HIGH){    // run device
     DW(PIN_UPANEL_LEFT_RESET, HIGH);     // set pin to input
     pinMode(PIN_UPANEL_LEFT_RESET, INPUT);
     DW(PIN_UPANEL_LEFT_RESET, LOW);      // disable pullup
+    
+    
+   //     DW(PIN_PANEL_LED3_NUM, value );   
+    //    DW(PIN_PANEL_LED6_NUM, value );  
+    
+        
   }else if( value == LOW ){    // reset device
     pinMode(PIN_UPANEL_LEFT_RESET, OUTPUT); 
     DW(PIN_UPANEL_LEFT_RESET, LOW );
+    
+    
+     //   DW(PIN_PANEL_LED3_NUM, value );
+     //   DW(PIN_PANEL_LED6_NUM, value );  
   }
 }
-
 void receiveEvent(int howMany){
   if(!howMany){
      return;
@@ -204,7 +236,7 @@ void receiveEvent(int howMany){
     in_buffer1[cntr] = aa;
     cntr++;
   }
-  if( in_buffer1[0] != METHOD_GETVERSION &&  in_buffer1[0] != METHOD_TEST_SLAVE ){
+  if( in_buffer1[0] != METHOD_GETVERSION && in_buffer1[0] != METHOD_TEST_SLAVE ){
       use_local = true;
   }
   // w tym miejscu jednynie bardzo proste komendy nie wymagające zwrotek pracujące w funkcji obsługi przerwania, pamietac o volatile
@@ -218,25 +250,25 @@ void requestEvent(){
     }else if( in_buffer1[0] == METHOD_TEST_SLAVE ){    // return xor
         byte res = in_buffer1[1] ^ in_buffer1[2];
         Wire.write(res);
+        DW(PIN_PANEL_LED4_NUM, HIGH );
+        delay(500);
         /*
         if( res & 0x01 ){    // ustawiony najmlodzzy bit
-          diddd = !diddd;
-          DW(PIN_PANEL_LED4_NUM, diddd);
+//          diddd = !diddd;
+//          DW(PIN_PANEL_LED4_NUM, diddd);
         }*/
     }
 }
 
 void send_pin_value( byte pin, byte value ){
-  byte ttt[6] = {METHOD_I2C_SLAVEMSG,my_address, RETURN_PIN_VALUE,my_address,pin,value};
-  send(ttt,6);
+  byte ttt[5] = {METHOD_I2C_SLAVEMSG,my_address, RETURN_PIN_VALUE,pin,value};
+  send(ttt,5);
  // Serial.println("out "+ String( my_address ) +" / "+ String( pin ) +"/"+ String(value));
 }
-
 static void send_here_i_am(){
   byte ttt[4] = {METHOD_HERE_I_AM,my_address,UPANEL_DEVICE_TYPE,UPANEL_VERSION};
   send(ttt,4);
 }
-
 void send( byte buffer[], byte length ){
   if(prog_mode){
     return;
@@ -259,33 +291,14 @@ void check_i2c_valid(){
   Wire.beginTransmission(I2C_ADR_RESERVED);
   byte ee = Wire.endTransmission();     // czy linia jest drozna
   if( ee == 6 ){    // niedrozna - resetuj i2c
+    DW(PIN_PANEL_LED4_NUM, HIGH );
+    delay(500);
+    DW(PIN_PANEL_LED4_NUM, LOW );
+    delay(700);
     reset_next(LOW);
     reset_next(HIGH);
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -303,7 +316,7 @@ ISR(TIMER2_COMP_vect){
     uint8_t i=COUNT_UPANEL_ONBOARD_LED;
     pwmnow=false;
     if(++_isr_count == 0){
-      if( checktime /* && ++_timediv==0*/ ){
+      if( checktime ){ // && ++_timediv==0
         if(checktime == 1){    // zmierzylem raz
           _nanotime =  micros();
           checktime = 2;
@@ -356,6 +369,7 @@ ISR(TIMER2_COMP_vect){
   }
 }
 
+/*
 void PWM(uint8_t pin, uint8_t pwmup, uint8_t pwmdown, uint8_t timeup, uint8_t timedown, uint8_t fadeup, uint8_t fadedown){
   if(pin == 0xff ){
     uint8_t i=COUNT_UPANEL_ONBOARD_LED;
@@ -399,7 +413,7 @@ void PWMSetFadeTime(uint8_t pin, uint8_t up, uint8_t down){
       _pwm_channels[pin].fadeup =  up;
       _pwm_channels[pin].fadedown = down;
   }
-}
+}*/
 
 /*
 void swiec(){
@@ -432,10 +446,8 @@ void swiec(){
 */
 
 /*
-
 TCNT2 = 0;
  _isr_count = 0xff;
-
 void PWMEnd(int8_t pin){
   if(pin == -1 ){
     uint8_t i=LEDS;
@@ -456,10 +468,4 @@ uint8_t fadeToSteps( uint16_t fadeTime ){
   return 0;
 }
 */
-
-
-
-
-
-
 
