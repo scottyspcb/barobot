@@ -642,6 +642,18 @@ D:\PROG\arduino-1.0.5\hardware/tools/avr/bin/avrdude -CD:\PROG\arduino-1.0.5\har
 D:\PROG\arduino-1.0.5\hardware/tools/avr/bin/avrdude -CD:\PROG\arduino-1.0.5\hardware/tools/avr/etc/avrdude.conf -v -v -v -v -D -patmega8 -cstk500v1 -P\\.\COM40 -b19200 -Ulock:w:0x3F:m -Uhfuse:w:0xc4:m -Ulfuse:w:0xe4:m
 -----------------------------
 
+-------- ATMEGA 8 FUSE DEFAULT --------
+D:\PROG\arduino-1.0.5\hardware/tools/avr/bin/avrdude -CD:\PROG\arduino-1.0.5\hardware/tools/avr/etc/avrdude.conf -v -v -v -v -D -patmega8 -cstk500v1 -P\\.\COM40 -b19200 -Ulock:w:0x3F:m -Uhfuse:w:0xD9:m -Ulfuse:w:0xE1:m
+-----------------------------
+
+
+PROG_NEXT 0x0d
+
+
+
+
+
+
 PROG_NEXT c,19200,1
 PROG_NEXT c
 
