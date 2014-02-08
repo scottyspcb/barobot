@@ -62,8 +62,6 @@ void setup(){
 	digitalWrite(PIN_PROGRAMMER_LED_STATE, LOW);
 
 	Wire.begin(I2C_ADR_MAINBOARD);
-	//digitalWrite(SDA, 1);
-	//digitalWrite(SCL, 1);
 	Wire.onReceive(receiveEvent);
 	setupStepper();
 	i2c_device_found(I2C_ADR_MAINBOARD, MAINBOARD_DEVICE_TYPE,MAINBOARD_VERSION);
@@ -230,9 +228,7 @@ void proceed( byte length,volatile uint8_t buffer[7] ){ // zrozum co przyszlo po
 		DEBUG(" ");
 		DEBUG(buffer[3]);
 		DEBUG(" ");
-		DEBUG(buffer[4]);
-		DEBUG(" ");
-		DEBUGLN(buffer[5]);
+		DEBUGLN(buffer[4]);
 	}
 	buffer[0] = 0;  //ready
 }
@@ -248,7 +244,7 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 	boolean defaultResult = true;
 	byte command = serialBuff[0];
 
-	if( command == METHOD_SEND2SLAVE ){    // wyÅ›lij przez i2c do slave i spodziewaj siÄ™ wyniku
+	if( command == METHOD_SEND2SLAVE ){    // send over i2c to slave
 		if(input.length() < 3 ){
 			return;
 		}
@@ -300,8 +296,7 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 			reset_device_num(num, HIGH);
 		}else{  //error
 			defaultResult = false;
-			send2android("E " );			
-			sendln2android(input );
+			send_error(input);
 		}
 	}else if( input.startsWith("RESET_NEXT ")) {
 		String digits     = input.substring( 11 );
@@ -309,7 +304,7 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 		digits.toCharArray(charBuf,6);
 		unsigned int num    = 0;
 		sscanf(charBuf,"%x", &num );
-		byte error =checkAddress(reprogramm_address);
+		byte error =checkAddress(num);
 		if (error == 0){
 			delay(200);
 			reset_device_next_to(num, LOW);
@@ -317,10 +312,8 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 			reset_device_next_to(num, HIGH);
 		}else{  //error
 			defaultResult = false;
-			send2android("E " );			
-			sendln2android(input );
+			send_error(input);
 		}
-		
 	}else if( input.equals("RB")) {	// resetuj magistralê i2c
 		reset_wire();
 
@@ -394,24 +387,36 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 //	}else if( input.equals(METHOD_RESET_BUS) ){    // reset bus
 //		get_order();
 
-
-	}else if( input.startsWith("LED ")) {    // LED 2 00000000b
+	}else if( input.startsWith("LED ")) {    // LED C,0,255		// LED nr 0 na upanelu o adresie 0x0C w³¹cz na 100%
 		String digits     = input.substring( 4 );
 		char charBuf[16];
 		digits.toCharArray(charBuf,16);
-		unsigned int num    = 0;
-		unsigned int value  = 0;
+		unsigned int num  	= 0;
+		unsigned int led  	= 0;
 		unsigned int power  = 0;
-		sscanf(charBuf,"%x,%x,%x", &num, &value, &power );
-		DEBUG(" num: ");
+		sscanf(charBuf,"%x,%x,%i", &num, &led, &power );
+		DEBUG("-num: ");
 		DEBUG(String(num));
-		DEBUG(" value: ");
-		DEBUG(String(value));
+		DEBUG(" led: ");
+		DEBUG(String(led));
 		DEBUG(" power: ");
 		DEBUG(String(power));
 		DEBUGLN();
 		out_buffer[0]  = METHOD_SETLED;
-		out_buffer[1]  = (byte)value;
+		out_buffer[1]  = (byte)led;
+		out_buffer[2]  = (byte)power;
+		writeRegisters(num, 3, true );
+
+	}else if( input.startsWith("LEDS ")) {    // LED C,0xff,0		// zgaœ wszystkie na upanelu 0x0C
+		String digits     = input.substring( 5 );
+		char charBuf[16];
+		digits.toCharArray(charBuf,16);
+		unsigned int num    = 0;
+		unsigned int leds 	= 0;
+		unsigned int power  = 0;
+		sscanf(charBuf,"%x,%x,%i", &num, &leds, &power );
+		out_buffer[0]  = METHOD_SETLED;
+		out_buffer[1]  = (byte)leds;
 		out_buffer[2]  = (byte)power;
 		writeRegisters(num, 3, true );
 
@@ -428,7 +433,7 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 			}
 		}
 		if( nDevices == 0 ){
-			sendln2android("EI2C");
+			send_error(input);
 			defaultResult = false;
 		}
 /*
@@ -450,6 +455,12 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 		sendln2android("R" + input );
 	}
 }
+
+void send_error( String input){
+	send2android("E" );	
+	sendln2android( input );
+}
+
 byte read_can_fill(){
 	out_buffer[0]  = METHOD_CAN_FILL;
 	byte error = writeRegisters(I2C_ADR_CARRET, 1, true );
@@ -505,7 +516,6 @@ void paserDeriver( byte driver, String input ){   // odczytaj komende silnika
 			//DEBUGLN("-setMaxSpeed: " + String(maxspeed) );
 		}
 	}
-	 
 	if( driver == DRIVER_X){
 		if(maxspeed > 0){
 			stepperX.setMaxSpeed(maxspeed);
@@ -640,10 +650,7 @@ void read_prog_settings( String input, byte ns, byte cut ){
 		reprogramm_address  = (byte) target;
 		byte error =checkAddress(reprogramm_address);
 		if (error != 0){
-			send2android("E"); 
-			//send2android(input); 
-			send2android(String(reprogramm_address));
-			send2androidEnd();
+			send_error(input);
 			return;
 		}
 		DEBUG(String( (int)reprogramm_index));
@@ -821,19 +828,30 @@ byte readRegisters(byte deviceAddress, byte length){
 }
  
 // wysyla dowolnÄ… ilosc liczb na kanal
+#define DEBUG_SEND	false
+
 byte writeRegisters(int deviceAddress, byte length, boolean wait) {
-	byte c = 0;
 	Wire.beginTransmission(deviceAddress); // start transmission to device
-	//    Wire.write(out_buffer, length);         // send value to write
-	if(!prog_mode){
-		DEBUG("-Sending to " + String(deviceAddress) + ": ");
-	}
-	
-	while( c < length ){
-		Wire.write(out_buffer[c]);         // send value to write
-		printHex(out_buffer[c]);
-		c++;
-	}
+
+	#if DEBUG_SEND
+		if(!prog_mode){
+			DEBUG("-Sending to " + String(deviceAddress) + ": ");
+		}
+		byte c = 0;
+		while( c < length ){
+			Wire.write(out_buffer[c]);         // send value to write
+			if(!prog_mode){
+				printHex(out_buffer[c]);
+			}
+			c++;
+		}
+		//if(!prog_mode){
+		//	DEBUGLN("-end writeRegisters");
+		//}
+    #else
+		Wire.write(out_buffer, length);         // send value to write
+    #endif
+
 	byte error = Wire.endTransmission();     // end transmission
 	if( error && !prog_mode ){
 		DEBUGLN("-! writeRegisters error: " + String(error) +"/"+ String(deviceAddress));
@@ -846,19 +864,8 @@ byte writeRegisters(int deviceAddress, byte length, boolean wait) {
 	if(wait){
 		delay(20);
 	}
-	if(!prog_mode){
-		DEBUGLN("-end writeRegisters");
-	}
+
 	return 0;
-}
-void send2debuger( String ns, String logstr ){
-	if(!prog_mode){
-		DEBUG("-");
-		DEBUG(ns);
-		DEBUG(": [");
-		DEBUG(logstr);
-		DEBUGLN("]");
-	}
 }
 void send2androidEnd(){      // wyslij string do androida
 	Serial.println();
@@ -983,6 +990,8 @@ void start_pmode() {
 		reset_device_num( reprogramm_index, LOW);
 		reset_device_num( reprogramm_index, HIGH);
 		reset_device_num( reprogramm_index, LOW);
+	}else{
+		Serial.print("!!!");
 	}
 	pinMode(SCK, OUTPUT);
 	digitalWrite(SCK, LOW);
@@ -992,7 +1001,6 @@ void start_pmode() {
 	}else if(reprogramm_index){
 		reset_device_num( reprogramm_index, LOW);
 	}
-	
 	delay(50);
 	pinMode(MISO, INPUT);
 	pinMode(MOSI, OUTPUT);
