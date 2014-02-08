@@ -123,9 +123,9 @@
 		#define PIN_PROGRAMMER_LED_ACTIVE	6		// PWM dip ??		shows the programmer is running
 		#define PIN_PROGRAMMER_LED_STATE    9		// PWM dip ??		In communication with the slave
 
-		#define PIN_PROGRAMMER_RESET_UPANEL_FRONT 7		// dip ??
+		#define PIN_PROGRAMMER_RESET_UPANEL_FRONT 8		// dip ??
 		#define PIN_PROGRAMMER_RESET_UPANEL_BACK 10		// dip ??
-		#define PIN_PROGRAMMER_RESET_CARRET 8		// dip ??
+		#define PIN_PROGRAMMER_RESET_CARRET 7		// dip ??
 		#define PIN_PROGRAMMER_RESET_MASTER 15		// dip ??
 
 		#define PROGRAMMER_METHOD_PIN	true
@@ -244,23 +244,32 @@
 
 	// set as INPUT do allow programming over ISP
 	#define PIN_UPANEL_SCK SCK				// dip pin 17
-	#define PIN_UPANEL_MISO MISO				// dip pin 18
-	#define PIN_UPANEL_MOSI MOSI				// dip pin 19
+	#define PIN_UPANEL_MISO MISO			// dip pin 18
+	#define PIN_UPANEL_MOSI MOSI			// dip pin 19
 
 	#define PIN_UPANEL_LEFT_RESET 14		// dip pin 23
-	#define PIN_UPANEL_POKE 3				// dip pin 5
+	#define PIN_UPANEL_POKE 16
 
 	#define PIN_UPANEL_SDA SDA
 	#define PIN_UPANEL_SCL SCL
 
-	#define PIN_PANEL_LED0_NUM	4		// dip pin 6,		Q 2
-	#define PIN_PANEL_LED1_NUM	5		// dip pin 11,		Q 9
-	#define PIN_PANEL_LED2_NUM	6		// dip pin 12,		Q 10
-	#define PIN_PANEL_LED3_NUM	7		// dip pin 13,		Q 11
-	#define PIN_PANEL_LED4_NUM	8		// dip pin 14,		Q 12
-	#define PIN_PANEL_LED5_NUM	9		// dip pin 15,		Q 13
-	#define PIN_PANEL_LED6_NUM	16		// dip pin 25 A2,	Q 25
-	#define PIN_PANEL_LED7_NUM	17		// dip pin 26 A3,	Q 26
+	#define PIN_PANEL_LED0_NUM	6
+	#define PIN_PANEL_LED1_NUM	7
+	#define PIN_PANEL_LED2_NUM	8
+	#define PIN_PANEL_LED3_NUM	9
+	#define PIN_PANEL_LED4_NUM	3
+	#define PIN_PANEL_LED5_NUM	4
+	#define PIN_PANEL_LED6_NUM	5
+	#define PIN_PANEL_LED7_NUM	17
+
+	#define PIN_PANEL_LED0_ON_WHEN	HIGH
+	#define PIN_PANEL_LED1_ON_WHEN	HIGH
+	#define PIN_PANEL_LED2_ON_WHEN	HIGH
+	#define PIN_PANEL_LED3_ON_WHEN	HIGH
+	#define PIN_PANEL_LED4_ON_WHEN	HIGH
+	#define PIN_PANEL_LED5_ON_WHEN	HIGH
+	#define PIN_PANEL_LED6_ON_WHEN	HIGH
+	#define PIN_PANEL_LED7_ON_WHEN	HIGH
 
 	#define PIN_PANEL_LED0_MASK	digital_pin_to_bit_mask_PGM+PIN_PANEL_LED0_NUM
 	#define PIN_PANEL_LED1_MASK	digital_pin_to_bit_mask_PGM+PIN_PANEL_LED1_NUM
@@ -302,10 +311,12 @@
 #define DEBUGINIT(sth) (Serial.begin(SERIAL0_BOUND))
 #define DEBUG(sth) (Serial.print(String(sth)))
 #define DEBUGLN(sth) (Serial.println(String(sth)))
+#define DEBUG_ON	true
 #else
 #define DEBUGINIT(sth)
 #define DEBUG(sth)
 #define DEBUGLN(sth)
+#define DEBUG_ON	false
 #endif
 
 // tyle dodaæ aby liczby bajtowe z zakresu 0-50 by³y widoczne w podgl¹dzie magistrali UART.
@@ -619,9 +630,39 @@ Carret:
 X5,40,200
 X55,60,-1250
 
-D:\PROG\arduino-1.0.5\hardware/tools/avr/bin/avrdude -CD:\PROG\arduino-1.0.5\hardware/tools/avr/etc/avrdude.conf -v -v -v -v -D -patmega8 -cstk500v1 -P\\.\COM43 -b19200 -Uflash:w:c:\temp\build7005077114599572471.tmp\atmega8_i2c_slave.cpp.hex:i -Ulock:w:0x3F:m -Uhfuse:w:0xc4:m -Ulfuse:w:0xe4:m
+D:\PROG\arduino-1.0.5\hardware/tools/avr/bin/avrdude -CD:\PROG\arduino-1.0.5\hardware/tools/avr/etc/avrdude.conf -v -v -v -v -D -patmega8 -cstk500v1 -P\\.\COM40 -b19200 -Uflash:w:c:\temp\build7005077114599572471.tmp\atmega8_i2c_slave.cpp.hex:i -Ulock:w:0x3F:m -Uhfuse:w:0xc4:m -Ulfuse:w:0xe4:m
 D:\PROG\arduino-1.0.5\hardware/tools/avr/bin/avrdude -CD:\PROG\arduino-1.0.5\hardware/tools/avr/etc/avrdude.conf -v -v -v -v -D -patmega8 -cstk500v1 -P\\.\COM43 -b19200 -Ulock:w:0x3F:m -Uhfuse:w:0xc4:m -Ulfuse:w:0xe4:m
+D:\PROG\arduino-1.0.5\hardware/tools/avr/bin/avrdude -CD:\PROG\arduino-1.0.5\hardware/tools/avr/etc/avrdude.conf -v -v -v -v -patmega8 -cstk500v1 -P\\.\COM40 -b19200 -Uflash:w:c:\temp\build7005077114599572471.tmp\atmega8_i2c_slave.cpp.hex:i
+
+
+
 D:\PROG\arduino-1.0.5\hardware/tools/avr/bin/avrdude -CD:\PROG\arduino-1.0.5\hardware/tools/avr/etc/avrdude.conf -v -v -v -v -patmega8 -cstk500v1 -P\\.\COM43 -b19200 -Uflash:w:c:\temp\build7005077114599572471.tmp\atmega8_i2c_slave.cpp.hex:i
+
+-------- ATMEGA 8 FUSE OK --------
+D:\PROG\arduino-1.0.5\hardware/tools/avr/bin/avrdude -CD:\PROG\arduino-1.0.5\hardware/tools/avr/etc/avrdude.conf -v -v -v -v -D -patmega8 -cstk500v1 -P\\.\COM40 -b19200 -Ulock:w:0x3F:m -Uhfuse:w:0xc4:m -Ulfuse:w:0xe4:m
+-----------------------------
+
+PROG_NEXT c,19200,1
+PROG_NEXT c
+
+RESET_NEXT c
+RESET_NEXT 0x0c
+
+
+
+
+
+D:\PROG\arduino-1.0.5\hardware/tools/avr/bin/avrdude -CD:\PROG\arduino-1.0.5\hardware/tools/avr/etc/avrdude.conf -v -v -v -v -p m328p -B 1.0 -u -U efuse:w:0xFF:m -U hfuse:w:0xDA:m -U lfuse:w:0xFF:m
+D:\PROG\arduino-1.0.5\hardware/tools/avr/bin/avrdude -CD:\PROG\arduino-1.0.5\hardware/tools/avr/etc/avrdude.conf -v -v -v -v -p m328p -U flash:w:ATmegaBOOT_168_atmega328.hex -U lock:w:0x0f:m
+
+
+
+
+
+pro5v328.bootloader.low_fuses=0xE2
+pro5v328.bootloader.high_fuses=0xDA
+pro5v328.bootloader.extended_fuses=0x05
+
 
 */
 

@@ -48,7 +48,7 @@ byte writeRegisters(int deviceAddress, byte length, boolean wait) {
     return 0;
 }
 */
-
+/*
 void printHex2(volatile uint8_t data){
 	if (data<0x10) {
 		Serial.print("0");
@@ -69,7 +69,7 @@ void printHex8(volatile uint8_t *data, uint8_t length){ // prints 8-bit data in 
 		printHex2(data[i]);
 	}
 }
-
+*/
 void printHex(byte val){
   int temp =  val;
   Serial.println(temp,HEX);
@@ -166,7 +166,7 @@ boolean init_i2c(){
 
 	if(ad1 == ad2 && ad1 == ad3 ){
 		my_address   = ad1;
-	}else{    // znajdz ten co sie nei zgadza i go zadpisz
+	}else{    // znajdz ten co sie nei zgadza i go zapisz
 		if( ad1 == ad2 ){        // ad3 sie nie zgadza
 			eeprom_write_byte((unsigned char *) 0x03, ad1);
 		}else if( ad2 == ad3 ){  // ad1 sie nie zgadza
@@ -183,7 +183,7 @@ boolean init_i2c(){
 		return false;
 	}
 	//Serial.println( "+m" );
-	//my_address = 0;
+//	my_address = 0;
 	if( my_address < I2C_ADR_USTART || my_address > I2C_ADR_UEND || addr_is_used(my_address)){    // zajety - sprawdzaj inne...
 	//	Serial.println("-");
 		my_address = I2C_ADR_USTART;
@@ -202,8 +202,23 @@ boolean init_i2c(){
 
 
 
+/*
+
+LED 0x0c,0xff,0xff
+LED 0x0c,0x00,0x99
 
 
+LED 0x0c,0x00,0x00
+LED 0x0c,0x00,0x44
+LED 0x0c,0x00,0x99
+LED 0x0c,0x00,0x99
+LED 0x0c,0x00,0xff
+LED 0x0c,0x0a,0xF0
+
+LED 0x0c,0x0E,0xFF
+
+
+*/
 
 
 
