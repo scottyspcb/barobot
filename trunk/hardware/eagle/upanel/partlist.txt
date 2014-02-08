@@ -22,11 +22,11 @@ LED1                                  TOPLED-3          P-LCC-4-3  led3         
 LED2                                  LED5MM            LED5MM     led                     1
 LED3                                  TOPLED-3          P-LCC-4-3  led3                    1
 LED7                                  LED5MM            LED5MM     led                     1
-Q1                     BSS84          BSS84             SOT23      transistor-small-signal 1
-Q2                     BSS84          BSS84             SOT23      transistor-small-signal 1
-Q3                     BSS84          BSS84             SOT23      transistor-small-signal 1
-Q4                     BSS84          BSS84             SOT23      transistor-small-signal 1
-Q5                     BSS84          BSS84             SOT23      transistor-small-signal 1
+Q1                     BSS84          BSS84             SOT23      transistor-small-signal 1	http://www.tme.eu/pl/details/bss84/tranzystory-z-kanalem-p-smd/#
+Q2                     BSS84          BSS84             SOT23      transistor-small-signal 1	http://www.tme.eu/pl/details/bss84/tranzystory-z-kanalem-p-smd/#
+Q3                     BSS84          BSS84             SOT23      transistor-small-signal 1	http://www.tme.eu/pl/details/bss84/tranzystory-z-kanalem-p-smd/#
+Q4                     BSS84          BSS84             SOT23      transistor-small-signal 1	http://www.tme.eu/pl/details/bss84/tranzystory-z-kanalem-p-smd/#
+Q5                     BSS84          BSS84             SOT23      transistor-small-signal 1	http://www.tme.eu/pl/details/bss84/tranzystory-z-kanalem-p-smd/#
 R1                     10k            R-EU_R0805        R0805      resistor                1
 R3                                    RES0805-MIN       0805-MIN   barobot                 1
 R4                                    RES0805-MIN       0805-MIN   barobot                 1
@@ -50,4 +50,4 @@ R308W17                               R-EU_R0805        R0805      resistor     
 R309                   10k            R-EU_R0805        R0805      resistor                1
 S2                     DTSM-6         DTSM-6            DTSM-6     switch-tact             1
 SV1                                   ML10E             ML10       con-ml                  1
-U1                     MEGA8-AI       MEGA8-AI          TQFP32-08  atmel                   1
+U1                     MEGA8-AI       MEGA8-AI          TQFP32-08  atmel                   1	http://www.tme.eu/pl/details/atmega8a-au/mikrokontrolery-atmel-avr-smd/atmel/#
