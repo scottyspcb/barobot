@@ -39,6 +39,6 @@ public class RPCPage extends EmptyRoute {
 				return "OK";	
 			}
 		}
-		return "-1";		
+		return "-1";
 	}
 }

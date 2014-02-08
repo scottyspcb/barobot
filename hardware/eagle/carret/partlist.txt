@@ -34,13 +34,13 @@ D209     SK36           DIODE-SMC      SMC        diode            1
 D210     SS20           DIODE-DO214AA  DO214AA    diode            1
 D211     LED GRN        LED            0805_DIODE barobot          1
 D212                    DIODE-SMB      SMB        diode            1
-IC201    LM358D         LM358D         SO08       linear           1
-IC202    TL431          TL431          SO08       0alib            1
-IC203    ULN2003        ULN2003AD      SO16       uln-udn          1
-IC204    OP07           OP07CR         SO08       linear           1
-IC205    OP07           OP07CR         SO08       linear           1
-IC206    ATMEGA328      MEGA8-AI       TQFP32-08  atmel            1
-IC207    LM358D         LM358D         SO08       linear           1
+IC201    LM358D         LM358D         SO08       linear           1	http://www.tme.eu/pl/details/lm358d/wzmacniacze-operacyjne-smd/
+IC202    TL431          TL431          SO08       0alib            1	http://www.tme.eu/pl/details/tl431cdsmd/zrodla-napiecia-odniesienia-uklady/
+IC203    ULN2003        ULN2003AD      SO16       uln-udn          1	http://www.tme.eu/pl/details/uln2003d1013tr/drivery-uklady-scalone/st-microelectronics/
+IC204    OP07           OP07CR         SO08       linear           1	http://www.tme.eu/pl/details/op07cd-smd/wzmacniacze-operacyjne-smd/texas-instruments/op07cd/
+IC205    OP07           OP07CR         SO08       linear           1	http://www.tme.eu/pl/details/op07cd-smd/wzmacniacze-operacyjne-smd/texas-instruments/op07cd/
+IC206    ATMEGA328      MEGA8-AI       TQFP32-08  atmel            1	http://www.tme.eu/pl/details/atmega328p-au/mikrokontrolery-atmel-avr-smd/atmel/
+IC207    LM358D         LM358D         SO08       linear           1	http://www.tme.eu/pl/details/lm358d/wzmacniacze-operacyjne-smd/
 IC208    MC34063AD      MC34063AD      SOIC8      mc34063          1
 J201     22-27-2051-05  22-27-2051-05  6410-05    con-molex        1
 J202                    AK300/4        AK300/4    con-ptr500       1
@@ -57,8 +57,8 @@ PAD202                  3,81/1,1       3,81/1,1   wirepad          1
 PAD203                  3,81/1,1       3,81/1,1   wirepad          1
 PAD204                  3,81/1,1       3,81/1,1   wirepad          1
 Q201     16 MHz         CRYSTALHC49UP  HC49UP     crystal          1
-Q202     16 MHz         CRYSTALHC49U-V HC49U-V    crystal          1
-Q203     TIP42C         TIP42C         TO220AV    transistor-power 1
+Q202     16 MHz         CRYSTALHC49U-V HC49U-V    crystal          1	http://www.tme.eu/pl/details/16.00m-hc49-s/rezonatory-kwarcowe-tht/yic/#
+Q203     TIP42C         TIP42C         TO220AV    transistor-power 1	v
 R201     82R            RES0805        0805       barobot          1
 R202     3k 1%          RES0805        0805       barobot          1
 R203     3k 1%          RES0805        0805       barobot          1
@@ -83,7 +83,7 @@ R221     470R           RES0805        0805       barobot          1
 R222     470R           RES0805        0805       barobot          1
 R223     10k            RES0805        0805       barobot          1
 R224     82R            RES0805        0805       barobot          1
-R225     0R047 1%       R-EU_R1206     R1206      resistor         1
+R225     0R047 1%       R-EU_R1206     R1206      resistor         1	v
 R226     0R047 1%       R-EU_R1206     R1206      resistor         1
 R227     100k 1%        RES0805        0805       barobot          1
 R228     470R           RES0805        0805       barobot          1
