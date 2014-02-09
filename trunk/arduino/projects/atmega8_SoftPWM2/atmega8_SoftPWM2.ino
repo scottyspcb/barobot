@@ -116,9 +116,9 @@ void PWMSetFadeTime(uint8_t pin, uint8_t up, uint8_t down){
 void setup(){
 //  Serial.begin(38400);
   // pootwieraj porty:
-  DDRC |= _BV(PC2) | _BV(PC3);
+  DDRC |= _BV(PC3);
   DDRB |= _BV(PB0) | _BV(PB1);
-  DDRD |= _BV(PD4) | _BV(PD5) | _BV(PD6) | _BV(PD7);
+  DDRD |= _BV(PD3) | _BV(PD4) | _BV(PD5) | _BV(PD6) | _BV(PD7);
 /*
   uint8_t i=LEDS;
   while(i--){
@@ -196,7 +196,7 @@ void loop() {
 
  // Serial.println(timertime);
   
-  delay(5200);
+  delay(2200);
 
   PWMSet(0, 1);
   PWMSet(1, 1);
@@ -207,7 +207,7 @@ void loop() {
   PWMSet(6, 0);
   PWMSet(7, 0);
 
-  delay(5200);
+  delay(2200);
 }
 
 
