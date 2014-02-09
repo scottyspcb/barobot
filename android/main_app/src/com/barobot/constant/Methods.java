@@ -51,7 +51,7 @@ public class Methods {
 	public static String METHOD_PROGN =	"PROGN";
 	public static String METHOD_RESET_BUS =	"RB";
 	public static String METHOD_RESET	=	"RESET";
-	public static String METHOD_RWIRE =	"RWIRE";
+	public static String METHOD_RWIRE =	"RB";
 	public static String METHOD_SEND2SLAVE =	"S";
 	public static String METHOD_TRIGGER =	"T";
 	public static String METHOD_WAIT_READY =	"WR";

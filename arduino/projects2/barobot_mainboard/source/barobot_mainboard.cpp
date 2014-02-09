@@ -47,8 +47,8 @@ void setup(){
 	pinMode(PIN_PROGRAMMER_LED_ERROR, OUTPUT);
 	pinMode(PIN_PROGRAMMER_LED_STATE, OUTPUT);
 	
-	pinMode(SDA, INPUT_PULLUP );
-	pinMode(SCL, INPUT_PULLUP );
+	pinMode(SDA, INPUT );
+	pinMode(SCL, INPUT );
 
 	pinMode(PIN_MAINBOARD_SCK, INPUT );
 	pinMode(PIN_MAINBOARD_MISO, INPUT );
@@ -274,7 +274,7 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 			}
 		}
 
-	}else if( input.startsWith("PROG_NEXT ")) {    // PROGN 0x0C,0,0   - programuj urzadzenie podlaczone resetem do 0x0C
+	}else if( input.startsWith("PROG_NEXT ")) {    // PROG_NEXT 0x0C,0,0   - programuj urzadzenie podlaczone resetem do 0x0C
 		read_prog_settings(input, 2, 10 );
 		defaultResult = false;
 		return;
@@ -288,7 +288,7 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 		char charBuf[10];
 		digits.toCharArray(charBuf,10);
 		unsigned int num    = 0;
-		sscanf(charBuf,"%x", &num );
+		sscanf(charBuf,"%i", &num );
 		delay(200);
 		boolean ret = reset_device_num(num, LOW);
 		if(ret){
@@ -298,12 +298,12 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 			defaultResult = false;
 			send_error(input);
 		}
-	}else if( input.startsWith("RESET_NEXT ")) {
+	}else if( input.startsWith("RESET_NEXT ")) {			// RESET 12
 		String digits     = input.substring( 11 );
 		char charBuf[6];
 		digits.toCharArray(charBuf,6);
 		unsigned int num    = 0;
-		sscanf(charBuf,"%x", &num );
+		sscanf(charBuf,"%i", &num );
 		byte error =checkAddress(num);
 		if (error == 0){
 			delay(200);
@@ -394,7 +394,7 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 		unsigned int num  	= 0;
 		unsigned int led  	= 0;
 		unsigned int power  = 0;
-		sscanf(charBuf,"%x,%x,%i", &num, &led, &power );
+		sscanf(charBuf,"%i,%x,%i", &num, &led, &power );
 		DEBUG("-num: ");
 		DEBUG(String(num));
 		DEBUG(" led: ");
@@ -407,15 +407,15 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 		out_buffer[2]  = (byte)power;
 		writeRegisters(num, 3, true );
 
-	}else if( input.startsWith("LEDS ")) {    // LED C,0xff,0		// zgaœ wszystkie na upanelu 0x0C
+	}else if( input.startsWith("LEDS ")) {    // LED 12,0xff,0		// zgaœ wszystkie na upanelu 0x0C
 		String digits     = input.substring( 5 );
 		char charBuf[16];
 		digits.toCharArray(charBuf,16);
 		unsigned int num    = 0;
 		unsigned int leds 	= 0;
 		unsigned int power  = 0;
-		sscanf(charBuf,"%x,%x,%i", &num, &leds, &power );
-		out_buffer[0]  = METHOD_SETLED;
+		sscanf(charBuf,"%i,%x,%i", &num, &leds, &power );
+		out_buffer[0]  = METHOD_SETLEDS;
 		out_buffer[1]  = (byte)leds;
 		out_buffer[2]  = (byte)power;
 		writeRegisters(num, 3, true );
@@ -638,7 +638,7 @@ void read_prog_settings( String input, byte ns, byte cut ){
 	long unsigned int serial_baud_num  = 0;
 	char charBuf[10];
 	digits.toCharArray(charBuf, 10);
-	sscanf(charBuf,"%x,%lx,%i", &target, &serial_baud_num, &slow_sck );
+	sscanf(charBuf,"%i,%li,%i", &target, &serial_baud_num, &slow_sck );
 
 	DEBUG("-ISP ADDR: ");
 	if(ns == 1){            // PROG - podany numer 1,2 lub 3
@@ -746,7 +746,7 @@ unsigned int test_slave(byte slave_address){
 		}
 	}
 	printHex( slave_address, false );
-	DEBUGLN("- Test_slave (" + String(cc) + "): " + String(errors));
+	DEBUGLN("- Test ERRORS: " + String(errors) + " / " + String(cc));
 	return errors;
 }
  
