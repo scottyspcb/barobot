@@ -62,7 +62,6 @@ public class input_parser {
 				aa.oscyloskop( value );
 			}
 			
-			
 		}else if( command == Constant.COMMENT ){		// nic- to komentarz	
 		}else if( fromArduino.startsWith( "" + Methods.METHOD_I2C_SLAVEMSG) ){		// msg od slave
 			int[] parts = decodeBytes( fromArduino );
