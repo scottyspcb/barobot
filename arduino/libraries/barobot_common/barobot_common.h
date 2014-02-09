@@ -646,6 +646,18 @@ D:\PROG\arduino-1.0.5\hardware/tools/avr/bin/avrdude -CD:\PROG\arduino-1.0.5\har
 D:\PROG\arduino-1.0.5\hardware/tools/avr/bin/avrdude -CD:\PROG\arduino-1.0.5\hardware/tools/avr/etc/avrdude.conf -v -v -v -v -D -patmega8 -cstk500v1 -P\\.\COM40 -b19200 -Ulock:w:0x3F:m -Uhfuse:w:0xD9:m -Ulfuse:w:0xE1:m
 -----------------------------
 
+-------- ATMEGA 8 FUSE +BROWN --------
+D:\PROG\arduino-1.0.5\hardware/tools/avr/bin/avrdude -CD:\PROG\arduino-1.0.5\hardware/tools/avr/etc/avrdude.conf -v -v -v -v -D -patmega8 -cstk500v1 -P\\.\COM40 -b19200 -Ulock:w:0x3F:m -Uhfuse:w:0xc4:m -Ulfuse:w:0xa4:m
+-----------------------------
+
+-------- ATMEGA 8 UPANEL --------
+D:\PROG\arduino-1.0.5\hardware/tools/avr/bin/avrdude -CD:\PROG\arduino-1.0.5\hardware/tools/avr/etc/avrdude.conf -v -v -v -v -D -patmega8 -cstk500v1 -P\\.\COM39 -b19200 -Uflash:w:c:\temp\build3775116777284934834.tmp\barobot_upanel.cpp.hex:i 
+-----------------------------
+
+
+
+
+
 
 PROG_NEXT 0x0d
 
