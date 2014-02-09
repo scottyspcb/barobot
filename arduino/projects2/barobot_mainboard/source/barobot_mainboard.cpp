@@ -132,6 +132,7 @@ void scann_i2c(){
     stepperX.run();
     Wire.beginTransmission(addr2);
     error = Wire.endTransmission();
+    delay(20);
     if (error == 0){
       DEBUG("-dev @");
       printHex(addr2, false );
@@ -427,6 +428,7 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 			Wire.beginTransmission(addr2);
 			error = Wire.endTransmission();
 			if (error == 0){
+				delay(20);
 				uint16_t readed = i2c_getVersion(addr2);
 				i2c_device_found( addr2,(readed & 0xff),(readed>>8) );
 				nDevices++;
@@ -589,6 +591,7 @@ void i2c_test_slaves(){
 		Wire.beginTransmission(aaa);
 		error = Wire.endTransmission();
 		if (error == 0){
+			delay(20);
 			uint16_t readed = i2c_getVersion(aaa);
 			if( (readed>>8) > 0 && ((readed & 0xff) >0)){
 			}else{
