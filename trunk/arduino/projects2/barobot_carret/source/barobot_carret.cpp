@@ -4,12 +4,13 @@
 #define HAS_LEDS true
 #include <WSWire.h>
 #include <i2c_helpers.h>
-#include <barobot_common.h>
+//#include <barobot_common.h>
+#include "constants.h"
 #include <avr/eeprom.h>
 #include <Servo.h>
 #include <FlexiTimer2.h>
 #include <avr/io.h>
-#include <stdint.h>       // needed for uint8_t
+//#include <stdint.h>       // needed for uint8_t
 #include <avr/interrupt.h>
 
 #define ANALOGS  6
@@ -81,7 +82,7 @@ void setup(){
 	pinMode(PIN_CARRET_HALL_X, INPUT);
 	pinMode(PIN_CARRET_HALL_Y, INPUT);
 	pinMode(PIN_CARRET_WEIGHT, INPUT);
-	
+
 	pinMode(PIN_CARRET_CURRENTY, INPUT);
 	pinMode(PIN_CARRET_CURRENTZ, INPUT);
 

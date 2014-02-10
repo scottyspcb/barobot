@@ -20,7 +20,7 @@ public class AJS {
 	}
 
 	public static void clearInstance() {
-		inst = nulln;
+		inst = null;
 	}
 
 	public AJS(Context c, WebView w) {

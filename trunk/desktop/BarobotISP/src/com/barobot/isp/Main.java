@@ -35,7 +35,7 @@ public class Main {
 		Hardware hw = new Hardware("COM39");
 
 		IspSettings.safeMode = false;
-		IspSettings.fuseBits = true;
+	//	IspSettings.fuseBits = true;
 		IspSettings.verbose = 4;
 		IspSettings.force = false;
 
