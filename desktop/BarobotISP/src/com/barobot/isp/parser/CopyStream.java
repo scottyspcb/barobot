@@ -1,22 +1,22 @@
-package com.barobot.isp;
+package com.barobot.isp.parser;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-public class CopyThread extends Thread {
+public class CopyStream extends Thread {
 	  InputStream theInput;
 	  OutputStream theOutput;
 
-	  CopyThread(InputStream in) {
+	  CopyStream(InputStream in) {
 	    this(in, System.out);
 	  }
 
-	  CopyThread(OutputStream out) {
+	  CopyStream(OutputStream out) {
 	    this(System.in, out);
 	  }
 
-	  CopyThread(InputStream in, OutputStream out) {
+	  public CopyStream(InputStream in, OutputStream out) {
 	    theInput = in;
 	    theOutput = out;
 	  }

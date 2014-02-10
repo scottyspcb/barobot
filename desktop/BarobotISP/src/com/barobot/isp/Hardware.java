@@ -9,6 +9,8 @@ import java.util.Enumeration;
 
 import org.smslib.helper.CommPortIdentifier;
 import org.smslib.helper.SerialPort;
+import org.smslib.helper.SerialPortEvent;
+import org.smslib.helper.SerialPortEventListener;
 
 import com.barobot.isp.parser.LineReader;
 import com.barobot.isp.parser.SerialInputBuffer;
@@ -19,9 +21,7 @@ public class Hardware implements LineReader {
 		SerialInputBuffer.lr =this;
 	}
 	boolean connected		= false;
-	static int fullspeed	=  115200;
-	int programmspeed		=  19200;
-	String comPort			= "COM1";
+	public String comPort	= "COM1";
 
 	private OutputStream outputStream;
 	private InputStream inputStream; 
@@ -35,13 +35,15 @@ public class Hardware implements LineReader {
 		}
 		System.out.println("\t>>>Sending: " + string);
 		string = string + "\n";
+
 		try {
 			outputStream.write(string.getBytes());
+			/*
 			try {
 				 Thread.sleep(100);
 			} catch (InterruptedException e1) {
 				e1.printStackTrace();
-			}
+			}*/
 		} catch (IOException e) {
 		  e.printStackTrace();
 		}
@@ -54,7 +56,11 @@ public class Hardware implements LineReader {
 			this.openPort(this.comPort);
 			this.setFullSpeed(serialPort);
 			this.inputStream = serialPort.getInputStream();
-	//		serialPort.addEventListener(this);
+			/*
+			serialPort.addEventListener( new SerialPortEventListener(){
+				public void serialEvent(SerialPortEvent arg0) {
+					System.out.println("serialEvent:" + arg0.getEventType());	
+				}} );&*/
 			this.startReader( inputStream );
 			connected = true;
 		} catch (Exception e) {
@@ -81,11 +87,11 @@ public class Hardware implements LineReader {
 		}
 	  }
 	  protected void startReader( InputStream inputStream ) {	
-			is = new BufferedReader(new InputStreamReader(inputStream));
-			il = new InputListener(is, this );
+			il = new InputListener(inputStream, this );
 			il.start();
 		}
 	protected void close() {
+		SerialInputBuffer.clear();
 		System.out.println("serial close");
 		if (il != null) {
 			il.close();
@@ -127,21 +133,21 @@ public class Hardware implements LineReader {
 			if( serialPort == null){
 				return;
 			}
-			serialPort.setSerialPortParams(fullspeed,
+			serialPort.setSerialPortParams(IspSettings.fullspeed,
 				  SerialPort.DATABITS_8,
 				  SerialPort.STOPBITS_1,
 				  SerialPort.PARITY_NONE);
-			 System.out.println("Set speed " + fullspeed );
+			 System.out.println("Set speed " + IspSettings.fullspeed );
 		}
 		void setProgrammerSpeed( SerialPort serialPort){
 			if( serialPort == null){
 				return;
 			}
-			serialPort.setSerialPortParams(programmspeed,
+			serialPort.setSerialPortParams(IspSettings.programmspeed,
 				  SerialPort.DATABITS_8,
 				  SerialPort.STOPBITS_1,
 				  SerialPort.PARITY_NONE);
-			 System.out.println("Set speed " + programmspeed );
+			 System.out.println("Set speed " + IspSettings.programmspeed );
 		}
 
 		public void read_line(String in) {
@@ -150,7 +156,10 @@ public class Hardware implements LineReader {
 				 int[] parts = Parser.decodeBytes( in );
 				 // Znaleziono urzadzenie
 				 int address = parts[1];
-				 Wizard.last_found_device	= address;
+				 IspSettings.last_found_device	= address;
+			 }else if( in.startsWith( "RL") ){			// RLEDS
+				 synchronized (Main.main) { Main.main.notify(); }
+				 
 			 }
 		}
 }

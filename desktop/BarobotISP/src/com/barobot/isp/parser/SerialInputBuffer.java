@@ -1,6 +1,5 @@
 package com.barobot.isp.parser;
 
-
 public class SerialInputBuffer {
 	public static char separator = '\n';
 	private static String buffer = "";
@@ -9,10 +8,8 @@ public class SerialInputBuffer {
 	public static void readInput( final String in ){
 		synchronized (SerialInputBuffer.class) {
 			SerialInputBuffer.buffer = SerialInputBuffer.buffer + in;
-			
 		//	System.out.println("readInput: " + in);
-			
-			
+
 			int end = SerialInputBuffer.buffer.indexOf(separator);
 			if( end!=-1){
 				while( end != -1 ){		// podziel to na kawalki
@@ -31,5 +28,10 @@ public class SerialInputBuffer {
 				}
 			}
         }
+	}
+	public static void clear() {
+		synchronized (SerialInputBuffer.class) {
+			buffer = "";
+		}
 	}
 }
