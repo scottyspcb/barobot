@@ -1,8 +1,17 @@
 #define IS_UPANEL true
 #define HAS_LEDS true
-#include <barobot_common.h>
+#include <constants.h>
 #include <WSWire.h>
+#include <barobot_common.h>
 #include <i2c_helpers.h>
+
+/*
+void aaa(){
+  if(CPU_F>0){
+    int u = 0;
+  }
+}
+*/
 
 volatile bool use_local = false;
 volatile byte in_buffer1[5];
@@ -49,9 +58,9 @@ void setup(){
   DW(PIN_PANEL_LED6_NUM, HIGH );
   DW(PIN_PANEL_LED1_NUM, LOW );
   DW(PIN_PANEL_LED2_NUM, LOW ); 
-  delay(1000); 
+  delay2(1000); 
 
-  byte tries = 0;
+//  byte tries = 0;
   if(!init_i2c()){
     {
       check_i2c_valid();
@@ -62,19 +71,13 @@ void setup(){
   }
   Wire.onReceive(receiveEvent);
   Wire.onRequest(requestEvent);
-  delay(200);
   send_here_i_am();  // send I'am ready
-
   for (uint8_t i = 0; i < COUNT_UPANEL_ONBOARD_LED; ++i){
     uint8_t pin = _pwm_channels[i].pin;
     _pwm_channels[i].outport = portOutputRegister(digitalPinToPort(pin));
     _pwm_channels[i].pinmask = digitalPinToBitMask(pin);
 //  pinMode(pin, OUTPUT);
-    #if UPANEL_COMMON_ANODE
-     *_pwm_channels[i].outport &= ~(_pwm_channels[i].pinmask);          // turn off the channel (set GND)
-    #else
-     *_pwm_channels[i].outport |= _pwm_channels[i].pinmask;              // turn off the channel (set VCC)
-    #endif
+    disable_pin(i);
   }
 
     OCR2 = 100;
@@ -111,6 +114,13 @@ void setup(){
 */
   sei();    // enable interrupts
 }
+void disable_pin( byte pin ){
+   *_pwm_channels[pin].outport |= _pwm_channels[pin].pinmask;              // turn off the channel (set VCC)
+}
+void enable_pin( byte pin ){
+   *_pwm_channels[pin].outport &= ~(_pwm_channels[pin].pinmask);          // turn off the channel (set GND)
+}
+
 void loop() {
   unsigned long mil = millis();
     // debug:
@@ -145,13 +155,12 @@ void loop() {
   read_i2c();
 }
 
-void read_i2c(){
+static void read_i2c(){
   if( use_local&& in_buffer1[0] ){          // komendy bez wymaganej odpowiedzi do mastera obsluguj tutaj:
     byte command = in_buffer1[0];
     if( command == METHOD_SETPWM ){                // PWM     3 bajty
    //         PWMSet(in_buffer1[1],in_buffer1[2]);
    //           leds[in_buffer1[1]].wypelnienie = in_buffer1[2];
-
     }else if( command ==  METHOD_SETLEDS ){
       byte i = COUNT_UPANEL_ONBOARD_LED;
       while(i--){
@@ -195,18 +204,20 @@ void read_i2c(){
     use_local = false;
   }
 }
+
 /*
 void show_error(byte value){
    while( (value--) > 0 ){
         DW(LED_BOTTOM_RED, HIGH );
         DW(LED_TOP_RED, HIGH );
-        delay(500);
+        delay2(500);
         DW(LED_BOTTOM_RED, LOW );
         DW(LED_TOP_RED, LOW );
-        delay(700);
+        delay2(700);
    }
 }
 */
+
 void reset_next(boolean value){
   if( value == HIGH){    // run device
     DW(PIN_UPANEL_LEFT_RESET, HIGH);     // set pin to input
@@ -243,12 +254,7 @@ void requestEvent(){
         byte res = in_buffer1[1] ^ in_buffer1[2];
         Wire.write(res);
    //     DW(PIN_PANEL_LED4_NUM, HIGH );
-   //     delay(500);
-        /*
-        if( res & 0x01 ){    // ustawiony najmlodzzy bit
-//          diddd = !diddd;
-//          DW(PIN_PANEL_LED4_NUM, diddd);
-        }*/
+   //     delay2(500);
     }
 }
 
@@ -257,7 +263,7 @@ void send_pin_value( byte pin, byte value ){
   send(ttt,5);
  // Serial.println("out "+ String( my_address ) +" / "+ String( pin ) +"/"+ String(value));
 }
-void send_here_i_am(){
+static void send_here_i_am(){
   byte ttt[4] = {METHOD_HERE_I_AM,my_address,UPANEL_DEVICE_TYPE,UPANEL_VERSION};
   send(ttt,4);
 }
@@ -284,9 +290,9 @@ void check_i2c_valid(){
   byte ee = Wire.endTransmission();     // czy linia jest drozna
   if( ee == 6 ){    // niedrozna - resetuj i2c
     DW(PIN_PANEL_LED4_NUM, HIGH );
-    delay(500);
+    delay2(500);
     DW(PIN_PANEL_LED4_NUM, LOW );
-    delay(700);
+    delay2(700);
 //    reset_next(LOW);
 //    reset_next(HIGH);
   }
@@ -338,21 +344,13 @@ ISR(TIMER2_COMP_vect){
         }
         led->current_pwm = newvalue;
         if (newvalue > 0){                  // set the pin high (if not 0) // don't set if current_pwm == 0
-          #if UPANEL_COMMON_ANODE
-           *(led->outport) |= led->pinmask;            // turn on the channel (set VCC)
-         #else
-           *(led->outport) &= ~(led->pinmask);          // turn on the channel (set GND) 
-         #endif
+          enable_pin(i);
         }
       }
     }else{
       while(i--){
        if( _pwm_channels[i].current_pwm == _isr_count) {                          // if it's a valid pin // if we have hit the width
-            #if UPANEL_COMMON_ANODE
-             *_pwm_channels[i].outport &= ~(_pwm_channels[i].pinmask);          // turn off the channel (set GND)
-           #else
-             *_pwm_channels[i].outport |= _pwm_channels[i].pinmask;              // turn off the channel (set VCC)
-           #endif
+           disable_pin(i);
         }
       }
     }
@@ -410,7 +408,6 @@ void PWMSetFadeTime(uint8_t pin, uint8_t up, uint8_t down){
 /*
 void swiec(){
 //  checktime  =0;
-
   PWMSet(0, 255);    //zapal
   PWMSet(1, 255);
   PWMSet(2, 255);
@@ -422,7 +419,7 @@ void swiec(){
 
  // Serial.println(timertime);
   
-  delay(5200);
+  delay2(5200);
 
   PWMSet(0, 1);
   PWMSet(1, 1);
@@ -433,11 +430,9 @@ void swiec(){
   PWMSet(6, 0);
   PWMSet(7, 0);
 
-  delay(5200);
+  delay2(5200);
 }
-*/
 
-/*
 TCNT2 = 0;
  _isr_count = 0xff;
 void PWMEnd(int8_t pin){
