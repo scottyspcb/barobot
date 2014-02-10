@@ -12,18 +12,19 @@ import java.util.Properties;
 import org.smslib.helper.CommPortIdentifier;
 
 public class Main {
-	
-	String config_filename	= "isp_settings.txt";
-	Hardware hw;
-	
+	public static Thread mt;
+	public String config_filename	= "isp_settings.txt";
+	public Hardware hw;
+	public static Main main = null;
+
 	public static void main(String[] args) {
-		Main m = new Main();
-		m.start();
+		mt = Thread.currentThread();
+		main = new Main();
+		main.start();
 		/*
 		 for (String s: args) {
 	            System.out.println(s);
 	     }*/
-		m = null;
 		// System.getProperty("path.separator"); 
 	}
 
@@ -32,8 +33,27 @@ public class Main {
 		//String[] comlist = list();
 		Wizard w = new Wizard();
 		Hardware hw = new Hardware("COM39");
-	//	w.preparePCB( hw );
-		w.findOrder( hw );
+
+		IspSettings.safeMode = false;
+		IspSettings.fuseBits = true;
+		IspSettings.verbose = 4;
+		IspSettings.force = false;
+
+	//	w.test( hw );
+
+	//	w.findOrder( hw );
+	//	Wizard.wait(1000);	
+		
+		w.prepareCarret( hw );
+		/*
+		w.clearUpanel( hw );
+		w.preparePCB( hw );
+		int repeat = 1;
+		while(repeat-->0){
+			w.mrygaj( hw );
+			w.mrygaj_grb( hw );
+			w.mrygaj_po_butelkach( hw );
+		}*/
 		System.out.println("koniec");
 	}
 	public Properties p;

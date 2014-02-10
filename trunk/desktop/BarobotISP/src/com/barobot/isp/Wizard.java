@@ -1,61 +1,33 @@
 package com.barobot.isp;
 
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
 
+import com.barobot.i2c.Carret;
+import com.barobot.i2c.I2C_Device;
+import com.barobot.i2c.Upanel;
+import com.barobot.isp.parser.CopyStream;
+
 public class Wizard {
 
-	static String avrDudePath	= "D:\\PROG\\arduino-1.0.5\\hardware\\tools\\avr\\bin\\avrdude";
-	static String configPath	= "D:\\PROG\\arduino-1.0.5\\hardware\\tools\\avr\\etc\\avrdude.conf";
-
-	static String carretHexPath	= "C:\\workspace\\Barobot\\arduino\\projects2\\barobot_carret\\build\\barobot_carret.hex";
-	static String mbHexPath		= "C:\\workspace\\Barobot\\arduino\\projects2\\barobot_mainboard\\build\\barobot_carret.hex";
-	static String upHexPath		= "C:\\Temp\\build4134267430172719603.tmp\\barobot_upanel.cpp.hex";
-	public static int last_found_device = 0;
-
-
-	public String uploadHex(Hardware hw, String cpu, String filePath ) {
-		if( cpu.equals("atmega8")){	// todo
-		
-		}else if( cpu.equals("m328p")){	// todo
-			String command = avrDudePath + " -C"+ configPath +" -v -v -D " +
-			"-pm328p -cstk500v1 -P\\\\.\\"+hw.comPort+" -b" + hw.programmspeed + " " +
-			"";
-			return command;
-		}
-		return "";
-	}
-
-	public String setFuseBits(Hardware hw, String cpu) {
-		//, int lfuse, int hfuse
-		if( cpu.equals("atmega8")){
-			
-		}else if( cpu.equals("m328p")){
-			String command = avrDudePath + " -C"+ configPath +" -v -v -D " +
-			"-pm328p -cstk500v1 -P\\\\.\\"+hw.comPort+" -b" + hw.programmspeed + " " +
-			"";
-			return command;
-		}
-		return "";
-	}
-
 	public void findOrder(Hardware hw) {
-		Upanel.list.add( new Upanel( 3, 0 ) );
 		String command = "";
 		String TimeStamp = new java.util.Date().toString();
 
 		hw.connect();
 		int current_index	= 0;
-		Upanel current_dev	= Upanel.list.get(current_index);
-		int device_found  = current_dev.resetAndReadI2c( hw );
-		if( device_found > 0 ){		// pierwszy ma adres i2c
+		Upanel current_dev	= new Upanel( 3, 0 );
+		int device_found	= current_dev.resetAndReadI2c( hw );
+		if( device_found > 0 ){		// pierwszy ma adres com.barobot.i2c
+			Upanel.list.add( current_dev );	
 			System.out.println("Upanel " + current_index + " ma adres " + device_found);
-			current_dev.hasAddress(device_found);
+			current_dev.setAddress(device_found);
 			find_next_to( hw, current_dev, current_index );
 		}else{
-			System.out.println("B£¥D Upanel " + (current_index) +" o adresie "+ current_dev.myaddress + " jest ostatni");
+			System.out.println("B£¥D Upanel " + (current_index) +" o adresie "+ current_dev.getAddress() + " jest ostatni");
 		}
 		/*
 		hw.send("RB");
@@ -73,78 +45,81 @@ public class Wizard {
 			Upanel u = null;
 			if( index == -1 ){
 				u = new Upanel( 0, device_found, current_dev );
-				u.hesOrder( next_index+1);
+				u.setOrder( next_index+1);
 				Upanel.list.add( u );
 			}else{
 				u = Upanel.list.get( index );
-				u.hesOrder( next_index+1);
+				u.setOrder( next_index+1);
 				u.canResetMe(current_dev);
 			}
 			System.out.println("Upanel " + (next_index+1) + " ma adres " + device_found);
 			find_next_to( hw, u, next_index+1 );
 		}else{
-			System.out.println("Upanel " + (next_index) +" o adresie "+ current_dev.myaddress + " jest ostatni");
+			System.out.println("Upanel " + (next_index) +" o adresie "+ current_dev.getAddress() + " jest ostatni");
 		}
 	}
 
 	public void preparePCB(Hardware hw) {
-		String upanel_code = upHexPath;
+		Upanel.list.clear();
 		Upanel.list.add( new Upanel( 3, 0 ) );	
 		String command = "";
 
 		hw.connect();
 		int current_index	= 0;
 		Upanel current_dev	= Upanel.list.get(current_index);
-		current_dev.isp(hw);
-		wait(1000);
+		String upanel_code = current_dev.getHexFile();
 
-		command = current_dev.setFuseBits(hw);
-		run(command, hw);
-		System.out.println("po run");
-		wait(2000);
+		if( IspSettings.fuseBits){
+			current_dev.isp(hw);
+			command = current_dev.setFuseBits(hw);
+			run(command, hw);
+			wait(1000);
+		}
 
 		current_dev.isp(hw);
 		command = current_dev.uploadCode(hw, upanel_code );
 		run(command, hw);
 
-		wait(5000);
+		wait(1000);
 
 		int device_found  = current_dev.resetAndReadI2c( hw );
-		if( device_found > 0 ){		// pierwszy ma adres i2c
-			System.out.println("Upanel " + current_index + " ma adres " + device_found);
-			current_dev.hasAddress(device_found);
+		if( device_found > 0 ){		// pierwszy ma adres com.barobot.i2c
+			System.out.println("+Upanel " + current_index + " ma adres " + device_found);
+			current_dev.setAddress(device_found);
 			prog_next_to( hw, current_dev, current_index+1, upanel_code );
 		}else{
-			System.out.println("B£¥D Upanel " + (current_index) +" o adresie "+ current_dev.myaddress + " jest ostatni");
+			System.out.println("B£¥D Upanel " + (current_index) +" o adresie "+ current_dev.getAddress() + " jest ostatni");
 		}
-	//	hw.send("LEDS 13,0xfe,0");
-	//	hw.send("LEDS 12,0xfe,0");
 		hw.close();
 	}
 
-	private void prog_next_to(Hardware hw, Upanel current_dev, int next_index, String upanel_code) {
+	private void prog_next_to(Hardware hw, Upanel current_dev, int next_index, String upanel_code ) {
+		String command = "";
 		Upanel next_device	= new Upanel( 0, 0, current_dev );
-		current_dev.isp_next(hw);
-		wait(1000);
-
-		String command = next_device.setFuseBits(hw);
-		run(command, hw);
-		wait(2000);
+		
+		if( IspSettings.fuseBits){
+			current_dev.isp_next(hw);
+			command = next_device.setFuseBits(hw);
+			run(command, hw);
+			wait(1000);
+		}
 
 		current_dev.isp_next(hw);
 		command = next_device.uploadCode(hw, upanel_code );
 		run(command, hw);
+		wait(1000);
 
-		wait(5000);
 		int device_found  = current_dev.resetNextAndReadI2c( hw );
-		if( device_found > 0 ){		// pierwszy ma adres i2c
-			next_device.hasAddress(device_found);
-			next_device.hesOrder( next_index+1);
+		wait(1000);
+		if( device_found > 0 ){		// pierwszy ma adres com.barobot.i2c
+			next_device.setAddress(device_found);
+			next_device.setOrder( next_index+1);
 			next_device.canResetMe(current_dev);
-			System.out.println("Upanel " + next_index + " ma adres " + device_found);
-			prog_next_to( hw, current_dev, next_index+1, upanel_code );
+			Upanel.list.add( next_device );
+			System.out.println("++Upanel " + next_index + " ma adres " + device_found);
+			prog_next_to( hw, next_device, next_index+1, upanel_code );
 		}else{
-			System.out.println("B£¥D Upanel " + (next_index) +" o adresie "+ current_dev.myaddress + " jest ostatni");
+			System.out.println("++Upanel " + (next_index-1) +" o adresie "+ current_dev.getAddress() + " jest ostatni");
 		}
 	}
 
@@ -155,6 +130,282 @@ public class Wizard {
 			e1.printStackTrace();
 		}
 	}
+	
+
+	public void clearUpanel(Hardware hw) {
+		while(Upanel.list.size() > 0 ){
+			boolean found = false;
+			for (Upanel u : Upanel.list){
+				if(u.have_reset_to == null ){
+					 System.out.println("Rozpoczynam id " + u.getAddress() );
+					 Upanel.list.remove(u);
+					 u.can_reset_me_dev.have_reset_to = null;
+					 found = true;
+					 break;
+				}
+			}
+			if(!found){
+				System.out.println("Brak wêz³ów koñcowych" );
+				break;
+			}
+		}
+		System.out.println("Lista pusta" );
+	}
+
+	public void mrygaj(Hardware hw) {
+		if(Upanel.list.size() == 0 ){
+			return;
+		}
+
+		hw.connect();
+		int repeat = 3;
+
+		System.out.println("Start" );
+		
+		int time = 5;
+		while (repeat-- > 0){
+			for (I2C_Device u : Upanel.list){
+				u.setLed( hw, "0x0e", 255 );	// zgas
+				u.setLed( hw, "0xf1", 0 );		// zgas
+				u.setLed( hw, "0x01", 255 );
+			}
+			wait(time);	
+			
+			for (I2C_Device u : Upanel.list){
+				u.setLed( hw, "0x0e", 255 );	// zgas
+				u.setLed( hw, "0xf1", 0 );		// zgas
+
+				u.setLed( hw, "0x02", 0 );
+			}
+			wait(time);	
+			
+	
+			for (I2C_Device u : Upanel.list){
+				u.setLed( hw, "0x0e", 255 );	// zgas
+				u.setLed( hw, "0xf1", 0 );		// zgas
+
+				u.setLed( hw, "0x04", 0 );
+			}
+			wait(time);		
+			
+			
+			for (I2C_Device u : Upanel.list){
+				u.setLed( hw, "0x0e", 255 );	// zgas
+				u.setLed( hw, "0xf1", 0 );		// zgas
+
+				u.setLed( hw, "0x08", 0 );
+			}
+			wait(time);	
+			
+			
+			
+			for (I2C_Device u : Upanel.list){
+				u.setLed( hw, "0x0e", 255 );	// zgas
+				u.setLed( hw, "0xf1", 0 );		// zgas
+
+				u.setLed( hw, "0x10", 255 );
+			}
+			wait(time);	
+			
+
+			for (I2C_Device u : Upanel.list){
+				u.setLed( hw, "0x0e", 255 );	// zgas
+				u.setLed( hw, "0xf1", 0 );		// zgas
+
+				u.setLed( hw, "0x20", 255 );
+			}
+			wait(time);	
+			
+			for (I2C_Device u : Upanel.list){
+				u.setLed( hw, "0x0e", 255 );	// zgas
+				u.setLed( hw, "0xf1", 0 );		// zgas
+
+				u.setLed( hw, "0x40", 255 );
+			}
+			wait(time);
+			
+			
+			for (I2C_Device u : Upanel.list){
+				u.setLed( hw, "0x0e", 255 );	// zgas
+				u.setLed( hw, "0xf1", 0 );		// zgas
+
+				u.setLed( hw, "0x80", 255 );
+			}
+			wait(time);
+		}
+		hw.close();
+	}
+
+	public void mrygaj_po_butelkach(Hardware hw) {
+		if(Upanel.list.size() == 0 ){
+			return;
+		}
+		hw.connect();
+
+		int time = 1400;
+		for (I2C_Device u2 : Upanel.list){
+			u2.setLed( hw, "0x0e", 255 );	// zgas
+			u2.setLed( hw, "0xf1", 0 );		// zgas
+		}
+
+		for (I2C_Device u : Upanel.list){
+
+			wait(time);
+
+				u.setLed( hw, "0x0e", 0 );
+				u.setLed( hw, "0xf1", 255 );
+
+			wait(time);
+			
+		
+				u.setLed( hw, "0x0e", 255 );	// zgas
+				u.setLed( hw, "0xf1", 0 );		// zgas
+				u.setLed( hw, "0x01", 255 );
+			
+			wait(time);	
+			
+	
+				u.setLed( hw, "0x0e", 255 );	// zgas
+				u.setLed( hw, "0xf1", 0 );		// zgas
+				u.setLed( hw, "0x02", 0 );
+			
+			wait(time);	
+			
+
+				u.setLed( hw, "0x0e", 255 );	// zgas
+				u.setLed( hw, "0xf1", 0 );		// zgas
+				u.setLed( hw, "0x04", 0 );
+			
+			wait(time);		
+			
+			
+			
+				u.setLed( hw, "0x0e", 255 );	// zgas
+				u.setLed( hw, "0xf1", 0 );		// zgas
+				u.setLed( hw, "0x08", 0 );
+			
+			wait(time);	
+			
+
+				u.setLed( hw, "0x0e", 255 );	// zgas
+				u.setLed( hw, "0xf1", 0 );		// zgas
+				u.setLed( hw, "0x10", 255 );
+	
+			wait(time);	
+			
+
+			
+				u.setLed( hw, "0x0e", 255 );	// zgas
+				u.setLed( hw, "0xf1", 0 );		// zgas
+				u.setLed( hw, "0x20", 255 );
+			
+			wait(time);	
+			
+			
+				u.setLed( hw, "0x0e", 255 );	// zgas
+				u.setLed( hw, "0xf1", 0 );		// zgas
+				u.setLed( hw, "0x40", 255 );
+			
+			wait(time);
+			
+
+				u.setLed( hw, "0x0e", 255 );	// zgas
+				u.setLed( hw, "0xf1", 0 );		// zgas
+				u.setLed( hw, "0x80", 255 );
+			
+			wait(time);		
+
+			u.setLed( hw, "0x0e", 255 );	// zgas
+			u.setLed( hw, "0xf1", 0 );		// zgas
+
+		}
+		hw.close();
+	}
+
+	public void mrygaj_grb(Hardware hw) {
+		if(Upanel.list.size() == 0 ){
+			return;
+		}
+		hw.connect();
+		int repeat = 6;
+
+		int time = 500;
+		while (repeat-- > 0){
+
+			for (I2C_Device u : Upanel.list){
+				u.setLed( hw, "0x0e", 255 );	// zgas
+				u.setLed( hw, "0xf1", 0 );		// zgas
+			}
+			wait(time);	
+			
+			for (I2C_Device u : Upanel.list){
+				u.setLed( hw, "0x0e", 255 );	// zgas
+				u.setLed( hw, "0xf1", 0 );		// zgas
+				
+			//	u.setLed( hw, "0x02", 0 );		// bottom green
+			//	u.setLed( hw, "0x08", 0 );		// bottom blue
+			//	u.setLed( hw, "0x04", 0 );		// bottom red 
+
+				u.setLed( hw, "0x0E", 0 );	// top RGB
+
+			//	u.setLed( hw, "0x10", 255 );	// top green
+			//	u.setLed( hw, "0x20", 255 );	// top blue
+			//	u.setLed( hw, "0x40", 255 );	// top red
+			}
+			wait(time);	
+			
+			
+			for (I2C_Device u : Upanel.list){
+				u.setLed( hw, "0x0e", 255 );	// zgas
+				u.setLed( hw, "0xf1", 0 );		// zgas
+
+				u.setLed( hw, "0x7E", 255 );	// boottm RGB
+
+			}
+			wait(time);			
+		}
+		wait(2000);
+		hw.close();
+	}
+
+	public void test(Hardware hw) {
+		hw.connect();
+		hw.send("I2C");
+		wait(1000);
+		hw.send("TEST");
+		wait(2000);
+		hw.close();
+	}
+
+	public void prepareCarret(Hardware hw) {
+		String command = "";
+
+		hw.connect();
+		Carret current_dev	= new Carret();
+		String carret_code = current_dev.getHexFile();
+
+		if( IspSettings.fuseBits){
+			current_dev.isp(hw);
+			command = current_dev.setFuseBits(hw);
+			run(command, hw);
+			wait(1000);
+		}
+
+		current_dev.isp(hw);
+		command = current_dev.uploadCode(hw, carret_code );
+		run(command, hw);
+
+		wait(1000);
+
+		int device_found  = current_dev.resetAndReadI2c( hw );
+		if( device_found > 0 ){		// pierwszy ma adres com.barobot.i2c
+			System.out.println("+Carret  ma adres " + device_found);
+		}else{
+			System.out.println("B£¥D Carret o nie zg³asza siê");
+		}
+		hw.close();
+	}
+
 	void run(String command, Hardware closeSerial ) {
 		String line;
         Process p;
@@ -168,10 +419,10 @@ public class Wizard {
 			BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));  
 			
 			System.out.println("\t>>>RESULT ");
-			CopyThread ct = new CopyThread(p.getInputStream(), System.out);
+			CopyStream ct = new CopyStream(p.getInputStream(), System.out);
 			ct.start();
 			
-			CopyThread ce = new CopyThread(p.getErrorStream(), System.out);
+			CopyStream ce = new CopyStream(p.getErrorStream(), System.out);
 			ce.start();	
 			
 			try {
@@ -180,7 +431,7 @@ public class Wizard {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			
+
 		//	while ((line = input.readLine()) != null) {
 	     //       System.out.println(line);
 	     //   }
@@ -201,27 +452,23 @@ public class Wizard {
 }
 
 /**
- * 	
-		
+ * 			
     //  run( "tasklist.exe" ); 
 	//	resetDevice( hw, 0, 2 );	// carret
 	//	command = "ping.exe localhost";
 	//	run( command );	
 
-command = avrDudePath + " -C"+ configPath +" -v -v -v -v -D "+
+command = avrDudePath + " -C"+ configPath +" -v -v -v -v "+
 		"-patmega8 -cstk500v1 -P\\\\.\\"+hw.comPort+" -b" + hw.programmspeed + " ";
 /
  */
 
 /*
-	uf0.prepareToSetFuseBits( hw );
-	command = uf0.setFuseBits(hw);
-	run( command, hw );
 	hw.send("RB");
 	wait(1000);
 	hw.send("I2C");
 	wait(3000);
 	hw.send("TEST");
 	wait(5000);
-		uf0.reset( hw );
+	uf0.reset( hw );
 */	
