@@ -1,6 +1,5 @@
 <mm_project serial_port="COM3" board="!FULL ATmega8-noxtal" programmer="Arduino as ISP" includePaths="" libPaths="" libs="" default="no" useCodeAutomation="yes" linkPrintfVersion="1" serialPortSpeed="" >
   <files>
-    <file name="barobot_upanel_main.h" open="no" />
     <file name="barobot_upanel.cpp" open="no" />
   </files>
   <extras>

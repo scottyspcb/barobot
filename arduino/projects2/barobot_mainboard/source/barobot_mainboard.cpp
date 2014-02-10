@@ -1,4 +1,5 @@
 #include "barobot_mainboard_main.h" 
+#include "constants.h"
 #define IS_MAINBOARD true
 #define IS_PROGRAMMER true
 #include <WSWire.h>
@@ -387,7 +388,7 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 		defaultResult = false;
 //	}else if( input.equals(METHOD_RESET_BUS) ){    // reset bus
 //		get_order();
-
+/*
 	}else if( input.startsWith("LED ")) {    // LED C,0,255		// LED nr 0 na upanelu o adresie 0x0C w³¹cz na 100%
 		String digits     = input.substring( 4 );
 		char charBuf[16];
@@ -407,11 +408,11 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 		out_buffer[1]  = (byte)led;
 		out_buffer[2]  = (byte)power;
 		writeRegisters(num, 3, true );
-
-	}else if( input.startsWith("LEDS ")) {    // LED 12,0xff,0		// zgaœ wszystkie na upanelu 0x0C
-		String digits     = input.substring( 5 );
-		char charBuf[16];
-		digits.toCharArray(charBuf,16);
+*/
+	}else if( input.startsWith("L")) {    // L 12,0xff,0		// zgaœ wszystkie na upanelu 0x0C
+		String digits     = input.substring( 2 );
+		char charBuf[12];
+		digits.toCharArray(charBuf,12);
 		unsigned int num    = 0;
 		unsigned int leds 	= 0;
 		unsigned int power  = 0;
@@ -419,7 +420,7 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 		out_buffer[0]  = METHOD_SETLEDS;
 		out_buffer[1]  = (byte)leds;
 		out_buffer[2]  = (byte)power;
-		writeRegisters(num, 3, true );
+		writeRegisters(num, 3, false );
 
 	}else if( input.equals("I2C") ){
 		byte nDevices=0;
@@ -658,7 +659,6 @@ void read_prog_settings( String input, byte ns, byte cut ){
 		}
 		DEBUG(String( (int)reprogramm_index));
 	}
-
 	DEBUG(" BAUD: ");
 	DEBUG(String( serial_baud_num));
 	DEBUG(" SSCK: " );
@@ -971,14 +971,16 @@ void programmer_mode( boolean active, byte serial_baud_num, boolean slow_sck ) {
 		pinMode(MISO, INPUT);
 		pinMode(MOSI, INPUT);
 		pinMode(SCK, INPUT);
-		if(reprogramm_address){
-			reset_device_next_to( reprogramm_address, HIGH);		
+		prog_mode = false;
+		Serial.flush();
+		Serial.begin(MAINBOARD_SERIAL0_BOUND);
+		delay(200);
+		if(reprogramm_address){		// unlock device
+			reset_device_next_to( reprogramm_address, HIGH);
 		}else if(reprogramm_index){
 			reset_device_num( reprogramm_index, HIGH);
 		}
-		prog_mode = false;
-		delay(2000);
-		Serial.begin(MAINBOARD_SERIAL0_BOUND);
+		
 	}
 }
 void start_pmode() {
