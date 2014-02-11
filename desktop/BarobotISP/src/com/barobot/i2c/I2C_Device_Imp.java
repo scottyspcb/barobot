@@ -76,4 +76,26 @@ public abstract class I2C_Device_Imp implements I2C_Device{
 		}
 		return command;
 	}
+
+	public String erase(Hardware hw, String filePath) {
+		String command = IspSettings.avrDudePath + " -C"+ IspSettings.configPath +" "+ IspSettings.verbose()+ " " +
+		"-p"+ this.cpuname +" -cstk500v1 -P\\\\.\\"+hw.comPort+" -b" + IspSettings.programmspeed + " " +
+		"-e";
+		if(IspSettings.safeMode){
+			command = command + " -n";
+		}
+		return command;
+	}
+	
+	
+
+	public String uploadCode(Hardware hw, String filePath) {
+		String command = IspSettings.avrDudePath + " -C"+ IspSettings.configPath +" "+ IspSettings.verbose()+ " " +
+		"-p"+ this.cpuname +" -cstk500v1 -P\\\\.\\"+hw.comPort+" -b" + IspSettings.programmspeed + " " +
+		"-Uflash:w:"+filePath+":i";
+		if(IspSettings.safeMode){
+			command = command + " -n";
+		}
+		return command;
+	}
 }

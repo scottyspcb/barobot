@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.barobot.i2c.Carret;
 import com.barobot.i2c.I2C_Device;
+import com.barobot.i2c.MainBoard;
 import com.barobot.i2c.Upanel;
 import com.barobot.isp.parser.CopyStream;
 
@@ -457,6 +458,25 @@ public class Wizard {
 		run(command, hw);
 		hw.close();
 	}
+
+	public void prepareMB(Hardware hw) {
+		String command = "";
+		hw.connect();
+		I2C_Device current_dev	= new MainBoard();
+		if( IspSettings.setFuseBits){
+			current_dev.isp(hw);
+			command = current_dev.setFuseBits(hw);
+			run(command, hw);
+			wait(1000);
+		}
+		if(IspSettings.setHex){	
+			current_dev.isp(hw);
+			command = current_dev.setFuseBits(hw);
+			run(command, hw);
+			wait(1000);
+		}
+		hw.close();
+	}
 }
 
 /**
@@ -469,9 +489,7 @@ public class Wizard {
 command = avrDudePath + " -C"+ configPath +" -v -v -v -v "+
 		"-patmega8 -cstk500v1 -P\\\\.\\"+hw.comPort+" -b" + hw.programmspeed + " ";
 /
- */
 
-/*
 	hw.send("RB");
 	wait(1000);
 	hw.send("I2C");
