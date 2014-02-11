@@ -47,6 +47,7 @@ public class Main {
 		
 	//	w.checkCarret( hw );
 		
+		w.prepareMB( hw );
 		w.prepareCarret( hw );
 		/*
 		w.clearUpanel( hw );

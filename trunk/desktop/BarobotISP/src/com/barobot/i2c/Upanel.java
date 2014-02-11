@@ -47,33 +47,8 @@ public class Upanel extends I2C_Device_Imp {
 	 */
 	public String setFuseBits(  Hardware hw){
 		String command = IspSettings.avrDudePath + " -C"+ IspSettings.configPath +" "+ IspSettings.verbose()+ " " +
-		"-patmega8 -cstk500v1 -P\\\\.\\"+hw.comPort+" -b" + IspSettings.programmspeed + " " +
+		"-p"+ this.cpuname +" -cstk500v1 -P\\\\.\\"+hw.comPort+" -b" + IspSettings.programmspeed + " " +
 		"-Ulock:w:0x3F:m -Uhfuse:w:0xC7:m -Ulfuse:w:0xA4:m";
-		if(IspSettings.safeMode){
-			command = command + " -n";
-		}
-		return command;
-	}
-	/* (non-Javadoc)
-	 * @see com.barobot.isp.I2C_Device#uploadCode(com.barobot.isp.Hardware, java.lang.String)
-	 */
-	public String uploadCode(Hardware hw, String filePath){
-		String command = IspSettings.avrDudePath + " -C"+ IspSettings.configPath +" "+ IspSettings.verbose()+ " " +
-		"-patmega8 -cstk500v1 -P\\\\.\\"+hw.comPort+" -b" + IspSettings.programmspeed + " " +
-		"-Uflash:w:"+filePath+":i";
-		if(IspSettings.safeMode){
-			command = command + " -n";
-		}
-		return command;
-	}
-
-	/* (non-Javadoc)
-	 * @see com.barobot.isp.I2C_Device#erase(com.barobot.isp.Hardware, java.lang.String)
-	 */
-	public String erase(Hardware hw, String filePath){
-		String command = IspSettings.avrDudePath + " -C"+ IspSettings.configPath +" "+ IspSettings.verbose()+ " " +
-		"-patmega8 -cstk500v1 -P\\\\.\\"+hw.comPort+" -b" + IspSettings.programmspeed + " " +
-		"-e";
 		if(IspSettings.safeMode){
 			command = command + " -n";
 		}
@@ -82,7 +57,7 @@ public class Upanel extends I2C_Device_Imp {
 
 	public void reset(Hardware hw) {
 		if(getIndex() > 0 ){
-			hw.send("RESET "+ getIndex());
+			hw.send("RESET "+ this.myindex );
 		}else if( can_reset_me_dev == null ){
 			hw.send("RESET_NEXT "+ can_reset_me_dev.getAddress() );
 		}
@@ -94,7 +69,7 @@ public class Upanel extends I2C_Device_Imp {
 	}
 	public void isp(Hardware hw) {		// mnie
 		if(getIndex() > 0 ){
-			hw.send("PROG "+ getIndex() );
+			hw.send("PROG "+ this.myindex );
 		}else if( can_reset_me_dev == null ){
 			hw.send("PROG_NEXT "+ can_reset_me_dev.getAddress() );
 		}

@@ -15,7 +15,7 @@ public class Carret extends I2C_Device_Imp {
 
 	public String setFuseBits(Hardware hw) {
 		String command = IspSettings.avrDudePath + " -C"+ IspSettings.configPath +" "+ IspSettings.verbose()+ " " +
-		"-p m328p -cstk500v1 -P\\\\.\\"+hw.comPort+" -b" + IspSettings.programmspeed + " " +
+		"-p"+ this.cpuname +" -cstk500v1 -P\\\\.\\"+hw.comPort+" -b" + IspSettings.programmspeed + " " +
 		" -U lfuse:w:0xFF:m -U hfuse:w:0xDB:m -U efuse:w:0x05:m";
 		if(IspSettings.safeMode){
 			command = command + " -n";
@@ -23,32 +23,12 @@ public class Carret extends I2C_Device_Imp {
 		return command;
 	}
 
-	public String uploadCode(Hardware hw, String filePath) {
-		String command = IspSettings.avrDudePath + " -C"+ IspSettings.configPath +" "+ IspSettings.verbose()+ " " +
-		"-pm328p -cstk500v1 -P\\\\.\\"+hw.comPort+" -b" + IspSettings.programmspeed + " " +
-		"-Uflash:w:"+filePath+":i";
-		if(IspSettings.safeMode){
-			command = command + " -n";
-		}
-		return command;
-	}
-
-	public String erase(Hardware hw, String filePath) {
-		String command = IspSettings.avrDudePath + " -C"+ IspSettings.configPath +" "+ IspSettings.verbose()+ " " +
-		"-pm328p -cstk500v1 -P\\\\.\\"+hw.comPort+" -b" + IspSettings.programmspeed + " " +
-		"-e";
-		if(IspSettings.safeMode){
-			command = command + " -n";
-		}
-		return command;
-	}
-
 	public void reset(Hardware hw) {
-		hw.send("RESET "+ getIndex());
+		hw.send("RESET "+ this.myindex);
 	}
 
 	public void isp(Hardware hw) {
-		hw.send("PROG "+ getIndex() );
+		hw.send("PROG "+ this.myindex );
 	}
 
 	public String getHexFile() {
