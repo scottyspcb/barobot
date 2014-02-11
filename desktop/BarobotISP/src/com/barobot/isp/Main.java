@@ -35,14 +35,17 @@ public class Main {
 		Hardware hw = new Hardware("COM39");
 
 		IspSettings.safeMode = false;
-	//	IspSettings.fuseBits = true;
+		IspSettings.setFuseBits = false;
 		IspSettings.verbose = 4;
+		IspSettings.setHex	= true;
 		IspSettings.force = false;
 
 	//	w.test( hw );
 
 	//	w.findOrder( hw );
 	//	Wizard.wait(1000);	
+		
+	//	w.checkCarret( hw );
 		
 		w.prepareCarret( hw );
 		/*

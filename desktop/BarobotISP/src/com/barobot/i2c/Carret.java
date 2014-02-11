@@ -5,10 +5,10 @@ import com.barobot.isp.IspSettings;
 
 public class Carret extends I2C_Device_Imp {
 
-	private int default_address	 = 0x0A;
-	private int default_index	 = 2;
-
+	private int default_address	= 0x0A;
+	private int default_index	= 2;
 	public Carret(){
+		this.cpuname		= "m328p";
 		this.myaddress		= default_address;
 		this.myindex		= default_index;
 	}
@@ -25,7 +25,7 @@ public class Carret extends I2C_Device_Imp {
 
 	public String uploadCode(Hardware hw, String filePath) {
 		String command = IspSettings.avrDudePath + " -C"+ IspSettings.configPath +" "+ IspSettings.verbose()+ " " +
-		"-p m328p -cstk500v1 -P\\\\.\\"+hw.comPort+" -b" + IspSettings.programmspeed + " " +
+		"-pm328p -cstk500v1 -P\\\\.\\"+hw.comPort+" -b" + IspSettings.programmspeed + " " +
 		"-Uflash:w:"+filePath+":i";
 		if(IspSettings.safeMode){
 			command = command + " -n";
@@ -35,7 +35,7 @@ public class Carret extends I2C_Device_Imp {
 
 	public String erase(Hardware hw, String filePath) {
 		String command = IspSettings.avrDudePath + " -C"+ IspSettings.configPath +" "+ IspSettings.verbose()+ " " +
-		"-p m328p -cstk500v1 -P\\\\.\\"+hw.comPort+" -b" + IspSettings.programmspeed + " " +
+		"-pm328p -cstk500v1 -P\\\\.\\"+hw.comPort+" -b" + IspSettings.programmspeed + " " +
 		"-e";
 		if(IspSettings.safeMode){
 			command = command + " -n";

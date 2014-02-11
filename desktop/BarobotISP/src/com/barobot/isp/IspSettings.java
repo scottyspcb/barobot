@@ -2,10 +2,10 @@ package com.barobot.isp;
 
 public class IspSettings {
 	public static boolean safeMode		= true;
-	public static boolean fuseBits		= false;
+	public static boolean setFuseBits	= false;
+	public static boolean setHex		= false;
 	public static boolean force			= false;
 
-	public static int speed				= 9200;
 	public static int verbose			= 3;
 	public static String avrDudePath	= "D:\\PROG\\arduino-1.0.5\\hardware\\tools\\avr\\bin\\avrdude";
 	public static String configPath		= "D:\\PROG\\arduino-1.0.5\\hardware\\tools\\avr\\etc\\avrdude.conf";

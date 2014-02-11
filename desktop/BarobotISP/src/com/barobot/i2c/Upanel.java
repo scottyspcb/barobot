@@ -20,12 +20,16 @@ public class Upanel extends I2C_Device_Imp {
 		}
 		return -1;
 	}
-
+	public Upanel(){
+		this.cpuname		= "atmega8";
+	}
 	public Upanel(int index, int address ){
+		this.cpuname		= "atmega8";
 		this.setAddress(address);
 		this.setIndex(index);
 	}
 	public Upanel(int index, int address, Upanel parent ){
+		this.cpuname		= "atmega8";
 		this.setAddress(address);
 		this.setIndex(index);
 		this.can_reset_me_dev	= parent;
