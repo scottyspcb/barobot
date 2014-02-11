@@ -129,7 +129,9 @@ void delay2( word ww ){
     //word ww = my_address;
 	++ww;	// jesli wstawilem zero to masakra
     while( --ww ){
-      uint16_t wait = 50000;		//65536max
+		// F_CPU =  8000000L or 16000000L
+		uint16_t wait = 50000;		//65536max
+		//uint16_t wait = F_CPU/8000;		//65536max, 1000
       while(--wait ){
         asm("nop");
       }
@@ -204,17 +206,44 @@ boolean init_i2c(){
 
 /*
 
-LEDS 0x0c,0xff,255
-LEDS 0x0c,0x00,100
+LEDS 12,0xff,255
+LEDS 12,0x00,100
 
-LEDS 0x0c,0x00,0
-LEDS 0x0c,0x00,4
-LEDS 0x0c,0x00,99
-LEDS 0x0c,0x00,99
-LEDS 0x0c,0x00,255
-LEDS 0x0c,0x0a,100
+LEDS 12,0x00,0
+LEDS 12,0x00,4
+LEDS 12,0x00,99
+LEDS 12,0x00,99
+LEDS 12,0x00,255
+LEDS 12,0x0a,100
 
-LEDS 0x0c,0x0E,255
+LEDS 12,0x0E,255
+
+LEDS 12,0x0e,255
+
+
+0xf1
+11110001
+
+nr	maxgdy	color
+01	255		bottom white 
+02	0		bottom green
+04	0		bottom red
+08	0		bottom blue
+
+10	255		top green
+20	255		top blue
+40	255		top red
+80	255		top white
+
+
+
+
+
+
+
+LEDS 12,0xf1,0
+
+
 
 
 Bity:
