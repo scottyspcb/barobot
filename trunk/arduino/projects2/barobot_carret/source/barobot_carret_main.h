@@ -25,6 +25,8 @@
 //		simply delete the lines below, with "&MM_DECLA" text
 //===================================================================
 //---- DO NOT DELETE THIS LINE -- @MM_DECLA_BEG@---------------------
+void enable_pin( byte pin );
+void disable_pin( byte pin );
 void init_analogs();
 byte localToGlobal( byte ind );
 byte globalToLocal( byte ind );

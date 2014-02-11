@@ -1,6 +1,5 @@
 package com.barobot.isp;
 
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -14,7 +13,6 @@ import com.barobot.isp.parser.CopyStream;
 public class Wizard {
 
 	public void findOrder(Hardware hw) {
-		String command = "";
 		String TimeStamp = new java.util.Date().toString();
 
 		hw.connect();
@@ -69,18 +67,18 @@ public class Wizard {
 		Upanel current_dev	= Upanel.list.get(current_index);
 		String upanel_code = current_dev.getHexFile();
 
-		if( IspSettings.fuseBits){
+		if( IspSettings.setFuseBits){
 			current_dev.isp(hw);
 			command = current_dev.setFuseBits(hw);
 			run(command, hw);
 			wait(1000);
 		}
-
-		current_dev.isp(hw);
-		command = current_dev.uploadCode(hw, upanel_code );
-		run(command, hw);
-
-		wait(1000);
+		if(IspSettings.setHex){
+			current_dev.isp(hw);
+			command = current_dev.uploadCode(hw, upanel_code );
+			run(command, hw);
+			wait(1000);
+		}
 
 		int device_found  = current_dev.resetAndReadI2c( hw );
 		if( device_found > 0 ){		// pierwszy ma adres com.barobot.i2c
@@ -97,17 +95,18 @@ public class Wizard {
 		String command = "";
 		Upanel next_device	= new Upanel( 0, 0, current_dev );
 		
-		if( IspSettings.fuseBits){
+		if( IspSettings.setFuseBits){
 			current_dev.isp_next(hw);
 			command = next_device.setFuseBits(hw);
 			run(command, hw);
 			wait(1000);
 		}
-
-		current_dev.isp_next(hw);
-		command = next_device.uploadCode(hw, upanel_code );
-		run(command, hw);
-		wait(1000);
+		if(IspSettings.setHex){
+			current_dev.isp_next(hw);
+			command = next_device.uploadCode(hw, upanel_code );
+			run(command, hw);
+			wait(1000);
+		}
 
 		int device_found  = current_dev.resetNextAndReadI2c( hw );
 		wait(1000);
@@ -384,18 +383,19 @@ public class Wizard {
 		Carret current_dev	= new Carret();
 		String carret_code = current_dev.getHexFile();
 
-		if( IspSettings.fuseBits){
+		if( IspSettings.setFuseBits){
 			current_dev.isp(hw);
 			command = current_dev.setFuseBits(hw);
 			run(command, hw);
 			wait(1000);
 		}
 
-		current_dev.isp(hw);
-		command = current_dev.uploadCode(hw, carret_code );
-		run(command, hw);
-
-		wait(1000);
+		if(IspSettings.setHex){
+			current_dev.isp(hw);
+			command = current_dev.uploadCode(hw, carret_code );
+			run(command, hw);
+			wait(1000);
+		}
 
 		int device_found  = current_dev.resetAndReadI2c( hw );
 		if( device_found > 0 ){		// pierwszy ma adres com.barobot.i2c
@@ -424,14 +424,12 @@ public class Wizard {
 			
 			CopyStream ce = new CopyStream(p.getErrorStream(), System.out);
 			ce.start();	
-			
 			try {
 				p.waitFor();
 				 System.out.println("\t>>>RETURN FROM TASK");
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-
 		//	while ((line = input.readLine()) != null) {
 	     //       System.out.println(line);
 	     //   }
@@ -448,6 +446,16 @@ public class Wizard {
 		if(closeSerial != null ){
 			closeSerial.connect();
 	    }
+	}
+	public void checkCarret(Hardware hw) {
+		String command = "";
+		hw.connect();
+		//I2C_Device current_dev	= new Upanel( 3, 0 );
+		I2C_Device current_dev	= new Carret();
+		current_dev.isp(hw);
+		command = current_dev.checkFuseBits(hw);
+		run(command, hw);
+		hw.close();
 	}
 }
 

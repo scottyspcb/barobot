@@ -1,9 +1,9 @@
 #include "barobot_mainboard_main.h" 
-#include "constants.h"
 #define IS_MAINBOARD true
 #define IS_PROGRAMMER true
 #include <WSWire.h>
 #include <barobot_common.h>
+#include <constants.h>
 #include <i2c_helpers.h>
 #include <AccelStepper.h>
 #include <FlexiTimer2.h>
@@ -409,10 +409,10 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 		out_buffer[2]  = (byte)power;
 		writeRegisters(num, 3, true );
 */
-	}else if( input.startsWith("L")) {    // L 12,0xff,0		// zgaœ wszystkie na upanelu 0x0C
+	}else if( input.startsWith("L ")) {    // L 12,0xff,0		// zgaœ wszystkie na upanelu 0x0C
 		String digits     = input.substring( 2 );
-		char charBuf[12];
-		digits.toCharArray(charBuf,12);
+		char charBuf[14];
+		digits.toCharArray(charBuf,14);
 		unsigned int num    = 0;
 		unsigned int leds 	= 0;
 		unsigned int power  = 0;

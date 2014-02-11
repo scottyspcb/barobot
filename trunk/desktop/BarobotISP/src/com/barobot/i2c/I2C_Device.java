@@ -5,7 +5,8 @@ import com.barobot.isp.Hardware;
 public interface I2C_Device {
 
 	public abstract String setFuseBits(Hardware hw);
-
+	public abstract String checkFuseBits(Hardware hw);
+	
 	public abstract String uploadCode(Hardware hw, String filePath);
 
 	public abstract String erase(Hardware hw, String filePath);

@@ -4,7 +4,7 @@
 #define HAS_LEDS true
 #include <WSWire.h>
 #include <i2c_helpers.h>
-//#include <barobot_common.h>
+#include <barobot_common.h>
 #include "constants.h"
 #include <avr/eeprom.h>
 #include <Servo.h>
@@ -17,7 +17,7 @@
 #define ANALOG_TRIES  4
 
 volatile uint16_t checks = 0;
-volatile int8_t ADCport[ANALOGS] = {2,6,7,5,0,1};
+volatile int8_t ADCport[ANALOGS] = {3,5,6,7,0,2};
 volatile int16_t ADCvalue[ANALOG_TRIES][ANALOGS] = {{0,0,0,0,0,0},{0,0,0,0,0,0},{0,0,0,0,0,0},{0,0,0,0,0,0}};
 volatile uint8_t channel = 0;
 volatile uint8_t row = 0;
@@ -95,7 +95,6 @@ void setup(){
 	Wire.onReceive(receiveEvent);
 	Wire.onRequest(requestEvent);
 	send_here_i_am();  // wyslij ze oto jestem
-	diddd = !diddd;
 	FlexiTimer2::set(40, 1.0/100, timer);
 	FlexiTimer2::start();
 	init_analogs();
@@ -490,11 +489,18 @@ void proceed( volatile byte buffer[5] ){
 		byte ttt[4] = {METHOD_I2C_SLAVEMSG, my_address, METHOD_DRIVER_DISABLE, index };
 		send(ttt,4);
 
-	}else if( buffer[0] == METHOD_SETLED ){
-      byte i = 8;
-      while(i--){
-        _pwm_channels[i].pwmup =   bitRead(buffer[1], i) ? 255 : 0;
-      }
+	}else if( buffer[0] == METHOD_SETLEDS ){
+		byte i = COUNT_CARRET_ONBOARD_LED;
+		while(i--){
+			if( bitRead(buffer[1], i) ){
+				_pwm_channels[i].pwmup = buffer[2];
+				if( buffer[2] > 0 ){
+					enable_pin(i);
+				}else{
+					disable_pin(i);
+				}
+			}
+		}
 
 	}else if( buffer[0] == METHOD_SET_Y_POS ){
 		// on wire: low_byte, high_byte, speed
@@ -748,6 +754,15 @@ ISR(ADC_vect){
   }
   //checks++;
 }
+ 
+
+void disable_pin( byte pin ){
+   *_pwm_channels[pin].outport |= _pwm_channels[pin].pinmask;              // turn off the channel (set VCC)
+}
+void enable_pin( byte pin ){
+   *_pwm_channels[pin].outport &= ~(_pwm_channels[pin].pinmask);          // turn off the channel (set GND)
+}
+
  
 /*
   	if( mil > milis2000 ){    // debug, mrygaj co 1 sek

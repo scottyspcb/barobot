@@ -9,6 +9,7 @@ public abstract class I2C_Device_Imp implements I2C_Device{
 	protected int myaddress = 0;
 	protected int myindex = 0;
 	protected int order = -1;
+	protected String cpuname = "";
 
 	public I2C_Device_Imp() {
 	}
@@ -65,5 +66,14 @@ public abstract class I2C_Device_Imp implements I2C_Device{
 		int ret = IspSettings.last_found_device;
 		IspSettings.last_found_device = 0;
 		return ret;
+	}
+	public String checkFuseBits(Hardware hw) {
+		String command = IspSettings.avrDudePath + " -C"+ IspSettings.configPath +" "+ IspSettings.verbose()+ " " +
+		"-p"+ this.cpuname +" -cstk500v1 -P\\\\.\\"+hw.comPort+" -b" + IspSettings.programmspeed + " " +
+		" -U lock:r:-:h";
+		if(IspSettings.safeMode){
+			command = command + " -n";
+		}
+		return command;
 	}
 }
