@@ -50,15 +50,16 @@ void setup(){
 	
 	pinMode(SDA, INPUT );
 	pinMode(SCL, INPUT );
+	pinMode(SS, OUTPUT );	// needed by SPI do enable ISP
 
 	pinMode(PIN_MAINBOARD_SCK, INPUT );
 	pinMode(PIN_MAINBOARD_MISO, INPUT );
 	pinMode(PIN_MAINBOARD_MOSI, INPUT );
 
+	pinMode(PIN_MAINBOARD_CURRENT_X, INPUT );
+	pinMode(PIN_MAINBOARD_TABLET_PWR, INPUT );	
+
 	digitalWrite(PIN_PROGRAMMER_LED_ACTIVE, LOW);
-	digitalWrite(PIN_PROGRAMMER_LED_ERROR, LOW);
-	digitalWrite(PIN_PROGRAMMER_LED_STATE, LOW);
-	 
 	digitalWrite(PIN_PROGRAMMER_LED_ERROR, LOW);
 	digitalWrite(PIN_PROGRAMMER_LED_STATE, LOW);
 
@@ -73,7 +74,7 @@ AccelStepper stepperX(8, PIN_MAINBOARD_STEPPER_STEP0, PIN_MAINBOARD_STEPPER_STEP
 #else
 AccelStepper stepperX(1, PIN_MAINBOARD_STEPPER_STEP, PIN_MAINBOARD_STEPPER_DIR);      // Step, DIR
 #endif
- 
+
 void setupStepper(){
 	stepperX.disable_on_ready = true;
 	stepperX.setEnablePin(PIN_MAINBOARD_STEPPER_ENABLE);
@@ -319,7 +320,7 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 	}else if( input.equals("RB")) {	// resetuj magistralê i2c
 		reset_wire();
 
-	}else if( input.startsWith("x")) {
+	}else if( command == 'x') {
 		long int pos = stepperX.currentPosition();
 		send2android("Rx"); 
 		send2android(String(pos)); 
@@ -334,23 +335,23 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 		val = val * 100;
 		stepperX.setAcceleration(val);
 		DEBUGLN("-setAcceleration: " + String(val) );
-	}else if( input.startsWith("X")) {    // X10,10,10              // TARGET,MAXSPEED
+	}else if(command == 'X' ) {    // X10,10,10              // TARGET,MAXSPEED
 		String ss 		= input.substring( 1 );
 		paserDeriver(DRIVER_X,ss);
 		defaultResult = false;
-	}else if( input.startsWith("Y")) {    // Y10,10                 // TARGET,ACCELERATION
+	}else if( command == 'Y' ) {    // Y10,10                 // TARGET,ACCELERATION
 		String ss 		= input.substring( 1 );		// 10,10
 		paserDeriver(DRIVER_Y,ss);
 		defaultResult = false;
-	}else if( input.startsWith("Z")) {    // Z10,10                 // TARGET,ACCELERATION
+	}else if(command == 'Z') {    // Z10,10                 // TARGET,ACCELERATION
 		String ss 		= input.substring( 1 );		// 10,10
 		paserDeriver(DRIVER_Z,ss);
 		defaultResult = false;
-	}else if( input.equals("y")) {    // pobierz pozycje
+	}else if(command == 'y' ) {    // pobierz pozycje
 		out_buffer[0]  = METHOD_GET_Y_POS;
 		writeRegisters(I2C_ADR_CARRET, 1, false );
 		defaultResult = false;
-	}else if( input.equals("z")) {    // pobierz pozycje
+	}else if( command == 'z' ) {    // pobierz pozycje
 		out_buffer[0]  = METHOD_GET_Z_POS;
 		writeRegisters(I2C_ADR_CARRET, 1, false );
 		defaultResult = false;
@@ -409,8 +410,15 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 		out_buffer[2]  = (byte)power;
 		writeRegisters(num, 3, true );
 */
-	}else if( input.startsWith("L ")) {    // L 12,0xff,0		// zgaœ wszystkie na upanelu 0x0C
-		String digits     = input.substring( 2 );
+
+	}else if( command == METHOD_GET_TEMP ){  
+		uint8_t tt = GetTemp();
+		defaultResult = false;
+		send2android("RT");
+		sendln2android(String(tt));
+
+	}else if(command == METHOD_MSET_LED ) {    // L12,0xff,0		// zgaœ wszystkie na upanelu 0x0C
+		String digits     = input.substring( 1 );
 		char charBuf[14];
 		digits.toCharArray(charBuf,14);
 		unsigned int num    = 0;
@@ -615,7 +623,7 @@ void i2c_test_slaves(){
 boolean reset_device_num( byte num, boolean pin_value ){
 	if( num == 0x01 ){                        // master
 		//tri_state( PIN_PROGRAMMER_RESET_MASTER, pin_value );		// to generalnie przerywa prace i resetuje procesor
-		wdt_enable(WDTO_8S);
+		//wdt_enable(WDTO_8S);
 		while(1){
 			pulse(PIN_PROGRAMMER_LED_ACTIVE, 2);
 		};
@@ -901,7 +909,27 @@ void serialEvent(){				             // Runs after every LOOP (means don't run if
 		}
 	}
 }
- 
+uint8_t GetTemp(){
+  // The internal temperature has to be used
+  // with the internal reference of 1.1V.
+  // Channel 8 can not be selected with
+  // the analogRead function yet.
+  // Set the internal reference and mux.
+//  ADMUX = (_BV(REFS1) | _BV(REFS0) | _BV(MUX3));
+  ADMUX = 0;
+  ADMUX |= _BV(REFS1);
+  ADMUX |= _BV(REFS0);
+  ADMUX |= 8;
+  ADCSRA |= _BV(ADEN);  // enable the ADC
+  delay(20);            // wait for voltages to become stable.
+  ADCSRA |= _BV(ADSC);  // Start the ADC
+  // Detect end-of-conversion
+  while (bit_is_set(ADCSRA,ADSC));
+  // Reading register "ADCW" takes care of how to read ADCL and ADCH.
+  uint8_t wADC = ADCW;
+  return wADC;
+}
+
  
 // These set the correct timing delays for programming a target with clk < 500KHz.
 // Be sure to specify the lowest clock frequency of any target you plan to burn.

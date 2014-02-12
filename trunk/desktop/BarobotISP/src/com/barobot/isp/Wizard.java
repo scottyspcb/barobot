@@ -397,13 +397,13 @@ public class Wizard {
 			run(command, hw);
 			wait(1000);
 		}
-
+/*
 		int device_found  = current_dev.resetAndReadI2c( hw );
 		if( device_found > 0 ){		// pierwszy ma adres com.barobot.i2c
 			System.out.println("+Carret  ma adres " + device_found);
 		}else{
 			System.out.println("B£¥D Carret o nie zg³asza siê");
-		}
+		}*/
 		hw.close();
 	}
 
@@ -464,13 +464,32 @@ public class Wizard {
 		hw.connect();
 		I2C_Device current_dev	= new MainBoard();
 		if( IspSettings.setFuseBits){
-			current_dev.isp(hw);
+			current_dev.isp(hw);	// mam 2 sek na wystartwanie
 			command = current_dev.setFuseBits(hw);
 			run(command, hw);
 			wait(1000);
 		}
 		if(IspSettings.setHex){	
-			current_dev.isp(hw);
+			current_dev.isp(hw);	// mam 2 sek na wystartwanie
+			command = current_dev.setFuseBits(hw);
+			run(command, hw);
+			wait(1000);
+		}
+		hw.close();
+	}
+
+	public void prepareSlaveMB(Hardware hw) {	// zaprogramuj p³ytkê g³ówn¹ pod³¹czon¹ jako SLAVE
+		String command = "";
+		hw.connect();
+		I2C_Device current_dev	= new MainBoard();
+		if( IspSettings.setFuseBits){
+			current_dev.isp(hw);	// mam 2 sek na wystartwanie
+			command = current_dev.setFuseBits(hw);
+			run(command, hw);
+			wait(1000);
+		}
+		if(IspSettings.setHex){	
+			current_dev.isp(hw);	// mam 2 sek na wystartwanie
 			command = current_dev.setFuseBits(hw);
 			run(command, hw);
 			wait(1000);

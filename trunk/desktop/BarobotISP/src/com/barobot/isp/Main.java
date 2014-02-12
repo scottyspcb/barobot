@@ -41,13 +41,10 @@ public class Main {
 		IspSettings.force = false;
 
 	//	w.test( hw );
-
 	//	w.findOrder( hw );
-	//	Wizard.wait(1000);	
-		
+	//	Wizard.wait(1000);
 	//	w.checkCarret( hw );
-		
-		w.prepareMB( hw );
+	//	w.prepareSlaveMB( hw );
 		w.prepareCarret( hw );
 		/*
 		w.clearUpanel( hw );
