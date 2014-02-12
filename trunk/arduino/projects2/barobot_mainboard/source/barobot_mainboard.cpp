@@ -162,12 +162,12 @@ void reset_wire(){
 	//    pinMode(PIN_MAINBOARD_SCL, INPUT );
 	Wire.begin(I2C_ADR_MAINBOARD);
 	tri_state( PIN_PROGRAMMER_RESET_CARRET, false );		// pin w stanie niskim = reset
-	tri_state( PIN_PROGRAMMER_RESET_UPANEL_FRONT, false );	// pin w stanie niskim = reset
-	tri_state( PIN_PROGRAMMER_RESET_UPANEL_BACK, false );	// pin w stanie niskim = reset
+//	tri_state( PIN_PROGRAMMER_RESET_UPANEL_FRONT, false );	// pin w stanie niskim = reset
+//	tri_state( PIN_PROGRAMMER_RESET_UPANEL_BACK, false );	// pin w stanie niskim = reset
 
 	tri_state( PIN_PROGRAMMER_RESET_CARRET, true );			// pin w stanie niskim = reset
-	tri_state( PIN_PROGRAMMER_RESET_UPANEL_FRONT, true );   // pin w stanie niskim = reset
-	tri_state( PIN_PROGRAMMER_RESET_UPANEL_BACK, true );	// pin w stanie niskim = reset
+//	tri_state( PIN_PROGRAMMER_RESET_UPANEL_FRONT, true );   // pin w stanie niskim = reset
+//	tri_state( PIN_PROGRAMMER_RESET_UPANEL_BACK, true );	// pin w stanie niskim = reset
 }
 
 void proceed( byte length,volatile uint8_t buffer[7] ){ // zrozum co przyszlo po i2c
@@ -624,10 +624,10 @@ boolean reset_device_num( byte num, boolean pin_value ){
 		tri_state( PIN_PROGRAMMER_RESET_CARRET, pin_value );
 		return true;
 	}else if( num == 0x03 ){                  // pierwszy upanel
-		tri_state( PIN_PROGRAMMER_RESET_UPANEL_BACK, pin_value );
+	//	tri_state( PIN_PROGRAMMER_RESET_UPANEL_BACK, pin_value );
 		return true;
 	}else if( num == 0x04 ){                  // pierwszy upanel
-		tri_state( PIN_PROGRAMMER_RESET_UPANEL_FRONT, pin_value );
+	//	tri_state( PIN_PROGRAMMER_RESET_UPANEL_FRONT, pin_value );
 		return true;
 	}else if( num == 0xff ){          // reset after last
 	}
@@ -664,9 +664,8 @@ void read_prog_settings( String input, byte ns, byte cut ){
 	DEBUG(" SSCK: " );
 	DEBUG(String( slow_sck));
 	DEBUGLN();
-	if(DEBUG_ON){
-		Serial.flush();
-	}
+
+	Serial.flush();
 	programmer_mode(true, serial_baud_num, slow_sck );
 }
  

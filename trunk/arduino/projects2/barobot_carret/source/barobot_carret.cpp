@@ -17,7 +17,8 @@
 #define ANALOG_TRIES  4
 
 volatile uint16_t checks = 0;
-volatile int8_t ADCport[ANALOGS] = {3,5,6,7,0,2};
+//									  {0,1,2,3,4,5}
+volatile int8_t ADCport[ANALOGS]	= {3,5,6,7,0,2};
 volatile int16_t ADCvalue[ANALOG_TRIES][ANALOGS] = {{0,0,0,0,0,0},{0,0,0,0,0,0},{0,0,0,0,0,0},{0,0,0,0,0,0}};
 volatile uint8_t channel = 0;
 volatile uint8_t row = 0;
