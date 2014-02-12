@@ -51,8 +51,8 @@
 #define METHOD_TRIGGER 	'T'
 #define METHOD_WAIT_READY 	"WR"
 #define METHOD_SET_X_POS 	'X'
-
-
+#define METHOD_GET_TEMP 	'T'
+#define METHOD_MSET_LED 	'L'
 
 
 
