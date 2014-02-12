@@ -119,16 +119,19 @@
 			#define PROGRAMMER_SERIAL0_BOUND 19200
 			//#define PIN_PROGRAMMER_RESET_MAINBOARD 7
 
+			
+			// PIN 10 czyli SlaveSelect (SS) musi byæ jako output gdziekolwiek aby SPI dzia³a³o
+
 			#define PIN_PROGRAMMER_LED_OTHER   	3
-			#define PIN_PROGRAMMER_LED_ERROR   	2
+			#define PIN_PROGRAMMER_LED_ERROR   	10
 			// 	Lights up if something goes wrong (use red if that makes sense)
 			#define PIN_PROGRAMMER_LED_ACTIVE	6
 			// 	shows the programmer is running
-			#define PIN_PROGRAMMER_LED_STATE    10
+			#define PIN_PROGRAMMER_LED_STATE    9
 			// 	In communication with the slave
 
 			#define PIN_PROGRAMMER_RESET_UPANEL_FRONT 8
-			#define PIN_PROGRAMMER_RESET_UPANEL_BACK 10
+			#define PIN_PROGRAMMER_RESET_UPANEL_BACK 2
 			#define PIN_PROGRAMMER_RESET_CARRET 7
 			#define PIN_PROGRAMMER_RESET_MASTER 15
 
