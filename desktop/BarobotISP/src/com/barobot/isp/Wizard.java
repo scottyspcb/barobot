@@ -58,7 +58,7 @@ public class Wizard {
 		}
 	}
 
-	public void preparePCB(Hardware hw) {
+	public void prepareUpanel(Hardware hw) {
 		Upanel.list.clear();
 		Upanel.list.add( new Upanel( 3, 0 ) );	
 		String command = "";
@@ -72,13 +72,13 @@ public class Wizard {
 			current_dev.isp(hw);
 			command = current_dev.setFuseBits(hw);
 			run(command, hw);
-			wait(1000);
+			wait(2000);
 		}
 		if(IspSettings.setHex){
 			current_dev.isp(hw);
 			command = current_dev.uploadCode(hw, upanel_code );
 			run(command, hw);
-			wait(1000);
+			wait(2000);
 		}
 
 		int device_found  = current_dev.resetAndReadI2c( hw );
@@ -106,11 +106,11 @@ public class Wizard {
 			current_dev.isp_next(hw);
 			command = next_device.uploadCode(hw, upanel_code );
 			run(command, hw);
-			wait(1000);
+			wait(2000);
 		}
 
 		int device_found  = current_dev.resetNextAndReadI2c( hw );
-		wait(1000);
+		wait(2000);
 		if( device_found > 0 ){		// pierwszy ma adres com.barobot.i2c
 			next_device.setAddress(device_found);
 			next_device.setOrder( next_index+1);
@@ -158,11 +158,11 @@ public class Wizard {
 		}
 
 		hw.connect();
-		int repeat = 3;
+		int repeat = 100;
 
 		System.out.println("Start" );
 		
-		int time = 5;
+		int time = 30;
 		while (repeat-- > 0){
 			for (I2C_Device u : Upanel.list){
 				u.setLed( hw, "0x0e", 255 );	// zgas
@@ -242,7 +242,7 @@ public class Wizard {
 		}
 		hw.connect();
 
-		int time = 1400;
+		int time = 900;
 		for (I2C_Device u2 : Upanel.list){
 			u2.setLed( hw, "0x0e", 255 );	// zgas
 			u2.setLed( hw, "0xf1", 0 );		// zgas
@@ -329,7 +329,7 @@ public class Wizard {
 		hw.connect();
 		int repeat = 6;
 
-		int time = 500;
+		int time = 20;
 		while (repeat-- > 0){
 
 			for (I2C_Device u : Upanel.list){
@@ -379,7 +379,6 @@ public class Wizard {
 
 	public void prepareCarret(Hardware hw) {
 		String command = "";
-
 		hw.connect();
 		Carret current_dev	= new Carret();
 		String carret_code = current_dev.getHexFile();
@@ -388,22 +387,21 @@ public class Wizard {
 			current_dev.isp(hw);
 			command = current_dev.setFuseBits(hw);
 			run(command, hw);
-			wait(1000);
+			wait(2000);
 		}
 
 		if(IspSettings.setHex){
 			current_dev.isp(hw);
 			command = current_dev.uploadCode(hw, carret_code );
 			run(command, hw);
-			wait(1000);
+			wait(2000);
 		}
-/*
 		int device_found  = current_dev.resetAndReadI2c( hw );
 		if( device_found > 0 ){		// pierwszy ma adres com.barobot.i2c
 			System.out.println("+Carret  ma adres " + device_found);
 		}else{
 			System.out.println("B£¥D Carret o nie zg³asza siê");
-		}*/
+		}
 		hw.close();
 	}
 
@@ -463,21 +461,16 @@ public class Wizard {
 		String command = "";
 		hw.connect();
 		I2C_Device current_dev	= new MainBoard();
-		if( IspSettings.setFuseBits){
-			current_dev.isp(hw);	// mam 2 sek na wystartwanie
-			command = current_dev.setFuseBits(hw);
-			run(command, hw);
-			wait(1000);
-		}
+		String upanel_code = current_dev.getHexFile();
 		if(IspSettings.setHex){	
 			current_dev.isp(hw);	// mam 2 sek na wystartwanie
-			command = current_dev.setFuseBits(hw);
+			command = current_dev.uploadCode(hw, upanel_code);
 			run(command, hw);
 			wait(1000);
 		}
 		hw.close();
 	}
-
+/*
 	public void prepareSlaveMB(Hardware hw) {	// zaprogramuj p³ytkê g³ówn¹ pod³¹czon¹ jako SLAVE
 		String command = "";
 		hw.connect();
@@ -495,7 +488,7 @@ public class Wizard {
 			wait(1000);
 		}
 		hw.close();
-	}
+	}*/
 }
 
 /**
@@ -505,8 +498,6 @@ public class Wizard {
 	//	command = "ping.exe localhost";
 	//	run( command );	
 
-command = avrDudePath + " -C"+ configPath +" -v -v -v -v "+
-		"-patmega8 -cstk500v1 -P\\\\.\\"+hw.comPort+" -b" + hw.programmspeed + " ";
 /
 
 	hw.send("RB");

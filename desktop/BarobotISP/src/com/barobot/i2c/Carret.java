@@ -15,7 +15,7 @@ public class Carret extends I2C_Device_Imp {
 
 	public String setFuseBits(Hardware hw) {
 		String command = IspSettings.avrDudePath + " -C"+ IspSettings.configPath +" "+ IspSettings.verbose()+ " " +
-		"-p"+ this.cpuname +" -cstk500v1 -P\\\\.\\"+hw.comPort+" -b" + IspSettings.programmspeed + " " +
+		"-p"+ this.cpuname +" -c"+this.protocol+" -P\\\\.\\"+hw.comPort+" -b" + this.bspeed + " " +
 		" -U lfuse:w:0xFF:m -U hfuse:w:0xDB:m -U efuse:w:0x05:m";
 		if(IspSettings.safeMode){
 			command = command + " -n";

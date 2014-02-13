@@ -10,11 +10,13 @@ public abstract class I2C_Device_Imp implements I2C_Device{
 	protected int myindex = 0;
 	protected int order = -1;
 	protected String cpuname = "";
+	protected String protocol = "stk500v1";
+	protected int bspeed = IspSettings.programmspeed;
 
 	public I2C_Device_Imp() {
 	}
 	public void setLed(Hardware hw, String selector, int pwm) {
-			hw.send("L " +this.getAddress() + ","+ selector +"," + pwm );
+			hw.send("L" +this.getAddress() + ","+ selector +"," + pwm );
 			synchronized (Main.main) {
 				try {
 					Main.main.wait();
@@ -69,7 +71,7 @@ public abstract class I2C_Device_Imp implements I2C_Device{
 	}
 	public String checkFuseBits(Hardware hw) {
 		String command = IspSettings.avrDudePath + " -C"+ IspSettings.configPath +" "+ IspSettings.verbose()+ " " +
-		"-p"+ this.cpuname +" -cstk500v1 -P\\\\.\\"+hw.comPort+" -b" + IspSettings.programmspeed + " " +
+		"-p"+ this.cpuname +" -c"+this.protocol +" -P\\\\.\\"+hw.comPort+" -b" + this.bspeed + " " +
 		" -U lock:r:-:h";
 		if(IspSettings.safeMode){
 			command = command + " -n";
@@ -79,7 +81,7 @@ public abstract class I2C_Device_Imp implements I2C_Device{
 
 	public String erase(Hardware hw, String filePath) {
 		String command = IspSettings.avrDudePath + " -C"+ IspSettings.configPath +" "+ IspSettings.verbose()+ " " +
-		"-p"+ this.cpuname +" -cstk500v1 -P\\\\.\\"+hw.comPort+" -b" + IspSettings.programmspeed + " " +
+		"-p"+ this.cpuname +" -c"+this.protocol+" -P\\\\.\\"+hw.comPort+" -b" + this.bspeed + " " +
 		"-e";
 		if(IspSettings.safeMode){
 			command = command + " -n";
@@ -91,7 +93,7 @@ public abstract class I2C_Device_Imp implements I2C_Device{
 
 	public String uploadCode(Hardware hw, String filePath) {
 		String command = IspSettings.avrDudePath + " -C"+ IspSettings.configPath +" "+ IspSettings.verbose()+ " " +
-		"-p"+ this.cpuname +" -cstk500v1 -P\\\\.\\"+hw.comPort+" -b" + IspSettings.programmspeed + " " +
+		"-p"+ this.cpuname +" -c"+this.protocol+" -P\\\\.\\"+hw.comPort+" -b" + this.bspeed + " " +
 		"-Uflash:w:"+filePath+":i";
 		if(IspSettings.safeMode){
 			command = command + " -n";

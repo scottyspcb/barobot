@@ -47,7 +47,7 @@ public class Upanel extends I2C_Device_Imp {
 	 */
 	public String setFuseBits(  Hardware hw){
 		String command = IspSettings.avrDudePath + " -C"+ IspSettings.configPath +" "+ IspSettings.verbose()+ " " +
-		"-p"+ this.cpuname +" -cstk500v1 -P\\\\.\\"+hw.comPort+" -b" + IspSettings.programmspeed + " " +
+		"-p"+ this.cpuname +" -c"+this.protocol +" -P\\\\.\\"+hw.comPort+" -b" + this.bspeed + " " +
 		"-Ulock:w:0x3F:m -Uhfuse:w:0xC7:m -Ulfuse:w:0xA4:m";
 		if(IspSettings.safeMode){
 			command = command + " -n";
