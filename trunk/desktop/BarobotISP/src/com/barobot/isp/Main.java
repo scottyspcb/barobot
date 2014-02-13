@@ -44,12 +44,14 @@ public class Main {
 	//	w.findOrder( hw );
 	//	Wizard.wait(1000);
 	//	w.checkCarret( hw );
+	//	w.prepareMB( hw );
 	//	w.prepareSlaveMB( hw );
 		w.prepareCarret( hw );
+	//	w.prepareUpanel(hw);
+	//	w.clearUpanel( hw );
+	//	w.preparePCB( hw );
 		/*
-		w.clearUpanel( hw );
-		w.preparePCB( hw );
-		int repeat = 1;
+		int repeat = 2;
 		while(repeat-->0){
 			w.mrygaj( hw );
 			w.mrygaj_grb( hw );

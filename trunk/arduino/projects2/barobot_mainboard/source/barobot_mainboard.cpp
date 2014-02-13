@@ -41,16 +41,12 @@ void disableWd(){
 	//wdt_disable();
 }
 void setup(){
-	//disableWd();
-	DEBUGINIT();
-	DEBUGLN("-MSTART");
-	pinMode(PIN_PROGRAMMER_LED_ACTIVE, OUTPUT);
-	pinMode(PIN_PROGRAMMER_LED_ERROR, OUTPUT);
-	pinMode(PIN_PROGRAMMER_LED_STATE, OUTPUT);
-	
-	pinMode(SDA, INPUT );
-	pinMode(SCL, INPUT );
-	pinMode(SS, OUTPUT );	// needed by SPI do enable ISP
+	//pinMode(8, INPUT );
+
+	pinMode(PIN_PROGRAMMER_RESET_UPANEL_FRONT, INPUT);
+	pinMode(PIN_PROGRAMMER_RESET_UPANEL_BACK, INPUT);
+	pinMode(PIN_PROGRAMMER_RESET_CARRET, INPUT);
+	pinMode(PIN_PROGRAMMER_RESET_MASTER, INPUT);
 
 	pinMode(PIN_MAINBOARD_SCK, INPUT );
 	pinMode(PIN_MAINBOARD_MISO, INPUT );
@@ -59,13 +55,27 @@ void setup(){
 	pinMode(PIN_MAINBOARD_CURRENT_X, INPUT );
 	pinMode(PIN_MAINBOARD_TABLET_PWR, INPUT );	
 
-	digitalWrite(PIN_PROGRAMMER_LED_ACTIVE, LOW);
-	digitalWrite(PIN_PROGRAMMER_LED_ERROR, LOW);
-	digitalWrite(PIN_PROGRAMMER_LED_STATE, LOW);
+	pinMode(PIN_MAINBOARD_SDA, INPUT );
+	pinMode(PIN_MAINBOARD_SCL, INPUT );
+	pinMode(SS, OUTPUT );	// needed by SPI do enable ISP
+
+	//disableWd();
+	DEBUGINIT();
+	DEBUGLN("-MSTART");
+
+	setupStepper();
+
+	pinMode(PIN_PROGRAMMER_LED_ACTIVE, OUTPUT);
+	pinMode(PIN_PROGRAMMER_LED_ERROR, OUTPUT);
+	pinMode(PIN_PROGRAMMER_LED_STATE, OUTPUT);
+	
+	digitalWrite( PIN_PROGRAMMER_LED_ACTIVE, LOW);
+	digitalWrite( PIN_PROGRAMMER_LED_ERROR, LOW);
+	digitalWrite( PIN_PROGRAMMER_LED_STATE, LOW);
 
 	Wire.begin(I2C_ADR_MAINBOARD);
 	Wire.onReceive(receiveEvent);
-	setupStepper();
+
 	i2c_device_found(I2C_ADR_MAINBOARD, MAINBOARD_DEVICE_TYPE,MAINBOARD_VERSION);
 }
 
@@ -82,12 +92,6 @@ void setupStepper(){
 	stepperX.setAcceleration(MAINBOARD_ACCELERX);
 	stepperX.setMaxSpeed(MAINBOARD_SPEEDX);
 
-	pinMode(PIN_MAINBOARD_STEPPER_MS1, OUTPUT);
-	pinMode(PIN_MAINBOARD_STEPPER_MS2, OUTPUT);
-	pinMode(PIN_MAINBOARD_STEPPER_MS3, OUTPUT);
-	digitalWrite(PIN_MAINBOARD_STEPPER_MS1, HIGH );
-	digitalWrite(PIN_MAINBOARD_STEPPER_MS2, HIGH );
-	digitalWrite(PIN_MAINBOARD_STEPPER_MS3, LOW );
 	stepperX.onReady(stepperReady);
 	FlexiTimer2::set(1, 1.0/3000, timer);
 	FlexiTimer2::start();
@@ -157,19 +161,29 @@ void check_i2c(){
 		reset_wire();
 	}
 }
+
 void reset_wire(){
 	sendln2android("RWIRE");
 	//    pinMode(PIN_MAINBOARD_SDA, INPUT );
 	//    pinMode(PIN_MAINBOARD_SCL, INPUT );
 	Wire.begin(I2C_ADR_MAINBOARD);
 	tri_state( PIN_PROGRAMMER_RESET_CARRET, false );		// pin w stanie niskim = reset
-//	tri_state( PIN_PROGRAMMER_RESET_UPANEL_FRONT, false );	// pin w stanie niskim = reset
-//	tri_state( PIN_PROGRAMMER_RESET_UPANEL_BACK, false );	// pin w stanie niskim = reset
+	tri_state( PIN_PROGRAMMER_RESET_UPANEL_FRONT, false );	// pin w stanie niskim = reset
+	tri_state( PIN_PROGRAMMER_RESET_UPANEL_BACK, false );	// pin w stanie niskim = reset
 
 	tri_state( PIN_PROGRAMMER_RESET_CARRET, true );			// pin w stanie niskim = reset
-//	tri_state( PIN_PROGRAMMER_RESET_UPANEL_FRONT, true );   // pin w stanie niskim = reset
-//	tri_state( PIN_PROGRAMMER_RESET_UPANEL_BACK, true );	// pin w stanie niskim = reset
+	tri_state( PIN_PROGRAMMER_RESET_UPANEL_FRONT, true );   // pin w stanie niskim = reset
+	tri_state( PIN_PROGRAMMER_RESET_UPANEL_BACK, true );	// pin w stanie niskim = reset
 }
+void reset_wire2(){
+	sendln2android("RWIRE2");
+	tri_state( PIN_PROGRAMMER_RESET_CARRET, false );		// pin w stanie niskim = reset
+	tri_state( PIN_PROGRAMMER_RESET_UPANEL_FRONT, false );	// pin w stanie niskim = reset
+	tri_state( PIN_PROGRAMMER_RESET_UPANEL_BACK, false );	// pin w stanie niskim = reset
+	tri_state( PIN_PROGRAMMER_RESET_MASTER, false );		// resetuje maszynê, odbiera sterowanie
+}
+
+
 
 void proceed( byte length,volatile uint8_t buffer[7] ){ // zrozum co przyszlo po i2c
 	if(prog_mode){
@@ -411,12 +425,6 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 		writeRegisters(num, 3, true );
 */
 
-	}else if( command == METHOD_GET_TEMP ){  
-		uint8_t tt = GetTemp();
-		defaultResult = false;
-		send2android("RT");
-		sendln2android(String(tt));
-
 	}else if(command == METHOD_MSET_LED ) {    // L12,0xff,0		// zgaœ wszystkie na upanelu 0x0C
 		String digits     = input.substring( 1 );
 		char charBuf[14];
@@ -457,6 +465,12 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 		defaultResult = false;
 	}else if( input.equals( "TEST") ){
 		i2c_test_slaves();		
+	}else if( command == METHOD_GET_TEMP ){  
+		uint8_t tt = GetTemp();
+		defaultResult = false;
+		send2android("RT");
+		sendln2android(String(tt));
+
 	}else if( input.equals( "WR") ){      // wait for return - tylko zwrÃ³c zwrotke
 	}else{
 		sendln2android("NO_CMD [" + input +"]");
@@ -622,20 +636,16 @@ void i2c_test_slaves(){
 
 boolean reset_device_num( byte num, boolean pin_value ){
 	if( num == 0x01 ){                        // master
-		//tri_state( PIN_PROGRAMMER_RESET_MASTER, pin_value );		// to generalnie przerywa prace i resetuje procesor
-		//wdt_enable(WDTO_8S);
-		while(1){
-			pulse(PIN_PROGRAMMER_LED_ACTIVE, 2);
-		};
+		tri_state( PIN_PROGRAMMER_RESET_MASTER, pin_value );		// to generalnie przerywa prace i resetuje procesor
 		return true;
 	}else if( num == 0x02 ){                        // wozek
 		tri_state( PIN_PROGRAMMER_RESET_CARRET, pin_value );
 		return true;
 	}else if( num == 0x03 ){                  // pierwszy upanel
-	//	tri_state( PIN_PROGRAMMER_RESET_UPANEL_BACK, pin_value );
+		tri_state( PIN_PROGRAMMER_RESET_UPANEL_BACK, pin_value );
 		return true;
 	}else if( num == 0x04 ){                  // pierwszy upanel
-	//	tri_state( PIN_PROGRAMMER_RESET_UPANEL_FRONT, pin_value );
+		tri_state( PIN_PROGRAMMER_RESET_UPANEL_FRONT, pin_value );
 		return true;
 	}else if( num == 0xff ){          // reset after last
 	}
@@ -992,22 +1002,20 @@ void programmer_mode( boolean active, byte serial_baud_num, boolean slow_sck ) {
 			}
 		}
 	}else{
-		digitalWrite(PIN_PROGRAMMER_LED_ACTIVE, HIGH);
-		digitalWrite(PIN_PROGRAMMER_LED_ERROR, HIGH);
-		digitalWrite(PIN_PROGRAMMER_LED_STATE, HIGH);
+		digitalWrite(PIN_PROGRAMMER_LED_ACTIVE, LOW );
+		digitalWrite(PIN_PROGRAMMER_LED_ERROR, LOW );
+		digitalWrite(PIN_PROGRAMMER_LED_STATE, LOW );
 		pinMode(MISO, INPUT);
 		pinMode(MOSI, INPUT);
 		pinMode(SCK, INPUT);
 		prog_mode = false;
 		Serial.flush();
 		Serial.begin(MAINBOARD_SERIAL0_BOUND);
-		delay(200);
 		if(reprogramm_address){		// unlock device
 			reset_device_next_to( reprogramm_address, HIGH);
 		}else if(reprogramm_index){
 			reset_device_num( reprogramm_index, HIGH);
 		}
-		
 	}
 }
 void start_pmode() {
