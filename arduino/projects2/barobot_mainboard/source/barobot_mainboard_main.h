@@ -7,7 +7,7 @@
 #include <AccelStepper.h>
  
  
- uint8_t GetTemp();
+uint8_t GetTemp();
  
 //-------------------------------------------------------------------
  
@@ -19,7 +19,7 @@ boolean reset_device_num( byte num, boolean pin_value );
 
 boolean reset_device_num2( byte num, boolean pin_value );
 uint16_t i2c_getVersion( byte slave_address );
-unsigned int test_slave(byte slave_address);
+unsigned int test_slave(byte slave_address, byte tests);
 uint8_t spi_transaction(uint8_t a, uint8_t b, uint8_t c, uint8_t d);
 uint8_t write_flash_pages(int length);
 
@@ -63,7 +63,10 @@ void fill(int n);
 void heartbeat();
 void pulse(int pin, int times);
 void start_pmode();
-void programmer_mode( boolean active, byte serial_baud_num, boolean slow_sck );
+void programmer_mode();
+void reset_wire2();
+void reset_wire();
+void check_i2c();
 void serialEvent();
 void send2android( String output2 );
 void send2android( volatile uint8_t buffer[], int length );
@@ -86,12 +89,9 @@ void paserDeriver( byte driver, String input );
 void stepperReady( long int pos );
 byte read_can_fill();
 void send_error( String input);
-void parseInput( String input );
 void i2c_device_found( byte addr,byte type,byte ver );
+void parseInput( String input );
 void proceed( byte length,volatile uint8_t buffer[7] );
-void reset_wire2();
-void reset_wire();
-void check_i2c();
 void loop();
 void timer();
 void setupStepper();

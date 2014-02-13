@@ -57,25 +57,25 @@ public class Upanel extends I2C_Device_Imp {
 
 	public void reset(Hardware hw) {
 		if(getIndex() > 0 ){
-			hw.send("RESET "+ this.myindex );
+			hw.send("RESET"+ this.myindex );
 		}else if( can_reset_me_dev == null ){
-			hw.send("RESET_NEXT "+ can_reset_me_dev.getAddress() );
+			hw.send("RESET_NEXT"+ can_reset_me_dev.getAddress() );
 		}
 	}
 	public void reset_next(Hardware hw) {
 		if( getAddress() > 0 ){
-			hw.send("RESET_NEXT "+ getAddress() );
+			hw.send("RESET_NEXT"+ getAddress() );
 		}
 	}
 	public void isp(Hardware hw) {		// mnie
 		if(getIndex() > 0 ){
-			hw.send("PROG "+ this.myindex );
+			hw.send("P"+ this.myindex );
 		}else if( can_reset_me_dev == null ){
-			hw.send("PROG_NEXT "+ can_reset_me_dev.getAddress() );
+			hw.send("PN"+ can_reset_me_dev.getAddress() );
 		}
 	}
 	public void isp_next(Hardware hw) {	// pod³¹czony do mnie
-		hw.send("PROG_NEXT "+ getAddress() );
+		hw.send("PN"+ getAddress() );
 	}
 
 	public int resetNextAndReadI2c(Hardware hw) {

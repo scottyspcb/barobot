@@ -36,15 +36,6 @@ volatile byte input_buffer[CARRET_BUFFER_LENGTH][5] = {{0,0,0,0,0},{0,0,0,0,0},{
 volatile byte last_index     = 0;
 volatile unsigned int ticks  = 0;
 
-union byteint{
-    byte bytes[4];
-    int i;
-};
-union byteword{
-    byte bytes[2];
-    word i;
-};
-
 struct ServoChannel {
 	uint8_t pin;
 	int16_t delta_pos;

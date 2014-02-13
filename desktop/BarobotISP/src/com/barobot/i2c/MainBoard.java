@@ -14,7 +14,6 @@ public class MainBoard extends I2C_Device_Imp {
 		this.protocol		= "arduino";
 		this.bspeed			= 57600;
 	}
-
 	public String setFuseBits(Hardware hw) {
 		String command = IspSettings.avrDudePath + " -C"+ IspSettings.configPath +" "+ IspSettings.verbose()+ " " +
 		"-p"+ this.cpuname +" -c"+this.protocol+" -P\\\\.\\"+hw.comPort+" -b" + this.bspeed + " ";
@@ -35,12 +34,8 @@ public class MainBoard extends I2C_Device_Imp {
 		}
 		return command;
 	}
-	
-	//-carduino -P\\.\COM39 -b57600 -D -Uflash:w:"c:\workspace\barobot\arduino\projects2\barobot_mainboard\build\barobot_mainboard.hex":i
-	
-	
 	public void reset(Hardware hw) {
-		hw.send("RESET "+ this.myindex);
+		hw.send("RESETd "+ this.myindex);
 	}
 	public void isp(Hardware hw) {
 		hw.send("RESET "+ getIndex() );
