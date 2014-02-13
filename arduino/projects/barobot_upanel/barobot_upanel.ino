@@ -5,14 +5,6 @@
 #include <barobot_common.h>
 #include <i2c_helpers.h>
 
-/*
-void aaa(){
-  if(CPU_F>0){
-    int u = 0;
-  }
-}
-*/
-
 volatile bool use_local = false;
 volatile byte in_buffer1[5];
 long int milis1 = 0;
@@ -54,11 +46,22 @@ void setup(){
   pd5    05     
   pc3    17 
   */
+  
   DW(PIN_PANEL_LED0_NUM, HIGH );
   DW(PIN_PANEL_LED6_NUM, HIGH );
   DW(PIN_PANEL_LED1_NUM, LOW );
   DW(PIN_PANEL_LED2_NUM, LOW ); 
-  delay2(1000); 
+  delay2(500); 
+  DW(PIN_PANEL_LED0_NUM, LOW );
+  DW(PIN_PANEL_LED6_NUM, LOW );
+  DW(PIN_PANEL_LED1_NUM, HIGH );
+  DW(PIN_PANEL_LED2_NUM, HIGH ); 
+  delay2(500); 
+  DW(PIN_PANEL_LED0_NUM, HIGH );
+  DW(PIN_PANEL_LED6_NUM, HIGH );
+  DW(PIN_PANEL_LED1_NUM, LOW );
+  DW(PIN_PANEL_LED2_NUM, LOW ); 
+
 
 //  byte tries = 0;
   if(!init_i2c()){

@@ -1,14 +1,14 @@
-#define IS_IPANEL true
+#define IS_CARRET true
 #define HAS_LEDS true
 #include <barobot_common.h>
 #include <avr/io.h>
 //#include <stdint.h>       // needed for uint8_t
 
-#define ANALOGS  6
+#define ANALOGS  9
 #define ANALOG_TRIES  2
 
 volatile uint16_t checks = 0;
-volatile int8_t ADCport[ANALOGS] = {2,3,4,5,0,1};
+volatile int8_t ADCport[ANALOGS] = {2,3,4,5,6,7,8,0,1};
 volatile int16_t ADCvalue[ANALOG_TRIES][ANALOGS] = {{0,0,0,0,0,0},{0,0,0,0,0,0}};
 volatile uint8_t channel = 0;
 volatile uint8_t row = 0;
@@ -20,6 +20,8 @@ void setup(){
   pinMode(A3, INPUT);
   pinMode(A4, INPUT);
   pinMode(A5, INPUT);
+  pinMode(A6, INPUT);
+  pinMode(A7, INPUT);
   DEBUGINIT();
   DEBUGLN("-start"); 
   init_analogs();
@@ -52,12 +54,11 @@ void loop() {
           DEBUG( ADCvalue[0][1] );          DEBUG(" ");
           DEBUG( ADCvalue[0][2] );          DEBUG(" ");
           DEBUG( ADCvalue[0][3] );          DEBUG(" ");
-       //   DEBUG( ADCvalue[0][4] );          DEBUG(" ");
-        //  DEBUG( ADCvalue[0][5] );          DEBUG(" ");
-       //   DEBUG( ADCvalue[0][6] );          DEBUG(" ");
-       //   DEBUG( ADCvalue[0][7] );          DEBUG(" ");
- 
-      //    DEBUG( ADCvalue[0][8] );          DEBUG(" ");
+          DEBUG( ADCvalue[0][4] );          DEBUG(" ");
+          DEBUG( ADCvalue[0][5] );          DEBUG(" ");
+          DEBUG( ADCvalue[0][6] );          DEBUG(" ");
+          DEBUG( ADCvalue[0][7] );          DEBUG(" ");
+          DEBUG( ADCvalue[0][8] );          DEBUG(" ");
           DEBUGLN( );
           milis1000 = mil + 100;
           checks = 0;
