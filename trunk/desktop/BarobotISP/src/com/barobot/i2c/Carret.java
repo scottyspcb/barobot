@@ -24,11 +24,11 @@ public class Carret extends I2C_Device_Imp {
 	}
 
 	public void reset(Hardware hw) {
-		hw.send("RESET "+ this.myindex);
+		hw.send("RESET"+ this.myindex);
 	}
 
 	public void isp(Hardware hw) {
-		hw.send("PROG "+ this.myindex );
+		hw.send("P"+ this.myindex );
 	}
 
 	public String getHexFile() {

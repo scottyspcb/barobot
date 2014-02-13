@@ -21,7 +21,8 @@ uint8_t serialBuff[130];
 uint8_t serialBuff_pos   = 0;
 
 boolean error=0;
-volatile boolean stepper_now = false;
+volatile boolean timer_now = false;
+volatile byte timer_counter = 1;
 int here;
 uint8_t hbval            = 128;
 
@@ -41,8 +42,6 @@ void disableWd(){
 	//wdt_disable();
 }
 void setup(){
-	//pinMode(8, INPUT );
-
 	pinMode(PIN_PROGRAMMER_RESET_UPANEL_FRONT, INPUT);
 	pinMode(PIN_PROGRAMMER_RESET_UPANEL_BACK, INPUT);
 	pinMode(PIN_PROGRAMMER_RESET_CARRET, INPUT);
@@ -95,25 +94,19 @@ void setupStepper(){
 	stepperX.onReady(stepperReady);
 	FlexiTimer2::set(1, 1.0/3000, timer);
 	FlexiTimer2::start();
-	milis100 = millis() + 3000;    // za 3 sek zaczij sprawdzanie magistrali
 }
 
 void timer(){
-	stepper_now = true;
+	timer_counter++;
+	timer_now = true;
 }
 
 void loop(){
-	long unsigned mil = millis();
-	if( mil > milis100 ){    // co 7 sek
+	if(timer_now == 0 ){
+		timer_now = false;
 		check_i2c();    // czy linia jest drozna?
-		hbval++;
-		if(hbval>=10){
-			//  2c_analog(I2C_ADR_CARRET, 0);
-			hbval=0;
-		}
-		milis100 = mil + 12000;
-		DEBUG("-HELLO ");
-		DEBUGLN(String(mil));
+		DEBUGLN("-HELLO ");
+//		DEBUGLN(String(mil));
 	}
 	if (Console0Complete) {
 		parseInput( serial0Buffer );				      // parsuj wejscie
@@ -130,61 +123,6 @@ void loop(){
 	}
 	stepperX.run();
 }
-/*
-void scann_i2c(){
-  byte nDevices=0;
-  byte error=0;
-  for(byte addr2 = 1; addr2 < 20; addr2++ )   {
-    stepperX.run();
-    Wire.beginTransmission(addr2);
-    error = Wire.endTransmission();
-    delay(20);
-    if (error == 0){
-      DEBUG("-dev @");
-      printHex(addr2, false );
-      uint16_t readed = i2c_getVersion(addr2);
-      DEBUG(" type: ");
-      printHex( readed>>8, false );        // starsze bity = typ
-      DEBUG(" ver: ");
-      printHex( readed & 0xff, false );    // mÅ‚odsze bity = ver
-      DEBUGLN("");
-      nDevices++;
-    }else{
-//     DEBUGLN("RET: "+String(addr2)+" / "+String(error));
-    }
-  }
-}*/
-void check_i2c(){
-	Wire.beginTransmission(I2C_ADR_RESERVED);
-	byte ee = Wire.endTransmission();     // czy linia jest drozna
-	if(ee == 6 ){    // niedrozna - resetuj i2c
-		reset_wire();
-	}
-}
-
-void reset_wire(){
-	sendln2android("RWIRE");
-	//    pinMode(PIN_MAINBOARD_SDA, INPUT );
-	//    pinMode(PIN_MAINBOARD_SCL, INPUT );
-	Wire.begin(I2C_ADR_MAINBOARD);
-	tri_state( PIN_PROGRAMMER_RESET_CARRET, false );		// pin w stanie niskim = reset
-	tri_state( PIN_PROGRAMMER_RESET_UPANEL_FRONT, false );	// pin w stanie niskim = reset
-	tri_state( PIN_PROGRAMMER_RESET_UPANEL_BACK, false );	// pin w stanie niskim = reset
-
-	tri_state( PIN_PROGRAMMER_RESET_CARRET, true );			// pin w stanie niskim = reset
-	tri_state( PIN_PROGRAMMER_RESET_UPANEL_FRONT, true );   // pin w stanie niskim = reset
-	tri_state( PIN_PROGRAMMER_RESET_UPANEL_BACK, true );	// pin w stanie niskim = reset
-}
-void reset_wire2(){
-	sendln2android("RWIRE2");
-	tri_state( PIN_PROGRAMMER_RESET_CARRET, false );		// pin w stanie niskim = reset
-	tri_state( PIN_PROGRAMMER_RESET_UPANEL_FRONT, false );	// pin w stanie niskim = reset
-	tri_state( PIN_PROGRAMMER_RESET_UPANEL_BACK, false );	// pin w stanie niskim = reset
-	tri_state( PIN_PROGRAMMER_RESET_MASTER, false );		// resetuje maszynê, odbiera sterowanie
-}
-
-
-
 void proceed( byte length,volatile uint8_t buffer[7] ){ // zrozum co przyszlo po i2c
 	if(prog_mode){
 		return;
@@ -249,12 +187,6 @@ void proceed( byte length,volatile uint8_t buffer[7] ){ // zrozum co przyszlo po
 	}
 	buffer[0] = 0;  //ready
 }
- 
-void i2c_device_found( byte addr,byte type,byte ver ){
-	byte ttt[4] = {METHOD_DEVICE_FOUND,addr,type,ver};
-	send2android(ttt,4);
-	send2androidEnd();
-}
 
 void parseInput( String input ){   // zrozum co przyszlo po serialu
 	input.trim();
@@ -291,17 +223,17 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 			}
 		}
 
-	}else if( input.startsWith("PROG_NEXT ")) {    // PROG_NEXT 0x0C,0,0   - programuj urzadzenie podlaczone resetem do 0x0C
-		read_prog_settings(input, 2, 10 );
+	}else if( input.startsWith("PN")) {    // PN10,0,0   - programuj urzadzenie podlaczone resetem do 10
+		read_prog_settings(input, 2, 2 );
 		defaultResult = false;
 		return;
-	}else if( input.startsWith("PROG ")) {    	// PROG 1; PROG 2,0; PROG 3,1; PROG 4,1;   - programuj urzadzenie 0x0A z prÄ™dkosca 19200, PROG 0,0 - force first, PROG 0A,0 - wozek
-		read_prog_settings(input, 1, 5);
+	}else if(  command == 'P' ) {    	// P1; P2,0; P3,1; P4,1;   - programuj urzadzenie 0x0A z prÄ™dkosca 19200, PROG 0,0 - force first, PROG 0A,0 - wozek
+		read_prog_settings(input, 1, 1);
 		defaultResult = false;
 		return;
 
-	}else if( input.startsWith("RESET ")) {    // RESET 0, RESET 1, RESET 2 
-		String digits     = input.substring( 6 );
+	}else if( input.startsWith("RESET")) {    // RESET0; RESET1; RESET2 
+		String digits     = input.substring( 5 );
 		char charBuf[10];
 		digits.toCharArray(charBuf,10);
 		unsigned int num    = 0;
@@ -315,8 +247,8 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 			defaultResult = false;
 			send_error(input);
 		}
-	}else if( input.startsWith("RESET_NEXT ")) {			// RESET 12
-		String digits     = input.substring( 11 );
+	}else if( input.startsWith("RESET_NEXT")) {			// RESET12
+		String digits     = input.substring( 10 );
 		char charBuf[6];
 		digits.toCharArray(charBuf,6);
 		unsigned int num    = 0;
@@ -401,8 +333,6 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 		out_buffer[1]  = DRIVER_Z;
 		writeRegisters(I2C_ADR_CARRET, 2, false );
 		defaultResult = false;
-//	}else if( input.equals(METHOD_RESET_BUS) ){    // reset bus
-//		get_order();
 /*
 	}else if( input.startsWith("LED ")) {    // LED C,0,255		// LED nr 0 na upanelu o adresie 0x0C w³¹cz na 100%
 		String digits     = input.substring( 4 );
@@ -438,12 +368,11 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 		out_buffer[2]  = (byte)power;
 		writeRegisters(num, 3, false );
 
-	}else if( input.equals("I2C") ){
+	}else if( command == 'I' ){
 		byte nDevices=0;
 		byte error=0;
 		for(byte addr2 = 1; addr2 < 20; addr2++ )   {
-			Wire.beginTransmission(addr2);
-			error = Wire.endTransmission();
+			error =checkAddress(addr2);
 			if (error == 0){
 				delay(20);
 				uint16_t readed = i2c_getVersion(addr2);
@@ -481,6 +410,12 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 	}
 }
 
+void i2c_device_found( byte addr,byte type,byte ver ){
+	byte ttt[4] = {METHOD_DEVICE_FOUND,addr,type,ver};
+	send2android(ttt,4);
+	send2androidEnd();
+}
+
 void send_error( String input){
 	send2android("E" );	
 	sendln2android( input );
@@ -495,11 +430,6 @@ byte read_can_fill(){
 	readRegisters( I2C_ADR_CARRET, 1 );
 	return in_buffer[0]; // 0 jesli mozna, inna liczba jesli blad
 }
-
-union byteint{
-    byte bytes[4];
-    int i;
-};
 
 void stepperReady( long int pos ){
 	sendln2android("Rx" + String(pos));
@@ -611,8 +541,7 @@ void tri_state( byte pin_num, boolean pin_value ){
 void i2c_test_slaves(){
 	byte error;
 	for(byte aaa = I2C_ADR_MAINBOARD; aaa < 20; aaa++ ) {
-		Wire.beginTransmission(aaa);
-		error = Wire.endTransmission();
+		error =checkAddress(aaa);
 		if (error == 0){
 			delay(20);
 			uint16_t readed = i2c_getVersion(aaa);
@@ -623,7 +552,7 @@ void i2c_test_slaves(){
 				printHex( (readed>>8), false );
 				printHex( (readed & 0xff) );
 			}
-			test_slave( aaa );
+			test_slave( aaa, 5 );
 		} else if (error==4){
 			DEBUG("-!Unknow error at address 0x");
 			printHex(aaa );
@@ -635,25 +564,22 @@ void i2c_test_slaves(){
 }
 
 boolean reset_device_num( byte num, boolean pin_value ){
-	if( num == 0x01 ){                        // master
+	if( num == 0x01 ){                     // master
 		tri_state( PIN_PROGRAMMER_RESET_MASTER, pin_value );		// to generalnie przerywa prace i resetuje procesor
-		return true;
-	}else if( num == 0x02 ){                        // wozek
+	}else if( num == 0x02 ){               // wozek
 		tri_state( PIN_PROGRAMMER_RESET_CARRET, pin_value );
-		return true;
-	}else if( num == 0x03 ){                  // pierwszy upanel
+	}else if( num == 0x03 ){               // pierwszy upanel
 		tri_state( PIN_PROGRAMMER_RESET_UPANEL_BACK, pin_value );
-		return true;
-	}else if( num == 0x04 ){                  // pierwszy upanel
+	}else if( num == 0x04 ){               // pierwszy upanel
 		tri_state( PIN_PROGRAMMER_RESET_UPANEL_FRONT, pin_value );
-		return true;
-	}else if( num == 0xff ){          // reset after last
+	//}else if( num == 0xff ){          // reset after last
+	}else{
+		return false;
 	}
-	return false;
+	return true;
 }
 
 void read_prog_settings( String input, byte ns, byte cut ){
-
 	String digits         		  = input.substring( cut );
 	unsigned int target           = 0x00;
 	unsigned int slow_sck         = 0;
@@ -662,12 +588,13 @@ void read_prog_settings( String input, byte ns, byte cut ){
 	digits.toCharArray(charBuf, 10);
 	sscanf(charBuf,"%i,%li,%i", &target, &serial_baud_num, &slow_sck );
 
-	DEBUG("-ISP ADDR: ");
 	if(ns == 1){            // PROG - podany numer 1,2 lub 3
+		DEBUG("-ISP PROG: ");
 		reprogramm_index    = target;
 		reprogramm_address  = 0;
 		DEBUG(String( (int)reprogramm_address));
 	}else if(ns == 2){     // PROG_NEXT, parametr to adres poprzedniego
+		DEBUG("-ISP PROG_NEXT: ");
 		reprogramm_index    = 0;
 		reprogramm_address  = (byte) target;
 		byte error =checkAddress(reprogramm_address);
@@ -684,7 +611,33 @@ void read_prog_settings( String input, byte ns, byte cut ){
 	DEBUGLN();
 
 	Serial.flush();
-	programmer_mode(true, serial_baud_num, slow_sck );
+
+	prog_mode = true;
+	// disable stepper
+	stepperX.disableOutputs();
+
+	if( serial_baud_num ){
+		Serial.begin(115200);
+	}else{
+		Serial.begin(PROGRAMMER_SERIAL0_BOUND);
+	}
+	if (slow_sck){
+		spi_init = sw_spi_init;
+		spi_send = sw_spi_send;
+	} else {
+		spi_init = hw_spi_init;
+		spi_send = hw_spi_send;
+	}
+	pulse(PIN_PROGRAMMER_LED_ACTIVE, 2);
+	pulse(PIN_PROGRAMMER_LED_ERROR, 2);
+	pulse(PIN_PROGRAMMER_LED_STATE, 2);
+	while(prog_mode){
+		digitalWrite(PIN_PROGRAMMER_LED_ERROR, !error);
+		heartbeat();
+		if (Serial.available()) {
+			simulateisp();
+		}
+	}
 }
  
 byte checkAddress( byte address ){
@@ -726,7 +679,7 @@ uint16_t i2c_getVersion( byte slave_address ){      // zwraca 2 bajty. typ na mÅ
 	return 0xFF;
 }
  
-void i2c_stop( byte slave_address ){      // zgaÅ› wszystko
+void i2c_stop( byte slave_address ){      // zgas wszystko
 	out_buffer[0]  = 0xEE;
 	writeRegisters(slave_address, 1, true );
 	writeRegisters(slave_address, 1, true );
@@ -744,19 +697,16 @@ byte i2c_test_slave( byte slave_address, byte num1, byte num2 ){      // testuj
 	return 0xFF;
 }
  
-unsigned int test_slave(byte slave_address){
-	//  printHex( slave_address, false );
-	//  DEBUGLN("- Test_slave start" );
-	byte cntr1 = 5;
+unsigned int test_slave(byte slave_address, byte tests){
 	const byte c2_max = 10;
-	unsigned int cc = cntr1 * c2_max;
+	unsigned int cc = tests * c2_max;
 	byte res = 0;
 	unsigned int errors= 0;
-	while(--cntr1){
+	while(--tests){
 		byte cntr2 = c2_max;
 		while(--cntr2){
-			res = i2c_test_slave(slave_address, cntr1, cntr2);
-			byte valid = cntr1 ^ cntr2;
+			res = i2c_test_slave(slave_address, tests, cntr2);
+			byte valid = tests ^ cntr2;
 			if(res !=valid){
 				errors++;
 				printHex( slave_address, false );
@@ -919,6 +869,37 @@ void serialEvent(){				             // Runs after every LOOP (means don't run if
 		}
 	}
 }
+
+
+
+void check_i2c(){ // czy linia jest drozna
+	byte ee =checkAddress(I2C_ADR_RESERVED);
+	if(ee == 6 ){    // niedrozna - resetuj i2c
+		reset_wire();
+	}
+}
+
+void reset_wire(){
+	sendln2android("RWIRE");
+	//    pinMode(PIN_MAINBOARD_SDA, INPUT );
+	//    pinMode(PIN_MAINBOARD_SCL, INPUT );
+	Wire.begin(I2C_ADR_MAINBOARD);
+	tri_state( PIN_PROGRAMMER_RESET_CARRET, false );		// pin w stanie niskim = reset
+	tri_state( PIN_PROGRAMMER_RESET_UPANEL_FRONT, false );	// pin w stanie niskim = reset
+	tri_state( PIN_PROGRAMMER_RESET_UPANEL_BACK, false );	// pin w stanie niskim = reset
+
+	tri_state( PIN_PROGRAMMER_RESET_CARRET, true );			// pin w stanie niskim = reset
+	tri_state( PIN_PROGRAMMER_RESET_UPANEL_FRONT, true );   // pin w stanie niskim = reset
+	tri_state( PIN_PROGRAMMER_RESET_UPANEL_BACK, true );	// pin w stanie niskim = reset
+}
+void reset_wire2(){
+	sendln2android("RWIRE2");
+	tri_state( PIN_PROGRAMMER_RESET_CARRET, false );		// pin w stanie niskim = reset
+	tri_state( PIN_PROGRAMMER_RESET_UPANEL_FRONT, false );	// pin w stanie niskim = reset
+	tri_state( PIN_PROGRAMMER_RESET_UPANEL_BACK, false );	// pin w stanie niskim = reset
+	tri_state( PIN_PROGRAMMER_RESET_MASTER, false );		// resetuje maszynê, odbiera sterowanie
+}
+
 uint8_t GetTemp(){
   // The internal temperature has to be used
   // with the internal reference of 1.1V.
@@ -936,8 +917,7 @@ uint8_t GetTemp(){
   // Detect end-of-conversion
   while (bit_is_set(ADCSRA,ADSC));
   // Reading register "ADCW" takes care of how to read ADCL and ADCH.
-  uint8_t wADC = ADCW;
-  return wADC;
+  return ADCW;
 }
 
  
@@ -972,50 +952,21 @@ typedef struct param {
 	//  int flashsize;
 } parameter;
 parameter param;
- 
-void programmer_mode( boolean active, byte serial_baud_num, boolean slow_sck ) {
-	if(active){
-		prog_mode = true;
-		// disable stepper
-		stepperX.disableOutputs();
 
-		if( serial_baud_num ){
-			Serial.begin(115200);
-		}else{
-			Serial.begin(PROGRAMMER_SERIAL0_BOUND);
-		}
-		if (slow_sck){
-			spi_init = sw_spi_init;
-			spi_send = sw_spi_send;
-		} else {
-			spi_init = hw_spi_init;
-			spi_send = hw_spi_send;
-		}
-		pulse(PIN_PROGRAMMER_LED_ACTIVE, 2);
-		pulse(PIN_PROGRAMMER_LED_ERROR, 2);
-		pulse(PIN_PROGRAMMER_LED_STATE, 2);
-		while(prog_mode){
-			digitalWrite(PIN_PROGRAMMER_LED_ERROR, !error);
-			heartbeat();
-			if (Serial.available()) {
-				simulateisp();
-			}
-		}
-	}else{
-		digitalWrite(PIN_PROGRAMMER_LED_ACTIVE, LOW );
-		digitalWrite(PIN_PROGRAMMER_LED_ERROR, LOW );
-		digitalWrite(PIN_PROGRAMMER_LED_STATE, LOW );
-		pinMode(MISO, INPUT);
-		pinMode(MOSI, INPUT);
-		pinMode(SCK, INPUT);
-		prog_mode = false;
-		Serial.flush();
-		Serial.begin(MAINBOARD_SERIAL0_BOUND);
-		if(reprogramm_address){		// unlock device
-			reset_device_next_to( reprogramm_address, HIGH);
-		}else if(reprogramm_index){
-			reset_device_num( reprogramm_index, HIGH);
-		}
+void programmer_mode(){
+	digitalWrite(PIN_PROGRAMMER_LED_ACTIVE, LOW );
+	digitalWrite(PIN_PROGRAMMER_LED_ERROR, LOW );
+	digitalWrite(PIN_PROGRAMMER_LED_STATE, LOW );
+	pinMode(MISO, INPUT);
+	pinMode(MOSI, INPUT);
+	pinMode(SCK, INPUT);
+	prog_mode = false;
+	Serial.flush();
+	Serial.begin(MAINBOARD_SERIAL0_BOUND);
+	if(reprogramm_address){		// unlock device
+		reset_device_next_to( reprogramm_address, HIGH);
+	}else if(reprogramm_index){
+		reset_device_num( reprogramm_index, HIGH);
 	}
 }
 void start_pmode() {
@@ -1102,33 +1053,29 @@ uint8_t spi_transaction(uint8_t a, uint8_t b, uint8_t c, uint8_t d) {
  
 void empty_reply() {
 	if (CRC_EOP == getch()) {
-		Serial.print((char)STK_INSYNC);
-		Serial.print((char)STK_OK);
+		Serial.print( (char)STK_INSYNC );
+		Serial.print( (char)STK_OK );
 	} else {
 		error = true;
-		Serial.print((char)STK_NOSYNC);
+		Serial.print( (char)STK_NOSYNC );
 	}
 }
  
 void breply(uint8_t b) {
 	if (CRC_EOP == getch()) {
-		Serial.print((char)STK_INSYNC);
-		Serial.print((char)b);
-		Serial.print((char)STK_OK);
+		Serial.print( (char)STK_INSYNC );
+		Serial.print( (char)b );
+		Serial.print( (char)STK_OK );
 	} else {
 		error = true;
-		Serial.print((char)STK_NOSYNC);
+		Serial.print( (char)STK_NOSYNC );
 	}
 }
  
 uint8_t sw_spi_send(uint8_t b) {
 	unsigned static char msk[] = { 0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01 };
-	 
-	 
 	uint8_t reply=0;
 	char bits[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
-	 
-	 
 	for(uint8_t _bit = 0;_bit < 8;_bit++){
 		digitalWrite(MOSI, !!(b & msk[_bit]));
 		delayMicroseconds(QUARTER_PERIOD);
@@ -1147,19 +1094,19 @@ void sw_spi_init() {
 void get_version(uint8_t c) {
 	switch(c) {
 		case 0x80:
-		breply(HWVER);
+			breply(HWVER);
 		break;
 		case 0x81:
-		breply(SWMAJ);
+			breply(SWMAJ);
 		break;
 		case 0x82:
-		breply(SWMIN);
+			breply(SWMIN);
 		break;
 		case 0x93:
-		breply('S'); // serial programmer
+			breply('S'); // serial programmer
 		break;
 		default:
-		breply(0);
+			breply(0);
 	}
 }
  
@@ -1191,10 +1138,7 @@ void universal(){
 }
  
 void flash(uint8_t hilo, int addr, uint8_t data) {
-	spi_transaction(0x40+8*hilo,
-	addr>>8 & 0xFF,
-	addr & 0xFF,
-	data);
+	spi_transaction(0x40+8*hilo,addr>>8 & 0xFF,addr & 0xFF,data);
 }
  
 void commit(int addr) {
@@ -1216,8 +1160,6 @@ void write_flash(int length) {
 		Serial.print((char) STK_INSYNC);
 		Serial.print((char) write_flash_pages(length));
 	}else {
-		 
-		 
 		error = true;
 		Serial.print((char) STK_NOSYNC);
 	}
@@ -1332,62 +1274,62 @@ void simulateisp() {
 		}
 		break;
 		case 'A':
-		get_version(getch());
+			get_version(getch());
 		break;
 		case 'B':
-		fill(20);
-		set_parameters();
-		empty_reply();
+			fill(20);
+			set_parameters();
+			empty_reply();
 		break;
 		case 'E':
-		fill(5);
-		empty_reply();
+			fill(5);
+			empty_reply();
 		break;
 		case 'P':      //0x50
-		start_pmode();
-		empty_reply();
+			start_pmode();
+			empty_reply();
 		break;
 		case 'U': // set address (word)
-		here = getch();
-		here += 256 * getch();
-		empty_reply();
+			here = getch();
+			here += 256 * getch();
+			empty_reply();
 		break;
 		case 'Q': //0x51
-		error=false;
-		if (CRC_EOP == getch()) {
-			Serial.print((char)STK_INSYNC);
-			Serial.print((char)STK_OK);
-		} else {
-			error = true;
-			Serial.print((char)STK_NOSYNC);
-		}
-		//    Serial.print((char) STK_INSYNC);  // 0x14
-		//    Serial.print((char) STK_OK);  // 0x10
-		programmer_mode(false, 0, false );
+			error=false;
+			if (CRC_EOP == getch()) {
+				Serial.print((char)STK_INSYNC);
+				Serial.print((char)STK_OK);
+			} else {
+				error = true;
+				Serial.print((char)STK_NOSYNC);
+			}
+			//    Serial.print((char) STK_INSYNC);  // 0x14
+			//    Serial.print((char) STK_OK);  // 0x10
+			programmer_mode();
 		break;
 		case 'V': //0x56
-		universal();
+			universal();
 		break;
 		case 0x60: //STK_PROG_FLASH
-		low = getch();
-		high = getch();
-		empty_reply();
+			low = getch();
+			high = getch();
+			empty_reply();
 		break;
 		case 0x61: //STK_PROG_DATA
-		data = getch();
-		empty_reply();
+			data = getch();
+			empty_reply();
 		break;
 		case 0x64: //STK_PROG_PAGE
-		program_page();
+			program_page();
 		break;
 		case 0x74: //STK_READ_PAGE 't'
-		read_page();
+			read_page();
 		break;
 		case 0x75: //STK_READ_SIGN 'u'
-		read_signature();
+			read_signature();
 		break;
 		case CRC_EOP:
-		Serial.print((char) STK_NOSYNC);
+			Serial.print((char) STK_NOSYNC);
 		break;
 		default:
 		char r = STK_NOSYNC;
@@ -1407,3 +1349,26 @@ void simulateisp() {
 }*/
 }
  
+/*
+void scann_i2c(){
+  byte nDevices=0;
+  byte error=0;
+  for(byte addr2 = 1; addr2 < 20; addr2++ )   {
+    stepperX.run();
+   error =checkAddress(I2C_ADR_RESERVED);
+    delay(20);
+    if (error == 0){
+      DEBUG("-dev @");
+      printHex(addr2, false );
+      uint16_t readed = i2c_getVersion(addr2);
+      DEBUG(" type: ");
+      printHex( readed>>8, false );        // starsze bity = typ
+      DEBUG(" ver: ");
+      printHex( readed & 0xff, false );    // mÅ‚odsze bity = ver
+      DEBUGLN("");
+      nDevices++;
+    }else{
+//     DEBUGLN("RET: "+String(addr2)+" / "+String(error));
+    }
+  }
+}*/

@@ -88,8 +88,6 @@ public abstract class I2C_Device_Imp implements I2C_Device{
 		}
 		return command;
 	}
-	
-	
 
 	public String uploadCode(Hardware hw, String filePath) {
 		String command = IspSettings.avrDudePath + " -C"+ IspSettings.configPath +" "+ IspSettings.verbose()+ " " +

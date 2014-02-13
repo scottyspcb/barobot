@@ -40,16 +40,19 @@ public class Main {
 		IspSettings.setHex	= true;
 		IspSettings.force = false;
 
+		//w.prepareSlaveMB( hw );
 	//	w.test( hw );
 	//	w.findOrder( hw );
 	//	Wizard.wait(1000);
 	//	w.checkCarret( hw );
+
 	//	w.prepareMB( hw );
-	//	w.prepareSlaveMB( hw );
 		w.prepareCarret( hw );
+	//	w.prepareUpanel( hw );
+
 	//	w.prepareUpanel(hw);
 	//	w.clearUpanel( hw );
-	//	w.preparePCB( hw );
+	//	
 		/*
 		int repeat = 2;
 		while(repeat-->0){

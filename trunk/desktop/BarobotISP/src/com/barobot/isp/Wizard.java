@@ -468,6 +468,7 @@ public class Wizard {
 			run(command, hw);
 			wait(1000);
 		}
+		wait(5000);		// wait for arduino bootloader
 		hw.close();
 	}
 /*
