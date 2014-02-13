@@ -44,7 +44,6 @@
 
 	/*------------------ MAINBOARD -------------------*/
 	#if IS_MAINBOARD
-
 		#define CPU_F MAINBOARD_F_CPU
 		#define MAINBOARD_USE_BT false
 		#define MAINBOARD_USE_SERIAL0 true
@@ -53,54 +52,56 @@
 		#define MAINBOARD_BT_BOUND 115200
 		#define MAINBOARD_BT_DEV_NAME "barobotA"
 
-
 		// czy wyl¹czaj stepper X gdy zajechal za miejsce?
 		#define MAINBOARD_STEPPER_READY_DISABLE true
 		#define MAINBOARD_SERVO_4PIN false
-
 		#define MAINBOARD_BUFFER_LENGTH 3
 
 		// domyslnie ustawienie mocy silnikow Xy
 		#if MAINBOARD_SERVO_4PIN==true
-		  #define MAINBOARD_SPEEDX 400
-		  #define MAINBOARD_ACCELERX 1050
-		  #define MAINBOARD_XLENGTH 1700
+			#define MAINBOARD_SPEEDX 400
+			#define MAINBOARD_ACCELERX 1050
+			#define MAINBOARD_XLENGTH 1700
+			#define PIN_MAINBOARD_STEPPER_STEP0 14			// A0
+			#define PIN_MAINBOARD_STEPPER_STEP1 15			// A1
+			#define PIN_MAINBOARD_STEPPER_STEP2 16			// A2
+			#define PIN_MAINBOARD_STEPPER_STEP3 17			// A3
 		#else
-		  #define MAINBOARD_SPEEDX 4000
-		  #define MAINBOARD_ACCELERX 9000
-		  #define MAINBOARD_XLENGTH 12700
-		#endif
-
-		// silniki 2-pin (easy driver, palulu)
-			#define PIN_MAINBOARD_STEPPER_ENABLE 14			// arduino PIN 14
+			// driver 4-pin (LMxxxx)
+			#define MAINBOARD_SPEEDX 4000
+			#define MAINBOARD_ACCELERX 9000
+			#define MAINBOARD_XLENGTH 12700
+			#define PIN_MAINBOARD_STEPPER_ENABLE 14			// A0
 			#define PIN_MAINBOARD_STEPPER_STEP 4
 			#define PIN_MAINBOARD_STEPPER_DIR 5
+		#endif
 
-			#define PIN_MAINBOARD_STEPPER_MS1 15			// microstepping controll 1
-			#define PIN_MAINBOARD_STEPPER_MS2 16			// microstepping controll 2
-			#define PIN_MAINBOARD_STEPPER_MS3 17			// microstepping controll 3
-
-		// silniki 4-pin (LMxxxx)
-			#define PIN_MAINBOARD_STEPPER_STEP0 14
-			#define PIN_MAINBOARD_STEPPER_STEP1 15
-			#define PIN_MAINBOARD_STEPPER_STEP2 16
-			#define PIN_MAINBOARD_STEPPER_STEP3 17
+		#define PIN_MAINBOARD_SDA SDA			// arduino 18 A4
+		#define PIN_MAINBOARD_SCL SCL			// arduino 19 A5
 
 		// Set as INPUT to allow programming over ISP
 		#define PIN_MAINBOARD_SCK SCK			// 13
 		#define PIN_MAINBOARD_MISO MISO			// 11
 		#define PIN_MAINBOARD_MOSI MOSI			// 12
-		
-		
-		
-		#define PIN_MAINBOARD_CURRENT_X	A3
+
+		#define PIN_MAINBOARD_CURRENT_X		A7
 		#define PIN_MAINBOARD_TABLET_PWR	A6
 	//	#define VPIN_TEMP_MB	8
 
+		#define PIN_PROGRAMMER_RESET_UPANEL_FRONT 8
+		#define PIN_PROGRAMMER_RESET_UPANEL_BACK 2
+		#define PIN_PROGRAMMER_RESET_CARRET 7
+		#define PIN_PROGRAMMER_RESET_MASTER 17		// A3
 
-		#define PIN_MAINBOARD_SDA SDA			// arduino 18
-		#define PIN_MAINBOARD_SCL SCL			// arduino 19
-		
+		// PIN 10 czyli SlaveSelect (SS) musi byæ jako output gdziekolwiek aby SPI dzia³a³o
+		#define PIN_PROGRAMMER_LED_OTHER   	3
+		// 	Lights up if something goes wrong (use red if that makes sense)
+		#define PIN_PROGRAMMER_LED_ERROR   	10
+		// 	shows the programmer is running
+		#define PIN_PROGRAMMER_LED_ACTIVE	6
+		// 	In communication with the slave
+		#define PIN_PROGRAMMER_LED_STATE    9
+
 		#if IS_PROGRAMMER	
 			#define HWVER		2
 			#define SWMAJ		1
@@ -114,29 +115,10 @@
 			#define CRC_EOP     0x20
 			#define beget16(addr) (*addr * 256 + *(addr+1) )
 
-
 			//#define PROGRAMMER_SERIAL0_BOUND 115200
 			#define PROGRAMMER_SERIAL0_BOUND 19200
-			//#define PIN_PROGRAMMER_RESET_MAINBOARD 7
-
-			
-			// PIN 10 czyli SlaveSelect (SS) musi byæ jako output gdziekolwiek aby SPI dzia³a³o
-
-			#define PIN_PROGRAMMER_LED_OTHER   	3
-			#define PIN_PROGRAMMER_LED_ERROR   	10
-			// 	Lights up if something goes wrong (use red if that makes sense)
-			#define PIN_PROGRAMMER_LED_ACTIVE	6
-			// 	shows the programmer is running
-			#define PIN_PROGRAMMER_LED_STATE    9
-			// 	In communication with the slave
-
-			#define PIN_PROGRAMMER_RESET_UPANEL_FRONT 8
-			#define PIN_PROGRAMMER_RESET_UPANEL_BACK 2
-			#define PIN_PROGRAMMER_RESET_CARRET 7
-			#define PIN_PROGRAMMER_RESET_MASTER 15
-
-			#define PROGRAMMER_METHOD_PIN	true
-			#define PROGRAMMER_METHOD_RPC	false
+		//	#define PROGRAMMER_METHOD_PIN	true
+		//	#define PROGRAMMER_METHOD_RPC	false
 		#endif
 	#endif
 
@@ -585,14 +567,6 @@ D:\PROG\arduino-1.0.5\hardware/tools/avr/bin/avrdude -CD:\PROG\arduino-1.0.5\har
 
 
 
-3F
-
-
-
-D:\PROG\arduino-1.0.5\hardware/tools/avr/bin/avrdude -CD:\PROG\arduino-1.0.5\hardware/tools/avr/etc/avrdude.conf -v -v -v -v -cstk500v1 -p m328p -u  -P\\.\COM39 -b19200 -U lfuse:r:-:h -U hfuse:r:-:h -U efuse:r:-:h -U lock:r:-:h
-
-
-
 -------- UPANEL ATMEGA 8 FUSE TEST -------
 D:\PROG\arduino-1.0.5\hardware/tools/avr/bin/avrdude -CD:\PROG\arduino-1.0.5\hardware\tools\avr\etc\avrdude.conf -v -v -v -v -D -patmega8 -cstk500v1 -P\\.\COM39 -b19200 -U lfuse:r:-:h -U hfuse:r:-:h -U efuse:r:-:h -U lock:r:-:h
 -----------------------------
@@ -602,6 +576,14 @@ D:\PROG\arduino-1.0.5\hardware/tools/avr/bin/avrdude -CD:\PROG\arduino-1.0.5\har
 
 -------- MB ATMEGA 328 CODE --------
 D:\PROG\arduino-1.0.5\hardware\tools\avr\bin\avrdude -C"D:\PROG\arduino-1.0.5\hardware\tools\avr\etc\avrdude.conf" -q -q  -patmega328p -carduino -P\\.\COM39 -b57600 -D -Uflash:w:"c:\workspace\barobot\arduino\projects2\barobot_mainboard\build\barobot_mainboard.hex":i
+
+
+
+
+
+
+
+
 
 -----------------------------
 

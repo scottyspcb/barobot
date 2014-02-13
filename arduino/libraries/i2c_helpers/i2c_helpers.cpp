@@ -130,11 +130,11 @@ void delay2( word ww ){
 	++ww;	// jesli wstawilem zero to masakra
     while( --ww ){
 		// F_CPU =  8000000L or 16000000L
-		uint16_t wait = 50000;		//65536max
-		//uint16_t wait = F_CPU/8000;		//65536max, 1000
-      while(--wait ){
-        asm("nop");
-      }
+		//uint16_t wait = 50000;		//65536max
+		uint16_t wait = F_CPU/8000;		//65536max, 1000
+		while(--wait ){
+			asm("nop");
+		}
     }
 }
 
