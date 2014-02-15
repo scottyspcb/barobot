@@ -84,6 +84,7 @@ public class Wizard {
 		int device_found  = current_dev.resetAndReadI2c( hw );
 		if( device_found > 0 ){		// pierwszy ma adres com.barobot.i2c
 			System.out.println("+Upanel " + current_index + " ma adres " + device_found);
+			wait(2000);
 			current_dev.setAddress(device_found);
 			prog_next_to( hw, current_dev, current_index+1, upanel_code );
 		}else{
@@ -158,77 +159,65 @@ public class Wizard {
 		}
 
 		hw.connect();
-		int repeat = 100;
+		int repeat = 20;
 
 		System.out.println("Start" );
 		
 		int time = 30;
 		while (repeat-- > 0){
 			for (I2C_Device u : Upanel.list){
-				u.setLed( hw, "0x0e", 255 );	// zgas
-				u.setLed( hw, "0xf1", 0 );		// zgas
-				u.setLed( hw, "0x01", 255 );
+				u.setLed( hw, "0xff", 0 );	// zgas
 			}
 			wait(time);	
-			
-			for (I2C_Device u : Upanel.list){
-				u.setLed( hw, "0x0e", 255 );	// zgas
-				u.setLed( hw, "0xf1", 0 );		// zgas
 
-				u.setLed( hw, "0x02", 0 );
+			for (I2C_Device u : Upanel.list){
+				u.setLed( hw, "0xff", 0 );	// zgas
+				u.setLed( hw, "0x01", 255 );
+			}
+			for (I2C_Device u : Upanel.list){
+				u.setLed( hw, "0xff", 0 );	// zgas
+				u.setLed( hw, "0x02", 255 );
 			}
 			wait(time);	
 			
 	
 			for (I2C_Device u : Upanel.list){
-				u.setLed( hw, "0x0e", 255 );	// zgas
-				u.setLed( hw, "0xf1", 0 );		// zgas
-
-				u.setLed( hw, "0x04", 0 );
+				u.setLed( hw, "0xff", 0 );	// zgas
+				u.setLed( hw, "0x04", 255 );
 			}
 			wait(time);		
 			
 			
 			for (I2C_Device u : Upanel.list){
-				u.setLed( hw, "0x0e", 255 );	// zgas
-				u.setLed( hw, "0xf1", 0 );		// zgas
-
-				u.setLed( hw, "0x08", 0 );
+				u.setLed( hw, "0xff", 0 );	// zgas
+				u.setLed( hw, "0x08", 255 );
 			}
 			wait(time);	
 			
 			
 			
 			for (I2C_Device u : Upanel.list){
-				u.setLed( hw, "0x0e", 255 );	// zgas
-				u.setLed( hw, "0xf1", 0 );		// zgas
-
+				u.setLed( hw, "0xff", 0 );	// zgas
 				u.setLed( hw, "0x10", 255 );
 			}
 			wait(time);	
 			
 
 			for (I2C_Device u : Upanel.list){
-				u.setLed( hw, "0x0e", 255 );	// zgas
-				u.setLed( hw, "0xf1", 0 );		// zgas
-
+				u.setLed( hw, "0xff", 0 );	// zgas
 				u.setLed( hw, "0x20", 255 );
 			}
 			wait(time);	
 			
 			for (I2C_Device u : Upanel.list){
-				u.setLed( hw, "0x0e", 255 );	// zgas
-				u.setLed( hw, "0xf1", 0 );		// zgas
-
+				u.setLed( hw, "0xff", 0 );	// zgas
 				u.setLed( hw, "0x40", 255 );
 			}
 			wait(time);
 			
 			
 			for (I2C_Device u : Upanel.list){
-				u.setLed( hw, "0x0e", 255 );	// zgas
-				u.setLed( hw, "0xf1", 0 );		// zgas
-
+				u.setLed( hw, "0xff", 0 );	// zgas
 				u.setLed( hw, "0x80", 255 );
 			}
 			wait(time);
@@ -244,79 +233,67 @@ public class Wizard {
 
 		int time = 900;
 		for (I2C_Device u2 : Upanel.list){
-			u2.setLed( hw, "0x0e", 255 );	// zgas
-			u2.setLed( hw, "0xf1", 0 );		// zgas
+			u2.setLed( hw, "0xff", 0 );	// zgas
 		}
 
 		for (I2C_Device u : Upanel.list){
 
 			wait(time);
 
-				u.setLed( hw, "0x0e", 0 );
-				u.setLed( hw, "0xf1", 255 );
+			u.setLed( hw, "0xff", 0 );	// zgas
 
 			wait(time);
 			
 		
-				u.setLed( hw, "0x0e", 255 );	// zgas
-				u.setLed( hw, "0xf1", 0 );		// zgas
+			u.setLed( hw, "0xff", 0 );	// zgas
 				u.setLed( hw, "0x01", 255 );
 			
 			wait(time);	
 			
 	
-				u.setLed( hw, "0x0e", 255 );	// zgas
-				u.setLed( hw, "0xf1", 0 );		// zgas
-				u.setLed( hw, "0x02", 0 );
+			u.setLed( hw, "0xff", 0 );	// zgas
+				u.setLed( hw, "0x02", 255 );
 			
 			wait(time);	
 			
 
-				u.setLed( hw, "0x0e", 255 );	// zgas
-				u.setLed( hw, "0xf1", 0 );		// zgas
-				u.setLed( hw, "0x04", 0 );
+			u.setLed( hw, "0xff", 0 );	// zgas
+				u.setLed( hw, "0x04", 255 );
 			
 			wait(time);		
 			
 			
 			
-				u.setLed( hw, "0x0e", 255 );	// zgas
-				u.setLed( hw, "0xf1", 0 );		// zgas
-				u.setLed( hw, "0x08", 0 );
+			u.setLed( hw, "0xff", 0 );	// zgas
+				u.setLed( hw, "0x08", 255 );
 			
 			wait(time);	
 			
-
-				u.setLed( hw, "0x0e", 255 );	// zgas
-				u.setLed( hw, "0xf1", 0 );		// zgas
+			u.setLed( hw, "0xff", 0 );	// zgas
 				u.setLed( hw, "0x10", 255 );
 	
 			wait(time);	
 			
 
 			
-				u.setLed( hw, "0x0e", 255 );	// zgas
-				u.setLed( hw, "0xf1", 0 );		// zgas
+			u.setLed( hw, "0xff", 0 );	// zgas
 				u.setLed( hw, "0x20", 255 );
 			
 			wait(time);	
 			
 			
-				u.setLed( hw, "0x0e", 255 );	// zgas
-				u.setLed( hw, "0xf1", 0 );		// zgas
+			u.setLed( hw, "0xff", 0 );	// zgas
 				u.setLed( hw, "0x40", 255 );
 			
 			wait(time);
 			
 
-				u.setLed( hw, "0x0e", 255 );	// zgas
-				u.setLed( hw, "0xf1", 0 );		// zgas
+			u.setLed( hw, "0xff", 0 );	// zgas
 				u.setLed( hw, "0x80", 255 );
 			
 			wait(time);		
 
-			u.setLed( hw, "0x0e", 255 );	// zgas
-			u.setLed( hw, "0xf1", 0 );		// zgas
+			u.setLed( hw, "0xff", 0 );	// zgas
 
 		}
 		hw.close();
@@ -333,20 +310,18 @@ public class Wizard {
 		while (repeat-- > 0){
 
 			for (I2C_Device u : Upanel.list){
-				u.setLed( hw, "0x0e", 255 );	// zgas
-				u.setLed( hw, "0xf1", 0 );		// zgas
+				u.setLed( hw, "0xff", 0 );	// zgas
 			}
 			wait(time);	
 			
 			for (I2C_Device u : Upanel.list){
-				u.setLed( hw, "0x0e", 255 );	// zgas
-				u.setLed( hw, "0xf1", 0 );		// zgas
-				
+				u.setLed( hw, "0xff", 0 );	// zgas
+
 			//	u.setLed( hw, "0x02", 0 );		// bottom green
 			//	u.setLed( hw, "0x08", 0 );		// bottom blue
 			//	u.setLed( hw, "0x04", 0 );		// bottom red 
 
-				u.setLed( hw, "0x0E", 0 );	// top RGB
+				u.setLed( hw, "0x07", 255 );	// top RGB
 
 			//	u.setLed( hw, "0x10", 255 );	// top green
 			//	u.setLed( hw, "0x20", 255 );	// top blue
@@ -356,10 +331,8 @@ public class Wizard {
 			
 			
 			for (I2C_Device u : Upanel.list){
-				u.setLed( hw, "0x0e", 255 );	// zgas
-				u.setLed( hw, "0xf1", 0 );		// zgas
-
-				u.setLed( hw, "0x7E", 255 );	// boottm RGB
+				u.setLed( hw, "0xff", 0 );	// zgas
+				u.setLed( hw, "0x70", 255 );	// boottm RGB
 
 			}
 			wait(time);			
@@ -490,6 +463,25 @@ public class Wizard {
 		}
 		hw.close();
 	}*/
+	public void prepare1Upanel(Hardware hw) {
+		String command = "";
+		hw.connect();
+		Upanel current_dev	= new Upanel( 3, 0 );
+		String upanel_code = current_dev.getHexFile();
+		if( IspSettings.setFuseBits){
+			current_dev.isp(hw);
+			command = current_dev.setFuseBits(hw);
+			run(command, hw);
+			wait(2000);
+		}
+		if(IspSettings.setHex){
+			current_dev.isp(hw);
+			command = current_dev.uploadCode(hw, upanel_code );
+			run(command, hw);
+			wait(2000);
+		}
+		hw.close();
+	}
 }
 
 /**

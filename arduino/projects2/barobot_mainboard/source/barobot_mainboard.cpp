@@ -67,7 +67,7 @@ void setup(){
 	pinMode(PIN_PROGRAMMER_LED_ACTIVE, OUTPUT);
 	pinMode(PIN_PROGRAMMER_LED_ERROR, OUTPUT);
 	pinMode(PIN_PROGRAMMER_LED_STATE, OUTPUT);
-	
+
 	digitalWrite( PIN_PROGRAMMER_LED_ACTIVE, LOW);
 	digitalWrite( PIN_PROGRAMMER_LED_ERROR, LOW);
 	digitalWrite( PIN_PROGRAMMER_LED_STATE, LOW);
@@ -90,7 +90,6 @@ void setupStepper(){
 	stepperX.setPinsInverted( false, false, true ); // enable pin invert
 	stepperX.setAcceleration(MAINBOARD_ACCELERX);
 	stepperX.setMaxSpeed(MAINBOARD_SPEEDX);
-
 	stepperX.onReady(stepperReady);
 	FlexiTimer2::set(1, 1.0/3000, timer);
 	FlexiTimer2::start();
@@ -101,13 +100,19 @@ void timer(){
 	timer_now = true;
 }
 
+byte divisor = 1;
+
 void loop(){
-	if(timer_now == 0 ){
-		timer_now = false;
-		check_i2c();    // czy linia jest drozna?
-		DEBUGLN("-HELLO ");
-//		DEBUGLN(String(mil));
+	if(!timer_counter){
+		divisor++;
+		if(!divisor){
+			timer_now = false;
+	//		check_i2c();    // czy linia jest drozna?
+			DEBUGLN("-HELLO ");
+	//		DEBUGLN(String(mil));
+		}
 	}
+
 	if (Console0Complete) {
 		parseInput( serial0Buffer );				      // parsuj wejscie
 		Console0Complete = false;
@@ -231,7 +236,22 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 		read_prog_settings(input, 1, 1);
 		defaultResult = false;
 		return;
-
+	}else if( input.startsWith("RESET_NEXT")) {			// RESET12
+		String digits     = input.substring( 10 );
+		char charBuf[4];
+		digits.toCharArray(charBuf,4);
+		unsigned int num    = 0;
+		sscanf(charBuf,"%i", &num );
+		byte error =checkAddress(num);
+		if (error == 0){
+			delay(200);
+			reset_device_next_to(num, LOW);
+			delay(1000);
+			reset_device_next_to(num, HIGH);
+		}else{  //error
+			defaultResult = false;
+			send_error(input);
+		}
 	}else if( input.startsWith("RESET")) {    // RESET0; RESET1; RESET2 
 		String digits     = input.substring( 5 );
 		char charBuf[10];
@@ -243,22 +263,6 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 		if(ret){
 			delay(1000);
 			reset_device_num(num, HIGH);
-		}else{  //error
-			defaultResult = false;
-			send_error(input);
-		}
-	}else if( input.startsWith("RESET_NEXT")) {			// RESET12
-		String digits     = input.substring( 10 );
-		char charBuf[6];
-		digits.toCharArray(charBuf,6);
-		unsigned int num    = 0;
-		sscanf(charBuf,"%i", &num );
-		byte error =checkAddress(num);
-		if (error == 0){
-			delay(200);
-			reset_device_next_to(num, LOW);
-			delay(1000);
-			reset_device_next_to(num, HIGH);
 		}else{  //error
 			defaultResult = false;
 			send_error(input);
@@ -552,7 +556,7 @@ void i2c_test_slaves(){
 				printHex( (readed>>8), false );
 				printHex( (readed & 0xff) );
 			}
-			test_slave( aaa, 5 );
+			test_slave( aaa, 15 );
 		} else if (error==4){
 			DEBUG("-!Unknow error at address 0x");
 			printHex(aaa );

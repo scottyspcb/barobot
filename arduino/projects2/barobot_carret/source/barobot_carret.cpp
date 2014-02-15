@@ -12,6 +12,7 @@
 #include <avr/io.h>
 //#include <stdint.h>       // needed for uint8_t
 #include <avr/interrupt.h>
+#include <avr/io.h>
 
 #define ANALOGS  6
 #define ANALOG_TRIES  4
@@ -60,8 +61,49 @@ byte analog_repeat = 0;
 byte analog_pos = 0;
 byteint analog_sum;
 // koniec oscyloskop
- 
+
 boolean diddd = false;
+
+unsigned long milisAnalog = 0;
+unsigned long mil = 0;
+unsigned long milis1000 = 0;
+unsigned long milis2000 = 0;
+byte iii = 0;
+ 
+int16_t typical_neutral = 511;
+int16_t threshold       = 30;
+int16_t enstrop_max     = 511;
+int16_t enstrop_min     = 511;
+
+boolean is_up    = false;
+boolean neutral  = false;
+boolean is_down  = false;
+boolean is_rising  = false;
+boolean is_falling  = false;
+boolean send_min  = false;
+boolean send_max  = false;
+boolean send_lmin  = false;
+boolean send_lmax  = false;
+
+#define HISTORY_LENGTH  7
+#define ENDSTOP_DIFF  100
+#define WAVING  6
+
+//int16_t historyx[HISTORY_LENGTH]  = {typical_neutral,typical_neutral,typical_neutral,typical_neutral,typical_neutral,typical_neutral,typical_neutral};
+//int8_t historyx_index  = 0;
+//int16_t cc = 0;
+
+#define SEPARATOR_CHAR '\n'
+#define TRIES  10
+String serial0Buffer = "";
+boolean Console0Complete = false;   // This will be set to true once we have a full string
+
+unsigned long int when_next = 0;
+unsigned long int sending = 0b11001101;
+unsigned long int time = 100;
+unsigned long int sum = 0;
+unsigned long int repeat = 0;
+
 
 void setup(){
 	pinMode(PIN_CARRET_SCK, INPUT );         // stan wysokiej impedancji
@@ -79,7 +121,7 @@ void setup(){
 	pinMode(PIN_CARRET_CURRENTZ, INPUT);
 
 	init_leds();
-
+	serial0Buffer = "";
 	DEBUGINIT();
 	DEBUGLN("-wozek start");
 	my_address = I2C_ADR_CARRET;
@@ -89,56 +131,41 @@ void setup(){
 	send_here_i_am();  // wyslij ze oto jestem
 	FlexiTimer2::set(40, 1.0/100, timer);
 	FlexiTimer2::start();
-	init_analogs();
-
-	DW(_pwm_channels[0].pin, 0 );
-	DW(_pwm_channels[1].pin, 1 );	
+//	init_analogs();
 }
- 
+
 void init_leds(){
 	for (uint8_t i = 0; i < COUNT_CARRET_ONBOARD_LED; ++i){
 		uint8_t pin = _pwm_channels[i].pin;
 		_pwm_channels[i].outport = portOutputRegister(digitalPinToPort(pin));
 		_pwm_channels[i].pinmask = digitalPinToBitMask(pin);
 		pinMode(pin, OUTPUT);
-		#if UPANEL_COMMON_ANODE
-		*_pwm_channels[i].outport |= _pwm_channels[i].pinmask;                // turn off the channel (set GND)
-		#else
-		*_pwm_channels[i].outport &= ~(_pwm_channels[i].pinmask);             // turn off the channel (set VCC)
-		#endif
+		set_pin(i, false);
 	}
 }
 
-unsigned long milisAnalog = 0;
-unsigned long mil = 0;
-unsigned long milis1000 = 0;
-unsigned long milis2000 = 0;
-byte iii = 0;
- 
-int16_t typical_neutral = 511;
-int16_t threshold       = 30;
-int16_t enstrop_max     = 511;
-int16_t enstrop_min     = 511;
- 
-boolean is_up    = false;
-boolean neutral  = false;
-boolean is_down  = false;
-boolean is_rising  = false;
-boolean is_falling  = false;
- 
-boolean send_min  = false;
-boolean send_max  = false;
-boolean send_lmin  = false;
-boolean send_lmax  = false;
- 
+byte common_anode = PIN_PANEL_LED_OFF_WHEN;
+void set_pin( byte pin, boolean value ){
+	boolean off_when = bitRead( common_anode, pin);
+	if( (value ^ off_when) == true ){
+	  *_pwm_channels[pin].outport |= _pwm_channels[pin].pinmask;
+	}else{
+	 *_pwm_channels[pin].outport &= ~(_pwm_channels[pin].pinmask);
+	}
+}
 
-#define HISTORY_LENGTH  7
-#define ENDSTOP_DIFF  100
-#define WAVING  6
-
-int16_t historyx[HISTORY_LENGTH]  = {typical_neutral,typical_neutral,typical_neutral,typical_neutral,typical_neutral,typical_neutral,typical_neutral};
-int8_t historyx_index  = 0;
-int16_t cc = 0;
+void sendVal( byte n ) {
+  /*
+  unsigned int value = ADCvalue[0][n];
+  if( value > 0 ){
+    for( byte i=1; i<=sum;i++){
+      value+= ADCvalue[i][n];
+    }
+  } */
+  int value =  analogRead( A0 + n ); 
+  Serial.print( value );  
+  Serial.print(",");  
+}
 
 void loop() {
 	mil = millis();
@@ -150,7 +177,7 @@ void loop() {
 			Serial.print( analog_num );
 			Serial.print( " " );
 			Serial.println( analog_sum );
-*/
+		*/
 			byte ttt[8] = {
 				METHOD_I2C_SLAVEMSG,
 				my_address, 
@@ -168,10 +195,31 @@ void loop() {
 		analog_pos++;
 		analog_sum.i	+= ADCvalue[0][analog_num];
 	}
+
+  if (Console0Complete) {
+    parseInput( serial0Buffer );                      // parsuj wejscie
+    Console0Complete = false;
+    serial0Buffer = "";
+  }
+  mil = millis();
+  if( mil > when_next ){    // debug, mrygaj co 1 sek
+      if( bitRead(sending, 0 ) ){  sendVal(0);   }
+      if( bitRead(sending, 1 ) ){  sendVal(1);   }
+      if( bitRead(sending, 2 ) ){  sendVal(2);   }
+      if( bitRead(sending, 3 ) ){  sendVal(3);   }
+      if( bitRead(sending, 4 ) ){  sendVal(4);   }
+      if( bitRead(sending, 5 ) ){  sendVal(5);   }
+      if( bitRead(sending, 6 ) ){  sendVal(6);   }
+      if( bitRead(sending, 7 ) ){  sendVal(7);   }
+      if( bitRead(sending, 8 ) ){  sendVal(8);   }
+      Serial.println();
+      when_next = mil + time;
+  }
 	// analizuj
 	// todo do znalezienia: local max, local min, global min, global max,
 	//      DW(_pwm_channels[6].pin, false);
 	//      DW(_pwm_channels[7].pin, false);
+	/*
 	cc++;
 	if(cc>200){
 		cli();
@@ -281,7 +329,7 @@ void loop() {
 				 
 				DEBUG( "\tval: " );
 				DEBUG( String(val1) );
-  /*
+  / *
                 DEBUG( "\tbA: " );
                 DEBUG( String( b1) );
   
@@ -290,7 +338,7 @@ void loop() {
   
                 DEBUG( "\tbC: " );
                 DEBUG( String( b3) );
-				*/
+				* /
 				//     DEBUG( String(val + b1) );
 				//    DEBUG( "\t" );
 				//    DEBUGLN( String(b2 + b3) );
@@ -307,11 +355,11 @@ void loop() {
 		}
 		historyx[historyx_index]  = val1;
 		historyx_index            = (historyx_index+1)%HISTORY_LENGTH;
-	}
+	}*/
 
 	update_servo( INNER_SERVOY );
 	update_servo( INNER_SERVOZ );
-	 
+
 	// analizuj bufor wejsciowy i2c
 	for( byte i=0;i<CARRET_BUFFER_LENGTH;i++){
 	//    if( input_buffer[i][0] >0 && bit_is_clear(input_buffer[i][0], 0 )){    // bez xxxx xxx1 b
@@ -323,7 +371,7 @@ void loop() {
 		}
 	}
 }
- 
+
 void update_servo( byte index ) {           // synchroniczne
 	if( servos[index].pos_changed == true && !prog_mode){  // mam byc gdzie indziej
 		//    DEBUG( "-przesuwam Y " );
@@ -347,6 +395,67 @@ void update_servo( byte index ) {           // synchroniczne
 		}
 	}
 }
+void parseInput( String input ){
+  byte command= input.charAt( 0 );
+  long unsigned int value= decodeInt( input, 1 );    // po komendzie zawsze jest liczba
+  if( command == '+'){
+    if(value < 10){
+      bitSet(sending,  value);
+    }
+    sendstats();
+  }else if( command == '-'){
+    if(value < 10){
+      bitClear(sending,  value);
+    } 
+    sendstats();
+  }else if( command == 'r'){
+    repeat = value;
+    sendstats();
+  }else if( command == 't'){
+    time = value;
+    sendstats();
+  }else if( command == 's'){
+    sum = value % TRIES;
+    sendstats();
+  }else if( command == 'c'){
+    sendstats();
+  }
+}
+void sendstats(){ 
+    DEBUG("state ");
+    if( bitRead(sending, 0 ) ){  DEBUG("0");   }
+    if( bitRead(sending, 1 ) ){  DEBUG("1");   }
+    if( bitRead(sending, 2 ) ){  DEBUG("2");   }
+    if( bitRead(sending, 3 ) ){  DEBUG("3");   }
+    if( bitRead(sending, 4 ) ){  DEBUG("4");   }
+    if( bitRead(sending, 5 ) ){  DEBUG("5");   }
+    if( bitRead(sending, 6 ) ){  DEBUG("6");   }
+    if( bitRead(sending, 7 ) ){  DEBUG("7");   }
+    if( bitRead(sending, 8 ) ){  DEBUG("8");   }
+    DEBUGLN("");
+    DEBUGLN("t" + String(time ));
+    DEBUGLN("s" + String(sum ));
+    DEBUGLN("r" + String(repeat) );
+}
+void serialEvent(){                       // FUNKCJA WBUDOWANA - zbieraj dane z serial0 i serial3 i skadaj w komendy
+  while (Serial.available() && !Console0Complete) {    // odczytuj gdy istnieja dane i poprzednie zostaly odczytane
+    char inChar = (char)Serial.read(); 
+    serial0Buffer += String(inChar);
+    if (inChar == SEPARATOR_CHAR) {
+      Console0Complete = true;
+    }
+  }
+}
+long unsigned decodeInt(String input, int odetnij ){
+  long pos = 0;
+  if(odetnij>0){
+    input = input.substring(odetnij);    // obetnij znaki z przodu
+  }
+  pos = input.toInt();
+  return pos;
+}
+
+
 
 void reload_servo( byte index ){      // in interrupt
 	volatile ServoChannel &ser = servos[index];
@@ -486,14 +595,9 @@ void proceed( volatile byte buffer[5] ){
 		while(i--){
 			if( bitRead(buffer[1], i) ){
 				_pwm_channels[i].pwmup = buffer[2];
-				if( buffer[2] > 0 ){
-					enable_pin(i);
-				}else{
-					disable_pin(i);
-				}
+				set_pin(i, (buffer[2] > 0));
 			}
 		}
-
 	}else if( buffer[0] == METHOD_SET_Y_POS ){
 		// on wire: low_byte, high_byte, speed
 		// in memory: 1=low_byte, 2=high_byte, 3=speed
@@ -734,7 +838,7 @@ void init_analogs(){
     ADCSRA |= (1 << ADSC);    // Start the ADC conversion
     sei();
 }
- 
+/*
 ISR(ADC_vect){
   uint8_t tmp  = ADMUX;            // read the value of ADMUX register
   tmp          &= 0xF8;            // starsze bity
@@ -747,14 +851,7 @@ ISR(ADC_vect){
   //checks++;
 }
  
-
-void disable_pin( byte pin ){
-   *_pwm_channels[pin].outport |= _pwm_channels[pin].pinmask;              // turn off the channel (set VCC)
-}
-void enable_pin( byte pin ){
-   *_pwm_channels[pin].outport &= ~(_pwm_channels[pin].pinmask);          // turn off the channel (set GND)
-}
-
+*/
  
 /*
   	if( mil > milis2000 ){    // debug, mrygaj co 1 sek

@@ -12,7 +12,7 @@
 //-------------------------------------------------------------------
  
 // Put yout declarations here
- 
+ long unsigned decodeInt(String input, int odetnij );
 //-------------------------------------------------------------------
  
 //===================================================================
@@ -25,8 +25,6 @@
 //		simply delete the lines below, with "&MM_DECLA" text
 //===================================================================
 //---- DO NOT DELETE THIS LINE -- @MM_DECLA_BEG@---------------------
-void enable_pin( byte pin );
-void disable_pin( byte pin );
 void init_analogs();
 byte localToGlobal( byte ind );
 byte globalToLocal( byte ind );
@@ -41,8 +39,13 @@ void run_to(byte index, byte sspeed, uint16_t target);
 void proceed( volatile byte buffer[5] );
 void timer();
 void reload_servo( byte index );
+void serialEvent();
+void sendstats();
+void parseInput( String input );
 void update_servo( byte index );
 void loop();
+void sendVal( byte n );
+void set_pin( byte pin, boolean value );
 void init_leds();
 void setup();
 //---- DO NOT DELETE THIS LINE -- @MM_DECLA_END@---------------------
