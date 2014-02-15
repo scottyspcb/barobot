@@ -7,22 +7,20 @@
 
 volatile bool use_local = false;
 volatile byte in_buffer1[5];
-long int milis1 = 0;
-long int milis4 = 0;
 boolean diddd = false;
 
 volatile uint8_t _isr_count = 0xff;
 volatile boolean pwmnow= false;
 volatile uint16_t timertime = 100;
-volatile unsigned long _nanotime = 0;
+//volatile unsigned long _nanotime = 0;
 volatile uint8_t _timediv= 0;
 volatile uint8_t checktime= 0;
 
 // debouncing
 boolean buttonState = HIGH;
 boolean lastButtonState = HIGH;            // default pull-up
-unsigned long lastDebounceTime = 0;
-unsigned long const debounceDelay = 30;
+uint8_t lastDebounceTime = 0;
+uint8_t const debounceDelay = 50;
 
 void setup(){
   DEBUGINIT();
@@ -36,33 +34,13 @@ void setup(){
   DDRC |= _BV(PC3);
   DDRB |= _BV(PB0) | _BV(PB1);
   DDRD |= _BV(PD3) | _BV(PD4) | _BV(PD5) | _BV(PD6) | _BV(PD7);
-  /*
-  pd6    06     
-  pd7    07     
-  pb0    08     
-  pb1    09     
-  pd3    03      
-  pd4    04      
-  pd5    05     
-  pc3    17 
-  */
-  
-  DW(PIN_PANEL_LED0_NUM, HIGH );
-  DW(PIN_PANEL_LED6_NUM, HIGH );
-  DW(PIN_PANEL_LED1_NUM, LOW );
-  DW(PIN_PANEL_LED2_NUM, LOW ); 
-  delay2(500); 
-  DW(PIN_PANEL_LED0_NUM, LOW );
-  DW(PIN_PANEL_LED6_NUM, LOW );
-  DW(PIN_PANEL_LED1_NUM, HIGH );
-  DW(PIN_PANEL_LED2_NUM, HIGH ); 
-  delay2(500); 
-  DW(PIN_PANEL_LED0_NUM, HIGH );
-  DW(PIN_PANEL_LED6_NUM, HIGH );
-  DW(PIN_PANEL_LED1_NUM, LOW );
-  DW(PIN_PANEL_LED2_NUM, LOW ); 
 
-
+  for (uint8_t i = 0; i < COUNT_UPANEL_ONBOARD_LED; ++i){
+    uint8_t pin = _pwm_channels[i].pin;
+    _pwm_channels[i].outport = portOutputRegister(digitalPinToPort(pin));
+    _pwm_channels[i].pinmask = digitalPinToBitMask(pin);
+    set_pin(i, false);
+  }
 //  byte tries = 0;
   if(!init_i2c()){
     {
@@ -75,14 +53,6 @@ void setup(){
   Wire.onReceive(receiveEvent);
   Wire.onRequest(requestEvent);
   send_here_i_am();  // send I'am ready
-  for (uint8_t i = 0; i < COUNT_UPANEL_ONBOARD_LED; ++i){
-    uint8_t pin = _pwm_channels[i].pin;
-    _pwm_channels[i].outport = portOutputRegister(digitalPinToPort(pin));
-    _pwm_channels[i].pinmask = digitalPinToBitMask(pin);
-//  pinMode(pin, OUTPUT);
-    disable_pin(i);
-  }
-
     OCR2 = 100;
     TCCR2 &= ~(1 << CS20);
     TCCR2 &= ~(1 << CS21);
@@ -117,45 +87,30 @@ void setup(){
 */
   sei();    // enable interrupts
 }
-void disable_pin( byte pin ){
-   *_pwm_channels[pin].outport |= _pwm_channels[pin].pinmask;              // turn off the channel (set VCC)
-}
-void enable_pin( byte pin ){
-   *_pwm_channels[pin].outport &= ~(_pwm_channels[pin].pinmask);          // turn off the channel (set GND)
-}
+
 
 void loop() {
-  unsigned long mil = millis();
-    // debug:
-/*
-  	if( mil > milis1 + 1000 ){    // debug, mrygaj co 1 sek
-                diddd = !diddd;
-                DW(PIN_PANEL_LED3_NUM, diddd);
-  		milis1 = mil;
-  	}
-  */
-  //	if( mil > milis4 + 4000 ){    // co 4 sek
-  //		milis4 = mil;
-  //	}
-
 // Debouncing
+  uint8_t mil =_isr_count;
   boolean reading = digitalRead(PIN_UPANEL_POKE);
   if (reading != lastButtonState) {
     lastDebounceTime =mil;
     lastButtonState = reading;
-  }else if( lastDebounceTime > 0 ){
+  }else if( lastDebounceTime != mil ){
     if (reading != buttonState) {
-      long unsigned now = mil;
-      if ((now - lastDebounceTime) > debounceDelay) {
+ //     uint8_t now = mil;
+      int16_t a = _isr_count;
+      a -= lastDebounceTime;
+      if (abs(a) > debounceDelay) {
         buttonState = reading;
         send_pin_value( PIN_UPANEL_POKE, buttonState );
-        DW(PIN_PANEL_LED4_NUM, buttonState );
+        DW(LED_TOP_RED, buttonState );
         lastDebounceTime = 0;
       }
     }
   }
 // end Debouncing
-  read_i2c();
+ read_i2c();
 }
 
 static void read_i2c(){
@@ -207,7 +162,16 @@ static void read_i2c(){
     use_local = false;
   }
 }
+byte common_anode = PIN_PANEL_LED_OFF_WHEN;
 
+void set_pin( byte pin, boolean value ){
+	boolean off_when = bitRead( common_anode, pin);
+	if( (value ^ off_when) == true ){
+	  *_pwm_channels[pin].outport |= _pwm_channels[pin].pinmask;
+	}else{
+	 *_pwm_channels[pin].outport &= ~(_pwm_channels[pin].pinmask);
+	}
+}
 /*
 void show_error(byte value){
    while( (value--) > 0 ){
@@ -249,15 +213,14 @@ void receiveEvent(int howMany){
 }
 
 void requestEvent(){ 
-  // w in_buffer jest polecenie
     if( in_buffer1[0] == METHOD_GETVERSION ){          // TEPE + VERSION       3 bajty
         byte ttt[2] = {UPANEL_DEVICE_TYPE,UPANEL_VERSION};
         Wire.write(ttt,2);
     }else if( in_buffer1[0] == METHOD_TEST_SLAVE ){    // return xor
         byte res = in_buffer1[1] ^ in_buffer1[2];
         Wire.write(res);
-   //     DW(PIN_PANEL_LED4_NUM, HIGH );
-   //     delay2(500);
+        DW(LED_TOP_BLUE, bitRead(res,0) );
+        delay2(30);
     }
 }
 
@@ -317,6 +280,7 @@ ISR(TIMER2_COMP_vect){
     uint8_t i=COUNT_UPANEL_ONBOARD_LED;
     pwmnow=false;
     if(++_isr_count == 0){
+      /*
       if( checktime ){ // && ++_timediv==0
         if(checktime == 1){    // zmierzylem raz
           _nanotime =  micros();
@@ -325,7 +289,7 @@ ISR(TIMER2_COMP_vect){
           timertime  = micros() - _nanotime;
           checktime = 0;
         }
-      }
+      }*/
       int16_t newvalue;
       int16_t direction;
       volatile PWMChannel *led;
@@ -346,14 +310,14 @@ ISR(TIMER2_COMP_vect){
           newvalue = led->pwmup;          //  default: new value
         }
         led->current_pwm = newvalue;
-        if (newvalue > 0){                  // set the pin high (if not 0) // don't set if current_pwm == 0
-          enable_pin(i);
+        if (newvalue > 0){                  // set the pin ON // don't set if current_pwm == 0
+          set_pin(i, true );
         }
       }
     }else{
       while(i--){
        if( _pwm_channels[i].current_pwm == _isr_count) {                          // if it's a valid pin // if we have hit the width
-           disable_pin(i);
+           set_pin(i, false);   // set the pin off
         }
       }
     }
