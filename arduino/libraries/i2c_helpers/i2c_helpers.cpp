@@ -221,24 +221,17 @@ LEDS 12,0x0E,255
 LEDS 12,0x0e,255
 
 
+ 
+UPANEL 
 0xf1
 11110001
 
-nr	maxgdy	color
-01	255		bottom white 
-02	0		bottom green
-04	0		bottom red
-08	0		bottom blue
-
-10	255		top green
-20	255		top blue
-40	255		top red
-80	255		top white
 
 
 
 
 
+CARRET
 
 
 LEDS 12,0xf1,0
@@ -264,6 +257,7 @@ Bity:
 
 
 */
+
 
 
 
