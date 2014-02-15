@@ -46,7 +46,7 @@ public class Main {
 	//	Wizard.wait(1000);
 	//	w.checkCarret( hw );
 
-	//	w.prepareMB( hw );
+	///	w.prepareMB( hw );
 		w.prepareCarret( hw );
 	//	w.prepare1Upanel( hw );
 	//	w.prepareUpanel( hw );
@@ -54,13 +54,8 @@ public class Main {
 	//	w.prepareUpanel(hw);
 	//	w.clearUpanel( hw );
 	//	
-		/*
-		int repeat = 2;
-		while(repeat-->0){
-			w.mrygaj( hw );
-			w.mrygaj_grb( hw );
-			w.mrygaj_po_butelkach( hw );
-		}*/
+	//	w.ilumination1( hw );
+		
 		System.out.println("koniec");
 	}
 	public Properties p;

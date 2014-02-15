@@ -100,10 +100,9 @@ boolean Console0Complete = false;   // This will be set to true once we have a f
 
 unsigned long int when_next = 0;
 unsigned long int sending = 0b11001101;
-unsigned long int time = 100;
+unsigned long int time = 1000;
 unsigned long int sum = 0;
 unsigned long int repeat = 0;
-
 
 void setup(){
 	pinMode(PIN_CARRET_SCK, INPUT );         // stan wysokiej impedancji
@@ -132,6 +131,8 @@ void setup(){
 	FlexiTimer2::set(40, 1.0/100, timer);
 	FlexiTimer2::start();
 //	init_analogs();
+
+	sendstats();
 }
 
 void init_leds(){
@@ -422,20 +423,20 @@ void parseInput( String input ){
   }
 }
 void sendstats(){ 
-    DEBUG("state ");
-    if( bitRead(sending, 0 ) ){  DEBUG("0");   }
-    if( bitRead(sending, 1 ) ){  DEBUG("1");   }
-    if( bitRead(sending, 2 ) ){  DEBUG("2");   }
-    if( bitRead(sending, 3 ) ){  DEBUG("3");   }
-    if( bitRead(sending, 4 ) ){  DEBUG("4");   }
-    if( bitRead(sending, 5 ) ){  DEBUG("5");   }
-    if( bitRead(sending, 6 ) ){  DEBUG("6");   }
-    if( bitRead(sending, 7 ) ){  DEBUG("7");   }
-    if( bitRead(sending, 8 ) ){  DEBUG("8");   }
-    DEBUGLN("");
-    DEBUGLN("t" + String(time ));
-    DEBUGLN("s" + String(sum ));
-    DEBUGLN("r" + String(repeat) );
+    Serial.print("state ");
+    if( bitRead(sending, 0 ) ){  Serial.print("0");   }
+    if( bitRead(sending, 1 ) ){  Serial.print("1");   }
+    if( bitRead(sending, 2 ) ){  Serial.print("2");   }
+    if( bitRead(sending, 3 ) ){  Serial.print("3");   }
+    if( bitRead(sending, 4 ) ){  Serial.print("4");   }
+    if( bitRead(sending, 5 ) ){  Serial.print("5");   }
+    if( bitRead(sending, 6 ) ){  Serial.print("6");   }
+    if( bitRead(sending, 7 ) ){  Serial.print("7");   }
+    if( bitRead(sending, 8 ) ){  Serial.print("8");   }
+    Serial.println();
+    Serial.print("t" + String(time ));
+    Serial.print("s" + String(sum ));
+    Serial.print("r" + String(repeat) );
 }
 void serialEvent(){                       // FUNKCJA WBUDOWANA - zbieraj dane z serial0 i serial3 i skadaj w komendy
   while (Serial.available() && !Console0Complete) {    // odczytuj gdy istnieja dane i poprzednie zostaly odczytane
@@ -454,8 +455,6 @@ long unsigned decodeInt(String input, int odetnij ){
   pos = input.toInt();
   return pos;
 }
-
-
 
 void reload_servo( byte index ){      // in interrupt
 	volatile ServoChannel &ser = servos[index];
@@ -838,10 +837,10 @@ void init_analogs(){
     ADCSRA |= (1 << ADSC);    // Start the ADC conversion
     sei();
 }
-/*
+
 ISR(ADC_vect){
   uint8_t tmp  = ADMUX;            // read the value of ADMUX register
-  tmp          &= 0xF8;            // starsze bity
+  tmp          &= 0xF0;            // starsze bity
   channel      = (channel + 1)%ANALOGS;
   ADMUX        = (tmp | ADCport[channel]);
   ADCvalue[ row ][ channel ] = ADCL | (ADCH << 8);  //  read low first
@@ -850,9 +849,7 @@ ISR(ADC_vect){
   }
   //checks++;
 }
- 
-*/
- 
+
 /*
   	if( mil > milis2000 ){    // debug, mrygaj co 1 sek
           uint8_t pin = _pwm_channels[iii].pin;
