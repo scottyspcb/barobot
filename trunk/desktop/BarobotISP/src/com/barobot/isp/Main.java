@@ -36,7 +36,7 @@ public class Main {
 
 		IspSettings.safeMode = false;
 		IspSettings.setFuseBits = false;
-		IspSettings.verbose = 4;
+		IspSettings.verbose = 0;
 		IspSettings.setHex	= true;
 		IspSettings.force = false;
 
@@ -48,6 +48,7 @@ public class Main {
 
 	//	w.prepareMB( hw );
 		w.prepareCarret( hw );
+	//	w.prepare1Upanel( hw );
 	//	w.prepareUpanel( hw );
 
 	//	w.prepareUpanel(hw);
