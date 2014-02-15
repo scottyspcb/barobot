@@ -51,6 +51,7 @@ public class Engine {
 	
 	private Engine(Context context)
 	{
+		BarobotDB.StartOrmanMapping(context);
 		db = new BarobotDB(context);
 		
 		//setupDatabase();
