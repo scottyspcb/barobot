@@ -35,10 +35,10 @@ public class MainBoard extends I2C_Device_Imp {
 		return command;
 	}
 	public void reset(Hardware hw) {
-		hw.send("RESETd "+ this.myindex);
+		hw.send("RESET"+ this.myindex);
 	}
 	public void isp(Hardware hw) {
-		hw.send("RESET "+ getIndex() );
+		hw.send("RESET"+ getIndex() );
 	}
 	public String getHexFile() {
 		return IspSettings.mbHexPath;

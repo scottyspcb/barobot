@@ -15,7 +15,6 @@ public class Arduino {
 	private static Arduino instance = null;
 	private LinkedList<rpc_message> output2 = new LinkedList<rpc_message>();
 	Wire connection = null;
-	Wire debugConnection = null;
 	public boolean stop_autoconnect = false;
 	public static Arduino getInstance() {
 		if (instance == null) {
@@ -49,10 +48,6 @@ public class Arduino {
 		}
 		connection = lowHardware;
 		connection.init();
-
-		if (debugConnection != null) {
-			debugConnection.destroy();
-		}
 
 		/*
 		 * debugConnection = lowHardware2; debugConnection.init(); if(
@@ -93,9 +88,6 @@ public class Arduino {
 		if (connection != null) {
 			connection.destroy();
 		}
-		if (debugConnection != null) {
-			debugConnection.destroy();
-		}
 		output2.clear();
 		output2.clear();
 
@@ -107,54 +99,8 @@ public class Arduino {
 		if (connection != null) {
 			connection.resume();
 		}
-		if (debugConnection != null) {
-			debugConnection.resume();
-		}
 	}
 
-	/*
-	 * public Wire getConnection() { return connection; }
-	 */
-	public boolean allowAutoconnect() {
-		if (debugConnection == null) {
-			// Constant.log(Constant.TAG, "nie autoconnect bo juz połączony");
-			return false;
-		}
-		if (debugConnection.isConnected()) {
-			// Constant.log(Constant.TAG, "nie autoconnect bo juz połączony");
-			return false;
-		}
-		if (!debugConnection.implementAutoConnect()) {
-			Constant.log(Constant.TAG, "nie autoconnect bo !canAutoConnect");
-			return false;
-		}
-		if (!debugConnection.canConnect()) {
-			Constant.log(Constant.TAG, "nie autoconnect bo !canConnect");
-			return false;
-		}
-		if (stop_autoconnect == true) {
-			Constant.log(Constant.TAG, "nie autoconnect bo STOP");
-			return false;
-		}
-		return true;
-	}
-
-	public boolean checkBT() {
-		return debugConnection != null && debugConnection.canConnect();
-	}
-
-	public void setupBT(BGraph barobotMain) {
-		/*
-		 * if(connection!=null){ connection.setup();
-		 * if(this.allowAutoconnect()){ connection.setAutoConnect( true ); } }
-		 */
-		if (debugConnection != null) {
-			debugConnection.setup();
-			if (this.allowAutoconnect()) {
-				debugConnection.setAutoConnect(true);
-			}
-		}
-	}
 
 	public void send(String message) {
 		rpc_message m = new rpc_message(message);
@@ -172,14 +118,12 @@ public class Arduino {
 				Constant.log("exec", "" + output2.size());
 
 				while (!output2.isEmpty()) {
-					Constant.log("while", "start");
+				//	Constant.log("while", "start");
 					rpc_message m = output2.pop();
-					Constant.log("while", "start2" + m.command );
-					Constant.log("serial send", m.command);
-					Constant.log("while", "start3" + m.command );
-
+				//	Constant.log("while", "start2" + m.command );
+				//	Constant.log("serial send", m.command);
 					String command = m.command + input_parser.separator;
-					Constant.log("while", "start4");
+				//	Constant.log("while", "start4");
 					connection.send(command);
 			//		debug(command);
 				}
@@ -188,37 +132,10 @@ public class Arduino {
 			}
 		}
 	}
-
-	public synchronized void low_send(String command) throws IOException { // wyslij														// interpretacji
-		if (connection == null) {
-			return; // jestem w trakcie oczekiwania
-		}
-		Constant.log("low_send", command);
-		connection.send(command);
-	}
-
-	public synchronized void debug(String command) { // wyslij bez interpretacji
-		if (debugConnection != null) {
-			try {
-				debugConnection.send(command);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-
 	public void clear() {
 		synchronized (this.lock) {
 			this.output2.clear();
 		}
 	}
-
-	public void connectId(String address) {
-		Constant.log(Constant.TAG, "autoconnect z: " + address);
-		if (debugConnection != null) {
-			debugConnection.connectToId(address);
-		}
-	}
-	
 }
 

@@ -25,10 +25,9 @@ public class input_parser {
 					// Log.i(Constant.TAG, "zostalo [" + input_parser.buffer
 					// +"]");
 					if ("".equals(command)) {
-						Log.i(Constant.TAG, "posta komenda!!!]");
+						Log.i(Constant.TAG, "pusta komenda!!!]");
 					} else {
 						parseInput(command);
-						Arduino.getInstance().debug(command + "\n");
 					}
 					end = input_parser.buffer.indexOf(separator);
 					//
@@ -42,27 +41,43 @@ public class input_parser {
 			return;
 		}
 		//Log.i(Constant.TAG, "parse:[" + fromArduino + "]");
-		int b  = fromArduino.indexOf(",");
-		if( b > -1 ){
-		//	int[] values2 = decodeBytes(fromArduino);
-		//	value = value / BGraph.graph_repeat;
-			AJS aa = AJS.getInstance();			
-			if(fromArduino.lastIndexOf(",") == fromArduino.length()-1){
-				fromArduino = fromArduino.substring(0,  fromArduino.length()-1 );
-			}
-			BGraph.getInstance().setText(R.id.input_field, fromArduino);
-			if (aa != null) {
-				aa.oscyloskop(fromArduino);
-			}
-		}else if(fromArduino.startsWith("state")){
-			String[] parts = fromArduino.split(" ");
-			for( int i=0;i<parts[1].length();i++){
-				int port = toInt(""+parts[1].charAt(i));
-				BGraph.getInstance().port_enabled(port, true );
-			}
+		if(fromArduino.startsWith("-")){
+			return;
 		}else if(fromArduino.startsWith("t")){
 		}else if(fromArduino.startsWith("s")){
-		}else if(fromArduino.startsWith("r")){	
+		}else if(fromArduino.startsWith("r")){
+		}else{
+			int b  = fromArduino.indexOf(",");
+			if( b > -1 ){
+			//	int[] values2 = decodeBytes(fromArduino);
+			//	value = value / BGraph.graph_repeat;
+				AJS aa = AJS.getInstance();			
+				if(fromArduino.lastIndexOf(",") == fromArduino.length()-1){
+					fromArduino = fromArduino.substring(0,  fromArduino.length()-1 );
+				}
+				BGraph.getInstance().setText(R.id.input_field, fromArduino);
+				if (aa != null) {
+					aa.oscyloskop(fromArduino);
+				}
+			}else if(fromArduino.startsWith("state")){
+				String[] parts	= fromArduino.split(" ");
+				int[] ports		= {0,0,0,0,0,0,0,0,0};
+				if( parts.length > 1 ){			// jesli są jakie skanały
+					for( int i=0;i<parts[1].length();i++){
+						int port = toInt(""+parts[1].charAt(i));
+						if( port < ports.length ){
+							ports[ port ] = 1;
+						}else{
+							Log.e(Constant.TAG, "Undefined port " + port);
+						}
+					}
+				}
+				for( int i=0;i<ports.length;i++){
+					BGraph.getInstance().port_enabled(i, ports[i] == 1 );
+				}
+			}else{
+				Log.i(Constant.TAG, "parse:[" + fromArduino + "]");
+			}
 		}
 	}
 

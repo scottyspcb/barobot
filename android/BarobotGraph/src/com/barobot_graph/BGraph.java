@@ -160,7 +160,7 @@ public class BGraph extends Activity {
 				String address = data.getExtras().getString(
 						Constant.EXTRA_DEVICE_ADDRESS); // Get the device MAC
 														// address
-				Arduino.getInstance().connectId(address);
+		//		Arduino.getInstance().connectId(address);
 			}
 			break;
 		case Constant.REQUEST_ENABLE_BT:
@@ -168,7 +168,7 @@ public class BGraph extends Activity {
 			// When the request to enable Bluetooth returns
 			if (resultCode == Activity.RESULT_OK) {
 				// Bluetooth is now enabled, so set up session
-				Arduino.getInstance().setupBT(this);
+	//			Arduino.getInstance().setupBT(this);
 			} else {
 				// User did not enable Bluetooth or an error occurred
 				Constant.log(Constant.TAG, "BT not enabled");
@@ -335,12 +335,13 @@ public class BGraph extends Activity {
 		Intent serverIntent = null;
 		switch (item.getItemId()) {
 		case R.id.secure_connect_scan:
+			/*
 			if (Arduino.getInstance().checkBT() == false) {
 				Toast.makeText(this, "Bluetooth jest niedostępny",
 						Toast.LENGTH_LONG).show();
 				finish();
 			}
-			serverIntent = new Intent(this, BTListActivity.class);
+			serverIntent = new Intent(this, BTListActivity.class);*/
 			break;
 		}
 		if (serverIntent != null) {
@@ -349,7 +350,7 @@ public class BGraph extends Activity {
 		}
 		return false;
 	}
-	public void port_enabled( int num, final boolean value  ){
+	public void port_enabled( final int num, final boolean value  ){
 		int[] btns = {
 				R.id.analog0,
 				R.id.analog1,
@@ -367,6 +368,7 @@ public class BGraph extends Activity {
 			public void run() {
 				ToggleButton tb = (ToggleButton) findViewById(btnid);
 				if (tb != null) {
+					Log.e(Constant.TAG, "SET port " + num + " to "  + (value ? "ON" : "OFF"));
 					tb.setChecked(value);
 				}
 			}

@@ -41,7 +41,7 @@ public class BT_wire implements Wire {
 			res = mChatService.initBt();
 			BGraph barobotMain = BGraph.getInstance();
 			if (res) { // jesli jest wlaczony
-				Arduino.getInstance().setupBT(barobotMain);
+	//			Arduino.getInstance().setupBT(barobotMain);
 				// setup();
 				return true;
 			} else { // jesli wymaga wlaczenia to wroci do onActivityResult
@@ -157,11 +157,6 @@ public class BT_wire implements Wire {
 				// Log.i(Constant.TAG, "buffer read " + readMessage );
 				String input = (String) msg.obj;
 				input_parser.readInput(input);
-				try {
-					Arduino.getInstance().low_send(input);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
 				break;
 			case Constant.MESSAGE_STATE_CHANGE:
 				switch (msg.arg1) {

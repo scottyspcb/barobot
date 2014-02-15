@@ -482,6 +482,14 @@ public class Wizard {
 		}
 		hw.close();
 	}
+	public void ilumination1(Hardware hw) {
+		int repeat = 2;
+		while(repeat-->0){
+			this.mrygaj( hw );
+			this.mrygaj_grb( hw );
+			this.mrygaj_po_butelkach( hw );
+		}
+	}
 }
 
 /**

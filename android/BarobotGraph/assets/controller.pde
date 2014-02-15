@@ -75,6 +75,10 @@ void readInput( vals ) {
 			}
 			lastX[d]++;
 			interval_size++;
+			
+			if(d > dimms){
+				break;
+			}
 		}
 	}
 	need_refresh = true;
