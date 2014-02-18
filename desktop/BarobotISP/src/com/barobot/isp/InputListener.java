@@ -20,25 +20,29 @@ public class InputListener  extends Thread {
 	}
 
 	public void run() {
+		boolean fast = false;
+		
 	    try {
-	      while (running) {   
-	    	while(!theInput.ready() && running){;
-	    	}
-//	    	 String ln = theInput.readLine();
-	    	 //this.owner.onInput(ln);
-	 //   	System.out.println("read[");
-	    	char[] buffer = new char[256];
-	        int bytesRead = theInput.read(buffer, 0, 256);
-
-	 //       System.out.println("read]" + bytesRead);
-	        if (bytesRead > 0){
-		        String in = new String( buffer, 0, bytesRead );
-		  //    this.owner.onInput(in);
-		    	SerialInputBuffer.readInput(in);	
-	        }else if (bytesRead == -1){
-	        	System.out.println("input -1");
-	        	break;
-	        }
+	      while (running) {
+	    	  if(fast){
+	    		  while(!theInput.ready() && running){}
+	    		  //   	System.out.println("read[");
+	    		  char[] buffer = new char[256];
+		  	      int bytesRead = theInput.read(buffer, 0, 256);
+		  	 //   System.out.println("read]" + bytesRead);
+		  	      if (bytesRead > 0){
+		  		      String in = new String( buffer, 0, bytesRead );
+		  		  //    this.owner.onInput(in);
+		  		    	SerialInputBuffer.readInput(in);	
+		  	      }else if (bytesRead == -1){
+		  	      	System.out.println("input -1");
+		  	       	break;
+		  	      }
+	    	  }else{
+	    		  String ln = theInput.readLine();
+	 //   		  System.out.println("theInput" + ln);
+	    		  SerialInputBuffer.readInput(ln + "\n");
+	    	  }
 	      }
 	    }
 	    catch (IOException e) {

@@ -32,7 +32,7 @@ public class Main {
 		loadProps();
 		//String[] comlist = list();
 		Wizard w = new Wizard();
-		Hardware hw = new Hardware("COM39");
+		Hardware hw = new Hardware("COM40");
 
 		IspSettings.safeMode = false;
 		IspSettings.setFuseBits = false;
@@ -42,20 +42,21 @@ public class Main {
 
 		//w.prepareSlaveMB( hw );
 	//	w.test( hw );
-	//	w.findOrder( hw );
+	//w.findOrder( hw );
 	//	Wizard.wait(1000);
 	//	w.checkCarret( hw );
 
-	///	w.prepareMB( hw );
-		w.prepareCarret( hw );
-	//	w.prepare1Upanel( hw );
+		w.prepareMB( hw );
+		//w.prepareCarret( hw );
+//		w.prepare1Upanel( hw );
 	//	w.prepareUpanel( hw );
 
 	//	w.prepareUpanel(hw);
 	//	w.clearUpanel( hw );
 	//	
-	//	w.ilumination1( hw );
-		
+		//w.ilumination1( hw );
+		w.ilumination2( hw );
+
 		System.out.println("koniec");
 	}
 	public Properties p;

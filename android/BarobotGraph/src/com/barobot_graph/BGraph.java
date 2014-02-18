@@ -102,7 +102,9 @@ public class BGraph extends Activity {
 				 R.id.analog6,
 				 R.id.analog7,
 				 R.id.analog8,
-
+				 R.id.perf,
+				 R.id.pfinished,
+				 R.id.pother,
 				R.id.graph_repeat, R.id.graph_xsize, R.id.graph_random,
 				R.id.graph_fps, R.id.graph_reverse, R.id.graph_scale,
 				R.id.graph_points, R.id.graph_lines, R.id.graph_columns,
@@ -120,9 +122,10 @@ public class BGraph extends Activity {
 			} else if ("android.widget.ToggleButton".equals(classname)) {
 				ToggleButton xb5 = (ToggleButton) this
 						.findViewById(buttons[i]);
-				xb5.setOnCheckedChangeListener(bc);
+				xb5.setOnClickListener(bc);
 			}
 		}
+		
 	//	enableUI(uiEnabled);
 		initUI( savedInstanceState);
 
@@ -361,18 +364,28 @@ public class BGraph extends Activity {
 				R.id.analog6,
 				R.id.analog7,
 				R.id.analog8,
+				0,			//9
+				0,			//10
+				0,			//11
+				0,			//12
+				R.id.pother,		//13
+				R.id.pfinished,		//14
+				R.id.perf,			//15
+				
 		};
 		final int btnid	= btns[num];
-		runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				ToggleButton tb = (ToggleButton) findViewById(btnid);
-				if (tb != null) {
-					Log.e(Constant.TAG, "SET port " + num + " to "  + (value ? "ON" : "OFF"));
-					tb.setChecked(value);
+		if( btnid > 0){
+			runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					ToggleButton tb = (ToggleButton) findViewById(btnid);
+					if (tb != null) {
+						Log.e(Constant.TAG, "SET port " + num + " to "  + (value ? "ON" : "OFF"));
+						tb.setChecked(value);
+					}
 				}
-			}
-		});
+			});
+		}
 	}
 	// Any update to UI can not be carried out in a non UI thread like the one
 	// used
@@ -495,16 +508,27 @@ public class BGraph extends Activity {
 		return res;
 	}
 
-	
 	private class graph_button_click implements OnClickListener,
 			OnCheckedChangeListener {
 		private Context dbw;
 
+		
 		public graph_button_click(Context debugWindow) {
 			dbw = debugWindow;
 		}
 		@Override
 		public void onClick(View v) {
+			Arduino ar = Arduino.getInstance();
+			
+			boolean isChecked = false;
+			String classname = v.getClass().getName();
+			if ("android.widget.Button".equals(classname)) {
+//				Button xb5 = (Button) findViewById(v.getId());
+			} else if ("android.widget.ToggleButton".equals(classname)) {
+				ToggleButton xb5 = (ToggleButton) findViewById(v.getId());
+				isChecked = xb5.isChecked();
+			}
+
 			switch (v.getId()) {
 			case R.id.graph_repeat:
 				if (jsInterface != null) {
@@ -547,7 +571,186 @@ public class BGraph extends Activity {
 					}, "" + graph_fps);
 				}
 				break;
-			}
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				case R.id.graph_random:
+					int graph_source5 = graph_source;
+					disable_analog(ar, graph_source5);
+					int graph_speed2 = graph_speed;
+					if (jsInterface != null) {
+						jsInterface.runJs("show_random", "" + graph_speed2);
+					}
+					break;
+
+				case R.id.graph_reverse:
+					if (jsInterface != null) {
+						jsInterface.runJs("reverseY", isChecked ? "1" : "0");
+					}
+					break;
+				case R.id.graph_scale:
+					if (jsInterface != null) {
+						jsInterface.runJs("toggleLocalMin", isChecked ? "1" : "0");
+					}
+					break;
+				case R.id.graph_points:
+					if (jsInterface != null) {
+						jsInterface.runJs("dots", isChecked ? "1" : "0");
+					}
+					break;
+				case R.id.graph_lines:
+					if (jsInterface != null) {
+						jsInterface.runJs("lines", isChecked ? "1" : "0");
+					}
+					break;
+				case R.id.graph_columns:
+					if (jsInterface != null) {
+						jsInterface.runJs("column", isChecked ? "1" : "0");
+					}
+					break;
+				case R.id.graph_high_speed:
+					if (jsInterface != null) {
+						jsInterface.runJs("sethighspeed", isChecked ? "1" : "0");
+					}
+					break;
+		
+				case R.id.analog0:
+					if(isChecked){
+						ar.send("+0");
+					}else{
+						ar.send("-0");
+					}
+					if (jsInterface != null) {
+			//			jsInterface.runJs("sethighspeed", isChecked ? "1" : "0");
+					}
+					break;
+				case  R.id.analog1:
+					if(isChecked){
+						ar.send("+1");
+					}else{
+						ar.send("-1");
+					}
+					if (jsInterface != null) {
+			//			jsInterface.runJs("sethighspeed", isChecked ? "1" : "0");
+					}
+					break;
+				case R.id.analog2:
+					if(isChecked){
+						ar.send("+2");
+					}else{
+						ar.send("-2");
+					}
+					if (jsInterface != null) {
+			//			jsInterface.runJs("sethighspeed", isChecked ? "1" : "0");
+					}
+					break;
+				case  R.id.analog3:
+					if(isChecked){
+						ar.send("+3");
+					}else{
+						ar.send("-3");
+					}
+					if (jsInterface != null) {
+			//			jsInterface.runJs("sethighspeed", isChecked ? "1" : "0");
+					}
+					break;
+				case  R.id.analog4:
+					if(isChecked){
+						ar.send("+4");
+					}else{
+						ar.send("-4");
+					}
+					if (jsInterface != null) {
+				//		jsInterface.runJs("sethighspeed", isChecked ? "1" : "0");
+					}
+					break;
+				case  R.id.analog5:
+					if(isChecked){
+						ar.send("+5");
+					}else{
+						ar.send("-5");
+					}
+					if (jsInterface != null) {
+				//		jsInterface.runJs("sethighspeed", isChecked ? "1" : "0");
+					}
+					break;
+				case  R.id.analog6:
+					if(isChecked){
+						ar.send("+6");
+					}else{
+						ar.send("-6");
+					}
+					if (jsInterface != null) {
+				//		jsInterface.runJs("sethighspeed", isChecked ? "1" : "0");
+					}
+					break;
+				case  R.id.analog7:
+					if(isChecked){
+						ar.send("+7");
+					}else{
+						ar.send("-7");
+					}
+					if (jsInterface != null) {
+				//		jsInterface.runJs("sethighspeed", isChecked ? "1" : "0");
+					}
+					break;
+				case  R.id.analog8:
+					if(isChecked){
+						ar.send("+8");
+					}else{
+						ar.send("-8");
+					}
+					if (jsInterface != null) {
+				//		jsInterface.runJs("sethighspeed", isChecked ? "1" : "0");
+					}
+					break;
+				case  R.id.perf:
+					if(isChecked){
+						ar.send("+p");
+					}else{
+						ar.send("-p");
+					}
+					if (jsInterface != null) {
+				//		jsInterface.runJs("sethighspeed", isChecked ? "1" : "0");
+					}
+					break;
+					
+					
+				case  R.id.pfinished:
+					if(isChecked){
+						ar.send("+f");
+					}else{
+						ar.send("-f");
+					}
+					if (jsInterface != null) {
+				//		jsInterface.runJs("sethighspeed", isChecked ? "1" : "0");
+					}
+					break;
+				case  R.id.pother:
+					if(isChecked){
+						ar.send("+o");
+					}else{
+						ar.send("-o");
+					}
+					if (jsInterface != null) {
+				//		jsInterface.runJs("sethighspeed", isChecked ? "1" : "0");
+					}
+					break;				
+				}	
+				
+				
+				
+				
+
 		}
 
 		@Override
@@ -556,137 +759,7 @@ public class BGraph extends Activity {
 			Arduino ar = Arduino.getInstance();
 			switch (buttonView.getId()) {
 			
-			case R.id.graph_random:
-				int graph_source5 = graph_source;
-				disable_analog(ar, graph_source5);
-				int graph_speed2 = graph_speed;
-				if (jsInterface != null) {
-					jsInterface.runJs("show_random", "" + graph_speed2);
-				}
-				break;
-
-			case R.id.graph_reverse:
-				if (jsInterface != null) {
-					jsInterface.runJs("reverseY", isChecked ? "1" : "0");
-				}
-				break;
-			case R.id.graph_scale:
-				if (jsInterface != null) {
-					jsInterface.runJs("toggleLocalMin", isChecked ? "1" : "0");
-				}
-				break;
-			case R.id.graph_points:
-				if (jsInterface != null) {
-					jsInterface.runJs("dots", isChecked ? "1" : "0");
-				}
-				break;
-			case R.id.graph_lines:
-				if (jsInterface != null) {
-					jsInterface.runJs("lines", isChecked ? "1" : "0");
-				}
-				break;
-			case R.id.graph_columns:
-				if (jsInterface != null) {
-					jsInterface.runJs("column", isChecked ? "1" : "0");
-				}
-				break;
-			case R.id.graph_high_speed:
-				if (jsInterface != null) {
-					jsInterface.runJs("sethighspeed", isChecked ? "1" : "0");
-				}
-				break;
-	
-			case R.id.analog0:
-				if(isChecked){
-					ar.send("+0");
-				}else{
-					ar.send("-0");
-				}
-				if (jsInterface != null) {
-		//			jsInterface.runJs("sethighspeed", isChecked ? "1" : "0");
-				}
-				break;
-			case  R.id.analog1:
-				if(isChecked){
-					ar.send("+1");
-				}else{
-					ar.send("-1");
-				}
-				if (jsInterface != null) {
-		//			jsInterface.runJs("sethighspeed", isChecked ? "1" : "0");
-				}
-				break;
-			case R.id.analog2:
-				if(isChecked){
-					ar.send("+2");
-				}else{
-					ar.send("-2");
-				}
-				if (jsInterface != null) {
-		//			jsInterface.runJs("sethighspeed", isChecked ? "1" : "0");
-				}
-				break;
-			case  R.id.analog3:
-				if(isChecked){
-					ar.send("+3");
-				}else{
-					ar.send("-3");
-				}
-				if (jsInterface != null) {
-		//			jsInterface.runJs("sethighspeed", isChecked ? "1" : "0");
-				}
-				break;
-			case  R.id.analog4:
-				if(isChecked){
-					ar.send("+4");
-				}else{
-					ar.send("-4");
-				}
-				if (jsInterface != null) {
-			//		jsInterface.runJs("sethighspeed", isChecked ? "1" : "0");
-				}
-				break;
-			case  R.id.analog5:
-				if(isChecked){
-					ar.send("+5");
-				}else{
-					ar.send("-5");
-				}
-				if (jsInterface != null) {
-			//		jsInterface.runJs("sethighspeed", isChecked ? "1" : "0");
-				}
-				break;
-			case  R.id.analog6:
-				if(isChecked){
-					ar.send("+6");
-				}else{
-					ar.send("-6");
-				}
-				if (jsInterface != null) {
-			//		jsInterface.runJs("sethighspeed", isChecked ? "1" : "0");
-				}
-				break;
-			case  R.id.analog7:
-				if(isChecked){
-					ar.send("+7");
-				}else{
-					ar.send("-7");
-				}
-				if (jsInterface != null) {
-			//		jsInterface.runJs("sethighspeed", isChecked ? "1" : "0");
-				}
-				break;
-			case  R.id.analog8:
-				if(isChecked){
-					ar.send("+8");
-				}else{
-					ar.send("-8");
-				}
-				if (jsInterface != null) {
-			//		jsInterface.runJs("sethighspeed", isChecked ? "1" : "0");
-				}
-				break;
-			}	
+			}
 		}
 	
 		public void show_dialog(final RunnableWithData onfinish,

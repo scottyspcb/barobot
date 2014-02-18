@@ -4,7 +4,6 @@ import com.barobot.isp.Hardware;
 import com.barobot.isp.IspSettings;
 
 public class Carret extends I2C_Device_Imp {
-
 	private int default_address	= 0x0A;
 	private int default_index	= 2;
 	public Carret(){

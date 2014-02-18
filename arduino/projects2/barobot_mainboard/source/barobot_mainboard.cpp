@@ -228,115 +228,6 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 			}
 		}
 
-	}else if( input.startsWith("PN")) {    // PN10,0,0   - programuj urzadzenie podlaczone resetem do 10
-		read_prog_settings(input, 2, 2 );
-		defaultResult = false;
-		return;
-	}else if(  command == 'P' ) {    	// P1; P2,0; P3,1; P4,1;   - programuj urzadzenie 0x0A z prÄ™dkosca 19200, PROG 0,0 - force first, PROG 0A,0 - wozek
-		read_prog_settings(input, 1, 1);
-		defaultResult = false;
-		return;
-	}else if( input.startsWith("RESET_NEXT")) {			// RESET12
-		String digits     = input.substring( 10 );
-		char charBuf[4];
-		digits.toCharArray(charBuf,4);
-		unsigned int num    = 0;
-		sscanf(charBuf,"%i", &num );
-		byte error =checkAddress(num);
-		if (error == 0){
-			delay(200);
-			reset_device_next_to(num, LOW);
-			delay(1000);
-			reset_device_next_to(num, HIGH);
-		}else{  //error
-			defaultResult = false;
-			send_error(input);
-		}
-	}else if( input.startsWith("RESET")) {    // RESET0; RESET1; RESET2 
-		String digits     = input.substring( 5 );
-		char charBuf[10];
-		digits.toCharArray(charBuf,10);
-		unsigned int num    = 0;
-		sscanf(charBuf,"%i", &num );
-		delay(200);
-		boolean ret = reset_device_num(num, LOW);
-		if(ret){
-			delay(1000);
-			reset_device_num(num, HIGH);
-		}else{  //error
-			defaultResult = false;
-			send_error(input);
-		}
-	}else if( input.equals("RB")) {	// resetuj magistralê i2c
-		reset_wire();
-
-	}else if( command == 'x') {
-		long int pos = stepperX.currentPosition();
-		send2android("Rx"); 
-		send2android(String(pos)); 
-		send2androidEnd();
-		defaultResult = false;
-		
-		//METHOD_GET_X_POS
-		
-	}else if( input.startsWith(METHOD_SET_X_ACCELERATION)) {    // AX10                  // ACCELERATION
-		String ss 	  = input.substring( 2 );		// 10
-		long unsigned val = decodeInt( ss, 0 );
-		val = val * 100;
-		stepperX.setAcceleration(val);
-		DEBUGLN("-setAcceleration: " + String(val) );
-	}else if(command == 'X' ) {    // X10,10,10              // TARGET,MAXSPEED
-		String ss 		= input.substring( 1 );
-		paserDeriver(DRIVER_X,ss);
-		defaultResult = false;
-	}else if( command == 'Y' ) {    // Y10,10                 // TARGET,ACCELERATION
-		String ss 		= input.substring( 1 );		// 10,10
-		paserDeriver(DRIVER_Y,ss);
-		defaultResult = false;
-	}else if(command == 'Z') {    // Z10,10                 // TARGET,ACCELERATION
-		String ss 		= input.substring( 1 );		// 10,10
-		paserDeriver(DRIVER_Z,ss);
-		defaultResult = false;
-	}else if(command == 'y' ) {    // pobierz pozycje
-		out_buffer[0]  = METHOD_GET_Y_POS;
-		writeRegisters(I2C_ADR_CARRET, 1, false );
-		defaultResult = false;
-	}else if( command == 'z' ) {    // pobierz pozycje
-		out_buffer[0]  = METHOD_GET_Z_POS;
-		writeRegisters(I2C_ADR_CARRET, 1, false );
-		defaultResult = false;
-	}else if( input.equals("EX") ){
-		stepperX.enableOutputs();
-		byte ttt[4] = {METHOD_I2C_SLAVEMSG, my_address, METHOD_DRIVER_ENABLE, DRIVER_X };
-		send2android(ttt,4);
-		send2androidEnd();
-		defaultResult = false;	
-	}else if( input.equals("DX") ){
-		stepperX.disableOutputs();
-		byte ttt[4] = {METHOD_I2C_SLAVEMSG, my_address, METHOD_DRIVER_ENABLE, DRIVER_X };
-		send2android(ttt,4);
-		send2androidEnd();
-		defaultResult = false;
-	}else if( input.equals("EY") ){
-		out_buffer[0]  = METHOD_DRIVER_ENABLE;
-		out_buffer[1]  = DRIVER_Y;
-		writeRegisters(I2C_ADR_CARRET, 2, false );
-		defaultResult = false;
-	}else if( input.equals("EZ") ){
-		out_buffer[0]  = METHOD_DRIVER_ENABLE;
-		out_buffer[1]  = DRIVER_Z;
-		writeRegisters(I2C_ADR_CARRET, 2, false );
-		defaultResult = false;
-	}else if( input.equals("DY") ){
-		out_buffer[0]  = METHOD_DRIVER_DISABLE;
-		out_buffer[1]  = DRIVER_Y;
-		writeRegisters(I2C_ADR_CARRET, 2, false );
-		defaultResult = false;
-	}else if( input.equals("DZ") ){
-		out_buffer[0]  = METHOD_DRIVER_DISABLE;
-		out_buffer[1]  = DRIVER_Z;
-		writeRegisters(I2C_ADR_CARRET, 2, false );
-		defaultResult = false;
 /*
 	}else if( input.startsWith("LED ")) {    // LED C,0,255		// LED nr 0 na upanelu o adresie 0x0C w³¹cz na 100%
 		String digits     = input.substring( 4 );
@@ -371,6 +262,153 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 		out_buffer[1]  = (byte)leds;
 		out_buffer[2]  = (byte)power;
 		writeRegisters(num, 3, false );
+	
+	}else if( command == 'x') {
+		long int pos = stepperX.currentPosition();
+		send2android("Rx"); 
+		send2android(String(pos)); 
+		send2androidEnd();
+		defaultResult = false;
+		//METHOD_GET_X_POS
+	}else if( input.startsWith(METHOD_SET_X_ACCELERATION)) {    // AX10                  // ACCELERATION
+		String ss 	  = input.substring( 2 );		// 10
+		long unsigned val = decodeInt( ss, 0 );
+		val = val * 100;
+		stepperX.setAcceleration(val);
+		DEBUGLN("-setAcceleration: " + String(val) );
+	}else if(command == 'X' ) {    // X10,10,10              // TARGET,MAXSPEED
+		String ss 		= input.substring( 1 );
+		paserDeriver(DRIVER_X,ss);
+		defaultResult = false;
+	}else if( command == 'Y' ) {    // Y10,10                 // TARGET,ACCELERATION
+		String ss 		= input.substring( 1 );		// 10,10
+		paserDeriver(DRIVER_Y,ss);
+		defaultResult = false;
+	}else if(command == 'Z') {    // Z10,10                 // TARGET,ACCELERATION
+		String ss 		= input.substring( 1 );		// 10,10
+		paserDeriver(DRIVER_Z,ss);
+		defaultResult = false;
+	}else if(command == 'y' ) {    // pobierz pozycje
+		out_buffer[0]  = METHOD_GET_Y_POS;
+		writeRegisters(I2C_ADR_CARRET, 1, false );
+		defaultResult = false;
+	}else if( command == 'z' ) {    // pobierz pozycje
+		out_buffer[0]  = METHOD_GET_Z_POS;
+		writeRegisters(I2C_ADR_CARRET, 1, false );
+		defaultResult = false;
+
+	}else if( command == 'E' ) {    // enable
+		byte command2 = serialBuff[1];
+		defaultResult = false;
+		if( command2 == 'X' ){
+			stepperX.enableOutputs();
+			byte ttt[4] = {METHOD_I2C_SLAVEMSG, my_address, METHOD_DRIVER_ENABLE, DRIVER_X };
+			send2android(ttt,4);
+			send2androidEnd();
+		}else if( command2 == 'Y' ){
+			out_buffer[0]  = METHOD_DRIVER_ENABLE;
+			out_buffer[1]  = DRIVER_Y;
+			writeRegisters(I2C_ADR_CARRET, 2, false );
+		}else if( command2 == 'Z' ){
+			out_buffer[0]  = METHOD_DRIVER_ENABLE;
+			out_buffer[1]  = DRIVER_Z;
+			writeRegisters(I2C_ADR_CARRET, 2, false );
+		}
+	}else if( command == 'D' ) {    // disable
+		byte command2 = serialBuff[1];
+		defaultResult = false;
+		if( command2 == 'Y' ){
+			out_buffer[0]  = METHOD_DRIVER_DISABLE;
+			out_buffer[1]  = DRIVER_Y;
+			writeRegisters(I2C_ADR_CARRET, 2, false );
+		}else if( command2 == 'X' ){
+			stepperX.disableOutputs();
+			byte ttt[4] = {METHOD_I2C_SLAVEMSG, my_address, METHOD_DRIVER_ENABLE, DRIVER_X };
+			send2android(ttt,4);
+			send2androidEnd();
+		}else if( command2 == 'Z' ){
+			out_buffer[0]  = METHOD_DRIVER_DISABLE;
+			out_buffer[1]  = DRIVER_Z;
+			writeRegisters(I2C_ADR_CARRET, 2, false );
+		}
+
+	}else if( input.equals( "PING2ANDROID") ){      // nic nie rob
+		defaultResult = false;
+	}else if( command == 'p' ) {    // PN10,0,0   - programuj urzadzenie podlaczone resetem do urzadzenia o adresie 10
+		read_prog_settings(input, 2 );
+		defaultResult = false;
+	}else if(  command == 'P' ) {    	// P1; P2,0; P3,1; P4,1;   - programuj urzadzenie 0x0A z prÄ™dkosca 19200, PROG 0,0 - force first, PROG 0A,0 - wozek
+		read_prog_settings(input, 1 );
+		defaultResult = false;
+	}else if( input.startsWith("RESET_NEXT")) {			// RESET12
+		String digits     = input.substring( 10 );
+		char charBuf[4];
+		digits.toCharArray(charBuf,4);
+		unsigned int num    = 0;
+		sscanf(charBuf,"%i", &num );
+		byte error =checkAddress(num);
+		if (error == 0){
+			delay(200);
+			reset_device_next_to(num, LOW);
+			delay(1000);
+			reset_device_next_to(num, HIGH);
+		}else{  //error
+			defaultResult = false;
+			send_error(input);
+		}
+	}else if( input.startsWith("RESET")) {    // RESET0; RESET1; RESET2 
+		String digits     = input.substring( 5 );
+		char charBuf[10];
+		digits.toCharArray(charBuf,10);
+		unsigned int num    = 0;
+		sscanf(charBuf,"%i", &num );
+		delay(200);
+		boolean ret = reset_device_num(num, LOW);
+		if(ret){
+			delay(1000);
+			reset_device_num(num, HIGH);
+		}else{  //error
+			defaultResult = false;
+			send_error(input);
+		}
+	}else if( input.equals("RB")) {	// resetuj magistralê i2c
+		reset_wire();
+
+	}else if( command == 'H' ){		// HAS NEXT, H2,H3,H4
+		String digits         		  = input.substring( 1 );
+		unsigned int target           = 0;
+		char charBuf[3];
+		digits.toCharArray(charBuf, 10);
+		sscanf(charBuf,"%i", &target );
+		defaultResult = false;
+		DEBUG(String( (int)target));
+		byte pin		= get_local_pin(target);
+		if(pin == 0xff){
+			send_error(input);
+		}else{
+			boolean value	= digitalRead( pin);			// is sht is connected
+			byte ttt[4]		= {METHOD_I2C_SLAVEMSG, my_address, METHOD_CHECK_NEXT, value };
+			send2android(ttt,4);
+			send2androidEnd();
+		}
+
+	}else if( command == 'h' ){			// h10,h11,h12,13   - id selected i2c device has next node
+		String digits         		  = input.substring( 1 );
+		unsigned int target           = 0;
+		char charBuf[3];
+		digits.toCharArray(charBuf, 10);
+		sscanf(charBuf,"%i", &target );
+		defaultResult = false;
+
+		byte adr 	= (byte) target;
+		byte error	= checkAddress(adr);
+		if (error != 0){
+			send_error(input);
+			return;
+		}
+		DEBUG(String( (int)adr));
+		out_buffer[0]  = METHOD_CHECK_NEXT;
+		writeRegisters(adr, 1, false );
 
 	}else if( command == 'I' ){
 		byte nDevices=0;
@@ -394,8 +432,6 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 	}else if( input.equals("PING2ARDUINO") ){        // odeslij PONG
 	}else if( input.equals( "PONG" )){			// nic, to byla odpowiedz na moje PING
 		*/
-	}else if( input.equals( "PING2ANDROID") ){      // nic nie rob
-		defaultResult = false;
 	}else if( input.equals( "TEST") ){
 		i2c_test_slaves();		
 	}else if( command == METHOD_GET_TEMP ){  
@@ -403,7 +439,6 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 		defaultResult = false;
 		send2android("RT");
 		sendln2android(String(tt));
-
 	}else if( input.equals( "WR") ){      // wait for return - tylko zwrÃ³c zwrotke
 	}else{
 		sendln2android("NO_CMD [" + input +"]");
@@ -567,24 +602,31 @@ void i2c_test_slaves(){
 	}
 }
 
+
+byte get_local_pin( byte index ){
+	if( index == 0x01 ){
+		return PIN_PROGRAMMER_RESET_MASTER;
+	}else if( index == 0x02 ){
+		return PIN_PROGRAMMER_RESET_CARRET;
+	}else if( index == 0x03 ){ 
+		return PIN_PROGRAMMER_RESET_UPANEL_BACK;
+	}else if( index == 0x04 ){
+		return PIN_PROGRAMMER_RESET_UPANEL_FRONT;
+	}
+	return 0xff;
+}
+
 boolean reset_device_num( byte num, boolean pin_value ){
-	if( num == 0x01 ){                     // master
-		tri_state( PIN_PROGRAMMER_RESET_MASTER, pin_value );		// to generalnie przerywa prace i resetuje procesor
-	}else if( num == 0x02 ){               // wozek
-		tri_state( PIN_PROGRAMMER_RESET_CARRET, pin_value );
-	}else if( num == 0x03 ){               // pierwszy upanel
-		tri_state( PIN_PROGRAMMER_RESET_UPANEL_BACK, pin_value );
-	}else if( num == 0x04 ){               // pierwszy upanel
-		tri_state( PIN_PROGRAMMER_RESET_UPANEL_FRONT, pin_value );
-	//}else if( num == 0xff ){          // reset after last
-	}else{
+	byte pin = get_local_pin(num);
+	if( pin == 0xff ){
 		return false;
 	}
+	tri_state( pin, pin_value );
 	return true;
 }
 
-void read_prog_settings( String input, byte ns, byte cut ){
-	String digits         		  = input.substring( cut );
+void read_prog_settings( String input, byte ns ){
+	String digits         		  = input.substring( 1 );
 	unsigned int target           = 0x00;
 	unsigned int slow_sck         = 0;
 	long unsigned int serial_baud_num  = 0;
