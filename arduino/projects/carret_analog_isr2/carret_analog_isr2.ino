@@ -1,8 +1,6 @@
-#define IS_CARRET true
-#define HAS_LEDS true
 #include <barobot_common.h>
 #include <avr/io.h>
-//#include <stdint.h>       // needed for uint8_t
+//#include <stdint.h>
 
 #define ANALOGS  9
 #define ANALOG_TRIES  2
@@ -22,8 +20,8 @@ void setup(){
   pinMode(A5, INPUT);
   pinMode(A6, INPUT);
   pinMode(A7, INPUT);
-  DEBUGINIT();
-  DEBUGLN("-start"); 
+  Serial.begin(115200);
+  Serial.println("-start"); 
   init_analogs();
 }
 
