@@ -28,6 +28,7 @@ public class Wizard {
 		}else{
 			System.out.println("B£¥D Upanel " + (current_index) +" o adresie "+ current_dev.getAddress() + " jest ostatni");
 		}
+		System.out.println("upaneli: " + Upanel.list.size());
 		/*
 		hw.send("RB");
 		wait(1000);
@@ -70,15 +71,17 @@ public class Wizard {
 
 		if( IspSettings.setFuseBits){
 			current_dev.isp(hw);
+			wait(2000);
 			command = current_dev.setFuseBits(hw);
 			run(command, hw);
-			wait(2000);
+			wait(1000);
 		}
 		if(IspSettings.setHex){
 			current_dev.isp(hw);
+			wait(2000);
 			command = current_dev.uploadCode(hw, upanel_code );
 			run(command, hw);
-			wait(2000);
+			wait(1000);
 		}
 
 		int device_found  = current_dev.resetAndReadI2c( hw );
@@ -86,6 +89,7 @@ public class Wizard {
 			System.out.println("+Upanel " + current_index + " ma adres " + device_found);
 			wait(2000);
 			current_dev.setAddress(device_found);
+			current_dev.setLed( hw, "0xff", 255 );
 			prog_next_to( hw, current_dev, current_index+1, upanel_code );
 		}else{
 			System.out.println("B£¥D Upanel " + (current_index) +" o adresie "+ current_dev.getAddress() + " jest ostatni");
@@ -109,7 +113,6 @@ public class Wizard {
 			run(command, hw);
 			wait(2000);
 		}
-
 		int device_found  = current_dev.resetNextAndReadI2c( hw );
 		wait(2000);
 		if( device_found > 0 ){		// pierwszy ma adres com.barobot.i2c
@@ -118,6 +121,7 @@ public class Wizard {
 			next_device.canResetMe(current_dev);
 			Upanel.list.add( next_device );
 			System.out.println("++Upanel " + next_index + " ma adres " + device_found);
+			next_device.setLed( hw, "0xff", 255 );
 			prog_next_to( hw, next_device, next_index+1, upanel_code );
 		}else{
 			System.out.println("++Upanel " + (next_index-1) +" o adresie "+ current_dev.getAddress() + " jest ostatni");
@@ -369,12 +373,13 @@ public class Wizard {
 			run(command, hw);
 			wait(2000);
 		}
+		/*
 		int device_found  = current_dev.resetAndReadI2c( hw );
 		if( device_found > 0 ){		// pierwszy ma adres com.barobot.i2c
 			System.out.println("+Carret  ma adres " + device_found);
 		}else{
 			System.out.println("B£¥D Carret o nie zg³asza siê");
-		}
+		}*/
 		hw.close();
 	}
 
@@ -488,6 +493,12 @@ public class Wizard {
 			this.mrygaj( hw );
 			this.mrygaj_grb( hw );
 			this.mrygaj_po_butelkach( hw );
+		}
+	}
+	public void ilumination2(Hardware hw) {
+		System.out.println("upaneli: " + Upanel.list.size());
+		for (I2C_Device u : Upanel.list){
+			u.setLed( hw, "0xff", 255);
 		}
 	}
 }

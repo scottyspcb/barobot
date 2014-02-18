@@ -70,10 +70,12 @@ unsigned long milis1000 = 0;
 unsigned long milis2000 = 0;
 byte iii = 0;
  
+/*
 int16_t typical_neutral = 511;
 int16_t threshold       = 30;
 int16_t enstrop_max     = 511;
 int16_t enstrop_min     = 511;
+*/
 
 boolean is_up    = false;
 boolean neutral  = false;
@@ -109,8 +111,8 @@ void setup(){
 	pinMode(PIN_CARRET_MISO, INPUT );        // stan wysokiej impedancji
 	pinMode(PIN_CARRET_MOSI, INPUT );        // stan wysokiej impedancji
 
-	pinMode(PIN_CARRET_SERVO_Y, INPUT);      // nie pozwalaj na przypadkowe machanie na starcie
-	pinMode(PIN_CARRET_SERVO_Z, INPUT);      // nie pozwalaj na przypadkowe machanie na starcie
+	pinMode(PIN_CARRET_SERVO_Y, INPUT_PULLUP);      // nie pozwalaj na przypadkowe machanie na starcie
+	pinMode(PIN_CARRET_SERVO_Z, INPUT_PULLUP);      // nie pozwalaj na przypadkowe machanie na starcie
 
 	pinMode(PIN_CARRET_HALL_X, INPUT);
 	pinMode(PIN_CARRET_HALL_Y, INPUT);
@@ -554,6 +556,11 @@ void proceed( volatile byte buffer[5] ){
 		}
 		DEBUG("-driver X moving:");
 		DEBUGLN(String(buffer[2]));
+		
+	}else if( buffer[0] == METHOD_CHECK_NEXT ){
+		byte ttt[4] = {METHOD_I2C_SLAVEMSG, my_address, METHOD_CHECK_NEXT, 0 };		// 0 = no device found (cant have device)
+		send(ttt,4);	
+
 	}else if( buffer[0] == METHOD_LIVE_ANALOG ){         // LIVE A 3,100,5 // TODO method byte
 		if(buffer[1] < 8){
 			analog_num		= buffer[1];   // analog num

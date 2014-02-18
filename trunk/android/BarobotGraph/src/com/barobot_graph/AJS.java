@@ -104,7 +104,7 @@ public class AJS {
 		webview.post(new Runnable() {
 			@Override
 			public void run() {
-				Log.d("+URL", "javascript:sendToDraw('" + e + "');");
+	//			Log.d("+URL", "javascript:sendToDraw('" + e + "');");
 				webview.loadUrl("javascript:sendToDraw('" + e + "');");
 			}
 		});

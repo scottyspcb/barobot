@@ -43,6 +43,32 @@ public class input_parser {
 		//Log.i(Constant.TAG, "parse:[" + fromArduino + "]");
 		if(fromArduino.startsWith("-")){
 			return;
+		}else if(fromArduino.startsWith("state")){
+			String[] parts	= fromArduino.split(" ");
+			int[] ports		= {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+			Log.e(Constant.TAG, "state " + fromArduino);
+
+			if( parts.length > 1 ){			// jesli są jakie skanały
+				for( int i=0;i<parts[1].length();i++){
+					if(parts[1].charAt(i) == 'o'){
+						ports[ 13 ] = 1;
+					}else if(parts[1].charAt(i) == 'f'){
+						ports[ 14 ] = 1;
+					}else if(parts[1].charAt(i) == 'p'){
+						ports[ 15 ] = 1;
+					}else{
+						int port = toInt(""+parts[1].charAt(i));
+						if( port < ports.length ){
+							ports[ port ] = 1;
+						}else{
+							Log.e(Constant.TAG, "Undefined port " + port);
+						}
+					}
+				}
+			}
+			for( int i=0;i<ports.length;i++){
+				BGraph.getInstance().port_enabled(i, ports[i] == 1 );
+			}
 		}else if(fromArduino.startsWith("t")){
 		}else if(fromArduino.startsWith("s")){
 		}else if(fromArduino.startsWith("r")){
@@ -59,22 +85,7 @@ public class input_parser {
 				if (aa != null) {
 					aa.oscyloskop(fromArduino);
 				}
-			}else if(fromArduino.startsWith("state")){
-				String[] parts	= fromArduino.split(" ");
-				int[] ports		= {0,0,0,0,0,0,0,0,0};
-				if( parts.length > 1 ){			// jesli są jakie skanały
-					for( int i=0;i<parts[1].length();i++){
-						int port = toInt(""+parts[1].charAt(i));
-						if( port < ports.length ){
-							ports[ port ] = 1;
-						}else{
-							Log.e(Constant.TAG, "Undefined port " + port);
-						}
-					}
-				}
-				for( int i=0;i<ports.length;i++){
-					BGraph.getInstance().port_enabled(i, ports[i] == 1 );
-				}
+			
 			}else{
 				Log.i(Constant.TAG, "parse:[" + fromArduino + "]");
 			}

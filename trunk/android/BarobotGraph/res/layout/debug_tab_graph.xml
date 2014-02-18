@@ -109,6 +109,36 @@
             android:textOff="A8"
             android:textOn="A8" />
 
+        <ToggleButton
+            android:id="@+id/perf"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxWidth="45dp"
+            android:minWidth="40dp"
+            android:text="P"
+            android:textOff="P"
+            android:textOn="P" />
+
+        <ToggleButton
+            android:id="@+id/pother"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxWidth="45dp"
+            android:minWidth="40dp"
+            android:text="O"
+            android:textOff="O"
+            android:textOn="O" />
+
+        <ToggleButton
+            android:id="@+id/pfinished"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxWidth="45dp"
+            android:minWidth="40dp"
+            android:text="F"
+            android:textOff="F"
+            android:textOn="F" />
+
         <Button
             android:id="@+id/graph_repeat"
             android:layout_width="wrap_content"
@@ -127,14 +157,20 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="FPS" />
+    </LinearLayout>
 
-        <ToggleButton
-            android:id="@+id/graph_reverse"
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="right" >
+
+        <TextView
+            android:id="@+id/input_field"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="ToggleButton"
-            android:textOff="Reverse"
-            android:textOn="Reverse" />
+            android:layout_weight="0.32"
+            android:text=""
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <ToggleButton
             android:id="@+id/graph_scale"
@@ -144,6 +180,14 @@
             android:text="ToggleButton"
             android:textOff="Scale"
             android:textOn="Scale" />
+
+        <ToggleButton
+            android:id="@+id/graph_reverse"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ToggleButton"
+            android:textOff="Reverse"
+            android:textOn="Reverse" />
 
         <ToggleButton
             android:id="@+id/graph_points"
@@ -172,20 +216,6 @@
             android:text="ToggleButton"
             android:textOff="Columns"
             android:textOn="Columns" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="right" >
-
-        <TextView
-            android:id="@+id/input_field"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.32"
-            android:text=""
-            android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <ToggleButton
             android:id="@+id/graph_high_speed"
