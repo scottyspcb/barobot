@@ -33,6 +33,8 @@
 #define METHOD_DEVICE_FOUND 	12
 #define METHOD_SETLED 	40
 #define METHOD_SETLEDS 	44
+#define METHOD_CHECK_NEXT 	188
+
 
 #define METHOD_SET_X_ACCELERATION 	"AX"
 #define METHOD_MASTER_CAN_FILL 	"CF"
@@ -53,6 +55,8 @@
 #define METHOD_SET_X_POS 	'X'
 #define METHOD_GET_TEMP 	'T'
 #define METHOD_MSET_LED 	'L'
+#define METHOD_HAS_NEXT 	'H'
+#define METHOD_SLAVE_HAS_NEXT 	'h'
 
 
 

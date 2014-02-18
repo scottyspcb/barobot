@@ -184,6 +184,7 @@ boolean init_i2c(){
 		delay2(100);
 		return false;
 	}
+
 	//Serial.println( "+m" );
 //	my_address = 0;
 	if( my_address < I2C_ADR_USTART || my_address > I2C_ADR_UEND || addr_is_used(my_address)){    // zajety - sprawdzaj inne...
