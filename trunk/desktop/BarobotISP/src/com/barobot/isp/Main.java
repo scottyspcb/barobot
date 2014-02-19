@@ -40,22 +40,26 @@ public class Main {
 		IspSettings.setHex	= true;
 		IspSettings.force = false;
 
-		//w.prepareSlaveMB( hw );
+	//	w.prepareSlaveMB( hw );
 	//	w.test( hw );
-	//w.findOrder( hw );
+	//	w.findOrder( hw, 4 );
 	//	Wizard.wait(1000);
+
+	//	w.prepareMB( hw );
+	//	w.prepareCarret( hw );
+//		w.prepareUpanel(hw);
+
+	//	w.prepareCarret( hw );
 	//	w.checkCarret( hw );
+	//	w.prepare1Upanel( hw, 4 );
+		w.prepareUpanel( hw, 3 );
+//		w.prepareUpanel( hw, 4 );
 
-		w.prepareMB( hw );
-		//w.prepareCarret( hw );
-//		w.prepare1Upanel( hw );
-	//	w.prepareUpanel( hw );
-
-	//	w.prepareUpanel(hw);
+	//	
 	//	w.clearUpanel( hw );
 	//	
 		//w.ilumination1( hw );
-		w.ilumination2( hw );
+	//	w.ilumination2( hw );
 
 		System.out.println("koniec");
 	}
