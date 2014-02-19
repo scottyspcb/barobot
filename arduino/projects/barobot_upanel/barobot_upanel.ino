@@ -21,7 +21,6 @@ boolean buttonState = HIGH;
 boolean lastButtonState = HIGH;            // default pull-up
 uint8_t lastDebounceTime = 0;
 uint8_t const debounceDelay = 50;
-boolean noi2c = false;
 
 void setup(){
   DEBUGINIT();
@@ -46,17 +45,14 @@ void setup(){
   if(!init_i2c()){
     {
       check_i2c_valid();
-     // if(tries ++ > 2){
-   //    show_error(5 );
-    //   noi2c = true;
-   //   }        
-    } while( !init_i2c());
+  //    if(tries ++ > 2){
+  //     show_error(5 );
+  //    }        
+    } while( !init_i2c() );
   }
-  if(!noi2c){
-    Wire.onReceive(receiveEvent);
-    Wire.onRequest(requestEvent);
-    send_here_i_am();  // send I'am ready
-  }
+  Wire.onReceive(receiveEvent);
+  Wire.onRequest(requestEvent);
+  send_here_i_am();  // send I'am ready
     OCR2 = 100;
     TCCR2 &= ~(1 << CS20);
     TCCR2 &= ~(1 << CS21);
@@ -92,8 +88,9 @@ void setup(){
   sei();    // enable interrupts
 }
 
+
 void loop() {
- // Debouncing
+// Debouncing
   uint8_t mil =_isr_count;
   boolean reading = digitalRead(PIN_UPANEL_POKE);
   if (reading != lastButtonState) {
@@ -101,19 +98,19 @@ void loop() {
     lastButtonState = reading;
   }else if( lastDebounceTime != mil ){
     if (reading != buttonState) {
+ //     uint8_t now = mil;
       int16_t a = _isr_count;
       a -= lastDebounceTime;
       if (abs(a) > debounceDelay) {
         buttonState = reading;
-        lastDebounceTime = 0;
         send_pin_value( PIN_UPANEL_POKE, buttonState );
+        DW(LED_TOP_RED, buttonState );
+        lastDebounceTime = 0;
       }
     }
   }
- // end Debouncing
-// if(!noi2c){
-   read_i2c();
-// }
+// end Debouncing
+ read_i2c();
 }
 
 static void read_i2c(){
@@ -122,10 +119,11 @@ static void read_i2c(){
     if( command == METHOD_SETPWM ){                // PWM     3 bajty
    //         PWMSet(in_buffer1[1],in_buffer1[2]);
    //           leds[in_buffer1[1]].wypelnienie = in_buffer1[2];
-    }else if( command ==  METHOD_CHECK_NEXT ){
+    }else if( command == METHOD_CHECK_NEXT ){
       byte value  = digitalRead( PIN_UPANEL_LEFT_RESET );
-      byte ttt[4] = {METHOD_I2C_SLAVEMSG,my_address, METHOD_CHECK_NEXT,value};
+      byte ttt[4] = {METHOD_I2C_SLAVEMSG, my_address, METHOD_CHECK_NEXT, value };		// 0 = no device found (cant have device)
       send(ttt,4);
+
     }else if( command ==  METHOD_SETLEDS ){
       byte i = COUNT_UPANEL_ONBOARD_LED;
       while(i--){
@@ -164,6 +162,16 @@ static void read_i2c(){
     }else if( command == METHOD_RUN_NEXT ){          // Koniec resetu urządzenia obok, ustaw pin w stan wysokiej impedancji
       reset_next( HIGH );
     }else if( command == METHOD_RESETSLAVEADDRESS ){          // zmien address
+
+ }else if( command == 114 ){          // zmien address
+    	byte value = eeprom_read_byte( (unsigned char *) in_buffer1[1] );
+        byte ttt[4] = {
+          METHOD_I2C_SLAVEMSG, 
+          my_address, 
+          METHOD_CHECK_NEXT, 
+          value
+        };
+        send(ttt,4);
     }
     in_buffer1[0] = 0;
     use_local = false;
@@ -174,9 +182,9 @@ byte common_anode = PIN_PANEL_LED_OFF_WHEN;
 void set_pin( byte pin, boolean value ){
 	boolean off_when = bitRead( common_anode, pin);
 	if( (value ^ off_when) == true ){
-//	  *_pwm_channels[pin].outport |= _pwm_channels[pin].pinmask;
+	  *_pwm_channels[pin].outport |= _pwm_channels[pin].pinmask;
 	}else{
-//	 *_pwm_channels[pin].outport &= ~(_pwm_channels[pin].pinmask);
+	 *_pwm_channels[pin].outport &= ~(_pwm_channels[pin].pinmask);
 	}
 }
 /*
@@ -202,6 +210,7 @@ void reset_next(boolean value){
     DW(PIN_UPANEL_LEFT_RESET, LOW );
   }
 }
+
 void receiveEvent(int howMany){
   if(!howMany){
      return;
@@ -226,8 +235,7 @@ void requestEvent(){
     }else if( in_buffer1[0] == METHOD_TEST_SLAVE ){    // return xor
         byte res = in_buffer1[1] ^ in_buffer1[2];
         Wire.write(res);
-        DW(LED_TOP_BLUE, bitRead(res,0) );
-        delay2(30);
+	DW(LED_TOP_BLUE, !digitalRead(LED_TOP_BLUE) );
     }
 }
 
@@ -241,7 +249,7 @@ static void send_here_i_am(){
   send(ttt,4);
 }
 void send( byte buffer[], byte length ){
-  if(prog_mode || noi2c ){
+  if(prog_mode){
     return;
   }
   byte ret = 1;
@@ -270,6 +278,11 @@ void check_i2c_valid(){
 //    reset_next(HIGH);
   }
 }
+
+
+
+
+
 
 
 
@@ -328,7 +341,6 @@ ISR(TIMER2_COMP_vect){
   }
 }
 
-
 /*
 void PWM(uint8_t pin, uint8_t pwmup, uint8_t pwmdown, uint8_t timeup, uint8_t timedown, uint8_t fadeup, uint8_t fadedown){
   if(pin == 0xff ){
@@ -350,6 +362,7 @@ void PWM(uint8_t pin, uint8_t pwmup, uint8_t pwmdown, uint8_t timeup, uint8_t ti
      _pwm_channels[pin].timeup = timeup;   
   }
 }
+
 void PWMSet(uint8_t pin, uint8_t up){
   if(pin == 0xff ){
     uint8_t i=COUNT_UPANEL_ONBOARD_LED;
