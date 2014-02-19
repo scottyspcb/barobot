@@ -133,7 +133,6 @@ void setup(){
 	FlexiTimer2::set(40, 1.0/100, timer);
 	FlexiTimer2::start();
 //	init_analogs();
-
 	sendstats();
 }
 
@@ -189,7 +188,7 @@ void loop() {
 				analog_sum.bytes[3],		// bits 0-7
 				analog_sum.bytes[2],		// bits 8-15
 				analog_sum.bytes[1],		// bits 16-23
-				analog_sum.bytes[0]		// bits 24-32
+				analog_sum.bytes[0]			// bits 24-32
 			};
 			send(ttt,8);
 			analog_pos = 0;
@@ -559,7 +558,7 @@ void proceed( volatile byte buffer[5] ){
 		
 	}else if( buffer[0] == METHOD_CHECK_NEXT ){
 		byte ttt[4] = {METHOD_I2C_SLAVEMSG, my_address, METHOD_CHECK_NEXT, 0 };		// 0 = no device found (cant have device)
-		send(ttt,4);	
+		send(ttt,4);
 
 	}else if( buffer[0] == METHOD_LIVE_ANALOG ){         // LIVE A 3,100,5 // TODO method byte
 		if(buffer[1] < 8){
@@ -642,9 +641,8 @@ void proceed( volatile byte buffer[5] ){
 
 	}else if( buffer[0] == METHOD_GETANALOGVALUE ){
 	}else if( buffer[0] == METHOD_GETVALUE ){
-	}else if( buffer[0] == METHOD_RESET_NEXT ){
-	}else if( buffer[0] == METHOD_RUN_NEXT ){
-
+	//}else if( buffer[0] == METHOD_RESET_NEXT ){
+	//}else if( buffer[0] == METHOD_RUN_NEXT ){
 	}else if( buffer[0] == METHOD_SETTIME ){
 		//  byte led   = buffer[1];
 		//  byte on    = buffer[2];
@@ -714,7 +712,7 @@ void receiveEvent(int howMany){
 	}
 	DEBUGLN(" - pelno");
 }
- 
+
 void requestEvent(){
 	// w in_buffer jest polecenie
 	byte command = input_buffer[last_index][0];

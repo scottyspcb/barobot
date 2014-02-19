@@ -1,5 +1,7 @@
 package com.barobot.i2c;
 
+import java.io.File;
+
 import com.barobot.isp.Hardware;
 import com.barobot.isp.IspSettings;
 import com.barobot.isp.Main;
@@ -90,6 +92,8 @@ public abstract class I2C_Device_Imp implements I2C_Device{
 	}
 
 	public String uploadCode(Hardware hw, String filePath) {
+		isFresh( hw );
+		
 		String command = IspSettings.avrDudePath + " -C"+ IspSettings.configPath +" "+ IspSettings.verbose()+ " " +
 		"-p"+ this.cpuname +" -c"+this.protocol+" -P\\\\.\\"+hw.comPort+" -b" + this.bspeed + " " +
 		"-Uflash:w:"+filePath+":i";
@@ -97,5 +101,12 @@ public abstract class I2C_Device_Imp implements I2C_Device{
 			command = command + " -n";
 		}
 		return command;
+	}
+	
+	
+	public long isFresh(Hardware hw) {
+		long b = new File( getHexFile() ).lastModified() / 1000;
+		System.out.println("isFresh " + b );
+		return b;
 	}
 }

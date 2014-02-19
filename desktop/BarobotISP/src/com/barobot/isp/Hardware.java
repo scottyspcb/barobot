@@ -152,14 +152,19 @@ public class Hardware implements LineReader {
 
 		public void read_line(String in) {
 			System.out.println("IN: "+ in);
-			 if( in.startsWith( "12") ){			// device found
+			 if( in.startsWith( "12,") ){			// device found
 				 int[] parts = Parser.decodeBytes( in );
 				 // Znaleziono urzadzenie
 				 int address = parts[1];
-				 IspSettings.last_found_device	= address;
+				 IspSettings.last_found_device	= address;				 
+				 System.out.println("Found device address " + address);
+			 }else if( in.startsWith( "122,") ){			// METHOD_I2C_SLAVEMSG
+				 int[] parts = Parser.decodeBytes( in );
+				 if( parts.length > 3 && parts[ 2 ] ==  188 ){
+					 IspSettings.last_has_next	= parts[ 3 ];		// 0 or 1	
+				 }
 			 }else if( in.startsWith( "RL") ){			// RLEDS
 				 synchronized (Main.main) { Main.main.notify(); }
-				 
 			 }
 		}
 }

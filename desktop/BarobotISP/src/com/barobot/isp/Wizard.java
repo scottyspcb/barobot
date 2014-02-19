@@ -13,22 +13,26 @@ import com.barobot.isp.parser.CopyStream;
 
 public class Wizard {
 
-	public void findOrder(Hardware hw) {
+	public void findOrder(Hardware hw, int index ) {
 		String TimeStamp = new java.util.Date().toString();
-
 		hw.connect();
-		int current_index	= 0;
-		Upanel current_dev	= new Upanel( 3, 0 );
-		int device_found	= current_dev.resetAndReadI2c( hw );
-		if( device_found > 0 ){		// pierwszy ma adres com.barobot.i2c
-			Upanel.list.add( current_dev );	
-			System.out.println("Upanel " + current_index + " ma adres " + device_found);
-			current_dev.setAddress(device_found);
-			find_next_to( hw, current_dev, current_index );
-		}else{
-			System.out.println("B£¥D Upanel " + (current_index) +" o adresie "+ current_dev.getAddress() + " jest ostatni");
+		int current_index		= 0;
+		MainBoard mb			= new MainBoard();
+		Upanel current_dev		= new Upanel( index, 0 );
+		current_dev.setOrder( 0 );
+		int has_next 			= mb.readHasNext( hw, index );
+		System.out.println("has_next " + has_next );
+		if(has_next>0){
+			int device_found	= current_dev.resetAndReadI2c( hw );
+			if( device_found > 0 ){		// pierwszy ma adres com.barobot.i2c
+				Upanel.list.add( current_dev );	
+				System.out.println("Upanel " + current_index + " ma adres " + device_found);
+				current_dev.setAddress(device_found);
+				find_next_to( hw, current_dev, current_index );
+			}else{
+				System.out.println("B£¥D Upanel " + (current_index) +" o adresie "+ current_dev.getAddress() + " jest ostatni");
+			}
 		}
-		System.out.println("upaneli: " + Upanel.list.size());
 		/*
 		hw.send("RB");
 		wait(1000);
@@ -36,38 +40,49 @@ public class Wizard {
 		wait(3000);
 		hw.send("TEST");
 */	
+		System.out.println("upaneli: " + Upanel.list.size());
+		for (I2C_Device u : Upanel.list){
+			System.out.println("Upanel numer "+ u.getOrder() + ", adres: "+ u.getAddress() +", index "+ u.getIndex());
+		}
 		hw.close();
 	}
 	private void find_next_to( Hardware hw, Upanel current_dev, int next_index) {
-		int device_found  = current_dev.resetNextAndReadI2c( hw );
-		if( device_found > 0 ){		// cos powsta³o na koñcu
-			int index = Upanel.findByI2c( device_found );
-			Upanel u = null;
-			if( index == -1 ){
-				u = new Upanel( 0, device_found, current_dev );
-				u.setOrder( next_index+1);
-				Upanel.list.add( u );
+		int has_next  = current_dev.readHasNext( hw );
+		System.out.println("has_next " + has_next );
+		if(has_next>0){
+			int device_found  = current_dev.resetNextAndReadI2c( hw );
+			if( device_found > 0 ){		// cos powsta³o na koñcu
+				int index = Upanel.findByI2c( device_found );
+				Upanel u = null;
+				if( index == -1 ){
+					u = new Upanel( 0, device_found, current_dev );
+					u.setOrder( next_index+1);
+					Upanel.list.add( u );
+				}else{
+					u = Upanel.list.get( index );
+					u.setOrder( next_index+1);
+					u.canResetMe(current_dev);
+				}
+				System.out.println("Upanel " + (next_index+1) + " ma adres " + device_found);
+				find_next_to( hw, u, next_index+1 );
 			}else{
-				u = Upanel.list.get( index );
-				u.setOrder( next_index+1);
-				u.canResetMe(current_dev);
+				System.out.println("Error. Upanel " + (next_index) +" o adresie "+ current_dev.getAddress() + " jest ostatni ale coœ jest po nim");
 			}
-			System.out.println("Upanel " + (next_index+1) + " ma adres " + device_found);
-			find_next_to( hw, u, next_index+1 );
 		}else{
 			System.out.println("Upanel " + (next_index) +" o adresie "+ current_dev.getAddress() + " jest ostatni");
 		}
 	}
 
-	public void prepareUpanel(Hardware hw) {
+	public void prepareUpanel(Hardware hw, int index ) {
 		Upanel.list.clear();
-		Upanel.list.add( new Upanel( 3, 0 ) );	
+		Upanel.list.add( new Upanel( index, 0 ) );	
 		String command = "";
 
 		hw.connect();
 		int current_index	= 0;
 		Upanel current_dev	= Upanel.list.get(current_index);
 		String upanel_code = current_dev.getHexFile();
+		current_dev.setOrder( index );
 
 		if( IspSettings.setFuseBits){
 			current_dev.isp(hw);
@@ -89,8 +104,12 @@ public class Wizard {
 			System.out.println("+Upanel " + current_index + " ma adres " + device_found);
 			wait(2000);
 			current_dev.setAddress(device_found);
-			current_dev.setLed( hw, "0xff", 255 );
-			prog_next_to( hw, current_dev, current_index+1, upanel_code );
+			current_dev.setLed( hw, "0xf0", 255 );	
+			int has_next  = current_dev.readHasNext( hw );
+			System.out.println("has_next " + has_next );
+			if(has_next>0){
+				prog_next_to( hw, current_dev, current_index+1, upanel_code );	
+			}
 		}else{
 			System.out.println("B£¥D Upanel " + (current_index) +" o adresie "+ current_dev.getAddress() + " jest ostatni");
 		}
@@ -100,7 +119,7 @@ public class Wizard {
 	private void prog_next_to(Hardware hw, Upanel current_dev, int next_index, String upanel_code ) {
 		String command = "";
 		Upanel next_device	= new Upanel( 0, 0, current_dev );
-		
+
 		if( IspSettings.setFuseBits){
 			current_dev.isp_next(hw);
 			command = next_device.setFuseBits(hw);
@@ -121,8 +140,13 @@ public class Wizard {
 			next_device.canResetMe(current_dev);
 			Upanel.list.add( next_device );
 			System.out.println("++Upanel " + next_index + " ma adres " + device_found);
-			next_device.setLed( hw, "0xff", 255 );
-			prog_next_to( hw, next_device, next_index+1, upanel_code );
+			next_device.setLed( hw, "0xf0", 255 );
+
+			int has_next  = next_device.readHasNext( hw );
+			System.out.println("has_next " + has_next );
+			if(has_next>0){
+				prog_next_to( hw, next_device, next_index+1, upanel_code );
+			}
 		}else{
 			System.out.println("++Upanel " + (next_index-1) +" o adresie "+ current_dev.getAddress() + " jest ostatni");
 		}
@@ -136,7 +160,6 @@ public class Wizard {
 		}
 	}
 	
-
 	public void clearUpanel(Hardware hw) {
 		while(Upanel.list.size() > 0 ){
 			boolean found = false;
@@ -468,10 +491,10 @@ public class Wizard {
 		}
 		hw.close();
 	}*/
-	public void prepare1Upanel(Hardware hw) {
+	public void prepare1Upanel(Hardware hw, int index ) {
 		String command = "";
 		hw.connect();
-		Upanel current_dev	= new Upanel( 3, 0 );
+		Upanel current_dev	= new Upanel( index, 0 );
 		String upanel_code = current_dev.getHexFile();
 		if( IspSettings.setFuseBits){
 			current_dev.isp(hw);
