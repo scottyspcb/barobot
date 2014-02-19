@@ -109,20 +109,20 @@
 		#define PIN_MAINBOARD_TABLET_PWR	A6
 	//	#define VPIN_TEMP_MB	8
 
-		#define PIN_PROGRAMMER_RESET_UPANEL_FRONT 8
-		#define PIN_PROGRAMMER_RESET_UPANEL_BACK 2
-		#define PIN_PROGRAMMER_RESET_CARRET 7
-		#define PIN_PROGRAMMER_RESET_MASTER 17		// A3
+		#define PIN_PROGRAMMER_RESET_UPANEL_FRONT PPD2	//	02
+		#define PIN_PROGRAMMER_RESET_UPANEL_BACK PPB0	//	08
+		#define PIN_PROGRAMMER_RESET_CARRET PPD7			//	7	
+		#define PIN_PROGRAMMER_RESET_MASTER PPC3			// A3/D17
 
 		// PIN 10 czyli SlaveSelect (SS) musi byæ jako output gdziekolwiek aby SPI dzia³a³o
-		#define PIN_PROGRAMMER_LED_OTHER   	3
+		#define PIN_PROGRAMMER_LED_LIGHT   	PPD3			//	03
 		// 	Lights up if something goes wrong (use red if that makes sense)
-		#define PIN_PROGRAMMER_LED_ERROR   	10
+		#define PIN_PROGRAMMER_LED_ERROR   	PPB2			//	10
 		// 	shows the programmer is running
-		#define PIN_PROGRAMMER_LED_ACTIVE	6
+		#define PIN_PROGRAMMER_LED_ACTIVE	PPD6			//	06
 		// 	In communication with the slave
-		#define PIN_PROGRAMMER_LED_STATE    9
-
+		#define PIN_PROGRAMMER_LED_STATE    PPB1			//	09
+		
 		#if IS_PROGRAMMER	
 			#define HWVER		2
 			#define SWMAJ		1
@@ -403,7 +403,6 @@ union byteword{
     byte bytes[2];
     word i;
 };
-
 
 
 /* 
