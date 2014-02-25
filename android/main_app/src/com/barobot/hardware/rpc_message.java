@@ -1,10 +1,8 @@
 package com.barobot.hardware;
 
-import com.barobot.constant.Constant;
 import com.barobot.utils.Arduino;
 import com.barobot.utils.ArduinoQueue;
 import com.barobot.utils.History_item;
-
 
 public class rpc_message extends History_item{
 	/**
@@ -26,12 +24,12 @@ public class rpc_message extends History_item{
 	}
 	public rpc_message( boolean dir ) {
 		// wszystko jest domyślne lub w funkcjach
-		this.direction		= dir;	// true = na zewnątrz
+		this.direction	= dir;	// true = na zewnątrz
 	}
 	public rpc_message(boolean dir, boolean wait4ready) {
-		this.direction		= dir;	// true = na zewnątrz
-		this.blocing		= wait4ready;
-		this.block			= wait4ready;
+		this.direction	= dir;	// true = na zewnątrz
+		this.blocing	= wait4ready;
+		this.block		= wait4ready;
 	}
 	public boolean isRet(String result) {	// czy to co przyszło jest zwrotką tej komendy
 		result =result.trim().toUpperCase();

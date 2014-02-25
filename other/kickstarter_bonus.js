@@ -6,6 +6,7 @@ $(".NS-projects-reward").each(function(){
 	var box = $(this);
 	var bac = box.find(".num-backers").first().text();
 	var pri = box.find(".money").first().text();
+	box.find(".money").first().text();
 	pri = pri.replace("$","");
 	pri = pri.replace("£","");
 	pri = pri.replace(",","");
@@ -14,4 +15,8 @@ $(".NS-projects-reward").each(function(){
 	bac	= bac.trim();
 	var tt = pri * bac;
 	sum += tt;
-});alert(title + "\nSuma prezentów: " + sum + "\nDodatkowe wpłaty: " + Math.round(((pledged/sum)-1)*1000)/10+"%");};void(0);
+	var procOfPledged	= Math.round(tt/pledged * 1000);
+	box.find("h5").append( " czyli <i>"+ tt + " $</i> (" + procOfPledged/10+"%)" );
+});
+var proc	= Math.round(((pledged/sum)-1)*1000)/10;
+alert(title + "\nSuma prezentów: " + Math.round(pledged-sum) + "\nDodatkowe wpłaty: " + Math.round(proc)+"%");};void(0);
