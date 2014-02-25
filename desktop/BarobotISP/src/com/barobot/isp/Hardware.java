@@ -1,9 +1,7 @@
 package com.barobot.isp;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.Enumeration;
 
@@ -25,12 +23,30 @@ public class Hardware implements LineReader {
 
 	private OutputStream outputStream;
 	private InputStream inputStream; 
-	private BufferedReader  is;
+//	private BufferedReader  is;
 	private SerialPort serialPort=null;
-	InputListener il;
+	//InputListener il;
 
+	protected void openPort( String name ) throws Exception {
+		
+		  Enumeration  portList = CommPortIdentifier.getPortIdentifiers();
+		  System.out.println("openPort:" + name);		  
+		  while (portList.hasMoreElements()) {
+			  CommPortIdentifier portId = (CommPortIdentifier) portList.nextElement();
+			  if( portId.getPortType() == CommPortIdentifier.PORT_SERIAL && 
+					  portId.getName().equals(name)){
+
+				  serialPort = (SerialPort) portId.open("BarobotISP", 5000);
+				  return;
+			  }
+		  }
+		if(serialPort == null){
+			throw new Exception("no port");	
+		}
+	  }
 	public void send(String string) {
 		if(!connected){
+			System.out.println("no connect");
 			return;
 		}
 		System.out.println("\t>>>Sending: " + string);
@@ -54,14 +70,28 @@ public class Hardware implements LineReader {
 		}
 		try {
 			this.openPort(this.comPort);
+			outputStream = serialPort.getOutputStream();
 			this.setFullSpeed(serialPort);
 			this.inputStream = serialPort.getInputStream();
-			/*
-			serialPort.addEventListener( new SerialPortEventListener(){
+
+			SerialPortEventListener lis = new SerialPortEventListener(){
 				public void serialEvent(SerialPortEvent arg0) {
-					System.out.println("serialEvent:" + arg0.getEventType());	
-				}} );&*/
-			this.startReader( inputStream );
+					if(  arg0.getEventType() ==  SerialPortEvent.DATA_AVAILABLE ){
+						 byte[] readBuffer = new byte[128];
+						 try {
+						        while (inputStream.available() > 0) {
+						          int bytesRead = inputStream.read(readBuffer);
+						          String in = new String(readBuffer, 0, bytesRead);
+				//		          System.out.print("!serialEvent" +in);
+						          SerialInputBuffer.readInput(in);	
+
+						        }
+						      } catch (IOException e) {
+						   }
+					}
+				}};
+			serialPort.addEventListener( lis );
+			serialPort.notifyOnDataAvailable(true);
 			connected = true;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -69,43 +99,9 @@ public class Hardware implements LineReader {
 		}
 	}
 
-	protected void openPort( String name ) throws Exception {
-		  Enumeration  portList = CommPortIdentifier.getPortIdentifiers();
-		  System.out.println("openPort:" + name);
-		  while (portList.hasMoreElements()) {
-			  CommPortIdentifier portId = (CommPortIdentifier) portList.nextElement();
-			  if( portId.getPortType() == CommPortIdentifier.PORT_SERIAL && 
-					  portId.getName().equals(name)){
-
-				  serialPort = (SerialPort) portId.open("SimpleWriteApp", 2000);
-				  outputStream = serialPort.getOutputStream();
-				  return;
-			  }
-		  }
-		if(serialPort == null){
-			throw new Exception("no port");	
-		}
-	  }
-	  protected void startReader( InputStream inputStream ) {	
-			il = new InputListener(inputStream, this );
-			il.start();
-		}
 	protected void close() {
 		SerialInputBuffer.clear();
 		System.out.println("serial close");
-		if (il != null) {
-			il.close();
-			il = null;
-		}
-		if (is != null) {
-			try {
-				//System.out.println("close3");
-				is.close();
-				//System.out.println("close4");
-			} catch (IOException e) {
-				 e.printStackTrace();
-			}
-		}
 		//System.out.println("close52");
 		if (inputStream != null) {
 			try {
@@ -124,11 +120,11 @@ public class Hardware implements LineReader {
 		}
 		if (serialPort != null) {
 			serialPort.close();
+			serialPort = null;
 		}
 		connected = false;
-		//System.out.println("close28");
 	}
-	  
+
 	  void setFullSpeed( SerialPort serialPort){
 			if( serialPort == null){
 				return;
