@@ -13,8 +13,18 @@ import com.barobot.isp.parser.CopyStream;
 
 public class Wizard {
 
+	public void test(Hardware hw, int index ) {
+		hw.connect();
+		try {
+			 Thread.sleep(1000);
+		} catch (InterruptedException e1) {
+			e1.printStackTrace();
+		}
+		hw.close();
+	}
+	
 	public void findOrder(Hardware hw, int index ) {
-		String TimeStamp = new java.util.Date().toString();
+	//	String TimeStamp = new java.util.Date().toString();
 		hw.connect();
 		int current_index		= 0;
 		MainBoard mb			= new MainBoard();
@@ -28,18 +38,15 @@ public class Wizard {
 				Upanel.list.add( current_dev );	
 				System.out.println("Upanel " + current_index + " ma adres " + device_found);
 				current_dev.setAddress(device_found);
+				current_dev.setLed( hw, "22", 50 );
 				find_next_to( hw, current_dev, current_index );
 			}else{
 				System.out.println("B£¥D Upanel " + (current_index) +" o adresie "+ current_dev.getAddress() + " jest ostatni");
 			}
 		}
-		/*
-		hw.send("RB");
-		wait(1000);
-		hw.send("I2C");
-		wait(3000);
-		hw.send("TEST");
-*/	
+		for (I2C_Device u : Upanel.list){
+			u.setLed( hw, "ff", 00 );
+		}
 		System.out.println("upaneli: " + Upanel.list.size());
 		for (I2C_Device u : Upanel.list){
 			System.out.println("Upanel numer "+ u.getOrder() + ", adres: "+ u.getAddress() +", index "+ u.getIndex());
@@ -63,6 +70,7 @@ public class Wizard {
 					u.setOrder( next_index+1);
 					u.canResetMe(current_dev);
 				}
+				u.setLed( hw, "22", 50 );
 				System.out.println("Upanel " + (next_index+1) + " ma adres " + device_found);
 				find_next_to( hw, u, next_index+1 );
 			}else{
@@ -72,7 +80,11 @@ public class Wizard {
 			System.out.println("Upanel " + (next_index) +" o adresie "+ current_dev.getAddress() + " jest ostatni");
 		}
 	}
-
+	public void showOrder() {
+		for (I2C_Device u2 : Upanel.list){
+			System.out.println("+Upanel" + u2.getIndex() + " pod numerem " + u2.getOrder() + "  ma adres " + u2.getAddress() );
+		}
+	}
 	public void prepareUpanel(Hardware hw, int index ) {
 		Upanel.list.clear();
 		Upanel.list.add( new Upanel( index, 0 ) );	
@@ -104,7 +116,7 @@ public class Wizard {
 			System.out.println("+Upanel " + current_index + " ma adres " + device_found);
 			wait(2000);
 			current_dev.setAddress(device_found);
-			current_dev.setLed( hw, "0xf0", 255 );	
+			current_dev.setLed( hw, "22", 255 );	
 			int has_next  = current_dev.readHasNext( hw );
 			System.out.println("has_next " + has_next );
 			if(has_next>0){
@@ -140,7 +152,7 @@ public class Wizard {
 			next_device.canResetMe(current_dev);
 			Upanel.list.add( next_device );
 			System.out.println("++Upanel " + next_index + " ma adres " + device_found);
-			next_device.setLed( hw, "0xf0", 255 );
+			next_device.setLed( hw, "22", 255 );
 
 			int has_next  = next_device.readHasNext( hw );
 			System.out.println("has_next " + has_next );
@@ -186,66 +198,66 @@ public class Wizard {
 		}
 
 		hw.connect();
-		int repeat = 20;
+		int repeat = 10;
 
 		System.out.println("Start" );
 		
 		int time = 30;
 		while (repeat-- > 0){
 			for (I2C_Device u : Upanel.list){
-				u.setLed( hw, "0xff", 0 );	// zgas
+				u.setLed( hw, "ff", 0 );	// zgas
 			}
 			wait(time);	
 
 			for (I2C_Device u : Upanel.list){
-				u.setLed( hw, "0xff", 0 );	// zgas
-				u.setLed( hw, "0x01", 255 );
+				u.setLed( hw, "ff", 0 );	// zgas
+				u.setLed( hw, "01", 255 );
 			}
 			for (I2C_Device u : Upanel.list){
-				u.setLed( hw, "0xff", 0 );	// zgas
-				u.setLed( hw, "0x02", 255 );
+				u.setLed( hw, "ff", 0 );	// zgas
+				u.setLed( hw, "02", 255 );
 			}
 			wait(time);	
 			
 	
 			for (I2C_Device u : Upanel.list){
-				u.setLed( hw, "0xff", 0 );	// zgas
-				u.setLed( hw, "0x04", 255 );
+				u.setLed( hw, "ff", 0 );	// zgas
+				u.setLed( hw, "04", 255 );
 			}
 			wait(time);		
 			
 			
 			for (I2C_Device u : Upanel.list){
-				u.setLed( hw, "0xff", 0 );	// zgas
-				u.setLed( hw, "0x08", 255 );
+				u.setLed( hw, "ff", 0 );	// zgas
+				u.setLed( hw, "08", 255 );
 			}
 			wait(time);	
 			
 			
 			
 			for (I2C_Device u : Upanel.list){
-				u.setLed( hw, "0xff", 0 );	// zgas
-				u.setLed( hw, "0x10", 255 );
+				u.setLed( hw, "ff", 0 );	// zgas
+				u.setLed( hw, "10", 255 );
 			}
 			wait(time);	
 			
 
 			for (I2C_Device u : Upanel.list){
-				u.setLed( hw, "0xff", 0 );	// zgas
-				u.setLed( hw, "0x20", 255 );
+				u.setLed( hw, "ff", 0 );	// zgas
+				u.setLed( hw, "20", 255 );
 			}
 			wait(time);	
 			
 			for (I2C_Device u : Upanel.list){
-				u.setLed( hw, "0xff", 0 );	// zgas
-				u.setLed( hw, "0x40", 255 );
+				u.setLed( hw, "ff", 0 );	// zgas
+				u.setLed( hw, "40", 255 );
 			}
 			wait(time);
 			
 			
 			for (I2C_Device u : Upanel.list){
-				u.setLed( hw, "0xff", 0 );	// zgas
-				u.setLed( hw, "0x80", 255 );
+				u.setLed( hw, "ff", 0 );	// zgas
+				u.setLed( hw, "80", 255 );
 			}
 			wait(time);
 		}
@@ -258,69 +270,69 @@ public class Wizard {
 		}
 		hw.connect();
 
-		int time = 900;
+		int time = 200;
 		for (I2C_Device u2 : Upanel.list){
-			u2.setLed( hw, "0xff", 0 );	// zgas
+			u2.setLed( hw, "ff", 0 );	// zgas
 		}
 
 		for (I2C_Device u : Upanel.list){
 
 			wait(time);
 
-			u.setLed( hw, "0xff", 0 );	// zgas
+			u.setLed( hw, "ff", 0 );	// zgas
 
 			wait(time);
 			
 		
-			u.setLed( hw, "0xff", 0 );	// zgas
-				u.setLed( hw, "0x01", 255 );
+			u.setLed( hw, "ff", 0 );	// zgas
+				u.setLed( hw, "01", 255 );
 			
 			wait(time);	
 			
 	
-			u.setLed( hw, "0xff", 0 );	// zgas
-				u.setLed( hw, "0x02", 255 );
+			u.setLed( hw, "ff", 0 );	// zgas
+				u.setLed( hw, "02", 255 );
 			
 			wait(time);	
 			
 
-			u.setLed( hw, "0xff", 0 );	// zgas
-				u.setLed( hw, "0x04", 255 );
+			u.setLed( hw, "ff", 0 );	// zgas
+				u.setLed( hw, "04", 255 );
 			
 			wait(time);		
 			
 			
 			
-			u.setLed( hw, "0xff", 0 );	// zgas
-				u.setLed( hw, "0x08", 255 );
+			u.setLed( hw, "ff", 0 );	// zgas
+				u.setLed( hw, "08", 255 );
 			
 			wait(time);	
 			
-			u.setLed( hw, "0xff", 0 );	// zgas
-				u.setLed( hw, "0x10", 255 );
+			u.setLed( hw, "ff", 0 );	// zgas
+				u.setLed( hw, "10", 255 );
 	
 			wait(time);	
 			
 
 			
-			u.setLed( hw, "0xff", 0 );	// zgas
-				u.setLed( hw, "0x20", 255 );
+			u.setLed( hw, "ff", 0 );	// zgas
+				u.setLed( hw, "20", 255 );
 			
 			wait(time);	
 			
 			
-			u.setLed( hw, "0xff", 0 );	// zgas
-				u.setLed( hw, "0x40", 255 );
+			u.setLed( hw, "ff", 0 );	// zgas
+				u.setLed( hw, "40", 255 );
 			
 			wait(time);
 			
 
-			u.setLed( hw, "0xff", 0 );	// zgas
-				u.setLed( hw, "0x80", 255 );
+			u.setLed( hw, "ff", 0 );	// zgas
+				u.setLed( hw, "80", 255 );
 			
 			wait(time);		
 
-			u.setLed( hw, "0xff", 0 );	// zgas
+			u.setLed( hw, "ff", 0 );	// zgas
 
 		}
 		hw.close();
@@ -337,29 +349,29 @@ public class Wizard {
 		while (repeat-- > 0){
 
 			for (I2C_Device u : Upanel.list){
-				u.setLed( hw, "0xff", 0 );	// zgas
+				u.setLed( hw, "ff", 0 );	// zgas
 			}
 			wait(time);	
 			
 			for (I2C_Device u : Upanel.list){
-				u.setLed( hw, "0xff", 0 );	// zgas
+				u.setLed( hw, "ff", 0 );	// zgas
 
-			//	u.setLed( hw, "0x02", 0 );		// bottom green
-			//	u.setLed( hw, "0x08", 0 );		// bottom blue
-			//	u.setLed( hw, "0x04", 0 );		// bottom red 
+			//	u.setLed( hw, "02", 0 );		// bottom green
+			//	u.setLed( hw, "08", 0 );		// bottom blue
+			//	u.setLed( hw, "04", 0 );		// bottom red 
 
-				u.setLed( hw, "0x07", 255 );	// top RGB
+				u.setLed( hw, "07", 255 );	// top RGB
 
-			//	u.setLed( hw, "0x10", 255 );	// top green
-			//	u.setLed( hw, "0x20", 255 );	// top blue
-			//	u.setLed( hw, "0x40", 255 );	// top red
+			//	u.setLed( hw, "10", 255 );	// top green
+			//	u.setLed( hw, "20", 255 );	// top blue
+			//	u.setLed( hw, "40", 255 );	// top red
 			}
 			wait(time);	
 			
 			
 			for (I2C_Device u : Upanel.list){
-				u.setLed( hw, "0xff", 0 );	// zgas
-				u.setLed( hw, "0x70", 255 );	// boottm RGB
+				u.setLed( hw, "ff", 0 );	// zgas
+				u.setLed( hw, "70", 255 );	// boottm RGB
 
 			}
 			wait(time);			
@@ -509,20 +521,103 @@ public class Wizard {
 			wait(2000);
 		}
 		hw.close();
+		System.out.println("koniec prepare1Upanel");
 	}
-	public void ilumination1(Hardware hw) {
-		int repeat = 2;
+	public void illumination1(Hardware hw) {
+		int repeat = 1;
 		while(repeat-->0){
 			this.mrygaj( hw );
-			this.mrygaj_grb( hw );
-			this.mrygaj_po_butelkach( hw );
+		//	this.mrygaj_grb( hw );
+		//	this.mrygaj_po_butelkach( hw );
 		}
+		System.out.println("koniec illumination1");
 	}
 	public void ilumination2(Hardware hw) {
 		System.out.println("upaneli: " + Upanel.list.size());
-		for (I2C_Device u : Upanel.list){
-			u.setLed( hw, "0xff", 255);
+		hw.connect();
+
+		for (int b = 0;b<4;b++){
+			int i=0;
+			for (;i<245;i+=5){
+				for (I2C_Device u2 : Upanel.list){
+					u2.setLed( hw, "ff", i );
+				}
+			}
+			for (;i>=0;i-=5){
+				for (I2C_Device u2 : Upanel.list){
+					u2.setLed( hw, "ff", i );
+				}
+			}
 		}
+		
+		hw.close();
+		
+		/*
+		for (I2C_Device u : Upanel.list){
+			u.setLed( hw, "ff", 255);
+		}
+
+		for (I2C_Device u2 : Upanel.list){
+			u2.setLed( hw, "ff", 0 );	// zgas
+		}
+		*/
+		System.out.println("koniec ilumination2");
+	}
+	public void zapal(Hardware hw) {
+		hw.connect();
+		for (I2C_Device u2 : Upanel.list){
+			u2.setLed( hw, "ff", 255 );
+		}
+		hw.close();
+		System.out.println("koniec zapal");
+	}
+	public void zgas(Hardware hw) {
+		hw.connect();
+		for (I2C_Device u2 : Upanel.list){
+			u2.setLed( hw, "ff", 0 );
+		}
+		hw.close();	
+		System.out.println("koniec zgas");
+	}
+	public void mrygaj(Hardware hw, int time) {
+		hw.connect();
+		int swiec = 255;
+		int razy = 500;
+
+		boolean now = true;
+		for( int i =0; i<razy;i++){
+			for (I2C_Device u2 : Upanel.list){
+				u2.setLed( hw, "0f", 0 );
+			}
+			if(time > 0){
+				wait( time * (now ? 2: 1));
+				now=!now;
+			}
+			for (I2C_Device u2 : Upanel.list){
+				u2.setLed( hw, "0f", swiec );
+			}
+		}
+		hw.close();
+		System.out.println("koniec mrygaj");
+	}
+	public void fadeButelka(Hardware hw, int num, int count) {
+		zgas( hw );
+		hw.connect();
+		Upanel butelka = Upanel.list.get(num);
+
+		for (int b = 0;b<count;b++){
+			int i=0;
+			for (;i<205;i+=3){
+					butelka.setLed( hw, "ff", i );
+			}
+			for (;i>=0;i-=1){
+					butelka.setLed( hw, "ff", i );
+			}
+			butelka.setLed( hw, "ff", 0 );
+			wait( 100 );
+		} 
+		hw.close();
+		System.out.println("koniec fadeButelka");
 	}
 }
 

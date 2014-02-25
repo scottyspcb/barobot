@@ -31,36 +31,42 @@ public class Main {
 	 private void start() {
 		loadProps();
 		//String[] comlist = list();
-		Wizard w = new Wizard();
+		Wizard w	= new Wizard();
 		Hardware hw = new Hardware("COM40");
 
 		IspSettings.safeMode = false;
 		IspSettings.setFuseBits = false;
-		IspSettings.verbose = 0;
+		IspSettings.verbose = 3;
 		IspSettings.setHex	= true;
 		IspSettings.force = false;
 
-	//	w.prepareSlaveMB( hw );
-	//	w.test( hw );
-	//	w.findOrder( hw, 4 );
-	//	Wizard.wait(1000);
-
 	//	w.prepareMB( hw );
-	//	w.prepareCarret( hw );
-//		w.prepareUpanel(hw);
-
+	//	w.prepareCarret( hw );	
 	//	w.prepareCarret( hw );
 	//	w.checkCarret( hw );
 	//	w.prepare1Upanel( hw, 4 );
-		w.prepareUpanel( hw, 3 );
-//		w.prepareUpanel( hw, 4 );
-
-	//	
+	//	w.prepareUpanel( hw, 3 );
+	//	w.prepareUpanel( hw, 4 );
+	//	w.prepareSlaveMB( hw );
+	//	w.test( hw );
+		w.findOrder( hw, 4 );
+		w.findOrder( hw, 3 );
+		//w.test( hw, 4 );
+		
+	//	w.findOrder( hw, 3 );
+	//	w.showOrder();
+		
+	//	Wizard.wait(1000);
 	//	w.clearUpanel( hw );
-	//	
-		//w.ilumination1( hw );
+	//	w.illumination1( hw );
 	//	w.ilumination2( hw );
+	//	w.fadeButelka( hw, 4, 200 );
 
+		w.mrygaj( hw, 10 );
+	//	w.zapal( hw );
+		w.zgas( hw );
+
+		hw.close();
 		System.out.println("koniec");
 	}
 	public Properties p;
