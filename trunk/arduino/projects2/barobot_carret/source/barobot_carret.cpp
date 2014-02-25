@@ -1,5 +1,4 @@
 #include "barobot_carret_main.h"
-
 #define IS_CARRET true
 #define HAS_LEDS true
 #include <WSWire.h>
@@ -69,7 +68,7 @@ unsigned long mil = 0;
 unsigned long milis1000 = 0;
 unsigned long milis2000 = 0;
 byte iii = 0;
- 
+
 /*
 int16_t typical_neutral = 511;
 int16_t threshold       = 30;
@@ -520,6 +519,7 @@ void timer(){  // in interrupt
  
 // czytaj komendy i2c
 void proceed( volatile byte buffer[5] ){
+/*
 	DEBUG("-proceed - ");
 	DEBUG(String(buffer[0]));
 	DEBUG(" ");
@@ -530,8 +530,9 @@ void proceed( volatile byte buffer[5] ){
 	printHex(buffer[3], false);
 	DEBUG(" ");
 	printHex(buffer[4]);
-	 
-	if( buffer[0] == METHOD_PROG_MODE_ON ){         // prog mode on
+*/
+	byte command = buffer[0];	 
+	if( command == METHOD_PROG_MODE_ON ){         // prog mode on
 		DW(PIN_PANEL_LED1_NUM, HIGH);
 		if(buffer[1] == my_address){
 			prog_me = true;
@@ -541,26 +542,26 @@ void proceed( volatile byte buffer[5] ){
 			prog_me = false;
 		}
 		prog_mode = true;
-	}else if( buffer[0] == METHOD_PROG_MODE_OFF ){         // prog mode off
+	}else if( command == METHOD_PROG_MODE_OFF ){         // prog mode off
 		DW(PIN_PANEL_LED1_NUM, LOW);
 		prog_mode = false;
 		prog_me = false;
 
-	}else if( buffer[0] == METHOD_LIVE_OFF ){         // LIVE A OFF
+	}else if( command == METHOD_LIVE_OFF ){         // LIVE A OFF
 		analog_reading	= false;
 
-	}else if( buffer[0] == METHOD_STEPPER_MOVING ){
+	}else if( command == METHOD_STEPPER_MOVING ){
 		if( buffer[1] == DRIVER_X ){
 			moving_x = buffer[2];
 		}
 		DEBUG("-driver X moving:");
 		DEBUGLN(String(buffer[2]));
 		
-	}else if( buffer[0] == METHOD_CHECK_NEXT ){
+	}else if( command == METHOD_CHECK_NEXT ){
 		byte ttt[4] = {METHOD_I2C_SLAVEMSG, my_address, METHOD_CHECK_NEXT, 0 };		// 0 = no device found (cant have device)
 		send(ttt,4);
 
-	}else if( buffer[0] == METHOD_LIVE_ANALOG ){         // LIVE A 3,100,5 // TODO method byte
+	}else if( command == METHOD_LIVE_ANALOG ){         // LIVE A 3,100,5 // TODO method byte
 		if(buffer[1] < 8){
 			analog_num		= buffer[1];   // analog num
 			analog_speed	= buffer[2];   // speed
@@ -572,7 +573,7 @@ void proceed( volatile byte buffer[5] ){
 		//	}
 			analog_reading	= true;
 		}
-	}else if( buffer[0] == METHOD_DRIVER_ENABLE ){
+	}else if( command == METHOD_DRIVER_ENABLE ){
 		byte index = globalToLocal( buffer[1] );
 		servo_lib[index].attach(servos[index].pin);
 		servos[index].enabled= true;
@@ -580,7 +581,7 @@ void proceed( volatile byte buffer[5] ){
 		byte ttt[4] = {METHOD_I2C_SLAVEMSG, my_address, METHOD_DRIVER_ENABLE, index };
 		send(ttt,4);
 
-	}else if( buffer[0] == METHOD_DRIVER_DISABLE ){
+	}else if( command == METHOD_DRIVER_DISABLE ){
 		byte index = globalToLocal( buffer[1] );
 		servos[index].enabled= false;
 		servo_lib[index].detach();
@@ -595,7 +596,7 @@ void proceed( volatile byte buffer[5] ){
 		byte ttt[4] = {METHOD_I2C_SLAVEMSG, my_address, METHOD_DRIVER_DISABLE, index };
 		send(ttt,4);
 
-	}else if( buffer[0] == METHOD_SETLEDS ){
+	}else if( command == METHOD_SETLEDS ){
 		byte i = COUNT_CARRET_ONBOARD_LED;
 		while(i--){
 			if( bitRead(buffer[1], i) ){
@@ -603,7 +604,7 @@ void proceed( volatile byte buffer[5] ){
 				set_pin(i, (buffer[2] > 0));
 			}
 		}
-	}else if( buffer[0] == METHOD_SET_Y_POS ){
+	}else if( command == METHOD_SET_Y_POS ){
 		// on wire: low_byte, high_byte, speed
 		// in memory: 1=low_byte, 2=high_byte, 3=speed
 		byte sspeed    = buffer[3];
@@ -616,14 +617,14 @@ void proceed( volatile byte buffer[5] ){
 		DEBUGLN(String(target));
 		run_to(INNER_SERVOY,sspeed,target);
 
-	}else if( buffer[0] == METHOD_SET_Z_POS ){
+	}else if( command == METHOD_SET_Z_POS ){
 		byte sspeed    = buffer[3];
 		uint16_t target= buffer[2];           // little endian
 		target= (target << 8);
 		target+= buffer[1];    // little endian
 		run_to(INNER_SERVOZ,sspeed,target);
 
-	}else if( buffer[0] == METHOD_SETPWM ){
+	}else if( command == METHOD_SETPWM ){
 		byte led    = buffer[1];
 		byte level  = buffer[2];
 		if( level > 127){
@@ -631,30 +632,34 @@ void proceed( volatile byte buffer[5] ){
 		}else{
 			DW(led, LOW);
 		}
-	}else if( buffer[0] == METHOD_GET_Y_POS ){
+	}else if( command == METHOD_GET_Y_POS ){
 		byte ttt[5] = {METHOD_I2C_SLAVEMSG, my_address, METHOD_GET_Y_POS, (servos[INNER_SERVOY].last_pos & 0xFF),(servos[INNER_SERVOY].last_pos >>8) };
 		send(ttt,5);
 
-	}else if( buffer[0] == METHOD_GET_Z_POS ){
+	}else if( command == METHOD_GET_Z_POS ){
 		byte ttt[5] = {METHOD_I2C_SLAVEMSG, my_address, METHOD_GET_Z_POS, (servos[INNER_SERVOZ].last_pos & 0xFF),(servos[INNER_SERVOZ].last_pos >>8) };
 		send(ttt,5);
 
-	}else if( buffer[0] == METHOD_GETANALOGVALUE ){
-	}else if( buffer[0] == METHOD_GETVALUE ){
+	}else if( command == METHOD_GETANALOGVALUE ){
+	}else if( command == METHOD_GETVALUE ){
 	//}else if( buffer[0] == METHOD_RESET_NEXT ){
 	//}else if( buffer[0] == METHOD_RUN_NEXT ){
-	}else if( buffer[0] == METHOD_SETTIME ){
+	}else if( command == METHOD_SETTIME ){
 		//  byte led   = buffer[1];
 		//  byte on    = buffer[2];
 		//   byte off   = buffer[2];
 		 
-	}else if( buffer[0] == METHOD_SETFADING ){
+	}else if( command == METHOD_SETFADING ){
 		//  byte led   = buffer[1];
 		// byte on    = buffer[2];
 		// byte off   = buffer[2];
 		 
-	}else if( buffer[0] == METHOD_RESETCYCLES ){
+	}else if( command == METHOD_RESETCYCLES ){
 		// resetuj cykl petli pwm
+
+    }else if( command ==  METHOD_EEPROM_WRITE_I2C ){
+    }else if( command ==  METHOD_EEPROM_READ_I2C ){
+
 	}else{
 		DEBUG("-proceed unknown - ");
 		printHex(buffer[0], false);
