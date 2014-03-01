@@ -419,7 +419,6 @@ public class virtualComponents {
 	
 	
 	public static void test( final int dest_x, final int dest_y) {
-
 		final rpc_message moveit = new rpc_message( true ){
 			int tryis = 3;
 			public ArduinoQueue run(){
