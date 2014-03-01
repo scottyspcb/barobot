@@ -3,6 +3,7 @@ package com.barobot.i2c;
 import com.barobot.isp.Hardware;
 import com.barobot.isp.IspSettings;
 import com.barobot.isp.Wizard;
+import com.barobot.parser.Parser;
 
 public class MainBoard extends I2C_Device_Imp {
 	private int default_address	= 0x01;
@@ -16,23 +17,7 @@ public class MainBoard extends I2C_Device_Imp {
 		this.bspeed			= 57600;
 	}
 	public String setFuseBits(Hardware hw) {
-		String command = IspSettings.avrDudePath + " -C"+ IspSettings.configPath +" "+ IspSettings.verbose()+ " " +
-		"-p"+ this.cpuname +" -c"+this.protocol+" -P\\\\.\\"+hw.comPort+" -b" + this.bspeed + " ";
-		//+ " -U lfuse:w:0xFF:m -U hfuse:w:0xDB:m -U efuse:w:0x05:m";
-		if(IspSettings.safeMode){
-			command = command + " -n";
-		}
-		return command;
-	}
-
-	public String uploadCode(Hardware hw, String filePath) {
-		String command = IspSettings.avrDudePath + " -C"+ IspSettings.configPath +" "+ IspSettings.verbose()+ " " +
-		"-p"+ this.cpuname +" -c"+this.protocol+" -P\\\\.\\"+hw.comPort+" -b" + this.bspeed + " " +
-		"-Uflash:w:"+filePath+":i";
-		if(IspSettings.safeMode){
-			command = command + " -n";
-		}
-		return command;
+		return "";
 	}
 	public void reset(Hardware hw) {
 		hw.send("RESET"+ this.myindex);
@@ -48,16 +33,20 @@ public class MainBoard extends I2C_Device_Imp {
 		while( reset_tries-- > 0 ){
 			hw.send("H" + index );
 			int wait_tries = IspSettings.wait_tries;
-			while( IspSettings.last_has_next == -1 && (wait_tries-- > 0 ) ){
+			while( Parser.last_has_next == -1 && (wait_tries-- > 0 ) ){
 				Wizard.wait(IspSettings.wait_time);
 			}
-			if( IspSettings.last_has_next > -1 ){
+			if( Parser.last_has_next > -1 ){
 				break;
 			}
 			System.out.println("Check try " + IspSettings.reset_tries );
 		}
-		int ret = IspSettings.last_has_next;
-		IspSettings.last_has_next = -1;	// resetuj
+		int ret = Parser.last_has_next;
+		Parser.last_has_next = -1;	// resetuj
 		return ret;
+	}
+	public void moveX(int max) {
+		
+		
 	}
 }

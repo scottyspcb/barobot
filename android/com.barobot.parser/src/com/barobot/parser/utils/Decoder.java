@@ -1,6 +1,6 @@
-package com.barobot.isp;
+package com.barobot.parser.utils;
 
-public class Parser {
+public class Decoder {
 	public static int[] decodeBytes(String fromArduino) {
 		String[] parts = fromArduino.split(",");
 		int[] iparts = new int[parts.length];
@@ -21,4 +21,9 @@ public class Parser {
 	//	Constant.log(Constant.TAG,"toInt:"+ input + "/ "+ res );
 		return res;
 	}
+
+	public static String strRepeat(  String input, int times ){
+		return new String(new char[times]).replace("\0", input );
+	}
 }
+

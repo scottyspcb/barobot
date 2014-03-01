@@ -19,7 +19,6 @@ boolean reset_device_num( byte num, boolean pin_value );
 
 boolean reset_device_num2( byte num, boolean pin_value );
 uint16_t i2c_getVersion( byte slave_address );
-unsigned int test_slave(byte slave_address, byte tests);
 uint8_t spi_transaction(uint8_t a, uint8_t b, uint8_t c, uint8_t d);
 uint8_t write_flash_pages(int length);
 
@@ -76,6 +75,7 @@ void send2androidEnd();
 byte writeRegisters(int deviceAddress, byte length, boolean wait);
 byte readRegisters(byte deviceAddress, byte length);
 void receiveEvent(int howMany);
+void test_slave(byte slave_address, byte tests);
 byte i2c_test_slave( byte slave_address, byte num1, byte num2 );
 void i2c_stop( byte slave_address );
 void i2c_analog_off( byte slave_address, byte analog );

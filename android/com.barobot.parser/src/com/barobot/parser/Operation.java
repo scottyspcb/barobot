@@ -8,7 +8,7 @@ import java.util.logging.Logger;
 public class Operation {
 	String name = "";
 	private static Map<String, Object> params = new HashMap<String, Object>();
-	
+
 	public Operation(String name) {
 		this.name = name;
 	}
@@ -18,14 +18,15 @@ public class Operation {
 	public void needParam(String key) {
 		params.put( key, null );
 	}
-
 	public Object getParam(String key, String type ) {
 		Object p = params.get(key);
 		if(p == null){
 			return null;
 		}
 		if(p.getClass() != null){
-			Test.logger.log(Level.INFO, "" + p.getClass());
+			if(Parser.logger!=null){
+				Parser.logger.log(Level.INFO, "" + p.getClass());
+			}
 		}
 		return p;
 	}

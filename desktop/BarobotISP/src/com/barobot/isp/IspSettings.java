@@ -1,5 +1,7 @@
 package com.barobot.isp;
 
+import com.barobot.parser.utils.Decoder;
+
 public class IspSettings {
 	public static boolean safeMode		= true;
 	public static boolean setFuseBits	= false;
@@ -13,18 +15,17 @@ public class IspSettings {
 	public static String mbHexPath		= "C:\\workspace\\Barobot\\arduino\\projects2\\barobot_mainboard\\build\\barobot_mainboard.hex";
 	public static String carretHexPath	= "C:\\workspace\\Barobot\\arduino\\projects2\\barobot_carret\\build\\barobot_carret.hex";
 	//public static String carretHexPath	= "C:\\Temp\\build7947917518911125744.tmp\\analog_read_test.cpp.hex";
-	
+	public static String mbBootloaderPath	= "C:\\workspace\\Barobot\\desktop\\BarobotISP\\assets\\optiboot_atmega328.hex";	
+
 	public static int fullspeed			= 115200;
 	public static int programmspeed		= 19200;
 
-	public static int last_found_device = 0;
-	public static int last_has_next		= -1;
 	public static int wait_tries		= 30;
 	public static int wait_time			= 200;
 	public static int reset_tries		= 3;
 
+
 	public static String verbose() {
-		String repeated = new String(new char[verbose]).replace("\0", " -v" );
-		return repeated;
+		return Decoder.strRepeat(" -v", verbose);
 	}
 }

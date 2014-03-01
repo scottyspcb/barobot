@@ -10,13 +10,10 @@ import org.smslib.helper.SerialPort;
 import org.smslib.helper.SerialPortEvent;
 import org.smslib.helper.SerialPortEventListener;
 
-import com.barobot.isp.parser.LineReader;
-import com.barobot.isp.parser.SerialInputBuffer;
 
-public class Hardware implements LineReader {
+public class Hardware  {
 	public Hardware(String comPort) {
 		this.comPort = comPort;
-		SerialInputBuffer.lr =this;
 	}
 	boolean connected		= false;
 	public String comPort	= "COM1";
@@ -83,7 +80,7 @@ public class Hardware implements LineReader {
 						          int bytesRead = inputStream.read(readBuffer);
 						          String in = new String(readBuffer, 0, bytesRead);
 				//		          System.out.print("!serialEvent" +in);
-						          SerialInputBuffer.readInput(in);	
+					//	          SerialInputBuffer.readInput(in);	
 
 						        }
 						      } catch (IOException e) {
@@ -100,7 +97,7 @@ public class Hardware implements LineReader {
 	}
 
 	protected void close() {
-		SerialInputBuffer.clear();
+	//	SerialInputBuffer.clear();
 		System.out.println("serial close");
 		//System.out.println("close52");
 		if (inputStream != null) {
@@ -148,19 +145,14 @@ public class Hardware implements LineReader {
 
 		public void read_line(String in) {
 			System.out.println("IN: "+ in);
-			 if( in.startsWith( "12,") ){			// device found
-				 int[] parts = Parser.decodeBytes( in );
-				 // Znaleziono urzadzenie
-				 int address = parts[1];
-				 IspSettings.last_found_device	= address;				 
-				 System.out.println("Found device address " + address);
-			 }else if( in.startsWith( "122,") ){			// METHOD_I2C_SLAVEMSG
-				 int[] parts = Parser.decodeBytes( in );
-				 if( parts.length > 3 && parts[ 2 ] ==  188 ){
-					 IspSettings.last_has_next	= parts[ 3 ];		// 0 or 1	
-				 }
-			 }else if( in.startsWith( "RL") ){			// RLEDS
-				 synchronized (Main.main) { Main.main.notify(); }
-			 }
+			
+		}
+		public void send(String string, String string2) {
+			// TODO Auto-generated method stub
+			
+		}
+		public void closeOnReady() {
+			// TODO Auto-generated method stub
+			
 		}
 }

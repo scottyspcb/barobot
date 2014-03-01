@@ -7,6 +7,7 @@ import com.barobot.isp.Hardware;
 import com.barobot.isp.IspSettings;
 import com.barobot.isp.Main;
 import com.barobot.isp.Wizard;
+import com.barobot.parser.Parser;
 
 public class Upanel extends I2C_Device_Imp {
 	public Upanel can_reset_me_dev	= null;
@@ -22,15 +23,19 @@ public class Upanel extends I2C_Device_Imp {
 		return -1;
 	}
 	public Upanel(){
-		this.cpuname		= "atmega8";
+		this.cpuname	= "atmega8";
+		this.lfuse		= "0xA4";
+		this.hfuse		= "0xC7";
+		this.lock		= "0x3F";
+		this.efuse		= "";
 	}
 	public Upanel(int index, int address ){
-		this.cpuname		= "atmega8";
+		this();	// call default constructor
 		this.setAddress(address);
 		this.setIndex(index);
 	}
 	public Upanel(int index, int address, Upanel parent ){
-		this.cpuname		= "atmega8";
+		this();	// call default constructor
 		this.setAddress(address);
 		this.setIndex(index);
 		this.can_reset_me_dev	= parent;
@@ -41,18 +46,6 @@ public class Upanel extends I2C_Device_Imp {
 	}
 	public void canResetMe( Upanel current_dev){
 		this.can_reset_me_dev = current_dev;
-	}
-	/* (non-Javadoc)
-	 * @see com.barobot.isp.I2C_Device#setFuseBits(com.barobot.isp.Hardware)
-	 */
-	public String setFuseBits(  Hardware hw){
-		String command = IspSettings.avrDudePath + " -C"+ IspSettings.configPath +" "+ IspSettings.verbose()+ " " +
-		"-p"+ this.cpuname +" -c"+this.protocol +" -P\\\\.\\"+hw.comPort+" -b" + this.bspeed + " " +
-		"-Ulock:w:0x3F:m -Uhfuse:w:0xC7:m -Ulfuse:w:0xA4:m";
-		if(IspSettings.safeMode){
-			command = command + " -n";
-		}
-		return command;
 	}
 
 	public void hasNext(Hardware hw){
@@ -87,16 +80,16 @@ public class Upanel extends I2C_Device_Imp {
 		while( reset_tries-- > 0 ){
 			this.reset_next( hw );
 			int wait_tries = IspSettings.wait_tries;
-			while( IspSettings.last_found_device <= 1 && (wait_tries-- > 0 ) ){
+			while( Parser.last_found_device <= 1 && (wait_tries-- > 0 ) ){
 				Wizard.wait(IspSettings.wait_time);
 			}
-			if( IspSettings.last_found_device > 1 ){		// tylko plytka glowna ma 1
+			if( Parser.last_found_device > 1 ){		// tylko plytka glowna ma 1
 				break;
 			}
 			System.out.println("Reset try " + IspSettings.reset_tries );
 		}
-		int ret = IspSettings.last_found_device;
-		IspSettings.last_found_device = 0;	// resetuj
+		int ret = Parser.last_found_device;
+		Parser.last_found_device = 0;	// resetuj
 		return ret;
 	}
 
@@ -105,16 +98,16 @@ public class Upanel extends I2C_Device_Imp {
 		while( reset_tries-- > 0 ){
 			this.hasNext( hw );
 			int wait_tries = IspSettings.wait_tries;
-			while( IspSettings.last_has_next == -1 && (wait_tries-- > 0 ) ){
+			while( Parser.last_has_next == -1 && (wait_tries-- > 0 ) ){
 				Wizard.wait(IspSettings.wait_time);
 			}
-			if( IspSettings.last_has_next > -1 ){
+			if( Parser.last_has_next > -1 ){
 				break;
 			}
 			System.out.println("Check try " + IspSettings.reset_tries );
 		}
-		int ret = IspSettings.last_has_next;
-		IspSettings.last_has_next = -1;	// resetuj
+		int ret = Parser.last_has_next;
+		Parser.last_has_next = -1;	// resetuj
 		return ret;
 	}
 
