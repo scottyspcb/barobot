@@ -4,6 +4,7 @@
 #include <WSWire.h>
 #include <barobot_common.h>
 #include <i2c_helpers.h>
+#include <avr/wdt.h>
 
 volatile bool use_local = false;
 volatile byte in_buffer1[5];
@@ -23,6 +24,8 @@ uint8_t lastDebounceTime = 0;
 uint8_t const debounceDelay = 50;
 
 void setup(){
+  wdt_disable();
+
   DEBUGINIT();
   pinMode(PIN_UPANEL_SCK, INPUT );         // high impedance
   pinMode(PIN_UPANEL_MISO, INPUT );        // high impedance
@@ -88,7 +91,6 @@ void setup(){
   sei();    // enable interrupts
 }
 
-
 void loop() {
 // Debouncing
   uint8_t mil =_isr_count;
@@ -109,8 +111,31 @@ void loop() {
       }
     }
   }
+/*
+  if(digitalRead(PIN_UPANEL_SCK)){
+    if(digitalRead(PIN_UPANEL_SCK)){
+      if(digitalRead(PIN_UPANEL_SCK)){
+        reset_wire();
+      }
+    }  
+  }
+  */
+ // check_i2c_valid();  
+  
+  
 // end Debouncing
  read_i2c();
+}
+
+static void reset_wire(){
+  _pwm_channels[4].pwmup = 255;    // RED
+  DW(LED_BOTTOM_RED, buttonState );    // RED
+
+  delay2(100);
+//  reset_next( LOW );
+  wdt_enable(WDTO_15MS); 
+  for(;;){
+  }
 }
 
 static void read_i2c(){
@@ -119,6 +144,8 @@ static void read_i2c(){
     if( command == METHOD_SETPWM ){                // PWM     3 bajty
    //         PWMSet(in_buffer1[1],in_buffer1[2]);
    //           leds[in_buffer1[1]].wypelnienie = in_buffer1[2];
+     reset_wire();
+  
     }else if( command == METHOD_CHECK_NEXT ){
       byte value  = digitalRead( PIN_UPANEL_LEFT_RESET );
       byte ttt[4] = {METHOD_I2C_SLAVEMSG, my_address, METHOD_CHECK_NEXT, value };		// 0 = no device found (cant have device)
@@ -139,11 +166,16 @@ static void read_i2c(){
       while(i--){
           _pwm_channels[i].pwmup = 0;
       }
+      
+      _pwm_channels[1].pwmup = 255;    // GREEN
+       DW(LED_TOP_GREEN, buttonState );    // RED
+      
+      /*
       if(in_buffer1[1] == my_address){
         prog_me = true;
       }else{
         prog_me = false;
-      }
+      }*/
       prog_mode = true;
   //      }else if( command == METHOD_GETANALOGVALUE ){  // get analog value
   /*
@@ -154,24 +186,30 @@ static void read_i2c(){
     /*  boolean value  = digitalRead(in_buffer1[1]);
       byte ttt[1]    = {value ? 0xff:0xff};
       Wire.write(ttt,1);*/
-    }else if( command == METHOD_PROG_MODE_OFF ){         // i2c in prog mode off
-      DW(LED_TOP_RED, LOW);
+    }else if( command == METHOD_PROG_MODE_OFF ){          // i2c in prog mode off
+      _pwm_channels[0].pwmup = 0;    // RED
       prog_mode = false;
-    }else if( command == METHOD_RESET_NEXT ){         // Resetuj urządzenie obok
+    }else if( command == METHOD_RESET_NEXT ){             // Resetuj urządzenie obok
       reset_next( LOW );
-    }else if( command == METHOD_RUN_NEXT ){          // Koniec resetu urządzenia obok, ustaw pin w stan wysokiej impedancji
+    }else if( command == METHOD_RUN_NEXT ){               // Koniec resetu urządzenia obok, ustaw pin w stan wysokiej impedancji
       reset_next( HIGH );
-    }else if( command == METHOD_RESETSLAVEADDRESS ){          // zmien address
+    }else if( command == METHOD_RESETSLAVEADDRESS ){      // zmien address
 
- }else if( command == 114 ){          // zmien address
-    	byte value = eeprom_read_byte( (unsigned char *) in_buffer1[1] );
-        byte ttt[4] = {
+    }else if( command ==  METHOD_EEPROM_WRITE_I2C ){
+      eeprom_write_byte((uint8_t*)in_buffer1[1],in_buffer1[2]);    // remember delay
+      eeprom_write_byte((uint8_t*)in_buffer1[1]+1,in_buffer1[3]);    // remember delay
+
+    }else if( command ==  METHOD_EEPROM_READ_I2C ){
+    	byte value1 = eeprom_read_byte( (unsigned char *) in_buffer1[1] );
+    	byte value2 = eeprom_read_byte( (unsigned char *) in_buffer1[1]+1 );
+        byte ttt[5] = {
           METHOD_I2C_SLAVEMSG, 
           my_address, 
           METHOD_CHECK_NEXT, 
-          value
+          value1,
+          value2
         };
-        send(ttt,4);
+        send(ttt,5);
     }
     in_buffer1[0] = 0;
     use_local = false;
@@ -270,25 +308,13 @@ void check_i2c_valid(){
   Wire.beginTransmission(I2C_ADR_RESERVED);
   byte ee = Wire.endTransmission();     // czy linia jest drozna
   if( ee == 6 ){    // niedrozna - resetuj i2c
-    DW(PIN_PANEL_LED4_NUM, HIGH );
-    delay2(500);
-    DW(PIN_PANEL_LED4_NUM, LOW );
-    delay2(700);
-//    reset_next(LOW);
-//    reset_next(HIGH);
+    _pwm_channels[3].pwmup = 255;    // RED
+    DW(LED_TOP_WHITE, buttonState );    // RED
+    delay2(200);
+    reset_next(LOW);
+    reset_next(HIGH);
   }
 }
-
-
-
-
-
-
-
-
-
-
-
 
 ISR(TIMER2_COMP_vect){
   if(pwmnow){
