@@ -369,6 +369,10 @@
       			<li>Piotr 'Raven' Wisniewski</li>
       			<li>Krzysztof Kossak</li>
       		</ul>
+      		
+      		<input type="button" value="GOTO 3" onclick="gotoBottle(3)" id="przycisk" />
+      		
+      		
       		<h2>Included open source software</h2>
       		<ul>
       			<li>Android API</li>

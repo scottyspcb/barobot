@@ -52,39 +52,6 @@ public class Arduino{
 			lowHardware[0]	= new Serial_wire();
 			prepareConnection(lowHardware[0],  new BT_wire());
 
-			/*
-			AlertDialog.Builder builder = new AlertDialog.Builder(barobotMain);
-			String[] name = new String[1];
-		//	lowHardware[1]	=
-			//		lowHardware[2]	= new ADB_wire();
-
-			name[0] = lowHardware[0].getName();
-			//name[1] = lowHardware[1].getName();
-			//name[2] = lowHardware[2].getName();
-			builder.setTitle("Wybierz typ połączenia z robotem");
-			builder.setCancelable(false);
-			builder.setItems(name, new DialogInterface.OnClickListener() {
-				@Override
-		     	public void onClick(DialogInterface dialog, int which) {
-			          switch(which){
-			             case 0:
-			            	 prepareConnection(lowHardware[0],  new BT_wire());
-			            	 break;
-			            case 1:
-			            	 prepareConnection(lowHardware[1], lowHardware[1]);
-			            	 break;
-			            	
-			             case 2:
-			            	 prepareConnection(lowHardware[2], lowHardware[1]);
-			            	 break;
-			           	default:
-			            	 barobotMain.finish();
-			            	 break;
-			          }
-			      }
-			});
-			builder.show();
-			*/
 		}
 	}
 
@@ -108,59 +75,7 @@ public class Arduino{
     //   	this.sendSomething();
 	}
     private boolean stopping = false;
-/*
-
-    private void sendSomething(){
-   		stopping = false;
-
-   		Log.d("serial", "sendSomething");
-	    Runnable tt = new Runnable(){
-	        @Override
-	        public void run() {
-	            Random generator = new Random( 19580427 );
-	            Log.d("serial", "Start writter");
-	            while(!stopping && connection != null ){
-	            	if( connection.isConnected()){
-		                int r = generator.nextInt();
-		                String test = "hello arduino "+ r + "\n";
-		                send(test);
-		                try {
-		                    Thread.sleep(500);
-		                } catch (InterruptedException e) {
-		                    e.printStackTrace();
-		                }
-	            	}
-	            }
-	            Log.d("serial", "koniec writter");
-	        }};
-	        Thread writer = new Thread(tt);
-	        writer.start();
-    }
-
-    private void runTimer( final Wire connection ) {
-//    	interval inn = new interval();
-//   	inn.run(1000,5000);
-//    	this.inters.add(inn);
-    	interval inn = new interval(new Runnable() {
-    		private int count = 0;
-		    public void run() {
-		    	Arduino ar = Arduino.getInstance();
-		        if( ar.allowAutoconnect()){
-		        	count++;
-		        	if(count > 2){		// po 10 sek
-		//        		Constant.log("RUNNABLE", "3 try autoconnect" );
-		        		connection.setAutoConnect( true ); 
-		        	}
-			    }else{
-			    	count = 0;
-		        }
-		   }
-		});
-    	inn.run(1000,5000);
-    	inn.pause();
-    	AppInvoker.getInstance().inters.add(inn);
-	}
-*/
+    
 	public void destroy() {
 		this.clear();
 	   	stopping = true;
@@ -462,4 +377,91 @@ public boolean addRetToList( final String last, final String ret ) {
 	}
 	return false;
 }
+*/
+
+/*
+AlertDialog.Builder builder = new AlertDialog.Builder(barobotMain);
+String[] name = new String[1];
+//	lowHardware[1]	=
+//		lowHardware[2]	= new ADB_wire();
+
+name[0] = lowHardware[0].getName();
+//name[1] = lowHardware[1].getName();
+//name[2] = lowHardware[2].getName();
+builder.setTitle("Wybierz typ połączenia z robotem");
+builder.setCancelable(false);
+builder.setItems(name, new DialogInterface.OnClickListener() {
+	@Override
+ 	public void onClick(DialogInterface dialog, int which) {
+          switch(which){
+             case 0:
+            	 prepareConnection(lowHardware[0],  new BT_wire());
+            	 break;
+            case 1:
+            	 prepareConnection(lowHardware[1], lowHardware[1]);
+            	 break;
+            	
+             case 2:
+            	 prepareConnection(lowHardware[2], lowHardware[1]);
+            	 break;
+           	default:
+            	 barobotMain.finish();
+            	 break;
+          }
+      }
+});
+builder.show();
+*/
+
+/*
+    private void sendSomething(){
+   		stopping = false;
+
+   		Log.d("serial", "sendSomething");
+	    Runnable tt = new Runnable(){
+	        @Override
+	        public void run() {
+	            Random generator = new Random( 19580427 );
+	            Log.d("serial", "Start writter");
+	            while(!stopping && connection != null ){
+	            	if( connection.isConnected()){
+		                int r = generator.nextInt();
+		                String test = "hello arduino "+ r + "\n";
+		                send(test);
+		                try {
+		                    Thread.sleep(500);
+		                } catch (InterruptedException e) {
+		                    e.printStackTrace();
+		                }
+	            	}
+	            }
+	            Log.d("serial", "koniec writter");
+	        }};
+	        Thread writer = new Thread(tt);
+	        writer.start();
+    }
+
+    private void runTimer( final Wire connection ) {
+//    	interval inn = new interval();
+//   	inn.run(1000,5000);
+//    	this.inters.add(inn);
+    	interval inn = new interval(new Runnable() {
+    		private int count = 0;
+		    public void run() {
+		    	Arduino ar = Arduino.getInstance();
+		        if( ar.allowAutoconnect()){
+		        	count++;
+		        	if(count > 2){		// po 10 sek
+		//        		Constant.log("RUNNABLE", "3 try autoconnect" );
+		        		connection.setAutoConnect( true ); 
+		        	}
+			    }else{
+			    	count = 0;
+		        }
+		   }
+		});
+    	inn.run(1000,5000);
+    	inn.pause();
+    	AppInvoker.getInstance().inters.add(inn);
+	}
 */

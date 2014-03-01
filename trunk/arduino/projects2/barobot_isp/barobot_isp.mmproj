@@ -1,0 +1,10 @@
+<mm_project serial_port="COM40" board="ATmega8-noxtal 8MHz bootloader" programmer="" includePaths="" libPaths="" libs="" default="no" useCodeAutomation="yes" linkPrintfVersion="1" serialPortSpeed="" >
+  <files>
+    <file name="barobot_isp_main.cpp" open="no" />
+    <file name="barobot_isp_main.h" open="no" />
+  </files>
+  <extras>
+  </extras>
+  <externals>
+  </externals>
+</mm_project>
