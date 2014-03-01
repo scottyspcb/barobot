@@ -4,25 +4,28 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import com.barobot.i2c.BarobotTester;
 import com.barobot.i2c.Carret;
 import com.barobot.i2c.I2C_Device;
 import com.barobot.i2c.MainBoard;
 import com.barobot.i2c.Upanel;
-import com.barobot.isp.parser.CopyStream;
+import com.barobot.parser.Operation;
+import com.barobot.parser.Parser;
+import com.barobot.parser.Queue;
+import com.barobot.parser.message.AsyncMessage;
+import com.barobot.parser.output.AsyncDevice;
+import com.barobot.parser.output.Console;
+import com.barobot.parser.output.MainScreen;
+import com.barobot.parser.output.Mainboard;
+import com.barobot.parser.utils.CopyStream;
 
 public class Wizard {
 
-	public void test(Hardware hw, int index ) {
-		hw.connect();
-		try {
-			 Thread.sleep(1000);
-		} catch (InterruptedException e1) {
-			e1.printStackTrace();
-		}
-		hw.close();
-	}
-	
 	public void findOrder(Hardware hw, int index ) {
 	//	String TimeStamp = new java.util.Date().toString();
 		hw.connect();
@@ -85,6 +88,7 @@ public class Wizard {
 			System.out.println("+Upanel" + u2.getIndex() + " pod numerem " + u2.getOrder() + "  ma adres " + u2.getAddress() );
 		}
 	}
+
 	public void prepareUpanel(Hardware hw, int index ) {
 		Upanel.list.clear();
 		Upanel.list.add( new Upanel( index, 0 ) );	
@@ -100,21 +104,20 @@ public class Wizard {
 			current_dev.isp(hw);
 			wait(2000);
 			command = current_dev.setFuseBits(hw);
-			run(command, hw);
+			Main.main.run(command, hw);
 			wait(1000);
 		}
 		if(IspSettings.setHex){
 			current_dev.isp(hw);
 			wait(2000);
 			command = current_dev.uploadCode(hw, upanel_code );
-			run(command, hw);
+			Main.main.run(command, hw);
 			wait(1000);
 		}
 
 		int device_found  = current_dev.resetAndReadI2c( hw );
 		if( device_found > 0 ){		// pierwszy ma adres com.barobot.i2c
 			System.out.println("+Upanel " + current_index + " ma adres " + device_found);
-			wait(2000);
 			current_dev.setAddress(device_found);
 			current_dev.setLed( hw, "22", 255 );	
 			int has_next  = current_dev.readHasNext( hw );
@@ -135,13 +138,13 @@ public class Wizard {
 		if( IspSettings.setFuseBits){
 			current_dev.isp_next(hw);
 			command = next_device.setFuseBits(hw);
-			run(command, hw);
+			Main.main.run(command, hw);
 			wait(1000);
 		}
 		if(IspSettings.setHex){
 			current_dev.isp_next(hw);
 			command = next_device.uploadCode(hw, upanel_code );
-			run(command, hw);
+			Main.main.run(command, hw);
 			wait(2000);
 		}
 		int device_found  = current_dev.resetNextAndReadI2c( hw );
@@ -379,14 +382,44 @@ public class Wizard {
 		wait(2000);
 		hw.close();
 	}
-
+	
 	public void test(Hardware hw) {
+		try {
+			FileHandler fh = new FileHandler("log_test.txt");
+			Main.logger.addHandler(fh);
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		hw.connect();
-		hw.send("I2C");
-		wait(1000);
-		hw.send("TEST");
-		wait(2000);
-		hw.close();
+		/*
+		Queue q = hw.getQueue();
+		q.add(new AsyncMessage( "I", true ){
+					public boolean isRet(String result) {
+						if( "RI".equals(result)){
+							return true;
+						}
+						return false;
+					}
+					public boolean onInput(String command) {
+						System.out.println("onInput: " + command);
+						return false;
+					}
+		});*/
+		hw.send("I", "RI");
+
+		Operation  op	= new Operation( "runTo" );
+		op.needParam("x", 10 );
+		op.needParam("y" );
+		op.needParam("z", 20 );
+		op.needParam("sth", null );		
+
+		hw.send("TEST", "RTEST");
+		hw.closeOnReady();
+
+	//	q.addWaitThread( Main.main );
+		System.out.println("wizard end");
 	}
 
 	public void prepareCarret(Hardware hw) {
@@ -398,14 +431,14 @@ public class Wizard {
 		if( IspSettings.setFuseBits){
 			current_dev.isp(hw);
 			command = current_dev.setFuseBits(hw);
-			run(command, hw);
+			Main.main.run(command, hw);
 			wait(2000);
 		}
 
 		if(IspSettings.setHex){
 			current_dev.isp(hw);
 			command = current_dev.uploadCode(hw, carret_code );
-			run(command, hw);
+			Main.main.run(command, hw);
 			wait(2000);
 		}
 		/*
@@ -418,47 +451,6 @@ public class Wizard {
 		hw.close();
 	}
 
-	void run(String command, Hardware closeSerial ) {
-		String line;
-        Process p;
-        if(closeSerial != null ){
-        	closeSerial.close();
-        }
-		try {
-			System.out.println("-----------------------------------------------");
-			System.out.println("\t>>>Running " + command);
-			p = Runtime.getRuntime().exec(command);
-			BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));  
-			
-			System.out.println("\t>>>RESULT ");
-			CopyStream ct = new CopyStream(p.getInputStream(), System.out);
-			ct.start();
-			
-			CopyStream ce = new CopyStream(p.getErrorStream(), System.out);
-			ce.start();	
-			try {
-				p.waitFor();
-				 System.out.println("\t>>>RETURN FROM TASK");
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		//	while ((line = input.readLine()) != null) {
-	     //       System.out.println(line);
-	     //   }
-		//	System.out.println("\t>>>ERROR ");
-		//	BufferedReader in = new BufferedReader(new InputStreamReader(p.getErrorStream()));
-	     //   while ((line = in.readLine()) != null) {
-	    //       System.out.println(line);
-	    //    }
-	        System.out.println("------------------------------------------------");
-	        input.close();
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
-		if(closeSerial != null ){
-			closeSerial.connect();
-	    }
-	}
 	public void checkCarret(Hardware hw) {
 		String command = "";
 		hw.connect();
@@ -466,7 +458,7 @@ public class Wizard {
 		I2C_Device current_dev	= new Carret();
 		current_dev.isp(hw);
 		command = current_dev.checkFuseBits(hw);
-		run(command, hw);
+		Main.main.run(command, hw);
 		hw.close();
 	}
 
@@ -478,7 +470,7 @@ public class Wizard {
 		if(IspSettings.setHex){	
 			current_dev.isp(hw);	// mam 2 sek na wystartwanie
 			command = current_dev.uploadCode(hw, upanel_code);
-			run(command, hw);
+			Main.main.run(command, hw);
 			wait(1000);
 		}
 		wait(5000);		// wait for arduino bootloader
@@ -511,13 +503,13 @@ public class Wizard {
 		if( IspSettings.setFuseBits){
 			current_dev.isp(hw);
 			command = current_dev.setFuseBits(hw);
-			run(command, hw);
+			Main.main.run(command, hw);
 			wait(2000);
 		}
 		if(IspSettings.setHex){
 			current_dev.isp(hw);
 			command = current_dev.uploadCode(hw, upanel_code );
-			run(command, hw);
+			Main.main.run(command, hw);
 			wait(2000);
 		}
 		hw.close();
@@ -618,6 +610,80 @@ public class Wizard {
 		} 
 		hw.close();
 		System.out.println("koniec fadeButelka");
+	}
+
+	public void swing(Hardware hw, int i, int min, int max) {
+		hw.connect();
+		MainBoard mb	= new MainBoard();
+		mb.moveX(max);
+		hw.closeOnReady();
+	}
+
+	public void test_proc(Hardware hw) {
+	//	Queue q = hw.getQueue();
+		hw.send( "P3" );
+		hw.closeOnReady();
+	//	SISP
+
+		hw.send( "P3" );
+/*
+		q.add(new AsyncMessage( "I", true ){
+					public boolean isRet(String result) {
+						if( "RI".equals(result)){
+							return true;
+						}
+						return false;
+					}
+					public boolean onInput(String command) {
+						System.out.println("onInput: " + command);
+						return false;
+					}
+		});*/
+		hw.send("I", "RI");
+		hw.send("TEST", "RTEST");
+		hw.closeOnReady();
+	//	q.addWaitThread( Main.main );
+	}
+	public void prepareSlaveMB(Hardware hw) {
+		String command = "";
+		hw.connect();
+		I2C_Device current_dev	= new BarobotTester();
+		String upanel_code = current_dev.getHexFile();
+
+		if(IspSettings.setFuseBits){	
+			current_dev.isp(hw);	// mam 2 sek na wystartwanie
+			wait(1000);
+			command = current_dev.setFuseBits(hw);
+		//	Main.main.run(command, hw);
+		}
+		if(IspSettings.setHex){	
+			current_dev.isp(hw);	// mam 2 sek na wystartwanie
+			command = current_dev.uploadCode(hw, upanel_code);
+			Main.main.run(command, hw);
+			wait(1000);
+		}
+		wait(5000);		// wait for arduino bootloader
+		hw.close();
+		
+
+	}
+	public void fast_close_test(Hardware hw) {
+		I2C_Device current_dev	= new BarobotTester();
+		hw.connect();
+		hw.send("K1","RK1");
+
+		hw.close();
+		hw.connect();
+		hw.send("K1","RK1");
+		hw.close();
+		
+		hw.connect();
+		hw.send("K1","RK1");
+		hw.close();
+
+		hw.connect();
+		hw.send("K1","RK1");
+		hw.close();
 	}
 }
 

@@ -51,7 +51,7 @@ void setup(){
 	pinMode(PIN_MAINBOARD_MISO, INPUT );
 	pinMode(PIN_MAINBOARD_MOSI, INPUT );
 
-	pinMode(PIN_MAINBOARD_CURRENT_X, INPUT );
+	pinMode(PIN_MAINBOARD_FREE_PIN, INPUT );
 	pinMode(PIN_MAINBOARD_TABLET_PWR, INPUT );	
 
 	pinMode(PIN_MAINBOARD_SDA, INPUT );
@@ -646,12 +646,11 @@ void read_prog_settings( String input, byte ns ){
 	sscanf(charBuf,"%i,%li,%i", &target, &serial_baud_num, &slow_sck );
 
 	if(ns == 1){            // PROG - podany numer 1,2 lub 3
-		DEBUG("-ISP PROG: ");
+		DEBUGLN("SISP");
 		reprogramm_index    = target;
 		reprogramm_address  = 0;
-		DEBUG(String( (int)reprogramm_address));
 	}else if(ns == 2){     // PROG_NEXT, parametr to adres poprzedniego
-		DEBUG("-ISP PROG_NEXT: ");
+		DEBUGLN("SISP");
 		reprogramm_index    = 0;
 		reprogramm_address  = (byte) target;
 		byte error =checkAddress(reprogramm_address);
@@ -659,14 +658,12 @@ void read_prog_settings( String input, byte ns ){
 			send_error(input);
 			return;
 		}
-		DEBUG(String( (int)reprogramm_index));
 	}
-	DEBUG(" BAUD: ");
-	DEBUG(String( serial_baud_num));
-	DEBUG(" SSCK: " );
-	DEBUG(String( slow_sck));
-	DEBUGLN();
-
+	//DEBUG(" BAUD: ");
+	//DEBUG(String( serial_baud_num));
+	//DEBUG(" SSCK: " );
+	//DEBUG(String( slow_sck));
+	//DEBUGLN();
 	Serial.flush();
 
 	send_prog_mode(METHOD_PROG_MODE_ON);
@@ -769,27 +766,36 @@ byte i2c_test_slave( byte slave_address, byte num1, byte num2 ){      // testuj
 	return 0xFF;
 }
 
-unsigned int test_slave(byte slave_address, byte tests){
+void test_slave(byte slave_address, byte tests){
 	const byte c2_max = 10;
-	unsigned int cc = tests * c2_max;
 	byte res = 0;
-	unsigned int errors= 0;
+	byteint cc, errors;
+	cc.i= tests * c2_max;
+	errors.i= 0;
 	while(--tests){
 		byte cntr2 = c2_max;
 		while(--cntr2){
 			res = i2c_test_slave(slave_address, tests, cntr2);
 			byte valid = tests ^ cntr2;
 			if(res !=valid){
-				errors++;
+				errors.i++;
 				DEBUG( slave_address );
 				DEBUGLN("- !!! zle "+ String(res) + " != " + String( valid ) );
 			}
 			//  delay(10);
 		}
 	}
-	DEBUG( slave_address );
-	DEBUGLN("- Test ERRORS: " + String(errors) + " / " + String(cc));
-	return errors;
+	byte ttt[7] = {
+		METHOD_I2C_SLAVEMSG,
+		my_address,
+		slave_address,
+		errors.bytes[1],
+		errors.bytes[0],
+		cc.bytes[1],
+		cc.bytes[0],
+	};
+	send2android(ttt,7);
+	send2androidEnd();
 }
  
  
