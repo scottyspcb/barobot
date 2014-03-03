@@ -61,7 +61,7 @@ public class AsyncMessage extends History_item{
 			prefix = "--> ";
 		}
 		boolean blocing = this.isBlocing();
-		if( this.command == null || this.command == "" ){
+		if( this.command == null || this.command.equals( "") ){
 			if( blocing ){
 				return prefix + "blocking logic ("+name+")\t\t\t\t" + unlocking_command;
 			}else{
