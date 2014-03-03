@@ -7,7 +7,6 @@ import java.util.Map.Entry;
 import java.util.logging.Level;
 
 
-import com.barobot.parser.Parser;
 import com.barobot.parser.Queue;
 import com.barobot.parser.message.AsyncMessage;
 import com.barobot.parser.utils.GlobalMatch;
@@ -50,10 +49,14 @@ public abstract class AsyncDevice {
 	}
 	private boolean useInput(String command) {
 		boolean handled =false;
+
+	//	System.out.println("useInput: " + command );
 		synchronized (this) {
 			if( this.wait_for != null ){
+		//		System.out.println("?isRet: " + command );
 				handled = this.wait_for.isRet( command );
 				if(handled){
+					System.out.println("+unlock: " + command );
 					unlockRet( command );
 					return true;
 				}
@@ -100,6 +103,7 @@ public abstract class AsyncDevice {
 		this.sender = sender;
 	}
 	public void waitFor(AsyncMessage m, Queue queue) {
+	//	Parser.logger.log(Level.INFO, "waitFor: " +m.toString() );
 		synchronized (this) {
 			this.wait_for		= m;
 			this.waiting_queue	= queue;	

@@ -37,10 +37,10 @@ public class Queue {
 	private LinkedList<AsyncMessage> output = new LinkedList<AsyncMessage>();
 	private int wait_for_device_id = -1;
 	public static int registerSource( AsyncDevice dev ) {
-		synchronized(devs){
+	//	synchronized(devs){
 			devs.add(dev);
 			return devs.size() - 1;
-		}
+	//	}
 	}
 	public static AsyncDevice getDevice(int mainboardSource) {
 		return devs.get(mainboardSource);
@@ -52,51 +52,69 @@ public class Queue {
 			this.output.clear();
 		}
 	}
-	public void read(int mainboardSource, String in) {
-		//synchronized (this.lock) {
-			devs.get(mainboardSource).read( in );
-		//}
+	public void read(int sourceid, String in) {
+		synchronized (this.lock) {
+			devs.get(sourceid).read( in );
+		}
 	}
-	public void add(final int mainboardSource, final String cmd, boolean blocking) {
+	public void add(final int sourceid, final String command, boolean blocking) {
 		synchronized (this.lock) {
 			if(blocking){
-				final String retcmd = "R" + cmd;
-				output.add(new AsyncMessage( cmd, blocking ){
+				final String retcmd = "R" + command;
+				output.add(new AsyncMessage( command, blocking ){
 					public boolean isRet(String result) {
 						if( retcmd.equals(result)){
-							Parser.logger.log(Level.INFO, "isret: " + result+" for "  + cmd);
+							Parser.logger.log(Level.INFO, "isret: " + result+" for "  + command);
 							return true;
 						}
 						return false;
 					}
 					public int getDeviceId() {
-						return mainboardSource;
+						return sourceid;
 					}
 				});
 			}else{
-				output.add(new AsyncMessage( cmd, blocking ));
+				output.add(new AsyncMessage( command, blocking ));
 			}
 		}
 		run();
 	}
-	public void add( String cmd, boolean blocking) {
+	public void add( String command, boolean blocking) {
 		synchronized (this.lock) {
 			if(blocking){
-				final String retcmd = "R" + cmd;
-				output.add(new AsyncMessage( cmd, blocking ){
+				final String retcmd = "R" + command;
+				output.add(new AsyncMessage( command, blocking ){
 					public boolean isRet(String result) {
-						if( retcmd == result){
+						if( retcmd.equals( result )){
 							return true;
 						}
 						return false;
 					}
 				});
 			}else{
-				output.add(new AsyncMessage( cmd, blocking ));
+				output.add(new AsyncMessage( command, blocking ));
 			}
 		}
 		run();
 	}
+	public void add(final int sourceid, String command, final String retcmd) {
+		synchronized (this.lock) {
+			output.add(new AsyncMessage( command, true ){
+				public boolean isRet(String result) {
+					if( retcmd.equals( result )){
+						return true;
+					}
+					return false;
+				}
+				public int getDeviceId() {
+					return sourceid;
+				}
+			});
+		}
+		run();
+	}	
+	
+	
 
 	public void add(AsyncMessage asyncMessage) {
 		synchronized (this.lock) {
@@ -106,9 +124,9 @@ public class Queue {
 	}
 
 	public void add(Queue q2) {
-		synchronized (this.lock) {
+	//	synchronized (this.lock) {
 			output.addAll(q2.output);
-		}
+	//	}
 		run();
 	}	
 	private void run() {
@@ -129,7 +147,7 @@ public class Queue {
 					m.start( dev );
 					moveToHistory( m );
 					if(m.isBlocing()){
-						System.out.println("run run:" + "isBlocing " + m.command );
+						System.out.println("isBlocing true:" + m.command );
 	                	this.wait_for_device_id	= m.getDeviceId();
 	                	dev.waitFor(m, this );
 	                	return;
@@ -145,16 +163,16 @@ public class Queue {
 	}
 
 	public void addFirst(Queue q2) {
-		synchronized (this.lock) {
+	//	synchronized (this.lock) {
 			this.output.addAll( 0, q2.output);		// add on start	
-		}
+	//	}
 		run();
 	}
 
-    public synchronized void sendNow( int devindex, String command ) throws IOException {	 // send without waiting
-		synchronized (this.lock) {
+    public void sendNow( int devindex, String command ) throws IOException {	 // send without waiting
+	//	synchronized (this.lock) {
 			devs.get(devindex).send(command);
-		}
+	//	}
     }
 	public void unlock() {
 		synchronized (this.lock) {
@@ -170,21 +188,25 @@ public class Queue {
 	
 	public void addWaitThread(final Object thread) {
 	//	Parser.logger.log(Level.INFO, "add thread wait");
-		this.add( new AsyncMessage( true ){
-			@Override
-			public void run(AsyncDevice dev) {
-	//			Parser.logger.log(Level.INFO, "thread notify");
+		synchronized(this.output){
+			if(this.output.size() > 0 ){
+				this.add( new AsyncMessage( true ){
+					@Override
+					public void run(AsyncDevice dev) {
+			//			Parser.logger.log(Level.INFO, "thread notify");
+						synchronized(thread){
+							thread.notify();
+						}
+					}
+				});
+			//	Parser.logger.log(Level.INFO, "START wait");
 				synchronized(thread){
-					thread.notify();
+					try {
+						thread.wait();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
 				}
-			}
-		});
-	//	Parser.logger.log(Level.INFO, "START wait");
-		synchronized(thread){
-			try {
-				thread.wait();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
 			}
 		}
 	//	Parser.logger.log(Level.INFO, "end wait");
@@ -221,6 +243,10 @@ public class Queue {
 	public static void enableDevice(int mainboardSource) {
 		AsyncDevice dev = getDevice(mainboardSource);
 		dev.enable();
+	}
+
+	public void error() {
+		devs.get(-1);
 	}
 }
 

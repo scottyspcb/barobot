@@ -30,22 +30,7 @@ public class Test {
 		 
 		logger.log(Level.INFO, "Msg");
 		 
-		AsyncDevice mb	= new Mainboard();
-		AsyncDevice c	= new Console();
-		AsyncDevice u	= new MainScreen();
 
-		Queue.registerOutput( "Mainboard", mb );
-		Queue.registerOutput( "Console", c );
-		Queue.registerOutput( "User", u );
-
-		
-		Operation  op	= new Operation( "runTo" );
-		op.needParam("x", 10 );
-		op.needParam("y" );
-		op.needParam("z", 20 );
-		op.needParam("sth", null );		
-	
-		
 		
 		
 	}

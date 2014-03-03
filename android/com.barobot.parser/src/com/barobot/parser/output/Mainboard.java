@@ -19,17 +19,17 @@ public class Mainboard extends AsyncDevice{
 			 int[] parts = Decoder.decodeBytes( in );
 			 // Znaleziono urzadzenie
 			 int address = parts[1];
-		*/
+		
 		if( in.startsWith( "122,") ){			// METHOD_I2C_SLAVEMSG
 			 int[] parts = Decoder.decodeBytes( in );
 			 if( parts.length > 3 && parts[ 2 ] ==  188 ){
 				 Parser.last_has_next	= parts[ 3 ];		// 0 or 1	
 			 }
-		}
+		}*/
 		return false;
 	}
 
-	public boolean isRetOf(AsyncMessage msg, String result) {
+	public boolean isRetOf56(AsyncMessage msg, String result) {
 	//	dfgf;
 		result =result.trim().toUpperCase();
 		String command2	= msg.command.toUpperCase();
