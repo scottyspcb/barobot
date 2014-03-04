@@ -10,17 +10,15 @@ public class BarobotTester extends I2C_Device_Imp {
 	public BarobotTester(){
 		this.cpuname	= "m328p";
 		this.myindex	= default_index;
-		this.protocol	= "arduino";
 		this.speed		= 16000000L;
 		this.lfuse		= "0xFF";
 		this.hfuse		= "0xDE";
 		this.lock		= "";
 		this.efuse		= "0x05";
-		this.bspeed		= 115200;		// optiboot can faster
 	}
 
 	public void reset(Hardware hw) {
-		hw.send("RESET"+ this.myindex, "RESET"+ this.myindex );
+		hw.send("RESET"+ this.myindex );
 	}
 
 	public String getHexFile() {

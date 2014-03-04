@@ -80,18 +80,18 @@ void setup(){
 }
 
 #if MAINBOARD_SERVO_4PIN==true
-AccelStepper stepperX(8, PIN_MAINBOARD_STEPPER_STEP0, PIN_MAINBOARD_STEPPER_STEP1, PIN_MAINBOARD_STEPPER_STEP2, PIN_MAINBOARD_STEPPER_STEP3 );
+AccelStepper stepperX(AccelStepper::HALF4WIRE, PIN_MAINBOARD_STEPPER_STEP0, PIN_MAINBOARD_STEPPER_STEP1, PIN_MAINBOARD_STEPPER_STEP2, PIN_MAINBOARD_STEPPER_STEP3 );
 #else
-AccelStepper stepperX(1, PIN_MAINBOARD_STEPPER_STEP, PIN_MAINBOARD_STEPPER_DIR);      // Step, DIR
+AccelStepper stepperX(AccelStepper::DRIVER, PIN_MAINBOARD_STEPPER_STEP, PIN_MAINBOARD_STEPPER_DIR);      // Step, DIR
 #endif
 
 void setupStepper(){
 	stepperX.disable_on_ready = true;
-	stepperX.setEnablePin(PIN_MAINBOARD_STEPPER_ENABLE);
-	stepperX.setPinsInverted( false, false, true ); // enable pin invert
+	stepperX.setDisablePin(PIN_MAINBOARD_STEPPER_ENABLE);
+	stepperX.disableOutputs();
 	stepperX.setAcceleration(MAINBOARD_ACCELERX);
 	stepperX.setMaxSpeed(MAINBOARD_SPEEDX);
-	stepperX.onReady(stepperReady);
+	stepperX.setOnReady(stepperReady);
 	FlexiTimer2::set(1, 1.0/3000, timer);
 	FlexiTimer2::start();
 }
@@ -110,15 +110,16 @@ void loop(){
 			timer_now	= false;
 			divisor 	= 500;
 	//		check_i2c();    // czy linia jest drozna?
-			DEBUGLN("-HELLO ");
+			DEBUGLN("-HELLO");
 	//		DEBUGLN(String(mil));
-	
-			if( stepperX.distanceToGo() > 0 ){
-				byte tablet = analogRead( PIN_MAINBOARD_TABLET_PWR );
+			long int dist	= stepperX.distanceToGo();
+			if( dist != 0 ){
+				uint16_t tablet = analogRead( PIN_MAINBOARD_TABLET_PWR );
 				if(tablet < 50 ){		// nie ma tabletu = wy³¹cz silniki
 					out_buffer[0]  = METHOD_DRIVER_DISABLE;
 					out_buffer[1]  = DRIVER_Y;
 					writeRegisters(I2C_ADR_CARRET, 2, true );
+					DEBUGLN("-NO TABLET ");
 					stepperX.stop();
 					stepperX.disableOutputs();
 					out_buffer[0]  = METHOD_DRIVER_DISABLE;
@@ -352,6 +353,10 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 
 	}else if( input.equals( "PING2ANDROID") ){      // nic nie rob
 		defaultResult = false;
+		
+	}else if( input.equals( "PING") ){
+		defaultResult = false;
+		sendln2android("PONG");	
 	}else if( command == 'p' ) {    // p10,0,0   (prog next to)- programuj urzadzenie podlaczone resetem do urzadzenia o adresie 10
 		read_prog_settings(input, 2 );
 		defaultResult = false;
@@ -483,7 +488,7 @@ byte read_can_fill(){
 }
 
 void stepperReady( long int pos ){
-	sendln2android("Rx" + String(pos));
+	//sendln2android("Rx" + String(pos));
 	out_buffer[0]  = METHOD_STEPPER_MOVING;           // wyslij do wozka ze jade
 	out_buffer[1]  = DRIVER_X;
 	out_buffer[2]  = DRIVER_DIR_STOP;

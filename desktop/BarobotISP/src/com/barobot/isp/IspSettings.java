@@ -15,7 +15,10 @@ public class IspSettings {
 	public static String mbHexPath		= "C:\\workspace\\Barobot\\arduino\\projects2\\barobot_mainboard\\build\\barobot_mainboard.hex";
 	public static String carretHexPath	= "C:\\workspace\\Barobot\\arduino\\projects2\\barobot_carret\\build\\barobot_carret.hex";
 	//public static String carretHexPath	= "C:\\Temp\\build7947917518911125744.tmp\\analog_read_test.cpp.hex";
-	public static String mbBootloaderPath	= "C:\\workspace\\Barobot\\desktop\\BarobotISP\\assets\\optiboot_atmega328.hex";	
+	//public static String mbBootloaderPath	= "C:\\workspace\\Barobot\\desktop\\BarobotISP\\assets\\optiboot_atmega328.hex";
+	//public static String mbBootloaderPath		= "C:\\workspace\\Barobot\\arduino\\projects2\\barobot_mainboard\\build\\barobot_mainboard.hex";
+	public static String mbBootloaderPath		= "C:\\workspace\\Barobot\\desktop\\BarobotISP\\assets\\barobot_mainboard.hex";
+
 
 	public static int fullspeed			= 115200;
 	public static int programmspeed		= 19200;

@@ -14,7 +14,8 @@ public class MainBoard extends I2C_Device_Imp {
 		this.myaddress		= default_address;
 		this.myindex		= default_index;
 		this.protocol		= "arduino";
-		this.bspeed			= 57600;
+	//	this.bspeed			= 57600;		// arduino bootloader
+		this.bspeed			= 115200;		// optiboot can faster
 	}
 	public String setFuseBits(Hardware hw) {
 		return "";
@@ -23,7 +24,7 @@ public class MainBoard extends I2C_Device_Imp {
 		hw.send("RESET"+ this.myindex);
 	}
 	public void isp(Hardware hw) {
-		hw.send("RESET"+ getIndex() );
+		hw.send("RESET"+ this.myindex );
 	}
 	public String getHexFile() {
 		return IspSettings.mbHexPath;
