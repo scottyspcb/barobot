@@ -462,39 +462,69 @@ public class Wizard {
 		hw.close();
 	}
 
-	public void prepareMB(Hardware hw) {
+	public void prepareMB(final Hardware hw) {
 		String command = "";
+		boolean fromempty = false;
+		Queue q = hw.getQueue();
+		final I2C_Device current_dev	= new MainBoard();
+		final String upanel_code = current_dev.getHexFile();
+
 		hw.connect();
-		I2C_Device current_dev	= new MainBoard();
-		String upanel_code = current_dev.getHexFile();
-		if(IspSettings.setHex){	
-			current_dev.isp(hw);	// mam 2 sek na wystartwanie
-			command = current_dev.uploadCode(hw, upanel_code);
-			Main.main.run(command, hw);
-			wait(1000);
+		hw.send("");
+
+		if(!fromempty){
+			hw.send("PING", "PONG");
 		}
-		wait(5000);		// wait for arduino bootloader
-		hw.close();
+		q.addWaitThread(Main.mt);
+		if(IspSettings.setHex){	
+			if(!fromempty){
+				current_dev.isp(hw);	// mam 2 sek na wystartwanie
+			}
+			q.add( new AsyncMessage( true ){		// na koncu zamknij
+				public void run(AsyncDevice dev) {
+					command = current_dev.uploadCode(hw, upanel_code);
+					Main.main.run(command, hw);
+				}
+			});
+		}
+		q.addWaitThread(Main.mt);
 	}
-/*
-	public void prepareSlaveMB(Hardware hw) {	// zaprogramuj p³ytkê g³ówn¹ pod³¹czon¹ jako SLAVE
-		String command = "";
-		hw.connect();
-		I2C_Device current_dev	= new MainBoard();
-		if( IspSettings.setFuseBits){
-			current_dev.isp(hw);	// mam 2 sek na wystartwanie
-			command = current_dev.setFuseBits(hw);
-			run(command, hw);
-			wait(1000);
+
+	public void prepareSlaveMB(final Hardware hw) {
+		final I2C_Device current_dev	= new BarobotTester();
+		Queue q = hw.getQueue();
+
+		if(IspSettings.setFuseBits){
+			hw.connect();
+			hw.send("");
+			hw.send("PING", "PONG");
+			q.addWaitThread(Main.mt);
+			current_dev.isp(hw);
+			q.add( new AsyncMessage( true ){		// na koncu zamknij
+				public void run(AsyncDevice dev) {
+					String command = current_dev.setFuseBits(hw);
+					Main.main.run(command, hw);
+				}
+			});
+			hw.closeOnReady();
+			q.addWaitThread(Main.main);
 		}
+
 		if(IspSettings.setHex){	
+			hw.connect();
+			hw.send("PING", "PONG");
 			current_dev.isp(hw);	// mam 2 sek na wystartwanie
-			command = current_dev.setFuseBits(hw);
-			run(command, hw);
-			wait(1000);
+			q.add( new AsyncMessage( true ){		// na koncu zamknij
+				public void run(AsyncDevice dev) {
+					command = current_dev.uploadCode(hw, current_dev.getHexFile());
+					Main.main.run(command, hw);
+				}
+			});
+			hw.closeOnReady();
+			q.addWaitThread(Main.main);
 		}
-		hw.close();
-	}*/
+	}
+
 	public void prepare1Upanel(Hardware hw, int index ) {
 		String command = "";
 		hw.connect();
@@ -620,7 +650,7 @@ public class Wizard {
 	}
 
 	public void test_proc(Hardware hw) {
-	//	Queue q = hw.getQueue();
+		Queue q = hw.getQueue();
 		hw.send( "P3" );
 		hw.closeOnReady();
 	//	SISP
@@ -644,29 +674,7 @@ public class Wizard {
 		hw.closeOnReady();
 	//	q.addWaitThread( Main.main );
 	}
-	public void prepareSlaveMB(Hardware hw) {
-		String command = "";
-		hw.connect();
-		I2C_Device current_dev	= new BarobotTester();
-		String upanel_code = current_dev.getHexFile();
 
-		if(IspSettings.setFuseBits){	
-			current_dev.isp(hw);	// mam 2 sek na wystartwanie
-			wait(1000);
-			command = current_dev.setFuseBits(hw);
-		//	Main.main.run(command, hw);
-		}
-		if(IspSettings.setHex){	
-			current_dev.isp(hw);	// mam 2 sek na wystartwanie
-			command = current_dev.uploadCode(hw, upanel_code);
-			Main.main.run(command, hw);
-			wait(1000);
-		}
-		wait(5000);		// wait for arduino bootloader
-		hw.close();
-		
-
-	}
 	public void fast_close_test(Hardware hw) {
 		I2C_Device current_dev	= new BarobotTester();
 		hw.connect();

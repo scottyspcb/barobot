@@ -54,16 +54,16 @@ public class Main implements HasLogger{
 		Wizard w	= new Wizard();
 		Hardware hw = new Hardware("COM40");
 
-		IspSettings.safeMode = true;
-		IspSettings.setFuseBits = true;
-		IspSettings.verbose = 5;
+		IspSettings.safeMode = false;
+		IspSettings.setFuseBits = false;
+		IspSettings.verbose = 2;
 		IspSettings.setHex	= true;
 		IspSettings.force = false;
 
+	//	w.fast_close_test( hw );
+	//	w.prepareSlaveMB( hw );
 		w.prepareMB( hw );
 	//	w.fast_close_test( hw );
-
-	//	w.prepareSlaveMB( hw );
 
 	//	w.prepareCarret( hw );	
 	//	w.prepareCarret( hw );
