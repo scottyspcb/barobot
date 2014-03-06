@@ -12,13 +12,13 @@ import javax.comm.SerialPortEvent;
 import javax.comm.SerialPortEventListener;
 import javax.comm.UnsupportedCommOperationException;
 
-import com.barobot.parser.Parser;
+
 import com.barobot.parser.Queue;
 import com.barobot.parser.message.AsyncMessage;
 import com.barobot.parser.output.AsyncDevice;
-import com.barobot.parser.output.Console;
+
 import com.barobot.parser.output.Mainboard;
-import com.barobot.parser.utils.GlobalMatch;
+
 
 public class Hardware {
 	public Hardware(String comPort) {
@@ -192,11 +192,12 @@ public class Hardware {
 		protected void close() {
 			if(connected){
 				System.out.println("serial close");
-/*
+
 				if(q != null){
 					q.clear( mainboardSource );
 					Queue.disableDevice( mainboardSource );
 				}
+				/*
 				if (outputStream != null) {
 					try {
 						synchronized(outputStream){

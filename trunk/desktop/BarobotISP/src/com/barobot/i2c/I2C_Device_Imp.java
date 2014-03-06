@@ -5,8 +5,11 @@ import java.io.File;
 import com.barobot.isp.Hardware;
 import com.barobot.isp.IspSettings;
 import com.barobot.isp.Main;
-import com.barobot.isp.Wizard;
 import com.barobot.parser.Parser;
+import com.barobot.parser.Queue;
+import com.barobot.parser.message.AsyncMessage;
+import com.barobot.parser.output.AsyncDevice;
+import com.barobot.parser.utils.Decoder;
 
 public abstract class I2C_Device_Imp implements I2C_Device{
 	protected int myaddress = 0;
@@ -27,7 +30,6 @@ public abstract class I2C_Device_Imp implements I2C_Device{
 		String command = "L" +this.getAddress() + ","+ selector +"," + pwm;
 		String retcmd = "RL" +this.getAddress() + ","+ selector +"," + pwm;
 		hw.send( command, retcmd );
-		//hw.send("L 12,0xfe,0");
 	}
 
 	public void setAddress(int myaddress) {
@@ -76,24 +78,6 @@ public abstract class I2C_Device_Imp implements I2C_Device{
 		return command;
 	}
 
-
-	public int resetAndReadI2c(Hardware hw) {
-		int reset_tries = IspSettings.reset_tries;
-		while( reset_tries-- > 0 ){
-			this.reset( hw );
-			int wait_tries = IspSettings.wait_tries;
-			while( Parser.last_found_device == 0 && (wait_tries-- > 0 ) ){
-				Wizard.wait(IspSettings.wait_time);
-			}
-			if( Parser.last_found_device > 0 ){
-				break;
-			}
-			System.out.println("Reset try " + reset_tries );
-		}
-		int ret = Parser.last_found_device;
-		Parser.last_found_device = 0;
-		return ret;
-	}
 	public String checkFuseBits(Hardware hw) {
 		String command = IspSettings.avrDudePath + " -C"+ IspSettings.configPath +" "+ IspSettings.verbose()+ " " +
 		"-p"+ this.cpuname +" -c"+this.protocol +" -P\\\\.\\"+hw.comPort+" -b" + this.bspeed + " " +
@@ -125,7 +109,18 @@ public abstract class I2C_Device_Imp implements I2C_Device{
 	}	
 	public long isFresh(Hardware hw) {
 		long b = new File( getHexFile() ).lastModified() / 1000;
-		System.out.println("isFresh " + b );
+		//System.out.println("isFresh " + b );
 		return b;
 	}
+
+	public void reset(Hardware hw ) {
+		hw.send( this.getReset() );
+	}
+	public void isp(Hardware hw) {
+		hw.send( this.getIsp() );
+
+	}
+	
+	
+	
 }

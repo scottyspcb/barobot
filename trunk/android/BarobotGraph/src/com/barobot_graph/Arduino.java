@@ -59,29 +59,6 @@ public class Arduino {
 
 	private boolean stopping = false;
 
-	/*
-	 * 
-	 * private void sendSomething(){ stopping = false;
-	 * 
-	 * Log.d("serial", "sendSomething"); Runnable tt = new Runnable(){
-	 * 
-	 * @Override public void run() { Random generator = new Random( 19580427 );
-	 * Log.d("serial", "Start writter"); while(!stopping && connection != null
-	 * ){ if( connection.isConnected()){ int r = generator.nextInt(); String
-	 * test = "hello arduino "+ r + "\n"; send(test); try { Thread.sleep(500); }
-	 * catch (InterruptedException e) { e.printStackTrace(); } } }
-	 * Log.d("serial", "koniec writter"); }}; Thread writer = new Thread(tt);
-	 * writer.start(); }
-	 * 
-	 * private void runTimer( final Wire connection ) { // interval inn = new
-	 * interval(); // inn.run(1000,5000); // this.inters.add(inn); interval inn
-	 * = new interval(new Runnable() { private int count = 0; public void run()
-	 * { Arduino ar = Arduino.getInstance(); if( ar.allowAutoconnect()){
-	 * count++; if(count > 2){ // po 10 sek // Constant.log("RUNNABLE",
-	 * "3 try autoconnect" ); connection.setAutoConnect( true ); } }else{ count
-	 * = 0; } } }); inn.run(1000,5000); inn.pause();
-	 * AppInvoker.getInstance().inters.add(inn); }
-	 */
 	public void destroy() {
 		this.clear();
 		stopping = true;
@@ -116,16 +93,10 @@ public class Arduino {
 			}
 			try {
 				Constant.log("exec", "" + output2.size());
-
 				while (!output2.isEmpty()) {
-				//	Constant.log("while", "start");
 					rpc_message m = output2.pop();
-				//	Constant.log("while", "start2" + m.command );
-				//	Constant.log("serial send", m.command);
 					String command = m.command + input_parser.separator;
-				//	Constant.log("while", "start4");
 					connection.send(command);
-			//		debug(command);
 				}
 			} catch (IOException e) {
 				Constant.log(Constant.TAG, "problem sending TCP message", e);

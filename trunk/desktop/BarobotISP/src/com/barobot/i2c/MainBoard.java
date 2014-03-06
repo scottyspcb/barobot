@@ -2,8 +2,11 @@ package com.barobot.i2c;
 
 import com.barobot.isp.Hardware;
 import com.barobot.isp.IspSettings;
-import com.barobot.isp.Wizard;
+import com.barobot.isp.Main;
 import com.barobot.parser.Parser;
+import com.barobot.parser.Queue;
+import com.barobot.parser.message.AsyncMessage;
+import com.barobot.parser.utils.Decoder;
 
 public class MainBoard extends I2C_Device_Imp {
 	private int default_address	= 0x01;
@@ -20,31 +23,37 @@ public class MainBoard extends I2C_Device_Imp {
 	public String setFuseBits(Hardware hw) {
 		return "";
 	}
-	public void reset(Hardware hw) {
-		hw.send("RESET"+ this.myindex);
+	public String getReset() {
+		return "RESET"+ this.myindex;
 	}
-	public void isp(Hardware hw) {
-		hw.send("RESET"+ this.myindex );
+	public String getIsp() {
+		return "RESET"+ this.myindex;
 	}
 	public String getHexFile() {
 		return IspSettings.mbHexPath;
 	}
-	public int readHasNext(Hardware hw, int index) {
-		int reset_tries = IspSettings.reset_tries;
-		while( reset_tries-- > 0 ){
-			hw.send("H" + index );
-			int wait_tries = IspSettings.wait_tries;
-			while( Parser.last_has_next == -1 && (wait_tries-- > 0 ) ){
-				Wizard.wait(IspSettings.wait_time);
+	
+	private boolean hasNext = false;
+	public boolean readHasNext(Hardware hw, Queue q, int index) {
+		hasNext = false;
+		String command = "H" + index;
+		q.add( new AsyncMessage( command, true ){
+			public boolean isRet(String result) {
+				if(result.startsWith("122,")){		//	122,1,188,1
+					int[] bytes = Decoder.decodeBytes(result);
+					if(bytes[2] == 188){
+						if(bytes[3] == 1 ){							// has next
+							hasNext = true;
+						}
+						return true;
+					}
+				}
+				return false;
 			}
-			if( Parser.last_has_next > -1 ){
-				break;
-			}
-			System.out.println("Check try " + IspSettings.reset_tries );
-		}
-		int ret = Parser.last_has_next;
-		Parser.last_has_next = -1;	// resetuj
-		return ret;
+		});
+		q.addWaitThread(Main.mt);
+		System.out.println("has next?" + (hasNext ? "1" : "0"));
+		return hasNext;
 	}
 	public void moveX(int max) {
 		

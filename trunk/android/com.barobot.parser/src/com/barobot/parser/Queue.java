@@ -2,8 +2,6 @@ package com.barobot.parser;
 
 import java.io.IOException;
 import java.util.LinkedList;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.logging.Level;
 
 
@@ -49,6 +47,7 @@ public class Queue {
 		synchronized (this.lock) {
 			AsyncDevice dev = Queue.getDevice(devindex);
 			dev.unlockRet("<close>");
+			wait_for_device_id = -1;
 			this.output.clear();
 		}
 	}
@@ -64,7 +63,7 @@ public class Queue {
 				output.add(new AsyncMessage( command, blocking ){
 					public boolean isRet(String result) {
 						if( retcmd.equals(result)){
-							Parser.logger.log(Level.INFO, "isret: " + result+" for "  + command);
+						//	Parser.logger.log(Level.INFO, "isret: " + result+" for "  + command);
 							return true;
 						}
 						return false;
@@ -101,6 +100,7 @@ public class Queue {
 		synchronized (this.lock) {
 			output.add(new AsyncMessage( command, true ){
 				public boolean isRet(String result) {
+			//		System.out.println("isRet?:" + result );
 					if( retcmd.equals( result )){
 						return true;
 					}
@@ -113,8 +113,6 @@ public class Queue {
 		}
 		run();
 	}	
-	
-	
 
 	public void add(AsyncMessage asyncMessage) {
 		synchronized (this.lock) {
@@ -132,13 +130,13 @@ public class Queue {
 	private void run() {
 		synchronized (this.lock) {
 			if(this.wait_for_device_id >= 0){
-			//	Constant.log("wait_for1", wait_for_device.name);
+		//		System.out.println("wait_for1: "+ wait_for_device_id);
 				return;		// jestem w trakcie oczekiwania
 			}
 	//		boolean wasEmpty = output.isEmpty();
 			while (!output.isEmpty()) {
 				if(this.wait_for_device_id >= 0){
-				//	Constant.log("wait_for2", wait_for_device.name);
+	//				System.out.println("wait_for2: "+ wait_for_device_id);
 					return;
 				}
 				AsyncMessage m = output.pop();
@@ -147,7 +145,7 @@ public class Queue {
 					m.start( dev );
 					moveToHistory( m );
 					if(m.isBlocing()){
-						System.out.println("isBlocing true:" + m.command );
+				//		System.out.println("isBlocing true:" + m.command );
 	                	this.wait_for_device_id	= m.getDeviceId();
 	                	dev.waitFor(m, this );
 	                	return;
@@ -157,7 +155,7 @@ public class Queue {
 				}
 			}
 			if(output.isEmpty()){
-				System.out.println("queue empty");
+	//			System.out.println("queue empty");
 			}
 		}
 	}
@@ -178,7 +176,7 @@ public class Queue {
 		synchronized (this.lock) {
 			this.wait_for_device_id = -1;
 		}
-		Parser.logger.log(Level.INFO, "unlock()");
+		//Parser.logger.log(Level.INFO, "unlock()");
 		run();
 	}
 
@@ -189,7 +187,7 @@ public class Queue {
 	public void addWaitThread(final Object thread) {
 	//	Parser.logger.log(Level.INFO, "add thread wait");
 		synchronized(this.output){
-			if(this.output.size() > 0 ){
+			if( this.wait_for_device_id >= 0 || this.output.size() > 0 ){
 				this.add( new AsyncMessage( true ){
 					@Override
 					public void run(AsyncDevice dev) {
@@ -247,6 +245,17 @@ public class Queue {
 
 	public void error() {
 		devs.get(-1);
+	}
+	public boolean isBusy() {
+		synchronized (this.lock) {
+			if( this.wait_for_device_id >= 0){
+				return true;	
+			}
+			if( this.output.size() > 0 ){
+				return true;
+			}
+		}
+		return false;
 	}
 }
 
