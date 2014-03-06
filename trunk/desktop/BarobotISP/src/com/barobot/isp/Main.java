@@ -66,7 +66,7 @@ public class Main implements HasLogger{
 	//	w.prepareMB( hw );
 	//	w.fast_close_test( hw );
 
-		w.prepareCarret( hw );	
+	//	w.prepareCarret( hw );	
 	//	w.checkCarret( hw );
 	//	w.prepare1Upanel( hw, 4 );
 	//	w.prepareUpanel( hw, 3 );
@@ -80,7 +80,7 @@ public class Main implements HasLogger{
 
 	//	mm.testBpm( hw );
 		
-	//	mm.promo_carret( hw );
+	//d	mm.promo_carret( hw );
 		
 		
 	//	w.test( hw );
@@ -95,7 +95,7 @@ public class Main implements HasLogger{
 		
 	//	Wizard.wait(1000);
 	//	w.clearUpanel( hw );
-	//	w.illumination1( hw );
+		w.illumination1( hw );
 	//	w.ilumination2( hw );
 	//	w.fadeButelka( hw, 4, 200 );
 

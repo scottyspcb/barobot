@@ -69,12 +69,6 @@ unsigned long milis1000 = 0;
 unsigned long milis2000 = 0;
 byte iii = 0;
 
-/*
-int16_t typical_neutral = 511;
-int16_t threshold       = 30;
-int16_t enstrop_max     = 511;
-int16_t enstrop_min     = 511;
-*/
 
 boolean is_up    = false;
 boolean neutral  = false;
@@ -90,9 +84,13 @@ boolean send_lmax  = false;
 #define ENDSTOP_DIFF  100
 #define WAVING  6
 
-//int16_t historyx[HISTORY_LENGTH]  = {typical_neutral,typical_neutral,typical_neutral,typical_neutral,typical_neutral,typical_neutral,typical_neutral};
-//int8_t historyx_index  = 0;
-//int16_t cc = 0;
+int16_t typical_neutral = 511;
+int16_t threshold       = 30;
+int16_t enstrop_max     = 511;
+int16_t enstrop_min     = 511;
+int16_t historyx[HISTORY_LENGTH]  = {typical_neutral,typical_neutral,typical_neutral,typical_neutral,typical_neutral,typical_neutral,typical_neutral};
+int8_t historyx_index  = 0;
+int16_t cc = 0;
 
 #define SEPARATOR_CHAR '\n'
 #define TRIES  10
@@ -110,8 +108,8 @@ void setup(){
 	pinMode(PIN_CARRET_MISO, INPUT );        // stan wysokiej impedancji
 	pinMode(PIN_CARRET_MOSI, INPUT );        // stan wysokiej impedancji
 
-	pinMode(PIN_CARRET_SERVO_Y, INPUT_PULLUP);      // nie pozwalaj na przypadkowe machanie na starcie
-	pinMode(PIN_CARRET_SERVO_Z, INPUT_PULLUP);      // nie pozwalaj na przypadkowe machanie na starcie
+	pinMode(PIN_CARRET_SERVO_Y, INPUT );      // nie pozwalaj na przypadkowe machanie na starcie
+	pinMode(PIN_CARRET_SERVO_Z, INPUT );      // nie pozwalaj na przypadkowe machanie na starcie
 
 	pinMode(PIN_CARRET_HALL_X, INPUT);
 	pinMode(PIN_CARRET_HALL_Y, INPUT);
@@ -132,7 +130,7 @@ void setup(){
 	FlexiTimer2::set(40, 1.0/100, timer);
 	FlexiTimer2::start();
 //	init_analogs();
-	sendstats();
+//	sendstats();
 }
 
 void init_leds(){
@@ -170,6 +168,51 @@ void sendVal( byte n ) {
 
 void loop() {
 	mil = millis();
+
+  if (Console0Complete) {
+    parseInput( serial0Buffer );                      // parsuj wejscie
+    Console0Complete = false;
+    serial0Buffer = "";
+  }
+
+  if( mil > when_next ){    // debug, mrygaj co 1 sek
+      if( bitRead(sending, 0 ) ){  sendVal(0);   }
+      if( bitRead(sending, 1 ) ){  sendVal(1);   }
+      if( bitRead(sending, 2 ) ){  sendVal(2);   }
+      if( bitRead(sending, 3 ) ){  sendVal(3);   }
+      if( bitRead(sending, 4 ) ){  sendVal(4);   }
+      if( bitRead(sending, 5 ) ){  sendVal(5);   }
+      if( bitRead(sending, 6 ) ){  sendVal(6);   }
+      if( bitRead(sending, 7 ) ){  sendVal(7);   }
+      if( bitRead(sending, 8 ) ){  sendVal(8);   }
+      Serial.println();
+      when_next = mil + time;
+  }
+	//sendanalog();
+	//readHall();
+  
+	//Serial.println("tutaj5");
+	update_servo( INNER_SERVOY );
+
+	//Serial.println("tutaj6");
+	update_servo( INNER_SERVOZ );
+	//Serial.println("tutaj7");
+
+	// analizuj bufor wejsciowy i2c
+	for( byte i=0;i<CARRET_BUFFER_LENGTH;i++){
+	//    if( input_buffer[i][0] >0 && bit_is_clear(input_buffer[i][0], 0 )){    // bez xxxx xxx1 b
+		if( input_buffer[i][0] >0 ){    // bez xxxx xxx1 b
+			if( input_buffer[i][0] != METHOD_GETVERSION &&  input_buffer[i][0] != METHOD_TEST_SLAVE ){
+				proceed( input_buffer[i] );
+				input_buffer[i][0] = 0;
+			}
+		}
+	}
+//	Serial.println("tutaj8");
+}
+
+void sendanalog() {           // synchroniczne
+
 	if( analog_reading &&  mil > milisAnalog ){
 		milisAnalog = mil+ analog_speed;
 		if( analog_pos == analog_repeat ){			// wysllij
@@ -196,30 +239,12 @@ void loop() {
 		analog_pos++;
 		analog_sum.i	+= ADCvalue[0][analog_num];
 	}
-
-  if (Console0Complete) {
-    parseInput( serial0Buffer );                      // parsuj wejscie
-    Console0Complete = false;
-    serial0Buffer = "";
-  }
-  if( mil > when_next ){    // debug, mrygaj co 1 sek
-      if( bitRead(sending, 0 ) ){  sendVal(0);   }
-      if( bitRead(sending, 1 ) ){  sendVal(1);   }
-      if( bitRead(sending, 2 ) ){  sendVal(2);   }
-      if( bitRead(sending, 3 ) ){  sendVal(3);   }
-      if( bitRead(sending, 4 ) ){  sendVal(4);   }
-      if( bitRead(sending, 5 ) ){  sendVal(5);   }
-      if( bitRead(sending, 6 ) ){  sendVal(6);   }
-      if( bitRead(sending, 7 ) ){  sendVal(7);   }
-      if( bitRead(sending, 8 ) ){  sendVal(8);   }
-      Serial.println();
-      when_next = mil + time;
-  }
+}
+void readHall() {           // synchroniczne
 	// analizuj
 	// todo do znalezienia: local max, local min, global min, global max,
 	//      DW(_pwm_channels[6].pin, false);
 	//      DW(_pwm_channels[7].pin, false);
-	/*
 	cc++;
 	if(cc>200){
 		cli();
@@ -329,7 +354,7 @@ void loop() {
 				 
 				DEBUG( "\tval: " );
 				DEBUG( String(val1) );
-  / *
+/*
                 DEBUG( "\tbA: " );
                 DEBUG( String( b1) );
   
@@ -338,7 +363,7 @@ void loop() {
   
                 DEBUG( "\tbC: " );
                 DEBUG( String( b3) );
-				* /
+				*/
 				//     DEBUG( String(val + b1) );
 				//    DEBUG( "\t" );
 				//    DEBUGLN( String(b2 + b3) );
@@ -355,26 +380,7 @@ void loop() {
 		}
 		historyx[historyx_index]  = val1;
 		historyx_index            = (historyx_index+1)%HISTORY_LENGTH;
-	}*/
-
-	//Serial.println("tutaj5");
-	update_servo( INNER_SERVOY );
-
-	//Serial.println("tutaj6");
-	update_servo( INNER_SERVOZ );
-	//Serial.println("tutaj7");
-
-	// analizuj bufor wejsciowy i2c
-	for( byte i=0;i<CARRET_BUFFER_LENGTH;i++){
-	//    if( input_buffer[i][0] >0 && bit_is_clear(input_buffer[i][0], 0 )){    // bez xxxx xxx1 b
-		if( input_buffer[i][0] >0 ){    // bez xxxx xxx1 b
-			if( input_buffer[i][0] != METHOD_GETVERSION &&  input_buffer[i][0] != METHOD_TEST_SLAVE ){
-				proceed( input_buffer[i] );
-				input_buffer[i][0] = 0;
-			}
-		}
 	}
-//	Serial.println("tutaj8");
 }
 
 void update_servo( byte index ) {           // synchroniczne
@@ -529,7 +535,7 @@ void reload_servo( byte index ){      // in interrupt
 
 void timer(){  // in interrupt
 	ticks++;
-//	DW(PIN_PANEL_LED1_NUM,  !digitalRead(PIN_PANEL_LED1_NUM));    // Toggle led. Read from register (not from pin)
+	DW(PIN_PANEL_LED1_NUM,  !digitalRead(PIN_PANEL_LED1_NUM));    // Toggle led. Read from register (not from pin)
 	reload_servo(INNER_SERVOY);
 	reload_servo(INNER_SERVOZ);
 }
