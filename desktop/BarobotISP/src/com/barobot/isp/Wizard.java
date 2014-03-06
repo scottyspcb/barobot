@@ -34,6 +34,7 @@ public class Wizard {
 		Upanel current_dev		= new Upanel( index, 0 );
 		current_dev.setOrder( 0 );
 		Queue q					= hw.getQueue();
+		q.add("", false);//reset
 		boolean has_next 		= mb.readHasNext( hw, q, index );
 		System.out.println("has_next " + has_next );
 		if(has_next){
@@ -530,8 +531,8 @@ public class Wizard {
 		int repeat = 1;
 		while(repeat-->0){
 			this.mrygaj( hw );
-		//	this.mrygaj_grb( hw );
-		//	this.mrygaj_po_butelkach( hw );
+			this.mrygaj_grb( hw );
+			this.mrygaj_po_butelkach( hw );
 		}
 		System.out.println("koniec illumination1");
 	}

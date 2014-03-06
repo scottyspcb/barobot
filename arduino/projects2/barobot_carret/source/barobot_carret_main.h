@@ -43,6 +43,8 @@ void serialEvent();
 void sendstats();
 void parseInput( String input );
 void update_servo( byte index );
+void readHall();
+void sendanalog();
 void loop();
 void sendVal( byte n );
 void set_pin( byte pin, boolean value );
