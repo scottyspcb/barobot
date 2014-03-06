@@ -6,13 +6,16 @@ import java.util.List;
 import com.barobot.isp.Hardware;
 import com.barobot.isp.IspSettings;
 import com.barobot.isp.Main;
-import com.barobot.isp.Wizard;
 import com.barobot.parser.Parser;
+import com.barobot.parser.Queue;
+import com.barobot.parser.message.AsyncMessage;
+import com.barobot.parser.utils.Decoder;
 
 public class Upanel extends I2C_Device_Imp {
 	public Upanel can_reset_me_dev	= null;
 	public I2C_Device have_reset_to	= null;
-
+	public int have_reset_address	= -1;
+	
 	public static List<Upanel> list	= new ArrayList<Upanel>();
 	public static int findByI2c(int device_add) {
 		for (I2C_Device s : list){
@@ -48,70 +51,101 @@ public class Upanel extends I2C_Device_Imp {
 		this.can_reset_me_dev = current_dev;
 	}
 
-	public void hasNext(Hardware hw){
-		hw.send("h" + getAddress() );
-	}
-
-	public void reset(Hardware hw) {
+	public String reset(Hardware hw, boolean execute ) {
+		String command = "";
 		if(getIndex() > 0 ){
-			hw.send("RESET"+ this.myindex );
+			command = "RESET"+ this.myindex;
+			
 		}else if( can_reset_me_dev == null ){
-			hw.send("RESET_NEXT"+ can_reset_me_dev.getAddress() );
+			command = "RESET_NEXT"+ can_reset_me_dev.getAddress();
 		}
+		if(execute){
+			hw.send( command );
+		}
+		return command;
 	}
 	public void reset_next(Hardware hw) {
-		if( getAddress() > 0 ){
-			hw.send("RESET_NEXT"+ getAddress() );
+		if( this.myaddress > 0 ){
+			hw.send("RESET_NEXT"+ this.myaddress );
 		}
 	}
-	public void isp(Hardware hw) {		// mnie
+	public String getReset() {
 		if(getIndex() > 0 ){
-			hw.send("P"+ this.myindex );
+			return "P"+ this.myindex;
 		}else if( can_reset_me_dev == null ){
-			hw.send("p"+ can_reset_me_dev.getAddress() );
+			return "p"+ can_reset_me_dev.getAddress();
 		}
+		return "";
 	}
+	public String getIsp() {
+		return "RESET"+ this.myindex;
+	}
+
 	public void isp_next(Hardware hw) {	// pod³¹czony do mnie
 		hw.send( "p"+ getAddress() );
 	}
+	
 
-	public int resetNextAndReadI2c(Hardware hw) {
-		int reset_tries = IspSettings.reset_tries;
-		while( reset_tries-- > 0 ){
-			this.reset_next( hw );
-			int wait_tries = IspSettings.wait_tries;
-			while( Parser.last_found_device <= 1 && (wait_tries-- > 0 ) ){
-				Wizard.wait(IspSettings.wait_time);
+	private boolean hasNext = false;
+	public boolean readHasNext(Hardware hw, Queue q ) {
+		hasNext = false;
+		String command = "h" + this.myaddress;
+		q.add( new AsyncMessage( command, true ){
+			public boolean isRet(String result) {
+				if(result.startsWith("122,")){		//	122,1,188,1
+					int[] bytes = Decoder.decodeBytes(result);
+					if(bytes[2] == 188){
+						if(bytes[3] == 1 ){							// has next
+							hasNext = true;
+						}
+						return true;
+					}
+				}
+				return false;
 			}
-			if( Parser.last_found_device > 1 ){		// tylko plytka glowna ma 1
-				break;
-			}
-			System.out.println("Reset try " + IspSettings.reset_tries );
-		}
-		int ret = Parser.last_found_device;
-		Parser.last_found_device = 0;	// resetuj
-		return ret;
+		});
+		q.addWaitThread(Main.mt);
+	//	System.out.println("has next?" + (hasNext ? "1" : "0"));
+		return hasNext;
 	}
 
-	public int readHasNext(Hardware hw) {
-		int reset_tries = IspSettings.reset_tries;
-		while( reset_tries-- > 0 ){
-			this.hasNext( hw );
-			int wait_tries = IspSettings.wait_tries;
-			while( Parser.last_has_next == -1 && (wait_tries-- > 0 ) ){
-				Wizard.wait(IspSettings.wait_time);
+	public int resetNextAndReadI2c(Hardware hw, Queue q) {
+		have_reset_address = -1;
+		String command = "RESET_NEXT"+ this.myaddress;
+		q.add( new AsyncMessage( command, true ){
+			public boolean isRet(String result) {
+				if(result.startsWith("12,")){		//	12,18,19,1
+					int[] bytes = Decoder.decodeBytes(result);	// HELLO, ADDRESS, TYPE, VERSION
+					have_reset_address = bytes[1];
+					return true;
+				}
+				return false;
 			}
-			if( Parser.last_has_next > -1 ){
-				break;
-			}
-			System.out.println("Check try " + IspSettings.reset_tries );
-		}
-		int ret = Parser.last_has_next;
-		Parser.last_has_next = -1;	// resetuj
-		return ret;
+		});
+		q.addWaitThread(Main.mt);
+		return have_reset_address;
 	}
 
+	public int resetAndReadI2c(Hardware hw, Queue q ) {
+		myaddress = -1;
+		String command = this.reset( hw, false );
+		q.add( new AsyncMessage( command, true ){
+			public boolean isRet(String result) {
+				if(result.startsWith("12,")){		//	12,18,19,1
+					int[] bytes = Decoder.decodeBytes(result);	// HELLO, ADDRESS, TYPE, VERSION
+					myaddress = bytes[1];
+					return true;
+				}
+				return false;
+			}
+		});
+		q.addWaitThread(Main.mt);
+		return myaddress;
+	}
+
+	
 	public String getHexFile() {
 		return IspSettings.upHexPath;
 	}
+
 }

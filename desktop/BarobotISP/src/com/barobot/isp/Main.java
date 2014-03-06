@@ -16,6 +16,7 @@ import java.util.logging.Logger;
 
 import org.smslib.helper.CommPortIdentifier;
 
+import com.barobot.parser.Operation;
 import com.barobot.parser.Parser;
 import com.barobot.parser.Queue;
 import com.barobot.parser.output.AsyncDevice;
@@ -62,20 +63,26 @@ public class Main implements HasLogger{
 
 	//	w.fast_close_test( hw );
 	//	w.prepareSlaveMB( hw );
-		w.prepareMB( hw );
+	//	w.prepareMB( hw );
 	//	w.fast_close_test( hw );
 
-	//	w.prepareCarret( hw );	
-	//	w.prepareCarret( hw );
+		w.prepareCarret( hw );	
 	//	w.checkCarret( hw );
 	//	w.prepare1Upanel( hw, 4 );
 	//	w.prepareUpanel( hw, 3 );
 	//	w.prepareUpanel( hw, 4 );
-	//	
 	//	w.test( hw );
-	//	w.findOrder( hw, 4 );
-	//	w.findOrder( hw, 3 );
+		w.findOrder( hw, 4 );
+		w.findOrder( hw, 3 );
 
+		Macro mm  = new Macro();
+	//	mm.promo1( hw );
+
+	//	mm.testBpm( hw );
+		
+	//	mm.promo_carret( hw );
+		
+		
 	//	w.test( hw );
 	//	w.test_proc( hw );
 		
@@ -96,7 +103,8 @@ public class Main implements HasLogger{
 	//	w.zapal( hw );
 	//	w.zgas( hw );
 
-		hw.close();
+	//	hw.close();
+		hw.closeOnReady();
 		System.out.println("koniec");
 	}
 	public Properties p;
@@ -183,5 +191,13 @@ public class Main implements HasLogger{
 	public static Logger logger = null;
 	public Logger getLogger() {
 		return logger;
+	}
+
+	public static void wait(int ms) {
+		try {
+			 Thread.sleep(ms);
+		} catch (InterruptedException e1) {
+			e1.printStackTrace();
+		}
 	}
 }

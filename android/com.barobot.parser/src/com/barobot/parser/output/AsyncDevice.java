@@ -49,14 +49,14 @@ public abstract class AsyncDevice {
 	}
 	private boolean useInput(String command) {
 		boolean handled =false;
-
 	//	System.out.println("useInput: " + command );
 		synchronized (this) {
+		//	System.out.println("wait_for?: " + ( (this.wait_for == null)? "null" : "nonull") );
 			if( this.wait_for != null ){
 		//		System.out.println("?isRet: " + command );
 				handled = this.wait_for.isRet( command );
 				if(handled){
-					System.out.println("+unlock: " + command );
+			//		System.out.println("+unlock: " + command );
 					unlockRet( command );
 					return true;
 				}
@@ -97,7 +97,13 @@ public abstract class AsyncDevice {
 		globalRegex.put(match, globalMatch);
 	}
 	public boolean send(String command) {
-		return this.sender.send(command);
+		try {
+			return this.sender.send(command);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return false;
 	}
 	public void registerSender(Sender sender) {
 		this.sender = sender;

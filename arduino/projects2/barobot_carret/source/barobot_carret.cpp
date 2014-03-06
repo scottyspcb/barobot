@@ -23,9 +23,9 @@ volatile int16_t ADCvalue[ANALOG_TRIES][ANALOGS] = {{0,0,0,0,0,0},{0,0,0,0,0,0},
 volatile uint8_t channel = 0;
 volatile uint8_t row = 0;
 
-byte moving_x = DRIVER_DIR_STOP;      // informacja co robi główny silnik
-byte moving_y = DRIVER_DIR_STOP;      // informacja co robi silnik
-byte moving_z = DRIVER_DIR_STOP;      // informacja co robi silnik
+byte moving_x = DRIVER_DIR_STOP;
+byte moving_y = DRIVER_DIR_STOP;
+byte moving_z = DRIVER_DIR_STOP;
 
 #define UNCONNECTED_LEVEL  3
 #define MIN_DELTA  20
@@ -100,7 +100,7 @@ String serial0Buffer = "";
 boolean Console0Complete = false;   // This will be set to true once we have a full string
 
 unsigned long int when_next = 0;
-unsigned long int sending = 0b11001101;
+unsigned long int sending = 0b10000000;
 unsigned long int time = 1000;
 unsigned long int sum = 0;
 unsigned long int repeat = 0;
@@ -172,7 +172,7 @@ void loop() {
 	mil = millis();
 	if( analog_reading &&  mil > milisAnalog ){
 		milisAnalog = mil+ analog_speed;
-		if( analog_pos == analog_repeat ){			// wyślij
+		if( analog_pos == analog_repeat ){			// wysllij
 		/*
 			Serial.print( "A" );
 			Serial.print( analog_num );
@@ -202,7 +202,6 @@ void loop() {
     Console0Complete = false;
     serial0Buffer = "";
   }
-  mil = millis();
   if( mil > when_next ){    // debug, mrygaj co 1 sek
       if( bitRead(sending, 0 ) ){  sendVal(0);   }
       if( bitRead(sending, 1 ) ){  sendVal(1);   }
@@ -358,8 +357,12 @@ void loop() {
 		historyx_index            = (historyx_index+1)%HISTORY_LENGTH;
 	}*/
 
+	//Serial.println("tutaj5");
 	update_servo( INNER_SERVOY );
+
+	//Serial.println("tutaj6");
 	update_servo( INNER_SERVOZ );
+	//Serial.println("tutaj7");
 
 	// analizuj bufor wejsciowy i2c
 	for( byte i=0;i<CARRET_BUFFER_LENGTH;i++){
@@ -371,13 +374,24 @@ void loop() {
 			}
 		}
 	}
+//	Serial.println("tutaj8");
 }
 
 void update_servo( byte index ) {           // synchroniczne
+//	Serial.println("moze");
+//	Serial.flush();
+
 	if( servos[index].pos_changed == true && !prog_mode){  // mam byc gdzie indziej
+	//	Serial.println("teraz");
+	//	Serial.flush();
+
 		//    DEBUG( "-przesuwam Y " );
 		//    DEBUGLN( String(servos[index].last_pos) );
 		servo_lib[index].writeMicroseconds(servos[index].last_pos);
+
+	//	Serial.println("po");
+	//	Serial.flush();
+		
 		servos[index].pos_changed = false;
 		if( servos[index].last_pos == servos[index].target_pos){
 			DEBUGLN( "-gotowe servo" );
@@ -394,6 +408,9 @@ void update_servo( byte index ) {           // synchroniczne
 			}
 			send_servo(false, localToGlobal(index), servos[index].target_pos );
 		}
+	//	Serial.println("po2");
+	//	Serial.flush();
+		
 	}
 }
 void parseInput( String input ){
@@ -509,16 +526,17 @@ void reload_servo( byte index ){      // in interrupt
 		}*/
 	}
 }
- 
+
 void timer(){  // in interrupt
 	ticks++;
-	//  DW(PIN_PANEL_LED7_NUM,  !digitalRead(PIN_PANEL_LED7_NUM));    // Toggle led. Read from register (not from pin)
+//	DW(PIN_PANEL_LED1_NUM,  !digitalRead(PIN_PANEL_LED1_NUM));    // Toggle led. Read from register (not from pin)
 	reload_servo(INNER_SERVOY);
 	reload_servo(INNER_SERVOZ);
 }
- 
+
 // czytaj komendy i2c
 void proceed( volatile byte buffer[5] ){
+	Serial.println("proceed1");
 /*
 	DEBUG("-proceed - ");
 	DEBUG(String(buffer[0]));
@@ -556,7 +574,7 @@ void proceed( volatile byte buffer[5] ){
 		}
 		DEBUG("-driver X moving:");
 		DEBUGLN(String(buffer[2]));
-		
+
 	}else if( command == METHOD_CHECK_NEXT ){
 		byte ttt[4] = {METHOD_I2C_SLAVEMSG, my_address, METHOD_CHECK_NEXT, 0 };		// 0 = no device found (cant have device)
 		send(ttt,4);
@@ -669,6 +687,7 @@ void proceed( volatile byte buffer[5] ){
 		printHex(buffer[2]);
 	}
 	buffer[0] = 0;  //ready
+	Serial.println("proceed9");
 }
  
 void run_to(byte index, byte sspeed, uint16_t target){
@@ -787,7 +806,7 @@ void send_y_pos( byte reason) {
  
 void send_here_i_am(){
 	byte ttt[4] = {METHOD_HERE_I_AM,my_address,CARRET_DEVICE_TYPE,CARRET_VERSION};
-	DEBUGLN("-hello "+ String( my_address ));
+	//DEBUGLN("-hello "+ String( my_address ));
 	send(ttt,4);
 }
  
@@ -848,6 +867,7 @@ void init_analogs(){
     sei();
 }
 
+/*
 ISR(ADC_vect){
   uint8_t tmp  = ADMUX;            // read the value of ADMUX register
   tmp          &= 0xF0;            // starsze bity
@@ -859,6 +879,7 @@ ISR(ADC_vect){
   }
   //checks++;
 }
+*/
 
 /*
   	if( mil > milis2000 ){    // debug, mrygaj co 1 sek

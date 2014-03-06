@@ -13,7 +13,6 @@ public class History_item{
 		this.command	= cmd;
 		this.direction	= dir;	// true = na zewnątrz
 	}
-
 	public String toString(){
 		String prefix = "";
 		if(this.direction){

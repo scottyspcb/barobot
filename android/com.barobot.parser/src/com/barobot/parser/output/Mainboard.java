@@ -1,8 +1,6 @@
 package com.barobot.parser.output;
 
-import com.barobot.parser.Parser;
 import com.barobot.parser.message.AsyncMessage;
-import com.barobot.parser.utils.Decoder;
 
 public class Mainboard extends AsyncDevice{
 
@@ -13,7 +11,13 @@ public class Mainboard extends AsyncDevice{
 	@Override
 	public boolean parse(String in) {
 		//Parser.log(Level.INFO, "parse: " + in);
-		System.out.println("read1: " + in);
+		// all other messages
+		if( in.startsWith( "-") ){			// comment
+			System.out.println("arduino comment: " + in);
+			return true;
+		}else{
+			System.out.println("read1: " + in);	
+		}
 /*
 		if( in.startsWith( "12,") ){			// device found
 			 int[] parts = Decoder.decodeBytes( in );

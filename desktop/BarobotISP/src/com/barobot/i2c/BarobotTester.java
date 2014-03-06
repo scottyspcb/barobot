@@ -17,15 +17,21 @@ public class BarobotTester extends I2C_Device_Imp {
 		this.efuse		= "0x05";
 	}
 
-	public void reset(Hardware hw) {
-		hw.send("RESET"+ this.myindex );
+	public String getReset() {
+		return "RESET"+ this.myindex;
 	}
-
+	public String getIsp() {
+		return "P"+ this.myindex;
+	}
+	public void isp(Hardware hw) {
+		hw.send("P"+ getIndex(), "SISP" );		// and wait for device
+	}
 	public String getHexFile() {
 		return IspSettings.mbBootloaderPath;
 	}
 
-	public void isp(Hardware hw) {
-		hw.send("P"+ getIndex(), "SISP" );
+	public int resetAndReadI2c(Hardware hw) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 }

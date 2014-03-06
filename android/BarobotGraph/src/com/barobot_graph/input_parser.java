@@ -11,19 +11,13 @@ public class input_parser {
 		// }
 		synchronized (input_parser.class) {
 			input_parser.buffer = input_parser.buffer + in;
-			// Log.v(Constant.TAG, "input [" + input_parser.buffer+"]" );
 			int end = input_parser.buffer.indexOf(separator);
 			if (end != -1) {
 				while (end != -1) { // podziel to na kawalki
-					// Log.i(Constant.TAG, "input [" +
-					// input_parser.buffer+"] dł:" +input_parser.buffer.length()
-					// );
 					String command = input_parser.buffer.substring(0, end);
 					input_parser.buffer = input_parser.buffer
 							.substring(end + 1);
 					command = command.trim();
-					// Log.i(Constant.TAG, "zostalo [" + input_parser.buffer
-					// +"]");
 					if ("".equals(command)) {
 						Log.i(Constant.TAG, "pusta komenda!!!]");
 					} else {

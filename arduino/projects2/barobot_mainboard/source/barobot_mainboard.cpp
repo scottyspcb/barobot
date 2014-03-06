@@ -112,21 +112,21 @@ void loop(){
 	//		check_i2c();    // czy linia jest drozna?
 			DEBUGLN("-HELLO");
 	//		DEBUGLN(String(mil));
-			long int dist	= stepperX.distanceToGo();
-			if( dist != 0 ){
-				uint16_t tablet = analogRead( PIN_MAINBOARD_TABLET_PWR );
-				if(tablet < 50 ){		// nie ma tabletu = wy³¹cz silniki
-					out_buffer[0]  = METHOD_DRIVER_DISABLE;
-					out_buffer[1]  = DRIVER_Y;
-					writeRegisters(I2C_ADR_CARRET, 2, true );
-					DEBUGLN("-NO TABLET ");
-					stepperX.stop();
-					stepperX.disableOutputs();
-					out_buffer[0]  = METHOD_DRIVER_DISABLE;
-					out_buffer[1]  = DRIVER_Z;
-					writeRegisters(I2C_ADR_CARRET, 2, true );
-				}
-			}	
+
+
+			// check tablet exists
+			uint16_t tablet = analogRead( PIN_MAINBOARD_TABLET_PWR );
+			if(tablet < 150 ){		// <1,5V = no tablet = disable drivers
+				out_buffer[0]  = METHOD_DRIVER_DISABLE;
+				out_buffer[1]  = DRIVER_Y;
+				writeRegisters(I2C_ADR_CARRET, 2, true );
+				DEBUGLN("-NO TABLET ");
+				stepperX.stop();
+				stepperX.disableOutputs();
+				out_buffer[0]  = METHOD_DRIVER_DISABLE;
+				out_buffer[1]  = DRIVER_Z;
+				writeRegisters(I2C_ADR_CARRET, 2, true );
+			}
 		}
 	}
 
@@ -575,18 +575,6 @@ void tri_state( byte pin_num, boolean pin_value ){
 	}
 }
 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
  
  
  

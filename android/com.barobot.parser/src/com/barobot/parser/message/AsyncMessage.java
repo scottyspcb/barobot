@@ -34,8 +34,9 @@ public class AsyncMessage extends History_item{
 		return false;
 	}*/
 	public void unlockWith( String withCommand ){
+	//	System.out.println("unlockWith "+withCommand);
 		this.unlocking_command = withCommand;
-		blocking= false;	
+		blocking= false;
 	}
 
 	public void start(AsyncDevice dev) {
