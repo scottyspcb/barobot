@@ -77,7 +77,7 @@
             android:label="@string/title_activity_barobot_main" >
         </activity>
         <activity
-            android:name="com.barobot.gui.BottleSetupActivity"
+            android:name="com.barobot.activity.BottleSetupActivity"
             android:label="@string/title_activity_bottle_setup" >
         </activity>
         <activity

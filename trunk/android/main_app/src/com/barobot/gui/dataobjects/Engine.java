@@ -66,9 +66,31 @@ public class Engine {
 		return BarobotData.GetSlots();
 	}
 	
+	public Product getProduct(int position)
+	{
+		return BarobotData.GetSlot(position).product;
+	}
+	
 	public void updateSlot(int position, Product prod)
 	{
-		BarobotData.UpdateSlot(position, prod);
+		if (prod != null)
+		{
+			Slot slot = BarobotData.GetSlot(position);
+			slot.product = prod;
+			slot.status = "OK";
+			slot.currentVolume = prod.capacity;
+		
+			slot.update();
+		}
+	}
+	
+	public void emptySlot(int position)
+	{
+		Slot slot = BarobotData.GetSlot(position);
+		slot.product = null;
+		slot.status = "Empty";
+		slot.currentVolume = 0;
+		slot.update();
 	}
 	
 	public List<Product> getProducts()
@@ -78,6 +100,21 @@ public class Engine {
 	
 	public List<Type> getTypes() {
 		return BarobotData.GetTypes();
+	}
+	
+	public void addType(Type type)
+	{
+		type.insert();
+	}
+	
+	public void addLiquid(Liquid_t liquid)
+	{
+		liquid.insert();
+	}
+	
+	public void addProduct(Product product) 
+	{
+		product.insert();	
 	}
 	
 	//---------------------------
@@ -327,6 +364,10 @@ public class Engine {
 		
 		return result;
 	}
+
+
+
+	
 
 
 

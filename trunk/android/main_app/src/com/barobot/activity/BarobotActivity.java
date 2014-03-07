@@ -1,7 +1,6 @@
 package com.barobot.activity;
 
 import com.barobot.R;
-import com.barobot.gui.BottleSetupActivity;
 import com.barobot.gui.MainActivity;
 import com.barobot.gui.OutsideComponentActivity;
 import com.barobot.gui.ProductActivity;
@@ -96,5 +95,17 @@ public class BarobotActivity extends Activity {
     		startActivity(serverIntent);
     	}
     	return false;
+    }
+    
+    protected void setTextViewText(String text, int id)
+	{
+		TextView tView = (TextView) findViewById(id);
+		tView.setText(text);
+	}
+    
+    protected String getTextViewText(int id)
+    {
+    	TextView tView = (TextView) findViewById(id);
+    	return tView.getText().toString();
     }
 }

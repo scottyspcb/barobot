@@ -9,31 +9,141 @@
     android:baselineAligned="false"
     tools:context=".ProductActivity" >
     
-    <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:orientation="vertical" >
-
-        <TextView
-            android:id="@+id/product_capacity_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/hello_world" />
-    </LinearLayout>
-
     <RelativeLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="2"
-        android:orientation="vertical" >
+        android:layout_weight="1"
+        
+        >
+        
+         <TextView
+            android:id="@+id/product_slot_number_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+             android:textSize="@dimen/bottle_box_text_size"
+            
+            android:text="[Slot Number]" />
+
+         <TextView
+            android:id="@+id/product_capacity_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/product_slot_number_text"
+             android:textSize="@dimen/bottle_box_text_size"
+            
+            android:text="[Capacity]" />
+         
+          <TextView
+            android:id="@+id/product_liquid_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/product_capacity_text"
+             android:textSize="@dimen/bottle_box_text_size"
+            
+            android:text="[Name]" />
+        <TextView
+            android:id="@+id/product_type_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/product_liquid_text"
+             android:textSize="@dimen/bottle_box_text_size"
+            
+            android:text="[Type]" />
+        
+        <Button 
+            android:id="@+id/product_button_ok"
+            android:layout_width="fill_parent"
+            android:layout_height="100sp"
+            android:layout_alignParentBottom="true"
+            android:onClick="onOKButtonClicked"
+            android:text="[OK]"/>
+        
+        <LinearLayout 
+            android:layout_width="fill_parent"
+    		android:layout_height="wrap_content"
+    		android:orientation="horizontal"
+    		android:layout_above="@id/product_button_ok">
+    		
+    		<Button
+            android:id="@+id/product_button_cancel"
+            android:layout_width="0sp"
+            android:layout_height="50sp"
+            android:layout_weight="1"
+             android:onClick="onCancelButtonClicked"
+            android:text="[Cancel]"/>
+        <Button
+            android:id="@+id/product_button_empty"
+            android:layout_width="0sp"
+            android:layout_height="50sp"
+            android:layout_weight="1"
+            android:onClick="onEmptyButtonClicked"
+            android:text="[Empty]"/>
+        
+        
+        </LinearLayout>
+            
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="0dp"
+        android:layout_height="fill_parent"
+        android:layout_weight="2" >
+
+        <Button
+            android:id="@+id/product_type_new_button"
+            android:layout_marginBottom="@dimen/product_button_margin_bottom"
+            android:layout_width="@dimen/product_list_width"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"
+            android:onClick="onAddNewTypeButtonClick"
+            android:text="@string/product_add_new_button" />
 
         <ListView
             android:id="@+id/product_types_list"
-            android:layout_width="130dp"
+            android:layout_width="@dimen/product_list_width"
             android:layout_height="wrap_content"
+            android:layout_below="@id/product_type_new_button"
             android:layout_alignParentRight="true" />
 
+        <Button
+            android:id="@+id/product_liquid_new_button"
+            android:layout_marginBottom="@dimen/product_button_margin_bottom"
+            android:layout_width="@dimen/product_list_width"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_toLeftOf="@id/product_type_new_button"
+            android:onClick="onAddNewLiquidButtonClicked"
+            android:text="@string/product_add_new_button" />
+
+        <ListView
+            android:id="@+id/product_liquids_list"
+            android:layout_width="@dimen/product_list_width"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/product_liquid_new_button"
+            android:layout_toLeftOf="@id/product_types_list" />
+
+        <Button
+            android:id="@+id/product_capacity_new_button"
+            android:layout_marginBottom="@dimen/product_button_margin_bottom"
+            android:layout_width="@dimen/product_list_width"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_toLeftOf="@id/product_liquid_new_button"
+            android:onClick="onAddNewProductButtonClicked"
+            android:text="@string/product_add_new_button" />
+
+        <ListView
+            android:id="@+id/product_capacities_list"
+            android:layout_width="@dimen/product_list_width"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/product_capacity_new_button"
+            android:layout_toLeftOf="@id/product_liquids_list" />
     </RelativeLayout>
 
 </LinearLayout>

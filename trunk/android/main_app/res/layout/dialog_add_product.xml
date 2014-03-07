@@ -3,21 +3,21 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
     <EditText
-        android:id="@+id/dialog_liquid_name"
+        android:id="@+id/dialog_product_capacity"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:layout_marginLeft="4dp"
         android:layout_marginRight="4dp"
         android:layout_marginBottom="4dp"
-        android:hint="@string/dialog_liquid_name" />
+        android:hint="@string/dialog_product_capacity" />
     <EditText
-        android:id="@+id/dialog_liquid_type"
+        android:id="@+id/dialog_product_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:layout_marginLeft="4dp"
         android:layout_marginRight="4dp"
         android:layout_marginBottom="16dp"
-        android:hint="@string/dialog_liquid_type"/>
+        android:hint="@string/dialog_product_name"/>
 </LinearLayout>

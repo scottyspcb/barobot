@@ -139,10 +139,10 @@ public class SelectLiquidDialogFragment extends DialogFragment {
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
 
-							TextView NameView = (TextView) dialogView.findViewById(R.id.liquid_name);
+							TextView NameView = (TextView) dialogView.findViewById(R.id.dialog_liquid_name);
 							String name = NameView.getText().toString();
 
-							TextView TypeView = (TextView) dialogView.findViewById(R.id.liquid_type);
+							TextView TypeView = (TextView) dialogView.findViewById(R.id.dialog_liquid_type);
 							String type = TypeView.getText().toString();
 
 							Liquid liquid = new Liquid(type, name, 0);
