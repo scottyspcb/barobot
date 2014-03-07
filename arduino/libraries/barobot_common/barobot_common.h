@@ -105,18 +105,22 @@
 		#define PIN_MAINBOARD_MISO MISO			// 11
 		#define PIN_MAINBOARD_MOSI MOSI			// 12
 
-		#define PIN_MAINBOARD_CURRENT_X		A7
-		#define PIN_MAINBOARD_TABLET_PWR	A6
+		#define PIN_MAINBOARD_FREE_PIN		A6
+		#define PIN_MAINBOARD_TABLET_PWR	A7
 	//	#define VPIN_TEMP_MB	8
 
+		// reset index = 4
 		#define PIN_PROGRAMMER_RESET_UPANEL_FRONT PPD2	//	02
+		// reset index = 3
 		#define PIN_PROGRAMMER_RESET_UPANEL_BACK PPB0	//	08
+		// reset index = 2
 		#define PIN_PROGRAMMER_RESET_CARRET PPD7			//	7	
+		// reset index = 1
 		#define PIN_PROGRAMMER_RESET_MASTER PPC3			// A3/D17
 
 		// PIN 10 czyli SlaveSelect (SS) musi byæ jako output gdziekolwiek aby SPI dzia³a³o
 		#define PIN_PROGRAMMER_LED_LIGHT   	PPD3			//	03
-		// 	Lights up if something goes wrong (use red if that makes sense)
+		// 	Lights up if something goes wrong
 		#define PIN_PROGRAMMER_LED_ERROR   	PPB2			//	10
 		// 	shows the programmer is running
 		#define PIN_PROGRAMMER_LED_ACTIVE	PPD6			//	06
@@ -195,8 +199,8 @@
 		#define INNER_CODE_CURRENT_Y 4
 		#define INNER_CODE_TEMP 5
 
-		#define PIN_CARRET_SERVO_Y 10
-		#define PIN_CARRET_SERVO_Z 9
+		#define PIN_CARRET_SERVO_Y PPB2		// 10
+		#define PIN_CARRET_SERVO_Z PPB1		// 9
 
 		#define PIN_PANEL_LED0_NUM	PPD5
 		#define PIN_PANEL_LED1_NUM	PPD4		
