@@ -29,15 +29,12 @@ import com.barobot.R;
 import com.barobot.constant.Constant;
 import com.barobot.hardware.virtualComponents;
 import com.barobot.utils.Arduino;
-import com.barobot.web.server.AJS;
-import com.barobot.web.server.htmlBrowser;
 
 // android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
 
 public class BarobotMain extends BarobotActivity {
     // Layout Viewsd
 	private static BarobotMain instance;
-	htmlBrowser wb =null;
 	public WebView webview	=null;
 	private FrameLayout webViewPlaceholder;
     @Override
@@ -58,7 +55,7 @@ public class BarobotMain extends BarobotActivity {
     	//	getWindow().requestFeature(Window.FEATURE_PROGRESS);
 	//	StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
 	//	StrictMode.setThreadPolicy(policy); 
-		initUI( savedInstanceState);  
+	//	initUI( savedInstanceState);  
 		int mUIFlag = View.SYSTEM_UI_FLAG_LOW_PROFILE | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
 	    getWindow().getDecorView().setSystemUiVisibility(mUIFlag);
     }
@@ -158,7 +155,7 @@ public class BarobotMain extends BarobotActivity {
 	    new AlertDialog.Builder(this)
 	        .setIcon(android.R.drawable.ic_dialog_alert)
 	        .setTitle("Koniec?")
-	        .setMessage("Czy na pewno zamknąć aplikację przerwać pracę robota?")
+	        .setMessage("Czy na pewno zamknąć aplikację i przerwać pracę robota?")
 	        .setPositiveButton("Yes", new DialogInterface.OnClickListener(){
 	        @Override
 	        public void onClick(DialogInterface dialog, int which) {
@@ -262,9 +259,9 @@ public class BarobotMain extends BarobotActivity {
 	        Toast.makeText(this, "portrait", Toast.LENGTH_SHORT).show();
 	    }
 		// Reinitialize the UI
-		initUI(null);
+	//	initUI(null);
 	}
-
+/*
 	@Override
 	  protected void onSaveInstanceState(Bundle outState){
 	    super.onSaveInstanceState(outState);
@@ -280,7 +277,7 @@ public class BarobotMain extends BarobotActivity {
 	    if(webview != null){
 	    	webview.restoreState(savedInstanceState);
 	    }
-	  }
+	  }*/
 	  public void showError(){  
 			runOnUiThread(new Runnable() {
 				@Override
