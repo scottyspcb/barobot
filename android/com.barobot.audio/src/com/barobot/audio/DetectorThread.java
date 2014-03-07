@@ -21,12 +21,13 @@ public class DetectorThread extends Thread{
 
 	private int frameByteSize = -1;
 	private int averageLength = -1;
-	int channel = 0;
+	int channels = 0;
 
 	public DetectorThread(Map<String, Integer> config, SampleRecorder recorder){
 		processor = new BpmProcessor( config );
-        this.frameByteSize = config.get("frameByteSize");
-        this.averageLength = config.get("averageLength");
+        this.frameByteSize	= config.get("frameByteSize");
+        this.averageLength	= config.get("averageLength");
+        this.channels		= config.get("channels");
 		this.recorder = recorder;
 	}
 
@@ -50,10 +51,6 @@ public class DetectorThread extends Thread{
 			Thread thisThread = Thread.currentThread();
 			while (_thread == thisThread) {
 				buffer = recorder.getFrameBytes();
-				
-				System.out.println("getFrameBytes: " +buffer.length );
-				
-				
 				this.detect( buffer );
 			}
 		} catch (Exception e) {
@@ -61,9 +58,11 @@ public class DetectorThread extends Thread{
 		}
 	}
 
+	float lastbpm = 0;
+	
 	private void detect(short[] buffer) {
-		   //	log.log(Level.INFO, "outputImpl: " +offs);
-	    //	   System.out.println("size99: " +len );
+//		log.log(Level.INFO, "outputImpl: " +offs);
+//	    System.out.println("size99: " +buffer.length );
 		int totalAbsValue = 0;
         short sample = 0; 
         float averageAbsValue = 0.0f;
@@ -71,7 +70,6 @@ public class DetectorThread extends Thread{
             sample = (short)((buffer[i]) | buffer[i + 1] << 8);
             totalAbsValue += Math.abs(sample);
         }
-        
         averageAbsValue = totalAbsValue /  frameByteSize / 2;
  //       System.out.println("size99: " +buffer.length );
         onSignalsDetectedListener.peek(averageAbsValue);
@@ -79,24 +77,20 @@ public class DetectorThread extends Thread{
         for(int i=0; i<len; i++){
             instantBuffer.offer(buffer[i]);
         }
-        while(instantBuffer.size()>averageLength*channel){
+    //    System.out.println("process now "+energy );
+        while(instantBuffer.size()>averageLength*channels){
             long energy = 0;
-            for(int i=0; i<averageLength*channel; i++){
+            for(int i=0; i<averageLength*channels; i++){
                 energy += Math.pow(instantBuffer.poll(), 2);
             }
-        //    System.out.println("process now " );
             processor.process( energy );
         }
-	    onSignalsDetectedListener.notify("bpm",processor.getBPM());
+        float newbpm = processor.getBPM(0);
+        if(lastbpm!= newbpm){
+        	onSignalsDetectedListener.notify("bpm", newbpm );	
+        	onSignalsDetectedListener.changeBPM(newbpm);
+        	lastbpm = newbpm;
+        }
 	//    log.log(Level.INFO, "calculated BPM: " + processor.getBPM());  
-	
 	}
 }
-
-
-/*
-		waveHeader = new WaveHeader();
-		waveHeader.setChannels(channel);
-		waveHeader.setBitsPerSample(bitsPerSample);
-		waveHeader.setSampleRate(audioRecord.getSampleRate());
-*/
