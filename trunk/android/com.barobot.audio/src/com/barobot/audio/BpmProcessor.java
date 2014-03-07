@@ -14,25 +14,30 @@ import com.barobot.audio.utils.SampleProcessor;
 public class BpmProcessor implements SampleProcessor {
     private int sampleRate = 44100;
     private int sampleSize =  2048;
-    private int bufferLength = 43;
+    private int bufferLength = 103;
     private Logger log = Logger.getLogger(BpmProcessor.class.getName());
 
     public BpmProcessor(Map<String, Integer> config) {
     	sampleRate = config.get("sampleRate");
     	sampleSize = config.get("sampleSize");
 	}
-    private long samples = 0;
-    private long beats = 0;
+    private float samples = 0;
+    private float beats = 0;
 	private Queue<Long> energyBuffer = new LinkedList<Long>();
     private static int beatThreshold = 3;
     private int beatTriggers = 0;
-    private List<Integer> bpmList = new LinkedList<Integer>();
+    private List<Float> bpmList = new LinkedList<Float>();
+    private List<Float> bpmList2 = new LinkedList<Float>();
     private double C = 1.3; //a * variance + b;
 	private OnSignalsDetectedListener onSignalsDetectedListener;
 
+    int maxBufferSize1 = 10;
+    int maxBufferSize2 = 4;
+	
     public void process(long sample ) {
     //	   log.log(Level.INFO, "process: " +sample);
         energyBuffer.offer(sample);
+      //  System.out.println("sample: " +sample);
         samples++;
      //   log.log(Level.INFO, "process: " +samples);
         if(energyBuffer.size() > bufferLength) {
@@ -43,42 +48,60 @@ public class BpmProcessor implements SampleProcessor {
             }
             averageEnergy /= bufferLength;
             boolean beat = sample > C * averageEnergy;
+        //    System.out.println("\tverageEnergy: " +averageEnergy);
        //     System.out.println("averageEnergy: " + ((long)averageEnergy) + " / "+ sample );
-
             onSignalsDetectedListener.notify( "energy", averageEnergy );
             if(beat) {
                 if(++beatTriggers == beatThreshold){
                     beats++;
                     onSignalsDetectedListener.notify( "beat", beats );
-                 }
+                }
             }else{
                 beatTriggers = 0;
             }
             if(samples > sampleRate * 5 / sampleSize) {
-                beats = 0;
+            	float bbb = getInstantBPM();
+                beats	= 0;
                 samples = 0;
-            	int bbb = getInstantBPM();
          //   	log.log(Level.INFO, "add getInstantBPM: " +bbb + " / " + ((beats * frequency)));
             //	System.out.println("\t\tbeat: " +sample);
             	onSignalsDetectedListener.notify( "local_bpm", bbb );
                 bpmList.add(bbb);
+                bpmList2.add(bbb);
             }
         }else{
         	log.log(Level.INFO, "empty process: "+ energyBuffer.size());
         }
     }
-    public int getInstantBPM() {
-        return (int)((beats * sampleRate * 60) / (samples * sampleSize));
+    public float getInstantBPM() {
+        return (float)((beats * sampleRate * 60) / (samples * sampleSize));
     }
-    public int getBPM() {
-        Collections.sort(bpmList);
-        int size = bpmList.size();
-    //    log.log(Level.INFO, "getBPMs: " +size);
-        if(size == 0 ){
-        	return 0;
-        }
-        int res = bpmList.get(size/ 2);
-     //   bpmList.clear();
+    public float getBPM( int local ) {
+    	float res = 0;
+    	if( local == 0 ){
+            Collections.sort(bpmList);
+            int size = bpmList.size();
+      //      log.log(Level.INFO, "getBPMs: " +size);
+            if(size == 0 ){
+            	return 0;
+            }
+            res = bpmList.get(size/ 2);		// IN HALF
+            if( bpmList.size() > maxBufferSize1 ){
+            //	bpmList.clear();
+            	bpmList = bpmList.subList( maxBufferSize1/3,  maxBufferSize1/2 );
+            }
+    	}else if( local == 1 ){
+            Collections.sort(bpmList2);
+            int size = bpmList2.size();
+            if(size == 0 ){
+            	return 0;
+            }
+            res = bpmList2.get(size / 2);		// IN HALF
+            if( bpmList2.size() > maxBufferSize2 ){
+            //	bpmList.clear();
+            	bpmList2 = bpmList2.subList( maxBufferSize2/2,  maxBufferSize2/2+1 );
+            }	
+    	}
         return res;
     }
 
