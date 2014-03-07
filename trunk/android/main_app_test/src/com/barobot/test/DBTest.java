@@ -3,9 +3,10 @@ package com.barobot.test;
 import java.util.List;
 
 import org.orman.mapper.Model;
-import org.orman.mapper.ModelQuery;
+
 
 import com.barobot.gui.database.BarobotDB;
+import com.barobot.gui.database.BarobotData;
 import com.barobot.gui.dataobjects.*;
 
 import android.test.AndroidTestCase;
@@ -18,7 +19,7 @@ public class DBTest extends AndroidTestCase {
 	{
 		if (!setupDone)
 		{
-			BarobotDB.StartOrmanMapping(this.getContext());
+			BarobotData.StartOrmanMapping(this.getContext());
 			setupDone = true;
 		}
 		
@@ -28,11 +29,11 @@ public class DBTest extends AndroidTestCase {
 	@Override
 	protected void tearDown() throws Exception
 	{
-		BarobotDB.ClearTable(Product.class);
-		BarobotDB.ClearTable(Liquid_t.class);
-		BarobotDB.ClearTable(Type.class);
-		BarobotDB.ClearTable(Category.class);
-		
+		BarobotData.ClearTable(Slot.class);
+		BarobotData.ClearTable(Product.class);
+		BarobotData.ClearTable(Liquid_t.class);
+		BarobotData.ClearTable(Type.class);
+		BarobotData.ClearTable(Category.class);
 	}
 
 	public void testLiquid() {
@@ -64,19 +65,44 @@ public class DBTest extends AndroidTestCase {
 	
 	public void testCategory()
 	{			
+		final String CATEGORY_NAME = "CatName";
+		final String CATEGORY_NAME_NEW = "NewCatName";
+		final String GENRE_JUICE = "Juice";
+		final String GENRE_SODA = "Soda";
+		
 		Category cat = new Category();
-		cat.name = "CategoryName1";
-		cat.genre = "Juice";
+		cat.name = CATEGORY_NAME;
+		cat.genre = GENRE_JUICE;
 		
 		cat.insert();
 		
 		List<Category> categories = Model.fetchAll(Category.class);
 		
 		assertEquals(1, categories.size());
+		
+		Category newCat = categories.get(0);
+		
+		assertEquals(CATEGORY_NAME, newCat.name);
+		assertEquals(GENRE_JUICE, newCat.genre);
+		
+		newCat.name = CATEGORY_NAME_NEW;
+		newCat.genre = GENRE_SODA;
+		newCat.update();
+		
+		categories = Model.fetchAll(Category.class);
+		
+		assertEquals(1, categories.size());
+		
+		Category newCat2 = categories.get(0);
+		
+		assertEquals(CATEGORY_NAME_NEW, newCat2.name);
+		assertEquals(GENRE_SODA, newCat2.genre);
 	}
 	
 	public void testType()
 	{
+		final String TYPE_NAME_NEW = "new type name";
+		
 		Category cat = new Category();
 		cat.name = "CategoryName1";
 		cat.genre = "Juice";
@@ -113,6 +139,17 @@ public class DBTest extends AndroidTestCase {
 		
 		assertEquals(2, newCat1.types.size());
 		assertEquals(1, newCat2.types.size());
+		
+		Type newT = BarobotData.GetType(t3.id);
+		
+		assertEquals(t3.name, newT.name);
+		
+		newT.name = TYPE_NAME_NEW;
+		
+		newT.update();
+		Type newT2 = BarobotData.GetType(t3.id);
+		
+		assertEquals(TYPE_NAME_NEW, newT2.name);
 	}
 
 	
@@ -187,7 +224,64 @@ public class DBTest extends AndroidTestCase {
 		assertEquals(liq2.id, productList.get(1).liquid.id);;
 	}
 	
+	public void testSlots()
+	{
+		SetupSlots();
+		
+		Category cat = new Category();
+		cat.name = "A";
+		cat.genre = "B";
+		cat.insert();
+		
+		Type t = new Type();
+		t.name ="T";
+		//t.category = cat;
+		t.insert();
+		
+		Liquid_t liq = new Liquid_t();
+		liq.name = "Vodka";
+		liq.type= t;
+		
+		
+		liq.insert();
+		
+		Product prod = new Product();
+		prod.liquid = liq;
+		prod.initNeeded = false;
+		prod.capacity = 500;
+		
+		prod.insert();
+		
+		BarobotData.UpdateSlot(3, prod);
+		
+		Slot slot1 = BarobotData.GetSlot(1);
+		assertEquals(1, slot1.position);
+		assertNull(slot1.product);
+		assertEquals("Empty", slot1.status);
+		
+		
+		Slot slot3 = BarobotData.GetSlot(3);
+		assertEquals(3, slot3.position);
+		assertEquals("Vodka", slot3.product.liquid.name);
+		assertEquals("OK", slot3.status);
+		
+	}
+	
 	// Helper classes
+	private void SetupSlots()
+	{
+	
+		for (int i= 1 ; i <= 12; i++)
+		{	
+			Slot slot = new Slot();
+			slot.position = i;
+			slot.status = "Empty";
+			//slot.product = null;
+			
+			slot.insert();	
+		}
+	}
+	
 	private Category getCategory(String suffix)
 	{
 		Category cat = new Category();
