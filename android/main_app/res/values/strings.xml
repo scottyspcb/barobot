@@ -99,6 +99,18 @@
     
     <!-- Product Setup -->
     <string name="action_product">ProductTest</string>
+    <string name="product_add_new_button">Add New</string>
+    
+    <!-- Dialog new Type -->
+    <string name="dialog_type_name">Liquid type</string>
+    
+    <!-- Dialog new Liquid -->
+    <string name="dialog_liquid_name">Liquid name (brand)</string>
+    <string name="dialog_liquid_type">Liquid type</string>
+    
+    <!-- Dialog new Product -->
+    <string name="dialog_product_capacity">Bottle capacity</string>
+    <string name="dialog_product_name">Product name</string>
 
     <!-- Recipe Setup -->
     <string name="add_recipe">Add new recipe</string>

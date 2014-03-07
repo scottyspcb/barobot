@@ -1,8 +1,11 @@
-package com.barobot.gui;
+package com.barobot.activity;
 
 import java.util.List;
 
-import com.barobot.activity.BarobotActivity;
+import com.barobot.gui.NoticeDialogListener;
+import com.barobot.gui.ProductActivity;
+import com.barobot.gui.SelectLiquidDialogFragment;
+import com.barobot.gui.NoticeDialogListener.ReturnStatus;
 import com.barobot.gui.dataobjects.Bottle;
 import com.barobot.gui.dataobjects.Engine;
 import com.barobot.gui.dataobjects.Liquid;
@@ -43,9 +46,9 @@ public class BottleSetupActivity extends BarobotActivity
 		ids[10] = R.id.bottle10;
 		ids[11] = R.id.bottle11;
 		ids[12] = R.id.bottle12;
-		UpdateBottlesState();
+		UpdateSlots();
 	}
-	private void UpdateBottlesState() {
+	private void UpdateSlots() {
 		
 		Engine engine = Engine.GetInstance(this);
 		List<Slot> bottles = engine.getSlots();
@@ -81,13 +84,19 @@ public class BottleSetupActivity extends BarobotActivity
 		if (position != 0)
 		{
 			bottleClicked = position;
-			virtualComponents.moveToBottle(position-1, true);
-			showLiquidSelector();
+			showProductSelectionActivity(position);
 		}
 		else
 		{
 			Log.w("BOTTLE_SETUP", "onBottleClicked called by an unknown view");
 		}
+	}
+	
+	void showProductSelectionActivity(int position)
+	{
+		Intent intent = new Intent(this, ProductActivity.class);
+		intent.putExtra(ProductActivity.SLOT_NUMBER, position);
+		startActivity(intent);
 	}
 
 	void showLiquidSelector() {
@@ -126,6 +135,14 @@ public class BottleSetupActivity extends BarobotActivity
 				break;
 				
 		}
-		UpdateBottlesState();
+		//UpdateBottlesState();
+	}
+	
+	@Override
+	protected void onResume() {
+		UpdateSlots();
+		super.onResume();
+		
+		
 	}
 }
