@@ -4,6 +4,7 @@ import com.barobot.R;
 import com.barobot.gui.BottleSetupActivity;
 import com.barobot.gui.MainActivity;
 import com.barobot.gui.OutsideComponentActivity;
+import com.barobot.gui.ProductActivity;
 import com.barobot.gui.RecipeSetupActivity;
 import com.barobot.hardware.virtualComponents;
 import com.barobot.utils.Arduino;
@@ -40,6 +41,9 @@ public class BarobotActivity extends Activity {
     		break;
     	case R.id.action_bottles:
     		serverIntent = new Intent(this, BottleSetupActivity.class);
+    		break;
+    	case R.id.action_product:
+    		serverIntent = new Intent(this, ProductActivity.class);
     		break;
     	case R.id.action_outside_components:
     		serverIntent = new Intent(this, OutsideComponentActivity.class);

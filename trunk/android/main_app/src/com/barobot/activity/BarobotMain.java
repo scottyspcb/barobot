@@ -169,7 +169,7 @@ public class BarobotMain extends BarobotActivity {
 	}
 
 	protected void initUI(Bundle savedInstanceState) {
-	    // Retrieve UI elements
+	    /*// Retrieve UI elements
 	    this.webViewPlaceholder = ((FrameLayout)findViewById(R.id.webViewPlaceholder));
 	    // Initialize the WebView if necessary
 	    if (this.webview == null) {
@@ -199,7 +199,7 @@ public class BarobotMain extends BarobotActivity {
 		   	    @Override
 			    public boolean shouldOverrideUrlLoading(WebView view, String url) {
 		   	    	return false;
-		   	    	/*
+		   	    	
 			        if (Uri.parse(url).getHost().equals("www.example.com")) {
 			            // This is my web site, so do not override; let my WebView load the page
 			            return false;
@@ -207,7 +207,7 @@ public class BarobotMain extends BarobotActivity {
 			        // Otherwise, the link is not for a page on my site, so launch another Activity that handles URLs
 			        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
 			        activity.startActivity(intent);
-			        return true;*/
+			        return true;
 			    }
 		   		});	    	
 
@@ -244,7 +244,7 @@ public class BarobotMain extends BarobotActivity {
 			 }	
 	    }
 	    this.webViewPlaceholder.addView(this.webview);// Attach the WebView to its placeholder
-	}
+*/	}
 	@Override
 	public void onConfigurationChanged(Configuration newConfig){
 		if (webview != null){

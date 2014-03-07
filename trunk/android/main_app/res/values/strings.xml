@@ -76,21 +76,20 @@
     <string name="title_activity_barobot_main">Barobot Main</string>
     <string name="title_activity_bottle_setup">Bottle Setup</string>
     <string name="title_activity_recipe_setup">Recipe Setup</string>
-    
+
     <!-- Panic -->
     <string name="action_panic">STOP!</string>
     <string name="panic_title">STOP!</string>
     <string name="panic_message">STOP barobot?</string>
     <string name="panic_button_ok">Yes, STOP</string>
     <string name="panic_button_cancel">No, back to drink</string>
-    
+
     <!-- Main -->
     <string name="glass_reminder_title">Reminder</string>
     <string name="glass_reminder_message1">Place glass into the tray</string>
     <string name="glass_reminder_message">Prosze upewnic sie ze na podstawce znajduje sie szklanka</string>
     <string name="glass_reminder_button_ok">OK</string>
     <string name="glass_reminder_button_cancel">Cancel</string>
-    
     <string name="pour_finished_title">Pouring finished</string>
     <string name="pour_finished_message">Take your tasty drink from the tray.</string>
     <string name="pour_finished_button">OK</string>
@@ -98,6 +97,8 @@
     <!-- Bottle Setup -->
     <string name="empty_bottle_string">Empty</string>
     
+    <!-- Product Setup -->
+    <string name="action_product">ProductTest</string>
 
     <!-- Recipe Setup -->
     <string name="add_recipe">Add new recipe</string>
@@ -107,5 +108,6 @@
     <string name="recipe_name">Recipe Name</string>
     <string name="recipe_description">Recipe Description</string>
     <string name="title_activity_outside_component">Outside Components</string>
-  	
+    <string name="title_activity_product">ProductActivity</string>
+
 </resources>
