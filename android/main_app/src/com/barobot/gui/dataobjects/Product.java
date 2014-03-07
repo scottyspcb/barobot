@@ -14,4 +14,21 @@ public class Product extends Model<Product>{
 	
 	@ManyToOne
 	public Liquid_t liquid;
+	
+	@Override
+	public String toString() {
+		String liquidName = "";
+		String typeName  = "";
+		
+		if (liquid != null)
+		{
+			liquidName = liquid.name;
+			
+			if (liquid.type != null)
+			{
+				typeName = liquid.type.name;
+			}
+		}
+		return String.valueOf(capacity) + " " + liquidName + " " + typeName;
+	}
 }

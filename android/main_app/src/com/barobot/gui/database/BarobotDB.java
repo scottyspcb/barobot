@@ -19,8 +19,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 public class BarobotDB {
-	public static final String DATABASE_NAME = "BarobotOrman.db";
-	public static final int DATABASE_SCHEMA_VERSION = 1;
+	
 	
 	private SQLiteDatabase db;
 	public BarobotDB(Context context)
@@ -29,28 +28,7 @@ public class BarobotDB {
 		db = dbHelper.getWritableDatabase();
 	}
 	
-	public static void StartOrmanMapping(Context context)
-	{
-		// Setting up ORMAN
-		Database omdb = new SQLiteAndroid(context, DATABASE_NAME, DATABASE_SCHEMA_VERSION);
-		
-		MappingSession.getConfiguration().setCreationPolicy(SchemaCreationPolicy.CREATE);
-		
-		MappingSession.registerEntity(Category.class);
-		MappingSession.registerEntity(Type.class);
-		MappingSession.registerEntity(Liquid_t.class);
-		MappingSession.registerEntity(Product.class);
-		MappingSession.registerEntity(Slot.class);
-		MappingSession.registerEntity(Ingredient_t.class);
-		MappingSession.registerEntity(Recipe_t.class);
-		MappingSession.registerDatabase(omdb);
-		MappingSession.start();
-	}
 	
-	public static void ClearTable (Class<?> cls)
-	{
-		Model.fetchQuery(ModelQuery.delete().from(cls).getQuery(),cls);
-	}
 	
 	//-----------------------
 	// Liquids table

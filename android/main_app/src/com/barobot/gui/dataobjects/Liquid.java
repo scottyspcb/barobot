@@ -13,6 +13,7 @@ public class Liquid {
 	public String toString() {
 		return name + " (" + type + ")";
 	}
+	
 	public Liquid (long id_, String type_, String name_, float voltage_)
 	{
 		id = id_;

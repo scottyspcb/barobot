@@ -7,12 +7,27 @@ import org.orman.mapper.annotation.PrimaryKey;
 
 @Entity
 public class Slot extends Model<Slot>{
-	@PrimaryKey
-	public long position;
+	public static final String STATUS_EMPTY = "Empty"; 
+	
+	@PrimaryKey(autoIncrement=true)
+	public long id;
+	public int position;
 	public String status;
 	public String dispenserType;
 	public int currentVolume;
 	
 	@ManyToOne
 	public Product product;
+	
+	public String GetName()
+	{
+		if (product != null)
+		{
+			return product.liquid.name;
+		}
+		else
+		{
+			return status;
+		}
+	}
 }

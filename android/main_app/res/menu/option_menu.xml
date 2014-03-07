@@ -11,6 +11,10 @@
     <item android:id="@+id/main_feature"
           android:title="@string/action_main"
           android:showAsAction="always" />
+    
+    <item android:id="@+id/action_product"
+          android:title="@string/action_product"
+          android:showAsAction="always" />
     <item
         android:id="@+id/action_bottles"
         android:title="@string/action_bottle_setup" 

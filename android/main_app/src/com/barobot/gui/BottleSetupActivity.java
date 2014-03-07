@@ -1,9 +1,12 @@
 package com.barobot.gui;
 
+import java.util.List;
+
 import com.barobot.activity.BarobotActivity;
 import com.barobot.gui.dataobjects.Bottle;
 import com.barobot.gui.dataobjects.Engine;
 import com.barobot.gui.dataobjects.Liquid;
+import com.barobot.gui.dataobjects.Slot;
 import com.barobot.hardware.virtualComponents;
 import com.barobot.R;
 import android.os.Bundle;
@@ -45,18 +48,20 @@ public class BottleSetupActivity extends BarobotActivity
 	private void UpdateBottlesState() {
 		
 		Engine engine = Engine.GetInstance(this);
-		
-		Bottle[] bottles = engine.getBottleSlots();
+		List<Slot> bottles = engine.getSlots();
 
-		Log.w("BOTTLE_SETUP length",""+bottles.length);
+		Log.w("BOTTLE_SETUP length",""+bottles.size());
 		
-		for (int i = 1; i<=12 ; i++)
+		for(Slot bottle : bottles)
 		{
-			TextView tview = (TextView) findViewById(ids[i]);
-			if (bottles[i] == null) {
-				tview.setText(R.string.empty_bottle_string);
-			} else {
-				tview.setText(bottles[i].toString());	
+			if (bottle.position > 0 && bottle.position <= ids.length )
+			{
+				TextView tview = (TextView) findViewById(ids[bottle.position]);
+				if (bottle.status == Slot.STATUS_EMPTY) {
+					tview.setText(R.string.empty_bottle_string);
+				} else {
+					tview.setText(bottle.GetName());	
+				}	
 			}
 		}
 	}

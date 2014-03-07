@@ -9,6 +9,8 @@ import android.database.Cursor;
 import com.barobot.constant.Constant;
 import com.barobot.gui.ArduinoListener;
 import com.barobot.gui.database.BarobotDB;
+import com.barobot.gui.database.BarobotData;
+import com.barobot.gui.database.BarobotDataStub;
 import com.barobot.gui.database.DataContract;
 import com.barobot.hardware.rpc_message;
 import com.barobot.hardware.virtualComponents;
@@ -44,31 +46,49 @@ public class Engine {
 			Liquids.coffeeLiquoir.id  = db.InsertLiquid(Liquids.coffeeLiquoir);
 		}
 	}
-	//bottle configuration
-	private Bottle[] bottleSet;
-	;
+	
 	private BarobotDB db;
 	
 	private Engine(Context context)
 	{
-		BarobotDB.StartOrmanMapping(context);
+		BarobotData.StartOrmanMapping(context);
 		db = new BarobotDB(context);
 		
 		//setupDatabase();
 		
-		refreshBottleSet();
+		BarobotDataStub.SetupDatabase();
 	}
 	
-	private void refreshBottleSet(){
-		bottleSet = db.GetSlots();
+	
+	
+	public List<Slot> getSlots()
+	{
+		return BarobotData.GetSlots();
 	}
 	
-	public Bottle[] getBottleSlots() {
-		refreshBottleSet();
-		return bottleSet;
+	public void updateSlot(int position, Product prod)
+	{
+		BarobotData.UpdateSlot(position, prod);
 	}
+	
+	public List<Product> getProducts()
+	{
+		return BarobotData.GetProduct();
+	}
+	
+	public List<Type> getTypes() {
+		return BarobotData.GetTypes();
+	}
+	
+	//---------------------------
+	// Obsolete old code
+	//
+	
 	
 	public void UpdateBottleSlot(int position, Bottle bottle){
+		
+		
+		
 		if (position <= 0 || position >12)
 			throw new IllegalArgumentException("Position of the bottle is outside the set boundaries");
 
@@ -77,7 +97,7 @@ public class Engine {
 		//}else{
 			db.UpdateSlot(position, bottle);
 	//	}
-		refreshBottleSet();
+
 	}
 	
 	public List<Recipe> getRecipes()
@@ -102,16 +122,16 @@ public class Engine {
 	
 	private boolean checkIngredients(List<Ingredient> ingredients)
 	{
-		for(Ingredient i : ingredients)
+		/*for(Ingredient i : ingredients)
 		{
 			Boolean ingridientFound = false;
 			for (int idx = 1; idx <= 12; idx++)
 			{
-				if (bottleSet[idx] == null)
+		//		if (bottleSet[idx] == null)
 				{
 					continue;
 				}
-				if (bottleSet[idx].getType().equalsIgnoreCase(i.getLiquid().type))
+			//	if (bottleSet[idx].getType().equalsIgnoreCase(i.getLiquid().type))
 				{
 					ingridientFound = true;
 					break;
@@ -136,7 +156,7 @@ public class Engine {
 				}
 			}
 		}
-		
+		*/
 		return true;
 	}
 	
@@ -147,7 +167,7 @@ public class Engine {
 	public String Sequence;
 	public Boolean Prepare(Recipe recipe, final ArduinoListener mListener)
 	{
-		List<Integer> bottleSequence = new ArrayList<Integer>();
+		/*List<Integer> bottleSequence = new ArrayList<Integer>();
 		List<Ingredient> ingridients = recipe.getIngridients();
 		for(Ingredient i : ingridients)
 		{
@@ -209,7 +229,7 @@ public class Engine {
 				return null;
 			}
 		} );
-		ar.send(q);
+		ar.send(q);*/
 		return true;
 	}
 	
@@ -307,4 +327,8 @@ public class Engine {
 		
 		return result;
 	}
+
+
+
+	
 }

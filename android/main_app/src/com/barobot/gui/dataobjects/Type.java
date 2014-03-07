@@ -18,4 +18,9 @@ public class Type extends Model<Type>{
 	
 	@OneToMany (toType = Liquid_t.class, onField = "type" )
 	public EntityList<Type, Liquid_t> liquids = new EntityList<Type, Liquid_t>(Type.class, Liquid_t.class, this);
+	
+	@Override
+	public String toString() {
+		return name;
+	}
 }
