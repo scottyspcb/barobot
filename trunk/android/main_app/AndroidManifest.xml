@@ -81,7 +81,7 @@
             android:label="@string/title_activity_bottle_setup" >
         </activity>
         <activity
-            android:name="com.barobot.gui.RecipeSetupActivity"
+            android:name="com.barobot.activity.RecipeSetupActivity"
             android:label="@string/title_activity_recipe_setup" >
         </activity>
         <activity
@@ -92,7 +92,7 @@
                 android:value="com.barobot.gui.BarobotActivity" />
         </activity>
         <activity
-            android:name="com.barobot.gui.ProductActivity"
+            android:name="com.barobot.activity.ProductActivity"
             android:label="@string/title_activity_product" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

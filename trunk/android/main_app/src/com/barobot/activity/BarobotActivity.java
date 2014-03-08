@@ -3,14 +3,10 @@ package com.barobot.activity;
 import com.barobot.R;
 import com.barobot.gui.MainActivity;
 import com.barobot.gui.OutsideComponentActivity;
-import com.barobot.gui.ProductActivity;
-import com.barobot.gui.RecipeSetupActivity;
 import com.barobot.hardware.virtualComponents;
 import com.barobot.utils.Arduino;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -108,4 +104,10 @@ public class BarobotActivity extends Activity {
     	TextView tView = (TextView) findViewById(id);
     	return tView.getText().toString();
     }
+    
+    protected void ButtonEnabled(boolean enabled, int id)
+	{
+		Button okButton = (Button) findViewById(id);
+		okButton.setEnabled(enabled);
+	}
 }

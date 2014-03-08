@@ -113,6 +113,8 @@
     <string name="dialog_product_name">Product name</string>
 
     <!-- Recipe Setup -->
+    <string name="recipe_add_new_button">Add New</string>
+    
     <string name="add_recipe">Add new recipe</string>
     <string name="remove_recipe">Remove recipe</string>
     <string name="add_ingredient">Add ingredient</string>

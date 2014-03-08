@@ -48,6 +48,11 @@ public class BarobotData {
 		Model.fetchQuery(ModelQuery.delete().from(cls).getQuery(),cls);
 	}
 	
+	public static List<Recipe_t> GetRecipes()
+	{
+		return Model.fetchAll(Recipe_t.class);
+	}
+	
 	public static List<Slot> GetSlots()
 	{
 		return Model.fetchAll(Slot.class);

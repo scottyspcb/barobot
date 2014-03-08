@@ -11,4 +11,9 @@ public class Recipe_t extends Model<Recipe_t>{
 	public String name;
 	public String Description;
 	public boolean favorite;
+	
+	@Override
+	public String toString() {
+		return name;
+	}
 }
