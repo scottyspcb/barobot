@@ -1,15 +1,11 @@
-package com.barobot.gui;
+package com.barobot.activity;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.barobot.R;
-import com.barobot.activity.BarobotActivity;
 import com.barobot.gui.dataobjects.Engine;
-import com.barobot.gui.dataobjects.Ingredient;
 import com.barobot.gui.dataobjects.Liquid_t;
 import com.barobot.gui.dataobjects.Product;
-import com.barobot.gui.dataobjects.Recipe;
 import com.barobot.gui.dataobjects.Type;
 import com.barobot.gui.utils.CapacityProductWrapper;
 
@@ -192,11 +188,7 @@ public class ProductActivity extends BarobotActivity {
 	}
 	
 	
-	private void ButtonEnabled(boolean enabled, int id)
-	{
-		Button okButton = (Button) findViewById(id);
-		okButton.setEnabled(enabled);
-	}
+	
 	
 	public void onAddNewTypeButtonClick (View view)
 	{

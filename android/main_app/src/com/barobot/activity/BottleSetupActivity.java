@@ -2,30 +2,17 @@ package com.barobot.activity;
 
 import java.util.List;
 
-import com.barobot.gui.NoticeDialogListener;
-import com.barobot.gui.ProductActivity;
-import com.barobot.gui.SelectLiquidDialogFragment;
-import com.barobot.gui.NoticeDialogListener.ReturnStatus;
-import com.barobot.gui.dataobjects.Bottle;
 import com.barobot.gui.dataobjects.Engine;
-import com.barobot.gui.dataobjects.Liquid;
 import com.barobot.gui.dataobjects.Slot;
-import com.barobot.hardware.virtualComponents;
 import com.barobot.R;
 import android.os.Bundle;
-import android.app.Activity;
-import android.app.DialogFragment;
-import android.app.Fragment;
-import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
 public class BottleSetupActivity extends BarobotActivity 
-									implements NoticeDialogListener {
+{
 	private int[] ids;
 	
 	@Override
@@ -83,7 +70,6 @@ public class BottleSetupActivity extends BarobotActivity
 		}
 		if (position != 0)
 		{
-			bottleClicked = position;
 			showProductSelectionActivity(position);
 		}
 		else
@@ -97,45 +83,6 @@ public class BottleSetupActivity extends BarobotActivity
 		Intent intent = new Intent(this, ProductActivity.class);
 		intent.putExtra(ProductActivity.SLOT_NUMBER, position);
 		startActivity(intent);
-	}
-
-	void showLiquidSelector() {
-	    
-		FragmentTransaction ft = getFragmentManager().beginTransaction();
-	    // Create and show the dialog.
-	    DialogFragment newFragment = SelectLiquidDialogFragment.newInstance();
-	    newFragment.show(ft, "dialog");
-	}
-
-	private int bottleClicked;
-	/*@Override
-	public void onDialogEnd(DialogFragment dialog) {
-		UpdateBottlesState();
-	}*/
-
-	@Override
-	public void onDialogEnd(DialogFragment dialog, ReturnStatus status, Liquid liquid, int volume) {
-		switch (status){
-			case OK:
-				Bottle bottle = null;
-				if (liquid != null)
-				{
-					bottle = new Bottle(liquid, 0);
-				}
-				Engine.GetInstance(this).UpdateBottleSlot(bottleClicked, bottle);
-
-				break;
-			case NewLiquid:
-				Engine engine = Engine.GetInstance(this);
-				liquid.id = engine.AddLiquid(liquid);
-				
-				engine.UpdateBottleSlot(bottleClicked, new Bottle(liquid, 0));
-				break;
-			case Canceled:
-				break;
-				
-		}
-		//UpdateBottlesState();
 	}
 	
 	@Override

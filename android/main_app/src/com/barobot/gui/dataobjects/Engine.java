@@ -117,6 +117,16 @@ public class Engine {
 		product.insert();	
 	}
 	
+	public List<Recipe_t> getRecipes()
+	{
+		return BarobotData.GetRecipes();
+	}
+	
+	public void addRecipe(Recipe_t recipe)
+	{
+		recipe.insert();
+	}
+	
 	//---------------------------
 	// Obsolete old code
 	//
@@ -137,10 +147,7 @@ public class Engine {
 
 	}
 	
-	public List<Recipe> getRecipes()
-	{
-		return db.getRecipes();
-	}
+	
 	
 	public List<Recipe> getPossibleRecipes()
 	{

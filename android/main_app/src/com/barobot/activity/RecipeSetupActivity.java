@@ -1,12 +1,17 @@
-package com.barobot.gui;
+package com.barobot.activity;
 
 import java.util.List;
 import java.util.ArrayList;
 
-import com.barobot.activity.BarobotActivity;
+import com.barobot.gui.NoticeDialogListener;
+import com.barobot.gui.SelectLiquidDialogFragment;
+import com.barobot.gui.NoticeDialogListener.ReturnStatus;
 import com.barobot.gui.dataobjects.Engine;
 import com.barobot.gui.dataobjects.Ingredient;
 import com.barobot.gui.dataobjects.Liquid;
+import com.barobot.gui.dataobjects.Liquid_t;
+import com.barobot.gui.dataobjects.Recipe_t;
+import com.barobot.gui.dataobjects.Type;
 import com.barobot.R;
 import com.barobot.gui.dataobjects.Recipe;
 
@@ -18,6 +23,7 @@ import android.content.DialogInterface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -28,31 +34,37 @@ public class RecipeSetupActivity extends BarobotActivity
 									implements OnItemSelectedListener,
 										NoticeDialogListener {
 
-	private Recipe currentRecipe;
+	private Type mCurrentType;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_recipe_setup);
-		Spinner spinner = (Spinner) findViewById(R.id.recipe_spinner);
+		/*Spinner spinner = (Spinner) findViewById(R.id.recipe_spinner);
 		
-		ArrayAdapter<Recipe> recipeAdapter = new ArrayAdapter<Recipe>(this, R.layout.spinner_layout);
+		ArrayAdapter<Recipe_t> recipeAdapter = new ArrayAdapter<Recipe_t>(this, R.layout.spinner_layout);
 		Engine engine = Engine.GetInstance(this);
 		recipeAdapter.addAll(engine.getRecipes());
 		
 		spinner.setAdapter(recipeAdapter);
 		spinner.setOnItemSelectedListener(this);
-
+*/
+		UpdateRecipes();
+		FillTypesList();
+		
+		ButtonEnabled(false, R.id.recipe_liquid_new_button);
 	}
+	
+	private Recipe_t currentRecipe;
 
 	@Override
 	public void onItemSelected(AdapterView<?> parent, View view, int position,
 			long id) {
-		currentRecipe = (Recipe) parent.getItemAtPosition(position);
+		currentRecipe = (Recipe_t) parent.getItemAtPosition(position);
 		SetupRecipeDetails();
 	}
 	
-	public void addRecipe(View view)
+	public void onAddRecipeButtonClicked (View view)
 	{
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
@@ -77,24 +89,23 @@ public class RecipeSetupActivity extends BarobotActivity
 					TextView descriptionView = (TextView) dialogView.findViewById(R.id.recipe_description);
 					String description = descriptionView.getText().toString();
 					
-					Recipe recipe = new Recipe(0, name, description, new ArrayList<Ingredient>());
+					Recipe_t recipe = new Recipe_t();
+					recipe.name = name;
+					recipe.Description = description;
 					
-					Engine engine = Engine.GetInstance(RecipeSetupActivity.this);
-					long recipeId = engine.AddRecipe(recipe);
+					Engine.GetInstance(RecipeSetupActivity.this).addRecipe(recipe);
 					
-					UpdateRecipes(recipeId);
-					
-					
+					UpdateRecipes(recipe.id);
 				}
 			});
 		AlertDialog ad = builder.create();
 		ad.show();
 	}
 	
-	public void removeRecipe(View view) {
+	/*public void removeRecipe(View view) {
 		Engine.GetInstance(this).RemoveRecipe(currentRecipe.getId());
 		UpdateRecipes();
-	}
+	}*/
 
 
 	@Override
@@ -105,7 +116,7 @@ public class RecipeSetupActivity extends BarobotActivity
 	
 	public void SetupRecipeDetails()
 	{
-		TextView descriptionText = (TextView) findViewById(R.id.recipe_description);
+		/*TextView descriptionText = (TextView) findViewById(R.id.recipe_description);
 		descriptionText.setText(currentRecipe.getDescription());
 
 
@@ -113,7 +124,7 @@ public class RecipeSetupActivity extends BarobotActivity
 
 		ArrayAdapter<Ingredient> mAdapter = new ArrayAdapter<Ingredient>(this, android.R.layout.simple_list_item_1, ing);
 		ListView listView = (ListView) findViewById(R.id.recipe_ingridient_list);
-		listView.setAdapter(mAdapter);
+		listView.setAdapter(mAdapter);*/
 	}
 	
 	public void UpdateRecipes() {
@@ -124,19 +135,18 @@ public class RecipeSetupActivity extends BarobotActivity
 	{
 		Spinner spinner = (Spinner) findViewById(R.id.recipe_spinner);
 		
-		ArrayAdapter<Recipe> recipeAdapter = new ArrayAdapter<Recipe>(this, R.layout.spinner_layout);
-		Engine engine = Engine.GetInstance(this);
+		ArrayAdapter<Recipe_t> recipeAdapter = new ArrayAdapter<Recipe_t>(this, R.layout.spinner_layout);
 		
-		ArrayList<Recipe> recipes = (ArrayList<Recipe>) engine.getRecipes();
-		recipeAdapter.addAll(engine.getRecipes());
+		List<Recipe_t> recipes =  Engine.GetInstance(this).getRecipes();
+		recipeAdapter.addAll(recipes);
 		
 		spinner.setAdapter(recipeAdapter);
 		spinner.setOnItemSelectedListener(this);
 		
 		if (selectedRecipeID != 0) {
-			for(Recipe rec: recipes)
+			for(Recipe_t rec: recipes)
 			{
-				if (rec.getId() == selectedRecipeID ) {
+				if (rec.id == selectedRecipeID ) {
 					spinner.setSelection(recipes.indexOf(rec));
 					break;
 				}
@@ -157,14 +167,14 @@ public class RecipeSetupActivity extends BarobotActivity
 	}
 	public void removeIngredients(View view)
 	{
-		Engine.GetInstance(this).RemoveIngredients(currentRecipe.getId());
-		UpdateRecipes(currentRecipe.getId());
+		/*Engine.GetInstance(this).RemoveIngredients(currentRecipe.getId());
+		UpdateRecipes(currentRecipe.getId());*/
 	}
 
 	@Override
 	public void onDialogEnd(DialogFragment dialog, ReturnStatus status,
 			Liquid liquid, int volume) {
-		switch(status)
+		/*switch(status)
 		{
 		case OK:
 			Engine.GetInstance(this).addIngredient(currentRecipe.getId(), new Ingredient(liquid, volume));
@@ -174,8 +184,65 @@ public class RecipeSetupActivity extends BarobotActivity
 			break;
 		case NewLiquid:
 			break;
-		}
+		}*/
 		
+	}
+	
+	// TODO: Wyodrębnić do oddzielnego fragmentu
+	
+	public void FillTypesList()
+	{
+		Engine engine = Engine.GetInstance(this);
+		
+		List<Type> types = engine.getTypes();
+
+		ArrayAdapter<Type> mAdapter = new ArrayAdapter<Type>(this, android.R.layout.simple_list_item_1, types);
+		ListView listView = (ListView) findViewById(R.id.recipe_types_list);
+		listView.setAdapter(mAdapter);
+		
+		listView.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position,
+					long id) {
+				
+				Type type = (Type) parent.getItemAtPosition(position);
+				SetCurrentType(type);
+				
+				FillLiquidList();
+			}
+			
+		});
+			
+	}
+	
+	public void FillLiquidList()
+	{
+		List<Liquid_t> liquids = mCurrentType.getLiquids();
+		
+		ArrayAdapter<Liquid_t> mAdapter = new ArrayAdapter<Liquid_t>(this, android.R.layout.simple_list_item_1, liquids);
+		ListView listView = (ListView) findViewById(R.id.recipe_liquids_list);
+		listView.setAdapter(mAdapter);
+		
+		listView.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position,
+					long id) {
+				
+				Liquid_t liquid = (Liquid_t) parent.getItemAtPosition(position); 
+				
+				//TODO: Implement adding of ingredients
+			}
+			
+		});
+		
+	}
+	
+	private void SetCurrentType(Type type)
+	{
+		mCurrentType = type;
+		ButtonEnabled(true, R.id.recipe_liquid_new_button);
 	}
 
 }
