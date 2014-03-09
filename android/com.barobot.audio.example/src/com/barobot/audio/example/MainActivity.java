@@ -6,10 +6,9 @@ import java.util.Map;
 import other.InputListener;
 import other.Wire;
 
-import com.barobot.audio.AndroidRecorderThread;
 import com.barobot.audio.DetectorThread;
-import com.barobot.audio.Serial_wire;
 import com.barobot.audio.utils.OnSignalsDetectedListener;
+import com.barobot.hardware.serial.Serial_wire;
 
 import com.barobot.parser.utils.Interval;
 import com.barobot.parser.Queue;
@@ -33,6 +32,7 @@ public class MainActivity extends Activity implements OnSignalsDetectedListener{
 	public long max			= 100;
 	public long min			= 10000;
 	Wire connection			= null;
+	private int mainboardSource;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -48,7 +48,7 @@ public class MainActivity extends Activity implements OnSignalsDetectedListener{
     	if(connection !=null){
     		connection.destroy();
     	}
-		
+
    	 	connection = new Serial_wire( this );
    	 	connection.setOnReceive( new InputListener(){
 			@Override
@@ -90,7 +90,7 @@ public class MainActivity extends Activity implements OnSignalsDetectedListener{
 	}
 
 
-	private int mainboardSource;
+	
 	public void init() {
 		ii1 = new Interval(new Runnable(){
 			public void run() {

@@ -1,4 +1,4 @@
-package com.barobot.audio;
+package com.barobot.hardware.serial;
 
 import java.io.IOException;
 import java.util.List;
@@ -7,7 +7,6 @@ import java.util.concurrent.Executors;
 
 import other.InputListener;
 import other.Wire;
-
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -21,7 +20,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
-import com.barobot.audio.example.MainActivity;
 import com.barobot.parser.interfaces.CanSend;
 import com.hoho.android.usbserial.driver.UsbSerialDriver;
 import com.hoho.android.usbserial.driver.UsbSerialPort;
@@ -41,21 +39,49 @@ public class Serial_wire implements CanSend, Wire {
 
     private int errors = 0;
 	private Activity view;
-    
+	private int baud = 115200;
+    InputListener listener;
+    private static SerialInputOutputManager.Listener mListener = null;
+
 	public Serial_wire(Activity mainActivity) {
 		super();
 		this.view = mainActivity;
+		if( mListener == null ){
+			mListener = new SerialInputOutputManager.Listener() {
+			    @Override
+			    public void onRunError(Exception e) {
+			        Log.d(getName(), "Runner stopped.");
+			        if(listener!=null){
+			        	listener.onRunError( e );
+			        }
+			        stopIoManager();
+			    }
+			    @Override
+			    public void onNewData( byte[] data) {
+			    	if(listener!=null){
+			    		listener.onNewData( data );
+			    	}
+			    }
+			};
+		}		
 	}
-
+    
+	public void setBaud( int baud ) {
+		this.baud = baud;
+		if(sPort!=null && sPort.isOpen() ){
+			try {
+				sPort.setParameters(baud, 8, UsbSerialPort.STOPBITS_1, UsbSerialPort.PARITY_NONE);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
 	public boolean init() {
 		mUsbManager = (UsbManager) view.getSystemService(Context.USB_SERVICE);
 		mHandler.sendEmptyMessage(MESSAGE_REFRESH);
 		return false;
 	}
 
-	public void setOnReceive(InputListener inputListener){
-		this.listener = inputListener;
-	}
 	public void setSearching(boolean active) {
 	}
 	@Override
@@ -244,7 +270,7 @@ public class Serial_wire implements CanSend, Wire {
     		mHandler.removeMessages(MESSAGE_REFRESH);
 			try {
 	            sPort.open(mUsbManager);
-	            sPort.setParameters(115200, 8, UsbSerialPort.STOPBITS_1, UsbSerialPort.PARITY_NONE);
+	            sPort.setParameters(baud, 8, UsbSerialPort.STOPBITS_1, UsbSerialPort.PARITY_NONE);
 	            onDeviceStateChange();
 	            Log.i("Serial", "opened 115200");
 	        } catch (IOException e) {
@@ -286,7 +312,6 @@ public class Serial_wire implements CanSend, Wire {
             }
         }
     };
-
     private void stopIoManager() {
         if (mSerialIoManager != null) {
             Log.i("serial", "Stopping io manager ..");
@@ -294,7 +319,6 @@ public class Serial_wire implements CanSend, Wire {
             mSerialIoManager = null;
         }
     }
-
     private void startIoManager() {
         if (sPort != null) {
             Log.i("serial", "Starting io manager ..");
@@ -302,22 +326,12 @@ public class Serial_wire implements CanSend, Wire {
             mExecutor.submit(mSerialIoManager);
         }
     }
-
-    InputListener listener;
-    private final SerialInputOutputManager.Listener mListener = new SerialInputOutputManager.Listener() {
-	    @Override
-	    public void onRunError(Exception e) {
-	        Log.d(getName(), "Runner stopped.");
-	        listener.onRunError( e );
-	        stopIoManager();
-	    }
-	    @Override
-	    public void onNewData( byte[] data) {
-			listener.onNewData( data );
-	    }
-	};
     private void onDeviceStateChange() {
         stopIoManager();
         startIoManager();
     }
+	@Override
+	public void setOnReceive(InputListener inputListener) {
+		this.listener = inputListener;
+	}
 }
