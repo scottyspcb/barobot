@@ -89,7 +89,6 @@ void i2c_test_slaves();
 void tri_state( byte pin_num, boolean pin_value );
 void paserDeriver( byte driver, String input );
 void stepperReady( long int pos );
-byte read_can_fill();
 void send_error( String input);
 void i2c_device_found( byte addr,byte type,byte ver );
 void parseInput( String input );

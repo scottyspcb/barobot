@@ -1,5 +1,7 @@
 package com.barobot.parser.output;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -8,9 +10,10 @@ import java.util.logging.Level;
 
 
 import com.barobot.parser.Queue;
+import com.barobot.parser.interfaces.CanSend;
+import com.barobot.parser.interfaces.Sender;
 import com.barobot.parser.message.AsyncMessage;
 import com.barobot.parser.utils.GlobalMatch;
-import com.barobot.parser.utils.Sender;
 
 public abstract class AsyncDevice {
 	static StringBuilder buffer = new StringBuilder();
@@ -98,9 +101,9 @@ public abstract class AsyncDevice {
 	}
 	public boolean send(String command) {
 		try {
+//			System.out.println("\t>>>Sending: " + command);
 			return this.sender.send(command);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return false;
@@ -108,6 +111,46 @@ public abstract class AsyncDevice {
 	public void registerSender(Sender sender) {
 		this.sender = sender;
 	}
+	public void registerSender(final CanSend connection) {
+		this.sender = new Sender(){
+			@Override
+			public boolean send(String command){
+				if( connection.isConnected() ){
+			//		synchronized(outputStream){
+					try {
+						return connection.send(command);
+					} catch (IOException e) {
+					  e.printStackTrace();
+					}
+				//	}
+				}else{
+					System.out.println("no connect");
+				//	throw new Exception("No connect");
+				}
+				return true;
+			}
+		};
+	}
+	public void registerSender(final OutputStream outputStream) {
+		this.sender = new Sender(){
+			public boolean send(String command) {
+				if(!connected){
+					System.out.println("no connect");
+					return false;
+				}
+		//		synchronized(outputStream){
+					try {
+						outputStream.write(command.getBytes());
+					} catch (IOException e) {
+					  e.printStackTrace();
+					}
+			//	}
+				return false;
+			}
+		};
+	}
+	
+
 	public void waitFor(AsyncMessage m, Queue queue) {
 	//	Parser.logger.log(Level.INFO, "waitFor: " +m.toString() );
 		synchronized (this) {

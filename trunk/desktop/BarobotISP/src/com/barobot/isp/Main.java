@@ -19,12 +19,12 @@ import org.smslib.helper.CommPortIdentifier;
 import com.barobot.parser.Operation;
 import com.barobot.parser.Parser;
 import com.barobot.parser.Queue;
+import com.barobot.parser.interfaces.HasLogger;
 import com.barobot.parser.output.AsyncDevice;
 import com.barobot.parser.output.Console;
 import com.barobot.parser.output.MainScreen;
 import com.barobot.parser.output.Mainboard;
 import com.barobot.parser.utils.CopyStream;
-import com.barobot.parser.utils.HasLogger;
 
 public class Main implements HasLogger{
 	public static Thread mt;

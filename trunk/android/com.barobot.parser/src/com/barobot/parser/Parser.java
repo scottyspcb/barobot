@@ -3,7 +3,7 @@ package com.barobot.parser;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.barobot.parser.utils.HasLogger;
+import com.barobot.parser.interfaces.HasLogger;
 
 public class Parser {
 	public static Logger logger = null;

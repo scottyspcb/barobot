@@ -37,10 +37,9 @@ public class Methods {
 	public static int METHOD_SETLED =	40;
 
 
-	public static int METHOD_GET_X_POS =	57;
-	
+	public static int METHOD_GET_X_POS =	57;	
 	public static String METHOD_SET_X_ACCELERATION =	"AX";
-	public static String METHOD_MASTER_CAN_FILL =	"CF";
+	public static String METHOD_MASTER_CAN_FILL =	"C";
 	public static String METHOD_SET_X_DISABLE =	"DX";
 	public static String METHOD_ERROR =	"E";
 	public static String METHOD_SET_X_ENABLE =	"EX";

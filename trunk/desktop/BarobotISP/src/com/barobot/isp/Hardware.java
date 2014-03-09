@@ -42,24 +42,8 @@ public class Hardware {
 		//	AsyncDevice c	= new Console();
 		//	AsyncDevice u	= new MainScreen();
 
-			mb.registerSender( new com.barobot.parser.utils.Sender(){
-				public boolean send(String command) {
-					if(!connected){
-						System.out.println("no connect");
-						return false;
-					}
-					System.out.println("\t>>>Sending: " + command);
-					command = command + "\n";
-			//		synchronized(outputStream){
-						try {
-							outputStream.write(command.getBytes());
-						} catch (IOException e) {
-						  e.printStackTrace();
-						}
-				//	}
-					return false;
-				}
-			} );
+			mb.registerSender( outputStream );
+
 			/*
 			mb.addGlobalRegex("^E.+", new GlobalMatch(){
 				public boolean run( String in ) {
