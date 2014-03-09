@@ -1,4 +1,4 @@
-package com.barobot.isp;
+package com.barobot.parser.utils;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -7,7 +7,7 @@ public class Interval {
 	private TimerTask scanTask;
 	private static Timer t = new Timer();
 	private Runnable rrr=null;
-
+	private boolean running;
 	public Interval( Runnable r){
 		this.rrr= r;
 	}
@@ -24,10 +24,15 @@ public class Interval {
 		}else{
 			t.schedule(scanTask, zaile);		// task, za ile pierwsze
 		}
+		running = true;
 	}
 	public void cancel(){
-		scanTask.cancel();	
+		running = false;
+		scanTask.cancel();
 	}
 	public void pause() { 
+	}
+	public boolean isRunning() {
+		return running;
 	}
 }

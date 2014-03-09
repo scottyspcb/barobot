@@ -119,7 +119,7 @@ public class Macro {
 
 	public void testBpm(final Hardware hw) {
 		int bpm = 235;
-		interval ii1 = new interval(new Runnable(){
+		Interval ii1 = new Interval(new Runnable(){
 			public void run() {
 				System.out.println("teraz");
 				for (I2C_Device u : Upanel.list){
@@ -127,7 +127,7 @@ public class Macro {
 				}
 			}});
 		ii1.run(100, 60 * 1000 /bpm );
-		interval ii2 = new interval(new Runnable(){
+		Interval ii2 = new Interval(new Runnable(){
 			public void run() {
 				System.out.println("teraz2");
 				for (I2C_Device u : Upanel.list){
@@ -140,6 +140,22 @@ public class Macro {
 		Main.wait(50000);
 		ii1.cancel();
 		ii2.cancel();
+		
+	}
+
+	public void resetuj(Hardware hw) {
+		Queue q = hw.getQueue();
+		hw.connect();
+		
+		
+		
+		q.add("RESET2", true );
+		Main.wait(50000);
+		q.add("Z1000,100", true );
+
+		
+
+		
 		
 	}
 }
