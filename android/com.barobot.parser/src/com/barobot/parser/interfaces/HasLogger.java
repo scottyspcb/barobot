@@ -1,4 +1,4 @@
-package com.barobot.parser.utils;
+package com.barobot.parser.interfaces;
 
 import java.util.logging.Logger;
 

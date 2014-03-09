@@ -113,8 +113,7 @@ void loop(){
 			DEBUGLN("-HELLO");
 	//		DEBUGLN(String(mil));
 
-
-			// check tablet exists
+			// check if tablet exists
 			uint16_t tablet = analogRead( PIN_MAINBOARD_TABLET_PWR );
 			if(tablet < 150 ){		// <1,5V = no tablet = disable drivers
 				out_buffer[0]  = METHOD_DRIVER_DISABLE;
@@ -123,6 +122,8 @@ void loop(){
 				DEBUGLN("-NO TABLET ");
 				stepperX.stop();
 				stepperX.disableOutputs();
+				byte ttt[4] = {METHOD_I2C_SLAVEMSG, my_address, METHOD_DRIVER_DISABLE, DRIVER_X };
+				send2android(ttt,4);
 				out_buffer[0]  = METHOD_DRIVER_DISABLE;
 				out_buffer[1]  = DRIVER_Z;
 				writeRegisters(I2C_ADR_CARRET, 2, true );
@@ -145,7 +146,7 @@ void loop(){
 	}
 	stepperX.run();
 }
-void proceed( byte length,volatile uint8_t buffer[7] ){ // zrozum co przyszlo po i2c
+void proceed( byte length,volatile uint8_t buffer[7] ){ // read I2C
 	if(prog_mode){
 		return;
 	}
@@ -158,10 +159,10 @@ void proceed( byte length,volatile uint8_t buffer[7] ){ // zrozum co przyszlo po
 			send2android( String(buffer[2]) );                // reason
 			send2android( "," );
 			long int dis = stepperX.distanceToGo();
-			if( dis < 0 && buffer[2] == HALL_GLOBAL_MIN ){    // moving down, min found
+			if( dis > 0 && buffer[2] == HALL_GLOBAL_MIN ){    // moving down, min found
 				stop_moving = true;
 				stepperX.stopNow();
-			}else if( dis > 0 && buffer[2] == HALL_GLOBAL_MAX){    // moving up, max found
+			}else if( dis < 0 && buffer[2] == HALL_GLOBAL_MAX){    // moving up, max found
 				stop_moving = true;
 				stepperX.stopNow();
 			}
@@ -186,12 +187,8 @@ void proceed( byte length,volatile uint8_t buffer[7] ){ // zrozum co przyszlo po
 		}
 
 	}else if(buffer[0] == METHOD_CAN_FILL ){
-		byte res = read_can_fill();          // if 0 = ready
-		if( res == 0 ){
-			sendln2android("RCAN_FILL" );
-		}else{                      // ERROR
-			sendln2android("ERCAN_FILL" );
-		}
+		out_buffer[0]  = METHOD_CAN_FILL;
+		writeRegisters(I2C_ADR_CARRET, 1, true );
 	}else if(buffer[0] == METHOD_I2C_SLAVEMSG || buffer[0] == METHOD_EXEC_ERROR ){      // wyslij do androida
 		send2android(buffer,length);
 		send2androidEnd();
@@ -338,7 +335,7 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 		defaultResult = false;
 		if( command2 == 'X' ){
 			stepperX.disableOutputs();
-			byte ttt[4] = {METHOD_I2C_SLAVEMSG, my_address, METHOD_DRIVER_ENABLE, DRIVER_X };
+			byte ttt[4] = {METHOD_I2C_SLAVEMSG, my_address, METHOD_DRIVER_DISABLE, DRIVER_X };
 			send2android(ttt,4);
 			send2androidEnd();
 		}else if( command2 == 'Y' ){
@@ -360,6 +357,10 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 	}else if( command == 'p' ) {    // p10,0,0   (prog next to)- programuj urzadzenie podlaczone resetem do urzadzenia o adresie 10
 		read_prog_settings(input, 2 );
 		defaultResult = false;
+		
+	}else if( command == 'C' ) {    // can fill // MASTER_CAN_FILL
+	
+		
 	}else if(  command == 'P' ) {    	// P1; P2,0; P3,1; P4,1;   - programuj urzadzenie 0x0A z predkosca 19200, PROG 0,0 - force first, PROG 0A,0 - wozek
 		read_prog_settings(input, 1 );
 		defaultResult = false;
@@ -385,7 +386,7 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 		sscanf(charBuf,"%i", &num );
 		boolean ret = reset_device_num(num, LOW);
 		if(ret){
-			delay(500);
+			delay(100);
 			reset_device_num(num, HIGH);
 		}else{  //error
 			defaultResult = false;
@@ -477,15 +478,6 @@ void send_error( String input){
 	sendln2android( input );
 }
 
-byte read_can_fill(){
-	out_buffer[0]  = METHOD_CAN_FILL;
-	byte error = writeRegisters(I2C_ADR_CARRET, 1, true );
-	if( error ){
-		return error;
-	}
-	readRegisters( I2C_ADR_CARRET, 1 );
-	return in_buffer[0]; // 0 jesli mozna, inna liczba jesli blad
-}
 
 void stepperReady( long int pos ){
 	//sendln2android("Rx" + String(pos));

@@ -169,7 +169,7 @@ public class Queue {
 
     public void sendNow( int devindex, String command ) throws IOException {	 // send without waiting
 	//	synchronized (this.lock) {
-			devs.get(devindex).send(command);
+			devs.get(devindex).send(command + "\n");
 	//	}
     }
 	public void unlock() {

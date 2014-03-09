@@ -3,8 +3,6 @@ package com.barobot.parser;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
-import java.util.logging.Logger;
-
 public class Operation {
 	String name = "";
 	private static Map<String, Object> params = new HashMap<String, Object>();

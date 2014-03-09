@@ -11,7 +11,8 @@ public class AsyncMessage extends History_item{
 	//public Runnable isRet		= null;
 	public long wait_until		= 0;
 	protected String unlocking_command	= "";
-	protected boolean blocking			= false;
+	protected boolean blocking	= false;
+	public boolean addSufix		= true;
 
 	public AsyncMessage( String cmd, boolean blocking, boolean dir ){
 		this.blocking		= blocking;
@@ -38,10 +39,9 @@ public class AsyncMessage extends History_item{
 		this.unlocking_command = withCommand;
 		blocking= false;
 	}
-
 	public void start(AsyncDevice dev) {
 		if(this.command != ""){
-			dev.send(command);
+			dev.send( addSufix() ? command + "\n" : command );
 		}else{
 			this.run(dev);
 		}
@@ -101,5 +101,8 @@ public class AsyncMessage extends History_item{
 
 	}
 	public void onException( String input ) {
+	}
+	public boolean addSufix() {			// add new line after command
+		return true;
 	}
 }
