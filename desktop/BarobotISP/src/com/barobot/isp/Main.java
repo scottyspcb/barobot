@@ -57,15 +57,15 @@ public class Main implements HasLogger{
 
 		IspSettings.safeMode = false;
 		IspSettings.setFuseBits = false;
-		IspSettings.verbose = 2;
+		IspSettings.verbose = 5;
 		IspSettings.setHex	= true;
 		IspSettings.force = false;
 
 	//	w.fast_close_test( hw );
 	//	w.prepareSlaveMB( hw );
 	//	w.prepareMB( hw );
+	//	w.prepareMBManualReset( hw );
 	//	w.fast_close_test( hw );
-
 	//	w.prepareCarret( hw );	
 	//	w.checkCarret( hw );
 	//	w.prepare1Upanel( hw, 4 );
@@ -77,26 +77,23 @@ public class Main implements HasLogger{
 
 		Macro mm  = new Macro();
 	//	mm.promo1( hw );
-
+	//	mm.resetuj( hw );
 	//	mm.testBpm( hw );
-		
-	//d	mm.promo_carret( hw );
-		
-		
+	//	mm.promo_carret( hw );
 	//	w.test( hw );
-	//	w.test_proc( hw );
-		
+	//	w.test_proc( hw );	
 	//	w.swing( hw, 3, 1000, 5000 );
-		
-		//w.test( hw, 4 );
+	//	w.test( hw, 4 );
 		
 	//	w.findOrder( hw, 3 );
 	//	w.showOrder();
 		
 	//	Wizard.wait(1000);
 	//	w.clearUpanel( hw );
-		w.illumination1( hw );
-	//	w.ilumination2( hw );
+	//	w.illumination1( hw );
+		
+		w.ilumination3( hw, "88", 255, "00", 2 );
+		
 	//	w.fadeButelka( hw, 4, 200 );
 
 	//	w.mrygaj( hw, 10 );

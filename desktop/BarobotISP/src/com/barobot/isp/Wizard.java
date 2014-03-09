@@ -445,24 +445,17 @@ public class Wizard {
 		Main.main.run(command, hw);
 	}
 
-	public void prepareMB(final Hardware hw) {
-		String command = "";
-		boolean fromempty = false;
+	public void prepareMB(final Hardware hw ) {
 		Queue q = hw.getQueue();
+		q.add("", false);
 		final I2C_Device current_dev	= new MainBoard();
 		final String upanel_code = current_dev.getHexFile();
-
 		hw.connect();
 		hw.send("");
-
-		if(!fromempty){
-			hw.send("PING", "PONG");
-		}
+		hw.send("PING", "PONG");
 		q.addWaitThread(Main.mt);
 		if(IspSettings.setHex){	
-			if(!fromempty){
-				current_dev.isp(hw);	// mam 2 sek na wystartwanie
-			}
+			current_dev.isp(hw);	// mam 2 sek na wystartwanie
 			q.add( new AsyncMessage( true ){		// na koncu zamknij
 				public void run(AsyncDevice dev) {
 					command = current_dev.uploadCode(hw, upanel_code);
@@ -471,6 +464,16 @@ public class Wizard {
 			});
 		}
 		q.addWaitThread(Main.mt);
+	}
+
+	public void prepareMBManualReset(final Hardware hw) {
+		String command					= "";
+		final I2C_Device current_dev	= new MainBoard();
+		final String upanel_code		= current_dev.getHexFile();
+		if(IspSettings.setHex){	
+			command = current_dev.uploadCode(hw, upanel_code);
+			Main.main.run(command, hw);
+		}
 	}
 
 	public void prepareSlaveMB(final Hardware hw) {
@@ -492,7 +495,6 @@ public class Wizard {
 			hw.closeOnReady();
 			q.addWaitThread(Main.main);
 		}
-
 		if(IspSettings.setHex){	
 			hw.connect();
 			hw.send("PING", "PONG");
@@ -536,10 +538,12 @@ public class Wizard {
 		}
 		System.out.println("koniec illumination1");
 	}
+
 	public void ilumination2(Hardware hw) {
 		System.out.println("upaneli: " + Upanel.list.size());
 		hw.connect();
 
+		
 		for (int b = 0;b<4;b++){
 			int i=0;
 			for (;i<245;i+=5){
@@ -565,6 +569,32 @@ public class Wizard {
 		*/
 		System.out.println("koniec ilumination2");
 	}
+
+	public void ilumination3(Hardware hw, String led, int value, String led2, int value2 ) {
+		System.out.println("upaneli: " + Upanel.list.size());
+		hw.connect();
+	
+		Carret current_dev	= new Carret();
+		current_dev.setLed( hw, "ff", 0 );
+		current_dev.setLed( hw, led2, value2 );
+		for (I2C_Device u2 : Upanel.list){
+			u2.setLed( hw, "ff", 0 );
+			u2.setLed( hw, led, value );
+		}
+
+	
+		/*
+		for (I2C_Device u : Upanel.list){
+			u.setLed( hw, "ff", 255);
+		}
+
+		for (I2C_Device u2 : Upanel.list){
+			u2.setLed( hw, "ff", 0 );	// zgas
+		}
+		*/
+		System.out.println("koniec ilumination2");
+	}
+
 	public void zapal(Hardware hw) {
 		hw.connect();
 		for (I2C_Device u2 : Upanel.list){
