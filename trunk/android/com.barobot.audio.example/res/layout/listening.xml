@@ -1,0 +1,147 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+ 
+    <TextView
+        android:id="@+id/tempo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:text="TextView" />
+
+    <ProgressBar
+        android:id="@+id/progressBar1"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/curcur"
+        android:layout_marginTop="80dp"
+        android:max="32000"
+        android:progress="10" />
+
+    <TextView
+        android:id="@+id/ferqrge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/curcur"
+        android:layout_alignBottom="@+id/curcur"
+        android:layout_alignParentRight="true"
+        android:text="Current" />
+
+    <TextView
+        android:id="@+id/textView5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/normnorm"
+        android:layout_alignParentRight="true"
+        android:text="norm:" />
+
+    <TextView
+        android:id="@+id/maxxx"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/tempo"
+        android:text="TextView" />
+
+    <TextView
+        android:id="@+id/curcur"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/maxxx"
+        android:text="TextView" />
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/tempo"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:text="Tempo" />
+
+    <TextView
+        android:id="@+id/textView6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/maxxx"
+        android:layout_alignBottom="@+id/maxxx"
+        android:layout_alignParentRight="true"
+        android:text="Max" />
+
+    <TextView
+        android:id="@+id/normnorm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/curcur"
+        android:text="TextView" />
+
+    <TextView
+        android:id="@+id/divdiv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/normnorm"
+        android:text="TextView" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/divdiv"
+        android:layout_alignBottom="@+id/divdiv"
+        android:layout_alignParentRight="true"
+        android:text="div" />
+
+    <TextView
+        android:id="@+id/localbpm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/divdiv"
+        android:text="TextView" />
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/localbpm"
+        android:layout_alignBottom="@+id/localbpm"
+        android:layout_alignParentRight="true"
+        android:text="local BPM" />
+
+    <TextView
+        android:id="@+id/beats"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/localbpm"
+        android:text="TextView" />
+
+    <TextView
+        android:id="@+id/textView7"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/beats"
+        android:layout_alignBottom="@+id/beats"
+        android:layout_alignParentRight="true"
+        android:text="Beats" />
+
+    <ProgressBar
+        android:id="@+id/ProgressBar01"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/progressBar1"
+        android:max="32000"
+        android:progress="10" />
+
+</RelativeLayout>

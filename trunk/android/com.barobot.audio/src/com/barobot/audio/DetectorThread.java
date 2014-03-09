@@ -8,7 +8,6 @@ import java.util.logging.Logger;
 
 import com.barobot.audio.utils.OnSignalsDetectedListener;
 import com.barobot.audio.utils.SampleRecorder;
-//import com.musicg.wave.WaveHeader;
 
 public class DetectorThread extends Thread{
 	private SampleRecorder recorder;

@@ -134,13 +134,10 @@ public abstract class AsyncDevice {
 	public void registerSender(final OutputStream outputStream) {
 		this.sender = new Sender(){
 			public boolean send(String command) {
-				if(!connected){
-					System.out.println("no connect");
-					return false;
-				}
 		//		synchronized(outputStream){
 					try {
 						outputStream.write(command.getBytes());
+						return true;
 					} catch (IOException e) {
 					  e.printStackTrace();
 					}
@@ -149,7 +146,6 @@ public abstract class AsyncDevice {
 			}
 		};
 	}
-	
 
 	public void waitFor(AsyncMessage m, Queue queue) {
 	//	Parser.logger.log(Level.INFO, "waitFor: " +m.toString() );
