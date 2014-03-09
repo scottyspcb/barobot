@@ -1,4 +1,4 @@
-package com.barobot.audio;
+package com.barobot.audio.example;
 
 import java.util.Map;
 

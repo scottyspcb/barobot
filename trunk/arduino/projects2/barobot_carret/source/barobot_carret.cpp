@@ -62,14 +62,11 @@ byteint analog_sum;
 // koniec oscyloskop
 
 boolean diddd = false;
-
 unsigned long milisAnalog = 0;
 unsigned long mil = 0;
 unsigned long milis1000 = 0;
 unsigned long milis2000 = 0;
-byte iii = 0;
-
-
+byte iii		 = 0;
 boolean is_up    = false;
 boolean neutral  = false;
 boolean is_down  = false;
@@ -84,22 +81,38 @@ boolean send_lmax  = false;
 #define ENDSTOP_DIFF  100
 #define WAVING  6
 
-int16_t typical_neutral = 511;
-int16_t threshold       = 30;
-int16_t enstrop_max     = 511;
-int16_t enstrop_min     = 511;
-int16_t historyx[HISTORY_LENGTH]  = {typical_neutral,typical_neutral,typical_neutral,typical_neutral,typical_neutral,typical_neutral,typical_neutral};
+int16_t threshold     		= 30;
+
+#define ENSTROP_MAX_BELOW    400
+#define ENSTROP_MIN_OVER     680
+#define NOT_CONNECTED_BELOW	 200
+#define NOISE_LEVEL	 10
+
+#define TYPICAL_NEUTRAL_OVER  525
+#define TYPICAL_NEUTRAL_BELOW 530
+#define TYPICAL_NEUTRAL_START  ((TYPICAL_NEUTRAL_OVER + TYPICAL_NEUTRAL_BELOW)/2)
+
+#define TYPICAL_NEUTRAL_OVER  525
+
+#define LOCAL_MAX_OVER  544
+#define LOCAL_MIN_BELOW  513
+
+
+int16_t typical_neutral  		= TYPICAL_NEUTRAL_START;
+
+int16_t historyx[HISTORY_LENGTH]  = {TYPICAL_NEUTRAL_START,TYPICAL_NEUTRAL_START,TYPICAL_NEUTRAL_START,TYPICAL_NEUTRAL_START,TYPICAL_NEUTRAL_START,TYPICAL_NEUTRAL_START,TYPICAL_NEUTRAL_START};
 int8_t historyx_index  = 0;
 int16_t cc = 0;
 
 #define SEPARATOR_CHAR '\n'
 #define TRIES  10
+
 String serial0Buffer = "";
 boolean Console0Complete = false;   // This will be set to true once we have a full string
 
 unsigned long int when_next = 0;
 unsigned long int sending = 0b10000000;
-unsigned long int time = 1000;
+unsigned long int time = 5000;
 unsigned long int sum = 0;
 unsigned long int repeat = 0;
 
@@ -189,8 +202,8 @@ void loop() {
       when_next = mil + time;
   }
 	//sendanalog();
-	//readHall();
-  
+	readHall();
+
 	//Serial.println("tutaj5");
 	update_servo( INNER_SERVOY );
 
@@ -212,7 +225,6 @@ void loop() {
 }
 
 void sendanalog() {           // synchroniczne
-
 	if( analog_reading &&  mil > milisAnalog ){
 		milisAnalog = mil+ analog_speed;
 		if( analog_pos == analog_repeat ){			// wysllij
@@ -240,6 +252,21 @@ void sendanalog() {           // synchroniczne
 		analog_sum.i	+= ADCvalue[0][analog_num];
 	}
 }
+
+int16_t readValue() {           // synchroniczne
+/*
+	cli();;
+	int16_t val1 = ADCvalue[0][INNER_CODE_HALL_X];      // copy, look at the ISR
+	val1 += ADCvalue[1][INNER_CODE_HALL_X];
+	val1 += ADCvalue[2][INNER_CODE_HALL_X];
+	val1 += ADCvalue[3][INNER_CODE_HALL_X];
+	sei();
+	val1 = val1 >>2;    // div 4
+	return val1;
+	*/
+	return analogRead(PIN_CARRET_HALL_X );
+}
+
 void readHall() {           // synchroniczne
 	// analizuj
 	// todo do znalezienia: local max, local min, global min, global max,
@@ -247,28 +274,10 @@ void readHall() {           // synchroniczne
 	//      DW(_pwm_channels[7].pin, false);
 	cc++;
 	if(cc>200){
-		cli();
-		int16_t val1 = ADCvalue[0][INNER_CODE_HALL_X];      // copy, look at the ISR
-		val1 += ADCvalue[1][INNER_CODE_HALL_X];
-		val1 += ADCvalue[2][INNER_CODE_HALL_X];
-		val1 += ADCvalue[3][INNER_CODE_HALL_X];
-		sei();
-		val1 = val1 >>2;    // div 4
-		 
-		int16_t val = abs( val1 - typical_neutral );
-		if( val1 > typical_neutral ){
-			is_up    = true;
-			is_down  = false;
-			send_min = false;
-			send_lmin = false;
-		}else if( val1 < typical_neutral ){
-			is_up    = false;
-			is_down  = true;
-			send_max = false;
-			send_lmax = false;
-		}
-
 		cc   = 0;
+		int16_t val1 = readValue();
+		int16_t val = abs( val1 - typical_neutral );
+
 		byte in = historyx_index + HISTORY_LENGTH;
 		int16_t b1 = historyx[ (in -1 )% HISTORY_LENGTH ];       // -1      +
 		int16_t b2 = historyx[ (in -2 )% HISTORY_LENGTH ];       // -2      +
@@ -277,20 +286,91 @@ void readHall() {           // synchroniczne
 		int16_t b5 = historyx[ (in -5 )% HISTORY_LENGTH ];       // -3      -
 		int16_t b6 = historyx[ (in -7 )% HISTORY_LENGTH ];       // -3      -
 		int16_t b7 = historyx[ (in -3 )% HISTORY_LENGTH ];       // -3      -
+		
 		int16_t diff = val1 - b4 + b2 - b5  + b1 - b6+ b3 - b7 ;    // dodatnie gdy rosnie, ujemne gdy maleje
-		 
-		if( val > 10 ){    // warte analizy
-			DW(_pwm_channels[3].pin, true);
-			if( val > ENDSTOP_DIFF ){    // warte analizy
-				DW(_pwm_channels[0].pin, true);      // red glass led
-			}else{
-				DW(_pwm_channels[0].pin, false);     // red glass led
+
+
+		if( val > NOISE_LEVEL ){    // czy warte analizy
+			DW(LED_TOP_RED, true);
+
+			if( val1 > typical_neutral ){
+				is_up    = true;
+				is_down  = false;
+			}else if( val1 < typical_neutral ){
+				is_up    = false;
+				is_down  = true;
 			}
+
+			if( diff < WAVING && diff > -WAVING ){		// noise
+			} else if( diff  < 0 ){          			// rising
+				is_falling  = false;
+				is_rising  	= true;
+			} else if( diff > 0 ){						// falling
+				is_falling  = true;
+				is_rising  	= false;
+			}
+
+
+			if( moving_x == DRIVER_DIR_STOP){			// stop = error
+
+			}else if( moving_x == DRIVER_DIR_FORWARD ){
+				if( is_falling && val < ENSTROP_MAX_BELOW ){
+					if(!send_max){
+						send_x_pos( HALL_GLOBAL_MAX, is_up, is_down );
+						send_max = true;
+					}
+				}
+			}else if( moving_x == DRIVER_DIR_BACKWARD ){
+				if( is_rising && val > ENSTROP_MIN_OVER ){
+					if(!send_min){
+						send_x_pos( HALL_GLOBAL_MIN, is_up, is_down );
+						send_min = true;
+					}
+				}
+			}
+
+
+
+			if( is_rising && val > ENSTROP_MIN_OVER ){							// enstop min = X MAX
+				DW(LED_TOP_GREEN, false);
+				
+
+			}else if( is_falling && val < ENSTROP_MAX_BELOW ){					// enstop max = X MIN
+	
+			}else{													// local max / min ? 
+				DW(LED_TOP_GREEN, true);
+				if( val > LOCAL_MAX_OVER ){
+					send_x_pos( HALL_LOCAL_MAX, is_up, is_down );
+
+				}else if( val < LOCAL_MIN_BELOW ){
+					send_x_pos( HALL_LOCAL_MAX, is_up, is_down );
+				}
+			}
+		}else{
+			DW(LED_TOP_RED, true);      // red glass led
+			if( diff < WAVING && diff > -WAVING ){		// noise
+				send_min = false;
+				send_lmin = false;
+				is_up    = false;
+				is_down  = false;
+			}
+		}
+		
+
+	//	DW(PIN_PANEL_LED1_NUM,  !digitalRead(PIN_PANEL_LED1_NUM));    // Toggle led. Read from register (not from pin)
+/*
+		if(moving_x != DRIVER_DIR_STOP){			// licz srednia
+			val1
+			DW(PIN_PANEL_LED1_NUM,  true );
+		}else{
+		}*/		
+
+		if( val > 10 ){    // warte analizy
 			if( diff < WAVING && diff > -WAVING ){
-				// odczyt pływa
+				// odczyt plywa
 			}else if( diff  < 0 ){          //rising
 				if(is_rising ){
-					if( val > 100 ){
+					if( val > 50 ){
 						if(is_up){
 							if(!send_max){
 								send_x_pos( HALL_GLOBAL_MAX, is_up, is_down );
@@ -319,7 +399,7 @@ void readHall() {           // synchroniczne
 				DW(_pwm_channels[7].pin, false);
 			}else if( diff > 0 ){
 				if(is_falling ){    // send message
-					if( val > 100 ){    // diff > 100
+					if( val > 50 ){    // diff > 100
 						if(is_up){
 							DEBUG( "+++" );
 						}else if(is_down){
@@ -348,13 +428,14 @@ void readHall() {           // synchroniczne
 			}
 			//    DEBUG( "\tin: " );
 			//    DEBUG( String(in) );
+		/*	
 			if( mil > milis1000 ){    // debug, mrygaj co 1 sek
 				DEBUG( "\td: " );
 				DEBUG(  String(diff) );
 				 
 				DEBUG( "\tval: " );
 				DEBUG( String(val1) );
-/*
+
                 DEBUG( "\tbA: " );
                 DEBUG( String( b1) );
   
@@ -363,20 +444,18 @@ void readHall() {           // synchroniczne
   
                 DEBUG( "\tbC: " );
                 DEBUG( String( b3) );
-				*/
+				
 				//     DEBUG( String(val + b1) );
 				//    DEBUG( "\t" );
 				//    DEBUGLN( String(b2 + b3) );
 				 
 				DEBUGLN();
 				milis1000 = mil + 150;
-			}
+			}*/
 			//   DW(_pwm_channels[6].pin, false);
 			//   DW(_pwm_channels[7].pin, false);
-			 
 		}else{
-			DW(_pwm_channels[0].pin, false);
-			DW(_pwm_channels[3].pin, false);
+
 		}
 		historyx[historyx_index]  = val1;
 		historyx_index            = (historyx_index+1)%HISTORY_LENGTH;
@@ -535,14 +614,14 @@ void reload_servo( byte index ){      // in interrupt
 
 void timer(){  // in interrupt
 	ticks++;
-	DW(PIN_PANEL_LED1_NUM,  !digitalRead(PIN_PANEL_LED1_NUM));    // Toggle led. Read from register (not from pin)
+	//DW(PIN_PANEL_LED1_NUM,  !digitalRead(PIN_PANEL_LED1_NUM));    // Toggle led. Read from register (not from pin)
 	reload_servo(INNER_SERVOY);
 	reload_servo(INNER_SERVOZ);
 }
 
 // czytaj komendy i2c
 void proceed( volatile byte buffer[5] ){
-	Serial.println("proceed1");
+	//Serial.println("proceed1");
 /*
 	DEBUG("-proceed - ");
 	DEBUG(String(buffer[0]));
@@ -618,6 +697,16 @@ void proceed( volatile byte buffer[5] ){
 		servos[index].pos_changed = false;
 
 		byte ttt[4] = {METHOD_I2C_SLAVEMSG, my_address, METHOD_DRIVER_DISABLE, index };
+		send(ttt,4);
+
+
+	}else if( command == METHOD_CAN_FILL ){
+		boolean value = false;
+		
+
+	
+	
+		byte ttt[4] = {METHOD_I2C_SLAVEMSG, my_address, METHOD_CAN_FILL, value ? 1 : 0 };
 		send(ttt,4);
 
 	}else if( command == METHOD_SETLEDS ){
