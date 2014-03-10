@@ -3,7 +3,6 @@ package com.barobot.i2c;
 import com.barobot.isp.Hardware;
 import com.barobot.isp.IspSettings;
 import com.barobot.isp.Main;
-import com.barobot.parser.Parser;
 import com.barobot.parser.Queue;
 import com.barobot.parser.message.AsyncMessage;
 import com.barobot.parser.utils.Decoder;

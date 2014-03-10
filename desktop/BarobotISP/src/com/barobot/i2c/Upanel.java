@@ -6,7 +6,6 @@ import java.util.List;
 import com.barobot.isp.Hardware;
 import com.barobot.isp.IspSettings;
 import com.barobot.isp.Main;
-import com.barobot.parser.Parser;
 import com.barobot.parser.Queue;
 import com.barobot.parser.message.AsyncMessage;
 import com.barobot.parser.utils.Decoder;
@@ -143,7 +142,6 @@ public class Upanel extends I2C_Device_Imp {
 		return myaddress;
 	}
 
-	
 	public String getHexFile() {
 		return IspSettings.upHexPath;
 	}

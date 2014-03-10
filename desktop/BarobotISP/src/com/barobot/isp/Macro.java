@@ -4,6 +4,7 @@ import com.barobot.i2c.Carret;
 import com.barobot.i2c.I2C_Device;
 import com.barobot.i2c.Upanel;
 import com.barobot.parser.Queue;
+import com.barobot.parser.utils.Interval;
 
 public class Macro {
 	public void promo1(Hardware hw) {

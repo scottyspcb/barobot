@@ -1,6 +1,7 @@
-package other;
+package com.barobot.hardware.serial;
 
 import java.io.IOException;
+
 
 
 import com.barobot.parser.interfaces.CanSend;

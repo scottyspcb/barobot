@@ -13,7 +13,6 @@ import com.barobot.hardware.virtualComponents;
 import com.barobot.utils.ArduinoQueue;
 import com.barobot.utils.Arduino;
 import com.barobot.utils.RunnableWithData;
-import com.barobot.web.server.AJS;
 
 import android.app.Dialog;
 import android.content.Context;

@@ -3,12 +3,14 @@ package com.barobot.audio.example;
 import java.util.HashMap;
 import java.util.Map;
 
-import other.InputListener;
-import other.Wire;
 
 import com.barobot.audio.DetectorThread;
 import com.barobot.audio.utils.OnSignalsDetectedListener;
+
+import com.barobot.hardware.serial.InputListener;
+
 import com.barobot.hardware.serial.Serial_wire;
+import com.barobot.hardware.serial.Wire;
 
 import com.barobot.parser.utils.Interval;
 import com.barobot.parser.Queue;
@@ -85,11 +87,8 @@ public class MainActivity extends Activity implements OnSignalsDetectedListener{
 		mb.registerSender( connection );		
 		mainboardSource = Queue.registerSource( mb );
 		Queue.enableDevice( mainboardSource );
-
     	init();
 	}
-
-
 	
 	public void init() {
 		ii1 = new Interval(new Runnable(){
@@ -208,11 +207,9 @@ public class MainActivity extends Activity implements OnSignalsDetectedListener{
 			}
 		});
 	}
-
 	public void readInput(String message) {
 		 q.read( mainboardSource, message );
 	}
-	
 	public void notify(String string, final double value) {
 		if(string.equals("energy")){
 			runOnUiThread(new Runnable() {

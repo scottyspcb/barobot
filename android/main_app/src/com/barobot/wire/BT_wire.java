@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import com.barobot.activity.BarobotMain;
 import com.barobot.constant.Constant;
-import com.barobot.hardware.virtualComponents;
 import com.barobot.utils.Arduino;
 import com.barobot.utils.input_parser;
 
@@ -13,7 +12,6 @@ import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
-import android.widget.Toast;
 
 public class BT_wire implements Wire {
     private BluetoothAdapter mBluetoothAdapter = null;    // Local Bluetooth adapter

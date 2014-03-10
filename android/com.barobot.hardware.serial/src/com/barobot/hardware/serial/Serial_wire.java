@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import other.InputListener;
-import other.Wire;
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
