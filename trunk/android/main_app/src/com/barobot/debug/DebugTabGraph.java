@@ -6,7 +6,7 @@ import com.barobot.constant.Constant;
 import com.barobot.hardware.virtualComponents;
 import com.barobot.utils.Arduino;
 import com.barobot.utils.RunnableWithData;
-import com.barobot.web.server.AJS;
+import com.barobot.utils.AJS;
 
 import android.app.Activity;
 import android.app.Dialog;

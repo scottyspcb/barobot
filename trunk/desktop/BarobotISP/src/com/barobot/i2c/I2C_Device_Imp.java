@@ -4,12 +4,6 @@ import java.io.File;
 
 import com.barobot.isp.Hardware;
 import com.barobot.isp.IspSettings;
-import com.barobot.isp.Main;
-import com.barobot.parser.Parser;
-import com.barobot.parser.Queue;
-import com.barobot.parser.message.AsyncMessage;
-import com.barobot.parser.output.AsyncDevice;
-import com.barobot.parser.utils.Decoder;
 
 public abstract class I2C_Device_Imp implements I2C_Device{
 	protected int myaddress = 0;
@@ -112,15 +106,10 @@ public abstract class I2C_Device_Imp implements I2C_Device{
 		//System.out.println("isFresh " + b );
 		return b;
 	}
-
 	public void reset(Hardware hw ) {
 		hw.send( this.getReset() );
 	}
 	public void isp(Hardware hw) {
 		hw.send( this.getIsp() );
-
-	}
-	
-	
-	
+	}	
 }

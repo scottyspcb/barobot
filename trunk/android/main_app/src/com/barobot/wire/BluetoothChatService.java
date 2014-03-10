@@ -10,9 +10,6 @@ import java.lang.reflect.Method;
 import com.barobot.activity.BarobotMain;
 import com.barobot.constant.Constant;
 import com.barobot.hardware.virtualComponents;
-import com.barobot.utils.RunnableWithData;
-import com.barobot.utils.input_parser;
-
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;

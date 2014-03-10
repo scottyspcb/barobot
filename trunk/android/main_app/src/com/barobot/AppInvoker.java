@@ -1,6 +1,5 @@
 package com.barobot;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -12,7 +11,6 @@ import com.barobot.hardware.virtualComponents;
 import com.barobot.utils.Arduino;
 import com.barobot.utils.CameraManager;
 import com.barobot.utils.interval;
-import com.barobot.web.server.SofaServer;
 
 public class AppInvoker {
     private static AppInvoker ins;
@@ -23,13 +21,14 @@ public class AppInvoker {
 	public void onStart() {	
     }
 	public void onCreate() {
+		/*
 		SofaServer ss = SofaServer.getInstance();
 		ss.setBaseContext(main.getBaseContext());
         try {
 			ss.start();
 		} catch (IOException e1) {
 			e1.printStackTrace();
-		}
+		}*/
 		I2C.init();
 
 		cm = new CameraManager( main );
@@ -60,7 +59,7 @@ public class AppInvoker {
 	}
 	public void onDestroy() {
 		Constant.log("MAINWINDOW", "onDestroy");
-    	SofaServer.getInstance().stop();
+    //	SofaServer.getInstance().stop();
     	Arduino.getInstance().destroy();
     	DeviceSet.clear();
     	Iterator<interval> it = this.inters.iterator();

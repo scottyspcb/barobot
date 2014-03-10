@@ -15,7 +15,7 @@ import android.widget.Toast;
 public class PhotoHandler implements PictureCallback {
 
   private final Context context;
-private int suffix;
+  private int suffix;
   public PhotoHandler(Context context, int suffix ) {
     this.context = context;
     this.suffix = suffix;
