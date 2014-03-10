@@ -8,5 +8,5 @@
 	<classpathentry exported="true" kind="lib" path="libs/chunk_template_2.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/nanohttpd-2.0.5-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/nanohttpd-webserver-2.0.5-jar-with-dependencies.jar"/>
-	<classpathentry kind="output" path="bin"/>
+	<classpathentry kind="output" path="bin/classes"/>
 </classpath>
