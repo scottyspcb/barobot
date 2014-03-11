@@ -115,6 +115,8 @@ public class Serial_wire implements Wire {
 	        	if(sPort.isOpen()){
 	        		sPort.close();
 	        	}
+		    } catch (IllegalStateException e2) {
+		    	Log.e("Serial", "IllegalStateException", e2);
 		    } catch (IOException e) {
 		    }
 		    sPort = null;
@@ -156,13 +158,11 @@ public class Serial_wire implements Wire {
         if(mPermissionReceiver_activated){
             mPermissionReceiver_activated = false;
             try {
-            	this.view.unregisterReceiver(
-						mPermissionReceiver);
+            	this.view.unregisterReceiver(mPermissionReceiver);
 			} catch (IllegalArgumentException e) {
 				e.printStackTrace();
 			}
         }
-      
 	}
 
 	@Override
@@ -279,7 +279,6 @@ public class Serial_wire implements Wire {
     	}
         Log.i("Serial", "Type:"+ sPort.getClass().getSimpleName());
 	}
- 
     private final Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {

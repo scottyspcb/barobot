@@ -123,7 +123,6 @@ public class Serial_wire implements CanSend, Wire {
 		}
 		stateHasChanged();
 	}
-
 	@Override
 	public boolean send(String message) {
         if(mSerialIoManager!=null){
@@ -148,6 +147,8 @@ public class Serial_wire implements CanSend, Wire {
 		return false;
 	}
 	public void stateHasChanged() {
+
+
 	}
 
 	@Override
