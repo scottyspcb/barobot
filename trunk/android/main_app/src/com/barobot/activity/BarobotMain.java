@@ -29,6 +29,7 @@ import com.barobot.R;
 import com.barobot.constant.Constant;
 import com.barobot.hardware.virtualComponents;
 import com.barobot.utils.Arduino;
+import com.barobot.wire.BluetoothChatService;
 
 // android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
 
@@ -114,11 +115,11 @@ public class BarobotMain extends BarobotActivity {
         	Constant.log(Constant.TAG, "REQUEST_CONNECT_DEVICE_SECURE");
             // When BTListActivity returns with a device to connect
             if (resultCode == Activity.RESULT_OK) {
-                String address = data.getExtras().getString(Constant.EXTRA_DEVICE_ADDRESS);           // Get the device MAC address
+                String address = data.getExtras().getString(BluetoothChatService.EXTRA_DEVICE_ADDRESS);           // Get the device MAC address
                 Arduino.getInstance().connectId(address);
             }
             break;
-        case Constant.REQUEST_ENABLE_BT:
+        case BluetoothChatService.REQUEST_ENABLE_BT:
         	Constant.log(Constant.TAG, "REQUEST_ENABLE_BT " + resultCode);
             // When the request to enable Bluetooth returns
             if (resultCode == Activity.RESULT_OK) {

@@ -1,22 +1,22 @@
 package com.barobot.wire;
 
-import java.io.IOException;
-
 import com.barobot.activity.BarobotMain;
-import com.barobot.constant.Constant;
+import com.barobot.hardware.virtualComponents;
 import com.barobot.utils.Arduino;
-import com.barobot.utils.input_parser;
 
-import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 
 public class BT_wire implements Wire {
+    private static final String TAG = BT_wire.class.getSimpleName();
     private BluetoothAdapter mBluetoothAdapter = null;    // Local Bluetooth adapter
     private BluetoothChatService mChatService = null;    // Member object for the chat services
- 
+	private int baud = 115200;
+	private InputListener listener;
+
 	@Override
 	public boolean init() {
 		mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -26,7 +26,7 @@ public class BT_wire implements Wire {
     		}
 			mChatService = new BluetoothChatService( this.mHandler );
 		} catch (Exception e) {
-			Constant.log(Constant.TAG, "BluetoothChatService fatal error", e);
+			Log.e(TAG, "BluetoothChatService fatal error", e);
 			return false;
 		}
 
@@ -43,7 +43,7 @@ public class BT_wire implements Wire {
 	        	return true;
 	        }else{	// jesli wymaga wlaczenia to wroci do onActivityResult
 	            Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-	            barobotMain.startActivityForResult(enableIntent, Constant.REQUEST_ENABLE_BT);
+	            barobotMain.startActivityForResult(enableIntent, BluetoothChatService.REQUEST_ENABLE_BT);
 	            return true;
 	        }
         }
@@ -51,30 +51,23 @@ public class BT_wire implements Wire {
 	}
 	@Override
 	public void setup() {
-		Constant.log(Constant.TAG, "setupBT()");
+		Log.d(TAG, "setupBT()");
         // Initialize the BluetoothChatService to perform bluetooth connections
-	}
-	@Override
-	public void setOnReceive() {
-		// TODO Auto-generated method stub
-
 	}
 	@Override
 	public void setSearching(boolean active) {
 		// TODO Auto-generated method stub
 	}
-	@Override
-	public void pause() {
-	}
+
 	@Override
 	public void resume() {
-        Constant.log(Constant.TAG, "+ ON RESUME +");
+        Log.d(TAG, "+ ON RESUME +");
         // Performing this check in onResume() covers the case in which BT was
         // not enabled during onStart(), so we were paused to enable it...
         // onResume() will be called when ACTION_REQUEST_ENABLE activity returns.
         if (mChatService != null) {
             // Only if the state is STATE_NONE, do we know that we haven't started already
-            if (mChatService.getState() == Constant.STATE_NONE) {
+            if (mChatService.getState() == BluetoothChatService.STATE_NONE) {
               // Start the Bluetooth chat services
               mChatService.start();
             }
@@ -90,7 +83,7 @@ public class BT_wire implements Wire {
 	}
 
 	@Override
-	public void disconnect() {
+	public void close() {
         if (mChatService != null){ 
         	mChatService.stop();
         }
@@ -98,8 +91,8 @@ public class BT_wire implements Wire {
 
 	@Override
 	public boolean send(String command) {
-		if(mChatService!=null && mChatService.getState() == Constant.STATE_CONNECTED ) {
-			Constant.log(Constant.TAG, "BT SEND:["+ command +"]");
+		if(mChatService!=null && mChatService.getState() == BluetoothChatService.STATE_CONNECTED ) {
+			Log.d(TAG, "BT SEND:["+ command +"]");
 			String command2 = command;
         	byte[] send = command2.getBytes();
         	mChatService.write(send);
@@ -135,22 +128,19 @@ public class BT_wire implements Wire {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
-            case Constant.MESSAGE_READ:
+            case BluetoothChatService.MESSAGE_READ:
                // byte[] readBuf = (byte[]) msg.obj;
                 // construct a string from the valid bytes in the buffer
               //  String readMessage = new String(readBuf, 0, msg.arg1);
-                //Log.i(Constant.TAG, "buffer read " + readMessage );
+                //Log.i(TAG, "buffer read " + readMessage );
             	String input = (String) msg.obj;
-				input_parser.readInput(input);
-				try {
-					Arduino.getInstance().low_send(input);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+		    	if(listener!=null){
+		    		listener.onNewData( input.getBytes() );
+		    	}
                 break;
-        	case Constant.MESSAGE_STATE_CHANGE:
+        	case BluetoothChatService.MESSAGE_STATE_CHANGE:
                 switch (msg.arg1) {
-                case Constant.STATE_CONNECTED:
+                case BluetoothChatService.STATE_CONNECTED:
                 	stateHasChanged();
                     break;
             //    case Constant.STATE_CONNECTING:
@@ -159,18 +149,16 @@ public class BT_wire implements Wire {
                 }
                 break;
 
-            case Constant.MESSAGE_DEVICE_NAME:
+            case BluetoothChatService.MESSAGE_DEVICE_NAME:
                 // save the connected device's name
-            	mChatService.bt_connected_device = msg.getData().getString(Constant.DEVICE_NAME);
+            	mChatService.bt_connected_device = msg.getData().getString(BluetoothChatService.DEVICE_NAME);
             	mChatService.is_connected		= true;
+            	String address =  msg.getData().getString(BluetoothChatService.DEVICE_ADDRESS);
+                virtualComponents.set( "LAST_BT_DEVICE", address );    	// remember device ID
+
            // 	Activity act1 = BarobotMain.getInstance();
            // 	Toast.makeText( act1.getApplicationContext(), "Connected to "
            //                    + mChatService.bt_connected_device, Toast.LENGTH_SHORT).show();
-                break;
-            case Constant.MESSAGE_TOAST:
-            	Activity act2 = BarobotMain.getInstance();
-             //   Toast.makeText( act2.getApplicationContext(), msg.getData().getString(Constant.TOAST),
-             //                  Toast.LENGTH_SHORT).show();
                 break;
             }
         }
@@ -204,5 +192,14 @@ public class BT_wire implements Wire {
 	@Override
 	public String getName() {
 		return "Bluetooth";
+	}
+	@Override
+	public void setOnReceive(InputListener inputListener) {
+		this.listener = inputListener;
+	}
+	@Override
+	public void setBaud( int baud ) {
+		this.baud = baud;
+		
 	}
 }

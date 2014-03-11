@@ -7,6 +7,7 @@ import com.barobot.R.layout;
 import com.barobot.R.string;
 import com.barobot.constant.Constant;
 import com.barobot.utils.Arduino;
+import com.barobot.wire.BluetoothChatService;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
@@ -142,7 +143,7 @@ public class BTListActivity extends Activity {
 
             // Create the result Intent and include the MAC address
             Intent intent = new Intent();
-            intent.putExtra(Constant.EXTRA_DEVICE_ADDRESS, address);
+            intent.putExtra(BluetoothChatService.EXTRA_DEVICE_ADDRESS, address);
 
             // Set result and finish this Activity
             setResult(Activity.RESULT_OK, intent);

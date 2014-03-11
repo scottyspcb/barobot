@@ -4,9 +4,6 @@ import java.util.List;
 import java.util.Map;
 
 import android.util.Log;
-import com.barobot.hardware.virtualComponents;
-import com.barobot.utils.Arduino;
-import com.barobot.utils.ArduinoQueue;
 import com.barobot.web.server.SofaServer;
 import com.x5.template.Chunk;
 import com.x5.template.Theme;

@@ -14,8 +14,10 @@ import com.barobot.activity.BarobotMain;
 import com.barobot.constant.Constant;
 import com.barobot.hardware.rpc_message;
 import com.barobot.wire.BT_wire;
+import com.barobot.wire.InputListener;
 import com.barobot.wire.Serial_wire;
 import com.barobot.wire.Wire;
+import com.hoho.android.usbserial.util.SerialInputOutputManager;
 
 public class Arduino{
 	private final Object lock = new Object();
@@ -43,27 +45,60 @@ public class Arduino{
 	}
 	public void onStart(final BarobotMain barobotMain) {
 		if( connection != null ){
-			connection.disconnect();
-			connection.destroy();
+			connection.close();
 			connection = null;
 		}
 		if( connection == null ){
 			final Wire lowHardware[]=  new Wire[1];  
-			lowHardware[0]	= new Serial_wire();
-			prepareConnection(lowHardware[0],  new BT_wire());
+			InputListener mListener = new InputListener() {
+			    @Override
+			    public void onRunError(Exception e) {
+			    }
+			    @Override
+			    public void onNewData(final byte[] data) {
+			    	String message = new String(data);
+			  //  	Log.e("Serial input", message);
+			    	input_parser.readInput(message);
+			    }
+			};
 
+			lowHardware[0]	= new Serial_wire(BarobotMain.getInstance());
+			lowHardware[0].setOnReceive(mListener);
+			
+
+			InputListener btl = new InputListener() {
+			    @Override
+			    public void onRunError(Exception e) {
+			    }
+			    @Override
+			    public void onNewData(final byte[] data) {
+			    	String message = new String(data);
+			  //  	Log.e("Serial input", message);
+			    	input_parser.readInput(message);
+					try {
+						Arduino.getInstance().low_send(message);
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+			    }
+			};
+
+			Wire bt = new BT_wire();
+			bt.setOnReceive(btl);	
+			
+			prepareConnection(lowHardware[0],  new BT_wire());
 		}
 	}
 
     protected void prepareConnection(Wire lowHardware, Wire lowHardware2) {
     	if(connection !=null){
-    		connection.destroy();
+    		connection.close();
     	}
    	 	connection = lowHardware;
     	connection.init();
        	
     	if(debugConnection !=null){
-    		debugConnection.destroy();
+    		debugConnection.close();
     	}
     	
     	/*
@@ -231,7 +266,7 @@ public class Arduino{
 	            	addToList( "--------------------------------------------------", true );
 				}
 			} catch (IOException e)	{
-				Constant.log(Constant.TAG, "problem sending TCP message",e);
+				Log.w(Constant.TAG, "problem sending message",e);
 			}
 		}
 	}

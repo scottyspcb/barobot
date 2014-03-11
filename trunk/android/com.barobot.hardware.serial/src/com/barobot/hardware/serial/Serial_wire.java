@@ -63,7 +63,6 @@ public class Serial_wire implements CanSend, Wire {
 			};
 		}		
 	}
-    
 	public void setBaud( int baud ) {
 		this.baud = baud;
 		if(sPort!=null && sPort.isOpen() ){
@@ -75,24 +74,12 @@ public class Serial_wire implements CanSend, Wire {
 		}
 	}
 	public boolean init() {
-		mUsbManager = (UsbManager) view.getSystemService(Context.USB_SERVICE);
+		mUsbManager = (UsbManager) this.view.getSystemService(Context.USB_SERVICE);
 		mHandler.sendEmptyMessage(MESSAGE_REFRESH);
 		return false;
 	}
 
 	public void setSearching(boolean active) {
-	}
-	@Override
-	public void pause() {
-		mHandler.removeMessages(MESSAGE_REFRESH);
-		stopIoManager();
-		if (sPort != null) {
-		    try {
-		        sPort.close();
-		    } catch (IOException e) {
-		    }
-		    sPort = null;
-		}
 	}
 
 	@Override
@@ -101,7 +88,7 @@ public class Serial_wire implements CanSend, Wire {
         if (sPort == null) {
         	Log.e("Serial","No serial device.");
         	mHandler.sendEmptyMessage(MESSAGE_REFRESH);
-        } else {
+        } else if(!sPort.isOpen()){
         	Log.e("Serial", "Resumed openPort");
         	openPort();
         }
@@ -120,9 +107,23 @@ public class Serial_wire implements CanSend, Wire {
 		return true;
 	}
 	@Override
-	public void disconnect() {
+	public void close() {
+		mHandler.removeMessages(MESSAGE_REFRESH);
+		stopIoManager();
+		if (sPort != null) {
+		    try {
+		    	if(sPort.isOpen()){
+	        		sPort.close();
+	        	}
+		    } catch (IllegalStateException e2) {
+		    	Log.e("Serial", "IllegalStateException", e2);
+		    } catch (IOException e) {
+		    }
+		    sPort = null;
+		}
 		stateHasChanged();
 	}
+
 	@Override
 	public boolean send(String message) {
         if(mSerialIoManager!=null){
@@ -147,22 +148,20 @@ public class Serial_wire implements CanSend, Wire {
 		return false;
 	}
 	public void stateHasChanged() {
-
 	}
 
 	@Override
 	public void destroy() {
+		close();
 		mHandler.removeMessages(MESSAGE_REFRESH);
         if(mPermissionReceiver_activated){
             mPermissionReceiver_activated = false;
             try {
-            	 view.unregisterReceiver(
-						mPermissionReceiver);
+            	 this.view.unregisterReceiver(mPermissionReceiver);
 			} catch (IllegalArgumentException e) {
 				e.printStackTrace();
 			}
         }
-        closePort();
 	}
 
 	@Override
@@ -242,7 +241,7 @@ public class Serial_wire implements CanSend, Wire {
         }.execute((Void) null);
 
     }
-    protected boolean connectWith(UsbDevice device) {    	// połącz...
+    protected boolean connectWith(UsbDevice device) {    	// polacz...
 		final UsbSerialDriver driver =  UsbSerialProber.probeSingleDevice(device);
         UsbSerialPort port = driver.getPort( 0 );
         if (port == null) {
@@ -254,7 +253,7 @@ public class Serial_wire implements CanSend, Wire {
         }
 		return false;
 	}
-    public void openPort() {
+    private void openPort() {
     	if( sPort == null ){
     		Log.e("Serial", "sPort is null");
     	}else if( mUsbManager == null ){
@@ -273,28 +272,12 @@ public class Serial_wire implements CanSend, Wire {
 	            Log.i("Serial", "opened 115200");
 	        } catch (IOException e) {
 	            Log.e("Serial", "Error setting up device: " + e.getMessage(), e);
-	            closePort();
+	            close();
 	            return;
 	        }
     	}
         Log.i("Serial", "Type:"+ sPort.getClass().getSimpleName());
 	}
-    public void closePort() {
-    	if( sPort!= null ){
-	        try {
-	        	if(sPort.isOpen()){
-	        		sPort.close();
-	        	}
-	        } catch (IllegalStateException e2) {
-	        	Log.e("Serial", "IllegalStateException", e2);
-	        } catch (IOException e2) {
-	            // Ignore.
-	        }
-	        sPort = null;
-    	}
-    }
-    
-    
     private final Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
