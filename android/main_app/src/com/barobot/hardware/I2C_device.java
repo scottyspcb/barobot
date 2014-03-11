@@ -28,11 +28,7 @@ public class I2C_device{
 	private void isResetedBy(I2C_device i2c_device) {
 		canBeResetedBy = i2c_device;
 	}
-	private rpc_message send( int why_code, byte[] params ) {
-		String res = I2C.createCommand( this.address, why_code, params);
-		rpc_message m =  new rpc_message( true, res, true );
-		return m;
-	}
+
 	public void hasResetCode(int i) {
 		resetCode = i;
 	}

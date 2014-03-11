@@ -48,7 +48,7 @@ public class MainActivity extends Activity implements OnSignalsDetectedListener{
 		textView.setMax(1024);
 
     	if(connection !=null){
-    		connection.destroy();
+    		connection.close();
     	}
 
    	 	connection = new Serial_wire( this );
@@ -153,6 +153,9 @@ public class MainActivity extends Activity implements OnSignalsDetectedListener{
 		if(ii0.isRunning()){
 			ii0.cancel();
 		}
+	   	if(connection !=null){
+    		connection.destroy();
+    	}
 		super.onDestroy();
 		android.os.Process.killProcess(android.os.Process.myPid());
 	}

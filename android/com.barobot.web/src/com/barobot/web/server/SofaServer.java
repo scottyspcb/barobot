@@ -14,7 +14,6 @@ import java.util.StringTokenizer;
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.util.Log;
-import com.barobot.hardware.Android;
 import com.barobot.web.route.EmptyRoute;
 import com.barobot.web.route.MainPage;
 import com.barobot.web.route.RPCPage;
@@ -190,7 +189,6 @@ public class SofaServer extends NanoHTTPD {
     }};
 
 	public static SofaServer getInstance() {
-		// TODO Auto-generated method stub
 		if( ins == null){
 			ins = new SofaServer();
 		}

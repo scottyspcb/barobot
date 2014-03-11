@@ -12,11 +12,10 @@ public interface Wire extends CanSend{
 	public String getName();
 	public void setOnReceive(InputListener inputListener);
 	public void setSearching( boolean active );
-	public void pause();
 	public void resume();
 	public boolean setAutoConnect( boolean active );
 	public boolean isConnected();
-	public void disconnect();
+	public void close();
 	public boolean send( String message ) throws IOException;
 	public boolean canConnect();
 	public boolean implementAutoConnect();
