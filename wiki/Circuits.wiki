@@ -2,7 +2,7 @@
 
 = Circuits =
 
-Add circuits are appended to the source in Hardware folder.
+All circuits are appended to the source in Hardware folder.
 
 ==Carret==
 
