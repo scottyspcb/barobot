@@ -11,7 +11,7 @@
 #include <avr/wdt.h>
 byte in_buffer[7];
 
-volatile uint8_t input_buffer[MAINBOARD_BUFFER_LENGTH][7] = {{0,0,0,0,0,0,0},{0,0,0,0,0,0,0},{0,0,0,0,0,0,0}};
+volatile uint8_t input_buffer[MAINBOARD_BUFFER_LENGTH][8] = {{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0}};
 volatile uint8_t buff_length[MAINBOARD_BUFFER_LENGTH] = {0,0,0};
 
 void (*spi_init)();
@@ -23,7 +23,7 @@ uint8_t serialBuff_pos   = 0;
 
 boolean error=0;
 volatile boolean timer_now = false;
-volatile byte timer_counter = 1;
+volatile unsigned int timer_counter = 1;
 int here;
 uint8_t hbval            = 128;
 boolean prog_mode        = false;
@@ -61,9 +61,7 @@ void setup(){
 	//disableWd();
 	DEBUGINIT();
 	DEBUGLN("-MSTART");
-
 	setupStepper();
-
 	pinMode(PIN_PROGRAMMER_LED_ACTIVE, OUTPUT);
 	pinMode(PIN_PROGRAMMER_LED_ERROR, OUTPUT);
 	pinMode(PIN_PROGRAMMER_LED_STATE, OUTPUT);
@@ -80,9 +78,9 @@ void setup(){
 }
 
 #if MAINBOARD_SERVO_4PIN==true
-AccelStepper stepperX(AccelStepper::HALF4WIRE, PIN_MAINBOARD_STEPPER_STEP0, PIN_MAINBOARD_STEPPER_STEP1, PIN_MAINBOARD_STEPPER_STEP2, PIN_MAINBOARD_STEPPER_STEP3 );
+	AccelStepper stepperX(AccelStepper::HALF4WIRE, PIN_MAINBOARD_STEPPER_STEP0, PIN_MAINBOARD_STEPPER_STEP1, PIN_MAINBOARD_STEPPER_STEP2, PIN_MAINBOARD_STEPPER_STEP3 );
 #else
-AccelStepper stepperX(AccelStepper::DRIVER, PIN_MAINBOARD_STEPPER_STEP, PIN_MAINBOARD_STEPPER_DIR);      // Step, DIR
+	AccelStepper stepperX(AccelStepper::DRIVER, PIN_MAINBOARD_STEPPER_STEP, PIN_MAINBOARD_STEPPER_DIR);      // Step, DIR
 #endif
 
 void setupStepper(){
@@ -92,25 +90,35 @@ void setupStepper(){
 	stepperX.setAcceleration(MAINBOARD_ACCELERX);
 	stepperX.setMaxSpeed(MAINBOARD_SPEEDX);
 	stepperX.setOnReady(stepperReady);
-	FlexiTimer2::set(1, 1.0/3000, timer);
+	FlexiTimer2::set(1, 1.0/10000, timer);
 	FlexiTimer2::start();
 }
 
 void timer(){
 	timer_counter++;
-	timer_now = true;
+	//timer_now = true;
+	stepperX.run();
 }
 
 uint16_t divisor = 500;
+long int next_time = 0;
 
 void loop(){
+	long int b = millis();
+	if( b > next_time){
+		Serial.print("timer: ");
+		Serial.println(timer_counter);
+		next_time	= next_time + 1000;
+		timer_counter = 0;
+	}
+
 	if(!timer_counter){
 		divisor--;
 		if(!divisor){
 			timer_now	= false;
 			divisor 	= 500;
 	//		check_i2c();    // czy linia jest drozna?
-			DEBUGLN("-HELLO");
+	//		DEBUGLN("-HELLO");
 	//		DEBUGLN(String(mil));
 
 			// check if tablet exists
@@ -138,13 +146,12 @@ void loop(){
 		serial0Buffer = "";
 	}
 	for( byte i=0;i<MAINBOARD_BUFFER_LENGTH;i++){
-		stepperX.run();
 		if( input_buffer[i][0] ){
 			proceed( buff_length[i],input_buffer[i] );
 			input_buffer[i][0] = 0;
 		}
 	}
-	stepperX.run();
+	
 }
 void proceed( byte length,volatile uint8_t buffer[7] ){ // read I2C
 	if(prog_mode){
@@ -478,13 +485,33 @@ void send_error( String input){
 	sendln2android( input );
 }
 
-
-void stepperReady( long int pos ){
-	//sendln2android("Rx" + String(pos));
+void stepperReady( long int pos ){		// in interrupt
+	//volatile byte (*buffer) = 0;
+//	DEBUG("-input " );
+	for( byte a = 0; a < MAINBOARD_BUFFER_LENGTH; a++ ){
+		if(input_buffer[a][0] == 0 ){
+			input_buffer[a][0]	= METHOD_I2C_SLAVEMSG;
+			input_buffer[a][1]	= my_address;
+			input_buffer[a][2]	= RETURN_DRIVER_READY;
+			input_buffer[a][3]	= DRIVER_X;
+			byteint bytepos;
+			bytepos.i= pos;
+			input_buffer[a][4]	= bytepos.bytes[3];	// bits 0-7
+			input_buffer[a][5]	= bytepos.bytes[2];	// bits 8-15
+			input_buffer[a][6]	= bytepos.bytes[1];	// bits 16-23
+			input_buffer[a][7]	= bytepos.bytes[0];	// bits 24-32
+			return;
+		}
+	}
+	/*
 	out_buffer[0]  = METHOD_STEPPER_MOVING;           // wyslij do wozka ze jade
 	out_buffer[1]  = DRIVER_X;
 	out_buffer[2]  = DRIVER_DIR_STOP;
-	writeRegisters(I2C_ADR_CARRET, 3, false );        // send to carret*/
+	writeRegisters(I2C_ADR_CARRET, 3, false );        // send to carret
+*/
+	
+	//sendln2android("Rx" + String(pos));
+	/*
 
 	byteint value;
 	value.i= pos;
@@ -500,7 +527,7 @@ void stepperReady( long int pos ){
 		value.bytes[0]				// bits 24-32
 	};
 	send2android(ttt,8);
-	send2androidEnd();
+	send2androidEnd();*/
 }
 void paserDeriver( byte driver, String input ){   // odczytaj komende silnika
 	input.trim();
@@ -520,18 +547,27 @@ void paserDeriver( byte driver, String input ){   // odczytaj komende silnika
 		}
 	}
 	if( driver == DRIVER_X){
+
 		if(maxspeed > 0){
 			stepperX.setMaxSpeed(maxspeed);
 		}
+
+		long int tar = stepperX.targetPosition();
+		Serial.println("-tar1: " + String(tar) );
 		stepperX.moveTo(target);
-		stepperX.run();
+		Serial.println("-moveTo: " + String(target) );
 		long int dis = stepperX.distanceToGo();
+		Serial.println("-dis: " + String(dis) );
+		tar = stepperX.targetPosition();
+		Serial.println("-tar2: " + String(tar) );		
+		
+/*
 		if( dis != 0 ){
 			out_buffer[0]  = METHOD_STEPPER_MOVING;
 			out_buffer[1]  = DRIVER_X;
 			out_buffer[2]  = ( dis > 0 ) ? DRIVER_DIR_FORWARD : DRIVER_DIR_BACKWARD;        // forward?
 			writeRegisters(I2C_ADR_CARRET, 3, false );        // send to carret
-		}
+		}*/
 	}else if( maxspeed > 0 && driver == DRIVER_Y ){            // stepper Y
 		out_buffer[0]  = METHOD_SET_Y_POS;
 		out_buffer[1]  = target & 0xff;            // low byte
@@ -1345,8 +1381,8 @@ void simulateisp() {
 	uint8_t ch = getch();
 	switch (ch) {
 		case '0': // signon
-		error = false;
-		empty_reply();
+			error = false;
+			empty_reply();
 		break;
 		case '1':
 		if (getch() == CRC_EOP) {

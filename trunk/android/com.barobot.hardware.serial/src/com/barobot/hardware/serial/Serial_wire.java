@@ -1,7 +1,10 @@
 package com.barobot.hardware.serial;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -18,7 +21,9 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
-import com.barobot.parser.interfaces.CanSend;
+import com.barobot.common.interfaces.CanSend;
+import com.barobot.common.interfaces.SerialInputListener;
+import com.barobot.common.interfaces.Wire;
 import com.hoho.android.usbserial.driver.UsbSerialDriver;
 import com.hoho.android.usbserial.driver.UsbSerialPort;
 import com.hoho.android.usbserial.driver.UsbSerialProber;
@@ -38,7 +43,7 @@ public class Serial_wire implements CanSend, Wire {
     private int errors = 0;
 	private Activity view;
 	private int baud = 115200;
-    InputListener listener;
+	protected Queue<SerialInputListener> listener=new LinkedList<SerialInputListener>();
     private static SerialInputOutputManager.Listener mListener = null;
 
 	public Serial_wire(Activity mainActivity) {
@@ -47,24 +52,29 @@ public class Serial_wire implements CanSend, Wire {
 		if( mListener == null ){
 			mListener = new SerialInputOutputManager.Listener() {
 			    @Override
-			    public void onRunError(Exception e) {
-			        Log.d(getName(), "Runner stopped.");
-			        if(listener!=null){
-			        	listener.onRunError( e );
+			    public synchronized void onRunError(Exception e) {
+			        for (SerialInputListener il : listener){
+			        	if(il.isEnabled()){
+			        		il.onRunError( e );
+			        	}
 			        }
 			        stopIoManager();
 			    }
 			    @Override
-			    public void onNewData( byte[] data) {
-			    	if(listener!=null){
-			    		listener.onNewData( data );
-			    	}
+			    public synchronized void onNewData( byte[] data) {
+		//	    	Log.e("Serial_wire.onNewData", new String(data, 0, data.length) );
+			        for (SerialInputListener il : listener){
+			        	if(il.isEnabled()){
+			        		il.onNewData( data );
+			        	}
+			        }
 			    }
 			};
 		}		
 	}
 	public void setBaud( int baud ) {
 		this.baud = baud;
+		Log.e("Serial_wire", "setBaud " + baud );
 		if(sPort!=null && sPort.isOpen() ){
 			try {
 				sPort.setParameters(baud, 8, UsbSerialPort.STOPBITS_1, UsbSerialPort.PARITY_NONE);
@@ -76,7 +86,7 @@ public class Serial_wire implements CanSend, Wire {
 	public boolean init() {
 		mUsbManager = (UsbManager) this.view.getSystemService(Context.USB_SERVICE);
 		mHandler.sendEmptyMessage(MESSAGE_REFRESH);
-		return false;
+		return true;
 	}
 
 	public void setSearching(boolean active) {
@@ -96,12 +106,15 @@ public class Serial_wire implements CanSend, Wire {
 	@Override
 	public boolean isConnected() {
 		if (sPort == null) {
+			Log.e("isConnected", "sPort null" );
 			return false;	
 		}
-		if(mSerialIoManager!=null){
+		if(mSerialIoManager==null){
+			Log.e("isConnected", "mSerialIoManager null" );
 			return false;
 		}
 		if (!sPort.isOpen()) {
+			Log.e("isConnected", "isOpen null" );
 			return false;
 		}
 		return true;
@@ -111,25 +124,39 @@ public class Serial_wire implements CanSend, Wire {
 		mHandler.removeMessages(MESSAGE_REFRESH);
 		stopIoManager();
 		if (sPort != null) {
-		    try {
-		    	if(sPort.isOpen()){
+			if(sPort.isOpen()){
+				try {
 	        		sPort.close();
-	        	}
-		    } catch (IllegalStateException e2) {
-		    	Log.e("Serial", "IllegalStateException", e2);
-		    } catch (IOException e) {
-		    }
+				} catch (IllegalStateException e2) {
+			    	Log.e("Serial", "IllegalStateException", e2);
+			    } catch (IOException e) {
+			    }
+        	}
 		    sPort = null;
 		}
 		stateHasChanged();
 	}
 	@Override
-	public boolean send(String message) {
+	public synchronized boolean send(String message) {
         if(mSerialIoManager!=null){
         	byte data[] = message.getBytes(); 
      //       mSerialIoManager.writeAsync(data);
             try {
                 mSerialIoManager.writeSync(data);
+                return true;
+            } catch (IOException e) {
+                e.printStackTrace();
+                errors++;
+            }
+        }
+		return false;
+	}
+	@Override
+	public synchronized boolean send(byte[] data, int size) throws IOException {
+		if(mSerialIoManager!=null){
+			byte [] subArray = Arrays.copyOfRange(data, 0, size);
+            try {
+                mSerialIoManager.writeSync(subArray);
                 return true;
             } catch (IOException e) {
                 e.printStackTrace();
@@ -147,14 +174,12 @@ public class Serial_wire implements CanSend, Wire {
 		return false;
 	}
 	public void stateHasChanged() {
-
-
 	}
 
 	@Override
 	public void destroy() {
-		close();
 		mHandler.removeMessages(MESSAGE_REFRESH);
+		close();
         if(mPermissionReceiver_activated){
             mPermissionReceiver_activated = false;
             try {
@@ -163,13 +188,12 @@ public class Serial_wire implements CanSend, Wire {
 				e.printStackTrace();
 			}
         }
+        mUsbManager = null;
+	    mSerialIoManager = null;
+	    view = null;
+	    listener.clear();
+	    mListener = null;
 	}
-
-	@Override
-	public void setup() {
-		// TODO Auto-generated method stub
-	}
-
 	@Override
 	public boolean setAutoConnect(boolean active) {
 		return false;
@@ -270,7 +294,7 @@ public class Serial_wire implements CanSend, Wire {
 	            sPort.open(mUsbManager);
 	            sPort.setParameters(baud, 8, UsbSerialPort.STOPBITS_1, UsbSerialPort.PARITY_NONE);
 	            onDeviceStateChange();
-	            Log.i("Serial", "opened 115200");
+	            Log.i("Serial", "opened " +baud);
 	        } catch (IOException e) {
 	            Log.e("Serial", "Error setting up device: " + e.getMessage(), e);
 	            close();
@@ -313,7 +337,12 @@ public class Serial_wire implements CanSend, Wire {
         startIoManager();
     }
 	@Override
-	public void setOnReceive(InputListener inputListener) {
-		this.listener = inputListener;
+	public void addOnReceive(SerialInputListener inputListener) {
+		this.listener.add( inputListener );
+		Log.i("serial", "listeners: " +this.listener.size() );
+	}
+	@Override
+	public void removeOnReceive(SerialInputListener inputListener) {
+		this.listener.remove(inputListener);
 	}
 }

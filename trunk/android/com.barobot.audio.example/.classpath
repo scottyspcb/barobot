@@ -9,5 +9,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry exported="true" kind="src" path="/com.barobot.hardware.serial"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/com.barobot.common"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

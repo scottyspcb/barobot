@@ -6,11 +6,11 @@ import java.util.Queue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.barobot.audio.utils.OnSignalsDetectedListener;
-import com.barobot.audio.utils.SampleRecorder;
+import com.barobot.common.interfaces.OnSignalsDetectedListener;
+import com.barobot.common.interfaces.SampleAudioRecorder;
 
 public class DetectorThread extends Thread{
-	private SampleRecorder recorder;
+	private SampleAudioRecorder recorder;
 	//private WaveHeader waveHeader;
 	private volatile Thread _thread;
 	public BpmProcessor processor;
@@ -22,7 +22,7 @@ public class DetectorThread extends Thread{
 	private int averageLength = -1;
 	int channels = 0;
 
-	public DetectorThread(Map<String, Integer> config, SampleRecorder recorder){
+	public DetectorThread(Map<String, Integer> config, SampleAudioRecorder recorder){
 		processor = new BpmProcessor( config );
         this.frameByteSize	= config.get("frameByteSize");
         this.averageLength	= config.get("averageLength");

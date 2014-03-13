@@ -1,4 +1,4 @@
-package com.barobot.audio.utils;
+package com.barobot.common.interfaces;
 
 public interface OnSignalsDetectedListener{
 	public abstract void peek(float averageAbsValue);

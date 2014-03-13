@@ -2,7 +2,6 @@ package com.barobot.wire;
 
 import java.io.IOException;
 
-
 public interface Wire{
 	public boolean isMainConnection = false;
 	public boolean init();
@@ -18,7 +17,6 @@ public interface Wire{
 	public boolean implementAutoConnect();
 	public void stateHasChanged();
 	public void destroy();
-	public void setup();
 	public void connectToId(String address);
 	public void setBaud(int i);
 }

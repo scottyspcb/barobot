@@ -10,20 +10,15 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.Enumeration;
 import java.util.Properties;
-import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.smslib.helper.CommPortIdentifier;
 
-import com.barobot.parser.Operation;
+import com.barobot.common.DesktopLogger;
+import com.barobot.common.Initiator;
+import com.barobot.common.interfaces.HasLogger;
 import com.barobot.parser.Parser;
-import com.barobot.parser.Queue;
-import com.barobot.parser.interfaces.HasLogger;
-import com.barobot.parser.output.AsyncDevice;
-import com.barobot.parser.output.Console;
-import com.barobot.parser.output.MainScreen;
-import com.barobot.parser.output.Mainboard;
 import com.barobot.parser.utils.CopyStream;
 
 public class Main implements HasLogger{
@@ -49,11 +44,11 @@ public class Main implements HasLogger{
 	}
 
 	 private void start() {
-		Parser.registerLogger(this);
+		Initiator.setLogger( new DesktopLogger());
 		loadProps();
 		//String[] comlist = list();
 		Wizard w	= new Wizard();
-		Hardware hw = new Hardware("COM40");
+		Hardware hw = new Hardware("COM39");
 
 		IspSettings.safeMode = false;
 		IspSettings.setFuseBits = false;
@@ -75,7 +70,7 @@ public class Main implements HasLogger{
 		w.findOrder( hw, 4 );
 		w.findOrder( hw, 3 );
 
-		Macro mm  = new Macro();
+	//	Macro mm  = new Macro();
 	//	mm.promo1( hw );
 	//	mm.resetuj( hw );
 	//	mm.testBpm( hw );
@@ -92,11 +87,11 @@ public class Main implements HasLogger{
 	//	w.clearUpanel( hw );
 	//	w.illumination1( hw );
 		
-		w.ilumination3( hw, "88", 255, "00", 2 );
+	//	w.ilumination3( hw, "88", 255, "00", 2 );
 		
 	//	w.fadeButelka( hw, 4, 200 );
 
-	//	w.mrygaj( hw, 10 );
+		w.mrygaj( hw, 10 );
 	//	w.zapal( hw );
 	//	w.zgas( hw );
 

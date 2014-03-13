@@ -1,5 +1,7 @@
 package com.barobot.parser.message;
 
+import com.barobot.common.Initiator;
+
 public class History_item{
 	public static final boolean OUTOUT = true;
 	public static final boolean INPUT = false;
@@ -13,9 +15,9 @@ public class History_item{
 		this.command	= cmd;
 		this.direction	= dir;
 		if(dir){
-			System.out.println("OUTOUT: "+ cmd);
+			Initiator.logger.d("OUTOUT: ", cmd);
 		}else{
-			System.out.println("INPUT: "+ cmd);
+			Initiator.logger.d("INPUT: ", cmd);
 		}
 	}
 

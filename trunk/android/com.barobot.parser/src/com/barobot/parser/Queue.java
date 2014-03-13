@@ -28,12 +28,13 @@ ArrayList<E>
  */
 
 public class Queue {
-	public static final int DFAULT_DEVICE = 0;
-
-	private final Object lock = new Object();
 	private static LinkedList<AsyncDevice> devs = new LinkedList<AsyncDevice>();
-	private LinkedList<AsyncMessage> output = new LinkedList<AsyncMessage>();
-	private int wait_for_device_id = -1;
+	
+	public static final int DFAULT_DEVICE = 0;
+	protected final Object lock = new Object();
+	protected LinkedList<AsyncMessage> output = new LinkedList<AsyncMessage>();
+	protected int wait_for_device_id = -1;
+
 	public static int registerSource( AsyncDevice dev ) {
 	//	synchronized(devs){
 			devs.add(dev);
@@ -112,7 +113,7 @@ public class Queue {
 			});
 		}
 		run();
-	}	
+	}
 
 	public void add(AsyncMessage asyncMessage) {
 		synchronized (this.lock) {
@@ -242,7 +243,6 @@ public class Queue {
 		AsyncDevice dev = getDevice(mainboardSource);
 		dev.enable();
 	}
-
 	public void error() {
 		devs.get(-1);
 	}
@@ -256,6 +256,14 @@ public class Queue {
 			}
 		}
 		return false;
+	}
+	public void destroy() {
+		wait_for_device_id = -1;
+		for (AsyncDevice dev : devs){
+			dev.destroy();
+		}
+		this.output.clear();
+		devs.clear();
 	}
 }
 

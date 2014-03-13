@@ -96,12 +96,15 @@ public class Serial_wire implements Wire {
 	@Override
 	public boolean isConnected() {
 		if (sPort == null) {
+			Log.e("isConnected", "sPort null" );
 			return false;	
 		}
 		if(mSerialIoManager!=null){
+			Log.e("isConnected", "mSerialIoManager null" );
 			return false;
 		}
 		if (!sPort.isOpen()) {
+			Log.e("isConnected", "isOpen null" );
 			return false;
 		}
 		return true;
@@ -166,11 +169,6 @@ public class Serial_wire implements Wire {
 	}
 
 	@Override
-	public void setup() {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
 	public boolean setAutoConnect(boolean active) {
 		return false;
 	}
@@ -220,7 +218,7 @@ public class Serial_wire implements Wire {
                     	view.registerReceiver(mPermissionReceiver, new IntentFilter(
                                 ACTION_USB_PERMISSION));
                         mPermissionReceiver_activated = true;
-                          
+
                         if (!mUsbManager.hasPermission(device)){
                             final PendingIntent pi = PendingIntent.getBroadcast(view, 0, new Intent(
                                     ACTION_USB_PERMISSION), 0);

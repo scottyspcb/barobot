@@ -24,12 +24,15 @@ public class Decoder {
 	public static String strRepeat(  String input, int times ){
 		return new String(new char[times]).replace("\0", input );
 	}
-	public String toHexStr(byte[] b, int length) {
+	public static String toHexStr(byte[] b, int length) {
         String str="";
         for(int i=0; i<length; i++) {
             str += String.format("%02x ", b[i]);
         }
         return str;
     }
+	public static String toHexStr(byte b) {
+		return String.format("0x%02x", b);
+	}
 }
 

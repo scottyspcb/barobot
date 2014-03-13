@@ -8,6 +8,5 @@ public class MainScreen extends AsyncDevice{
 	@Override
 	public boolean parse(String in) {
 		return false;
-		// TODO Auto-generated method stub
 	}
 }

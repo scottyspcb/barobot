@@ -3,15 +3,12 @@ package com.barobot.parser.output;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.logging.Level;
 
-
+import com.barobot.common.interfaces.CanSend;
+import com.barobot.common.interfaces.Sender;
 import com.barobot.parser.Queue;
-import com.barobot.parser.interfaces.CanSend;
-import com.barobot.parser.interfaces.Sender;
 import com.barobot.parser.message.AsyncMessage;
 import com.barobot.parser.utils.GlobalMatch;
 
@@ -25,6 +22,7 @@ public abstract class AsyncDevice {
 	public static String separator = "\n";
 	private AsyncMessage wait_for = null;
 	private Queue waiting_queue;
+
 	public AsyncDevice(String name) {
 		this.name = name;
 	}
@@ -101,7 +99,7 @@ public abstract class AsyncDevice {
 	}
 	public boolean send(String command) {
 		try {
-//			System.out.println("\t>>>Sending: " + command);
+			System.out.println("\t>>>AsyncDevice Sending: " + command);
 			return this.sender.send(command);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -118,6 +116,7 @@ public abstract class AsyncDevice {
 				if( connection.isConnected() ){
 			//		synchronized(outputStream){
 					try {
+						System.out.println("registerSender send" + command );
 						return connection.send(command);
 					} catch (IOException e) {
 					  e.printStackTrace();
@@ -136,7 +135,8 @@ public abstract class AsyncDevice {
 			public boolean send(String command) {
 		//		synchronized(outputStream){
 					try {
-						outputStream.write(command.getBytes());
+						byte[] bytes = command.getBytes();
+						outputStream.write(bytes);
 						return true;
 					} catch (IOException e) {
 					  e.printStackTrace();
@@ -170,5 +170,15 @@ public abstract class AsyncDevice {
 	}
 	public void enable() {
 		enabled = true;
+	}
+	
+	public void destroy() {
+		synchronized (buffer) {
+			buffer =  new StringBuilder();
+		}
+		globalRegex.clear();
+		sender = null;
+		wait_for = null;
+		waiting_queue = null;
 	}
 }

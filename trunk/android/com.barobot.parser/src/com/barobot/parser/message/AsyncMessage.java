@@ -41,7 +41,7 @@ public class AsyncMessage extends History_item{
 	}
 	public void start(AsyncDevice dev) {
 		if(this.command != ""){
-			dev.send( addSufix() ? command + "\n" : command );
+			dev.send( addSufix() ? ( command + "\n") : command );
 		}else{
 			this.run(dev);
 		}
