@@ -49,11 +49,7 @@ public class BT_wire implements Wire {
         }
 		return false;
 	}
-	@Override
-	public void setup() {
-		Log.d(TAG, "setupBT()");
-        // Initialize the BluetoothChatService to perform bluetooth connections
-	}
+
 	@Override
 	public void setSearching(boolean active) {
 		// TODO Auto-generated method stub

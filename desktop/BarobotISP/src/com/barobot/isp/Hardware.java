@@ -31,18 +31,14 @@ public class Hardware {
 	private InputStream inputStream; 
 	private SerialPort serialPort=null;
 	private Queue q = new Queue();
-
 	private static boolean inited = false;
 	static int mainboardSource		= 0;
-
 
 	public void init() {
 		if( !Hardware.inited ){
 			Mainboard mb	= new Mainboard();
 		//	AsyncDevice c	= new Console();
 		//	AsyncDevice u	= new MainScreen();
-
-			mb.registerSender( outputStream );
 
 			/*
 			mb.addGlobalRegex("^E.+", new GlobalMatch(){
@@ -76,7 +72,6 @@ public class Hardware {
 		System.out.println("\t>>>add 2 send: " + command +" / "+retcmd);
 		q.add( mainboardSource, command, retcmd );
 	}
-	
 	public void send(String string) {
 		q.add( string, false );
 	}
@@ -93,7 +88,6 @@ public class Hardware {
 		  e.printStackTrace();
 		}
 	}
-
 	public void connect() {
 		if(connected){
 			return;
@@ -103,6 +97,7 @@ public class Hardware {
 			outputStream		= serialPort.getOutputStream();
 			this.setFullSpeed(serialPort);
 			this.inputStream	= serialPort.getInputStream();
+			Queue.getDevice( mainboardSource ).registerSender( outputStream );
 
 			SerialPortEventListener lis = new SerialPortEventListener(){
 				public void serialEvent(SerialPortEvent arg0) {
@@ -113,7 +108,7 @@ public class Hardware {
 					if( arg0.getEventType() ==  SerialPortEvent.DATA_AVAILABLE ){
 						 byte[] readBuffer = new byte[128];
 						 try {
-						        while ( inputStream.available() > 0){
+						        while ( connected && inputStream.available() > 0){
 						          int bytesRead = inputStream.read(readBuffer);
 						          String in = new String(readBuffer, 0, bytesRead); 
 						    //      System.out.println("in" + in );
@@ -181,30 +176,6 @@ public class Hardware {
 					q.clear( mainboardSource );
 					Queue.disableDevice( mainboardSource );
 				}
-				/*
-				if (outputStream != null) {
-					try {
-						synchronized(outputStream){
-							outputStream.notify();
-						}
-						outputStream.close();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
-				//System.out.println("close52");
-				if (inputStream != null) {
-					try {
-						synchronized(outputStream){
-							outputStream.notify();
-						}
-						inputStream.close();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}*/
-			//	System.out.println("close5");
-
 				if (serialPort != null) {
 					serialPort.notifyOnDataAvailable(false);
 					System.out.println("removeEventListener");
@@ -225,6 +196,30 @@ public class Hardware {
 					serialPort.close();
 					System.out.println("close5");
 					serialPort = null;
+
+					if (outputStream != null) {
+						try {
+							synchronized(outputStream){
+								outputStream.notify();
+							}
+							outputStream.close();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					}
+					//System.out.println("close52");
+					if (inputStream != null) {
+						try {
+							synchronized(outputStream){
+								outputStream.notify();
+							}
+							inputStream.close();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					}
+				//	System.out.println("close5");
+
 				}
 				connected = false;
 			}

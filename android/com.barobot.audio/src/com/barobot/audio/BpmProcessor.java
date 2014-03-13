@@ -8,10 +8,10 @@ import java.util.Queue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.barobot.audio.utils.OnSignalsDetectedListener;
-import com.barobot.audio.utils.SampleProcessor;
+import com.barobot.common.interfaces.OnSignalsDetectedListener;
+import com.barobot.common.interfaces.SampleAudioProcessor;
 
-public class BpmProcessor implements SampleProcessor {
+public class BpmProcessor implements SampleAudioProcessor {
     private int sampleRate = 44100;
     private int sampleSize =  2048;
     private int bufferLength = 103;

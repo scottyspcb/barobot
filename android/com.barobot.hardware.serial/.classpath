@@ -7,5 +7,6 @@
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.DEPENDENCIES"/>
 	<classpathentry exported="true" kind="lib" path="libs/usbseriallibrary.jar"/>
 	<classpathentry kind="src" path="/com.barobot.parser"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/com.barobot.common"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

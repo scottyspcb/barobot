@@ -3,11 +3,9 @@ package com.barobot.parser.output;
 import com.barobot.parser.message.AsyncMessage;
 
 public class Mainboard extends AsyncDevice{
-
 	public Mainboard() {
 		super("Mainboard");
 	}
-
 	@Override
 	public boolean parse(String in) {
 		//Parser.log(Level.INFO, "parse: " + in);

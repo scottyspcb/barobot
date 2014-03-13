@@ -1,13 +1,7 @@
 package com.barobot.isp;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.List;
-import java.util.logging.ConsoleHandler;
 import java.util.logging.FileHandler;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import com.barobot.i2c.BarobotTester;
 import com.barobot.i2c.Carret;
@@ -15,14 +9,9 @@ import com.barobot.i2c.I2C_Device;
 import com.barobot.i2c.MainBoard;
 import com.barobot.i2c.Upanel;
 import com.barobot.parser.Operation;
-import com.barobot.parser.Parser;
 import com.barobot.parser.Queue;
 import com.barobot.parser.message.AsyncMessage;
 import com.barobot.parser.output.AsyncDevice;
-import com.barobot.parser.output.Console;
-import com.barobot.parser.output.MainScreen;
-import com.barobot.parser.output.Mainboard;
-import com.barobot.parser.utils.CopyStream;
 
 public class Wizard {
 
@@ -447,10 +436,10 @@ public class Wizard {
 
 	public void prepareMB(final Hardware hw ) {
 		Queue q = hw.getQueue();
+		hw.connect();
 		q.add("", false);
 		final I2C_Device current_dev	= new MainBoard();
 		final String upanel_code = current_dev.getHexFile();
-		hw.connect();
 		hw.send("");
 		hw.send("PING", "PONG");
 		q.addWaitThread(Main.mt);
@@ -609,19 +598,15 @@ public class Wizard {
 		}
 		System.out.println("koniec zgas");
 	}
-	public void mrygaj(Hardware hw, int time) {
+	public void mrygaj(Hardware hw, int time){
 		hw.connect();
-		int swiec = 255;
+		int swiec = 1255;
 		int razy = 500;
 
 		boolean now = true;
 		for( int i =0; i<razy;i++){
 			for (I2C_Device u2 : Upanel.list){
 				u2.setLed( hw, "0f", 0 );
-			}
-			if(time > 0){
-				Main.wait( time * (now ? 2: 1));
-				now=!now;
 			}
 			for (I2C_Device u2 : Upanel.list){
 				u2.setLed( hw, "0f", swiec );

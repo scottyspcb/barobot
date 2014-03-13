@@ -2,7 +2,8 @@ package com.barobot.parser;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
+
+import com.barobot.common.Initiator;
 public class Operation {
 	String name = "";
 	private static Map<String, Object> params = new HashMap<String, Object>();
@@ -22,9 +23,7 @@ public class Operation {
 			return null;
 		}
 		if(p.getClass() != null){
-			if(Parser.logger!=null){
-				Parser.logger.log(Level.INFO, "" + p.getClass());
-			}
+			Initiator.logger.i("Operation.getParam", ""+p.getClass());
 		}
 		return p;
 	}

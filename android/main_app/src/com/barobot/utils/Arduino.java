@@ -179,7 +179,6 @@ public class Arduino{
 			}
 		}*/
 		if(debugConnection!=null){
-			debugConnection.setup();
 			if(this.allowAutoconnect()){
 				debugConnection.setAutoConnect( true ); 
 			}

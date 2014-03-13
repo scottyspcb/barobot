@@ -1,17 +1,14 @@
 package com.barobot.audio.example;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-
 import com.barobot.audio.DetectorThread;
-import com.barobot.audio.utils.OnSignalsDetectedListener;
-
-import com.barobot.hardware.serial.InputListener;
-
+import com.barobot.common.interfaces.SerialInputListener;
+import com.barobot.common.interfaces.OnSignalsDetectedListener;
+import com.barobot.common.interfaces.Wire;
 import com.barobot.hardware.serial.Serial_wire;
-import com.barobot.hardware.serial.Wire;
-
 import com.barobot.parser.utils.Interval;
 import com.barobot.parser.Queue;
 import com.barobot.parser.output.Mainboard;
@@ -20,6 +17,7 @@ import android.media.AudioFormat;
 import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.app.Activity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -46,24 +44,34 @@ public class MainActivity extends Activity implements OnSignalsDetectedListener{
 
 		ProgressBar textView = (ProgressBar) mainView.findViewById(R.id.progressBar1);
 		textView.setMax(1024);
-
     	if(connection !=null){
     		connection.close();
     	}
-
    	 	connection = new Serial_wire( this );
-   	 	connection.setOnReceive( new InputListener(){
+   	 	connection.addOnReceive( new SerialInputListener(){
 			@Override
 			public void onNewData(byte[] data) {
-			   	//Log.e("Serial input", message);
 				String message = new String(data);
+				Log.e("Serial input", message);
 				readInput(message);
 			}
 			@Override
 			public void onRunError(Exception e) {
+			}
+			@Override
+			public boolean isEnabled() {
+				return true;
 			}});
     	connection.init();
-
+    	
+		System.out.println("test connection ");
+		try {
+			connection.send("I");
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		System.out.println("koniec test connection ");
+		
 		Map<String, Integer> config = new HashMap<String, Integer>();
 		config.put("source",  MediaRecorder.AudioSource.MIC);
 		config.put("frameByteSize", 2048);
@@ -84,6 +92,8 @@ public class MainActivity extends Activity implements OnSignalsDetectedListener{
 		Mainboard mb	= new Mainboard();
 		//	AsyncDevice c	= new Console();
 		//	AsyncDevice u	= new MainScreen();
+		
+
 		mb.registerSender( connection );		
 		mainboardSource = Queue.registerSource( mb );
 		Queue.enableDevice( mainboardSource );
@@ -189,8 +199,8 @@ public class MainActivity extends Activity implements OnSignalsDetectedListener{
 			final String command2 = ",22," + ((int) b);
 	//		System.out.println("\t>>>add: " + command);
 
-			q.add( "L14"+command2, true);
-		//	q.add( "L15"+command2, true);
+			q.add( "L20"+command2, true);
+			q.add( "L21"+command2, true);
 		//	q.add( "L16"+command2, true);
 		//	q.add( "L17"+command2, true);
 		//	q.add( "L18"+command2, true);

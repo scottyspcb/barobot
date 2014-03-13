@@ -1,4 +1,4 @@
-package com.barobot.parser.interfaces;
+package com.barobot.common.interfaces;
 
 public interface Sender {
 	public boolean send(String command);

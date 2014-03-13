@@ -2,10 +2,11 @@ package com.barobot.audio.example;
 
 import java.util.Map;
 
-import com.barobot.audio.utils.SampleRecorder;
+import com.barobot.common.interfaces.SampleAudioRecorder;
+
 import android.media.AudioRecord;
 
-public class AndroidRecorderThread extends Thread implements SampleRecorder{
+public class AndroidRecorderThread extends Thread implements SampleAudioRecorder{
 	private AudioRecord audioRecord;
 	private int frameByteSize = 0;
 	short[] buffer;
