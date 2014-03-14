@@ -10,28 +10,19 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.Enumeration;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.smslib.helper.CommPortIdentifier;
-
 import com.barobot.common.DesktopLogger;
-import com.barobot.common.Initiator;
-import com.barobot.common.interfaces.HasLogger;
-import com.barobot.parser.Parser;
 import com.barobot.parser.utils.CopyStream;
 
-public class Main implements HasLogger{
+public class Main{
 	public static Thread mt;
 	public String config_filename	= "isp_settings.txt";
 	public Hardware hw;
 	public static Main main = null;
 
 	public static void main(String[] args) {
-		Main.logger = Logger.getLogger(Hardware.class.getName());
-		Main.logger.setLevel(Level.FINE);
-	//	Main.logger.addHandler(new ConsoleHandler());
-		Main.logger.log(Level.INFO, "Start");
+		DesktopLogger dl = new DesktopLogger();
+		com.barobot.common.Initiator.setLogger( dl );
 
 		mt = Thread.currentThread();
 		main = new Main();
@@ -44,7 +35,6 @@ public class Main implements HasLogger{
 	}
 
 	 private void start() {
-		Initiator.setLogger( new DesktopLogger());
 		loadProps();
 		//String[] comlist = list();
 		Wizard w	= new Wizard();
@@ -59,6 +49,7 @@ public class Main implements HasLogger{
 	//	w.fast_close_test( hw );
 	//	w.prepareSlaveMB( hw );
 	//	w.prepareMB( hw );
+	//	w.prepareMB2( hw );
 	//	w.prepareMBManualReset( hw );
 	//	w.fast_close_test( hw );
 	//	w.prepareCarret( hw );	
@@ -82,17 +73,14 @@ public class Main implements HasLogger{
 		
 	//	w.findOrder( hw, 3 );
 	//	w.showOrder();
-		
 	//	Wizard.wait(1000);
 	//	w.clearUpanel( hw );
 	//	w.illumination1( hw );
-		
 	//	w.ilumination3( hw, "88", 255, "00", 2 );
-		
 	//	w.fadeButelka( hw, 4, 200 );
 
-		w.mrygaj( hw, 10 );
-	//	w.zapal( hw );
+	//	w.mrygaj( hw, 10 );
+		w.zapal( hw );
 	//	w.zgas( hw );
 
 	//	hw.close();
@@ -127,64 +115,45 @@ public class Main implements HasLogger{
 			e.printStackTrace();
 		}
 	}
+	void run(String command, Hardware closeSerial ) {
+        Process p;
+        if(closeSerial != null ){
+        	System.out.println("bclose");
+        	closeSerial.close();
+        	System.out.println("wait");
+        	System.out.println("aclose");
+        }
+        CopyStream ct;
+        CopyStream ce;
+		try {
+			System.out.println("-----------------------------------------------");
+			System.out.println("\t>>>Running " + command);
+			p = Runtime.getRuntime().exec(command);
+			BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));  
 
-	  protected String[] list() {
-		String[] list = {};
-		int i=0;
-	    Enumeration pList = CommPortIdentifier.getPortIdentifiers();
-	    while (pList.hasMoreElements()) {
-	      CommPortIdentifier cpi = (CommPortIdentifier) pList.nextElement();
-	     // list[i++] = cpi.getName();
-	      System.out.println( cpi.getName());
-	    }
-	    return list; 
-	  }
+			System.out.println("\t>>>RESULT ");
+			ct = new CopyStream(p.getInputStream(), System.out);
+			ct.start();
 
-		void run(String command, Hardware closeSerial ) {
-	        Process p;
-	        if(closeSerial != null ){
-	        	System.out.println("bclose");
-	        	closeSerial.close();
-	        	System.out.println("wait");
-	        	System.out.println("aclose");
-	        }
-	        CopyStream ct;
-	        CopyStream ce;
+			ce = new CopyStream(p.getErrorStream(), System.out);
+			ce.start();	
+
 			try {
-				System.out.println("-----------------------------------------------");
-				System.out.println("\t>>>Running " + command);
-				p = Runtime.getRuntime().exec(command);
-				BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));  
-
-				System.out.println("\t>>>RESULT ");
-				ct = new CopyStream(p.getInputStream(), System.out);
-				ct.start();
-
-				ce = new CopyStream(p.getErrorStream(), System.out);
-				ce.start();	
-
-				try {
-					p.waitFor();
-				//	p.getInputStream().close();
-				//	p.getErrorStream().close();
-					System.out.println("\t>>>RETURN FROM TASK");
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-		        input.close();
-			} catch (IOException e1) {
-				e1.printStackTrace();
+				p.waitFor();
+			//	p.getInputStream().close();
+			//	p.getErrorStream().close();
+				System.out.println("\t>>>RETURN FROM TASK");
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
-			if(closeSerial != null ){
-				closeSerial.connect();
-		    }
+	        input.close();
+		} catch (IOException e1) {
+			e1.printStackTrace();
 		}
-
-	public static Logger logger = null;
-	public Logger getLogger() {
-		return logger;
+		if(closeSerial != null ){
+			closeSerial.connect();
+	    }
 	}
-
 	public static void wait(int ms) {
 		try {
 			 Thread.sleep(ms);

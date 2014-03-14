@@ -15,18 +15,15 @@ import com.barobot.parser.utils.GlobalMatch;
 public abstract class AsyncDevice {
 	static StringBuilder buffer = new StringBuilder();
 	private static Map<String, GlobalMatch> globalRegex = new HashMap<String, GlobalMatch>();
-
 	public String name = "";
 	public boolean enabled = true;
 	private Sender sender;
 	public static String separator = "\n";
 	private AsyncMessage wait_for = null;
 	private Queue waiting_queue;
-
 	public AsyncDevice(String name) {
 		this.name = name;
 	}
-
 	public void read(String in) {
 		synchronized (buffer) {
 			buffer.append(in);
@@ -41,6 +38,7 @@ public abstract class AsyncDevice {
 			//			Log.i(Constant.TAG, "pusta komenda!!!]");
 					}else{
 					//	History_item hi = new History_item( command, History_item.INPUT );
+						System.out.println("command: " + command);	
 						this.useInput( command );
 					}
 					end		= buffer.indexOf(separator);
@@ -99,15 +97,12 @@ public abstract class AsyncDevice {
 	}
 	public boolean send(String command) {
 		try {
-			System.out.println("\t>>>AsyncDevice Sending: " + command);
+		//	System.out.println("\t>>>AsyncDevice Sending: " + command.trim());
 			return this.sender.send(command);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return false;
-	}
-	public void registerSender(Sender sender) {
-		this.sender = sender;
 	}
 	public void registerSender(final CanSend connection) {
 		this.sender = new Sender(){
@@ -116,7 +111,7 @@ public abstract class AsyncDevice {
 				if( connection.isConnected() ){
 			//		synchronized(outputStream){
 					try {
-						System.out.println("registerSender send" + command );
+			//			System.out.println("registerSender send" + command.trim() );
 						return connection.send(command);
 					} catch (IOException e) {
 					  e.printStackTrace();
@@ -146,7 +141,6 @@ public abstract class AsyncDevice {
 			}
 		};
 	}
-
 	public void waitFor(AsyncMessage m, Queue queue) {
 	//	Parser.logger.log(Level.INFO, "waitFor: " +m.toString() );
 		synchronized (this) {
@@ -171,14 +165,13 @@ public abstract class AsyncDevice {
 	public void enable() {
 		enabled = true;
 	}
-	
 	public void destroy() {
 		synchronized (buffer) {
-			buffer =  new StringBuilder();
+			buffer		= new StringBuilder();
 		}
 		globalRegex.clear();
-		sender = null;
-		wait_for = null;
-		waiting_queue = null;
+		sender			= null;
+		wait_for		= null;
+		waiting_queue	= null;
 	}
 }

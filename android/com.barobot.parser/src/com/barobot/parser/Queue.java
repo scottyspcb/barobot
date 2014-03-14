@@ -236,15 +236,10 @@ public class Queue {
 		output.add( m2 );		
 	}
 	public static void disableDevice(int mainboardSource) {
-		AsyncDevice dev = getDevice(mainboardSource);
-		dev.disable();
+		getDevice(mainboardSource).disable();
 	}
 	public static void enableDevice(int mainboardSource) {
-		AsyncDevice dev = getDevice(mainboardSource);
-		dev.enable();
-	}
-	public void error() {
-		devs.get(-1);
+		getDevice(mainboardSource).enable();
 	}
 	public boolean isBusy() {
 		synchronized (this.lock) {

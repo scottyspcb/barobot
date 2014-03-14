@@ -205,7 +205,7 @@ public class Serial_wire implements CanSend, Wire {
 
 	@Override
 	public String getName() {
-		return "Port szeregowy";
+		return "Android Serial Port";
 	}
 
     private final BroadcastReceiver mPermissionReceiver = new BroadcastReceiver() {
