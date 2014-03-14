@@ -360,6 +360,7 @@ public class Wizard {
 	}
 	
 	public void test(Hardware hw) {
+		/*
 		try {
 			FileHandler fh = new FileHandler("log_test.txt");
 			Main.logger.addHandler(fh);
@@ -367,7 +368,8 @@ public class Wizard {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
+		}*/
+		
 		hw.connect();
 		/*
 		Queue q = hw.getQueue();
@@ -437,10 +439,11 @@ public class Wizard {
 	public void prepareMB(final Hardware hw ) {
 		Queue q = hw.getQueue();
 		hw.connect();
-		q.add("", false);
+		hw.send("");
+		hw.send("");
 		final I2C_Device current_dev	= new MainBoard();
 		final String upanel_code = current_dev.getHexFile();
-		hw.send("");
+		q.add("", false);		
 		hw.send("PING", "PONG");
 		q.addWaitThread(Main.mt);
 		if(IspSettings.setHex){	
@@ -600,10 +603,8 @@ public class Wizard {
 	}
 	public void mrygaj(Hardware hw, int time){
 		hw.connect();
-		int swiec = 1255;
+		int swiec = 255;
 		int razy = 500;
-
-		boolean now = true;
 		for( int i =0; i<razy;i++){
 			for (I2C_Device u2 : Upanel.list){
 				u2.setLed( hw, "0f", 0 );
@@ -681,6 +682,32 @@ public class Wizard {
 		hw.connect();
 		hw.send("K1","RK1");
 		hw.close();
+	}
+	public void prepareMB2(final Hardware hw) {	
+		Queue q = hw.getQueue();
+		hw.connect();
+		hw.send("");
+		hw.send("");
+		final I2C_Device current_dev	= new MainBoard();
+		final String upanel_code = current_dev.getHexFile();
+		
+		
+   	 //	com.barobot.isp.IspOverComSerial mSerial = new IspOverComSerial();
+   	 	
+   	 	
+		q.add("", false);		
+		hw.send("PING", "PONG");
+		q.addWaitThread(Main.mt);
+		if(IspSettings.setHex){	
+			current_dev.isp(hw);	// mam 2 sek na wystartwanie
+			q.add( new AsyncMessage( true ){		// na koncu zamknij
+				public void run(AsyncDevice dev) {
+					command = current_dev.uploadCode(hw, upanel_code);
+					Main.main.run(command, hw);
+				}
+			});
+		}
+		q.addWaitThread(Main.mt);
 	}
 }
 

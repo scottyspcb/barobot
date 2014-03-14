@@ -14,7 +14,7 @@ public class Mainboard extends AsyncDevice{
 			System.out.println("arduino comment: " + in);
 			return true;
 		}else{
-			System.out.println("read1: " + in);	
+	//		System.out.println("read1: " + in);	
 		}
 /*
 		if( in.startsWith( "12,") ){			// device found
