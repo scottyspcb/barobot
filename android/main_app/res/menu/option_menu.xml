@@ -12,8 +12,8 @@
           android:title="@string/action_main"
           android:showAsAction="always" />
     
-    <item android:id="@+id/action_product"
-          android:title="@string/action_product"
+    <item android:id="@+id/action_creator"
+          android:title="@string/action_creator"
           android:showAsAction="always" />
     <item
         android:id="@+id/action_bottles"

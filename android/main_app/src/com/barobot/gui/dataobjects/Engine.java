@@ -127,6 +127,11 @@ public class Engine {
 		recipe.insert();
 	}
 	
+	public void removeIngredient(Ingredient_t ingredient)
+	{
+		ingredient.delete();
+	}
+	
 	//---------------------------
 	// Obsolete old code
 	//
