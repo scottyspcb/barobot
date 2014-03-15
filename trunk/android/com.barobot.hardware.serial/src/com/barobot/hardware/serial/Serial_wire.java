@@ -22,6 +22,7 @@ import android.os.Message;
 import android.util.Log;
 
 import com.barobot.common.interfaces.CanSend;
+import com.barobot.common.interfaces.SerialEventListener;
 import com.barobot.common.interfaces.SerialInputListener;
 import com.barobot.common.interfaces.Wire;
 import com.hoho.android.usbserial.driver.UsbSerialDriver;
@@ -45,6 +46,7 @@ public class Serial_wire implements CanSend, Wire {
 	private int baud = 115200;
 	protected Queue<SerialInputListener> listener=new LinkedList<SerialInputListener>();
     private static SerialInputOutputManager.Listener mListener = null;
+	private SerialEventListener iel = null;
 
 	public Serial_wire(Activity mainActivity) {
 		super();
@@ -134,7 +136,9 @@ public class Serial_wire implements CanSend, Wire {
         	}
 		    sPort = null;
 		}
-		stateHasChanged();
+    	if(iel!=null){
+    		iel.onClose();
+    	}
 	}
 	@Override
 	public synchronized boolean send(String message) {
@@ -173,9 +177,6 @@ public class Serial_wire implements CanSend, Wire {
 	public boolean implementAutoConnect() {
 		return false;
 	}
-	public void stateHasChanged() {
-	}
-
 	@Override
 	public void destroy() {
 		mHandler.removeMessages(MESSAGE_REFRESH);
@@ -301,6 +302,9 @@ public class Serial_wire implements CanSend, Wire {
 	            return;
 	        }
     	}
+    	if(iel!=null){
+    		iel.onConnect();
+    	}
         Log.i("Serial", "Type:"+ sPort.getClass().getSimpleName());
 	}
     private final Handler mHandler = new Handler() {
@@ -344,5 +348,13 @@ public class Serial_wire implements CanSend, Wire {
 	@Override
 	public void removeOnReceive(SerialInputListener inputListener) {
 		this.listener.remove(inputListener);
+	}
+	@Override
+	public SerialEventListener getSerialEventListener() {
+		return iel;
+	}
+	@Override
+	public void setSerialEventListener(SerialEventListener iel) {
+		this.iel  = iel;
 	}
 }

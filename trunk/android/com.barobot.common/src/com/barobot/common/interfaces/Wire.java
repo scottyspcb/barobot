@@ -17,8 +17,9 @@ public interface Wire extends CanSend{
 	public boolean send(byte[] buf, int size ) throws IOException;
 	public boolean canConnect();
 	public boolean implementAutoConnect();
-	public void stateHasChanged();
 	public void destroy();
 	public void connectToId(String address);
 	public void setBaud(int i);
+	public void setSerialEventListener(SerialEventListener iel);
+	public SerialEventListener getSerialEventListener();
 }
