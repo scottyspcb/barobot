@@ -180,11 +180,11 @@ public class Wizard {
 		}
 
 		hw.connect();
-		int repeat = 10;
+		int repeat = 20;
 
 		System.out.println("Start" );
 		
-		int time = 30;
+		int time = 1000;
 		while (repeat-- > 0){
 			for (I2C_Device u : Upanel.list){
 				u.setLed( hw, "ff", 0 );	// zgas
@@ -195,28 +195,26 @@ public class Wizard {
 				u.setLed( hw, "ff", 0 );	// zgas
 				u.setLed( hw, "01", 255 );
 			}
+			Main.wait(time);
+			
 			for (I2C_Device u : Upanel.list){
 				u.setLed( hw, "ff", 0 );	// zgas
 				u.setLed( hw, "02", 255 );
 			}
 			Main.wait(time);	
-			
-	
+
 			for (I2C_Device u : Upanel.list){
 				u.setLed( hw, "ff", 0 );	// zgas
 				u.setLed( hw, "04", 255 );
 			}
 			Main.wait(time);		
-			
-			
+
 			for (I2C_Device u : Upanel.list){
 				u.setLed( hw, "ff", 0 );	// zgas
 				u.setLed( hw, "08", 255 );
 			}
 			Main.wait(time);	
-			
-			
-			
+
 			for (I2C_Device u : Upanel.list){
 				u.setLed( hw, "ff", 0 );	// zgas
 				u.setLed( hw, "10", 255 );
@@ -235,8 +233,7 @@ public class Wizard {
 				u.setLed( hw, "40", 255 );
 			}
 			Main.wait(time);
-			
-			
+
 			for (I2C_Device u : Upanel.list){
 				u.setLed( hw, "ff", 0 );	// zgas
 				u.setLed( hw, "80", 255 );
@@ -449,13 +446,15 @@ public class Wizard {
 		if(IspSettings.setHex){	
 			current_dev.isp(hw);	// mam 2 sek na wystartwanie
 			q.add( new AsyncMessage( true ){		// na koncu zamknij
-				public void run(AsyncDevice dev) {
+				public Queue run(AsyncDevice dev) {
 					command = current_dev.uploadCode(hw, upanel_code);
 					Main.main.run(command, hw);
+					return null;
 				}
 			});
 		}
 		q.addWaitThread(Main.mt);
+		hw.send("");
 	}
 
 	public void prepareMBManualReset(final Hardware hw) {
@@ -479,9 +478,10 @@ public class Wizard {
 			q.addWaitThread(Main.mt);
 			current_dev.isp(hw);
 			q.add( new AsyncMessage( true ){		// na koncu zamknij
-				public void run(AsyncDevice dev) {
+				public Queue run(AsyncDevice dev) {
 					String command = current_dev.setFuseBits(hw);
 					Main.main.run(command, hw);
+					return null;
 				}
 			});
 			hw.closeOnReady();
@@ -492,9 +492,10 @@ public class Wizard {
 			hw.send("PING", "PONG");
 			current_dev.isp(hw);	// mam 2 sek na wystartwanie
 			q.add( new AsyncMessage( true ){		// na koncu zamknij
-				public void run(AsyncDevice dev) {
+				public Queue run(AsyncDevice dev) {
 					command = current_dev.uploadCode(hw, current_dev.getHexFile());
 					Main.main.run(command, hw);
+					return null;
 				}
 			});
 			hw.closeOnReady();
@@ -701,9 +702,10 @@ public class Wizard {
 		if(IspSettings.setHex){	
 			current_dev.isp(hw);	// mam 2 sek na wystartwanie
 			q.add( new AsyncMessage( true ){		// na koncu zamknij
-				public void run(AsyncDevice dev) {
+				public Queue run(AsyncDevice dev) {
 					command = current_dev.uploadCode(hw, upanel_code);
 					Main.main.run(command, hw);
+					return null;
 				}
 			});
 		}

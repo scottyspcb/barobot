@@ -57,8 +57,8 @@ public class IspActivity extends Activity {
     	connection.setBaud( mSelectedBoard.uploadBaudrate );
     	connection.addOnReceive( new SerialInputListener(){
 	 		@Override
-	 		public void onNewData(byte[] data) {
-	 		//		String message = new String(data);
+	 		public void onNewData(byte[] data, int length) {
+	 		//		String message = new String(data, 0, length);
 	 		//	   	Log.e("Serial input", Decoder.toHexStr(data, data.length) );
 	 		//		q.read( mainboardSource, message );
 	 		}

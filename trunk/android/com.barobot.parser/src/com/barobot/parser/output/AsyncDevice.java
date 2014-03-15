@@ -17,10 +17,13 @@ public abstract class AsyncDevice {
 	private static Map<String, GlobalMatch> globalRegex = new HashMap<String, GlobalMatch>();
 	public String name = "";
 	public boolean enabled = true;
-	private Sender sender;
 	public static String separator = "\n";
 	private AsyncMessage wait_for = null;
 	private Queue waiting_queue;
+	private Sender sender;
+	private RetReader retReader;
+
+
 	public AsyncDevice(String name) {
 		this.name = name;
 	}
@@ -38,7 +41,6 @@ public abstract class AsyncDevice {
 			//			Log.i(Constant.TAG, "pusta komenda!!!]");
 					}else{
 					//	History_item hi = new History_item( command, History_item.INPUT );
-						System.out.println("command: " + command);	
 						this.useInput( command );
 					}
 					end		= buffer.indexOf(separator);
@@ -48,7 +50,7 @@ public abstract class AsyncDevice {
 	}
 	private boolean useInput(String command) {
 		boolean handled =false;
-	//	System.out.println("useInput: " + command );
+		System.out.println("AsyncDevice.useInput: " + command );
 		synchronized (this) {
 		//	System.out.println("wait_for?: " + ( (this.wait_for == null)? "null" : "nonull") );
 			if( this.wait_for != null ){
@@ -57,6 +59,10 @@ public abstract class AsyncDevice {
 				if(handled){
 			//		System.out.println("+unlock: " + command );
 					unlockRet( command );
+					return true;
+				}
+				handled = this.isRetOf( this.wait_for, command );
+				if(handled){
 					return true;
 				}
 				handled = this.wait_for.onInput( command );
@@ -73,13 +79,21 @@ public abstract class AsyncDevice {
 		//	Parser.logger.log(  , command);
 		return this.machGlobal(command);
 	}
-
+	public void setRetReader(RetReader retReader) {
+		this.retReader = retReader;
+	}
+	private boolean isRetOf(AsyncMessage wait_for2, String command) {
+		if( this.retReader != null ){
+			return this.retReader.isRetOf( this, wait_for2, command );
+		}
+		return false;
+	}
 	private boolean machGlobal(String command) {
 	    for(Entry<String, GlobalMatch> e : globalRegex.entrySet()) {
 	        String regex = e.getKey();
 	    	if(command.matches(regex)){
-	    		 GlobalMatch value = e.getValue();  	
-	    		 boolean stopnow =  value.run(command);
+	    		 GlobalMatch value	= e.getValue();  	
+	    		 boolean stopnow	= value.run( this, command, wait_for );
 	    		 if(stopnow){
 	    			 return true;
 	    		 }
@@ -97,7 +111,7 @@ public abstract class AsyncDevice {
 	}
 	public boolean send(String command) {
 		try {
-		//	System.out.println("\t>>>AsyncDevice Sending: " + command.trim());
+			System.out.println("\t\t>>>AsyncDevice Sending: " + command.trim());
 			return this.sender.send(command);
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -2,8 +2,9 @@ package com.barobot.parser;
 
 import java.io.IOException;
 import java.util.LinkedList;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.logging.Level;
-
 
 import com.barobot.parser.message.AsyncMessage;
 import com.barobot.parser.output.AsyncDevice;
@@ -143,9 +144,12 @@ public class Queue {
 				AsyncMessage m = output.pop();
 				AsyncDevice dev = m.getDevice();
 				if(dev!=null){
-					m.start( dev );
+					Queue nextq = m.start( dev );
 					moveToHistory( m );
-					if(m.isBlocing()){
+					if( nextq != null ){
+						this.addFirst(nextq);	// add on front
+					}
+					if(m.wait4Finish()){
 				//		System.out.println("isBlocing true:" + m.command );
 	                	this.wait_for_device_id	= m.getDeviceId();
 	                	dev.waitFor(m, this );
@@ -191,11 +195,12 @@ public class Queue {
 			if( this.wait_for_device_id >= 0 || this.output.size() > 0 ){
 				this.add( new AsyncMessage( true ){
 					@Override
-					public void run(AsyncDevice dev) {
+					public Queue run(AsyncDevice dev) {
 			//			Parser.logger.log(Level.INFO, "thread notify");
 						synchronized(thread){
 							thread.notify();
 						}
+						return null;
 					}
 				});
 			//	Parser.logger.log(Level.INFO, "START wait");
@@ -213,15 +218,16 @@ public class Queue {
 
 	public void addWait(final int time) {
 		final AsyncMessage m2 = new AsyncMessage( true ) {
-			public void run(AsyncDevice dev) {
+			public Queue run(AsyncDevice dev) {
 				this.name				= "wait " + time;
+				return null;
 			}
 			@Override
 			public long getTimeout() {
 				return time;
 			}
 			@Override
-			public boolean isBlocing() {
+			public boolean wait4Finish() {
 				return true;
 			}
 			@Override
@@ -235,6 +241,31 @@ public class Queue {
 		};
 		output.add( m2 );		
 	}
+	public void addWait2(final int time) {
+		final AsyncMessage m2 = new AsyncMessage( true, true ) {
+			@Override
+			public Queue run(final AsyncDevice dev) {
+				this.name				= "wait " + time;
+				/*
+				final Handler handler	= new Handler();
+				handler.postDelayed(new Runnable() {
+				  @Override
+				  public void run() {
+					  ar.unlock( m3 );
+				  }
+				}, time);			
+				*/
+				new Timer().schedule(new TimerTask() {          
+				    public void run() {
+				    	 dev.unlockRet("wait " + time);
+				    }
+				}, time);// odczekaj tyle czasu, odblokuj kolejkê i jedz dalej
+				return null;
+			}
+		};
+		output.add( m2 );		
+	}
+
 	public static void disableDevice(int mainboardSource) {
 		getDevice(mainboardSource).disable();
 	}
@@ -259,6 +290,9 @@ public class Queue {
 		}
 		this.output.clear();
 		devs.clear();
+	}
+	public void clearAll() {
+		// TODO Auto-generated method stub
 	}
 }
 

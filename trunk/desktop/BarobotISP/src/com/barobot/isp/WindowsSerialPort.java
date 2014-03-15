@@ -18,6 +18,7 @@ import javax.comm.UnsupportedCommOperationException;
 import com.barobot.common.Initiator;
 import com.barobot.common.interfaces.CanSend;
 import com.barobot.common.interfaces.Sender;
+import com.barobot.common.interfaces.SerialEventListener;
 import com.barobot.common.interfaces.SerialInputListener;
 import com.barobot.common.interfaces.Wire;
 
@@ -32,6 +33,7 @@ public class WindowsSerialPort implements CanSend, Wire, Sender {
 	protected int baud = 115200;
 	protected boolean connected	= false;
 	protected Queue<SerialInputListener> listener=new LinkedList<SerialInputListener>();
+	private SerialEventListener iel = null;
 
 	public WindowsSerialPort(String comPort, int speed ) {
 		this.comPort 	= comPort;
@@ -62,19 +64,15 @@ public class WindowsSerialPort implements CanSend, Wire, Sender {
 
 		SerialPortEventListener lis = new SerialPortEventListener(){
 			public void serialEvent(SerialPortEvent arg0) {
-		        if(!connected ){
-		          doError();// bad hack - throw indirect exception
-		        }
 				if( arg0.getEventType() ==  SerialPortEvent.DATA_AVAILABLE ){
 					byte[] readBuffer = new byte[128];
 					try {
 					     while ( connected && inputStream.available() > 0){
 					         int bytesRead = inputStream.read(readBuffer);
 					    //      System.out.println("in" + in );
-					         byte [] subArray = Arrays.copyOfRange(readBuffer, 0, bytesRead);
 						        for (SerialInputListener il : listener){
 						        	if(il.isEnabled()){
-						        		il.onNewData( subArray );
+						        		il.onNewData( readBuffer, bytesRead );
 						        	}
 						        }
 					         if(!connected ){ 
@@ -95,6 +93,9 @@ public class WindowsSerialPort implements CanSend, Wire, Sender {
 		System.out.println("Set speed " + IspSettings.fullspeed );
 		serialPort.notifyOnDataAvailable(true);
 		connected			= true;
+    	if(iel!=null){
+    		iel.onConnect();
+    	}
 		return true;
 	}
 	protected void openPort( String name ) throws Exception {
@@ -162,11 +163,13 @@ public class WindowsSerialPort implements CanSend, Wire, Sender {
 				}
 			}
 			connected = false;
+	    	if(iel!=null){
+	    		iel.onClose();
+	    	}
 		}
 	}
-
 	public boolean send(String command) {
-		System.out.println("\t>>>Sending: " + command);
+	//	System.out.println("\t>>>Sending: " + command.trim());
 		try {
 			outputStream.write(command.getBytes());
 			return true;
@@ -238,8 +241,7 @@ public class WindowsSerialPort implements CanSend, Wire, Sender {
 
 	public void setSearching(boolean active) {}
 	public void connectToId(String address) {}
-	public void stateHasChanged() {}
-	
+
 	public void setBaud(int speed) {
 		try {
 			serialPort.setSerialPortParams(speed,
@@ -250,5 +252,11 @@ public class WindowsSerialPort implements CanSend, Wire, Sender {
 		} catch (UnsupportedCommOperationException e) {
 			e.printStackTrace();
 		}
+	}
+	public SerialEventListener getSerialEventListener() {
+		return iel;
+	}
+	public void setSerialEventListener(SerialEventListener iel) {
+		this.iel  = iel;
 	}
 }

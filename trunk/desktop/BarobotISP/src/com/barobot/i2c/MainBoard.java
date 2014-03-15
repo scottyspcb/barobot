@@ -35,7 +35,7 @@ public class MainBoard extends I2C_Device_Imp {
 	private boolean hasNext = false;
 	public boolean readHasNext(Hardware hw, Queue q, int index) {
 		hasNext = false;
-		String command = "H" + index;
+		String command = "N" + index;
 		q.add( new AsyncMessage( command, true ){
 			public boolean isRet(String result) {
 				if(result.startsWith("122,")){		//	122,1,188,1

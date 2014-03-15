@@ -8,9 +8,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.util.Enumeration;
 import java.util.Properties;
-import org.smslib.helper.CommPortIdentifier;
+
 import com.barobot.common.DesktopLogger;
 import com.barobot.parser.utils.CopyStream;
 
@@ -42,7 +41,7 @@ public class Main{
 
 		IspSettings.safeMode = false;
 		IspSettings.setFuseBits = false;
-		IspSettings.verbose = 5;
+		IspSettings.verbose = 2;
 		IspSettings.setHex	= true;
 		IspSettings.force = false;
 
@@ -53,7 +52,7 @@ public class Main{
 	//	w.prepareMBManualReset( hw );
 	//	w.fast_close_test( hw );
 	//	w.prepareCarret( hw );	
-	//	w.checkCarret( hw );
+		//w.checkCarret( hw );
 	//	w.prepare1Upanel( hw, 4 );
 	//	w.prepareUpanel( hw, 3 );
 	//	w.prepareUpanel( hw, 4 );
@@ -70,19 +69,18 @@ public class Main{
 	//	w.test_proc( hw );	
 	//	w.swing( hw, 3, 1000, 5000 );
 	//	w.test( hw, 4 );
-		
 	//	w.findOrder( hw, 3 );
 	//	w.showOrder();
 	//	Wizard.wait(1000);
 	//	w.clearUpanel( hw );
-	//	w.illumination1( hw );
+		w.mrygaj( hw );
+		
+		//w.illumination1( hw );
 	//	w.ilumination3( hw, "88", 255, "00", 2 );
 	//	w.fadeButelka( hw, 4, 200 );
-
 	//	w.mrygaj( hw, 10 );
-		w.zapal( hw );
+	//	w.zapal( hw );
 	//	w.zgas( hw );
-
 	//	hw.close();
 		hw.closeOnReady();
 		System.out.println("koniec");
@@ -134,7 +132,6 @@ public class Main{
 			System.out.println("\t>>>RESULT ");
 			ct = new CopyStream(p.getInputStream(), System.out);
 			ct.start();
-
 			ce = new CopyStream(p.getErrorStream(), System.out);
 			ce.start();	
 

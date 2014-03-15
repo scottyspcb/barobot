@@ -1,9 +1,6 @@
-package com.barobot.constant;
-
+package com.barobot.common.constant;
 
 import java.util.UUID;
-
-import android.util.Log;
 
 public class Constant {
  
@@ -30,10 +27,7 @@ public class Constant {
 	public static final String PING = "PING";
 	public static final String PONG = "PONG";
 
-    public static void log(String tag4, String string) {
-		Log.w(tag4,string);
-	}
-	public static final int DRIVER_X 		= 4;
+    public static final int DRIVER_X 		= 4;
 	public static final int DRIVER_Y 		= 8;
 	public static final int DRIVER_Z 		= 16;
 

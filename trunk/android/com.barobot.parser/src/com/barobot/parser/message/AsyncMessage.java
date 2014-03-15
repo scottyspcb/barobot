@@ -4,14 +4,16 @@ import com.barobot.parser.Queue;
 import com.barobot.parser.output.AsyncDevice;
 
 public class AsyncMessage extends History_item{
-	private static final long NO_TIMEOUT = -1;
+	protected static final long NO_TIMEOUT		= -1;
+	protected static final long DEFAULT_TIME	= 15;
+	protected String unlocking_command	= "";
+	protected boolean blocking	= false;
 	protected String name		= "";
+
 	public int timeout			= 20000;		// tyle ms maksymalnie czekaj na zwrotkę zanim pokazać błąd (30s)
 	public long send_timestamp	= 0;			// czas wyslania
 	//public Runnable isRet		= null;
 	public long wait_until		= 0;
-	protected String unlocking_command	= "";
-	protected boolean blocking	= false;
 	public boolean addSufix		= true;
 
 	public AsyncMessage( String cmd, boolean blocking, boolean dir ){
@@ -30,25 +32,23 @@ public class AsyncMessage extends History_item{
 		this.direction		= dir;
 		this.blocking		= blocking;
 	}
-	/*
-	public boolean handle( String command ){
-		return false;
-	}*/
 	public void unlockWith( String withCommand ){
 	//	System.out.println("unlockWith "+withCommand);
 		this.unlocking_command = withCommand;
 		blocking= false;
 	}
-	public void start(AsyncDevice dev) {
+	public Queue start(AsyncDevice dev) {
+		Queue nextq = null;
 		if(this.command != ""){
 			dev.send( addSufix() ? ( command + "\n") : command );
 		}else{
-			this.run(dev);
+			nextq = this.run(dev);
 		}
-		if(this.isBlocing()){
+		if(this.wait4Finish()){
 			this.send_timestamp	= System.currentTimeMillis();
 			this.wait_until		= this.send_timestamp + this.getTimeout();
 		}
+		return nextq;
 	}
 	public AsyncDevice getDevice() {
 		int devid		= this.getDeviceId();
@@ -61,7 +61,7 @@ public class AsyncMessage extends History_item{
 		}else{
 			prefix = "--> ";
 		}
-		boolean blocing = this.isBlocing();
+		boolean blocing = this.wait4Finish();
 		if( this.command == null || this.command.equals( "") ){
 			if( blocing ){
 				return prefix + "blocking logic ("+name+")\t\t\t\t" + unlocking_command;
@@ -76,14 +76,14 @@ public class AsyncMessage extends History_item{
 			return prefix + command;
 		}
 	}
-
 	// do nadpisania:
-	public void run(AsyncDevice dev) {
+	public Queue run(AsyncDevice dev) {
+		return null;
 	}
 	public int getDeviceId() {
 		return Queue.DFAULT_DEVICE;
 	}
-	public boolean isBlocing() {
+	public boolean wait4Finish() {
 		return this.blocking;
 	}
 	public boolean isRet(String result) {
@@ -98,7 +98,6 @@ public class AsyncMessage extends History_item{
 		return AsyncMessage.NO_TIMEOUT;
 	}
 	public void afterTimeout(){						// command is expired
-
 	}
 	public void onException( String input ) {
 	}
