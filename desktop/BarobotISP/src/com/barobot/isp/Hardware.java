@@ -20,8 +20,6 @@ public class Hardware {
 	}
 	public void init() {
 		Mainboard mb	= new Mainboard();
-	//	AsyncDevice c	= new Console();
-	//	AsyncDevice u	= new MainScreen();
 		/*
 			mb.addGlobalRegex("^E.+", new GlobalMatch(){
 				public boolean run( String in ) {
@@ -38,7 +36,7 @@ public class Hardware {
 		q.add( mainboardSource, command, retcmd );
 	}
 	public void send(String command) {
-		q.add( command + "\n", false );
+		q.add( command, false );
 	}
 	public void connect() {
 		if(serial.isConnected()){
@@ -49,20 +47,21 @@ public class Hardware {
 			System.exit(-1);
 		}
 		try {
-			Queue.getDevice( mainboardSource ).registerSender( serial );
+			final AsyncDevice mb	= Queue.getDevice( mainboardSource );
+			mb.registerSender( serial );
 			SerialInputListener listener = new SerialInputListener() {
 				public void onRunError(Exception e) {
 					// TODO Auto-generated method stub
 				}
-				public void onNewData(byte[] data) {
-					String in = new String(data);
-					q.read( mainboardSource, in );
+				public void onNewData(byte[] data, int length) {
+					String in = new String(data, 0, length);
+					mb.read( in );
 				}
 				public boolean isEnabled() {
 					return true;
 				}
 			};
-			serial.addOnReceive( listener);
+			serial.addOnReceive( listener );
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -74,8 +73,9 @@ public class Hardware {
 	}
 	public void closeOnReady() {
 		q.add( new AsyncMessage( true ){		// na koncu zamknij
-			public void run(AsyncDevice dev) {
+			public Queue run(AsyncDevice dev) {
 				close();
+				return null;
 			}
 		});
 	}

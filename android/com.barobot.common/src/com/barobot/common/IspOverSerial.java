@@ -58,8 +58,8 @@ public class IspOverSerial implements SerialInputListener, IspCommunicator {
     public void reset(boolean b){
 	}
 
-	public synchronized void onNewData(byte[] buf) {
-		int putLength = buf.length;
+	public synchronized void onNewData(byte[] buf, int length) {
+		int putLength = length;
     	for( int i=0; i<putLength;i++ ){
     		qe.add(buf[i]); // add on end
     		size++;

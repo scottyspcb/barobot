@@ -88,7 +88,7 @@ public class Upanel extends I2C_Device_Imp {
 	private boolean hasNext = false;
 	public boolean readHasNext(Hardware hw, Queue q ) {
 		hasNext = false;
-		String command = "h" + this.myaddress;
+		String command = "n" + this.myaddress;
 		q.add( new AsyncMessage( command, true ){
 			public boolean isRet(String result) {
 				if(result.startsWith("122,")){		//	122,1,188,1

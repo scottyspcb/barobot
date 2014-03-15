@@ -4,7 +4,6 @@ public class MainScreen extends AsyncDevice{
 	public MainScreen() {
 		super("MainScreen");
 	}
-
 	@Override
 	public boolean parse(String in) {
 		return false;

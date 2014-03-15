@@ -1,4 +1,4 @@
-package com.barobot.constant;
+package com.barobot.common.constant;
 
 public class Methods {
 	public static int METHOD_GETVERSION =	5;
@@ -67,6 +67,10 @@ public class Methods {
 */
 	
 	
+	public static int INNER_HALL_X	= 0;
+	public static int INNER_HALL_Y	= 1;
+	public static int INNER_WEIGHT	= 2;
+	
 	
 	
 	
@@ -85,23 +89,5 @@ public class Methods {
 
 	
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
 }

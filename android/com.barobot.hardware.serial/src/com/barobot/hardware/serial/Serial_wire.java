@@ -67,7 +67,7 @@ public class Serial_wire implements CanSend, Wire {
 		//	    	Log.e("Serial_wire.onNewData", new String(data, 0, data.length) );
 			        for (SerialInputListener il : listener){
 			        	if(il.isEnabled()){
-			        		il.onNewData( data );
+			        		il.onNewData( data, data.length );
 			        	}
 			        }
 			    }
@@ -232,7 +232,7 @@ public class Serial_wire implements CanSend, Wire {
         new AsyncTask<Void, Void, List<String>>() {
             @Override
             protected List<String> doInBackground(Void... params) {   
-      //          Log.d("serial", "Refreshing device list ...");
+                Log.d("serial", "Refreshing device list ...");
    
                 for (final UsbDevice device : mUsbManager.getDeviceList().values()) {
                     final UsbSerialDriver driver =  UsbSerialProber.probeSingleDevice(device);

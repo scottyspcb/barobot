@@ -133,7 +133,7 @@ public class BT_wire implements Wire {
                 //Log.i(TAG, "buffer read " + readMessage );
             	String input = (String) msg.obj;
 		    	if(listener!=null){
-		    		listener.onNewData( input.getBytes() );
+		    		listener.onNewData( input.getBytes(), input.length() );
 		    	}
                 break;
         	case BluetoothChatService.MESSAGE_STATE_CHANGE:

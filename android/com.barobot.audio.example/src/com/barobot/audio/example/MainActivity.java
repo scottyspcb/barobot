@@ -48,20 +48,6 @@ public class MainActivity extends Activity implements OnSignalsDetectedListener{
     		connection.close();
     	}
    	 	connection = new Serial_wire( this );
-   	 	connection.addOnReceive( new SerialInputListener(){
-			@Override
-			public void onNewData(byte[] data) {
-				String message = new String(data);
-				Log.e("Serial input", message);
-				readInput(message);
-			}
-			@Override
-			public void onRunError(Exception e) {
-			}
-			@Override
-			public boolean isEnabled() {
-				return true;
-			}});
     	connection.init();
     	
 		System.out.println("test connection ");
@@ -89,14 +75,26 @@ public class MainActivity extends Activity implements OnSignalsDetectedListener{
 		detectorThread.setOnSignalsDetectedListener(this);
 		detectorThread.start();
 		
-		Mainboard mb	= new Mainboard();
+		final Mainboard mb	= new Mainboard();
 		//	AsyncDevice c	= new Console();
 		//	AsyncDevice u	= new MainScreen();
-		
-
 		mb.registerSender( connection );		
 		mainboardSource = Queue.registerSource( mb );
 		Queue.enableDevice( mainboardSource );
+		connection.addOnReceive( new SerialInputListener(){
+			@Override
+			public void onNewData(byte[] data, int length) {
+				String message = new String(data, 0, length);
+				Log.e("Serial input", message);
+				mb.read( message );
+			}
+			@Override
+			public void onRunError(Exception e) {
+			}
+			@Override
+			public boolean isEnabled() {
+				return true;
+			}});
     	init();
 	}
 	
@@ -220,9 +218,7 @@ public class MainActivity extends Activity implements OnSignalsDetectedListener{
 			}
 		});
 	}
-	public void readInput(String message) {
-		 q.read( mainboardSource, message );
-	}
+
 	public void notify(String string, final double value) {
 		if(string.equals("energy")){
 			runOnUiThread(new Runnable() {

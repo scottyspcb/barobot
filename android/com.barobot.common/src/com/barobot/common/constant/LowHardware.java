@@ -1,4 +1,4 @@
-package com.barobot.constant;
+package com.barobot.common.constant;
 
 public class LowHardware {
 
@@ -39,8 +39,4 @@ public class LowHardware {
 	public static final String UPANEL_CPU="atmega8";
 	public static final int UPANEL_SERIAL0_BOUND= 115200;
 
-	
-	
-	
-	
 }
