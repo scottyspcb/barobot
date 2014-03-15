@@ -46,50 +46,14 @@ public class BarobotDataStub {
 		liq.type = type;
 		liq.insert();
 		
-		liq = new Liquid_t();
-		liq.name = "Finlandia";
-		liq.type = type;
-		liq.insert();
-		
-		liq = new Liquid_t();
-		liq.name = "Finlandia";
-		liq.type = type;
-		liq.insert();
-		
-		liq = new Liquid_t();
-		liq.name = "Finlandia";
-		liq.type = type;
-		liq.insert();
-		
-		liq = new Liquid_t();
-		liq.name = "Finlandia";
-		liq.type = type;
-		liq.insert();
-		
-		liq = new Liquid_t();
-		liq.name = "Finlandia";
-		liq.type = type;
-		liq.insert();
-		
-		liq = new Liquid_t();
-		liq.name = "Finlandia";
-		liq.type = type;
-		liq.insert();
-		
-		liq = new Liquid_t();
-		liq.name = "Finlandia";
-		liq.type = type;
-		liq.insert();
-		
-		liq = new Liquid_t();
-		liq.name = "Finlandia";
-		liq.type = type;
-		liq.insert();
-		
 		Product prod = new Product();
 		prod.capacity = 700;
 		prod.liquid = liq;
 		prod.insert();
+		
+		Recipe_t rec = new Recipe_t();
+		rec.name = "White Rav";
+		rec.insert();
 		
 		Slot slot = BarobotData.GetSlot(1);
 		slot.product = prod;

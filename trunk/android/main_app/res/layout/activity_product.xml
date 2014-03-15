@@ -108,8 +108,13 @@
             android:id="@+id/product_types_list"
             android:layout_width="@dimen/product_list_width"
             android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
             android:layout_below="@id/product_type_new_button"
-            android:layout_alignParentRight="true" />
+            android:choiceMode="singleChoice"
+            android:focusableInTouchMode="true"
+            android:focusable="true"
+            android:drawable="@drawable/list_selector"
+             />
 
         <Button
             android:id="@+id/product_liquid_new_button"

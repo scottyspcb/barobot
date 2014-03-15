@@ -98,6 +98,11 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.barobot.activity.BarobotActivity" />
         </activity>
+        <activity
+            android:name="com.barobot.activity.CreatorActivity"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+            android:label="@string/title_activity_creator" >
+        </activity>
     </application>
 
 </manifest>

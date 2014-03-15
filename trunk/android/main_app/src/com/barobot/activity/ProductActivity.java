@@ -3,12 +3,14 @@ package com.barobot.activity;
 import java.util.List;
 
 import com.barobot.R;
+import com.barobot.R.drawable;
 import com.barobot.gui.dataobjects.Engine;
 import com.barobot.gui.dataobjects.Liquid_t;
 import com.barobot.gui.dataobjects.Product;
 import com.barobot.gui.dataobjects.Type;
 import com.barobot.gui.utils.CapacityProductWrapper;
 
+import android.R.color;
 import android.os.Bundle;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -76,7 +78,8 @@ public class ProductActivity extends BarobotActivity {
 		
 		List<Type> types = engine.getTypes();
 
-		ArrayAdapter<Type> mAdapter = new ArrayAdapter<Type>(this, android.R.layout.simple_list_item_1, types);
+		
+		ArrayAdapter<Type> mAdapter = new ArrayAdapter<Type>(this, R.layout.item_layout, types);
 		ListView listView = (ListView) findViewById(R.id.product_types_list);
 		listView.setAdapter(mAdapter);
 		
@@ -85,6 +88,8 @@ public class ProductActivity extends BarobotActivity {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position,
 					long id) {
+				view.setSelected(true);
+				
 				
 				Type type = (Type) parent.getItemAtPosition(position);
 				SetCurrentType(type);
