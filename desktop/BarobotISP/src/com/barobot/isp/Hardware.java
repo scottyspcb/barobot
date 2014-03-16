@@ -1,6 +1,7 @@
 package com.barobot.isp;
 
 
+import com.barobot.common.IspSettings;
 import com.barobot.common.interfaces.SerialInputListener;
 import com.barobot.parser.Queue;
 import com.barobot.parser.message.AsyncMessage;
@@ -9,7 +10,7 @@ import com.barobot.parser.output.Mainboard;
 
 public class Hardware {
 	private WindowsSerialPort serial	= null;
-	private Queue q						= new Queue();
+	private Queue q						= new Queue( true );
 	public String comPort				= "com1";
 	static int mainboardSource			= 0;
 

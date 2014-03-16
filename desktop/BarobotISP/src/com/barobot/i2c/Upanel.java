@@ -3,10 +3,11 @@ package com.barobot.i2c;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.barobot.isp.Hardware;
-import com.barobot.isp.IspSettings;
+import com.barobot.common.IspSettings;
 import com.barobot.isp.Main;
 import com.barobot.parser.Queue;
+import com.barobot.parser.devices.I2C_Device;
+import com.barobot.parser.devices.I2C_Device_Imp;
 import com.barobot.parser.message.AsyncMessage;
 import com.barobot.parser.utils.Decoder;
 
@@ -50,22 +51,21 @@ public class Upanel extends I2C_Device_Imp {
 		this.can_reset_me_dev = current_dev;
 	}
 
-	public String reset(Hardware hw, boolean execute ) {
+	public String reset(Queue q, boolean execute ) {
 		String command = "";
 		if(getIndex() > 0 ){
 			command = "RESET"+ this.myindex;
-			
 		}else if( can_reset_me_dev == null ){
 			command = "RESET_NEXT"+ can_reset_me_dev.getAddress();
 		}
 		if(execute){
-			hw.send( command );
+			q.add( command, true );
 		}
 		return command;
 	}
-	public void reset_next(Hardware hw) {
+	public void reset_next(Queue q) {
 		if( this.myaddress > 0 ){
-			hw.send("RESET_NEXT"+ this.myaddress );
+			q.add("RESET_NEXT"+ this.myaddress, true );
 		}
 	}
 	public String getReset() {
@@ -80,13 +80,12 @@ public class Upanel extends I2C_Device_Imp {
 		return "RESET"+ this.myindex;
 	}
 
-	public void isp_next(Hardware hw) {	// pod³¹czony do mnie
-		hw.send( "p"+ getAddress() );
+	public void isp_next(Queue q) {	// pod³¹czony do mnie
+		q.add( "p"+ getAddress(), false );
 	}
-	
 
 	private boolean hasNext = false;
-	public boolean readHasNext(Hardware hw, Queue q ) {
+	public boolean readHasNext( Queue q ) {
 		hasNext = false;
 		String command = "n" + this.myaddress;
 		q.add( new AsyncMessage( command, true ){
@@ -108,7 +107,7 @@ public class Upanel extends I2C_Device_Imp {
 		return hasNext;
 	}
 
-	public int resetNextAndReadI2c(Hardware hw, Queue q) {
+	public int resetNextAndReadI2c(Queue q) {
 		have_reset_address = -1;
 		String command = "RESET_NEXT"+ this.myaddress;
 		q.add( new AsyncMessage( command, true ){
@@ -125,9 +124,9 @@ public class Upanel extends I2C_Device_Imp {
 		return have_reset_address;
 	}
 
-	public int resetAndReadI2c(Hardware hw, Queue q ) {
+	public int resetAndReadI2c( Queue q ) {
 		myaddress = -1;
-		String command = this.reset( hw, false );
+		String command = this.reset( q, false );
 		q.add( new AsyncMessage( command, true ){
 			public boolean isRet(String result) {
 				if(result.startsWith("12,")){		//	12,18,19,1
