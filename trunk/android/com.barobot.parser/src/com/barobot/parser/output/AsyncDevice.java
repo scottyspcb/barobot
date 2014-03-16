@@ -6,8 +6,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.barobot.common.Initiator;
 import com.barobot.common.interfaces.CanSend;
-import com.barobot.common.interfaces.Sender;
 import com.barobot.parser.Queue;
 import com.barobot.parser.message.AsyncMessage;
 import com.barobot.parser.utils.GlobalMatch;
@@ -20,9 +20,8 @@ public abstract class AsyncDevice {
 	public static String separator = "\n";
 	private AsyncMessage wait_for = null;
 	private Queue waiting_queue;
-	private Sender sender;
+	private CanSend sender;
 	private RetReader retReader;
-
 
 	public AsyncDevice(String name) {
 		this.name = name;
@@ -36,7 +35,7 @@ public abstract class AsyncDevice {
 					String command	= buffer.substring(0, end);
 					buffer			= buffer.delete(0, end+1);
 					command			= command.trim();
-		//			System.out.println("command: " + command);
+		//			Initiator.logger.i("command: " , command);
 					if("".equals(command)){
 			//			Log.i(Constant.TAG, "pusta komenda!!!]");
 					}else{
@@ -50,20 +49,31 @@ public abstract class AsyncDevice {
 	}
 	private boolean useInput(String command) {
 		boolean handled =false;
-		System.out.println("AsyncDevice.useInput: " + command );
+		Initiator.logger.e("AsyncDevice.useInput", command );
 		synchronized (this) {
-		//	System.out.println("wait_for?: " + ( (this.wait_for == null)? "null" : "nonull") );
-			if( this.wait_for != null ){
-		//		System.out.println("?isRet: " + command );
+		//	Initiator.logger.i("wait_for?: ", ( (this.wait_for == null)? "null" : "nonull") );
+			if( this.wait_for == null ){
+				if( this.retReader != null ){
+					handled = this.retReader.isRetOf( this, null, command );
+					if(handled){
+						return true;
+					}
+				}	
+			}else{
+		//		Initiator.logger.i("?isRet: ", command );
 				handled = this.wait_for.isRet( command );
 				if(handled){
-			//		System.out.println("+unlock: " + command );
-					unlockRet( command );
+			//		Initiator.logger.i("+unlock: ", command );
+					this.unlockRet( command );
 					return true;
 				}
-				handled = this.isRetOf( this.wait_for, command );
-				if(handled){
-					return true;
+				if( this.retReader != null ){
+					handled = this.retReader.isRetOf( this, this.wait_for, command );
+					if(handled){
+						//Initiator.logger.i("+unlock: ", command );
+						this.unlockRet( command );
+						return true;
+					}
 				}
 				handled = this.wait_for.onInput( command );
 				if(handled){
@@ -71,32 +81,42 @@ public abstract class AsyncDevice {
 				}
 			}
 		}
+		this.machGlobal( command );
 		handled = this.parse(command);
 		if(handled){
 			return true;
 		}
 		//	Log.i("command", command);
-		//	Parser.logger.log(  , command);
-		return this.machGlobal(command);
+		Initiator.logger.i("AsyncDevice.useInput.nohandler", command);
+		return false;
 	}
 	public void setRetReader(RetReader retReader) {
 		this.retReader = retReader;
 	}
-	private boolean isRetOf(AsyncMessage wait_for2, String command) {
-		if( this.retReader != null ){
-			return this.retReader.isRetOf( this, wait_for2, command );
-		}
-		return false;
-	}
 	private boolean machGlobal(String command) {
+		String wait4Command = "";
+		if(this.wait_for != null ){
+			wait4Command = this.wait_for.command;
+		}
+		Initiator.logger.i("AsyncDevice.machGlobal", command + "/" + wait4Command);
 	    for(Entry<String, GlobalMatch> e : globalRegex.entrySet()) {
-	        String regex = e.getKey();
-	    	if(command.matches(regex)){
-	    		 GlobalMatch value	= e.getValue();  	
-	    		 boolean stopnow	= value.run( this, command, wait_for );
-	    		 if(stopnow){
-	    			 return true;
-	    		 }
+	        String regex		= e.getKey();	// String matchRet		= value.getMatchRet();
+	 //       Initiator.logger.i("AsyncDevice.machGlobal.matches", regex + "=" + command );
+	        if( command.matches(regex)){
+	        	Initiator.logger.i("AsyncDevice.machGlobal ok: ", regex + "=" + command );
+	        	GlobalMatch value	= e.getValue();
+	        	String matchCommand	= value.getMatchCommand();
+	        	Initiator.logger.i("AsyncDevice.machGlobal ok1: ", regex + "=" + command );
+	        	if( matchCommand == null || wait4Command.matches(matchCommand)){
+	        		Initiator.logger.i("AsyncDevice.machGlobal ok2", wait4Command );
+					boolean stopnow	= value.run( this, command, wait4Command, wait_for );
+					if(stopnow){
+						return true;
+					}
+	        	}else{
+	        		Initiator.logger.i("AsyncDevice.machGlobal.matches no ok2", wait4Command );
+	        	}
+	        	Initiator.logger.i("AsyncDevice.machGlobal ok3 ", regex + "=" + command );
 		    }
 	    }
 		return false;
@@ -106,41 +126,56 @@ public abstract class AsyncDevice {
 			buffer =  new StringBuilder();
 		}
 	}
-	public void addGlobalRegex(String match, GlobalMatch globalMatch ){
-		globalRegex.put(match, globalMatch);
+	public void addGlobalRegex( GlobalMatch globalMatch ){
+		Initiator.logger.i("AsyncDevice.addGlobalRegex", globalMatch.getMatchRet() );
+		globalRegex.put(globalMatch.getMatchRet(), globalMatch);
 	}
 	public boolean send(String command) {
 		try {
-			System.out.println("\t\t>>>AsyncDevice Sending: " + command.trim());
-			return this.sender.send(command);
+			Initiator.logger.e(">>>AsyncDevice.Send", command.trim());
+			if( this.sender.isConnected() ){
+		//		synchronized(outputStream){
+				try {
+		//			Initiator.logger.i(registerSender send" , command.trim() );
+					return this.sender.send(command);
+				} catch (IOException e) {
+				  e.printStackTrace();
+				}
+			//	}
+			}else{
+				Initiator.logger.i("AsyncDevice.Send", "no connect");
+			//	throw new Exception("No connect");
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return false;
 	}
 	public void registerSender(final CanSend connection) {
+		this.sender = connection;
+		/*
 		this.sender = new Sender(){
 			@Override
 			public boolean send(String command){
 				if( connection.isConnected() ){
 			//		synchronized(outputStream){
 					try {
-			//			System.out.println("registerSender send" + command.trim() );
+			//			Initiator.logger.i("registerSender send",  command.trim() );
 						return connection.send(command);
 					} catch (IOException e) {
 					  e.printStackTrace();
 					}
 				//	}
 				}else{
-					System.out.println("no connect");
+					Initiator.logger.i("no connect");
 				//	throw new Exception("No connect");
 				}
 				return true;
 			}
-		};
+		};*/
 	}
 	public void registerSender(final OutputStream outputStream) {
-		this.sender = new Sender(){
+		this.sender = new CanSend(){
 			public boolean send(String command) {
 		//		synchronized(outputStream){
 					try {
@@ -152,6 +187,10 @@ public abstract class AsyncDevice {
 					}
 			//	}
 				return false;
+			}
+			@Override
+			public boolean isConnected() {
+				return true;
 			}
 		};
 	}
@@ -165,6 +204,7 @@ public abstract class AsyncDevice {
 	public void unlockRet(String withCommand){
 		synchronized (this) {
 			if(this.wait_for!=null){
+				Initiator.logger.i(">>>AsyncDevice.unlockRet", this.wait_for.toString() +" with: "+ withCommand.trim());
 				this.wait_for.unlockWith(withCommand);
 				this.wait_for = null;
 				waiting_queue.unlock();

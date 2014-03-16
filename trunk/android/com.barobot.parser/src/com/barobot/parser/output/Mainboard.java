@@ -1,5 +1,7 @@
 package com.barobot.parser.output;
 
+import com.barobot.common.Initiator;
+
 public class Mainboard extends AsyncDevice{
 	public Mainboard() {
 		super("Mainboard");
@@ -9,10 +11,10 @@ public class Mainboard extends AsyncDevice{
 		//Parser.log(Level.INFO, "parse: " + in);
 		// all other messages
 		if( in.startsWith( "-") ){			// comment
-			System.out.println("Arduino comment: " + in);
+			Initiator.logger.i("Mainboard.parse.comment", in);
 			return true;
 		}else{
-			System.out.println("Mainboard parse: " + in);	
+			Initiator.logger.i("Mainboard.parse", in);	
 		}
 /*
 		if( in.startsWith( "12,") ){			// device found

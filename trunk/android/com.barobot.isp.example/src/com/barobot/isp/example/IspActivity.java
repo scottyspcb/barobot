@@ -4,6 +4,7 @@ import java.io.IOException;
 import com.barobot.common.IspOverSerial;
 import com.barobot.common.interfaces.SerialInputListener;
 import com.barobot.common.interfaces.Wire;
+import com.barobot.hardware.serial.AndroidLogger;
 import com.barobot.hardware.serial.Serial_wire;
 import com.barobot.isp.Uploader;
 import com.barobot.isp.enums.Board;
@@ -59,7 +60,7 @@ public class IspActivity extends Activity {
 	 		@Override
 	 		public void onNewData(byte[] data, int length) {
 	 		//		String message = new String(data, 0, length);
-	 		//	   	Log.e("Serial input", Decoder.toHexStr(data, data.length) );
+	 		//	   	Log.e("Serial addOnReceive", Decoder.toHexStr(data, data.length) );
 	 		//		q.read( mainboardSource, message );
 	 		}
 	 		@Override

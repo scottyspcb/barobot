@@ -96,9 +96,9 @@ public class Serial_wire implements CanSend, Wire {
 
 	@Override
 	public void resume() {
-		Log.e("Serial", "Resumed, sDriver=" + sPort);
+		Log.e("Serial_wire.resume", "Resumed, sDriver=" + sPort);
         if (sPort == null) {
-        	Log.e("Serial","No serial device.");
+        	Log.e("Serial_wire.resume","No serial device.");
         	mHandler.sendEmptyMessage(MESSAGE_REFRESH);
         } else if(!sPort.isOpen()){
         	Log.e("Serial", "Resumed openPort");
@@ -108,15 +108,15 @@ public class Serial_wire implements CanSend, Wire {
 	@Override
 	public boolean isConnected() {
 		if (sPort == null) {
-			Log.e("isConnected", "sPort null" );
+			Log.e("Serial_wire.isConnected", "sPort null" );
 			return false;	
 		}
 		if(mSerialIoManager==null){
-			Log.e("isConnected", "mSerialIoManager null" );
+			Log.e("Serial_wire.isConnected", "mSerialIoManager null" );
 			return false;
 		}
 		if (!sPort.isOpen()) {
-			Log.e("isConnected", "isOpen null" );
+			Log.e("Serial_wire.isConnected", "isOpen null" );
 			return false;
 		}
 		return true;
@@ -130,7 +130,7 @@ public class Serial_wire implements CanSend, Wire {
 				try {
 	        		sPort.close();
 				} catch (IllegalStateException e2) {
-			    	Log.e("Serial", "IllegalStateException", e2);
+			    	Log.e("Serial_wire.close", "IllegalStateException", e2);
 			    } catch (IOException e) {
 			    }
         	}
@@ -214,14 +214,14 @@ public class Serial_wire implements CanSend, Wire {
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(ACTION_USB_PERMISSION)) {
                 if (!intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
-                    Log.e("serial","Permission not granted :(");
+                    Log.e("Serial_wire.mPermissionReceiver","Permission not granted :(");
                 } else {
                     UsbDevice dev = (UsbDevice) intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
                     if (dev != null) {
-                        Log.w("serial","Permission granted: "+ dev.getVendorId() );
+                        Log.w("Serial_wire.mPermissionReceiver","Permission granted: "+ dev.getVendorId() );
                         connectWith(dev);
                     } else {
-                        Log.e("serial","device not present!");
+                        Log.e("Serial_wire.mPermissionReceiver","device not present!");
                     }
                 }
             }
@@ -232,7 +232,7 @@ public class Serial_wire implements CanSend, Wire {
         new AsyncTask<Void, Void, List<String>>() {
             @Override
             protected List<String> doInBackground(Void... params) {   
-                Log.d("serial", "Refreshing device list ...");
+                Log.d("Serial_wire.refreshDeviceList", "Refreshing device list ...");
    
                 for (final UsbDevice device : mUsbManager.getDeviceList().values()) {
                     final UsbSerialDriver driver =  UsbSerialProber.probeSingleDevice(device);
@@ -250,10 +250,10 @@ public class Serial_wire implements CanSend, Wire {
                             final PendingIntent pi = PendingIntent.getBroadcast( view, 0, new Intent(
                                     ACTION_USB_PERMISSION), 0);
                             mUsbManager.requestPermission(device, pi);
-                            Log.w("serial", "requestPermission");
+                            Log.w("Serial_wire.refreshDeviceList", "requestPermission");
                         }else{
                             for (int i = 0; i < driver.getPortCount(); ++i) {	
-                            	Log.w("serial", "ready device: " + i +": "+ device.getVendorId()+" - "+ device.getProductId() );
+                            	Log.w("Serial_wire.refreshDeviceList", "ready device: " + i +": "+ device.getVendorId()+" - "+ device.getProductId() );
                 //                result.add(new DeviceEntry(device, driver, i));
                                 if( i == 0 ){
                                 	connectWith(device);
@@ -271,33 +271,33 @@ public class Serial_wire implements CanSend, Wire {
 		final UsbSerialDriver driver =  UsbSerialProber.probeSingleDevice(device);
         UsbSerialPort port = driver.getPort( 0 );
         if (port == null) {
-            Log.d("serial", "No port.");
+            Log.d("serial.connectWith", "No port.");
         }else{
         	sPort = port;
-        	Log.w("Serial", "openPort connectWith");
+        	Log.w("Serial.connectWith", "openPort connectWith");
         	openPort();
         }
 		return false;
 	}
     private void openPort() {
     	if( sPort == null ){
-    		Log.e("Serial", "sPort is null");
+    		Log.e("Serial.openPort", "sPort was null");
     	}else if( mUsbManager == null ){
-        	Log.e("Serial", "mUsbManager is null");
+        	Log.e("Serial.openPort", "mUsbManager is null");
     	}else if(sPort.isOpen()){
-    		Log.e("Serial", "isOpen is opened");
+    		Log.e("Serial.openPort", "isOpen is opened");
     		mHandler.removeMessages(MESSAGE_REFRESH);
     		onDeviceStateChange();
     	}else{
-    		Log.e("Serial", "openPort");
+    		Log.e("Serial.openPort", "openPort");
     		mHandler.removeMessages(MESSAGE_REFRESH);
 			try {
 	            sPort.open(mUsbManager);
 	            sPort.setParameters(baud, 8, UsbSerialPort.STOPBITS_1, UsbSerialPort.PARITY_NONE);
 	            onDeviceStateChange();
-	            Log.i("Serial", "opened " +baud);
+	            Log.i("Serial.openPort", "opened " +baud);
 	        } catch (IOException e) {
-	            Log.e("Serial", "Error setting up device: " + e.getMessage(), e);
+	            Log.e("Serial.openPort", "Error setting up device: " + e.getMessage(), e);
 	            close();
 	            return;
 	        }
@@ -305,13 +305,14 @@ public class Serial_wire implements CanSend, Wire {
     	if(iel!=null){
     		iel.onConnect();
     	}
-        Log.i("Serial", "Type:"+ sPort.getClass().getSimpleName());
+        Log.i("Serial.openPort", "Type: "+ sPort.getClass().getSimpleName());
 	}
     private final Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case MESSAGE_REFRESH:
+                	Log.i("Serial.handleMessage", "trying to connect");
                     refreshDeviceList();
                     mHandler.removeMessages(MESSAGE_REFRESH);		// usun duplikaty
                     mHandler.sendEmptyMessageDelayed(MESSAGE_REFRESH, REFRESH_TIMEOUT_MILLIS);

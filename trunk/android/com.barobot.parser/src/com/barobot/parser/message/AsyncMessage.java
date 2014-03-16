@@ -22,6 +22,9 @@ public class AsyncMessage extends History_item{
 		this.direction		= dir;
 	}
 	public AsyncMessage(String cmd, boolean blocking ) {
+		if(blocking){
+	//		System.out.println("new blocking AsyncMessage()" + cmd );
+		}
 		this.command		= cmd;
 		this.blocking		= blocking;
 	}
@@ -29,11 +32,12 @@ public class AsyncMessage extends History_item{
 		this.direction		= dir;
 	}
 	public AsyncMessage( boolean blocking, boolean dir ) {
-		this.direction		= dir;
 		this.blocking		= blocking;
+		this.direction		= dir;
 	}
 	public void unlockWith( String withCommand ){
 	//	System.out.println("unlockWith "+withCommand);
+	//	System.out.println("\t\t>>>AsyncMessage.unlockWith: " + this.command +" with: "+ withCommand.trim());
 		this.unlocking_command = withCommand;
 		blocking= false;
 	}
@@ -69,11 +73,12 @@ public class AsyncMessage extends History_item{
 				return prefix + "logic ("+name+")\t\t\t\t" + unlocking_command;
 			}
 		}else if(unlocking_command!=null){
-			return prefix + command +"\t\t\t\t" + unlocking_command;
+			String isblocking = blocking ? "(blocking)" : "";
+			return prefix + command +"\t"+ isblocking +"\t\t\t" + unlocking_command;
 		}else if(blocing){
-			return prefix + command +"\t\t\t\t ???";
+			return prefix + command +" (blocking)\t\t\t\t ???";
 		}else{
-			return prefix + command;
+			return prefix + command + "(no blocking)";
 		}
 	}
 	// do nadpisania:

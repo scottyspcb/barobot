@@ -1,4 +1,4 @@
-package com.barobot.isp.example;
+package com.barobot.hardware.serial;
 
 import com.barobot.common.interfaces.CanLog;
 

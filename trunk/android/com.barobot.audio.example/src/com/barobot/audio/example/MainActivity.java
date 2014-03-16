@@ -85,7 +85,7 @@ public class MainActivity extends Activity implements OnSignalsDetectedListener{
 			@Override
 			public void onNewData(byte[] data, int length) {
 				String message = new String(data, 0, length);
-				Log.e("Serial input", message);
+				Log.e("Serial addOnReceive", message);
 				mb.read( message );
 			}
 			@Override
