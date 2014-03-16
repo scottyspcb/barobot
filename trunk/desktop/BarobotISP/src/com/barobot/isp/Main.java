@@ -11,6 +11,7 @@ import java.io.OutputStream;
 import java.util.Properties;
 
 import com.barobot.common.DesktopLogger;
+import com.barobot.common.IspSettings;
 import com.barobot.parser.utils.CopyStream;
 
 public class Main{
@@ -62,6 +63,7 @@ public class Main{
 
 	//	Macro mm  = new Macro();
 	//	mm.promo1( hw );
+	//	w.createContstans( hw );
 	//	mm.resetuj( hw );
 	//	mm.testBpm( hw );
 	//	mm.promo_carret( hw );
@@ -73,11 +75,11 @@ public class Main{
 	//	w.showOrder();
 	//	Wizard.wait(1000);
 	//	w.clearUpanel( hw );
-		w.mrygaj( hw );
+	//	w.mrygaj( hw );
 		
-		//w.illumination1( hw );
+		w.illumination1( hw );
 	//	w.ilumination3( hw, "88", 255, "00", 2 );
-	//	w.fadeButelka( hw, 4, 200 );
+		w.fadeButelka( hw, 4, 200 );
 	//	w.mrygaj( hw, 10 );
 	//	w.zapal( hw );
 	//	w.zgas( hw );

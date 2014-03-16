@@ -1,9 +1,10 @@
 package com.barobot.i2c;
 
-import com.barobot.isp.Hardware;
-import com.barobot.isp.IspSettings;
+import com.barobot.common.IspSettings;
+
 import com.barobot.isp.Main;
 import com.barobot.parser.Queue;
+import com.barobot.parser.devices.I2C_Device_Imp;
 import com.barobot.parser.message.AsyncMessage;
 import com.barobot.parser.utils.Decoder;
 
@@ -19,7 +20,7 @@ public class MainBoard extends I2C_Device_Imp {
 	//	this.bspeed			= 57600;		// arduino bootloader
 		this.bspeed			= 115200;		// optiboot can faster
 	}
-	public String setFuseBits(Hardware hw) {
+	public String setFuseBits(Queue q) {
 		return "";
 	}
 	public String getReset() {
@@ -31,9 +32,9 @@ public class MainBoard extends I2C_Device_Imp {
 	public String getHexFile() {
 		return IspSettings.mbHexPath;
 	}
-	
+
 	private boolean hasNext = false;
-	public boolean readHasNext(Hardware hw, Queue q, int index) {
+	public boolean readHasNext( Queue q, int index) {
 		hasNext = false;
 		String command = "N" + index;
 		q.add( new AsyncMessage( command, true ){
@@ -55,7 +56,5 @@ public class MainBoard extends I2C_Device_Imp {
 		return hasNext;
 	}
 	public void moveX(int max) {
-		
-		
 	}
 }

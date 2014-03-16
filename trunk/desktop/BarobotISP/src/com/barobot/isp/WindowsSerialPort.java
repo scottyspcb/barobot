@@ -16,13 +16,13 @@ import javax.comm.SerialPortEventListener;
 import javax.comm.UnsupportedCommOperationException;
 
 import com.barobot.common.Initiator;
+import com.barobot.common.IspSettings;
 import com.barobot.common.interfaces.CanSend;
-import com.barobot.common.interfaces.Sender;
 import com.barobot.common.interfaces.SerialEventListener;
 import com.barobot.common.interfaces.SerialInputListener;
 import com.barobot.common.interfaces.Wire;
 
-public class WindowsSerialPort implements CanSend, Wire, Sender {
+public class WindowsSerialPort implements CanSend, Wire {
 	protected static final String APPNAME = "BarobotISP";
 	protected static final int timeout = 5000;
 

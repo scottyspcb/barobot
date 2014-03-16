@@ -1,24 +1,23 @@
-package com.barobot.i2c;
+package com.barobot.parser.devices;
 
-import com.barobot.isp.Hardware;
 import com.barobot.parser.Queue;
 
 public interface I2C_Device {
 
-	public abstract String setFuseBits(Hardware hw);
-	public abstract String checkFuseBits(Hardware hw);
+	public abstract String setFuseBits(String comPort);
+	public abstract String checkFuseBits(String comPort);
 	
-	public abstract String uploadCode(Hardware hw, String filePath);
+	public abstract String uploadCode(String filePath, String comPort);
 
-	public abstract String erase(Hardware hw, String filePath);
+	public abstract String erase( String filePath, String comPort);
 
-	public abstract void reset(Hardware hw );
-	public abstract void isp(Hardware hw );
+	public abstract void reset(Queue q );
+	public abstract void isp(Queue q );
 
 	public abstract String getReset();
 	public abstract String getIsp();	
 
-	public abstract void setLed(Hardware hw, String selector, int pwm);
+	public abstract void setLed(Queue q, String selector, int pwm);
 
 	public abstract String getHexFile();
 

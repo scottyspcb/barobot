@@ -1,6 +1,8 @@
 package com.barobot.i2c;
 
-import com.barobot.isp.IspSettings;
+import com.barobot.common.IspSettings;
+import com.barobot.parser.devices.I2C_Device_Imp;
+
 public class Carret extends I2C_Device_Imp {
 	private int default_address	= 0x0A;
 	private int default_index	= 2;

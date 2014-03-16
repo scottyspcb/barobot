@@ -1,7 +1,8 @@
 package com.barobot.i2c;
 
+import com.barobot.common.IspSettings;
 import com.barobot.isp.Hardware;
-import com.barobot.isp.IspSettings;
+import com.barobot.parser.devices.I2C_Device_Imp;
 
 public class BarobotTester extends I2C_Device_Imp {
 	private int default_index	= 4;

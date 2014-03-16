@@ -1,45 +1,51 @@
 package com.barobot.isp;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.logging.FileHandler;
 
+import com.barobot.common.IspSettings;
 import com.barobot.i2c.BarobotTester;
 import com.barobot.i2c.Carret;
-import com.barobot.i2c.I2C_Device;
 import com.barobot.i2c.MainBoard;
 import com.barobot.i2c.Upanel;
 import com.barobot.parser.Operation;
 import com.barobot.parser.Queue;
+import com.barobot.parser.devices.I2C_Device;
 import com.barobot.parser.message.AsyncMessage;
 import com.barobot.parser.output.AsyncDevice;
 
 public class Wizard {
 
 	public void findOrder(Hardware hw, int index ) {
+		Queue q = hw.getQueue();
 	//	String TimeStamp = new java.util.Date().toString();
 		hw.connect();
 		int current_index		= 0;
 		MainBoard mb			= new MainBoard();
 		Upanel current_dev		= new Upanel( index, 0 );
 		current_dev.setOrder( 0 );
-		Queue q					= hw.getQueue();
 		q.add("", false);//reset
-		boolean has_next 		= mb.readHasNext( hw, q, index );
+		boolean has_next 		= mb.readHasNext( q, index );
 		System.out.println("has_next " + has_next );
 		if(has_next){
-			int device_found	= current_dev.resetAndReadI2c( hw, hw.getQueue() );
+			int device_found	= current_dev.resetAndReadI2c( hw.getQueue() );
 			if( device_found > 0 ){		// pierwszy ma adres com.barobot.i2c
 				Upanel.list.add( current_dev );	
 				System.out.println("Upanel " + current_index + " ma adres " + device_found);
 				current_dev.setAddress(device_found);
-				current_dev.setLed( hw, "22", 50 );
+				current_dev.setLed( q, "22", 50 );
 				find_next_to( hw, current_dev, current_index );
 			}else{
 				System.out.println("B£¥D Upanel " + (current_index) +" o adresie "+ current_dev.getAddress() + " jest ostatni");
 			}
 		}
 		for (I2C_Device u : Upanel.list){
-			u.setLed( hw, "ff", 00 );
+			u.setLed( q, "ff", 00 );
 		}
 		System.out.println("upaneli: " + Upanel.list.size());
 		for (I2C_Device u : Upanel.list){
@@ -47,10 +53,11 @@ public class Wizard {
 		}
 	}
 	private void find_next_to( Hardware hw, Upanel current_dev, int next_index) {
-		boolean has_next  = current_dev.readHasNext( hw, hw.getQueue() );
+		Queue q = hw.getQueue();
+		boolean has_next  = current_dev.readHasNext( q );
 		System.out.println("has_next " + has_next );
 		if(has_next){
-			int device_found  = current_dev.resetNextAndReadI2c( hw, hw.getQueue() );
+			int device_found  = current_dev.resetNextAndReadI2c( q );
 			if( device_found > 0 ){		// cos powsta³o na koñcu
 				int index = Upanel.findByI2c( device_found );
 				Upanel u = null;
@@ -63,7 +70,7 @@ public class Wizard {
 					u.setOrder( next_index+1);
 					u.canResetMe(current_dev);
 				}
-				u.setLed( hw, "22", 50 );
+				u.setLed( q, "22", 50 );
 				System.out.println("Upanel " + (next_index+1) + " ma adres " + device_found);
 				find_next_to( hw, u, next_index+1 );
 			}else{
@@ -80,6 +87,7 @@ public class Wizard {
 	}
 
 	public void prepareUpanel(Hardware hw, int index ) {
+		Queue q = hw.getQueue();
 		Upanel.list.clear();
 		Upanel.list.add( new Upanel( index, 0 ) );	
 		String command = "";
@@ -91,25 +99,25 @@ public class Wizard {
 		current_dev.setOrder( index );
 
 		if( IspSettings.setFuseBits){
-			current_dev.isp(hw);
+			current_dev.isp( q );
 			Main.wait(2000);
-			command = current_dev.setFuseBits(hw);
+			command = current_dev.setFuseBits( hw.comPort );
 			Main.main.run(command, hw);
 			Main.wait(1000);
 		}
 		if(IspSettings.setHex){
-			current_dev.isp(hw);
+			current_dev.isp( q );
 			Main.wait(2000);
-			command = current_dev.uploadCode(hw, upanel_code );
+			command = current_dev.uploadCode(upanel_code, hw.comPort );
 			Main.main.run(command, hw);
 			Main.wait(1000);
 		}
-		int device_found  = current_dev.resetAndReadI2c( hw, hw.getQueue());
+		int device_found  = current_dev.resetAndReadI2c( q);
 		if( device_found > 0 ){		// pierwszy ma adres com.barobot.i2c
 			System.out.println("+Upanel " + current_index + " ma adres " + device_found);
 			current_dev.setAddress(device_found);
-			current_dev.setLed( hw, "22", 255 );	
-			boolean has_next  = current_dev.readHasNext( hw, hw.getQueue() );
+			current_dev.setLed( q, "22", 255 );	
+			boolean has_next  = current_dev.readHasNext( q );
 		//	System.out.println("has_next " + has_next );
 			if(has_next){
 				prog_next_to( hw, current_dev, current_index+1, upanel_code );	
@@ -121,21 +129,22 @@ public class Wizard {
 
 	private void prog_next_to(Hardware hw, Upanel current_dev, int next_index, String upanel_code ) {
 		String command = "";
+		Queue q = hw.getQueue();
 		Upanel next_device	= new Upanel( 0, 0, current_dev );
 
 		if( IspSettings.setFuseBits){
-			current_dev.isp_next(hw);
-			command = next_device.setFuseBits(hw);
+			current_dev.isp_next(q);
+			command = next_device.setFuseBits( hw.comPort );
 			Main.main.run(command, hw);
 			Main.wait(1000);
 		}
 		if(IspSettings.setHex){
-			current_dev.isp_next(hw);
-			command = next_device.uploadCode(hw, upanel_code );
+			current_dev.isp_next(q);
+			command = next_device.uploadCode( upanel_code, hw.comPort );
 			Main.main.run(command, hw);
 			Main.wait(2000);
 		}
-		int device_found  = current_dev.resetNextAndReadI2c( hw, hw.getQueue() );
+		int device_found  = current_dev.resetNextAndReadI2c( q );
 		Main.wait(2000);
 		if( device_found > 0 ){		// pierwszy ma adres com.barobot.i2c
 			next_device.setAddress(device_found);
@@ -143,8 +152,8 @@ public class Wizard {
 			next_device.canResetMe(current_dev);
 			Upanel.list.add( next_device );
 			System.out.println("++Upanel " + next_index + " ma adres " + device_found);
-			next_device.setLed( hw, "22", 255 );
-			boolean has_next  = next_device.readHasNext( hw, hw.getQueue() );
+			next_device.setLed( q, "22", 255 );
+			boolean has_next  = next_device.readHasNext( q );
 			System.out.println("has_next " + has_next );
 			if(has_next){
 				prog_next_to( hw, next_device, next_index+1, upanel_code );
@@ -175,6 +184,7 @@ public class Wizard {
 	}
 
 	public void mrygaj(Hardware hw) {
+		final Queue q = hw.getQueue();
 		if(Upanel.list.size() == 0 ){
 			return;
 		}
@@ -187,56 +197,56 @@ public class Wizard {
 		int time = 1000;
 		while (repeat-- > 0){
 			for (I2C_Device u : Upanel.list){
-				u.setLed( hw, "ff", 0 );	// zgas
+				u.setLed( q, "ff", 0 );	// zgas
 			}
 			Main.wait(time);	
 
 			for (I2C_Device u : Upanel.list){
-				u.setLed( hw, "ff", 0 );	// zgas
-				u.setLed( hw, "01", 255 );
+				u.setLed( q, "ff", 0 );	// zgas
+				u.setLed( q, "01", 255 );
 			}
 			Main.wait(time);
 			
 			for (I2C_Device u : Upanel.list){
-				u.setLed( hw, "ff", 0 );	// zgas
-				u.setLed( hw, "02", 255 );
+				u.setLed( q, "ff", 0 );	// zgas
+				u.setLed( q, "02", 255 );
 			}
 			Main.wait(time);	
 
 			for (I2C_Device u : Upanel.list){
-				u.setLed( hw, "ff", 0 );	// zgas
-				u.setLed( hw, "04", 255 );
+				u.setLed( q, "ff", 0 );	// zgas
+				u.setLed( q, "04", 255 );
 			}
 			Main.wait(time);		
 
 			for (I2C_Device u : Upanel.list){
-				u.setLed( hw, "ff", 0 );	// zgas
-				u.setLed( hw, "08", 255 );
+				u.setLed( q, "ff", 0 );	// zgas
+				u.setLed( q, "08", 255 );
 			}
 			Main.wait(time);	
 
 			for (I2C_Device u : Upanel.list){
-				u.setLed( hw, "ff", 0 );	// zgas
-				u.setLed( hw, "10", 255 );
+				u.setLed( q, "ff", 0 );	// zgas
+				u.setLed( q, "10", 255 );
 			}
 			Main.wait(time);	
 			
 
 			for (I2C_Device u : Upanel.list){
-				u.setLed( hw, "ff", 0 );	// zgas
-				u.setLed( hw, "20", 255 );
+				u.setLed( q, "ff", 0 );	// zgas
+				u.setLed( q, "20", 255 );
 			}
 			Main.wait(time);	
 			
 			for (I2C_Device u : Upanel.list){
-				u.setLed( hw, "ff", 0 );	// zgas
-				u.setLed( hw, "40", 255 );
+				u.setLed( q, "ff", 0 );	// zgas
+				u.setLed( q, "40", 255 );
 			}
 			Main.wait(time);
 
 			for (I2C_Device u : Upanel.list){
-				u.setLed( hw, "ff", 0 );	// zgas
-				u.setLed( hw, "80", 255 );
+				u.setLed( q, "ff", 0 );	// zgas
+				u.setLed( q, "80", 255 );
 			}
 			Main.wait(time);
 		}
@@ -247,70 +257,71 @@ public class Wizard {
 			return;
 		}
 		hw.connect();
+		Queue q = hw.getQueue();
 
 		int time = 200;
 		for (I2C_Device u2 : Upanel.list){
-			u2.setLed( hw, "ff", 0 );	// zgas
+			u2.setLed( q, "ff", 0 );	// zgas
 		}
 
 		for (I2C_Device u : Upanel.list){
 
 			Main.wait(time);
 
-			u.setLed( hw, "ff", 0 );	// zgas
+			u.setLed( q, "ff", 0 );	// zgas
 
 			Main.wait(time);
 			
 		
-			u.setLed( hw, "ff", 0 );	// zgas
-				u.setLed( hw, "01", 255 );
+			u.setLed( q, "ff", 0 );	// zgas
+				u.setLed( q, "01", 255 );
 			
 			Main.wait(time);	
 			
 	
-			u.setLed( hw, "ff", 0 );	// zgas
-				u.setLed( hw, "02", 255 );
+			u.setLed( q, "ff", 0 );	// zgas
+				u.setLed( q, "02", 255 );
 			
 			Main.wait(time);	
 			
 
-			u.setLed( hw, "ff", 0 );	// zgas
-				u.setLed( hw, "04", 255 );
+			u.setLed( q, "ff", 0 );	// zgas
+				u.setLed( q, "04", 255 );
 			
 			Main.wait(time);		
 			
 			
 			
-			u.setLed( hw, "ff", 0 );	// zgas
-				u.setLed( hw, "08", 255 );
+			u.setLed( q, "ff", 0 );	// zgas
+				u.setLed( q, "08", 255 );
 			
 			Main.wait(time);	
 			
-			u.setLed( hw, "ff", 0 );	// zgas
-				u.setLed( hw, "10", 255 );
+			u.setLed( q, "ff", 0 );	// zgas
+				u.setLed( q, "10", 255 );
 	
 			Main.wait(time);	
 			
 
 			
-			u.setLed( hw, "ff", 0 );	// zgas
-				u.setLed( hw, "20", 255 );
+			u.setLed( q, "ff", 0 );	// zgas
+				u.setLed( q, "20", 255 );
 			
 			Main.wait(time);	
 			
 			
-			u.setLed( hw, "ff", 0 );	// zgas
-				u.setLed( hw, "40", 255 );
+			u.setLed( q, "ff", 0 );	// zgas
+				u.setLed( q, "40", 255 );
 			
 			Main.wait(time);
 			
 
-			u.setLed( hw, "ff", 0 );	// zgas
-				u.setLed( hw, "80", 255 );
+			u.setLed( q, "ff", 0 );	// zgas
+				u.setLed( q, "80", 255 );
 			
 			Main.wait(time);		
 
-			u.setLed( hw, "ff", 0 );	// zgas
+			u.setLed( q, "ff", 0 );	// zgas
 
 		}
 	}
@@ -320,35 +331,36 @@ public class Wizard {
 			return;
 		}
 		hw.connect();
+		Queue q = hw.getQueue();
 		int repeat = 6;
 
 		int time = 20;
 		while (repeat-- > 0){
 
 			for (I2C_Device u : Upanel.list){
-				u.setLed( hw, "ff", 0 );	// zgas
+				u.setLed( q, "ff", 0 );	// zgas
 			}
 			Main.wait(time);	
 			
 			for (I2C_Device u : Upanel.list){
-				u.setLed( hw, "ff", 0 );	// zgas
+				u.setLed( q, "ff", 0 );	// zgas
 
-			//	u.setLed( hw, "02", 0 );		// bottom green
-			//	u.setLed( hw, "08", 0 );		// bottom blue
-			//	u.setLed( hw, "04", 0 );		// bottom red 
+			//	u.setLed( q, "02", 0 );		// bottom green
+			//	u.setLed( q, "08", 0 );		// bottom blue
+			//	u.setLed( q, "04", 0 );		// bottom red 
 
-				u.setLed( hw, "07", 255 );	// top RGB
+				u.setLed( q, "07", 255 );	// top RGB
 
-			//	u.setLed( hw, "10", 255 );	// top green
-			//	u.setLed( hw, "20", 255 );	// top blue
-			//	u.setLed( hw, "40", 255 );	// top red
+			//	u.setLed( q, "10", 255 );	// top green
+			//	u.setLed( q, "20", 255 );	// top blue
+			//	u.setLed( q, "40", 255 );	// top red
 			}
 			Main.wait(time);	
 			
 			
 			for (I2C_Device u : Upanel.list){
-				u.setLed( hw, "ff", 0 );	// zgas
-				u.setLed( hw, "70", 255 );	// boottm RGB
+				u.setLed( q, "ff", 0 );	// zgas
+				u.setLed( q, "70", 255 );	// boottm RGB
 
 			}
 			Main.wait(time);			
@@ -397,20 +409,21 @@ public class Wizard {
 
 	public void prepareCarret(Hardware hw) {
 		String command = "";
+		Queue q = hw.getQueue();
 		hw.connect();
 		Carret current_dev	= new Carret();
 		String carret_code = current_dev.getHexFile();
 
 		if( IspSettings.setFuseBits){
-			current_dev.isp(hw);
-			command = current_dev.setFuseBits(hw);
+			current_dev.isp( q );
+			command = current_dev.setFuseBits( hw.comPort );
 			Main.main.run(command, hw);
 			Main.wait(2000);
 		}
 
 		if(IspSettings.setHex){
-			current_dev.isp(hw);
-			command = current_dev.uploadCode(hw, carret_code );
+			current_dev.isp( q );
+			command = current_dev.uploadCode( carret_code, hw.comPort );
 			Main.main.run(command, hw);
 			Main.wait(2000);
 		}
@@ -425,11 +438,12 @@ public class Wizard {
 
 	public void checkCarret(Hardware hw) {
 		String command = "";
+		Queue q = hw.getQueue();
 		hw.connect();
 		//I2C_Device current_dev	= new Upanel( 3, 0 );
 		I2C_Device current_dev	= new Carret();
-		current_dev.isp(hw);
-		command = current_dev.checkFuseBits(hw);
+		current_dev.isp( q );
+		command = current_dev.checkFuseBits( hw.comPort );
 		Main.main.run(command, hw);
 	}
 
@@ -444,10 +458,10 @@ public class Wizard {
 		hw.send("PING", "PONG");
 		q.addWaitThread(Main.mt);
 		if(IspSettings.setHex){	
-			current_dev.isp(hw);	// mam 2 sek na wystartwanie
+			current_dev.isp( q );	// mam 2 sek na wystartwanie
 			q.add( new AsyncMessage( true ){		// na koncu zamknij
 				public Queue run(AsyncDevice dev) {
-					command = current_dev.uploadCode(hw, upanel_code);
+					command = current_dev.uploadCode( upanel_code, hw.comPort);
 					Main.main.run(command, hw);
 					return null;
 				}
@@ -459,10 +473,11 @@ public class Wizard {
 
 	public void prepareMBManualReset(final Hardware hw) {
 		String command					= "";
+		Queue q = hw.getQueue();
 		final I2C_Device current_dev	= new MainBoard();
 		final String upanel_code		= current_dev.getHexFile();
 		if(IspSettings.setHex){	
-			command = current_dev.uploadCode(hw, upanel_code);
+			command = current_dev.uploadCode(upanel_code, hw.comPort);
 			Main.main.run(command, hw);
 		}
 	}
@@ -476,10 +491,10 @@ public class Wizard {
 			hw.send("");
 			hw.send("PING", "PONG");
 			q.addWaitThread(Main.mt);
-			current_dev.isp(hw);
+			current_dev.isp( q );
 			q.add( new AsyncMessage( true ){		// na koncu zamknij
 				public Queue run(AsyncDevice dev) {
-					String command = current_dev.setFuseBits(hw);
+					String command = current_dev.setFuseBits( hw.comPort );
 					Main.main.run(command, hw);
 					return null;
 				}
@@ -490,10 +505,10 @@ public class Wizard {
 		if(IspSettings.setHex){	
 			hw.connect();
 			hw.send("PING", "PONG");
-			current_dev.isp(hw);	// mam 2 sek na wystartwanie
+			current_dev.isp( q );	// mam 2 sek na wystartwanie
 			q.add( new AsyncMessage( true ){		// na koncu zamknij
 				public Queue run(AsyncDevice dev) {
-					command = current_dev.uploadCode(hw, current_dev.getHexFile());
+					command = current_dev.uploadCode( current_dev.getHexFile(), hw.comPort);
 					Main.main.run(command, hw);
 					return null;
 				}
@@ -505,18 +520,19 @@ public class Wizard {
 
 	public void prepare1Upanel(Hardware hw, int index ) {
 		String command = "";
+		Queue q = hw.getQueue();
 		hw.connect();
 		Upanel current_dev	= new Upanel( index, 0 );
 		String upanel_code = current_dev.getHexFile();
 		if( IspSettings.setFuseBits){
-			current_dev.isp(hw);
-			command = current_dev.setFuseBits(hw);
+			current_dev.isp( q );
+			command = current_dev.setFuseBits(hw.comPort);
 			Main.main.run(command, hw);
 			Main.wait(2000);
 		}
 		if(IspSettings.setHex){
-			current_dev.isp(hw);
-			command = current_dev.uploadCode(hw, upanel_code );
+			current_dev.isp( q );
+			command = current_dev.uploadCode( upanel_code, hw.comPort );
 			Main.main.run(command, hw);
 			Main.wait(2000);
 		}
@@ -535,25 +551,25 @@ public class Wizard {
 	public void ilumination2(Hardware hw) {
 		System.out.println("upaneli: " + Upanel.list.size());
 		hw.connect();
-
+		Queue q = hw.getQueue();
 		
 		for (int b = 0;b<4;b++){
 			int i=0;
 			for (;i<245;i+=5){
 				for (I2C_Device u2 : Upanel.list){
-					u2.setLed( hw, "ff", i );
+					u2.setLed( q, "ff", i );
 				}
 			}
 			for (;i>=0;i-=5){
 				for (I2C_Device u2 : Upanel.list){
-					u2.setLed( hw, "ff", i );
+					u2.setLed( q, "ff", i );
 				}
 			}
 		}
 		
 		/*
 		for (I2C_Device u : Upanel.list){
-			u.setLed( hw, "ff", 255);
+			u.setLed( q, "ff", 255);
 		}
 
 		for (I2C_Device u2 : Upanel.list){
@@ -566,19 +582,20 @@ public class Wizard {
 	public void ilumination3(Hardware hw, String led, int value, String led2, int value2 ) {
 		System.out.println("upaneli: " + Upanel.list.size());
 		hw.connect();
+		Queue q = hw.getQueue();
 	
 		Carret current_dev	= new Carret();
-		current_dev.setLed( hw, "ff", 0 );
-		current_dev.setLed( hw, led2, value2 );
+		current_dev.setLed( q, "ff", 0 );
+		current_dev.setLed( q, led2, value2 );
 		for (I2C_Device u2 : Upanel.list){
-			u2.setLed( hw, "ff", 0 );
-			u2.setLed( hw, led, value );
+			u2.setLed( q, "ff", 0 );
+			u2.setLed( q, led, value );
 		}
 
 	
 		/*
 		for (I2C_Device u : Upanel.list){
-			u.setLed( hw, "ff", 255);
+			u.setLed( q, "ff", 255);
 		}
 
 		for (I2C_Device u2 : Upanel.list){
@@ -590,15 +607,17 @@ public class Wizard {
 
 	public void zapal(Hardware hw) {
 		hw.connect();
+		Queue q = hw.getQueue();
 		for (I2C_Device u2 : Upanel.list){
-			u2.setLed( hw, "ff", 255 );
+			u2.setLed( q, "ff", 255 );
 		}
 		System.out.println("koniec zapal");
 	}
 	public void zgas(Hardware hw) {
 		hw.connect();
+		Queue q = hw.getQueue();
 		for (I2C_Device u2 : Upanel.list){
-			u2.setLed( hw, "ff", 0 );
+			u2.setLed( q, "ff", 0 );
 		}
 		System.out.println("koniec zgas");
 	}
@@ -606,17 +625,19 @@ public class Wizard {
 		hw.connect();
 		int swiec = 255;
 		int razy = 500;
+		Queue q = hw.getQueue();
 		for( int i =0; i<razy;i++){
 			for (I2C_Device u2 : Upanel.list){
-				u2.setLed( hw, "0f", 0 );
+				u2.setLed( q, "0f", 0 );
 			}
 			for (I2C_Device u2 : Upanel.list){
-				u2.setLed( hw, "0f", swiec );
+				u2.setLed( q, "0f", swiec );
 			}
 		}
 		System.out.println("koniec mrygaj");
 	}
 	public void fadeButelka(Hardware hw, int num, int count) {
+		final Queue q = hw.getQueue();
 		zgas( hw );
 		hw.connect();
 		Upanel butelka = Upanel.list.get(num);
@@ -624,12 +645,12 @@ public class Wizard {
 		for (int b = 0;b<count;b++){
 			int i=0;
 			for (;i<205;i+=3){
-					butelka.setLed( hw, "ff", i );
+					butelka.setLed( q, "ff", i );
 			}
 			for (;i>=0;i-=1){
-					butelka.setLed( hw, "ff", i );
+					butelka.setLed( q, "ff", i );
 			}
-			butelka.setLed( hw, "ff", 0 );
+			butelka.setLed( q, "ff", 0 );
 			Main.wait( 100 );
 		} 
 		System.out.println("koniec fadeButelka");
@@ -700,16 +721,78 @@ public class Wizard {
 		hw.send("PING", "PONG");
 		q.addWaitThread(Main.mt);
 		if(IspSettings.setHex){	
-			current_dev.isp(hw);	// mam 2 sek na wystartwanie
+			current_dev.isp( q );	// mam 2 sek na wystartwanie
 			q.add( new AsyncMessage( true ){		// na koncu zamknij
 				public Queue run(AsyncDevice dev) {
-					command = current_dev.uploadCode(hw, upanel_code);
+					command = current_dev.uploadCode( upanel_code, hw.comPort);
 					Main.main.run(command, hw);
 					return null;
 				}
 			});
 		}
 		q.addWaitThread(Main.mt);
+	}
+	public void createContstans(Hardware hw) {
+		String source = "D:\\PROG\\arduino-1.0.5\\libraries\\barobot_common\\constants.h";
+		String detsination = "C:\\workspace\\Barobot\\android\\com.barobot.common\\src\\com\\barobot\\common\\constant\\Methods.java";	
+
+		BufferedReader br = null;
+		String data = "";
+		try {
+			br = new BufferedReader(new FileReader(source));
+	        StringBuilder sb = new StringBuilder();
+	        String line = translateLine(br.readLine());
+	        while (line != null) {
+	            sb.append(line);
+	            sb.append("\n");
+	            line = translateLine(br.readLine());
+	        }
+	        data = sb.toString();
+		} catch (FileNotFoundException e1) {
+			e1.printStackTrace();
+	    } catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if(br!=null){
+		        try {
+					br.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+	    }
+		FileOutputStream fout;		
+		try{
+		    fout = new FileOutputStream (detsination);
+		    PrintStream writer = new PrintStream(fout);
+		    
+		    writer.print("package com.barobot.common.constant;\n\n" +
+		    		"public class Methods {\n\n");
+
+		 	writer.println (data);
+		   	writer.println ("}");
+		    fout.close();		
+		}
+		catch (IOException e){
+			System.err.println ("Unable to write to file");
+			System.exit(-1);
+		}	
+	}
+	private String translateLine(String readLine) {
+		if(readLine!=null){
+			if(readLine.contains("'")){		// CHAR
+				readLine = readLine.replaceAll("'", "\"");
+			}
+			if(readLine.contains("\"")){	// STRING
+				readLine = readLine.replaceAll("#define\\s", "\tpublic static final String ");
+				readLine = readLine.replaceAll("\\s+(\".*\")$", "\t= $1;");
+			}else{
+				readLine = readLine.replaceAll("#define\\s", "\tpublic static final int ");
+				readLine = readLine.replaceAll("\\s((0x)?\\d+)\\s*$", "\t= $1;");
+			}
+		//	System.out.println("onInput: " + readLine);
+		}
+		return readLine;
 	}
 }
 

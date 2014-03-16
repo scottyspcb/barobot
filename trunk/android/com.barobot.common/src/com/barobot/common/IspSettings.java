@@ -1,6 +1,4 @@
-package com.barobot.isp;
-
-import com.barobot.parser.utils.Decoder;
+package com.barobot.common;
 
 public class IspSettings {
 	public static boolean safeMode		= true;
@@ -25,9 +23,4 @@ public class IspSettings {
 	public static int wait_tries		= 30;
 	public static int wait_time			= 200;
 	public static int reset_tries		= 3;
-
-
-	public static String verbose() {
-		return Decoder.strRepeat(" -v", verbose);
-	}
 }
