@@ -237,7 +237,7 @@ public class Queue {
 		synchronized (this.lock) {
 			if(this.wait_for_device_id != -1 ){
 				AsyncDevice dev = devs.get(this.wait_for_device_id);
-				Initiator.logger.i("Queue", "unlock id:" + this.wait_for_device_id );
+			//	Initiator.logger.i("Queue", "unlock id:" + this.wait_for_device_id );
 				dev.unlockRet("force unlock");
 				this.wait_for_device_id = -1;
 			}
