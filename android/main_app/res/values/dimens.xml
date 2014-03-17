@@ -21,5 +21,65 @@
     
     <color name="pressed_color">#4d90fe</color>
     <color name="default_color">#0000ff</color>
+    
+    <!-- Green Button -->
+    <color name="GreenButtonStartColor">#4AA02C</color>
+    <color name="GreenButtonEndColor">#348017</color>
+    <color name="GreenButtonDisabledStartColor">#565051</color>
+    <color name="GreenButtonDisabledEndColor">#736F6E</color>
+    <color name="GreenButtonBorderColor">#254117</color>
+    
+    <!-- Blue Button -->
+    <color name="BlueButtonStartColor">#0928EC</color>
+    <color name="BlueButtonEndColor">#0E0792</color>
+    <color name="BlueButtonDisabledStartColor">#565051</color>
+    <color name="BlueButtonDisabledEndColor">#736F6E</color>
+    <color name="BlueButtonBorderColor">#254117</color>
+    
+    <!-- Red Button -->
+    <color name="RedButtonStartColor">#EC1609</color>
+    <color name="RedButtonEndColor">#950C09</color>
+    <color name="RedButtonDisabledStartColor">#565051</color>
+    <color name="RedButtonDisabledEndColor">#736F6E</color>
+    <color name="RedButtonBorderColor">#254117</color>
+    
+    <!-- Yellow Button -->
+    <color name="YellowButtonStartColor">#E9EC09</color>
+    <color name="YellowButtonEndColor">#959109</color>
+    <color name="YellowButtonDisabledStartColor">#565051</color>
+    <color name="YellowButtonDisabledEndColor">#736F6E</color>
+    <color name="YellowButtonBorderColor">#254117</color>
+    
+    <!-- Menu Button -->
+    <color name="MenuButtonStartColor">@color/SecondaryB</color>
+    <color name="MenuButtonEndColor">@color/SecondaryBLight2</color>
+    <color name="MenuButtonDisabledStartColor">#565051</color>
+    <color name="MenuButtonDisabledEndColor">#736F6E</color>
+    <color name="MenuButtonBorderColor">@color/SecondaryB</color>
+    
+    <!-- Bottle Buttons -->
+    <color name="BottleStartColor">#DFF4FB</color>
+    <color name="BottleEndColor">#81F4F8</color>
+    <color name="BottleBorderColor">#FFFFFF</color>
+    
+    <!-- Colors -->
+    <color name="ComplementaryLight1">#FFDD73</color>
+    <color name="ComplementaryLight2">#FFD140</color>
+    <color name="Complementary">#FFC200</color>
+    <color name="ComplementaryDark1">#FFC200</color>
+    <color name="ComplementaryDark2">#A67E00</color>
+    
+    <color name="SecondaryBLight1">#A3F06C</color>
+    <color name="SecondaryBLight2">#87F03C</color>
+    <color name="SecondaryB">#5DE100</color>
+    <color name="SecondaryBDark1">#5FA92A</color>
+    <color name="SecondaryBDark2">#3D9200</color>
+    
+    <color name="MainLight1">#7673D9</color>
+    <color name="MainLight2">#0C0874</color>
+    <color name="Main">#0C0874</color>
+    <color name="MainDark1">#0C0874</color>
+    <color name="MainDark2">#0C0874</color>
+    
 
 </resources>

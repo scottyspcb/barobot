@@ -94,7 +94,8 @@ public class RecipeSetupActivity extends BarobotActivity
 					recipe.name = name;
 					recipe.Description = description;
 					
-					Engine.GetInstance(RecipeSetupActivity.this).addRecipe(recipe);
+					// TODO: Fix that
+					//Engine.GetInstance(RecipeSetupActivity.this).addRecipe(recipe);
 					
 					UpdateRecipes(recipe.id);
 				}

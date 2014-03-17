@@ -4,7 +4,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-   			android:background="@drawable/list_selector"
-            android:textSize="@dimen/bottle_box_text_size"
-            
-            android:text="[Type]" />
+            android:padding="10sp"
+            android:textSize="20sp"
+            android:textColor="#000000"
+            />
