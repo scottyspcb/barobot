@@ -1,6 +1,7 @@
-#include "barobot_mainboard_main.h" 
+#define MAXCOMMAND 	10
 #define IS_MAINBOARD true
 #define IS_PROGRAMMER true
+#include "barobot_mainboard_main.h" 
 #include <WSWire.h>
 #include <barobot_common.h>
 #include <constants.h>
@@ -11,7 +12,8 @@
 #include <avr/wdt.h>
 byte in_buffer[7];
 
-volatile uint8_t input_buffer[MAINBOARD_BUFFER_LENGTH][8] = {{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0}};
+
+volatile uint8_t input_buffer[MAINBOARD_BUFFER_LENGTH][MAXCOMMAND] = {{0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0}};
 volatile uint8_t buff_length[MAINBOARD_BUFFER_LENGTH] = {0,0,0};
 
 void (*spi_init)();
@@ -154,13 +156,13 @@ void loop(){
 	}
 	stepperX.run();	
 }
-void proceed( byte length,volatile uint8_t buffer[7] ){ // read I2C
+void proceed( byte length,volatile uint8_t buffer[MAXCOMMAND] ){ // read I2C
 	if(prog_mode){
 		return;
 	}
 	if(buffer[0] == METHOD_HERE_I_AM){         //  here_i_am {METHOD_HERE_I_AM,my_address,type,ver}
 		i2c_device_found( buffer[1], buffer[2], buffer[3] );
-	}else if(buffer[0] == METHOD_IMPORTANT_ANALOG){      // wyslij do androida pozycje bo trafiono na górkę hallem
+	}else if(buffer[0] == METHOD_IMPORTANT_ANALOG){      // wyslij do androida pozycje bo trafiono na glownyn hallem
 		if( buffer[1] == INNER_HALL_X){		
 			boolean stop_moving = false;// is moving up or down
 			long int dis = stepperX.distanceToGo();
@@ -171,7 +173,9 @@ void proceed( byte length,volatile uint8_t buffer[7] ){ // read I2C
 				stop_moving = true;
 				stepperX.stopNow();
 			}
-			long int pos = stepperX.currentPosition();
+			byteint bytepos;
+			bytepos.i= stepperX.currentPosition();
+			
 			if( dis > 0 ){
 				buffer[3] = DRIVER_DIR_FORWARD;
 			}else if( dis < 0 ){
@@ -179,27 +183,26 @@ void proceed( byte length,volatile uint8_t buffer[7] ){ // read I2C
 			}else{
 				buffer[3] = DRIVER_DIR_STOP;
 			}
-			buffer[4]		= (pos & 0xFF);
-			buffer[5]		= (pos >>8);
-			send2android(buffer,length);
-			send2androidEnd();
+			buffer[4]		= bytepos.bytes[3];				// bits 0-7
+			buffer[5]		= bytepos.bytes[2];				// bits 8-15
+			buffer[6]		= bytepos.bytes[1];				// bits 16-23
+			buffer[7]		= bytepos.bytes[0];				// bits 24-32
 			/*
 			if(stop_moving){
 				send2android("Rx");
 				send2android( String(pos) );
-				send2androidEnd();
+				Serial.println();
 			}*/
-		}else{
-			send2android(buffer,length);
-			send2androidEnd();		
 		}
+		send2android(buffer,length);
+		Serial.println();	
 
 	}else if(buffer[0] == METHOD_CAN_FILL ){
 		out_buffer[0]  = METHOD_CAN_FILL;
 		writeRegisters(I2C_ADR_CARRET, 1, true );
 	}else if(buffer[0] == METHOD_I2C_SLAVEMSG || buffer[0] == METHOD_EXEC_ERROR ){      // wyslij do androida
 		send2android(buffer,length);
-		send2androidEnd();
+		Serial.println();
 	}else{
 		DEBUG("- no idea ");
 		DEBUG(buffer[0]);
@@ -251,7 +254,7 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 			}
 		}
 
-	}else if( input.startsWith("W")) {
+	}else if( input.startsWith("K")) {
 		String digits     = input.substring( 2 );
 		char charBuf[16];
 		digits.toCharArray(charBuf,16);
@@ -291,7 +294,7 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 		long int pos = stepperX.currentPosition();
 		send2android("Rx"); 
 		send2android(String(pos)); 
-		send2androidEnd();
+		Serial.println();
 		defaultResult = false;
 		//METHOD_GET_X_POS
 	}else if( input.startsWith(METHOD_SET_X_ACCELERATION)) {    // AX10                  // ACCELERATION
@@ -328,7 +331,7 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 			stepperX.enableOutputs();
 			byte ttt[4] = {METHOD_I2C_SLAVEMSG, my_address, METHOD_DRIVER_ENABLE, DRIVER_X };
 			send2android(ttt,4);
-			send2androidEnd();
+			Serial.println();
 		}else if( command2 == 'Y' ){
 			out_buffer[0]  = METHOD_DRIVER_ENABLE;
 			out_buffer[1]  = DRIVER_Y;
@@ -345,7 +348,7 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 			stepperX.disableOutputs();
 			byte ttt[4] = {METHOD_I2C_SLAVEMSG, my_address, METHOD_DRIVER_DISABLE, DRIVER_X };
 			send2android(ttt,4);
-			send2androidEnd();
+			Serial.println();
 		}else if( command2 == 'Y' ){
 			out_buffer[0]  = METHOD_DRIVER_DISABLE;
 			out_buffer[1]  = DRIVER_Y;
@@ -379,14 +382,13 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 		
 	}else if( input.equals( "PING") ){
 		defaultResult = false;
-		sendln2android("PONG");	
+		Serial.println("PONG");	
 	}else if( command == 'p' ) {    // p10,0,0   (prog next to)- programuj urzadzenie podlaczone resetem do urzadzenia o adresie 10
 		read_prog_settings(input, 2 );
 		defaultResult = false;
 		
 	}else if( command == 'C' ) {    // can fill // MASTER_CAN_FILL
 	
-		
 	}else if(  command == 'P' ) {    	// P1; P2,0; P3,1; P4,1;   - programuj urzadzenie 0x0A z predkosca 19200, PROG 0,0 - force first, PROG 0A,0 - wozek
 		read_prog_settings(input, 1 );
 		defaultResult = false;
@@ -432,7 +434,7 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 			boolean value	= digitalRead( pin);			// is sht is connected
 			byte ttt[4]		= {METHOD_I2C_SLAVEMSG, my_address, METHOD_CHECK_NEXT, value };
 			send2android(ttt,4);
-			send2androidEnd();
+			Serial.println();
 		}
 
 	}else if( command == 'n' ){			// h10,h11,h12,13   - id selected i2c device has next node
@@ -484,26 +486,26 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 		uint8_t tt = GetTemp();
 		defaultResult = false;
 		send2android("RT");
-		sendln2android(String(tt));
+		Serial.println(String(tt));
 	}else if( input.equals( "WR") ){      // wait for return - tylko zwróc zwrotke
 	}else{
-		sendln2android("NO_CMD [" + input +"]");
+		Serial.println("NO_CMD [" + input +"]");
 		defaultResult = false;
 	}
 	if(defaultResult ){
-		sendln2android("R" + input );
+		Serial.println("R" + input );
 	}
 }
 
 void i2c_device_found( byte addr,byte type,byte ver ){
 	byte ttt[4] = {METHOD_DEVICE_FOUND,addr,type,ver};
 	send2android(ttt,4);
-	send2androidEnd();
+	Serial.println();
 }
 
 void send_error( String input){
 	send2android("E" );	
-	sendln2android( input );
+	Serial.println( input );
 }
 
 void stepperReady( long int pos ){		// in interrupt
@@ -532,6 +534,7 @@ void stepperReady( long int pos ){		// in interrupt
 
 	byteint value;
 	value.i= pos;
+	
 	byte ttt[8] = {
 		METHOD_I2C_SLAVEMSG,
 		my_address, 
@@ -543,8 +546,11 @@ void stepperReady( long int pos ){		// in interrupt
 		value.bytes[0]				// bits 24-32
 	};
 	send2android(ttt,8);
-	send2androidEnd();
-	//sendln2android("Rx" + String(pos));
+	Serial.println();
+	ttt[2] = RETURN_DRIVER_READY_REPEAT;
+	send2android(ttt,8);
+	Serial.println();
+	//Serial.println("Rx" + String(pos));
 
 }
 void paserDeriver( byte driver, String input ){   // odczytaj komende silnika
@@ -829,7 +835,7 @@ void test_slave(byte slave_address, byte tests){
 		cc.bytes[0],
 	};
 	send2android(ttt,8);
-	send2androidEnd();
+	Serial.println();
 }
  
  
@@ -948,7 +954,7 @@ byte writeRegisters(int deviceAddress, byte length, boolean wait) {
 		DEBUGLN("-! writeRegisters error: " + String(error) +"/"+ String(deviceAddress));
 		byte ttt[6] = {RETURN_I2C_ERROR,my_address,deviceAddress, error, length, out_buffer[0]};
 		send2android(ttt,6);
-		send2androidEnd();
+		Serial.println();
 		return error;
 	}
 	if(wait){
@@ -997,7 +1003,7 @@ void check_i2c(){ // czy linia jest drozna
 }
 
 void reset_wire(){
-	sendln2android("RRB");
+	Serial.println("RRB");
 	//    pinMode(PIN_MAINBOARD_SDA, INPUT );
 	//    pinMode(PIN_MAINBOARD_SCL, INPUT );
 	Wire.begin(I2C_ADR_MAINBOARD);
@@ -1010,7 +1016,7 @@ void reset_wire(){
 	tri_state( PIN_PROGRAMMER_RESET_UPANEL_BACK, true );	// pin w stanie niskim = reset
 }
 void reset_wire2(){
-	sendln2android("RRB2");
+	Serial.println("RRB2");
 	pinMode(PIN_MAINBOARD_SCK, OUTPUT);
 	pinMode(PIN_MAINBOARD_MISO, OUTPUT);
 	pinMode(PIN_MAINBOARD_MOSI, OUTPUT);

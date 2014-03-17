@@ -21,35 +21,43 @@ public abstract class I2C_Device_Imp implements I2C_Device{
 
 	public I2C_Device_Imp() {
 	}
+	@Override
 	public void setLed(Queue q, String selector, int pwm) {
 		String command = "L" +this.getAddress() + ","+ selector +"," + pwm;
 		q.add( command, true );
 	}
 
+	@Override
 	public void setAddress(int myaddress) {
 		this.myaddress = myaddress;
 	}
 
+	@Override
 	public int getAddress() {
 		return myaddress;
 	}
 
+	@Override
 	public void setIndex(int myindex) {
 		this.myindex = myindex;
 	}
 
+	@Override
 	public int getIndex() {
 		return myindex;
 	}
 
+	@Override
 	public void setOrder(int order) {
 		this.order = order;
 	}
 
+	@Override
 	public int getOrder() {
 		return order;
 	}
 
+	@Override
 	public String setFuseBits( String comPort ){
 		String command = IspSettings.avrDudePath + " -C"+ IspSettings.configPath +" "+ I2C_Device_Imp.verbose( IspSettings.verbose )+ " " +
 		"-p"+ this.cpuname +" -c"+this.protocol+" -P\\\\.\\"+comPort+" -b" + this.bspeed;
@@ -72,6 +80,7 @@ public abstract class I2C_Device_Imp implements I2C_Device{
 		return command;
 	}
 
+	@Override
 	public String checkFuseBits(String comPort) {
 		String command = IspSettings.avrDudePath + " -C"+ IspSettings.configPath +" "+ I2C_Device_Imp.verbose( IspSettings.verbose )+ " " +
 		"-p"+ this.cpuname +" -c"+this.protocol +" -P\\\\.\\"+comPort+" -b" + this.bspeed + " " +
@@ -82,6 +91,7 @@ public abstract class I2C_Device_Imp implements I2C_Device{
 		return command;
 	}
 
+	@Override
 	public String erase(String filePath, String comPort) {
 		String command = IspSettings.avrDudePath + " -C"+ IspSettings.configPath +" "+I2C_Device_Imp.verbose( IspSettings.verbose )+ " " +
 		"-p"+ this.cpuname +" -c"+this.protocol+" -P\\\\.\\"+comPort+" -b" + this.bspeed + " " +
@@ -92,6 +102,7 @@ public abstract class I2C_Device_Imp implements I2C_Device{
 		return command;
 	}
 
+	@Override
 	public String uploadCode( String filePath, String comPort ) {
 		String command = IspSettings.avrDudePath + " -C"+ IspSettings.configPath +" "+ I2C_Device_Imp.verbose( IspSettings.verbose )+ " " +
 		"-p"+ this.cpuname +" -c"+this.protocol+" -P\\\\.\\"+comPort+" -b" + this.bspeed + " " +
@@ -106,15 +117,14 @@ public abstract class I2C_Device_Imp implements I2C_Device{
 		//System.out.println("isFresh " + b );
 		return b;
 	}
+	@Override
 	public void reset(Queue q ) {
 		q.add( this.getReset(), false );
 	}
+	@Override
 	public void isp(Queue q) {
 		q.add( this.getIsp(), false );
 	}
-	
-	
-	
 
 	public static String verbose( int verbose ) {
 		return Decoder.strRepeat(" -v", verbose);

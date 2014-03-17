@@ -88,6 +88,7 @@ public class Serial_wire implements CanSend, Wire {
 	public boolean init() {
 		mUsbManager = (UsbManager) this.view.getSystemService(Context.USB_SERVICE);
 		mHandler.sendEmptyMessage(MESSAGE_REFRESH);
+		Log.e("Serial_wire.init", "MESSAGE_REFRESH");
 		return true;
 	}
 

@@ -48,22 +48,23 @@ public class Main{
 
 	//	w.fast_close_test( hw );
 	//	w.prepareSlaveMB( hw );
-	//	w.prepareMB( hw );
+		w.prepareMB( hw );
 	//	w.prepareMB2( hw );
 	//	w.prepareMBManualReset( hw );
 	//	w.fast_close_test( hw );
-	//	w.prepareCarret( hw );	
+		w.prepareCarret( hw );	
 		//w.checkCarret( hw );
 	//	w.prepare1Upanel( hw, 4 );
 	//	w.prepareUpanel( hw, 3 );
 	//	w.prepareUpanel( hw, 4 );
 	//	w.test( hw );
-		w.findOrder( hw, 4 );
-		w.findOrder( hw, 3 );
 
+	//	w.findOrder( hw, 3 );
+	//	w.findOrder( hw, 4 );
+		
 	//	Macro mm  = new Macro();
 	//	mm.promo1( hw );
-	//	w.createContstans( hw );
+		w.createContstans( hw );
 	//	mm.resetuj( hw );
 	//	mm.testBpm( hw );
 	//	mm.promo_carret( hw );
@@ -77,9 +78,9 @@ public class Main{
 	//	w.clearUpanel( hw );
 	//	w.mrygaj( hw );
 		
-		w.illumination1( hw );
+	//	w.illumination1( hw );
 	//	w.ilumination3( hw, "88", 255, "00", 2 );
-		w.fadeButelka( hw, 4, 200 );
+	//	w.fadeButelka( hw, 4, 200 );
 	//	w.mrygaj( hw, 10 );
 	//	w.zapal( hw );
 	//	w.zgas( hw );

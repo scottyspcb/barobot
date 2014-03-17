@@ -29,6 +29,7 @@ public class Methods {
 	public static final int METHOD_I2C_SLAVEMSG 	= 122;
 	public static final int RETURN_DRIVER_ERROR 	= 180;
 	public static final int RETURN_DRIVER_READY 	= 182;
+	public static final int RETURN_DRIVER_READY_REPEAT 	= 184;
 	public static final int RETURN_PIN_VALUE 	= 211;
 	public static final int METHOD_STEPPER_MOVING 	= 222;
 	public static final int METHOD_IMPORTANT_ANALOG 	= 224;
@@ -99,18 +100,19 @@ public class Methods {
 	public static final int INNER_CARRET_TEMP	= 7;
 
 
-	public static final int HX_STATE_0		= 11;		// error or shortcuted to VCC
-	public static final int HX_STATE_1		= 22;		// max x, hall max
+	public static final int HX_STATE_0		= 11;
+	public static final int HX_STATE_1		= 22;
 	public static final int HX_STATE_2		= 33;
 	public static final int HX_STATE_3		= 44;
 	public static final int HX_STATE_4		= 55;
+
 	public static final int HX_STATE_5		= 66;
 
 	public static final int HX_STATE_6		= 77;
 	public static final int HX_STATE_7		= 88;
 	public static final int HX_STATE_8		= 99;
-	public static final int HX_STATE_9		= 100;		// min x, hall min
-	public static final int HX_STATE_10		= 111;		// error not connected or GND
+	public static final int HX_STATE_9		= 100;
+	public static final int HX_STATE_10		= 111;
 
 
 

@@ -55,7 +55,7 @@ public class Arduino{
 		if(connection !=null){
 			connection.close();
 		}
-		mainboardSource = Queue.registerSource( mb );
+		mainboardSource = main_queue.registerSource( mb );
 		connection		= new Serial_wire( barobotMain );
 		connection.addOnReceive( new SerialInputListener(){
 			@Override
@@ -387,8 +387,7 @@ public class Arduino{
 	public void resetSerial() {
 		if( connection != null ){
 			connection.close();
-			connection = null;
-			
+			connection		= null;
 			connection		= new Serial_wire( BarobotMain.getInstance() );
 			connection.addOnReceive( new SerialInputListener(){
 				@Override

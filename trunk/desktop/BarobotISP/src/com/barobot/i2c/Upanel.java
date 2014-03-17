@@ -89,7 +89,8 @@ public class Upanel extends I2C_Device_Imp {
 		hasNext = false;
 		String command = "n" + this.myaddress;
 		q.add( new AsyncMessage( command, true ){
-			public boolean isRet(String result) {
+			@Override
+			public boolean isRet(String result, Queue q) {
 				if(result.startsWith("122,")){		//	122,1,188,1
 					int[] bytes = Decoder.decodeBytes(result);
 					if(bytes[2] == 188){
@@ -111,7 +112,8 @@ public class Upanel extends I2C_Device_Imp {
 		have_reset_address = -1;
 		String command = "RESET_NEXT"+ this.myaddress;
 		q.add( new AsyncMessage( command, true ){
-			public boolean isRet(String result) {
+			@Override
+			public boolean isRet(String result, Queue q) {
 				if(result.startsWith("12,")){		//	12,18,19,1
 					int[] bytes = Decoder.decodeBytes(result);	// HELLO, ADDRESS, TYPE, VERSION
 					have_reset_address = bytes[1];
@@ -128,7 +130,8 @@ public class Upanel extends I2C_Device_Imp {
 		myaddress = -1;
 		String command = this.reset( q, false );
 		q.add( new AsyncMessage( command, true ){
-			public boolean isRet(String result) {
+			@Override
+			public boolean isRet(String result, Queue q) {
 				if(result.startsWith("12,")){		//	12,18,19,1
 					int[] bytes = Decoder.decodeBytes(result);	// HELLO, ADDRESS, TYPE, VERSION
 					myaddress = bytes[1];

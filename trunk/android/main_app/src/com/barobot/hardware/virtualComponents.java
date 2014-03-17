@@ -52,10 +52,10 @@ public class virtualComponents {
 	public static final int SERVOZ_TEST_POS = 1300;
 
 	public static final int SERVOY_FRONT_POS = 800;
-	public static final int SERVOY_BACK_POS = 2100;
+	public static final int SERVOY_BACK_POS = 2200;
 	public static final int SERVOY_TEST_POS = 1000;
 	public static final int SERVOY_BACK_NEUTRAL = 1800;
-	
+
 	public static final int DRIVER_X_SPEED = 2500;
 	public static final int DRIVER_Y_SPEED = 40;
 	public static final int DRIVER_Z_SPEED = 250;
@@ -70,18 +70,7 @@ public class virtualComponents {
 	public static int margin_back = 0;
 
 	public static int[] upanels = {
-		23,					// 0, num 1
-		16,					// 1, num 2
-		19,					// 2, num 3
-		12,					// 3, num 4
-		17,					// 4, num 5
-		18,					// 5, num 6
-		20,					// 6, num 7
-		15,					// 7, num 8
-		22,					// 8, num 9
-		21,					// 9, num 10
-		14,					// 10, num 11
-		13,					// 11, num 12
+		16,12,23,19,18,17,15,20,21,22,13,14,
 	};
 
 	// pozycje butelek, sa aktualizowane w trakcie
@@ -165,7 +154,7 @@ public class virtualComponents {
 	};
 
 	public static MotorDriver driver_x;
-	public static boolean scann_bottles = true;
+	public static boolean scann_bottles = false;
 	public static int scann_num = 0;
 	public static boolean set_bottle_on = false;
 	public static boolean ledsReady = false;
@@ -271,7 +260,7 @@ public class virtualComponents {
 			}
 
 			@Override
-			public boolean isRet(String result) {
+			public boolean isRet(String result, Queue q) {
 				return false;
 			}
 
@@ -317,18 +306,17 @@ public class virtualComponents {
 	public static void moveToBottle(final int num, final boolean disableOnReady ){
 		Arduino ar		= Arduino.getInstance();
 		Queue q			= new Queue();
+		final Upanel up	= getUpanelBottle(num);
 		moveZDown( q ,true );
-		q.add( new AsyncMessage( true ) {
+		q.add( new AsyncMessage( true ){
 			@Override
-			public Queue run(AsyncDevice dev) {
+			public Queue run(AsyncDevice dev, Queue queue) {
 				this.name	= "check position";
 				int cx		= virtualComponents.driver_x.getSPos();		// czy ja juz jestem na tej pozycji?	
 				int cy		= virtualComponents.getInt("POSY", 0 );
 				int tx 		= getBottlePosX( num );
 				int ty  	= getBottlePosY( num );
 				Queue	q2	= new Queue();
-
-				Upanel up =  getUpanelBottle(num);
 				if( up != null ){
 					up.setLed( q2, "ff", 0 );
 					up.setLed( q2, "11", 200 );
@@ -352,7 +340,7 @@ public class virtualComponents {
 				}
 				if( up != null ){
 					up.setLed( q2, "ff", 0 );
-					up.setLed( q2, "22", 200 );
+					up.setLed( q2, "44", 200 );
 				}
 				return q2;
 			}
@@ -373,15 +361,30 @@ public class virtualComponents {
 	public static void nalej(int num) {			// num 0-11
 		Queue q = Arduino.getInstance().getMainQ();
 		int time = getPourTime(num);
+		final Upanel up	= getUpanelBottle(num);
 		q.add("EX", true);
 //		q.add("EY", true);	
 //		q.add("EZ", true);
 		virtualComponents.moveZUp(q, false);
-		q.addWait( time );
+		if( up == null ){
+			q.addWait( time );		
+		}else{
+			up.setLed( q, "ff", 0 );
+			up.setLed( q, "04", 20 );
+			q.addWait( time/4 );
+			up.setLed( q, "04", 50 );
+			q.addWait( time/4 );
+			up.setLed( q, "04", 100 );
+			q.addWait( time/4 );
+			up.setLed( q, "04", 200 );
+			q.addWait( time/4 );
+			up.setLed( q, "20", 255 );
+			up.setLed( q, "80", 100 );
+		}
 		virtualComponents.moveZDown(q,false);
 		q.add( new AsyncMessage( true ) {
 			@Override
-			public Queue run(AsyncDevice dev) {
+			public Queue run(AsyncDevice dev, Queue queue) {
 				this.name		= "pacpac";
 				if(virtualComponents.pac_enabled){
 					Queue	q2	= new Queue();	
@@ -400,6 +403,9 @@ public class virtualComponents {
 	    q.add(Constant.GETXPOS, true);
 	    q.add(Constant.GETYPOS, true);
 	    q.add(Constant.GETZPOS, true);
+	    if( up != null ){
+			up.setLed( q, "ff", 0 );
+		}
 	}
 
 	public static void enable_analog( Queue q, int pin, int time, int repeat) {
@@ -415,17 +421,17 @@ public class virtualComponents {
 
 		q.add( new AsyncMessage( true, true ) {
 			@Override
-			public boolean isRet(String result) {
+			public boolean isRet(String result, Queue mainQueue) {
 				return false;
 			}
 			@Override
-			public Queue run(AsyncDevice dev) {
+			public Queue run(AsyncDevice dev, Queue queue){
 				this.name		= "Check Hall X";
 				q.sendNow(Queue.DFAULT_DEVICE, "A0");
 				return null;
 			}
 			@Override
-			public boolean onInput(String input, AsyncDevice dev) {
+			public boolean onInput(String input, AsyncDevice dev, Queue mainQueue) {
 				Initiator.logger.w("MotorDriver.movoTo.AsyncMessage.onInput", input );
 				if(input.matches("^" +  Methods.METHOD_IMPORTANT_ANALOG + ",0,.*" )){		//	224,0,66,0,208,7,15,2
 					int[] parts = Decoder.decodeBytes( input );
@@ -443,12 +449,13 @@ public class virtualComponents {
 					}
 					if( can ){
 						Initiator.logger.w("MotorDriver.movoTo.AsyncMessage.onInput", "MOVE" );
-						Queue	q2	= new Queue();
+						Queue	q2	= new Queue(); 
 						q2.add("X" + newx+ ","+virtualComponents.DRIVER_X_SPEED, true);
-						q.addFirst(q2);
+						mainQueue.addFirst(q2);
 						dev.unlockRet(this, "A0 OK");
 						return true;
 					}
+					dev.unlockRet(this, "A0 FAIL");
 				}
 				return false;
 			}
@@ -497,7 +504,7 @@ public class virtualComponents {
 		moveZDown( q ,true );
 		q.add( new AsyncMessage( true ) {
 			@Override
-			public Queue run(AsyncDevice dev) {
+			public Queue run(AsyncDevice dev, Queue queue) {
 				this.name		= "check position";
 				int posx		= driver_x.getSPos();;		// czy ja juz jestem na tej pozycji?	
 				int posy		= virtualComponents.getInt("POSY", 0 );
@@ -522,6 +529,20 @@ public class virtualComponents {
 
 		carret.setLed( q, "ff", 0 );
 		carret.setLed( q, "22", 250 );
+		
+	    virtualComponents.setLeds( "88", 100 );
+	    virtualComponents.setLeds( "22", 200 );
+
+		q.addWait(500);
+		carret.setLed( q, "22", 20 );
+		q.addWait(500);
+		carret.setLed( q, "22", 250 );
+		q.addWait(500);
+		carret.setLed( q, "22", 20 );
+		q.addWait(500);
+		carret.setLed( q, "22", 250 );
+
+		virtualComponents.setLeds( "88", 0 );
 	}
 	
 	public static void startDoingDrink() {
@@ -554,7 +575,7 @@ public class virtualComponents {
 		// scann Triggers
 		q.add( new AsyncMessage( true ) {			// go up
 			@Override
-			public Queue run(AsyncDevice dev) {
+			public Queue run(AsyncDevice dev, Queue queue) {
 				this.name		= "scanning up";
 				AppInvoker.log("+find_bottles", "up");
 				virtualComponents.scann_bottles = true;
@@ -566,7 +587,7 @@ public class virtualComponents {
 
 		q.add( new AsyncMessage( true ) {
 			@Override
-			public Queue run(AsyncDevice dev) {
+			public Queue run(AsyncDevice dev, Queue queue) {
 				this.name		= "scanning back";
 				AppInvoker.log("+find_bottles", "down na:" + virtualComponents.scann_num);
 				virtualComponents.scann_num = 1;
@@ -576,7 +597,7 @@ public class virtualComponents {
 		virtualComponents.moveX( q, -lengthx19);			// down to 0
 		q.add( new AsyncMessage( true ) {
 			@Override
-			public Queue run(AsyncDevice dev) {
+			public Queue run(AsyncDevice dev, Queue queue) {
 				this.name		= "end scanning";
 				AppInvoker.log("+find_bottles", "koniec na:" + virtualComponents.scann_num);
 				virtualComponents.scann_bottles = false;
@@ -606,7 +627,19 @@ public class virtualComponents {
 			spos = 0;
 		}
 		virtualComponents.set( "POSX", "" + spos);
-		driver_x.setSPos( spos );
-		
+		driver_x.setSPos( spos );	
+	}
+	public static void setLeds(String string, int value ) {
+		Queue q1			= new Queue();
+		Queue q2			= new Queue();		
+		for(int i =0; i<upanels.length;i++){
+			q1.add("L"+ upanels[i] +",ff,0", true);
+			q1.add("L"+ upanels[i] +","+ string +"," + value, true);
+		}
+		Queue q			= Arduino.getInstance().getMainQ();
+		q.add(q1);
+		q.addWait(1000);
+		q.add(q2);
+		ledsReady = true;
 	}
 }

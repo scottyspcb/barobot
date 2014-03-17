@@ -18,7 +18,7 @@ public class DesktopRetReader implements RetReader {
 		this.hwc = hwc;
 	}
 
-	public boolean isRetOf(AsyncDevice asyncDevice, AsyncMessage wait_for2, String fromArduino ) {
+	public boolean isRetOf(AsyncDevice asyncDevice, AsyncMessage wait_for2, String fromArduino, Queue mainQueue ) {
 
 		String command = "";
 		if(wait_for2!= null && wait_for2.command != null && wait_for2.command != "" ){
@@ -52,10 +52,6 @@ public class DesktopRetReader implements RetReader {
 				decoded += "/METHOD_GET_X_POS";
 				int hpos = parts[3] + (parts[4] << 8); 
 				/*virtualComponents.driver_x.hard2soft(hpos);
-				
-				
-				
-				
 				virtualComponents.saveXPos( posx);
 				int lx	=  virtualComponents.getInt("LENGTHX", 600 );
 				if( posx > lx){		// Pozycja wieksza niz dlugosc? Zwieksz długosc
@@ -67,7 +63,6 @@ public class DesktopRetReader implements RetReader {
 					return false;
 				}
 				*/
-				
 			}else if( parts[2] == Methods.METHOD_GET_Y_POS ){
 				decoded += "/METHOD_GET_Y_POS";
 				int pos = parts[3] + (parts[4] << 8); 
@@ -132,9 +127,12 @@ public class DesktopRetReader implements RetReader {
 					Initiator.logger.e("MyRetReader.decoded.wrong", command);
 					return false;
 				}
-				
-			}else if( parts[2] == Methods.RETURN_DRIVER_READY ){
-				decoded += "/RETURN_DRIVER_READY";
+			}else if( parts[2] == Methods.RETURN_DRIVER_READY || parts[2] == Methods.RETURN_DRIVER_READY_REPEAT){
+				if(parts[2] == Methods.RETURN_DRIVER_READY){
+					decoded += "/RETURN_DRIVER_READY";
+				}else{
+					decoded += "/RETURN_DRIVER_READY_REPEAT";
+				}
 				if( parts[3] == Constant.DRIVER_X){
 					decoded += "/DRIVER_X";
 					//int pos = parts[4] + (parts[5] << 8) + (parts[6] << 16 + (parts[7] << 24));

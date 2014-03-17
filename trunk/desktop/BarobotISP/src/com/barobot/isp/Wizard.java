@@ -6,8 +6,6 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.logging.FileHandler;
-
 import com.barobot.common.IspSettings;
 import com.barobot.i2c.BarobotTester;
 import com.barobot.i2c.Carret;
@@ -16,11 +14,38 @@ import com.barobot.i2c.Upanel;
 import com.barobot.parser.Operation;
 import com.barobot.parser.Queue;
 import com.barobot.parser.devices.I2C_Device;
+import com.barobot.parser.devices.MotorDriver;
 import com.barobot.parser.message.AsyncMessage;
 import com.barobot.parser.output.AsyncDevice;
 
 public class Wizard {
+	public static int[] magnet_order = {0,2,1,4,3,6,5,8,7,10,9,11 };	// numer butelki, odj¹c 1 aby numer ID
 
+	public static int[] upanelIndex2order = {0,2,4,6,8,10,1,3,5,7,9,11};	// numer butelki, odj¹c 1 aby numer ID
+	public static int[] order2upanelIndex = {0,6,1,7,2,8,3,9,4,10,5,11};	// numer butelki, odj¹c 1 aby numer ID
+
+	/*
+	0	Upanel numer 0, adres: 12, index 3	0
+	1	Upanel numer 1, adres: 19, index 0	2
+	2	Upanel numer 2, adres: 17, index 0	4
+	3	Upanel numer 3, adres: 20, index 0	6
+	4	Upanel numer 4, adres: 22, index 0	8
+	5	Upanel numer 5, adres: 14, index 0	10
+	6	Upanel numer 0, adres: 16, index 4	1
+	7	Upanel numer 1, adres: 23, index 0	3
+	8	Upanel numer 2, adres: 18, index 0	5
+	9	Upanel numer 3, adres: 15, index 0	7
+	10	Upanel numer 4, adres: 21, index 0	9
+	11	Upanel numer 5, adres: 13, index 0	11
+	
+	0,2,4,6,8,10,1,3,5,7,9,11
+	*/
+	
+	
+	
+	
+	
+	
 	public void findOrder(Hardware hw, int index ) {
 		Queue q = hw.getQueue();
 	//	String TimeStamp = new java.util.Date().toString();
@@ -47,10 +72,29 @@ public class Wizard {
 		for (I2C_Device u : Upanel.list){
 			u.setLed( q, "ff", 00 );
 		}
+		q.addWaitThread( Main.main );
 		System.out.println("upaneli: " + Upanel.list.size());
 		for (I2C_Device u : Upanel.list){
 			System.out.println("Upanel numer "+ u.getOrder() + ", adres: "+ u.getAddress() +", index "+ u.getIndex());
 		}
+		if(order2upanelIndex.length == Upanel.list.size()){
+			//upanel_order
+			String res = "";
+			for( int i = 0;i<order2upanelIndex.length; i++){
+				int ind		= order2upanelIndex[ i ];
+				int address = Upanel.list.get(ind).getAddress();
+				res = res + address + ",";
+			}
+			System.out.println("Kolejnoœæ: " + res);
+			
+		}else{
+			System.out.println("Upaneli: " +Upanel.list.size() +  " a powinno byc: " +  order2upanelIndex.length);
+			
+		}
+		
+		
+		
+		
 	}
 	private void find_next_to( Hardware hw, Upanel current_dev, int next_index) {
 		Queue q = hw.getQueue();
@@ -383,7 +427,8 @@ public class Wizard {
 		/*
 		Queue q = hw.getQueue();
 		q.add(new AsyncMessage( "I", true ){
-					public boolean isRet(String result) {
+					@Override
+					public boolean isRet(String result, Queue q) {
 						if( "RI".equals(result)){
 							return true;
 						}
@@ -460,7 +505,8 @@ public class Wizard {
 		if(IspSettings.setHex){	
 			current_dev.isp( q );	// mam 2 sek na wystartwanie
 			q.add( new AsyncMessage( true ){		// na koncu zamknij
-				public Queue run(AsyncDevice dev) {
+				@Override
+				public Queue run(AsyncDevice dev, Queue queue) {
 					command = current_dev.uploadCode( upanel_code, hw.comPort);
 					Main.main.run(command, hw);
 					return null;
@@ -493,7 +539,8 @@ public class Wizard {
 			q.addWaitThread(Main.mt);
 			current_dev.isp( q );
 			q.add( new AsyncMessage( true ){		// na koncu zamknij
-				public Queue run(AsyncDevice dev) {
+				@Override
+				public Queue run(AsyncDevice dev, Queue queue) {
 					String command = current_dev.setFuseBits( hw.comPort );
 					Main.main.run(command, hw);
 					return null;
@@ -658,8 +705,15 @@ public class Wizard {
 
 	public void swing(Hardware hw, int i, int min, int max) {
 		hw.connect();
-		MainBoard mb	= new MainBoard();
-		mb.moveX(max);
+		Queue q						= hw.getQueue();
+		MotorDriver driver_x		= new MotorDriver();
+		driver_x.defaultSpeed		= 2500;
+		driver_x.setSPos( 0 );
+		driver_x.movoTo(q, 1000);
+		driver_x.movoTo(q, 2000);
+		driver_x.movoTo(q, 1000);
+	//	MainBoard mb	= new MainBoard();
+	//	mb.moveX(max);
 	}
 
 	public void test_proc(Hardware hw) {
@@ -670,7 +724,8 @@ public class Wizard {
 		hw.send( "P3" );
 /*
 		q.add(new AsyncMessage( "I", true ){
-					public boolean isRet(String result) {
+					@Override
+					public boolean isRet(String result, Queue q) {
 						if( "RI".equals(result)){
 							return true;
 						}
@@ -723,7 +778,8 @@ public class Wizard {
 		if(IspSettings.setHex){	
 			current_dev.isp( q );	// mam 2 sek na wystartwanie
 			q.add( new AsyncMessage( true ){		// na koncu zamknij
-				public Queue run(AsyncDevice dev) {
+				@Override
+				public Queue run(AsyncDevice dev, Queue queue) {
 					command = current_dev.uploadCode( upanel_code, hw.comPort);
 					Main.main.run(command, hw);
 					return null;

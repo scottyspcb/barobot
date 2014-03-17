@@ -38,7 +38,8 @@ public class MainBoard extends I2C_Device_Imp {
 		hasNext = false;
 		String command = "N" + index;
 		q.add( new AsyncMessage( command, true ){
-			public boolean isRet(String result) {
+			@Override
+			public boolean isRet(String result, Queue q) {
 				if(result.startsWith("122,")){		//	122,1,188,1
 					int[] bytes = Decoder.decodeBytes(result);
 					if(bytes[2] == 188){

@@ -36,7 +36,7 @@ void send_servo( boolean error, byte servo, uint16_t pos );
 void requestEvent();
 void receiveEvent(int howMany);
 void run_to(byte index, byte sspeed, uint16_t target);
-void proceed( volatile byte buffer[5] );
+void proceed( volatile byte buffer[MAXCOMMAND_CARRET] );
 void timer();
 void reload_servo( byte index );
 void serialEvent();

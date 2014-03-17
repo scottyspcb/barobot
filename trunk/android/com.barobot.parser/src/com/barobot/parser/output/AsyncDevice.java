@@ -22,6 +22,7 @@ public abstract class AsyncDevice {
 	private Queue waiting_queue;
 	private CanSend sender;
 	private RetReader retReader;
+	private Queue mainQueue = null;
 
 	public AsyncDevice(String name) {
 		this.name = name;
@@ -39,8 +40,14 @@ public abstract class AsyncDevice {
 					if("".equals(command)){
 			//			Log.i(Constant.TAG, "pusta komenda!!!]");
 					}else{
-					//	History_item hi = new History_item( command, History_item.INPUT );
-						this.useInput( command );
+					//	History_item hi = new History_item( command, History_item.INPUT );	
+						final String theCommand = command;
+						new Thread( new Runnable(){
+							@Override
+							public void run() {
+								useInput( theCommand );
+							}
+						}).start();
 					}
 					end		= buffer.indexOf(separator);
 				}
@@ -50,34 +57,39 @@ public abstract class AsyncDevice {
 	private boolean useInput(String command) {
 		boolean handled =false;
 		Initiator.logger.e("AsyncDevice.useInput", command );
+		
+		boolean used = false;
 		synchronized (this) {
 		//	Initiator.logger.i("wait_for?: ", ( (this.wait_for == null)? "null" : "nonull") );
-			if( this.wait_for == null ){
-				if( this.retReader != null ){
-					handled = this.retReader.isRetOf( this, null, command );
-					if(handled){
-						return true;
-					}
-				}	
-			}else{
-		//		Initiator.logger.i("?isRet: ", command );
-				handled = this.wait_for.isRet( command );
+			if( this.wait_for != null ){
+				used = true;
+				Initiator.logger.i("useInput.useInput.isRet: ", command );
+				handled = this.wait_for.isRet( command, mainQueue );
 				if(handled){
 			//		Initiator.logger.i("+unlock: ", command );
 					this.unlockRet( command );
 					return true;
 				}
-				handled = this.wait_for.onInput( command, this );
+				handled = this.wait_for.onInput( command, this, mainQueue );
 				if(handled){
 					return true;
 				}
 				if( this.retReader != null ){
-					handled = this.retReader.isRetOf( this, this.wait_for, command );
+					handled = this.retReader.isRetOf( this, this.wait_for, command, mainQueue );
 					if(handled){
 						//Initiator.logger.i("+unlock: ", command );
 						this.unlockRet( command );
 						return true;
 					}
+				}
+			}
+		}
+		if(!used){
+		//	Initiator.logger.i("wait_for?: ", ( (this.wait_for == null)? "null" : "nonull") );
+			if( this.retReader != null ){
+				handled = this.retReader.isRetOf( this, null, command, mainQueue );
+				if(handled){
+					return true;
 				}
 			}
 		}
@@ -239,8 +251,12 @@ public abstract class AsyncDevice {
 		}
 		globalRegex.clear();
 		sender			= null;
+		mainQueue		= null;
 		wait_for		= null;
 		waiting_queue	= null;
+	}
+	public void setMainQueue(Queue queue) {
+		this.mainQueue = queue;
 	}
 
 }

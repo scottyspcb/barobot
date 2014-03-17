@@ -8,6 +8,7 @@ import com.barobot.common.constant.Methods;
 import com.barobot.hardware.Arduino;
 import com.barobot.parser.Queue;
 import com.barobot.parser.message.AsyncMessage;
+import com.barobot.parser.output.AsyncDevice;
 
 public class I2C{
 	static List<I2C_device> lista = new ArrayList<I2C_device>();
@@ -104,14 +105,16 @@ public class I2C{
 		q.add("I2C", true );
 		// skanuj magistralę. Gdy znaleziono wyslij informację o sprzęcie
 		AsyncMessage m =  new AsyncMessage( true ){
-			public boolean handle( String command ){
+			@Override
+			public boolean isRet( String command, Queue queue ){
 				if (command == "EI2C"){	// jesli nie znaleziono zadnego
 					// clear active devices
 					return true;
 				}
 				return false;
 			}
-			public Queue run(){
+			@Override
+			public Queue run(AsyncDevice dev, Queue queue) {
 				return null;
 			}
 		};

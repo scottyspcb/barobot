@@ -308,16 +308,20 @@ public class button_click implements OnClickListener{
 			if(!virtualComponents.ledsReady){
 				virtualComponents.scann_leds();
 			}
+			virtualComponents.setLeds( "22", 200 );
 			break;	
 		case R.id.led_blue_on:
 			if(!virtualComponents.ledsReady){
 				virtualComponents.scann_leds();
 			}
+			virtualComponents.setLeds( "44", 200 );
+			
 			break;
 		case R.id.led_red_on:
 			if(!virtualComponents.ledsReady){
 				virtualComponents.scann_leds();
 			}
+			virtualComponents.setLeds( "11", 200 );
 			break;
 		case R.id.reset_margin:
 			virtualComponents.driver_x.setM(0);
