@@ -24,10 +24,10 @@ volatile uint8_t channel = 0;
 volatile uint8_t row = 0;
 
 byte moving_x = DRIVER_DIR_STOP;
-byte moving_y = DRIVER_DIR_STOP;
-byte moving_z = DRIVER_DIR_STOP;
+//byte moving_y = DRIVER_DIR_STOP;
+//byte moving_z = DRIVER_DIR_STOP;
 
-#define UNCONNECTED_LEVEL  3
+
 #define MIN_DELTA  20
 //unsigned int typical_zero = 512;
 //unsigned int last_max = 0;
@@ -44,12 +44,13 @@ struct ServoChannel {
 	int16_t last_distance;
 	volatile boolean pos_changed;
 	volatile boolean enabled;
+	uint8_t moving;
 };
 
 Servo servo_lib[2];
 volatile ServoChannel servos[2]= {
-	{PIN_CARRET_SERVO_Y,0,0,0,0,false,false},
-	{PIN_CARRET_SERVO_Z,0,0,0,0,false,false},
+	{PIN_CARRET_SERVO_Y,0,0,0,0,false,false,DRIVER_DIR_STOP },
+	{PIN_CARRET_SERVO_Z,0,0,0,0,false,false,DRIVER_DIR_STOP },
 };
 
 // oscyloskop
@@ -64,54 +65,54 @@ byteint analog_sum;
 boolean diddd = false;
 unsigned long milisAnalog = 0;
 unsigned long mil = 0;
-unsigned long milis1000 = 0;
-unsigned long milis2000 = 0;
-byte iii		 = 0;
-boolean is_up    = false;
-boolean neutral  = false;
-boolean is_down  = false;
-boolean is_rising  = false;
-boolean is_falling  = false;
-boolean send_min  = false;
-boolean send_max  = false;
-boolean send_lmin  = false;
-boolean send_lmax  = false;
+
+
+uint16_t cc = 0;
+byte state_id = 0xff;
+int16_t up_level = 0;
+int16_t down_level = 0;
 
 #define HISTORY_LENGTH  7
-#define ENDSTOP_DIFF  100
-#define WAVING  6
+#define HXSTATES  11
 
-int16_t threshold     		= 30;
+volatile int16_t hallx_state[HXSTATES][4] = {
+	//{CODE, MIN, MAX }
+	{HX_STATE_0,	HX_NEODYM_UP_BELOW,			1024,						0x0f},		// ERROR
+	{HX_STATE_1,	HX_NEODYM_UP_START,			HX_NEODYM_UP_BELOW-1,		0x08},		// to jest neodym max
+	{HX_STATE_2,	HX_FERRITE_UP_IS_BELOW,		HX_NEODYM_UP_START-1,		0x04},		// wznosi siê neodym
+	{HX_STATE_3,	HX_LOCAL_UP_MAX_OVER,		HX_FERRITE_UP_IS_BELOW-1,	0x02},		// czubek lokalnego max
+	{HX_STATE_4,	HX_NOISE_BELOW,				HX_LOCAL_UP_MAX_OVER-1,		0x01},		// wznosi siê
 
-#define ENSTROP_MAX_BELOW    400
-#define ENSTROP_MIN_OVER     680
-#define NOT_CONNECTED_BELOW	 200
-#define NOISE_LEVEL	 10
+	{HX_STATE_5,	HX_NOISE_OVER,				HX_NOISE_BELOW-1,			0x00},		// neutralne
 
-#define TYPICAL_NEUTRAL_OVER  525
-#define TYPICAL_NEUTRAL_BELOW 530
-#define TYPICAL_NEUTRAL_START  ((TYPICAL_NEUTRAL_OVER + TYPICAL_NEUTRAL_BELOW)/2)
+	{HX_STATE_6,	HX_LOCAL_DOWN_IS_BELOW,		HX_NOISE_OVER-1,			0x10},		// opada
+	{HX_STATE_7,	HX_FERRITE_DOWN_IS_BELOW,	HX_LOCAL_DOWN_IS_BELOW-1,	0x20},		// czubek lokalnego min
+	{HX_STATE_8,	HX_NEODYM_DOWN_START,		HX_FERRITE_DOWN_IS_BELOW-1,	0x40},		// opada neodym
+	{HX_STATE_9,	HX_NEODYM_DOWN_OVER,		HX_NEODYM_DOWN_START-1,		0x80},		// to jest neodym min	
+	{HX_STATE_10,	0,							HX_NEODYM_DOWN_OVER-1,		0xf0}		// NOT CONNECTED	
+};
 
-#define TYPICAL_NEUTRAL_OVER  525
-
-#define LOCAL_MAX_OVER  544
-#define LOCAL_MIN_BELOW  513
-
-
-int16_t typical_neutral  		= TYPICAL_NEUTRAL_START;
-
-int16_t historyx[HISTORY_LENGTH]  = {TYPICAL_NEUTRAL_START,TYPICAL_NEUTRAL_START,TYPICAL_NEUTRAL_START,TYPICAL_NEUTRAL_START,TYPICAL_NEUTRAL_START,TYPICAL_NEUTRAL_START,TYPICAL_NEUTRAL_START};
-int8_t historyx_index  = 0;
-int16_t cc = 0;
-
+#define HYSTERESIS  2
 #define SEPARATOR_CHAR '\n'
 #define TRIES  10
+#define HYSTATES  7
+
+volatile int16_t hally_state[HYSTATES][4] = {
+	//{CODE, MIN, MAX  }
+	{'E',	HX_NEODYM_UP_BELOW,		1024,						0x0f},		// ERROR
+	{'O',	HX_NEODYM_UP_START,		HX_NEODYM_UP_BELOW-1,		0x08},		// to jest neodym max
+	{'R',	HX_FERRITE_UP_IS_BELOW,	HX_NEODYM_UP_START-1,		0x04},		// wznosi siê neodym
+	{'A',	HX_LOCAL_UP_MAX_OVER,	HX_FERRITE_UP_IS_BELOW-1,	0x02},		// czubek lokalnego max
+	{'B',	HX_NOISE_BELOW,			HX_LOCAL_UP_MAX_OVER-1,		0x01},		// wznosi siê
+	{'W',	HX_NOISE_OVER,			HX_NOISE_BELOW-1,			0x00},		// neutralne
+	{'N',	0,						HX_NEODYM_DOWN_OVER-1,		0xf0}		// NOT CONNECTED	
+};
 
 String serial0Buffer = "";
 boolean Console0Complete = false;   // This will be set to true once we have a full string
 
 unsigned long int when_next = 0;
-unsigned long int sending = 0b10000000;
+unsigned long int sending = 0b00000000;
 unsigned long int time = 5000;
 unsigned long int sum = 0;
 unsigned long int repeat = 0;
@@ -142,8 +143,9 @@ void setup(){
 	send_here_i_am();  // wyslij ze oto jestem
 	FlexiTimer2::set(40, 1.0/100, timer);
 	FlexiTimer2::start();
-//	init_analogs();
-//	sendstats();
+	//init_analogs();
+	init_hallx();
+	sendstats();
 }
 
 void init_leds(){
@@ -189,27 +191,26 @@ void loop() {
   }
 
   if( mil > when_next ){    // debug, mrygaj co 1 sek
-      if( bitRead(sending, 0 ) ){  sendVal(0);   }
-      if( bitRead(sending, 1 ) ){  sendVal(1);   }
-      if( bitRead(sending, 2 ) ){  sendVal(2);   }
-      if( bitRead(sending, 3 ) ){  sendVal(3);   }
-      if( bitRead(sending, 4 ) ){  sendVal(4);   }
-      if( bitRead(sending, 5 ) ){  sendVal(5);   }
-      if( bitRead(sending, 6 ) ){  sendVal(6);   }
-      if( bitRead(sending, 7 ) ){  sendVal(7);   }
-      if( bitRead(sending, 8 ) ){  sendVal(8);   }
-      Serial.println();
+		boolean sendsth = false;
+      if( bitRead(sending, 0 ) ){  sendVal(0); sendsth=true;  }
+      if( bitRead(sending, 1 ) ){  sendVal(1); sendsth=true;   }
+      if( bitRead(sending, 2 ) ){  sendVal(2); sendsth=true;   }
+      if( bitRead(sending, 3 ) ){  sendVal(3); sendsth=true;   }
+      if( bitRead(sending, 4 ) ){  sendVal(4); sendsth=true;   }
+      if( bitRead(sending, 5 ) ){  sendVal(5); sendsth=true;   }
+      if( bitRead(sending, 6 ) ){  sendVal(6); sendsth=true;   }
+      if( bitRead(sending, 7 ) ){  sendVal(7); sendsth=true;   }
+      if( bitRead(sending, 8 ) ){  sendVal(8); sendsth=true;   }
+      if(sendsth){
+		Serial.println();
+      }
       when_next = mil + time;
   }
 	//sendanalog();
 	readHall();
 
-	//Serial.println("tutaj5");
 	update_servo( INNER_SERVOY );
-
-	//Serial.println("tutaj6");
 	update_servo( INNER_SERVOZ );
-	//Serial.println("tutaj7");
 
 	// analizuj bufor wejsciowy i2c
 	for( byte i=0;i<CARRET_BUFFER_LENGTH;i++){
@@ -267,198 +268,46 @@ int16_t readValue() {           // synchroniczne
 	return analogRead(PIN_CARRET_HALL_X );
 }
 
+byte get_hx_state_id( int16_t value){
+	for(byte i=0;i<HXSTATES;i++){
+		if(hallx_state[i][1] <= value && hallx_state[i][2] >= value ){
+			return i;
+		}
+	}
+	return 0xff;
+}
+
+void init_hallx() {           // synchroniczne
+	int16_t val1 = readValue();
+	val1 += readValue();
+	val1 += readValue();
+	val1 += readValue();
+	val1 = val1>>2;		//  div 4
+	byte new_state_id = get_hx_state_id( val1 );
+	change_state( state_id, new_state_id, val1 );
+}
+void change_state( byte oldStateId, byte newStateId, int16_t value ) {           // synchroniczne
+	if( newStateId != 0xff ){
+		state_id		= newStateId;
+		up_level		= hallx_state[newStateId][2] + HYSTERESIS;		// max is a limit
+		down_level		= hallx_state[newStateId][1] - HYSTERESIS;		// min is a limit
+		send_hx_pos( newStateId, value );	// send to mainboard
+	}
+}
 void readHall() {           // synchroniczne
-	// analizuj
-	// todo do znalezienia: local max, local min, global min, global max,
-	//      DW(_pwm_channels[6].pin, false);
-	//      DW(_pwm_channels[7].pin, false);
-	cc++;
-	if(cc>200){
-		cc   = 0;
-		int16_t val1 = readValue();
-		int16_t val = abs( val1 - typical_neutral );
-
-		byte in = historyx_index + HISTORY_LENGTH;
-		int16_t b1 = historyx[ (in -1 )% HISTORY_LENGTH ];       // -1      +
-		int16_t b2 = historyx[ (in -2 )% HISTORY_LENGTH ];       // -2      +
-		int16_t b3 = historyx[ (in -3 )% HISTORY_LENGTH ];       // -3      +
-		int16_t b4 = historyx[ (in -4 )% HISTORY_LENGTH ];       // -3      -
-		int16_t b5 = historyx[ (in -5 )% HISTORY_LENGTH ];       // -3      -
-		int16_t b6 = historyx[ (in -7 )% HISTORY_LENGTH ];       // -3      -
-		int16_t b7 = historyx[ (in -3 )% HISTORY_LENGTH ];       // -3      -
-		
-		int16_t diff = val1 - b4 + b2 - b5  + b1 - b6+ b3 - b7 ;    // dodatnie gdy rosnie, ujemne gdy maleje
-
-
-		if( val > NOISE_LEVEL ){    // czy warte analizy
-			DW(LED_TOP_RED, true);
-
-			if( val1 > typical_neutral ){
-				is_up    = true;
-				is_down  = false;
-			}else if( val1 < typical_neutral ){
-				is_up    = false;
-				is_down  = true;
-			}
-
-			if( diff < WAVING && diff > -WAVING ){		// noise
-			} else if( diff  < 0 ){          			// rising
-				is_falling  = false;
-				is_rising  	= true;
-			} else if( diff > 0 ){						// falling
-				is_falling  = true;
-				is_rising  	= false;
-			}
-
-
-			if( moving_x == DRIVER_DIR_STOP){			// stop = error
-
-			}else if( moving_x == DRIVER_DIR_FORWARD ){
-				if( is_falling && val < ENSTROP_MAX_BELOW ){
-					if(!send_max){
-						send_x_pos( HALL_GLOBAL_MAX, is_up, is_down );
-						send_max = true;
-					}
-				}
-			}else if( moving_x == DRIVER_DIR_BACKWARD ){
-				if( is_rising && val > ENSTROP_MIN_OVER ){
-					if(!send_min){
-						send_x_pos( HALL_GLOBAL_MIN, is_up, is_down );
-						send_min = true;
-					}
-				}
-			}
-
-
-
-			if( is_rising && val > ENSTROP_MIN_OVER ){							// enstop min = X MAX
-				DW(LED_TOP_GREEN, false);
-				
-
-			}else if( is_falling && val < ENSTROP_MAX_BELOW ){					// enstop max = X MIN
-	
-			}else{													// local max / min ? 
-				DW(LED_TOP_GREEN, true);
-				if( val > LOCAL_MAX_OVER ){
-					send_x_pos( HALL_LOCAL_MAX, is_up, is_down );
-
-				}else if( val < LOCAL_MIN_BELOW ){
-					send_x_pos( HALL_LOCAL_MAX, is_up, is_down );
-				}
-			}
-		}else{
-			DW(LED_TOP_RED, true);      // red glass led
-			if( diff < WAVING && diff > -WAVING ){		// noise
-				send_min = false;
-				send_lmin = false;
-				is_up    = false;
-				is_down  = false;
+	if( moving_x != DRIVER_DIR_STOP 
+		&& servos[INNER_SERVOY].moving == DRIVER_DIR_STOP 
+		&& servos[INNER_SERVOZ].moving == DRIVER_DIR_STOP )
+		{
+		if( cc>HX_SPEED){
+			cc   = 0;
+			int16_t val1 = readValue();
+			if( val1 >= up_level || val1 <= down_level ){
+				byte new_state_id = get_hx_state_id( val1 );
+				change_state( state_id, new_state_id, val1 );
 			}
 		}
-		
-
-	//	DW(PIN_PANEL_LED1_NUM,  !digitalRead(PIN_PANEL_LED1_NUM));    // Toggle led. Read from register (not from pin)
-/*
-		if(moving_x != DRIVER_DIR_STOP){			// licz srednia
-			val1
-			DW(PIN_PANEL_LED1_NUM,  true );
-		}else{
-		}*/		
-
-		if( val > 10 ){    // warte analizy
-			if( diff < WAVING && diff > -WAVING ){
-				// odczyt plywa
-			}else if( diff  < 0 ){          //rising
-				if(is_rising ){
-					if( val > 50 ){
-						if(is_up){
-							if(!send_max){
-								send_x_pos( HALL_GLOBAL_MAX, is_up, is_down );
-								send_max = true;
-							}
-						}else if(is_down){
-							DEBUG( "---" );
-						}
-					}else{
-						if(is_up){
-							if(!send_lmax){
-								//                         DEBUGLN( "IS_FALLING+" );        //  ok
-								send_x_pos( HALL_LOCAL_MAX, is_up, is_down );
-								send_lmax = true;
-							}
-						}else if(is_down){
-							DEBUGLN( "IS_FALLING-" );
-						}
-						//  send_x_pos( HALL_GLOBAL_MAX );
-					}
-				}
-				DEBUG( "R" );
-				is_falling   = true;
-				is_rising  = false;
-				DW(_pwm_channels[6].pin, true);
-				DW(_pwm_channels[7].pin, false);
-			}else if( diff > 0 ){
-				if(is_falling ){    // send message
-					if( val > 50 ){    // diff > 100
-						if(is_up){
-							DEBUG( "+++" );
-						}else if(is_down){
-							if(!send_min){
-								send_x_pos( HALL_GLOBAL_MIN, is_up, is_down );
-								send_min = true;
-							}
-						}
-					}else{
-						if(is_up){
-							DEBUGLN( "IS_RISING+" );
-						}else if(is_down){
-							if(!send_lmin){
-								//                         DEBUGLN( "IS_RISING-" );      // ok
-								send_x_pos( HALL_LOCAL_MIN, is_up, is_down );
-								send_lmin = true;
-							}
-						}
-					}
-				}
-				DEBUG( "F" );
-				is_rising  = true;
-				is_falling = false;
-				DW(_pwm_channels[6].pin, false);
-				DW(_pwm_channels[7].pin, true);
-			}
-			//    DEBUG( "\tin: " );
-			//    DEBUG( String(in) );
-		/*	
-			if( mil > milis1000 ){    // debug, mrygaj co 1 sek
-				DEBUG( "\td: " );
-				DEBUG(  String(diff) );
-				 
-				DEBUG( "\tval: " );
-				DEBUG( String(val1) );
-
-                DEBUG( "\tbA: " );
-                DEBUG( String( b1) );
-  
-                DEBUG( "\tbB: " );
-                DEBUG( String( b2) );
-  
-                DEBUG( "\tbC: " );
-                DEBUG( String( b3) );
-				
-				//     DEBUG( String(val + b1) );
-				//    DEBUG( "\t" );
-				//    DEBUGLN( String(b2 + b3) );
-				 
-				DEBUGLN();
-				milis1000 = mil + 150;
-			}*/
-			//   DW(_pwm_channels[6].pin, false);
-			//   DW(_pwm_channels[7].pin, false);
-		}else{
-
-		}
-		historyx[historyx_index]  = val1;
-		historyx_index            = (historyx_index+1)%HISTORY_LENGTH;
+		cc++;
 	}
 }
 
@@ -469,14 +318,11 @@ void update_servo( byte index ) {           // synchroniczne
 	if( servos[index].pos_changed == true && !prog_mode){  // mam byc gdzie indziej
 	//	Serial.println("teraz");
 	//	Serial.flush();
-
 		//    DEBUG( "-przesuwam Y " );
 		//    DEBUGLN( String(servos[index].last_pos) );
 		servo_lib[index].writeMicroseconds(servos[index].last_pos);
-
 	//	Serial.println("po");
 	//	Serial.flush();
-		
 		servos[index].pos_changed = false;
 		if( servos[index].last_pos == servos[index].target_pos){
 			DEBUGLN( "-gotowe servo" );
@@ -495,7 +341,6 @@ void update_servo( byte index ) {           // synchroniczne
 		}
 	//	Serial.println("po2");
 	//	Serial.flush();
-		
 	}
 }
 void parseInput( String input ){
@@ -657,8 +502,8 @@ void proceed( volatile byte buffer[5] ){
 		if( buffer[1] == DRIVER_X ){
 			moving_x = buffer[2];
 		}
-		DEBUG("-driver X moving:");
-		DEBUGLN(String(buffer[2]));
+		//DEBUG("-driver X moving:");
+		//DEBUGLN(String(buffer[2]));
 
 	}else if( command == METHOD_CHECK_NEXT ){
 		byte ttt[4] = {METHOD_I2C_SLAVEMSG, my_address, METHOD_CHECK_NEXT, 0 };		// 0 = no device found (cant have device)
@@ -696,16 +541,12 @@ void proceed( volatile byte buffer[5] ){
 		//    pinMode(servos[index].pin, INPUT);
 		servos[index].pos_changed = false;
 
-		byte ttt[4] = {METHOD_I2C_SLAVEMSG, my_address, METHOD_DRIVER_DISABLE, index };
+		byte ttt[4] = {METHOD_I2C_SLAVEMSG, my_address, METHOD_DRIVER_DISABLE, localToGlobal(index) };
 		send(ttt,4);
 
 
 	}else if( command == METHOD_CAN_FILL ){
 		boolean value = false;
-		
-
-	
-	
 		byte ttt[4] = {METHOD_I2C_SLAVEMSG, my_address, METHOD_CAN_FILL, value ? 1 : 0 };
 		send(ttt,4);
 
@@ -754,6 +595,37 @@ void proceed( volatile byte buffer[5] ){
 		send(ttt,5);
 
 	}else if( command == METHOD_GETANALOGVALUE ){
+		byte source = buffer[1];
+		if( source == INNER_HALL_X ){	
+			int16_t val1 = readValue();
+			byte newStateId = get_hx_state_id( val1 );
+			if( newStateId != 0xff ){
+				byte state_name	= hallx_state[newStateId][0];
+				byte ttt[8] = {
+					METHOD_IMPORTANT_ANALOG, 
+					INNER_HALL_X, 
+					state_name, 
+					0,					// dir is unknown on carret
+					0, 					// position is unknown on carret
+					0,  				// position is unknown on carret
+					(val1 & 0xFF),
+					(val1 >>8),
+				};
+				send(ttt,8);
+			}
+		
+		}else if( source ==  INNER_HALL_Y ){ 
+		
+		}else if( source ==  INNER_WEIGHT ){ 
+		
+		}else if( source ==  INNER_CURRENTY ){
+		
+		}else if( source ==  INNER_CURRENTZ ){
+		
+		}else if( source ==  INNER_CARRET_TEMP ){
+		
+		}
+
 	}else if( command == METHOD_GETVALUE ){
 	//}else if( buffer[0] == METHOD_RESET_NEXT ){
 	//}else if( buffer[0] == METHOD_RUN_NEXT ){
@@ -782,7 +654,6 @@ void proceed( volatile byte buffer[5] ){
 		printHex(buffer[2]);
 	}
 	buffer[0] = 0;  //ready
-	Serial.println("proceed9");
 }
  
 void run_to(byte index, byte sspeed, uint16_t target){
@@ -798,9 +669,11 @@ void run_to(byte index, byte sspeed, uint16_t target){
 		if( servos[index].target_pos < servos[index].last_pos ){    // jedz w dol
 			servos[index].delta_pos = -sspeed;
 			servos[index].last_distance = servos[index].last_pos - servos[index].target_pos;
+			servos[index].moving	= DRIVER_DIR_FORWARD;
 		}else if( servos[index].target_pos > servos[index].last_pos ){    // jedz w gore
 			servos[index].delta_pos = sspeed;
 			servos[index].last_distance = servos[index].target_pos - servos[index].last_pos;
+			servos[index].moving	= DRIVER_DIR_BACKWARD;
 		}
 	}
 	if(!servo_lib[index].attached()){            //  turn on even if the same target pos
@@ -873,38 +746,59 @@ void send_servo( boolean error, byte servo, uint16_t pos ){
 	}else{
 		byte ttt[6] = {METHOD_I2C_SLAVEMSG, my_address, RETURN_DRIVER_READY, servo, (pos & 0xFF), (pos >>8) };
 		send(ttt,6);
+		if(servo == DRIVER_Y ){
+			servos[INNER_SERVOY].moving= DRIVER_DIR_STOP;
+		}else if(servo == DRIVER_Z ){
+			servos[INNER_SERVOZ].moving= DRIVER_DIR_STOP;
+		}
 	}
 }
 
-void send_x_pos( byte reason, boolean is_up, boolean is_down ) {
-	if( reason == HALL_GLOBAL_MIN ){
-		DEBUGLN("-X HALL_GLOBAL_MIN");
-	}else if( reason == HALL_GLOBAL_MAX ){
-		DEBUGLN("-X HALL_GLOBAL_MAX");
-	}else if( reason == HALL_LOCAL_MAX ){
-		DEBUGLN("-X HALL_LOCAL_MAX");
-	}else if( reason == HALL_LOCAL_MIN ){
-		DEBUGLN("-X HALL_LOCAL_MIN");
-	}
-	byte ttt[5] = {METHOD_IMPORTANT_ANALOG, INNER_HALL_X, reason, 0, 0 };    // pozycja nieznana - uzupelnij w mainboard
-	send(ttt,5);
+void send_hx_pos( byte stateId, int16_t value ) {
+	Serial.println("new state: " + String(stateId) + " @ " + String(value) );
+	byte i = COUNT_CARRET_ONBOARD_LED;
+	while(i--){
+		if( bitRead( hallx_state[stateId][3], i) ){
+			set_pin(i, 1);
+		}else{
+			set_pin(i, 0);
+		}
+	}	
+	byte state_name	= hallx_state[stateId][0];
+	byte ttt[8] = {
+		METHOD_IMPORTANT_ANALOG, 
+		INNER_HALL_X, 
+		state_name, 
+		0,					// dir is unknown on carret
+		0, 					// position is unknown on carret
+		0,  				// position is unknown on carret
+		(value & 0xFF),
+		(value >>8),
+	};
+	send(ttt,8);
 }
- 
-void send_y_pos( byte reason) {
-	if( reason == HALL_GLOBAL_MIN ||  reason == HALL_GLOBAL_MIN ){    // zatrzymaj Y
-		servos[INNER_SERVOY].last_pos = servos[INNER_SERVOY].target_pos;
-	}
+void send_y_pos( byte stateId, int16_t value) {
+	byte state_name	= hally_state[stateId][0];
 	uint16_t pos = servos[INNER_SERVOY].last_pos;
-	byte ttt[5] = {METHOD_IMPORTANT_ANALOG, INNER_HALL_Y, reason, (pos & 0xFF), (pos >>8) };
-	send(ttt,5);
+	byte ttt[8] = {
+		METHOD_IMPORTANT_ANALOG, 
+		INNER_HALL_Y, 
+		state_name, 
+		0,						// last dir
+		(pos & 0xFF),			// position unknown on carret
+		(pos >>8),				// position unknown on carret
+		(value & 0xFF),
+		(value >>8),
+	}; 
+	send(ttt,8);
 }
- 
+
 void send_here_i_am(){
 	byte ttt[4] = {METHOD_HERE_I_AM,my_address,CARRET_DEVICE_TYPE,CARRET_VERSION};
 	//DEBUGLN("-hello "+ String( my_address ));
 	send(ttt,4);
 }
- 
+#define DEBUG_SEND	false
 void send( byte buffer[], byte length ){
 	if(prog_mode){
 		return;
@@ -915,19 +809,21 @@ void send( byte buffer[], byte length ){
 		Wire.beginTransmission(I2C_ADR_MAINBOARD);
 		Wire.write(buffer,length);
 		ret = Wire.endTransmission();
-		DEBUG("-send try:"+String(licznik) +", myadr: " + String( my_address ) +": ");
-		DEBUG(buffer[0]);
-		DEBUG(", ");
-		DEBUG(buffer[1] );
-		if(length > 2){
+		if(DEBUG_SEND){
+			DEBUG("-send try:"+String(licznik) +", myadr: " + String( my_address ) +": ");
+			DEBUG(buffer[0]);
 			DEBUG(", ");
-			DEBUG(buffer[2] );
-			if(length > 3){
+			DEBUG(buffer[1] );
+			if(length > 2){
 				DEBUG(", ");
-				DEBUG(buffer[3] );
+				DEBUG(buffer[2] );
+				if(length > 3){
+					DEBUG(", ");
+					DEBUG(buffer[3] );
+				}
 			}
+			DEBUGLN(" ret: "+ String(ret) );
 		}
-		DEBUGLN(" ret: "+ String(ret) );
 	}
 }
  
