@@ -1,11 +1,12 @@
-package com.barobot.hardware;
+package com.barobot.other;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.barobot.constant.LowHardware;
-import com.barobot.constant.Methods;
-import com.barobot.utils.ArduinoQueue;
+import com.barobot.common.constant.LowHardware;
+import com.barobot.common.constant.Methods;
+import com.barobot.parser.Queue;
+import com.barobot.parser.message.AsyncMessage;
 
 public class I2C_device{
 	byte address = 0;
@@ -32,10 +33,10 @@ public class I2C_device{
 	public void hasResetCode(int i) {
 		resetCode = i;
 	}
-	public ArduinoQueue resetCommand() {
-		ArduinoQueue q = new ArduinoQueue();
+	public Queue resetCommand() {
+		Queue q = new Queue();
 		if( resetCode > 0 ){
-			q.add( new rpc_message( true, "RESETN " + resetCode, true ));
+			q.add( new AsyncMessage( "RESETN " + resetCode, true, true ));
 		}else{
 			// znajdz poprzedni i kaz zresetowac mnie
 			if(canBeResetedBy!= null){
@@ -45,8 +46,8 @@ public class I2C_device{
 		}
 		return q;
 	}
-	public ArduinoQueue progStartCommand() {
-		ArduinoQueue q = new ArduinoQueue();
+	public Queue progStartCommand() {
+		Queue q = new Queue();
 		// prog mode on, powiadom wszystkich
 		for (I2C_device v : I2C.lista){
 		    if(v.address > 0 && v.address !=  LowHardware.I2C_ADR_MAINBOARD){
@@ -54,7 +55,7 @@ public class I2C_device{
 		    }
 		}
 		if( resetCode > 0 ){
-			q.add(new rpc_message( true, "RESETN " + resetCode, true ));
+			q.add(new AsyncMessage( "RESETN " + resetCode, true, true ));
 		}else{
 			// znajdz poprzedni i kaz zresetowac mnie
 			if(canBeResetedBy!= null){
@@ -64,8 +65,8 @@ public class I2C_device{
 		return q;
 	}
 
-	public ArduinoQueue progEndCommand() {
-		ArduinoQueue q = new ArduinoQueue();
+	public Queue progEndCommand() {
+		Queue q = new Queue();
 		// prog mode off, powiadom wszystkich
 		for (I2C_device v : I2C.lista){
 		    if(v.address > 0 && v.address !=  LowHardware.I2C_ADR_MAINBOARD){

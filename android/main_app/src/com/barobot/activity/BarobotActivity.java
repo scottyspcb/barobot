@@ -3,8 +3,8 @@ package com.barobot.activity;
 import com.barobot.R;
 import com.barobot.gui.MainActivity;
 import com.barobot.gui.OutsideComponentActivity;
+import com.barobot.hardware.Arduino;
 import com.barobot.hardware.virtualComponents;
-import com.barobot.utils.Arduino;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -105,14 +105,14 @@ public class BarobotActivity extends Activity {
     				}
     			}
     		});
-    		Arduino.getInstance().unlock();
+    		Arduino.getInstance().getMainQ().unlock();
     		break;    		
     		
     	case R.id.menu_debug_window:
     		serverIntent = new Intent(this, DebugActivity.class);
     		break;
     	case R.id.menu_settings:
-    		serverIntent = new Intent(this, MainSettingsActivity.class);
+    	//	serverIntent = new Intent(this, MainSettingsActivity.class);
     		break;
     	}
     	if(serverIntent!=null){
@@ -122,8 +122,7 @@ public class BarobotActivity extends Activity {
     	return false;
     }
     
-    protected void setTextViewText(String text, int id)
-	{
+    protected void setTextViewText(String text, int id){
 		TextView tView = (TextView) findViewById(id);
 		tView.setText(text);
 	}

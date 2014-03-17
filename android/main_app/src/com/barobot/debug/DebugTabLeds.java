@@ -1,24 +1,17 @@
 package com.barobot.debug;
 
-import com.barobot.R;
-import com.barobot.activity.DebugActivity;
-import com.barobot.constant.Constant;
-import com.barobot.hardware.DeviceSet;
-import com.barobot.hardware.DeviceView;
-
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.ExpandableListView;
 import android.widget.ListView;
 import android.widget.ToggleButton;
-import android.widget.AdapterView.OnItemClickListener;
+
+import com.barobot.R;
+import com.barobot.activity.DebugActivity;
 
 public class DebugTabLeds extends Fragment {
 	public int tab_id	= -1 ;
@@ -68,17 +61,7 @@ public class DebugTabLeds extends Fragment {
 		if( led_list_box == null){
 	//		Constant.log("DebugTabDevices", "null2");
 		}
-		DeviceSet ss = DeviceSet.byFeature("IS_RGBW_LED");
-	    DeviceView adapter_listy = new DeviceView(this.cc, ss,  R.layout.device_led);
-	    led_list_box.setAdapter(adapter_listy);
 
-	    /*
-        DisplayMetrics dm = new DisplayMetrics();
-        this.cc.getWindowManager().getDefaultDisplay().getMetrics(dm);
-        int width = dm.widthPixels;
- 
-        led_list_box.setIndicatorBounds(width - getDipsFromPixel(35), width - getDipsFromPixel(5));
-*/
 		return rootView;
 	}
     public int getDipsFromPixel(float pixels) {

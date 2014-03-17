@@ -1,4 +1,4 @@
-package com.barobot.db;
+package com.barobot.other;
 
 import java.util.ArrayList;
 import java.util.HashMap;

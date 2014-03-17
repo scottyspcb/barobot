@@ -3,7 +3,7 @@ import com.barobot.R;
 import com.barobot.R.id;
 import com.barobot.activity.BarobotMain;
 import com.barobot.activity.DebugActivity;
-import com.barobot.constant.Constant;
+import com.barobot.common.constant.Constant;
 import com.barobot.hardware.virtualComponents;
 
 import android.view.View;
@@ -24,7 +24,7 @@ public class button_zajedz  implements OnClickListener {
 		switch (v.getId()) {
 		  case R.id.start_pos:
 			  if(setting_mode){
-				int posx		=  virtualComponents.getInt("POSX", 0 );	
+				int posx		=  virtualComponents.driver_x.getSPos();;	
 				int posy		=  virtualComponents.getInt("POSY", 0 );
 				virtualComponents.hereIsStart(posx, posy);
 			  }else{
@@ -162,7 +162,7 @@ public class button_zajedz  implements OnClickListener {
 		}
 	  if(setting_mode){
 		  virtualComponents.set_bottle_on= false;
-		int posx		=  virtualComponents.getInt("POSX", 0 );	
+		int posx		=  virtualComponents.driver_x.getSPos();;	
 		int posy		=  virtualComponents.getInt("POSY", 0 );
 		Toast.makeText(bb, "Zapisano ["+posx+"/"+posy+"] jako butelka", Toast.LENGTH_LONG).show();
 	  }

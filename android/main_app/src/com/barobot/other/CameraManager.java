@@ -1,4 +1,4 @@
-package com.barobot.utils;
+package com.barobot.other;
 
 import com.barobot.activity.BarobotMain;
 

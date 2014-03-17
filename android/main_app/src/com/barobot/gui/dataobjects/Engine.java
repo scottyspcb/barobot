@@ -4,27 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
-import android.database.Cursor;
 
-import com.barobot.constant.Constant;
 import com.barobot.gui.ArduinoListener;
 import com.barobot.gui.database.BarobotDB;
 import com.barobot.gui.database.BarobotData;
 import com.barobot.gui.database.BarobotDataStub;
-import com.barobot.gui.database.DataContract;
-import com.barobot.hardware.rpc_message;
-import com.barobot.hardware.virtualComponents;
-import com.barobot.utils.Arduino;
-import com.barobot.utils.ArduinoQueue;
 
 public class Engine {
-	
 	private final int OUTSIDE_POSITION = 13;
-	
 	private static Engine instance;
-	
-	public static Engine GetInstance(Context context)
-	{
+	public static Engine GetInstance(Context context){
 		if (instance == null){
 			instance = new Engine(context);
 		}

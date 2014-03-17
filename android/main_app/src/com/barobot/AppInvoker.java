@@ -3,20 +3,22 @@ package com.barobot;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import android.util.Log;
+
 import com.barobot.activity.BarobotMain;
-import com.barobot.constant.Constant;
-import com.barobot.hardware.DeviceSet;
-import com.barobot.hardware.I2C;
+import com.barobot.common.DesktopLogger;
+import com.barobot.hardware.Arduino;
 import com.barobot.hardware.virtualComponents;
-import com.barobot.utils.Arduino;
-import com.barobot.utils.CameraManager;
-import com.barobot.utils.interval;
+import com.barobot.hardware.serial.AndroidLogger;
+import com.barobot.other.CameraManager;
+import com.barobot.other.I2C;
+import com.barobot.parser.utils.Interval;
 
 public class AppInvoker {
     private static AppInvoker ins;
 	private BarobotMain main;
 	public CameraManager cm;
-    public ArrayList<interval> inters = new ArrayList<interval>();
+    public ArrayList<Interval> inters = new ArrayList<Interval>();
 
 	public void onStart() {	
     }
@@ -29,14 +31,15 @@ public class AppInvoker {
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}*/
-		I2C.init();
+	//	I2C.init();
 
 		cm = new CameraManager( main );
 		cm.findCameras();
 		virtualComponents.init( main );
+	    Arduino.getInstance().onStart( main );
 
-	    DeviceSet.loadXML(main, R.raw.devices);
-	    Arduino.getInstance().onStart( main );	
+	    AndroidLogger dl = new AndroidLogger();
+		com.barobot.common.Initiator.setLogger( dl );
 	}
 	public static AppInvoker createInstance(BarobotMain barobotMain) {
 		ins = new AppInvoker();
@@ -47,26 +50,28 @@ public class AppInvoker {
 		return ins;
 	}
 	public void onPause() {
-		Constant.log("MAINWINDOW", "onPause");
+		AppInvoker.log("MAINWINDOW", "onPause");
 		cm.onPause();
 	}
 	public void onResume() {
-		Constant.log("MAINWINDOW", "onResume");     
+		AppInvoker.log("MAINWINDOW", "onResume");     
 		if(cm!=null){
 			cm.onResume();
 		}
         Arduino.getInstance().resume();
 	}
 	public void onDestroy() {
-		Constant.log("MAINWINDOW", "onDestroy");
+		AppInvoker.log("MAINWINDOW", "onDestroy");
     //	SofaServer.getInstance().stop();
     	Arduino.getInstance().destroy();
-    	DeviceSet.clear();
-    	Iterator<interval> it = this.inters.iterator();
+    	Iterator<Interval> it = this.inters.iterator();
     	while(it.hasNext()){
     		it.next().cancel();
     	}
-		I2C.destroy();
+	//	I2C.destroy();
         cm.onDestroy();	
+	}
+	public static void log(String tag4, String string) {
+		Log.w(tag4,string);
 	}
 }

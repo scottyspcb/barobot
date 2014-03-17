@@ -1,9 +1,7 @@
-package com.barobot.utils;
+package com.barobot.other;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import com.barobot.constant.Constant;
 
 import android.content.Context;
 import android.util.Log;

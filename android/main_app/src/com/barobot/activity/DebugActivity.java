@@ -3,20 +3,20 @@ package com.barobot.activity;
 import java.util.Locale;
 import java.util.Vector;
 
+import com.barobot.AppInvoker;
 import com.barobot.R;
 import com.barobot.R.id;
 import com.barobot.R.layout;
 import com.barobot.R.menu;
 import com.barobot.R.string;
-import com.barobot.constant.Constant;
 import com.barobot.debug.DebugTabBottles;
 import com.barobot.debug.DebugTabCommands;
 import com.barobot.debug.DebugTabDevices;
 import com.barobot.debug.DebugTabGraph;
 import com.barobot.debug.DebugTabLeds;
 import com.barobot.debug.DebugTabLog;
+import com.barobot.hardware.RunnableWithData;
 import com.barobot.hardware.virtualComponents;
-import com.barobot.utils.RunnableWithData;
 
 import android.app.ActionBar;
 import android.app.Dialog;
@@ -64,7 +64,7 @@ public class DebugActivity extends FragmentActivity implements	ActionBar.TabList
 	public Vector<Fragment> objVector = new Vector<Fragment>(10);
 
 	public DebugActivity(){
-		Constant.log("DebugActivity", "init");
+		AppInvoker.log("DebugActivity", "init");
 		
 	}
 	
@@ -89,17 +89,11 @@ public class DebugActivity extends FragmentActivity implements	ActionBar.TabList
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		
-		
-    	
-    	
-   	 if (getIntent().hasExtra("bundle") && savedInstanceState==null){
-   	        savedInstanceState = getIntent().getExtras().getBundle("bundle");
-   	 }	
-   	  setTheme(android.R.style.Theme_Holo_Light);
-		
-		
-		
+		if (getIntent().hasExtra("bundle") && savedInstanceState==null){
+			savedInstanceState = getIntent().getExtras().getBundle("bundle");
+		}	
+	   	 // setTheme(android.R.style.Theme_Holo_Light);
+
 		objVector.add(DebugActivity.TAB_COMMANDS_ID,  	new DebugTabCommands( this, DebugActivity.TAB_COMMANDS_ID ));
 		objVector.add(DebugActivity.TAB_DEVICES_ID,  	new DebugTabDevices( this, DebugActivity.TAB_DEVICES_ID ));
 		objVector.add(DebugActivity.TAB_LEDS_ID,  		new DebugTabLeds( this, DebugActivity.TAB_LEDS_ID ));
@@ -150,10 +144,10 @@ public class DebugActivity extends FragmentActivity implements	ActionBar.TabList
 		// Inflate the menu; this adds items to the action bar if it is present.
 		menu.clear();
 		getMenuInflater().inflate(R.menu.device_list, menu);
-		Constant.log("Debug", "onPrepareOptionsMenu");
+		AppInvoker.log("Debug", "onPrepareOptionsMenu");
 		int position = mViewPager.getCurrentItem();
 		Fragment fff = null;
-		Constant.log("Debug", "onPrepareOptionsMenu " + position);
+		AppInvoker.log("Debug", "onPrepareOptionsMenu " + position);
 		try {
 			fff = objVector.get(position);
 			fff.onCreateOptionsMenu(menu, getMenuInflater());
@@ -201,7 +195,7 @@ public class DebugActivity extends FragmentActivity implements	ActionBar.TabList
 			// below) with the page number as its lone argument.
 			Bundle args = new Bundle();
 			args.putInt(DebugActivity.ARG_SECTION_NUMBER, position + 1);
-			Constant.log("DebugActivity", "pos " + position);
+			AppInvoker.log("DebugActivity", "pos " + position);
 			Fragment fff = null;
 			try {
 				fff = objVector.get(position);

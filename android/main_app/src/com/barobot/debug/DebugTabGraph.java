@@ -1,12 +1,13 @@
 package com.barobot.debug;
 
+import com.barobot.AppInvoker;
 import com.barobot.R;
 import com.barobot.activity.DebugActivity;
-import com.barobot.constant.Constant;
+import com.barobot.hardware.Arduino;
+import com.barobot.hardware.RunnableWithData;
 import com.barobot.hardware.virtualComponents;
-import com.barobot.utils.Arduino;
-import com.barobot.utils.RunnableWithData;
-import com.barobot.utils.AJS;
+import com.barobot.other.AJS;
+import com.barobot.parser.Queue;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -18,7 +19,6 @@ import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -364,6 +364,7 @@ public class DebugTabGraph extends Fragment {
 
 		@Override
 		public void onClick(View v) {
+			final Queue mq			= Arduino.getInstance().getMainQ();
 			switch (v.getId()) {
 			case R.id.graph_source:
 	  	  		((ToggleButton) rootView.findViewById(R.id.graph_active)).setChecked(true);
@@ -372,8 +373,7 @@ public class DebugTabGraph extends Fragment {
 					@Override
 					public void run() {
 						DebugTabGraph.graph_source		= toInt(this.data,0);	
-						Arduino ar							= Arduino.getInstance();
-						virtualComponents.enable_analog(ar, DebugTabGraph.graph_source, DebugTabGraph.graph_speed, DebugTabGraph.graph_repeat);	
+						virtualComponents.enable_analog(mq, DebugTabGraph.graph_source, DebugTabGraph.graph_speed, DebugTabGraph.graph_repeat);	
 					}
 	        	}, ""+graph_source);
 
@@ -393,8 +393,7 @@ public class DebugTabGraph extends Fragment {
 					@Override
 					public void run() {
 						DebugTabGraph.graph_speed		= toInt(this.data, 50 );
-						Arduino ar							= Arduino.getInstance();
-						virtualComponents.enable_analog(ar, DebugTabGraph.graph_source, DebugTabGraph.graph_speed, DebugTabGraph.graph_repeat);
+						virtualComponents.enable_analog(mq, DebugTabGraph.graph_source, DebugTabGraph.graph_speed, DebugTabGraph.graph_repeat);
 					}
 	        	}, ""+DebugTabGraph.graph_speed);
 
@@ -405,10 +404,8 @@ public class DebugTabGraph extends Fragment {
 					show_dialog( new RunnableWithData(){
 						@Override
 						public void run() {
-
 							DebugTabGraph.graph_repeat	= toInt(this.data, 1 );
-							Arduino ar						= Arduino.getInstance();
-				        	virtualComponents.enable_analog(ar, DebugTabGraph.graph_source, DebugTabGraph.graph_speed, DebugTabGraph.graph_repeat);	
+				        	virtualComponents.enable_analog(mq, DebugTabGraph.graph_source, DebugTabGraph.graph_speed, DebugTabGraph.graph_repeat);	
 						}
 		        	}, ""+DebugTabGraph.graph_repeat);
 				}
@@ -441,17 +438,17 @@ public class DebugTabGraph extends Fragment {
 
 		@Override
 		public void onCheckedChanged(CompoundButton buttonView,boolean isChecked) {
-			Arduino ar			= Arduino.getInstance();
+			Queue mq			= Arduino.getInstance().getMainQ();
 			switch (buttonView.getId()) {
 			case R.id.graph_active:
-				Constant.log("graph_active","isChecked: " + isChecked );
+				AppInvoker.log("graph_active","isChecked: " + isChecked );
 				if(isChecked){
 					initUI( true );
 					enableUI(true);
 				}else{
 					enableUI(false);
 					int graph_source9	= DebugTabGraph.graph_source;
-					virtualComponents.disable_analog(ar, graph_source9 );
+					virtualComponents.disable_analog(mq, graph_source9 );
 					if(jsInterface!=null){
 						jsInterface.runJs("show_random", "0");
 					}
@@ -463,7 +460,7 @@ public class DebugTabGraph extends Fragment {
 		  	  	if(isChecked){
 		  	  		xb1.setChecked(true);
 					int graph_source5	= DebugTabGraph.graph_source;
-					virtualComponents.disable_analog(ar, graph_source5 );
+					virtualComponents.disable_analog(mq, graph_source5 );
 					int graph_speed2 = DebugTabGraph.graph_speed;
 					if(jsInterface!=null){
 						jsInterface.runJs("show_random", ""+graph_speed2);	
