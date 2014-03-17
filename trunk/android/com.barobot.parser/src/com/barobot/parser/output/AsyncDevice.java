@@ -81,7 +81,10 @@ public abstract class AsyncDevice {
 				}
 			}
 		}
-		this.machGlobal( command );
+		handled =  this.machGlobal( command );
+		if(handled){
+			return true;
+		}
 		handled = this.parse(command);
 		if(handled){
 			return true;
@@ -98,25 +101,25 @@ public abstract class AsyncDevice {
 		if(this.wait_for != null ){
 			wait4Command = this.wait_for.command;
 		}
-		Initiator.logger.i("AsyncDevice.machGlobal", command + "/" + wait4Command);
+	//	Initiator.logger.i("AsyncDevice.machGlobal", command + "/" + wait4Command);
 	    for(Entry<String, GlobalMatch> e : globalRegex.entrySet()) {
 	        String regex		= e.getKey();	// String matchRet		= value.getMatchRet();
 	 //       Initiator.logger.i("AsyncDevice.machGlobal.matches", regex + "=" + command );
 	        if( command.matches(regex)){
-	        	Initiator.logger.i("AsyncDevice.machGlobal ok: ", regex + "=" + command );
+	      //  	Initiator.logger.i("AsyncDevice.machGlobal ok: ", regex + "=" + command );
 	        	GlobalMatch value	= e.getValue();
 	        	String matchCommand	= value.getMatchCommand();
-	        	Initiator.logger.i("AsyncDevice.machGlobal ok1: ", regex + "=" + command );
+	       // 	Initiator.logger.i("AsyncDevice.machGlobal ok1: ", regex + "=" + command );
 	        	if( matchCommand == null || wait4Command.matches(matchCommand)){
-	        		Initiator.logger.i("AsyncDevice.machGlobal ok2", wait4Command );
+	        //		Initiator.logger.i("AsyncDevice.machGlobal ok2", wait4Command );
 					boolean stopnow	= value.run( this, command, wait4Command, wait_for );
 					if(stopnow){
 						return true;
 					}
 	        	}else{
-	        		Initiator.logger.i("AsyncDevice.machGlobal.matches no ok2", wait4Command );
+	       // 		Initiator.logger.i("AsyncDevice.machGlobal.matches no ok2", wait4Command );
 	        	}
-	        	Initiator.logger.i("AsyncDevice.machGlobal ok3 ", regex + "=" + command );
+	       // 	Initiator.logger.i("AsyncDevice.machGlobal ok3 ", regex + "=" + command );
 		    }
 	    }
 		return false;

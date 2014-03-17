@@ -33,7 +33,7 @@ public class Methods {
 	public static final int METHOD_STEPPER_MOVING 	= 222;
 	public static final int METHOD_IMPORTANT_ANALOG 	= 224;
 	public static final int RETURN_I2C_ERROR 	= 53;
-	public static final int METHOD_EXEC_ERROR 	= 22;
+	public static final int METHOD_EXEC_ERROR 	= 33;
 	public static final int METHOD_DEVICE_FOUND 	= 12;
 	public static final int METHOD_SETLED 	= 40;
 	public static final int METHOD_SETLEDS 	= 44;
