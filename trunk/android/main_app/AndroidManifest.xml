@@ -26,6 +26,7 @@
             android:name="com.barobot.activity.BarobotMain"
             android:configChanges="orientation"
             android:label="@string/app_name"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
             android:screenOrientation="sensorLandscape" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -78,6 +79,7 @@
         </activity>
         <activity
             android:name="com.barobot.activity.BottleSetupActivity"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
             android:label="@string/title_activity_bottle_setup" >
         </activity>
         <activity
@@ -93,6 +95,7 @@
         </activity>
         <activity
             android:name="com.barobot.activity.ProductActivity"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
             android:label="@string/title_activity_product" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

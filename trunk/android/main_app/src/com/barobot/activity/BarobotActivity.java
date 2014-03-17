@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -23,6 +24,34 @@ public class BarobotActivity extends Activity {
 	    inflater.inflate(R.menu.option_menu, menu);
 	    return true;
     }
+	
+	public void onMenuButtonClicked(View view)
+	{
+		Intent serverIntent = null;
+		switch(view.getId())
+		{
+		case R.id.menu_choose:
+			serverIntent = new Intent(this, BarobotMain.class);
+			break;
+			
+		case R.id.menu_create:
+			serverIntent = new Intent(this, CreatorActivity.class);
+			break;
+			
+		case R.id.menu_bottles:
+			serverIntent = new Intent(this, BottleSetupActivity.class);
+			break;
+			
+		case R.id.menu_options:
+			serverIntent = new Intent(this, DebugActivity.class);
+			break;
+		}
+		
+		if(serverIntent!=null){
+    		serverIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+    		startActivity(serverIntent);
+    	}
+	}
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

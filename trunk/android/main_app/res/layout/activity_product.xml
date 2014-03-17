@@ -7,6 +7,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:baselineAligned="false"
+    android:background="@drawable/background"
     tools:context=".ProductActivity" >
     
     <RelativeLayout
@@ -60,6 +61,7 @@
             android:layout_width="fill_parent"
             android:layout_height="100sp"
             android:layout_alignParentBottom="true"
+            style="@style/ButtonGreen"
             android:onClick="onOKButtonClicked"
             android:text="[OK]"/>
         
@@ -74,6 +76,7 @@
             android:layout_width="0sp"
             android:layout_height="50sp"
             android:layout_weight="1"
+            style="@style/ButtonRed"
              android:onClick="onCancelButtonClicked"
             android:text="[Cancel]"/>
         <Button
@@ -81,6 +84,7 @@
             android:layout_width="0sp"
             android:layout_height="50sp"
             android:layout_weight="1"
+            style="@style/ButtonYellow"
             android:onClick="onEmptyButtonClicked"
             android:text="[Empty]"/>
         
@@ -101,6 +105,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_alignParentRight="true"
+            style="@style/ButtonBlue"
             android:onClick="onAddNewTypeButtonClick"
             android:text="@string/product_add_new_button" />
 
@@ -110,11 +115,14 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_below="@id/product_type_new_button"
-            android:choiceMode="singleChoice"
-            android:focusableInTouchMode="true"
+            android:choiceMode="singleChoice" />
+            <!--  android:focusableInTouchMode="true"
             android:focusable="true"
             android:drawable="@drawable/list_selector"
-             />
+            
+            
+             -->
+            
 
         <Button
             android:id="@+id/product_liquid_new_button"
@@ -123,6 +131,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_toLeftOf="@id/product_type_new_button"
+            style="@style/ButtonBlue"
             android:onClick="onAddNewLiquidButtonClicked"
             android:text="@string/product_add_new_button" />
 
@@ -140,6 +149,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_toLeftOf="@id/product_liquid_new_button"
+            style="@style/ButtonBlue"
             android:onClick="onAddNewProductButtonClicked"
             android:text="@string/product_add_new_button" />
 

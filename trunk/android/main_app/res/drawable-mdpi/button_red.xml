@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:state_pressed="true">
+        <shape>
+            <gradient android:angle="270" android:endColor="@color/RedButtonStartColor" android:startColor="@color/RedButtonEndColor" />
+            <stroke android:width="1dp" android:color="@color/RedButtonBorderColor" />
+            <corners android:radius="3dp" />
+            <padding android:bottom="10dp" android:left="0dp" android:right="0dp" android:top="10dp" />
+        </shape>
+    </item>
+    <item android:state_focused="true"><shape>
+            <gradient android:angle="270" android:endColor="@color/RedButtonEndColor" android:startColor="@color/RedButtonStartColor" />
+
+            <stroke android:width="1dp" android:color="@color/RedButtonBorderColor" />
+
+            <corners android:radius="3dp" />
+
+            <padding android:bottom="10dp" android:left="0dp" android:right="0dp" android:top="10dp" />
+        </shape></item>
+    <item android:state_enabled="false"><shape>
+            <gradient android:angle="270" android:endColor="@color/RedButtonDisabledEndColor" android:startColor="@color/RedButtonDisabledStartColor" />
+
+            <stroke android:width="1dp" android:color="@color/RedButtonBorderColor" />
+
+            <corners android:radius="3dp" />
+
+            <padding android:bottom="10dp" android:left="0dp" android:right="0dp" android:top="10dp" />
+        </shape></item>
+    <item>
+        <shape>
+            <gradient android:angle="270" android:endColor="@color/RedButtonEndColor" android:startColor="@color/RedButtonStartColor" />
+
+            <stroke android:width="1dp" android:color="@color/RedButtonBorderColor" />
+
+            <corners android:radius="3dp" />
+
+            <padding android:bottom="10dp" android:left="0dp" android:right="0dp" android:top="10dp" />
+        </shape>
+       </item>
+
+</selector>

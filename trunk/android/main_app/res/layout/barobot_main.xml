@@ -1,11 +1,85 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-xmlns:tools="http://schemas.android.com/tools"
-android:layout_width="match_parent"
-android:layout_height="match_parent"
- >
-    <FrameLayout android:id="@+id/webViewPlaceholder"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"/> 
-</LinearLayout>
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" 
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:background="@drawable/background"
+    android:orientation="horizontal">
+    
+     <RelativeLayout
+        android:id="@+id/page_layout"
+        android:layout_width="0sp"
+        android:layout_height="fill_parent"
+        android:layout_weight="3" >
+        
+        <ListView 
+            android:id="@+id/recipe_list"
+            android:layout_width="400sp"
+            android:layout_height="fill_parent"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true" 
+            android:background="@drawable/ingredient_list_background"/>
+        
+        </RelativeLayout>
+        
+     <RelativeLayout
+        android:layout_width="0sp"
+        android:layout_height="fill_parent"
+        android:layout_weight="1" >
+    	
+    	<Button 
+        	android:id="@+id/menu_favorite"
+        	android:layout_alignParentTop="true"
+        	    	android:layout_margin="2dp"
+        	style="@style/MenuButton"
+        	android:onClick="onMenuButtonClicked"
+        	android:text="@string/menu_favorite"/>
+    	
+    	<Button
+    	    android:id="@+id/menu_choose"
+    	    android:layout_below="@id/menu_favorite"
+    	        	android:layout_margin="2dp"
+    	    style="@style/MenuButton"
+    	    android:onClick="onMenuButtonClicked"
+    	    android:text="@string/menu_choose"
+    	    />
+    	
+    	<Button
+        	android:id="@+id/menu_lucky"
+        	android:layout_below="@id/menu_choose"
+        	    	android:layout_margin="2dp"
+        	style="@style/MenuButton"
+        	android:onClick="onMenuButtonClicked"
+        	android:text="@string/menu_lucky"/>
+    	
+    	<Button
+        	android:id="@+id/menu_create"
+        	android:layout_below="@id/menu_lucky"
+        	    	android:layout_margin="2dp"
+        	style="@style/MenuButton"
+        	android:onClick="onMenuButtonClicked"
+        	android:text="@string/menu_create"/>
+    	
+    	<Button
+        	android:id="@+id/menu_bottles"
+        	android:layout_below="@id/menu_create"
+        	    	android:layout_margin="2dp"
+        	style="@style/MenuButton"
+        	android:onClick="onMenuButtonClicked"
+        	android:text="@string/menu_bottles"/>
+    	
+    	<Button
+        	android:id="@+id/menu_options"
+        	android:layout_alignParentBottom="true"
+        	    	android:layout_margin="2dp"
+        	style="@style/MenuButton"
+        	android:onClick="onMenuButtonClicked"
+        	android:text="@string/menu_options"/>
+    	
+    </RelativeLayout>
 
+</LinearLayout>

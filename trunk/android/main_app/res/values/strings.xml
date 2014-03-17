@@ -120,9 +120,17 @@
     <string name="action_creator">Create</string>
     
     <string name="menu_favorite">Try Favorites</string>
+    <string name="menu_choose">Choose a drink</string>
     <string name="menu_lucky">I feel lucky</string>
     <string name="menu_create">Create your own</string>
+    <string name="menu_bottles">Setup bottles</string>
     <string name="menu_options">Options and Setup</string>
+    
+    <!-- Create Activity -->
+    <string name="create_pour_button">Pour!</string>
+    <string name="create_undo_button">Undo last step</string>
+    <string name="create_clear_button">Clear</string>
+    <string name="create_add_button">Give it a name and save</string>
 
     <!-- Recipe Setup -->
     <string name="recipe_add_new_button">Add New</string>

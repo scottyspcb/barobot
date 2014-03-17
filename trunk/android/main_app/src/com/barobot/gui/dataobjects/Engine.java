@@ -66,6 +66,11 @@ public class Engine {
 		return BarobotData.GetSlots();
 	}
 	
+	public Slot getSlot(int position)
+	{
+		return BarobotData.GetSlot(position);
+	}
+	
 	public Product getProduct(int position)
 	{
 		return BarobotData.GetSlot(position).product;
@@ -122,8 +127,13 @@ public class Engine {
 		return BarobotData.GetRecipes();
 	}
 	
-	public void addRecipe(Recipe_t recipe)
+	public void addRecipe(Recipe_t recipe, List<Ingredient_t> ingredients)
 	{
+		for(Ingredient_t ing : ingredients)
+		{
+			ing.insert();
+			recipe.ingredients.add(ing);
+		}
 		recipe.insert();
 	}
 	
