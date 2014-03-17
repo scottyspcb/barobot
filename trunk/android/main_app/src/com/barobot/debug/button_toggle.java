@@ -1,8 +1,9 @@
 package com.barobot.debug;
 import com.barobot.R;
 import com.barobot.R.id;
+import com.barobot.hardware.Arduino;
 import com.barobot.hardware.virtualComponents;
-import com.barobot.utils.Arduino;
+import com.barobot.parser.Queue;
 
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -15,77 +16,76 @@ public class button_toggle implements OnClickListener{
   	  	ToggleButton tb			= (ToggleButton) v;
   	  	boolean isChecked		= tb.isChecked();
   	  	tb.setChecked(!isChecked);		//anuluj zmian, zrb to dopiero po otrzymaniu potwierdzenia
-
-  	  	Arduino ar = Arduino.getInstance();
+		Queue q					= Arduino.getInstance().getMainQ();
 		switch (v.getId()) {
 	    	case R.id.led1:
 	    		if(isChecked){
-	    			ar.send("SET LED1 ON");
+	    			q.add("SET LED1 ON", false);
 	    		}else{
-	    			ar.send("SET LED1 OFF");	    			
+	    			q.add("SET LED1 OFF", false);	    			
 	    		}
 		    	break;
 	    	case R.id.led2:
 	    		if(isChecked){
-	    			ar.send("SET LED2 ON");
+	    			q.add("SET LED2 ON", false);
 	    		}else{
-	    			ar.send("SET LED2 OFF");	    			
+	    			q.add("SET LED2 OFF", false);   			
 	    		}
 	    		break;
 			case R.id.led3:
 	    		if(isChecked){
-	    			ar.send("SET LED3 ON");
+	    			q.add("SET LED3 ON", false);
 	    		}else{
-	    			ar.send("SET LED3 OFF");	    			
+	    			q.add("SET LED3 OFF", false);	    			
 	    		}	    	  
 				break;
 			case R.id.led4:	// LED6
 	    		if(isChecked){
-	    			ar.send("SET LED4 ON");
+	    			q.add("SET LED4 ON", false);
 	    		}else{
-	    			ar.send("SET LED4 OFF");	    			
+	    			q.add("SET LED4 OFF", false);
 	    		}
 				break;
 			case R.id.led5:
 	    		if(isChecked){
-	    			ar.send("SET LED5 ON");
+	    			q.add("SET LED5 ON", false);
 	    		}else{
-	    			ar.send("SET LED5 OFF");	    			
+	    			q.add("SET LED5 OFF", false);
 	    		}
 	    	  	break;
 			case R.id.led6:	
 	    		if(isChecked){
-	    			ar.send("SET LED6 ON");
+	    			q.add("SET LED6 ON", false);
 	    		}else{
-	    			ar.send("SET LED6 OFF");	    			
+	    			q.add("SET LED6 OFF", false);
 	    		}
 	    	  	break;
 			case R.id.led7:
 	    		if(isChecked){
-	    			ar.send("SET LED7 ON");
+	    			q.add("SET LED7 ON", false);
 	    		}else{
-	    			ar.send("SET LED7 OFF");	    			
+	    			q.add("SET LED7 OFF", false);
 	    		}
 	    	  	break;
 			case R.id.led8:
 	    		if(isChecked){
-	    			ar.send("SET LED8 ON");
+	    			q.add("SET LED8 ON", false);
 	    		}else{
-	    			ar.send("SET LED8 OFF");	    			
+	    			q.add("SET LED8 OFF", false);
 	    		}
 	    	  	break;
 			case R.id.led9:
 	    		if(isChecked){
-	    			ar.send("SET LED9 ON");
+	    			q.add("SET LED9 ON", false);
 	    		}else{
-	    			ar.send("SET LED9 OFF");	    			
+	    			q.add("SET LED9 OFF", false);
 	    		}
 	    	  	break;
 			case R.id.led10:
 	    		if(isChecked){
-	    			ar.send("SET LED10 ON");
+	    			q.add("SET LED10 ON", false);
 	    		}else{
-	    			ar.send("SET LED10 OFF");
+	    			q.add("SET LED10 OFF", false);
 	    		}
 	    	  	break;
 	    	 
@@ -109,9 +109,9 @@ public class button_toggle implements OnClickListener{
 				break;
 			case R.id.wagi_live:
 	    		if(isChecked){
-	    			virtualComponents.enable_analog(ar, virtualComponents.ANALOG_WAGA, 50, 2);
+	    			virtualComponents.enable_analog(q, virtualComponents.ANALOG_WAGA, 50, 2);
 	    		}else{
-	    			virtualComponents.disable_analog( ar, virtualComponents.ANALOG_WAGA ); 			
+	    			virtualComponents.disable_analog( q, virtualComponents.ANALOG_WAGA ); 			
 	    		}
 	    	  	break;
 		}

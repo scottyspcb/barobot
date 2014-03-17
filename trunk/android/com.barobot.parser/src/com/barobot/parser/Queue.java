@@ -228,7 +228,7 @@ public class Queue {
 		exec();
 	}
 
-    public void sendNow( int devindex, String command ) throws IOException {	 // send without waiting
+    public void sendNow( int devindex, String command ) {	 // send without waiting
 		synchronized (this.lock) {
 			devs.get(devindex).send(command + "\n");
 		}

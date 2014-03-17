@@ -1,9 +1,10 @@
 package com.barobot.debug;
 
+import com.barobot.AppInvoker;
 import com.barobot.R;
 import com.barobot.R.id;
 import com.barobot.activity.DebugActivity;
-import com.barobot.constant.Constant;
+import com.barobot.common.constant.Constant;
 import com.barobot.hardware.virtualComponents;
 
 import android.app.Activity;
@@ -76,15 +77,34 @@ public class DebugTabCommands extends Fragment {
 				R.id.disablez,
 				R.id.disabley,
 				R.id.enabley,
-				R.id.reset_carret,
+				R.id.rb,
+				R.id.rb2,
+				R.id.led_red_on,
+				R.id.scann_leds,		
+				R.id.led_green_on,
+				R.id.led_blue_on,
+				R.id.i2c_test,
+				R.id.clear_queue,		
+				R.id.scann_i2c,
+				R.id.reset_upanels,		
+				R.id.reset_margin,
+				R.id.analog_temp,
+				R.id.reset_serial,
 				R.id.smile,
 				R.id.find_bottles,
-				R.id.pacpac
+				R.id.pacpac,
+				R.id.reset1,
+				R.id.reset2,
+				R.id.reset3,		
+				R.id.reset4,		
+				R.id.goto_max_x,
+				R.id.goto_min_x,
 			};
+
 		for(int i =0; i<buttons.length;i++){
 			View w = rootView.findViewById(buttons[i]);
 			if( w == null){
-				Constant.log(Constant.TAG,"pomijam: "+ buttons[i] );
+				AppInvoker.log(Constant.TAG,"pomijam: "+ buttons[i] );
 				continue;
 			}
 			String classname = w.getClass().getName();
@@ -124,7 +144,7 @@ public class DebugTabCommands extends Fragment {
 		}
 		ttt = (TextView)rootView.findViewById(R.id.position_x);
 		if(ttt!=null){
-			ttt.setText(virtualComponents.get( "POSX","0"));
+			ttt.setText(""+virtualComponents.driver_x.getSPos());
 		}
 
 		return rootView;

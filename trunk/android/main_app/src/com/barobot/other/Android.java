@@ -1,4 +1,4 @@
-package com.barobot.hardware;
+package com.barobot.other;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;

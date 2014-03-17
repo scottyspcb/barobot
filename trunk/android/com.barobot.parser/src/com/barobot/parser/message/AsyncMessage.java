@@ -94,9 +94,6 @@ public class AsyncMessage extends History_item{
 	public boolean isRet(String result) {
 		return false;
 	}
-	public boolean onInput( String input ) {	// some input while waiting for ret
-		return false;
-	}
 	public void onDisconnect() {
 	}
 	public long getTimeout() {					// in milisec
@@ -108,5 +105,8 @@ public class AsyncMessage extends History_item{
 	}
 	public boolean addSufix() {			// add new line after command
 		return true;
+	}
+	public boolean onInput(String input, AsyncDevice dev) {	// some input while waiting for ret
+		return false;
 	}
 }

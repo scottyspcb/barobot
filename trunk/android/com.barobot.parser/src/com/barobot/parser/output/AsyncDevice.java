@@ -67,6 +67,10 @@ public abstract class AsyncDevice {
 					this.unlockRet( command );
 					return true;
 				}
+				handled = this.wait_for.onInput( command, this );
+				if(handled){
+					return true;
+				}
 				if( this.retReader != null ){
 					handled = this.retReader.isRetOf( this, this.wait_for, command );
 					if(handled){
@@ -74,10 +78,6 @@ public abstract class AsyncDevice {
 						this.unlockRet( command );
 						return true;
 					}
-				}
-				handled = this.wait_for.onInput( command );
-				if(handled){
-					return true;
 				}
 			}
 		}
@@ -90,7 +90,7 @@ public abstract class AsyncDevice {
 			return true;
 		}
 		//	Log.i("command", command);
-		Initiator.logger.i("AsyncDevice.useInput.nohandler", command);
+	//	Initiator.logger.i("AsyncDevice.useInput.nohandler", command);
 		return false;
 	}
 	public void setRetReader(RetReader retReader) {
@@ -214,6 +214,17 @@ public abstract class AsyncDevice {
 			}
 		}
 	}
+	public void unlockRet(AsyncMessage asyncMessage, String withCommand) {
+		synchronized (this) {
+			if(this.wait_for == asyncMessage ){
+				Initiator.logger.i(">>>AsyncDevice.unlockRet", this.wait_for.toString() +" with: "+ withCommand.trim());
+				this.wait_for.unlockWith(withCommand);
+				this.wait_for = null;
+				waiting_queue.unlock();
+			}
+		}
+	}
+	
 	abstract public boolean parse(String in);
 
 	public void disable() {
@@ -231,4 +242,5 @@ public abstract class AsyncDevice {
 		wait_for		= null;
 		waiting_queue	= null;
 	}
+
 }

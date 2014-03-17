@@ -1,9 +1,10 @@
 package com.barobot.debug;
 
+import com.barobot.AppInvoker;
 import com.barobot.R;
 import com.barobot.R.id;
 import com.barobot.activity.DebugActivity;
-import com.barobot.constant.Constant;
+import com.barobot.common.constant.Constant;
 import com.barobot.hardware.virtualComponents;
 
 import android.app.Activity;
@@ -127,7 +128,7 @@ public class DebugTabBottles extends Fragment {
 		return rootView;
 	}
 	public void refreshPos() {
-		Constant.log(Constant.TAG,"reload pozycje na stronie glownej");
+		AppInvoker.log(Constant.TAG,"reload pozycje na stronie glownej");
 		int[] wagi = {R.id.waga1,
 				R.id.waga2,
 				R.id.waga3,

@@ -3,7 +3,7 @@ package com.barobot.activity;
 import com.barobot.R;
 import com.barobot.R.layout;
 import com.barobot.R.menu;
-import com.barobot.utils.update_drinks;
+import com.barobot.other.update_drinks;
 
 import android.os.Bundle;
 import android.app.Activity;

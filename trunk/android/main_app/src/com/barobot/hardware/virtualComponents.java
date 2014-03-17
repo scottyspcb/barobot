@@ -3,12 +3,17 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.barobot.AppInvoker;
 import com.barobot.activity.BarobotMain;
 import com.barobot.activity.DebugActivity;
-import com.barobot.constant.Constant;
-import com.barobot.utils.ArduinoQueue;
-import com.barobot.utils.Arduino;
-import com.barobot.utils.input_parser;
+import com.barobot.common.Initiator;
+import com.barobot.common.constant.Constant;
+import com.barobot.common.constant.Methods;
+import com.barobot.parser.Queue;
+import com.barobot.parser.devices.MotorDriver;
+import com.barobot.parser.message.AsyncMessage;
+import com.barobot.parser.output.AsyncDevice;
+import com.barobot.parser.utils.Decoder;
 
 import android.app.Activity;
 import android.content.Context;
@@ -34,26 +39,26 @@ public class virtualComponents {
 
 	//config
 	private static final int SERVOZ_PAC_TIME_UP = 600;
-	private static final int SERVOZ_PAC_POS = 1100;
+	private static final int SERVOZ_PAC_POS = 1800;
 	private static final int SERVOZ_PAC_TIME_WAIT = 400;
 
 	public static final int SERVOZ_POUR_TIME = 4000;
 	
 	public static final int SERVOZ_UP_TIME = 400;
 	public static final int SERVOZ_DOWN_TIME = 300;
-	
-	public static final int SERVOZ_UP_POS = 900;
-	public static final int SERVOZ_DOWN_POS = 1600;
-	public static final int SERVOZ_TEST_POS = 1650;
-	
+
+	public static final int SERVOZ_UP_POS = 2100;
+	public static final int SERVOZ_DOWN_POS = 1100;
+	public static final int SERVOZ_TEST_POS = 1300;
+
 	public static final int SERVOY_FRONT_POS = 800;
-	public static final int SERVOY_BACK_POS = 2090;
+	public static final int SERVOY_BACK_POS = 2100;
 	public static final int SERVOY_TEST_POS = 1000;
 	public static final int SERVOY_BACK_NEUTRAL = 1800;
 	
-	public static final int DRIVER_X_SPEED = 4000;
+	public static final int DRIVER_X_SPEED = 2500;
 	public static final int DRIVER_Y_SPEED = 40;
-	public static final int DRIVER_Z_SPEED = 200;
+	public static final int DRIVER_Z_SPEED = 250;
 
 	public static final int ANALOG_WAGA = 2;
 	public static final int ANALOG_DIST1 = 20;
@@ -64,9 +69,24 @@ public class virtualComponents {
 	public static int margin_front = 0;
 	public static int margin_back = 0;
 
+	public static int[] upanels = {
+		23,					// 0, num 1
+		16,					// 1, num 2
+		19,					// 2, num 3
+		12,					// 3, num 4
+		17,					// 4, num 5
+		18,					// 5, num 6
+		20,					// 6, num 7
+		15,					// 7, num 8
+		22,					// 8, num 9
+		21,					// 9, num 10
+		14,					// 10, num 11
+		13,					// 11, num 12
+	};
+
 	// pozycje butelek, sa aktualizowane w trakcie
 	public static int[] times = {
-		SERVOZ_POUR_TIME,
+		SERVOZ_POUR_TIME,		
 		SERVOZ_POUR_TIME, 
 		SERVOZ_POUR_TIME,
 		SERVOZ_POUR_TIME,
@@ -82,20 +102,20 @@ public class virtualComponents {
 
 	// pozycje butelek, sa aktualizowane w trakcie
 	public static int[] margin_x = {
-		300,
-		-100,
-		200,
 		0,
-		200,
 		0,
-		200,
+		0,
+		0,
+		0,
+		0,
+		0,
 		0, 
-		200,
 		0,
-		300,
+		0,
+		0,
 		0
 	};
-	
+
 	private static int[] b_pos_x = {207,207, 394,394,581,581,768,768, 955,955,1142,1142};
 	public static int[] b_pos_y = {
 		SERVOY_BACK_POS,					// 0, num 1
@@ -114,7 +134,9 @@ public class virtualComponents {
 
 	public static int[] magnet_order = {0,2,1,4,3,6,5,8,7,10,9,11 };	// numer butelki, odjąc 1 aby numer ID
 	private static String[] persistant = {
-		"POSX","POSY","POSY",
+		"POSX",
+		"POSY",
+		"POSY",
 		"X_GLOBAL_MIN",
 		"X_GLOBAL_MAX",
 		"LENGTHX","LAST_BT_DEVICE",
@@ -143,16 +165,20 @@ public class virtualComponents {
 	};
 
 	public static MotorDriver driver_x;
-	public static boolean scann_bottles = false;
+	public static boolean scann_bottles = true;
 	public static int scann_num = 0;
 	public static boolean set_bottle_on = false;
-
+	public static boolean ledsReady = false;
+	private static Carret carret;
+	
 	public static void init( Activity app ){
-		application		= app;
-		myPrefs			= application.getSharedPreferences(Constant.SETTINGS_TAG, Context.MODE_PRIVATE);
-		config_editor	= myPrefs.edit();
-		driver_x		= new MotorDriver();
-
+		application			= app;
+		myPrefs				= application.getSharedPreferences(Constant.SETTINGS_TAG, Context.MODE_PRIVATE);
+		config_editor		= myPrefs.edit();
+		driver_x			= new MotorDriver();
+		carret				= new Carret( 2, 10 );
+		driver_x.defaultSpeed = virtualComponents.DRIVER_X_SPEED;
+		driver_x.setSPos( virtualComponents.getInt( "POSX", 0 ) );
 	}
 	public static String get( String name, String def ){
 		String ret = hashmap.get(name);
@@ -173,15 +199,15 @@ public class virtualComponents {
 	}
 	
 	public static int getInt( String name, int def ){
-		return input_parser.toInt(virtualComponents.get( name, ""+def ));
+		return Decoder.toInt(virtualComponents.get( name, ""+def ));
 	}
 	public static void set(String name, long value) {
 		virtualComponents.set(name, "" + value );
 	}
 	public static void set( String name, String value ){
-		if(name == "POSX"){
-			Constant.log(Constant.TAG,"zapisuje posx:"+ value );	
-		}
+	//	if(name == "POSX"){
+			AppInvoker.log("virtualComponents.set","save: "+name + ": "+ value );	
+	//	}
 		hashmap.put(name, value );
 		virtualComponents.update( name, value );
 
@@ -220,62 +246,96 @@ public class virtualComponents {
 	public static boolean hasGlass() {
 		return false;
 	}
-
 	public static void pacpac() {
-		Arduino ar = Arduino.getInstance();
-		ArduinoQueue q = new ArduinoQueue();	
+		Queue q = Arduino.getInstance().getMainQ();
+		AppInvoker.log(Constant.TAG,"pac");
+/*
+		AsyncMessage moveX = new AsyncMessage(true){
+			@Override
+			public long getTimeout() {
+				return AsyncMessage.DEFAULT_TIME;
+			}
+			@Override
+			public void onException(String input) {
+			}
 
-		Constant.log(Constant.TAG,"pac");
+			@Override
+			public Queue run(AsyncDevice dev) {
+				dev.send("X1000,1000");
+				return null;
+			}
 
+			@Override
+			public boolean wait4Finish() {
+				return true;
+			}
+
+			@Override
+			public boolean isRet(String result) {
+				return false;
+			}
+
+			@Override
+			public boolean onInput(String input) {
+				return false;
+			}
+
+			@Override
+			public void afterTimeout() {
+				AppInvoker.log("pacpac","afterTimeout");
+			}
+		};*/
+	//	q.add( moveX );
 		q.add("EX", true);
 //		q.add("EY", true);
 //		q.add("EZ", true);
 		q.add("Z" + virtualComponents.SERVOZ_PAC_POS+","+virtualComponents.DRIVER_Z_SPEED, true);
-		
-		Constant.log("pacpac","Z" + virtualComponents.SERVOZ_PAC_POS+","+virtualComponents.DRIVER_Z_SPEED);
-
-		virtualComponents.moveZDown(q);
+		AppInvoker.log("pacpac","Z" + virtualComponents.SERVOZ_PAC_POS+","+virtualComponents.DRIVER_Z_SPEED);
+		virtualComponents.moveZDown(q, true );
 		q.add("DX", true);
 		q.addWait(200);
 		q.add("DZ", true);
-		ar.send(q);
 	}
 
 	public static void cancel_all() {
-		Arduino ar = Arduino.getInstance();
-		ar.clear();
-		ar.send("LIVE A OFF");
-//		ar.send("EZ");
+		Queue mq = Arduino.getInstance().getMainQ();
+		mq.clearAll();
+		mq.add("LIVE A OFF", false );
+//		add("EZ");
 		int poszdown	=  virtualComponents.getInt("ENDSTOP_Z_MIN", SERVOZ_DOWN_POS );
-		ar.send("Z" + poszdown);		// zwraca początek operacji a nie koniec
-		ar.send("DX");
-	    ar.send("DY");
-		ar.send("DZ");
-		ar.send(Constant.GETXPOS);
+		mq.add("Z" + poszdown, false );		// zwraca początek operacji a nie koniec
+		mq.add("DX", false );
+		mq.add("DY", false );
+		mq.add("DZ", false );
+		mq.add(Constant.GETXPOS, false );
 	}
 	public static void stop_all() {
-		Arduino ar = Arduino.getInstance();
-		ar.clear();
+		Queue mq = Arduino.getInstance().getMainQ();
+		mq.clearAll();
 	}
 
 	public static void moveToBottle(final int num, final boolean disableOnReady ){
-		Arduino ar			= Arduino.getInstance();
-		ArduinoQueue q		= new ArduinoQueue();
-		moveZDown( q );
-		q.add( new rpc_message( true ) {
+		Arduino ar		= Arduino.getInstance();
+		Queue q			= new Queue();
+		moveZDown( q ,true );
+		q.add( new AsyncMessage( true ) {
 			@Override
-			public ArduinoQueue run() {
+			public Queue run(AsyncDevice dev) {
 				this.name	= "check position";
-				int cx		= virtualComponents.getInt("POSX", 0 );		// czy ja juz jestem na tej pozycji?	
+				int cx		= virtualComponents.driver_x.getSPos();		// czy ja juz jestem na tej pozycji?	
 				int cy		= virtualComponents.getInt("POSY", 0 );
-				int tx 	= getBottlePosX( num );
+				int tx 		= getBottlePosX( num );
 				int ty  	= getBottlePosY( num );
+				Queue	q2	= new Queue();
+
+				Upanel up =  getUpanelBottle(num);
+				if( up != null ){
+					up.setLed( q2, "ff", 0 );
+					up.setLed( q2, "11", 200 );
+				}
 				if(cx == tx && cy == ty ){		// nie musze jechac
-					ArduinoQueue	q2	= new ArduinoQueue();
 					q2.addWait( virtualComponents.SERVOY_REPEAT_TIME );
-					return q2;
 				}else if(cx != tx && cy == ty ){		// jade tylem lub przodem
-					ArduinoQueue	q2	= new ArduinoQueue();
 					virtualComponents.moveZDown(q2, disableOnReady );
 					if( cy > virtualComponents.SERVOY_BACK_NEUTRAL ){
 						virtualComponents.moveY( q2, virtualComponents.SERVOY_BACK_NEUTRAL, true);
@@ -283,44 +343,51 @@ public class virtualComponents {
 						virtualComponents.moveY( q2, virtualComponents.SERVOY_FRONT_POS, true);	
 					}
 					virtualComponents.moveX( q2, tx);
-					virtualComponents.moveY( q2, ty, disableOnReady);
-					return q2;		
+					virtualComponents.moveY( q2, ty, disableOnReady);		
 				}else{
-					ArduinoQueue	q2	= new ArduinoQueue();
 					virtualComponents.moveZDown(q2, disableOnReady );
 					virtualComponents.moveY( q2, virtualComponents.SERVOY_FRONT_POS, true);
 					virtualComponents.moveX( q2, tx);
 					virtualComponents.moveY( q2, ty, disableOnReady);
-					return q2;
 				}
+				if( up != null ){
+					up.setLed( q2, "ff", 0 );
+					up.setLed( q2, "22", 200 );
+				}
+				return q2;
 			}
 		} );
 	    q.add(Constant.GETXPOS, true);
 	    q.add(Constant.GETYPOS, true);
 	    q.add(Constant.GETZPOS, true);
-		ar.send( q );
+	    ar.getMainQ().add(q);
 	}
 
+	private static Upanel getUpanelBottle(int num) {
+		if( num > 0 && num < upanels.length ){
+			int addr = upanels[ num ];
+			return new Upanel( 0 , addr);
+		}
+		return null;
+	}
 	public static void nalej(int num) {			// num 0-11
-		Arduino ar = Arduino.getInstance();
-		ArduinoQueue q = new ArduinoQueue();
+		Queue q = Arduino.getInstance().getMainQ();
 		int time = getPourTime(num);
-		q.addWaitGlass();
 		q.add("EX", true);
 //		q.add("EY", true);	
 //		q.add("EZ", true);
 		virtualComponents.moveZUp(q, false);
 		q.addWait( time );
 		virtualComponents.moveZDown(q,false);
-		q.add( new rpc_message( true ) {
+		q.add( new AsyncMessage( true ) {
 			@Override
-			public ArduinoQueue run() {
+			public Queue run(AsyncDevice dev) {
 				this.name		= "pacpac";
 				if(virtualComponents.pac_enabled){
-					ArduinoQueue	q2	= new ArduinoQueue();	
+					Queue	q2	= new Queue();	
 					q2.addWait( virtualComponents.SERVOZ_PAC_TIME_WAIT );
-					q2.add("Z " + virtualComponents.SERVOZ_PAC_POS+",250", true);	
-					virtualComponents.moveZDown(q2);
+					q2.add("Z" + virtualComponents.SERVOZ_PAC_POS+",250", true);	
+					virtualComponents.moveZDown(q2, true );
 					return q2;
 				}
 				return null;
@@ -333,29 +400,70 @@ public class virtualComponents {
 	    q.add(Constant.GETXPOS, true);
 	    q.add(Constant.GETYPOS, true);
 	    q.add(Constant.GETZPOS, true);
-	    ar.send(q);
 	}
 
-	public static void enable_analog( Arduino ar, int pin, int time, int repeat) {
-		ar.send("LIVE A "+pin+","+time+","+repeat);		// repeat pomiary co time na porcie pin
+	public static void enable_analog( Queue q, int pin, int time, int repeat) {
+		q.add("LIVE A "+pin+","+time+","+repeat, false);		// repeat pomiary co time na porcie pin
 	}
-	public static void disable_analog(Arduino ar, int analogWaga) {
-		ar.send("LIVE A OFF");
+	public static void disable_analog(Queue q, int analogWaga) {
+		q.add("LIVE A OFF", false);
 	}
-	public static void moveX( ArduinoQueue q, int pos ) {
-		pos = driver_x.soft2hard(pos);
-		q.add("X" + pos+ ","+virtualComponents.DRIVER_X_SPEED, true);	
+
+	public static void moveX( final Queue q, int pos ) {
+		final int newx		= driver_x.soft2hard(pos);
+		final int currentx	= driver_x.getSPos();
+
+		q.add( new AsyncMessage( true, true ) {
+			@Override
+			public boolean isRet(String result) {
+				return false;
+			}
+			@Override
+			public Queue run(AsyncDevice dev) {
+				this.name		= "Check Hall X";
+				q.sendNow(Queue.DFAULT_DEVICE, "A0");
+				return null;
+			}
+			@Override
+			public boolean onInput(String input, AsyncDevice dev) {
+				Initiator.logger.w("MotorDriver.movoTo.AsyncMessage.onInput", input );
+				if(input.matches("^" +  Methods.METHOD_IMPORTANT_ANALOG + ",0,.*" )){		//	224,0,66,0,208,7,15,2
+					int[] parts = Decoder.decodeBytes( input );
+					boolean can = true;
+					if( parts[2] == Methods.HX_STATE_9 ){		// this is max	//	224,0,100,0,204,3,185,1
+						if(newx < currentx ){		// move backward
+							can = false;
+							Initiator.logger.w("MotorDriver.movoTo.AsyncMessage.onInput", "OVER max" );
+						}
+					}else if( parts[2] == Methods.HX_STATE_1 ){		// this is min
+						if( newx > currentx ){		// move forward
+							can = false;
+							Initiator.logger.w("MotorDriver.movoTo.AsyncMessage.onInput", "BELOW MIN" );
+						}
+					}
+					if( can ){
+						Initiator.logger.w("MotorDriver.movoTo.AsyncMessage.onInput", "MOVE" );
+						Queue	q2	= new Queue();
+						q2.add("X" + newx+ ","+virtualComponents.DRIVER_X_SPEED, true);
+						q.addFirst(q2);
+						dev.unlockRet(this, "A0 OK");
+						return true;
+					}
+				}
+				return false;
+			}
+		} );
 	}
-	public static void moveX( ArduinoQueue q, String pos ) {
-		moveX(q, input_parser.toInt(pos));
+	public static void moveX( Queue q, String pos ) {
+		moveX(q, Decoder.toInt(pos));
 	}
-	public static void moveY( ArduinoQueue q, int pos, boolean disableOnReady ) {
+	public static void moveY( Queue q, int pos, boolean disableOnReady ) {
 		q.add("Y" + pos+ ","+virtualComponents.DRIVER_Y_SPEED, true);
 		if(disableOnReady){
 			q.add("DY", true );
 		}
 	}
-	public static void moveY( ArduinoQueue q, String pos ) {
+	public static void moveY( Queue q, String pos ) {
 		q.add("Y" + pos+ ","+virtualComponents.DRIVER_Y_SPEED, true);	
 	}
 	public static void hereIsStart( int posx, int posy) {
@@ -363,47 +471,44 @@ public class virtualComponents {
 		virtualComponents.set("POS_START_X", posx );
 		virtualComponents.set("POS_START_Y", posy );
 	}
-	public static void moveZDown( ArduinoQueue q ) {
-		moveZDown(q, true);
-	}
-	private static void moveZ(ArduinoQueue q, int pos) {
-		q.add("Z" + pos +","+virtualComponents.DRIVER_Z_SPEED, true);
-		q.addWait(100);
-	}
-	private static void moveZDown(ArduinoQueue q, boolean b) {
+	public static void moveZDown(Queue q, boolean b) {
 		int poszdown	=  virtualComponents.getInt("ENDSTOP_Z_MIN", SERVOZ_DOWN_POS );
 		moveZ(q, poszdown );
 	    q.add("DZ", true);
 	}
-	public static void moveZUp( ArduinoQueue q, boolean disableOnReady ) {
+	private static void moveZ(Queue q, int pos) {
+		q.add("Z" + pos +","+virtualComponents.DRIVER_Z_SPEED, true);
+		q.addWait(300);
+	}
+
+	public static void moveZUp( Queue q, boolean disableOnReady ) {
 //		q.add("EZ", true);
 		int poszup	=  virtualComponents.getInt("ENDSTOP_Z_MAX", SERVOZ_UP_POS );
 		q.add("Z" + poszup+","+virtualComponents.DRIVER_Z_SPEED, true);
 	//	q.addWait( virtualComponents.SERVOZ_UP_TIME );	// wiec trzeba poczekać
 		if(disableOnReady){
-			q.addWait(100);
+			q.addWait(300);
 			q.add("DZ", true);
 		}
 	}
 
 	public static void moveToStart() {
-		Arduino ar		= Arduino.getInstance();
-		ArduinoQueue q	= new ArduinoQueue();
-		moveZDown( q );
-		q.add( new rpc_message( true ) {
+		Queue q = Arduino.getInstance().getMainQ();
+		moveZDown( q ,true );
+		q.add( new AsyncMessage( true ) {
 			@Override
-			public ArduinoQueue run() {
+			public Queue run(AsyncDevice dev) {
 				this.name		= "check position";
-				int posx		= virtualComponents.getInt("POSX", 0 );		// czy ja juz jestem na tej pozycji?	
+				int posx		= driver_x.getSPos();;		// czy ja juz jestem na tej pozycji?	
 				int posy		= virtualComponents.getInt("POSY", 0 );
 				int sposx		= virtualComponents.getInt("POS_START_X", 0 );		// tu mam byc
 				int sposy		= virtualComponents.getInt("POS_START_X", 0 );
 
 				if(posx != sposx || posy != sposy ){		// musze jechac?
-					ArduinoQueue	q2	= new ArduinoQueue();
-					virtualComponents.moveZDown(q2);
+					Queue	q2	= new Queue();
+					virtualComponents.moveZDown(q2, true );
 					//virtualComponents.moveY( q2, virtualComponents.get("NEUTRAL_POS_Y", "0" ));
-					virtualComponents.moveY( q2, virtualComponents.SERVOY_FRONT_POS, false );
+					virtualComponents.moveY( q2, virtualComponents.SERVOY_FRONT_POS, true );
 					virtualComponents.moveX( q2, sposx);
 					virtualComponents.moveY( q2, sposy, true );
 					return q2;
@@ -414,94 +519,66 @@ public class virtualComponents {
 	    q.add(Constant.GETXPOS, true);
 	    q.add(Constant.GETYPOS, true);
 	    q.add(Constant.GETZPOS, true);
-		ar.send( q );
+
+		carret.setLed( q, "ff", 0 );
+		carret.setLed( q, "22", 250 );
 	}
 	
-	
-	public static void test( final int dest_x, final int dest_y) {
-		final rpc_message moveit = new rpc_message( true ){
-			int tryis = 3;
-			public ArduinoQueue run(){
-				ArduinoQueue q2 = new ArduinoQueue();
-				int posx		= virtualComponents.getInt("POSX", 0 );		// czy ja juz jestem na tej pozycji?	
-				int posy		= virtualComponents.getInt("POSY", 0 );
-				rpc_message waitx = null;
-				rpc_message waity = null;	
-				if( posx != dest_x ){
-					waitx = q2.add( "X" + dest_x, false );
-				}
-				if( posy != dest_y ){
-					waity = q2.add( "Y" + dest_y, false );
-				}
-				if( waitx != null || waity != null ){
-					q2.addWait( waitx );
-					q2.addWait( waity );
-					q2.add( new rpc_message( true ){
-						public boolean handle( String command ){
-							if (command == "ECANT_Y"){
-								ArduinoQueue q3 = new ArduinoQueue();
-								if( tryis-- > 0){
-						//			q3.add( moveit );
-								}else{
-									q3.addThrow("cant_move" );
-								}
-							}
-							return true;
-						}
-						public ArduinoQueue run(){
-							return null;
-						}
-					});
-				}
-				return q2;
-			}
-		};
+	public static void startDoingDrink() {
+		Queue q = Arduino.getInstance().getMainQ();
+		carret.setLed( q, "ff", 0 );
+		carret.setLed( q, "11", 250 );
+		Queue q1		= new Queue();	
+		for(int i =0; i<upanels.length;i++){
+			q1.add("L"+ upanels[i] +",ff,0", true);
+			q1.add("L"+ upanels[i] +",ff,200", true);
+		}
+		q.add(q1);
 	}
-	
+
 	public static void kalibrcja() {
-		Arduino ar		= Arduino.getInstance();
-		ArduinoQueue q	= new ArduinoQueue();
-		int posx		= virtualComponents.getInt("POSX", 0 );
+		Queue q			= Arduino.getInstance().getMainQ();
+		int posx		= driver_x.getSPos();
 		int posy		= virtualComponents.getInt("POSY", 0 );
 
-		Constant.log("+find_bottles", "start");
+		AppInvoker.log("+find_bottles", "start");
 		q.add("EX", true );
-		virtualComponents.moveZDown( q );
+		virtualComponents.moveZDown( q ,true );
 		virtualComponents.moveZ( q, virtualComponents.SERVOZ_TEST_POS );
-		virtualComponents.moveZDown( q );
+		virtualComponents.moveZDown( q ,true );
 		virtualComponents.moveY( q, virtualComponents.SERVOY_TEST_POS, true);
 		virtualComponents.moveY( q, virtualComponents.SERVOY_FRONT_POS, true);
 		int lengthx19	=  virtualComponents.getInt("LENGTHX", 60000 );	
 		virtualComponents.moveX( q, posx + 2000);
 		virtualComponents.moveX( q, -70000 );	// read margin
 		// scann Triggers
-		q.add( new rpc_message( true ) {			// go up
+		q.add( new AsyncMessage( true ) {			// go up
 			@Override
-			public ArduinoQueue run() {
+			public Queue run(AsyncDevice dev) {
 				this.name		= "scanning up";
-				Constant.log("+find_bottles", "up");
+				AppInvoker.log("+find_bottles", "up");
 				virtualComponents.scann_bottles = true;
 				virtualComponents.scann_num = 0;
 				return null;
 			}
 		} );
 		virtualComponents.moveX( q, 70000 );		// go down
-		
-		q.add( new rpc_message( true ) {
+
+		q.add( new AsyncMessage( true ) {
 			@Override
-			public ArduinoQueue run() {
+			public Queue run(AsyncDevice dev) {
 				this.name		= "scanning back";
-				Constant.log("+find_bottles", "down na:" + virtualComponents.scann_num);
+				AppInvoker.log("+find_bottles", "down na:" + virtualComponents.scann_num);
 				virtualComponents.scann_num = 1;
 				return null;
 			}
 		} );
 		virtualComponents.moveX( q, -lengthx19);			// down to 0
-		q.add( new rpc_message( true ) {
+		q.add( new AsyncMessage( true ) {
 			@Override
-			public ArduinoQueue run() {
+			public Queue run(AsyncDevice dev) {
 				this.name		= "end scanning";
-				Constant.log("+find_bottles", "koniec na:" + virtualComponents.scann_num);
+				AppInvoker.log("+find_bottles", "koniec na:" + virtualComponents.scann_num);
 				virtualComponents.scann_bottles = false;
 				if( virtualComponents.scann_num != 12 ){
 					BarobotMain.getInstance().showError();
@@ -509,6 +586,27 @@ public class virtualComponents {
 				return null;
 			}
 		} );
-		ar.send(q);
+		virtualComponents.scann_leds();
+	}
+	public static void scann_leds() {
+		Queue q1			= new Queue();
+		Queue q2			= new Queue();		
+		for(int i =0; i<upanels.length;i++){
+			q1.add("L"+ upanels[i] +",ff,200", true);
+			q2.add("L"+ upanels[i] +",ff,0", true);
+		}
+		Queue q			= Arduino.getInstance().getMainQ();
+		q.add(q1);
+		q.addWait(1000);
+		q.add(q2);
+		ledsReady = true;	
+	}
+	public static void saveXPos(int spos) {
+		if( spos < 100 ){
+			spos = 0;
+		}
+		virtualComponents.set( "POSX", "" + spos);
+		driver_x.setSPos( spos );
+		
 	}
 }

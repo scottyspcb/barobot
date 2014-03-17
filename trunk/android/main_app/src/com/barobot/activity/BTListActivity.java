@@ -1,13 +1,14 @@
 package com.barobot.activity;
 import java.util.Set;
 
+import com.barobot.AppInvoker;
 import com.barobot.R;
 import com.barobot.R.id;
 import com.barobot.R.layout;
 import com.barobot.R.string;
-import com.barobot.constant.Constant;
-import com.barobot.utils.Arduino;
-import com.barobot.wire.BluetoothChatService;
+import com.barobot.common.constant.Constant;
+import com.barobot.hardware.Arduino;
+import com.barobot.hardware.serial.BluetoothChatService;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
@@ -83,7 +84,7 @@ public class BTListActivity extends Activity {
         mBtAdapter = BluetoothAdapter.getDefaultAdapter();
 
         if(mBtAdapter == null){
-        	Constant.log(Constant.TAG, "nie ma adaptera");
+        	AppInvoker.log(Constant.TAG, "nie ma adaptera");
         	return;
         }
         // Get a set of currently paired devices
@@ -104,7 +105,7 @@ public class BTListActivity extends Activity {
      * Start device discover with the BluetoothAdapter
      */
     private void doDiscovery() {
-        Constant.log(Constant.TAG, "doDiscovery()");
+        AppInvoker.log(Constant.TAG, "doDiscovery()");
 
         // Indicate scanning in the title
         setProgressBarIndeterminateVisibility(true);

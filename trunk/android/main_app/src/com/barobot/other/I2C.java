@@ -1,12 +1,13 @@
-package com.barobot.hardware;
+package com.barobot.other;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.barobot.constant.LowHardware;
-import com.barobot.constant.Methods;
-import com.barobot.utils.Arduino;
-import com.barobot.utils.ArduinoQueue;
+import com.barobot.common.constant.LowHardware;
+import com.barobot.common.constant.Methods;
+import com.barobot.hardware.Arduino;
+import com.barobot.parser.Queue;
+import com.barobot.parser.message.AsyncMessage;
 
 public class I2C{
 	static List<I2C_device> lista = new ArrayList<I2C_device>();
@@ -73,7 +74,6 @@ public class I2C{
 	public static void destroy(){
 		lista.clear();
 	}
-
 	public static I2C_device getByAddress( int address ){
 		I2C_device t = null;
 		for (I2C_device v : lista){
@@ -81,7 +81,6 @@ public class I2C{
 		}
 		return t;
 	}
-
 	public static String createCommand( int address, int why_code, byte[] params ){
 		String res = ""+Methods.METHOD_SEND2SLAVE + (char)address + (char)why_code;
 		if(params!=null){
@@ -91,23 +90,20 @@ public class I2C{
 		}
 		return res;
 	}
-
-	public static rpc_message send( int address, int why_code, byte[] params ){	
+	public static AsyncMessage send( int address, int why_code, byte[] params ){	
 		String res = createCommand( address, why_code, params);
-		rpc_message m =  new rpc_message( true, res, true );
+		AsyncMessage m =  new AsyncMessage( res, true, true );
 		return m;
 	}
-
-	public static rpc_message send( int address, int why_code ){
+	public static AsyncMessage send( int address, int why_code ){
 		byte[] a = null;
 		return send( address, why_code, a );
 	}
-
-	public static ArduinoQueue findNodes(){
-		ArduinoQueue q = new ArduinoQueue();
+	public static Queue findNodes(){
+		Queue q = new Queue();
 		q.add("I2C", true );
 		// skanuj magistralę. Gdy znaleziono wyslij informację o sprzęcie
-		rpc_message m =  new rpc_message( true ){
+		AsyncMessage m =  new AsyncMessage( true ){
 			public boolean handle( String command ){
 				if (command == "EI2C"){	// jesli nie znaleziono zadnego
 					// clear active devices
@@ -115,7 +111,7 @@ public class I2C{
 				}
 				return false;
 			}
-			public ArduinoQueue run(){
+			public Queue run(){
 				return null;
 			}
 		};
@@ -124,28 +120,21 @@ public class I2C{
 	}
 	public static void findNodesOrder(){
 		// resetuj wózek
-		Arduino ar		= Arduino.getInstance();
-		ArduinoQueue q = new ArduinoQueue();
+		Queue mq			= Arduino.getInstance().getMainQ();
 	//	q.add( lista.get(0).resetCommand(), true );			// Reset first back upanel
 		//q.add( lista.get(0).resetCommand(), true );			// Reset first f upanel
-		ar.send( q );
 	}
-
-	
-	
 	
 	public static void temp(){
-		Arduino ar		= Arduino.getInstance();
-		ArduinoQueue q = new ArduinoQueue();
-		q.add( I2C.send( LowHardware.I2C_ADR_MAINBOARD, 0x11, new byte[]{1,2,3} ));
-		q.add( I2C.send( 0x12, 0x11, new byte[]{1,2,3} ));
-		q.add( I2C.findNodes() );
+		Queue mq			= Arduino.getInstance().getMainQ();
+		mq.add( I2C.send( LowHardware.I2C_ADR_MAINBOARD, 0x11, new byte[]{1,2,3} ));
+		mq.add( I2C.send( 0x12, 0x11, new byte[]{1,2,3} ));
+		mq.add( I2C.findNodes() );
 		// q.add( "RESETN 1", true );		// Reset Carret
 		// czekam na zwrotkę
 		// q.add( "RESETN 1", true );		// Reset Carret
 
-		q.add( I2C.send( 0x12, 0x11, new byte[]{1,2,3} ));
-		ar.send( q );
+		mq.add( I2C.send( 0x12, 0x11, new byte[]{1,2,3} ));
 	}
 
 }

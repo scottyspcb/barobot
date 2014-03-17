@@ -1,4 +1,4 @@
-package com.barobot.db;
+package com.barobot.other;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

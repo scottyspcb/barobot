@@ -14,9 +14,9 @@ import android.widget.ToggleButton;
 
 import com.barobot.R;
 import com.barobot.activity.DebugActivity;
-import com.barobot.constant.Constant;
-import com.barobot.utils.Arduino;
-import com.barobot.utils.History_item;
+import com.barobot.common.constant.Constant;
+import com.barobot.hardware.Arduino;
+import com.barobot.parser.History_item;
 
 public class DebugTabLog extends Fragment {
 	public int tab_id	= -1 ;
@@ -71,8 +71,8 @@ public class DebugTabLog extends Fragment {
 		xb3.setOnClickListener( new OnClickListener(){
 			@Override
 			public void onClick(View v) {
-				Arduino.getInstance().unlock();
-			};			
+				Arduino.getInstance().getMainQ().unlock();
+			};
 		});
 
 	    mConversationView = (ListView) rootView.findViewById(R.id.led_list);
