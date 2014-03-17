@@ -53,20 +53,20 @@ public class MotorDriver {
 	//	Initiator.logger.w("MARGIN X2", "Margin: " + m1 + "  soft: " + pos3 + " => hard " + (pos3 -( -m1)));
 		return pos3 - (- m1);
 	}
-	public void movoTo( final Queue q, int pos ) {
+	public void movoTo( final Queue q, final int pos ) {
 		final int newx		= this.soft2hard(pos);
 		final int currentx	= software_pos;
 
 		q.add( new AsyncMessage( true, true ) {
 			@Override
-			public Queue run(AsyncDevice dev) {
+			public Queue run(AsyncDevice dev, Queue queue) {
 				this.name		= "Check Hall X";
 				q.sendNow(Queue.DFAULT_DEVICE, "A0");
-				Initiator.logger.w("MotorDriver.movoTo.AsyncMessage.run", "sendNow" );
+				Initiator.logger.w("MotorDriver.movoTo.AsyncMessage.run", "want to s:" + pos + " / hpos" + newx );
 				return null;
 			}
 			@Override
-			public boolean onInput(String input, AsyncDevice dev ) {
+			public boolean onInput(String input, AsyncDevice dev, Queue mainQueue ) {
 				Initiator.logger.w("MotorDriver.movoTo.AsyncMessage.onInput", input );
 				if(input.matches("^" +  Methods.METHOD_IMPORTANT_ANALOG + ",0,.*" )){		//	224,0,66,0,208,7,15,2
 					int[] parts = Decoder.decodeBytes( input );
@@ -74,12 +74,12 @@ public class MotorDriver {
 					if( parts[2] == Methods.HX_STATE_9 ){		// this is max	//	224,0,100,0,204,3,185,1
 						if(newx < currentx ){		// move backward
 							can = false;
-							Initiator.logger.w("MotorDriver.movoTo.AsyncMessage.onInput", "OVER max" );
+							Initiator.logger.w("MotorDriver.movoTo.AsyncMessage.onInput", "BELOW MIN" );
 						}
 					}else if( parts[2] == Methods.HX_STATE_1 ){		// this is min
 						if( newx > currentx ){		// move forward
 							can = false;
-							Initiator.logger.w("MotorDriver.movoTo.AsyncMessage.onInput", "BELOW MIN" );
+							Initiator.logger.w("MotorDriver.movoTo.AsyncMessage.onInput", "OVER max" );
 						}
 					}
 					if( can ){
@@ -90,6 +90,7 @@ public class MotorDriver {
 						dev.unlockRet(this, "A0 OK");
 						return true;
 					}
+					dev.unlockRet(this, "A0 OK");
 				}
 				return false;
 			}

@@ -79,7 +79,7 @@ public class MainActivity extends Activity implements OnSignalsDetectedListener{
 		//	AsyncDevice c	= new Console();
 		//	AsyncDevice u	= new MainScreen();
 		mb.registerSender( connection );		
-		mainboardSource = Queue.registerSource( mb );
+		mainboardSource = q.registerSource( mb );
 		Queue.enableDevice( mainboardSource );
 		connection.addOnReceive( new SerialInputListener(){
 			@Override

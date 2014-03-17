@@ -92,7 +92,7 @@ void stepperReady( long int pos );
 void send_error( String input);
 void i2c_device_found( byte addr,byte type,byte ver );
 void parseInput( String input );
-void proceed( byte length,volatile uint8_t buffer[7] );
+void proceed( byte length,volatile uint8_t buffer[MAXCOMMAND] );
 void loop();
 void timer();
 void setupStepper();

@@ -22,7 +22,7 @@ import com.barobot.common.interfaces.SerialEventListener;
 import com.barobot.common.interfaces.SerialInputListener;
 import com.barobot.common.interfaces.Wire;
 
-public class WindowsSerialPort implements CanSend, Wire {
+public class WindowsSerialPort implements Wire, CanSend{
 	protected static final String APPNAME = "BarobotISP";
 	protected static final int timeout = 5000;
 
@@ -168,7 +168,7 @@ public class WindowsSerialPort implements CanSend, Wire {
 	    	}
 		}
 	}
-	public boolean send(String command) {
+	public boolean send(String command) throws IOException{
 	//	System.out.println("\t>>>Sending: " + command.trim());
 		try {
 			outputStream.write(command.getBytes());
@@ -188,7 +188,6 @@ public class WindowsSerialPort implements CanSend, Wire {
 		}
 		return false;
 	}
-	
 	public boolean isConnected() {
 		return connected;
 	}

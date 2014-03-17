@@ -1,6 +1,8 @@
-#include "barobot_carret_main.h"
+#define MAXCOMMAND_CARRET 	6
 #define IS_CARRET true
 #define HAS_LEDS true
+
+#include "barobot_carret_main.h"
 #include <WSWire.h>
 #include <i2c_helpers.h>
 #include <barobot_common.h>
@@ -29,10 +31,11 @@ byte moving_x = DRIVER_DIR_STOP;
 
 
 #define MIN_DELTA  20
+
 //unsigned int typical_zero = 512;
 //unsigned int last_max = 0;
 //unsigned int last_min = 0;
-volatile byte input_buffer[CARRET_BUFFER_LENGTH][5] = {{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0}};      // 6 buforow po 5 bajtów
+volatile byte input_buffer[CARRET_BUFFER_LENGTH][MAXCOMMAND_CARRET] = {{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0},{0,0,0,0,0}};      // 6 buforow po 5 bajtów
 volatile byte last_index     = 0;
 volatile unsigned int ticks  = 0;
 
@@ -465,7 +468,7 @@ void timer(){  // in interrupt
 }
 
 // czytaj komendy i2c
-void proceed( volatile byte buffer[5] ){
+void proceed( volatile byte buffer[MAXCOMMAND_CARRET] ){
 	//Serial.println("proceed1");
 /*
 	DEBUG("-proceed - ");
@@ -601,17 +604,19 @@ void proceed( volatile byte buffer[5] ){
 			byte newStateId = get_hx_state_id( val1 );
 			if( newStateId != 0xff ){
 				byte state_name	= hallx_state[newStateId][0];
-				byte ttt[8] = {
+				byte ttt[10] = {
 					METHOD_IMPORTANT_ANALOG, 
 					INNER_HALL_X, 
 					state_name, 
 					0,					// dir is unknown on carret
 					0, 					// position is unknown on carret
 					0,  				// position is unknown on carret
+					0, 					// position is unknown on carret
+					0,  				// position is unknown on carret
 					(val1 & 0xFF),
 					(val1 >>8),
 				};
-				send(ttt,8);
+				send(ttt,10);
 			}
 		
 		}else if( source ==  INNER_HALL_Y ){ 
@@ -729,7 +734,7 @@ void requestEvent(){
 	}
 	input_buffer[last_index][0] = 0;
 }
- 
+
 /*
 static void send_pin_value( byte pin, byte value ){
   byte ttt[5] = {METHOD_I2C_SLAVEMSG,my_address, RETURN_PIN_VALUE,my_address,pin,value};
@@ -751,6 +756,8 @@ void send_servo( boolean error, byte servo, uint16_t pos ){
 		}else if(servo == DRIVER_Z ){
 			servos[INNER_SERVOZ].moving= DRIVER_DIR_STOP;
 		}
+		ttt[2] = RETURN_DRIVER_READY_REPEAT;
+		send(ttt,6);
 	}
 }
 
@@ -765,32 +772,36 @@ void send_hx_pos( byte stateId, int16_t value ) {
 		}
 	}	
 	byte state_name	= hallx_state[stateId][0];
-	byte ttt[8] = {
+	byte ttt[10] = {
 		METHOD_IMPORTANT_ANALOG, 
 		INNER_HALL_X, 
 		state_name, 
 		0,					// dir is unknown on carret
 		0, 					// position is unknown on carret
 		0,  				// position is unknown on carret
+		0, 					// position is unknown on carret
+		0,  				// position is unknown on carret
 		(value & 0xFF),
 		(value >>8),
 	};
-	send(ttt,8);
+	send(ttt,10);
 }
 void send_y_pos( byte stateId, int16_t value) {
 	byte state_name	= hally_state[stateId][0];
 	uint16_t pos = servos[INNER_SERVOY].last_pos;
-	byte ttt[8] = {
+	byte ttt[10] = {
 		METHOD_IMPORTANT_ANALOG, 
 		INNER_HALL_Y, 
 		state_name, 
 		0,						// last dir
+		0,						// pos
+		0,						// pos
 		(pos & 0xFF),			// position unknown on carret
 		(pos >>8),				// position unknown on carret
 		(value & 0xFF),
 		(value >>8),
 	}; 
-	send(ttt,8);
+	send(ttt,10);
 }
 
 void send_here_i_am(){

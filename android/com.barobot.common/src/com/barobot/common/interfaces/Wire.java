@@ -11,8 +11,10 @@ public interface Wire extends CanSend{
 	public void setSearching( boolean active );
 	public void resume();
 	public boolean setAutoConnect( boolean active );
+	@Override
 	public boolean isConnected();
 	public void close();
+	@Override
 	public boolean send( String message ) throws IOException;
 	public boolean send(byte[] buf, int size ) throws IOException;
 	public boolean canConnect();

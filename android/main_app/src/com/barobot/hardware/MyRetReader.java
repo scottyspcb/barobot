@@ -19,7 +19,7 @@ public class MyRetReader implements RetReader {
 
 	@Override
 	public boolean isRetOf(AsyncDevice asyncDevice,
-			AsyncMessage wait_for2, String fromArduino ) {
+			AsyncMessage wait_for2, String fromArduino, Queue mainQueue ) {
 
 		String command = "";
 		if(wait_for2!= null && wait_for2.command != null && wait_for2.command != "" ){
@@ -129,8 +129,12 @@ public class MyRetReader implements RetReader {
 					return false;
 				}
 				
-			}else if( parts[2] == Methods.RETURN_DRIVER_READY ){
-				decoded += "/RETURN_DRIVER_READY";
+			}else if( parts[2] == Methods.RETURN_DRIVER_READY || parts[2] == Methods.RETURN_DRIVER_READY_REPEAT){
+				if(parts[2] == Methods.RETURN_DRIVER_READY){
+					decoded += "/RETURN_DRIVER_READY";
+				}else{
+					decoded += "/RETURN_DRIVER_READY_REPEAT";
+				}
 				if( parts[3] == Constant.DRIVER_X){
 					decoded += "/DRIVER_X";
 					//int pos = parts[4] + (parts[5] << 8) + (parts[6] << 16 + (parts[7] << 24));
@@ -274,7 +278,6 @@ public class MyRetReader implements RetReader {
 			if(dir == Methods.DRIVER_DIR_BACKWARD){
 			}
 			if(dir == Methods.DRIVER_DIR_FORWARD) {
-			
 				int ind	= virtualComponents.scann_num
 				if(direction == Methods.DRIVER_DIR_BACKWARD){
 					ind	= 11-virtualComponents.scann_num;
@@ -290,15 +293,15 @@ public class MyRetReader implements RetReader {
 			}	*/
 		//	Initiator.logger.i("input_parser", "hardware pos: " + hpos );
 		//	Initiator.logger.i("input_parser", "software pos: " + spos );
+			int state_name	= parts[2];
+			int dir			= parts[3];
+			int hpos		= parts[7] + (parts[6] << 8) + (parts[5] << 16 + (parts[4] << 24));
+			int value		= parts[8] + (parts[9] << 8);
+			int spos		= virtualComponents.driver_x.hard2soft(hpos);
+			decoded += "/@" + hpos;
+			virtualComponents.saveXPos( spos );	
 
-			if(virtualComponents.scann_bottles && checkInput != true ){
-				int state_name	= parts[2];
-				int dir			= parts[3];
-				int hpos		= parts[4] + (parts[5] << 8); 
-				int spos		= virtualComponents.driver_x.hard2soft(hpos);
-				
-				virtualComponents.saveXPos( spos );
-				
+			if(virtualComponents.scann_bottles && !checkInput && dir == Methods.DRIVER_DIR_FORWARD ){
 				state_num++;
 				if(state_name == Methods.HX_STATE_0 ){				// ERROR
 					decoded += "/HX_STATE_0";

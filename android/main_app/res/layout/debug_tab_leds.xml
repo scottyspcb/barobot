@@ -2,98 +2,98 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
- 
-			    <ToggleButton
-			        android:id="@+id/led1"
-			        android:layout_width="wrap_content"
-			        android:layout_height="wrap_content"
-			        android:layout_alignLeft="@+id/set_neutral_y"
-			        android:layout_alignParentBottom="false"
-			        android:layout_alignParentLeft="true"
-			        android:layout_alignParentTop="true"
-			        android:textOff="1 OFF"
-			        android:textOn="1 ON" />
 
-			    <ToggleButton
-			        android:id="@+id/led2"
-			        android:layout_width="wrap_content"
-			        android:layout_height="wrap_content"
-			        android:layout_alignBaseline="@+id/led1"
-			        android:layout_toRightOf="@+id/led1"
-			        android:textOff="2 OFF"
-			        android:textOn="2 ON" />
+    <ToggleButton
+        android:id="@+id/led1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/set_neutral_y"
+        android:layout_alignParentBottom="false"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:textOff="1 OFF"
+        android:textOn="1 ON" />
 
-			    <ToggleButton
-			        android:id="@+id/led3"
-			        android:layout_width="wrap_content"
-			        android:layout_height="wrap_content"
-			        android:layout_alignBaseline="@+id/led1"
-			        android:layout_toRightOf="@+id/led2"
-			        android:textOff="3 OFF"
-			        android:textOn="3 ON" />
+    <ToggleButton
+        android:id="@+id/led2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/led1"
+        android:layout_toRightOf="@+id/led1"
+        android:textOff="2 OFF"
+        android:textOn="2 ON" />
 
-			    <ToggleButton
-			        android:id="@+id/led4"
-			        android:layout_width="wrap_content"
-			        android:layout_height="wrap_content"
-			        android:layout_alignBaseline="@+id/led1"
-			        android:layout_toRightOf="@+id/led3"
-			        android:textOff="4 OFF"
-			        android:textOn="4 ON" />
+    <ToggleButton
+        android:id="@+id/led3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/led1"
+        android:layout_toRightOf="@+id/led2"
+        android:textOff="3 OFF"
+        android:textOn="3 ON" />
 
-			    <ToggleButton
-			        android:id="@+id/led5"
-			        android:layout_width="wrap_content"
-			        android:layout_height="wrap_content"
-			        android:layout_alignBaseline="@+id/led1"
-			        android:layout_toRightOf="@+id/led4"
-			        android:textOff="5 OFF"
-			        android:textOn="5 ON" />
+    <ToggleButton
+        android:id="@+id/led4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/led1"
+        android:layout_toRightOf="@+id/led3"
+        android:textOff="4 OFF"
+        android:textOn="4 ON" />
 
-			    <ToggleButton
-			        android:id="@+id/led6"
-			        android:layout_width="wrap_content"
-			        android:layout_height="wrap_content"
-			        android:layout_alignBaseline="@+id/led1"
-			        android:layout_toRightOf="@+id/led5"
-			        android:textOff="6 OFF"
-			        android:textOn="6 ON" />
+    <ToggleButton
+        android:id="@+id/led5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/led1"
+        android:layout_toRightOf="@+id/led4"
+        android:textOff="5 OFF"
+        android:textOn="5 ON" />
 
-			    <ToggleButton
-			        android:id="@+id/led7"
-			        android:layout_width="wrap_content"
-			        android:layout_height="wrap_content"
-			        android:layout_alignBaseline="@+id/led1"
-			        android:layout_centerHorizontal="true"
-			        android:layout_toRightOf="@+id/led6"
-			        android:textOff="7 OFF"
-			        android:textOn="7 ON" />
+    <ToggleButton
+        android:id="@+id/led6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/led1"
+        android:layout_toRightOf="@+id/led5"
+        android:textOff="6 OFF"
+        android:textOn="6 ON" />
 
-			    <ToggleButton
-			        android:id="@+id/led8"
-			        android:layout_width="wrap_content"
-			        android:layout_height="wrap_content"
-			        android:layout_alignBaseline="@+id/led1"
-			        android:layout_toRightOf="@+id/led7"
-			        android:textOff="8 OFF"
-			        android:textOn="8 ON" />
+    <ToggleButton
+        android:id="@+id/led7"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/led1"
+        android:layout_centerHorizontal="true"
+        android:layout_toRightOf="@+id/led6"
+        android:textOff="7 OFF"
+        android:textOn="7 ON" />
 
-			    <ToggleButton
-			        android:id="@+id/led9"
-			        android:layout_width="wrap_content"
-			        android:layout_height="wrap_content"
-			        android:layout_alignBaseline="@+id/led1"
-			        android:layout_toRightOf="@+id/led8"
-			        android:textOff="9 OFF"
-			        android:textOn="9 ON" />
+    <ToggleButton
+        android:id="@+id/led8"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/led1"
+        android:layout_toRightOf="@+id/led7"
+        android:textOff="8 OFF"
+        android:textOn="8 ON" />
 
-			    <ToggleButton
-			        android:id="@+id/led10"
-			        android:layout_width="wrap_content"
-			        android:layout_height="wrap_content"
-			        android:layout_alignBaseline="@+id/led1"
-			        android:layout_toRightOf="@+id/led9"
-			        android:textOff="10 OFF"
-			        android:textOn="10 ON" />
-    
+    <ToggleButton
+        android:id="@+id/led9"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/led1"
+        android:layout_toRightOf="@+id/led8"
+        android:textOff="9 OFF"
+        android:textOn="9 ON" />
+
+    <ToggleButton
+        android:id="@+id/led10"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/led1"
+        android:layout_toRightOf="@+id/led9"
+        android:textOff="10 OFF"
+        android:textOn="10 ON" />
+
 </RelativeLayout>

@@ -323,7 +323,8 @@ public class BluetoothChatService {
             mmSocket = tmp;
         }
 
-        public void run() {
+        @Override
+    	public void run() {
             setName("ConnectThread" +  "Secure");
             if(mAdapter.isDiscovering()){            // Always cancel discovery because it will slow down a connection
             	mAdapter.cancelDiscovery();
@@ -394,7 +395,8 @@ public class BluetoothChatService {
             	is_connected = false;
             }
         }
-        public void run() {
+        @Override
+    	public void run() {
         	while (reading){
         		synchronized (ConnectedThread.this) {
         		if(is_connected){

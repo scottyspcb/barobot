@@ -5,7 +5,6 @@
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.DEPENDENCIES"/>
 	<classpathentry exported="true" kind="lib" path="/com.barobot.hardware.serial/bin/com.barobot.hardware.serial.jar" sourcepath="/com.barobot.hardware.serial/src"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/com.barobot.common"/>
-	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/com.barobot.hardware.devices"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/com.barobot.parser"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>

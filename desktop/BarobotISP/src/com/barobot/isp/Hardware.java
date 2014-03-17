@@ -28,7 +28,7 @@ public class Hardware {
 					return true;
 				}});
 */
-		mainboardSource = Queue.registerSource( mb );
+		mainboardSource = q.registerSource( mb );
 		Queue.enableDevice( mainboardSource );
 	}
 
@@ -74,7 +74,8 @@ public class Hardware {
 	}
 	public void closeOnReady() {
 		q.add( new AsyncMessage( true ){		// na koncu zamknij
-			public Queue run(AsyncDevice dev) {
+			@Override
+			public Queue run(AsyncDevice dev, Queue queue) {
 				close();
 				return null;
 			}

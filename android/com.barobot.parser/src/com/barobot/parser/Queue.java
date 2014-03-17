@@ -45,9 +45,10 @@ public class Queue {
 		//	t = new Thread(this);
 		}
 	
-	public static int registerSource( AsyncDevice dev ) {
+	public int registerSource( AsyncDevice dev ) {
 	//	synchronized(devs){
-			devs.add(dev);
+		Queue.devs.add(dev);
+			dev.setMainQueue( this );
 			return devs.size() - 1;
 	//	}
 	}
@@ -74,27 +75,30 @@ public class Queue {
 	}
 
 	public void read(int sourceid, String in) {
-		synchronized (this.lock) {
-			devs.get(sourceid).read( in );
-		}
+		devs.get(sourceid).read( in );
 	}
 	public void add(final int sourceid, final String command, boolean blocking) {
-		synchronized (this.lock) {
-			if(blocking){
-				final String retcmd = "R" + command;
-				output.add(new AsyncMessage( command, blocking ){
-					public boolean isRet(String result) {
-						if( retcmd.equals(result)){
-						//	Initiator.logger.i("Queue", "isret: " + result+" for "  + command);
-							return true;
-						}
-						return false;
+		if(blocking){
+			final String retcmd = "R" + command;
+			AsyncMessage am = new AsyncMessage( command, blocking ){
+				@Override
+				public boolean isRet(String result, Queue q) {
+					if( retcmd.equals(result)){
+					//	Initiator.logger.i("Queue", "isret: " + result+" for "  + command);
+						return true;
 					}
-					public int getDeviceId() {
-						return sourceid;
-					}
-				});
-			}else{
+					return false;
+				}
+				@Override
+				public int getDeviceId() {
+					return sourceid;
+				}
+			};
+			synchronized (this.lock) {
+				output.add(am );
+			}
+		}else{
+			synchronized (this.lock) {
 				output.add(new AsyncMessage( command, blocking ));
 			}
 		}
@@ -105,7 +109,8 @@ public class Queue {
 			if(blocking){
 				final String retcmd = "R" + command;
 				output.add(new AsyncMessage( command, true ){
-					public boolean isRet(String result) {
+					@Override
+					public boolean isRet(String result, Queue q) {
 				//		Initiator.logger.i("Queue.add.isRet?:", result  + " of " + command );
 						if( retcmd.equals( result )){
 							return true;
@@ -122,13 +127,15 @@ public class Queue {
 	public void add(final int sourceid, String command, final String retcmd) {
 		synchronized (this.lock) {
 			output.add(new AsyncMessage( command, true ){
-				public boolean isRet(String result) {
+				@Override
+				public boolean isRet(String result, Queue q) {
 			//		Initiator.logger.i("Queue.isRet?:", + result );
 					if( retcmd.equals( result )){
 						return true;
 					}
 					return false;
 				}
+				@Override
 				public int getDeviceId() {
 					return sourceid;
 				}
@@ -194,7 +201,7 @@ public class Queue {
 				AsyncDevice dev = m.getDevice();
 				if(dev!=null){
 	//				Initiator.logger.i("Queue.run.start",  m.toString() );
-					Queue nextq = m.start( dev );
+					Queue nextq = m.start( dev, this );
 					moveToHistory( m );
 					if( nextq != null ){
 						this.addFirst(nextq);	// add on front
@@ -214,7 +221,7 @@ public class Queue {
 				}
 			}
 			if(output.isEmpty()){
-	//			Initiator.logger.i("Queue.run", "empty");
+				Initiator.logger.i("Queue.run", "empty");
 			}
 		}
 	//	endRun();
@@ -223,7 +230,10 @@ public class Queue {
 
 	public void addFirst(Queue q2) {
 		synchronized (this.lock) {
-			this.output.addAll( 0, q2.output);		// add on start	
+			this.output.addAll( 0, q2.output);		// add on start
+			if(isMainQueue ){
+				Initiator.logger.i("Queue.addFirst", "newsize: "+ this.output.size() );
+			}
 		}
 		exec();
 	}
@@ -256,7 +266,7 @@ public class Queue {
 			if( this.wait_for_device_id >= 0 || this.output.size() > 0 ){
 				this.add( new AsyncMessage( true ){
 					@Override
-					public Queue run(AsyncDevice dev) {
+					public Queue run(AsyncDevice dev, Queue queue) {
 			//			Initiator.logger.i("Queue","thread notify");
 						synchronized(thread){
 							thread.notify();
@@ -279,7 +289,8 @@ public class Queue {
 
 	public void addWait2(final int time) {
 		final AsyncMessage m2 = new AsyncMessage( true ) {
-			public Queue run(AsyncDevice dev) {
+			@Override
+			public Queue run(AsyncDevice dev, Queue queue) {
 				this.name				= "wait " + time;
 				return null;
 			}
@@ -292,7 +303,7 @@ public class Queue {
 				return true;
 			}
 			@Override
-			public boolean isRet(String result) {
+			public boolean isRet(String result, Queue mainQueue) {
 				return false;
 			}
 			@Override
@@ -305,9 +316,10 @@ public class Queue {
 	public void addWait(final int time) {
 		final AsyncMessage m2 = new AsyncMessage( true, true ) {
 			@Override
-			public Queue run(final AsyncDevice dev) {
+			public Queue run(final AsyncDevice dev, Queue queue) {
 				Initiator.logger.w("Queue.addWait.run", "time: " +time);
 				this.name				= "wait " + time;
+				final AsyncMessage msg	= this;
 				/*
 				final Handler handler	= new Handler();
 				handler.postDelayed(new Runnable() {
@@ -319,8 +331,8 @@ public class Queue {
 				*/
 				new Timer().schedule(new TimerTask() {          
 				    public void run() {
-				    	Initiator.logger.w("Queue.addWait.schedule", "time: " +time);
-				    	dev.unlockRet("wait " + time);
+				    	Initiator.logger.w("Queue.addWait.end", "time: " +time);
+				    	dev.unlockRet( msg, "wait " + time);
 				    }
 				}, time);// odczekaj tyle czasu, odblokuj kolejkê i jedz dalej
 				return null;

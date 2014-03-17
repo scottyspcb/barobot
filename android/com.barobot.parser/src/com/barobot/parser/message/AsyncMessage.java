@@ -41,12 +41,12 @@ public class AsyncMessage extends History_item{
 		this.unlocking_command = withCommand;
 		blocking= false;
 	}
-	public Queue start(AsyncDevice dev) {
+	public Queue start(AsyncDevice dev, Queue queue) {
 		Queue nextq = null;
 		if(this.command != ""){
 			dev.send( addSufix() ? ( command + "\n") : command );
 		}else{
-			nextq = this.run(dev);
+			nextq = this.run(dev, queue);
 		}
 		if(this.wait4Finish()){
 			this.send_timestamp	= System.currentTimeMillis();
@@ -58,6 +58,7 @@ public class AsyncMessage extends History_item{
 		int devid		= this.getDeviceId();
 		return Queue.getDevice(devid);
 	}
+	@Override
 	public String toString(){
 		String prefix = "";
 		if(this.direction){
@@ -82,7 +83,7 @@ public class AsyncMessage extends History_item{
 		}
 	}
 	// do nadpisania:
-	public Queue run(AsyncDevice dev) {
+	public Queue run(AsyncDevice dev, Queue queue) {
 		return null;
 	}
 	public int getDeviceId() {
@@ -91,7 +92,7 @@ public class AsyncMessage extends History_item{
 	public boolean wait4Finish() {
 		return this.blocking;
 	}
-	public boolean isRet(String result) {
+	public boolean isRet(String result, Queue mainQueue) {
 		return false;
 	}
 	public void onDisconnect() {
@@ -106,7 +107,7 @@ public class AsyncMessage extends History_item{
 	public boolean addSufix() {			// add new line after command
 		return true;
 	}
-	public boolean onInput(String input, AsyncDevice dev) {	// some input while waiting for ret
+	public boolean onInput(String input, AsyncDevice dev, Queue mainQueue) {	// some input while waiting for ret
 		return false;
 	}
 }
