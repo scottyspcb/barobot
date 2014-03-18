@@ -32,7 +32,16 @@ public class CreatorActivity extends BarobotActivity implements ArduinoListener{
 		setContentView(R.layout.activity_creator);
 		
 		ingredients = new ArrayList<Ingredient_t>();
-		
+	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		UpdateData();
+	}
+	
+	private void UpdateData(){
+
 		ids = new int[13];
 		ids[1] = R.id.bottle_button1;
 		ids[2] = R.id.bottle_button2;
@@ -46,7 +55,7 @@ public class CreatorActivity extends BarobotActivity implements ArduinoListener{
 		ids[10] = R.id.bottle_button10;
 		ids[11] = R.id.bottle_button11;
 		ids[12] = R.id.bottle_button12;
-		UpdateSlots();
+		UpdateSlots();	
 	}
 	
 	private void UpdateSlots() {

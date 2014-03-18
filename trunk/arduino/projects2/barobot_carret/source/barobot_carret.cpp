@@ -332,10 +332,10 @@ void update_servo( byte index ) {           // synchroniczne
 				uint16_t margin = servos[index].last_pos;    // odwrotnie do ostatniej komendy
 				if(  servos[index].delta_pos > 0 ){      // jechalem w gore
 					DEBUGLN( "- -100" );
-					margin -= 100;
+					margin -= 20;
 				}else if(  servos[index].delta_pos < 0){  // jechalem w dol
 					DEBUGLN( "- +100" );
-					margin += 100;
+					margin += 20;
 				}
 				servo_lib[index].writeMicroseconds(margin);				
 			}

@@ -25,8 +25,7 @@ public class BarobotData {
 	public static final String DATABASE_NAME = "BarobotOrman.db";
 	public static final int DATABASE_SCHEMA_VERSION = 1;
 	
-	public static void StartOrmanMapping(Context context)
-	{
+	public static void StartOrmanMapping(Context context){
 		// Setting up ORMAN
 		Database omdb = new SQLiteAndroid(context, DATABASE_NAME, DATABASE_SCHEMA_VERSION);
 		

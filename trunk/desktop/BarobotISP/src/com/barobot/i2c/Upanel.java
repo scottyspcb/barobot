@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.barobot.common.IspSettings;
+import com.barobot.common.constant.Methods;
 import com.barobot.isp.Main;
 import com.barobot.parser.Queue;
 import com.barobot.parser.devices.I2C_Device;
@@ -91,9 +92,9 @@ public class Upanel extends I2C_Device_Imp {
 		q.add( new AsyncMessage( command, true ){
 			@Override
 			public boolean isRet(String result, Queue q) {
-				if(result.startsWith("122,")){		//	122,1,188,1
+				if(result.startsWith("" + Methods.METHOD_I2C_SLAVEMSG + ",")){		//	122,1,188,1
 					int[] bytes = Decoder.decodeBytes(result);
-					if(bytes[2] == 188){
+					if(bytes[2] == Methods.METHOD_CHECK_NEXT ){
 						if(bytes[3] == 1 ){							// has next
 							hasNext = true;
 						}
@@ -114,7 +115,7 @@ public class Upanel extends I2C_Device_Imp {
 		q.add( new AsyncMessage( command, true ){
 			@Override
 			public boolean isRet(String result, Queue q) {
-				if(result.startsWith("12,")){		//	12,18,19,1
+				if(result.startsWith(""+ Methods.METHOD_DEVICE_FOUND +",")){		//	112,18,19,1
 					int[] bytes = Decoder.decodeBytes(result);	// HELLO, ADDRESS, TYPE, VERSION
 					have_reset_address = bytes[1];
 					return true;
@@ -132,7 +133,7 @@ public class Upanel extends I2C_Device_Imp {
 		q.add( new AsyncMessage( command, true ){
 			@Override
 			public boolean isRet(String result, Queue q) {
-				if(result.startsWith("12,")){		//	12,18,19,1
+				if(result.startsWith(""+ Methods.METHOD_DEVICE_FOUND +",")){		//	112,18,19,1
 					int[] bytes = Decoder.decodeBytes(result);	// HELLO, ADDRESS, TYPE, VERSION
 					myaddress = bytes[1];
 					return true;

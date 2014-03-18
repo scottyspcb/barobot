@@ -73,7 +73,7 @@ public class virtualComponents {
 	public static int margin_back = 0;
 
 	public static int[] upanels = {
-		16,12,23,19,18,17,15,20,21,22,13,14,
+		12,20,23,19,18,17,15,16,21,22,13,14,
 	};
 	public static int[] front_upanels = {
 		12,19,17,20,22,14,
@@ -682,18 +682,48 @@ public class virtualComponents {
 		//virtualComponents.scann_leds();
 	}
 	public static void scann_leds() {
+		Queue q			= Arduino.getInstance().getMainQ();
+		findOrder( q, 3 );
+		findOrder( q, 4 );
+
 		Queue q1			= new Queue();
 		Queue q2			= new Queue();		
 		for(int i =0; i<upanels.length;i++){
 			q1.add("L"+ upanels[i] +",ff,200", true);
 			q2.add("L"+ upanels[i] +",ff,0", true);
 		}
-		Queue q			= Arduino.getInstance().getMainQ();
+
 		q.add(q1);
 		q.addWait(1000);
 		q.add(q2);
 		ledsReady = true;	
 	}
+
+
+	private static void findOrder(Queue q, int index) {
+		int current_index		= 0;
+
+		String command = "N" + index;
+		q.add( new AsyncMessage( command, true ){
+			@Override
+			public boolean isRet(String result, Queue q) {
+				if(result.startsWith("" + Methods.METHOD_I2C_SLAVEMSG + ",")){		//	122,1,188,1
+					int[] bytes = Decoder.decodeBytes(result);
+					if(bytes[2] == Methods.METHOD_CHECK_NEXT){
+						if(bytes[3] == 1 ){							// has next
+							System.out.println("has next? 1");
+						}else{
+							System.out.println("has next? 0");
+						}
+						return true;
+					}
+				}
+				return false;
+			}
+		});
+	}
+
+	
 	public static void saveXPos(int spos) {
 		virtualComponents.set( "POSX", "" + spos);
 		driver_x.setSPos( spos );	

@@ -178,6 +178,7 @@ public class Arduino{
 				return null;
 			}
 		} );
+
 		mb.addGlobalRegex(  new GlobalMatch(){		// METHOD_TEST_SLAVE
 			@Override
 			public boolean run(AsyncDevice asyncDevice, String fromArduino, String wait4Command, AsyncMessage wait_for) {

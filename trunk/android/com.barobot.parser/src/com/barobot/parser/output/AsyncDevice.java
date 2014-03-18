@@ -5,6 +5,7 @@ import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.regex.PatternSyntaxException;
 
 import com.barobot.common.Initiator;
 import com.barobot.common.interfaces.CanSend;
@@ -15,6 +16,7 @@ import com.barobot.parser.utils.GlobalMatch;
 public abstract class AsyncDevice {
 	static StringBuilder buffer = new StringBuilder();
 	private static Map<String, GlobalMatch> globalRegex = new HashMap<String, GlobalMatch>();
+	private static Map<String, GlobalInputModifier> modifiers = new HashMap<String, GlobalInputModifier>();
 	public String name = "";
 	public boolean enabled = true;
 	public static String separator = "\n";
@@ -67,7 +69,12 @@ public abstract class AsyncDevice {
 	private boolean useInput(String command) {
 		boolean handled =false;
 		Initiator.logger.e("AsyncDevice.useInput", command );
-		
+		String command2 = this.modyfyInput( command );
+		if( !command2.equals(command)){
+			Initiator.logger.e("AsyncDevice.useInput changed to:", command2 );
+			command = command2;
+		}
+
 		boolean used = false;
 		synchronized (this) {
 		//	Initiator.logger.i("wait_for?: ", ( (this.wait_for == null)? "null" : "nonull") );
@@ -152,10 +159,30 @@ public abstract class AsyncDevice {
 			
 		}
 	}
+	public void addGlobalModifier( GlobalInputModifier globalModifier ){
+		modifiers.put(globalModifier.getMatchRet(), globalModifier);
+	}
 	public void addGlobalRegex( GlobalMatch globalMatch ){
-		Initiator.logger.i("AsyncDevice.addGlobalRegex", globalMatch.getMatchRet() );
 		globalRegex.put(globalMatch.getMatchRet(), globalMatch);
 	}
+
+	private String modyfyInput(String command) {
+	    for(Entry<String, GlobalInputModifier> e : modifiers.entrySet()) {
+	    	try {
+	        	GlobalInputModifier mod	= e.getValue();
+	        	command			= mod.replace(command);	
+	    	} catch (PatternSyntaxException ex) {
+	    		ex.printStackTrace();
+	    	} catch (IllegalArgumentException ex) {
+	    		ex.printStackTrace();
+	    	} catch (IndexOutOfBoundsException ex) {
+	    		ex.printStackTrace();
+	    	}
+	     //   String regex		= e.getKey();
+	 //       Initiator.logger.i("AsyncDevice.machGlobal.matches", regex + "=" + command );
+	    }
+		return command;
+	}	
 	public boolean send(String command) {
 		try {
 			Initiator.logger.e(">>>AsyncDevice.Send", command.trim());
@@ -256,17 +283,14 @@ public abstract class AsyncDevice {
 		enabled = true;
 	}
 	public void destroy() {
-		synchronized (buffer) {
-			buffer		= new StringBuilder();
-		}
-		globalRegex.clear();
 		sender			= null;
 		mainQueue		= null;
 		wait_for		= null;
 		waiting_queue	= null;
+		globalRegex.clear();
+		modifiers.clear();
 	}
 	public void setMainQueue(Queue queue) {
 		this.mainQueue = queue;
 	}
-
 }
