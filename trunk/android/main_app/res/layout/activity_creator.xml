@@ -119,6 +119,7 @@
                     android:layout_height="0sp"
                     android:layout_weight="2"
                     style="@style/ButtonGreen"
+                    android:onClick="onPourRecipeButtonClicked"
                     android:text="@string/create_pour_button" />
                 <Button
                     android:layout_width="fill_parent"
@@ -139,6 +140,7 @@
                     android:layout_height="0sp"
                     android:layout_weight="2"
                     style="@style/ButtonBlue"
+                    android:onClick="onAddRecipeButtonClicked"
                     android:text="@string/create_add_button" />
                 <Button
                     android:layout_width="fill_parent"

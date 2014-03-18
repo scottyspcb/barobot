@@ -51,8 +51,8 @@
     <color name="YellowButtonBorderColor">#254117</color>
     
     <!-- Menu Button -->
-    <color name="MenuButtonStartColor">@color/SecondaryB</color>
-    <color name="MenuButtonEndColor">@color/SecondaryBLight2</color>
+    <color name="MenuButtonStartColor">@color/SecondaryBLight2</color>
+    <color name="MenuButtonEndColor">@color/SecondaryB</color>
     <color name="MenuButtonDisabledStartColor">#565051</color>
     <color name="MenuButtonDisabledEndColor">#736F6E</color>
     <color name="MenuButtonBorderColor">@color/SecondaryB</color>

@@ -122,7 +122,7 @@ public class RecipeSetupActivity extends BarobotActivity
 		descriptionText.setText(currentRecipe.getDescription());
 		*/
 
-		List<Ingredient_t> ing = currentRecipe.getIngridients();
+		List<Ingredient_t> ing = currentRecipe.getIngredients();
 
 		ArrayAdapter<Ingredient_t> mAdapter = new ArrayAdapter<Ingredient_t>(this, android.R.layout.simple_list_item_1, ing);
 		ListView listView = (ListView) findViewById(R.id.recipe_ingridient_list);

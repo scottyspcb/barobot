@@ -4,11 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
+import android.util.Log;
 
+import com.barobot.common.constant.Constant;
 import com.barobot.gui.ArduinoListener;
 import com.barobot.gui.database.BarobotDB;
 import com.barobot.gui.database.BarobotData;
 import com.barobot.gui.database.BarobotDataStub;
+import com.barobot.hardware.Arduino;
+import com.barobot.hardware.virtualComponents;
+import com.barobot.parser.Queue;
+import com.barobot.parser.message.AsyncMessage;
 
 public class Engine {
 	private final int OUTSIDE_POSITION = 13;
@@ -118,17 +124,83 @@ public class Engine {
 	
 	public void addRecipe(Recipe_t recipe, List<Ingredient_t> ingredients)
 	{
+		recipe.insert();
 		for(Ingredient_t ing : ingredients)
 		{
 			ing.insert();
 			recipe.ingredients.add(ing);
 		}
-		recipe.insert();
 	}
 	
 	public void removeIngredient(Ingredient_t ingredient)
 	{
 		ingredient.delete();
+	}
+	
+	public int getIngredientPosition(Ingredient_t ing)
+	{
+		List<Slot> slots = getSlots();
+		for(Slot sl : slots)
+		{
+			if (sl.product != null)
+			{
+				if (sl.product.liquid.id == ing.liquid.id)
+				{
+					return sl.position;
+				}
+			}
+		}
+		
+		return -1; // Indicating that ingredient was not found
+	}
+	
+	public Boolean Pour(Recipe_t recipe, final ArduinoListener mListener)
+	{
+		final int VOLUME_DIVIDER = 20;
+		
+		List<Integer> bottleSequence = new ArrayList<Integer>();
+		List<Ingredient_t> ingredients = recipe.getIngredients();
+		List<Slot> slots = getSlots();
+		for(Ingredient_t ing : ingredients)
+		{
+			int position = getIngredientPosition(ing);
+			if (position != -1)
+			{
+				int num = (int) ing.quantity/VOLUME_DIVIDER;
+				for (int iter = 1; iter <= num ; iter++){
+					bottleSequence.add(position);
+				}
+			}
+			else
+			{
+				return false;
+			}
+		}
+		Sequence = "";
+		for (Integer i : bottleSequence){
+			Sequence += i + " ";
+		}
+		
+		Log.i("Prepare Sequence:", Sequence );
+		for (Integer i : bottleSequence){
+			Log.i("Prepare", ""+i );
+			virtualComponents.moveToBottle( i-1, false );
+			virtualComponents.nalej(i);
+		}
+		virtualComponents.moveToStart();
+
+		
+		/*Queue q	= Arduino.getInstance().getMainQ();
+		q.add( new AsyncMessage( true ) {
+			@Override
+			public Queue run() {
+				this.name		= "onQueueFinished";
+				mListener.onQueueFinished();
+				return null;
+			}
+		} );
+		ar.send(q);*/
+		return true;
 	}
 	
 	//---------------------------

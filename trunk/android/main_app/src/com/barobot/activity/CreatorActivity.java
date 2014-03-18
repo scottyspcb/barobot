@@ -4,28 +4,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.barobot.R;
-import com.barobot.R.layout;
-import com.barobot.R.menu;
-import com.barobot.gui.RecipeFragment;
+import com.barobot.gui.ArduinoListener;
 import com.barobot.gui.dataobjects.Engine;
 import com.barobot.gui.dataobjects.Ingredient_t;
 import com.barobot.gui.dataobjects.Liquid_t;
 import com.barobot.gui.dataobjects.Recipe_t;
 import com.barobot.gui.dataobjects.Slot;
-import com.barobot.gui.dataobjects.Type;
-
 import android.os.Bundle;
-import android.app.Activity;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public class CreatorActivity extends BarobotActivity {
+public class CreatorActivity extends BarobotActivity implements ArduinoListener{
 
 	private int[] ids;
 	private List<Ingredient_t> ingredients;
@@ -119,6 +115,44 @@ public class CreatorActivity extends BarobotActivity {
 		ShowIngredients();
 	}
 	
+	public void onAddRecipeButtonClicked (View view)
+	{
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+	    LayoutInflater inflater = getLayoutInflater();
+	    final View dialogView = inflater.inflate(R.layout.dialog_add_recipe, null);
+	    
+	    builder.setView(dialogView)
+		.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+			}
+		})
+		.setPositiveButton("Add", new DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				
+				TextView nameView = (TextView) dialogView.findViewById(R.id.recipe_name);
+				String name = nameView.getText().toString();
+				
+				//TextView descriptionView = (TextView) dialogView.findViewById(R.id.recipe_description);
+				//String description = descriptionView.getText().toString();
+				
+				CreateDrink(name);	
+			}
+		});
+	    AlertDialog ad = builder.create();
+	    ad.show();
+	}
+	
+	public void onPourRecipeButtonClicked (View view)
+	{
+		Recipe_t tempRecipe = CreateDrink("Unnamed Drink");
+		Engine.GetInstance(this).Pour(tempRecipe, this);
+	}
+	
 	public void addIngredient(Ingredient_t ing)
 	{
 		Ingredient_t existing = findIngredient(ing.liquid);
@@ -144,11 +178,13 @@ public class CreatorActivity extends BarobotActivity {
 		return null;
 	}
 	
-	public void CreateDrink(String name)
+	public Recipe_t CreateDrink(String name)
 	{
 		Recipe_t recipe = new Recipe_t();
 		recipe.name = name;
 		Engine.GetInstance(this).addRecipe(recipe, ingredients);
+		
+		return recipe;
 	}
 
 	@Override
@@ -170,6 +206,25 @@ public class CreatorActivity extends BarobotActivity {
 		ListView listView = (ListView) findViewById(R.id.ingredient_list);
 		listView.setAdapter(mAdapter);
 		
+	}
+
+	@Override
+	public void onQueueFinished() {
+		// TODO Auto-generated method stub
+		new AlertDialog.Builder(this)
+	    .setTitle("Success!!!")
+	    .setMessage("Finished pouring")
+	    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+	        public void onClick(DialogInterface dialog, int which) { 
+	            // continue with delete
+	        }
+	     })
+	    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+	        public void onClick(DialogInterface dialog, int which) { 
+	            // do nothing
+	        }
+	     })
+	     .show();
 	}
 
 }
