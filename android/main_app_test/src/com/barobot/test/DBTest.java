@@ -252,7 +252,6 @@ public class DBTest extends AndroidTestCase {
 		
 		prod.insert();
 		
-		BarobotData.UpdateSlot(3, prod);
 		
 		Slot slot1 = BarobotData.GetSlot(1);
 		assertEquals(1, slot1.position);

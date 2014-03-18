@@ -55,6 +55,30 @@ public class BarobotDataStub {
 		rec.name = "White Rav";
 		rec.insert();
 		
+		rec = new Recipe_t();
+		rec.name = "Lorem";
+		rec.insert();
+		
+		rec = new Recipe_t();
+		rec.name = "Ipsum";
+		rec.insert();
+		
+		rec = new Recipe_t();
+		rec.name = "Dolor";
+		rec.insert();
+		
+		rec = new Recipe_t();
+		rec.name = "Mortus";
+		rec.insert();
+		
+		rec = new Recipe_t();
+		rec.name = "Ignis";
+		rec.insert();
+		
+		rec = new Recipe_t();
+		rec.name = "Lumen";
+		rec.insert();
+		
 		Slot slot = BarobotData.GetSlot(1);
 		slot.product = prod;
 		slot.status = "OK";
