@@ -68,6 +68,7 @@ public class Queue {
 		Initiator.logger.i("Queue","clearAll");
 		synchronized (this.lock) {
 			wait_for_device_id = -1;
+			output.clear();
 			for (AsyncDevice dev : devs){
 				dev.clear();
 			}
@@ -220,9 +221,9 @@ public class Queue {
 	                }
 				}
 			}
-			if(output.isEmpty()){
-				Initiator.logger.i("Queue.run", "empty");
-			}
+		//	if(output.isEmpty()){
+		//		Initiator.logger.i("Queue.run", "empty");
+		//	}
 		}
 	//	endRun();
 	}
@@ -252,7 +253,7 @@ public class Queue {
 				this.wait_for_device_id = -1;
 			}
 		}
-		Initiator.logger.i("Queue", "unlock()");
+	//	Initiator.logger.i("Queue", "unlock()");
 		exec();
 	}
 

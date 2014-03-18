@@ -42,12 +42,22 @@ public abstract class AsyncDevice {
 					}else{
 					//	History_item hi = new History_item( command, History_item.INPUT );	
 						final String theCommand = command;
-						new Thread( new Runnable(){
-							@Override
-							public void run() {
-								useInput( theCommand );
-							}
-						}).start();
+					//	new Thread( new Runnable(){		// geto out of the serial port thread
+					//		@Override
+					//		public void run() {
+								try {
+									useInput( theCommand );
+								} catch (java.lang.NullPointerException e) {
+									e.printStackTrace();
+								} catch (java.lang.NumberFormatException e) {
+									e.printStackTrace();
+								} catch (java.lang.ArrayIndexOutOfBoundsException e) {
+									e.printStackTrace();
+								} catch (Exception e) {
+									e.printStackTrace();
+								}
+					//		}
+					//	}).start();
 					}
 					end		= buffer.indexOf(separator);
 				}
@@ -63,7 +73,7 @@ public abstract class AsyncDevice {
 		//	Initiator.logger.i("wait_for?: ", ( (this.wait_for == null)? "null" : "nonull") );
 			if( this.wait_for != null ){
 				used = true;
-				Initiator.logger.i("useInput.useInput.isRet: ", command );
+		//		Initiator.logger.i("AsyncDevice.useInput.isRet: ", command );
 				handled = this.wait_for.isRet( command, mainQueue );
 				if(handled){
 			//		Initiator.logger.i("+unlock: ", command );
@@ -139,6 +149,7 @@ public abstract class AsyncDevice {
 	public void clear() {
 		synchronized (buffer) {
 			buffer =  new StringBuilder();
+			
 		}
 	}
 	public void addGlobalRegex( GlobalMatch globalMatch ){
@@ -236,7 +247,6 @@ public abstract class AsyncDevice {
 			}
 		}
 	}
-	
 	abstract public boolean parse(String in);
 
 	public void disable() {

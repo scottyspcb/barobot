@@ -10,11 +10,11 @@
 #include <FlexiTimer2.h>
 #include <avr/io.h>
 #include <avr/wdt.h>
-byte in_buffer[7];
-
+#define INBFLENGTH 	5
+byte in_buffer[INBFLENGTH];
 
 volatile uint8_t input_buffer[MAINBOARD_BUFFER_LENGTH][MAXCOMMAND] = {{0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0}};
-volatile uint8_t buff_length[MAINBOARD_BUFFER_LENGTH] = {0,0,0};
+volatile uint8_t buff_length[MAINBOARD_BUFFER_LENGTH] = {0,0,0,0};
 
 void (*spi_init)();
 uint8_t (*spi_send)(uint8_t);
@@ -102,6 +102,7 @@ void timer(){
 }
 
 uint16_t divisor = 500;
+byteint bytepos;
 long int next_time = 0;
 
 void loop(){
@@ -133,13 +134,13 @@ void loop(){
 				stepperX.disableOutputs();
 				byte ttt[4] = {METHOD_I2C_SLAVEMSG, my_address, METHOD_DRIVER_DISABLE, DRIVER_X };
 				send2android(ttt,4);
+				Serial.println();
 				out_buffer[0]  = METHOD_DRIVER_DISABLE;
 				out_buffer[1]  = DRIVER_Z;
 				writeRegisters(I2C_ADR_CARRET, 2, true );
 			}
 		}
 	}
-
 	if (Console0Complete) {
 		parseInput( serial0Buffer );				      // parsuj wejscie
 		Console0Complete = false;
@@ -173,9 +174,7 @@ void proceed( byte length,volatile uint8_t buffer[MAXCOMMAND] ){ // read I2C
 				stop_moving = true;
 				stepperX.stopNow();
 			}
-			byteint bytepos;
 			bytepos.i= stepperX.currentPosition();
-			
 			if( dis > 0 ){
 				buffer[3] = DRIVER_DIR_FORWARD;
 			}else if( dis < 0 ){
@@ -187,12 +186,6 @@ void proceed( byte length,volatile uint8_t buffer[MAXCOMMAND] ){ // read I2C
 			buffer[5]		= bytepos.bytes[2];				// bits 8-15
 			buffer[6]		= bytepos.bytes[1];				// bits 16-23
 			buffer[7]		= bytepos.bytes[0];				// bits 24-32
-			/*
-			if(stop_moving){
-				send2android("Rx");
-				send2android( String(pos) );
-				Serial.println();
-			}*/
 		}
 		send2android(buffer,length);
 		Serial.println();	
@@ -292,8 +285,8 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 
 	}else if( command == 'x') {
 		long int pos = stepperX.currentPosition();
-		send2android("Rx"); 
-		send2android(String(pos)); 
+		Serial.print("Rx"); 
+		Serial.print(String(pos)); 
 		Serial.println();
 		defaultResult = false;
 		//METHOD_GET_X_POS
@@ -485,7 +478,7 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 	}else if( command == METHOD_GET_TEMP ){  
 		uint8_t tt = GetTemp();
 		defaultResult = false;
-		send2android("RT");
+		Serial.print("RT");
 		Serial.println(String(tt));
 	}else if( input.equals( "WR") ){      // wait for return - tylko zwróc zwrotke
 	}else{
@@ -504,7 +497,7 @@ void i2c_device_found( byte addr,byte type,byte ver ){
 }
 
 void send_error( String input){
-	send2android("E" );	
+	Serial.print("E" );	
 	Serial.println( input );
 }
 
@@ -532,18 +525,15 @@ void stepperReady( long int pos ){		// in interrupt
 	out_buffer[2]  = DRIVER_DIR_STOP;
 	writeRegisters(I2C_ADR_CARRET, 3, false );        // send to carret
 
-	byteint value;
-	value.i= pos;
-	
 	byte ttt[8] = {
 		METHOD_I2C_SLAVEMSG,
 		my_address, 
 		RETURN_DRIVER_READY, 
 		DRIVER_X, 
-		value.bytes[3],				// bits 0-7
-		value.bytes[2],				// bits 8-15
-		value.bytes[1],				// bits 16-23
-		value.bytes[0]				// bits 24-32
+		bytepos.bytes[3],				// bits 0-7
+		bytepos.bytes[2],				// bits 8-15
+		bytepos.bytes[1],				// bits 16-23
+		bytepos.bytes[0]				// bits 24-32
 	};
 	send2android(ttt,8);
 	Serial.println();
@@ -910,8 +900,10 @@ byte readRegisters(byte deviceAddress, byte length){
 		byte d = Wire.read();
 		//    DEBUG("READ:");
 		//    printHex(d);
-		in_buffer[count] = d;//Wire.read();
-		count++;
+		if( count < INBFLENGTH ){
+			in_buffer[count] = d;//Wire.read();
+			count++;
+		}
 	}
 	if( count == length){
 		last_i2c_read_error = false;
@@ -962,15 +954,17 @@ byte writeRegisters(int deviceAddress, byte length, boolean wait) {
 	}
 	return 0;
 }
+/*
 void send2androidEnd(){      // wyslij string do androida
 	Serial.println();
 }
 void sendln2android( String output2 ){      // wyslij string do androida
 	Serial.println( output2 );
-}
+}*/
+/*
 void send2android( uint8_t bits8 ){
 	Serial.write(bits8);
-}
+}*/
 void send2android( volatile uint8_t buffer[], int length ){
 	//Serial.write(buf, len);
 	Serial.print(buffer[0]);
@@ -978,9 +972,6 @@ void send2android( volatile uint8_t buffer[], int length ){
 		Serial.print(",");	
 		Serial.print(buffer[i]); 
 	}
-}
-void send2android( String output2 ){      // wyslij string do androida
-	Serial.print( output2 );
 }
 void serialEvent(){				             // Runs after every LOOP (means don't run if loop hangs)
 	if(!prog_mode){

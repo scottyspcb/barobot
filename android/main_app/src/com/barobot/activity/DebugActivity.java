@@ -9,6 +9,7 @@ import com.barobot.R.id;
 import com.barobot.R.layout;
 import com.barobot.R.menu;
 import com.barobot.R.string;
+import com.barobot.common.Initiator;
 import com.barobot.debug.DebugTabBottles;
 import com.barobot.debug.DebugTabCommands;
 import com.barobot.debug.DebugTabDevices;
@@ -64,7 +65,7 @@ public class DebugActivity extends FragmentActivity implements	ActionBar.TabList
 	public Vector<Fragment> objVector = new Vector<Fragment>(10);
 
 	public DebugActivity(){
-		AppInvoker.log("DebugActivity", "init");
+		Initiator.logger.i("DebugActivity", "init");
 		
 	}
 	
@@ -144,10 +145,10 @@ public class DebugActivity extends FragmentActivity implements	ActionBar.TabList
 		// Inflate the menu; this adds items to the action bar if it is present.
 		menu.clear();
 		getMenuInflater().inflate(R.menu.device_list, menu);
-		AppInvoker.log("Debug", "onPrepareOptionsMenu");
+		Initiator.logger.i("Debug", "onPrepareOptionsMenu");
 		int position = mViewPager.getCurrentItem();
 		Fragment fff = null;
-		AppInvoker.log("Debug", "onPrepareOptionsMenu " + position);
+		Initiator.logger.i("Debug", "onPrepareOptionsMenu " + position);
 		try {
 			fff = objVector.get(position);
 			fff.onCreateOptionsMenu(menu, getMenuInflater());
@@ -195,7 +196,7 @@ public class DebugActivity extends FragmentActivity implements	ActionBar.TabList
 			// below) with the page number as its lone argument.
 			Bundle args = new Bundle();
 			args.putInt(DebugActivity.ARG_SECTION_NUMBER, position + 1);
-			AppInvoker.log("DebugActivity", "pos " + position);
+			Initiator.logger.i("DebugActivity", "pos " + position);
 			Fragment fff = null;
 			try {
 				fff = objVector.get(position);

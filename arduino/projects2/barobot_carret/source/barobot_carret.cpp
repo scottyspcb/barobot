@@ -29,7 +29,6 @@ byte moving_x = DRIVER_DIR_STOP;
 //byte moving_y = DRIVER_DIR_STOP;
 //byte moving_z = DRIVER_DIR_STOP;
 
-
 #define MIN_DELTA  20
 
 //unsigned int typical_zero = 512;
@@ -332,13 +331,13 @@ void update_servo( byte index ) {           // synchroniczne
 			if( index == INNER_SERVOY ){
 				uint16_t margin = servos[index].last_pos;    // odwrotnie do ostatniej komendy
 				if(  servos[index].delta_pos > 0 ){      // jechalem w gore
-					DEBUGLN( "- -10" );
-					margin -= 10;
+					DEBUGLN( "- -100" );
+					margin -= 100;
 				}else if(  servos[index].delta_pos < 0){  // jechalem w dol
-					DEBUGLN( "- +10" );
-					margin += 10;
+					DEBUGLN( "- +100" );
+					margin += 100;
 				}
-				servo_lib[index].writeMicroseconds(margin);
+				servo_lib[index].writeMicroseconds(margin);				
 			}
 			send_servo(false, localToGlobal(index), servos[index].target_pos );
 		}

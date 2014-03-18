@@ -38,26 +38,29 @@ public class virtualComponents {
 	public static boolean pac_enabled = true;
 
 	//config
-	private static final int SERVOZ_PAC_TIME_UP = 600;
-	private static final int SERVOZ_PAC_POS = 1800;
-	private static final int SERVOZ_PAC_TIME_WAIT = 400;
+//	private static final int SERVOZ_PAC_TIME_UP = 600;
+	private static final int SERVOZ_PAC_POS = 1850;
+	private static final int SERVOZ_PAC_TIME_WAIT = 800;
+	public static final int SERVOZ_POUR_TIME = 3500;
 
-	public static final int SERVOZ_POUR_TIME = 4000;
-	
-	public static final int SERVOZ_UP_TIME = 400;
-	public static final int SERVOZ_DOWN_TIME = 300;
+	//public static final int SERVOZ_UP_TIME = 400;
+	//public static final int SERVOZ_DOWN_TIME = 300;
 
 	public static final int SERVOZ_UP_POS = 2100;
-	public static final int SERVOZ_DOWN_POS = 1100;
+	public static final int SERVOZ_UP_LIGHT_POS = 2050;
+	public static final int SERVOZ_DOWN_POS = 1250;
 	public static final int SERVOZ_TEST_POS = 1300;
 
 	public static final int SERVOY_FRONT_POS = 800;
 	public static final int SERVOY_BACK_POS = 2200;
 	public static final int SERVOY_TEST_POS = 1000;
-	public static final int SERVOY_BACK_NEUTRAL = 1800;
+	public static final int SERVOY_BACK_NEUTRAL = 1200;
+
+	public static final int BOTTLE_IS_BACK = 2;
+	public static final int BOTTLE_IS_FRONT = 4;
 
 	public static final int DRIVER_X_SPEED = 2500;
-	public static final int DRIVER_Y_SPEED = 40;
+	public static final int DRIVER_Y_SPEED = 30;
 	public static final int DRIVER_Z_SPEED = 250;
 
 	public static final int ANALOG_WAGA = 2;
@@ -71,6 +74,9 @@ public class virtualComponents {
 
 	public static int[] upanels = {
 		16,12,23,19,18,17,15,20,21,22,13,14,
+	};
+	public static int[] front_upanels = {
+		12,19,17,20,22,14,
 	};
 
 	// pozycje butelek, sa aktualizowane w trakcie
@@ -91,18 +97,18 @@ public class virtualComponents {
 
 	// pozycje butelek, sa aktualizowane w trakcie
 	public static int[] margin_x = {
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-		0, 
-		0,
-		0,
-		0,
-		0
+		-80,				// 0, num 1,back
+		0,					// 1, num 2,front		
+		-10,				// 2, num 3,back
+		0,					// 3, num 4,front		
+		-30,				// 4, num 5,back		
+		0,					// 5, num 6,front		
+		+20,				// 6, num 7,back
+		-20,				// 7, num 8,front
+		-40,				// 8, num 9,back
+		0,					// 9, num 10,front
+		+40,				// 10, num 11,back		
+		-100,				// 11, num 12,front
 	};
 
 	private static int[] b_pos_x = {207,207, 394,394,581,581,768,768, 955,955,1142,1142};
@@ -119,6 +125,21 @@ public class virtualComponents {
 		SERVOY_FRONT_POS,					// 9, num 10
 		SERVOY_BACK_POS,					// 10, num 11
 		SERVOY_FRONT_POS,					// 11, num 12
+	};
+	
+	public static int[] bottle_row = {
+		BOTTLE_IS_BACK,					// 0, num 1
+		BOTTLE_IS_FRONT,				// 1, num 2
+		BOTTLE_IS_BACK,					// 2, num 3
+		BOTTLE_IS_FRONT,				// 3, num 4
+		BOTTLE_IS_BACK,					// 4, num 5
+		BOTTLE_IS_FRONT,				// 5, num 6
+		BOTTLE_IS_BACK,					// 6, num 7
+		BOTTLE_IS_FRONT,				// 7, num 8
+		BOTTLE_IS_BACK,					// 8, num 9
+		BOTTLE_IS_FRONT,				// 9, num 10
+		BOTTLE_IS_BACK,					// 10, num 11
+		BOTTLE_IS_FRONT,				// 11, num 12
 	};
 
 	public static int[] magnet_order = {0,2,1,4,3,6,5,8,7,10,9,11 };	// numer butelki, odjąc 1 aby numer ID
@@ -155,7 +176,6 @@ public class virtualComponents {
 
 	public static MotorDriver driver_x;
 	public static boolean scann_bottles = false;
-	public static int scann_num = 0;
 	public static boolean set_bottle_on = false;
 	public static boolean ledsReady = false;
 	private static Carret carret;
@@ -195,7 +215,7 @@ public class virtualComponents {
 	}
 	public static void set( String name, String value ){
 	//	if(name == "POSX"){
-			AppInvoker.log("virtualComponents.set","save: "+name + ": "+ value );	
+	//		Initiator.logger.i("virtualComponents.set","save: "+name + ": "+ value );	
 	//	}
 		hashmap.put(name, value );
 		virtualComponents.update( name, value );
@@ -237,7 +257,7 @@ public class virtualComponents {
 	}
 	public static void pacpac() {
 		Queue q = Arduino.getInstance().getMainQ();
-		AppInvoker.log(Constant.TAG,"pac");
+		Initiator.logger.i(Constant.TAG,"pac");
 /*
 		AsyncMessage moveX = new AsyncMessage(true){
 			@Override
@@ -271,7 +291,7 @@ public class virtualComponents {
 
 			@Override
 			public void afterTimeout() {
-				AppInvoker.log("pacpac","afterTimeout");
+				Initiator.logger.i("pacpac","afterTimeout");
 			}
 		};*/
 	//	q.add( moveX );
@@ -279,7 +299,7 @@ public class virtualComponents {
 //		q.add("EY", true);
 //		q.add("EZ", true);
 		q.add("Z" + virtualComponents.SERVOZ_PAC_POS+","+virtualComponents.DRIVER_Z_SPEED, true);
-		AppInvoker.log("pacpac","Z" + virtualComponents.SERVOZ_PAC_POS+","+virtualComponents.DRIVER_Z_SPEED);
+		Initiator.logger.i("pacpac","Z" + virtualComponents.SERVOZ_PAC_POS+","+virtualComponents.DRIVER_Z_SPEED);
 		virtualComponents.moveZDown(q, true );
 		q.add("DX", true);
 		q.addWait(200);
@@ -321,6 +341,7 @@ public class virtualComponents {
 					up.setLed( q2, "ff", 0 );
 					up.setLed( q2, "11", 200 );
 				}
+				Initiator.logger.i("moveToBottle","(cx == tx && cy == ty)("+cx+" == "+tx+" && "+cy+" == "+ty+")");
 				if(cx == tx && cy == ty ){		// nie musze jechac
 					q2.addWait( virtualComponents.SERVOY_REPEAT_TIME );
 				}else if(cx != tx && cy == ty ){		// jade tylem lub przodem
@@ -332,7 +353,7 @@ public class virtualComponents {
 					}
 					virtualComponents.moveX( q2, tx);
 					virtualComponents.moveY( q2, ty, disableOnReady);		
-				}else{
+				}else{	// jade przodem
 					virtualComponents.moveZDown(q2, disableOnReady );
 					virtualComponents.moveY( q2, virtualComponents.SERVOY_FRONT_POS, true);
 					virtualComponents.moveX( q2, tx);
@@ -345,14 +366,15 @@ public class virtualComponents {
 				return q2;
 			}
 		} );
+		//q.add("DY", true);
 	    q.add(Constant.GETXPOS, true);
 	    q.add(Constant.GETYPOS, true);
 	    q.add(Constant.GETZPOS, true);
 	    ar.getMainQ().add(q);
 	}
 
-	private static Upanel getUpanelBottle(int num) {
-		if( num > 0 && num < upanels.length ){
+	static Upanel getUpanelBottle(int num) {
+		if( num >= 0 && num < upanels.length ){
 			int addr = upanels[ num ];
 			return new Upanel( 0 , addr);
 		}
@@ -363,15 +385,20 @@ public class virtualComponents {
 		int time = getPourTime(num);
 		final Upanel up	= getUpanelBottle(num);
 		q.add("EX", true);
-//		q.add("EY", true);	
+//		q.add("EY", true);
 //		q.add("EZ", true);
 		virtualComponents.moveZUp(q, false);
 		if( up == null ){
-			q.addWait( time );		
+			q.addWait( time/4 );
+			virtualComponents.moveZLight(q, false);
+			q.add("DY", true);
+			q.addWait( 3* time/4 );
 		}else{
 			up.setLed( q, "ff", 0 );
 			up.setLed( q, "04", 20 );
 			q.addWait( time/4 );
+			virtualComponents.moveZLight(q, false);
+			q.add("DY", true);
 			up.setLed( q, "04", 50 );
 			q.addWait( time/4 );
 			up.setLed( q, "04", 100 );
@@ -381,6 +408,7 @@ public class virtualComponents {
 			up.setLed( q, "20", 255 );
 			up.setLed( q, "80", 100 );
 		}
+		q.add("DY", true);
 		virtualComponents.moveZDown(q,false);
 		q.add( new AsyncMessage( true ) {
 			@Override
@@ -389,14 +417,14 @@ public class virtualComponents {
 				if(virtualComponents.pac_enabled){
 					Queue	q2	= new Queue();	
 					q2.addWait( virtualComponents.SERVOZ_PAC_TIME_WAIT );
-					q2.add("Z" + virtualComponents.SERVOZ_PAC_POS+",250", true);	
+					q2.add("Z" + virtualComponents.SERVOZ_PAC_POS+",255", true);	
 					virtualComponents.moveZDown(q2, true );
 					return q2;
 				}
 				return null;
 			}
 		} );
-	//	q.add("DX", true);
+		q.add("DX", true);
 	    q.add("DY", true);
 	    q.addWait(100);
 	    q.add("DZ", true);
@@ -450,7 +478,7 @@ public class virtualComponents {
 					if( can ){
 						Initiator.logger.w("MotorDriver.movoTo.AsyncMessage.onInput", "MOVE" );
 						Queue	q2	= new Queue(); 
-						q2.add("X" + newx+ ","+virtualComponents.DRIVER_X_SPEED, true);
+						q2.add("X" + newx+ ","+virtualComponents.driver_x.defaultSpeed, true);
 						mainQueue.addFirst(q2);
 						dev.unlockRet(this, "A0 OK");
 						return true;
@@ -478,19 +506,29 @@ public class virtualComponents {
 		virtualComponents.set("POS_START_X", posx );
 		virtualComponents.set("POS_START_Y", posy );
 	}
-	public static void moveZDown(Queue q, boolean b) {
+	public static void moveZDown(Queue q, boolean disableOnReady) {
 		int poszdown	=  virtualComponents.getInt("ENDSTOP_Z_MIN", SERVOZ_DOWN_POS );
 		moveZ(q, poszdown );
-	    q.add("DZ", true);
+		q.add("DZ", true);
 	}
 	private static void moveZ(Queue q, int pos) {
 		q.add("Z" + pos +","+virtualComponents.DRIVER_Z_SPEED, true);
 		q.addWait(300);
 	}
 
+	private static void moveZLight(Queue q, boolean disableOnReady) {
+//		q.add("EZ", true);
+		int poszup	=  virtualComponents.SERVOZ_UP_LIGHT_POS;
+		q.add("Z" + poszup+","+virtualComponents.DRIVER_Z_SPEED, true);
+	//	q.addWait( virtualComponents.SERVOZ_UP_TIME );	// wiec trzeba poczekać
+		if(disableOnReady){
+			q.addWait(300);
+			q.add("DZ", true);
+		}
+	}
 	public static void moveZUp( Queue q, boolean disableOnReady ) {
 //		q.add("EZ", true);
-		int poszup	=  virtualComponents.getInt("ENDSTOP_Z_MAX", SERVOZ_UP_POS );
+		int poszup	=  virtualComponents.SERVOZ_UP_POS;
 		q.add("Z" + poszup+","+virtualComponents.DRIVER_Z_SPEED, true);
 	//	q.addWait( virtualComponents.SERVOZ_UP_TIME );	// wiec trzeba poczekać
 		if(disableOnReady){
@@ -529,9 +567,17 @@ public class virtualComponents {
 
 		carret.setLed( q, "ff", 0 );
 		carret.setLed( q, "22", 250 );
-		
+
 	    virtualComponents.setLeds( "88", 100 );
 	    virtualComponents.setLeds( "22", 200 );
+
+		Queue q1			= new Queue();
+		for(int i =front_upanels.length-1; i>=0;i--){
+			q1.add("L"+ upanels[i] +",22,200", true);
+			q1.addWait(500);
+			q1.add("L"+ upanels[i] +",22,0", true);
+		}
+		q.add(q1);
 
 		q.addWait(500);
 		carret.setLed( q, "22", 20 );
@@ -559,38 +605,55 @@ public class virtualComponents {
 
 	public static void kalibrcja() {
 		Queue q			= Arduino.getInstance().getMainQ();
+		q.add( "\n", false );
+		q.add( "\n", false );
+		virtualComponents.setLeds( "ff", 0 );
 		int posx		= driver_x.getSPos();
-		int posy		= virtualComponents.getInt("POSY", 0 );
+		for(int i=0;i<12;i++){
+			virtualComponents.set("BOTTLE_X_" + i, "0" );
+			virtualComponents.set("BOTTLE_Y_" + i, "0" );
+		}
+		virtualComponents.set("POS_START_X", "0" );
+		virtualComponents.set("POS_START_Y", "0" );
 
-		AppInvoker.log("+find_bottles", "start");
+		Initiator.logger.i("+find_bottles", "start");
 		q.add("EX", true );
 		virtualComponents.moveZDown( q ,true );
+		q.addWait(100);
 		virtualComponents.moveZ( q, virtualComponents.SERVOZ_TEST_POS );
+		q.addWait(100);
 		virtualComponents.moveZDown( q ,true );
+		q.addWait(200);
 		virtualComponents.moveY( q, virtualComponents.SERVOY_TEST_POS, true);
+		q.addWait(200);
 		virtualComponents.moveY( q, virtualComponents.SERVOY_FRONT_POS, true);
+		q.addWait(200);
 		int lengthx19	=  virtualComponents.getInt("LENGTHX", 60000 );	
+		
+		Initiator.logger.i("+find_bottles", "up");
 		virtualComponents.moveX( q, posx + 2000);
+		q.addWait(100);
 		virtualComponents.moveX( q, -70000 );	// read margin
+		q.addWait(100);
 		// scann Triggers
 		q.add( new AsyncMessage( true ) {			// go up
 			@Override
 			public Queue run(AsyncDevice dev, Queue queue) {
 				this.name		= "scanning up";
-				AppInvoker.log("+find_bottles", "up");
+				virtualComponents.driver_x.defaultSpeed = 1000;
+				Initiator.logger.i("+find_bottles", "up");
 				virtualComponents.scann_bottles = true;
-				virtualComponents.scann_num = 0;
 				return null;
 			}
 		} );
-		virtualComponents.moveX( q, 70000 );		// go down
-
+		virtualComponents.moveX( q, 30000 );		// go down
+		
 		q.add( new AsyncMessage( true ) {
 			@Override
 			public Queue run(AsyncDevice dev, Queue queue) {
 				this.name		= "scanning back";
-				AppInvoker.log("+find_bottles", "down na:" + virtualComponents.scann_num);
-				virtualComponents.scann_num = 1;
+				virtualComponents.driver_x.defaultSpeed = DRIVER_X_SPEED;
+				Initiator.logger.i("+find_bottles", "down kalibrcja");
 				return null;
 			}
 		} );
@@ -599,15 +662,24 @@ public class virtualComponents {
 			@Override
 			public Queue run(AsyncDevice dev, Queue queue) {
 				this.name		= "end scanning";
-				AppInvoker.log("+find_bottles", "koniec na:" + virtualComponents.scann_num);
+				Initiator.logger.i("+find_bottles", "koniec kalibrcja");
 				virtualComponents.scann_bottles = false;
-				if( virtualComponents.scann_num != 12 ){
+				boolean error = false;
+				for(int i=0;i<12;i++){
+					int xpos = virtualComponents.getInt("BOTTLE_X_" + i, 0 );
+					int ypos = virtualComponents.getInt("BOTTLE_Y_" + i, 0 );
+					if(xpos ==0 || ypos == 0 ){
+						error = true;
+					}
+				}
+				if(error){
+					Initiator.logger.i("+find_bottles", "show error");
 					BarobotMain.getInstance().showError();
 				}
 				return null;
 			}
 		} );
-		virtualComponents.scann_leds();
+		//virtualComponents.scann_leds();
 	}
 	public static void scann_leds() {
 		Queue q1			= new Queue();
@@ -623,9 +695,6 @@ public class virtualComponents {
 		ledsReady = true;	
 	}
 	public static void saveXPos(int spos) {
-		if( spos < 100 ){
-			spos = 0;
-		}
 		virtualComponents.set( "POSX", "" + spos);
 		driver_x.setSPos( spos );	
 	}

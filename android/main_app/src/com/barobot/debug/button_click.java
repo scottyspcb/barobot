@@ -3,12 +3,14 @@ package com.barobot.debug;
 import java.util.Random;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Toast;
 
 import com.barobot.AppInvoker;
 import com.barobot.R;
+import com.barobot.common.Initiator;
 import com.barobot.common.constant.Constant;
 import com.barobot.hardware.Arduino;
 import com.barobot.hardware.virtualComponents;
@@ -21,10 +23,13 @@ public class button_click implements OnClickListener{
 	@Override
 	public void onClick(final View v) {
 		// get out of the UI thread
+		Log.i("button click","click");
 		new Thread( new Runnable(){
 			@Override
 			public void run() {
+				Log.i("button click","exec start");
 				exec(v);
+				Log.i("button click","exec end");
 			}}).start();
 	}
 	public void exec(View v) {
@@ -201,7 +206,7 @@ public class button_click implements OnClickListener{
 			virtualComponents.set_bottle_on = true;
 			// przełącz okno na listę butelek, 
 			// zablokuj przyciski i po naciśnięciu ustaw w tym miejscu butelkę
-			AppInvoker.log(Constant.TAG,"wybierz butelkę...");
+			Initiator.logger.i(Constant.TAG,"wybierz butelkę...");
 			Toast.makeText(dbw, "Wybierz butelkę do zapisania pozycji " + posx + "/" + posy, Toast.LENGTH_LONG).show();
 //			dbw.tabHost.setCurrentTabByTag("tab0");
 //			dbw.tabHost.bringToFront();

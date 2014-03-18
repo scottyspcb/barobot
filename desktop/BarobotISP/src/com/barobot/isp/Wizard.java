@@ -456,11 +456,15 @@ public class Wizard {
 		String command = "";
 		Queue q = hw.getQueue();
 		hw.connect();
+		hw.send("\n");
+		hw.send("\n");
+		hw.send("PING", "PONG");
 		Carret current_dev	= new Carret();
 		String carret_code = current_dev.getHexFile();
-
+		q.addWaitThread(Main.mt);
 		if( IspSettings.setFuseBits){
 			current_dev.isp( q );
+			q.addWaitThread(Main.mt);
 			command = current_dev.setFuseBits( hw.comPort );
 			Main.main.run(command, hw);
 			Main.wait(2000);
@@ -495,8 +499,8 @@ public class Wizard {
 	public void prepareMB(final Hardware hw ) {
 		Queue q = hw.getQueue();
 		hw.connect();
-		hw.send("");
-		hw.send("");
+		hw.send("\n");
+		hw.send("\n");
 		final I2C_Device current_dev	= new MainBoard();
 		final String upanel_code = current_dev.getHexFile();
 		q.add("", false);		
@@ -534,7 +538,7 @@ public class Wizard {
 
 		if(IspSettings.setFuseBits){
 			hw.connect();
-			hw.send("");
+			hw.send("\n");
 			hw.send("PING", "PONG");
 			q.addWaitThread(Main.mt);
 			current_dev.isp( q );
@@ -763,8 +767,8 @@ public class Wizard {
 	public void prepareMB2(final Hardware hw) {	
 		Queue q = hw.getQueue();
 		hw.connect();
-		hw.send("");
-		hw.send("");
+		hw.send("\n");
+		hw.send("\n");
 		final I2C_Device current_dev	= new MainBoard();
 		final String upanel_code = current_dev.getHexFile();
 		

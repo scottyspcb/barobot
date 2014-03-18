@@ -13,6 +13,7 @@ import com.barobot.AppInvoker;
 import com.barobot.R;
 import com.barobot.activity.BarobotMain;
 import com.barobot.activity.UpdateActivity;
+import com.barobot.common.Initiator;
 import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonObject.Member;
@@ -39,7 +40,7 @@ public class update_drinks {
 			private String source;
 			public void sendSource( String source ) {
 				this.source = source;
-				AppInvoker.log("sendSource", source);
+				Initiator.logger.i("sendSource", source);
 			}
 		    @Override
 			public void run() {
@@ -53,36 +54,36 @@ public class update_drinks {
 		this.parseJsonObject(jsonObject, 0 );
 	}
 	protected void parseJsonObject(JsonObject in, int level ) {
-		AppInvoker.log("Json " +level + " IN", "json Object: "+in);	
+		Initiator.logger.i("Json " +level + " IN", "json Object: "+in);	
 
 		for( Member member : in ) {
 			String name		= member.getName();
 			JsonValue value = member.getValue();
 			if(value.isObject()){
-				AppInvoker.log("Json " + (level+1), "isObject: "+name);
+				Initiator.logger.i("Json " + (level+1), "isObject: "+name);
 				this.parseJsonObject(value.asObject(), level+1);
 
 			}else if(value.isArray()){
 				JsonArray jsa =  value.asArray();
 				for( JsonValue amember : jsa ) {
 					if(amember.isObject()){
-						AppInvoker.log("Json " + (level +1), "isObject: "+name);
+						Initiator.logger.i("Json " + (level +1), "isObject: "+name);
 						this.parseJsonObject(amember.asObject(), level+1);
 					}else if(value.isNumber()){
-						AppInvoker.log("Json "+level, "number: "+name +"/"+amember);
+						Initiator.logger.i("Json "+level, "number: "+name +"/"+amember);
 					}else if(value.isString()){
-						AppInvoker.log("Json "+level, "string: "+name +"/"+amember);
+						Initiator.logger.i("Json "+level, "string: "+name +"/"+amember);
 					}else{
-						AppInvoker.log("Json "+level, "none: "+name +"/"+amember);
+						Initiator.logger.i("Json "+level, "none: "+name +"/"+amember);
 					}
 				}
-				AppInvoker.log("Json "+level, "Array: "+name +"/"+jsa);
+				Initiator.logger.i("Json "+level, "Array: "+name +"/"+jsa);
 			}else if(value.isString()){
-				AppInvoker.log("Json "+level, "string: "+name +"/"+value);	
+				Initiator.logger.i("Json "+level, "string: "+name +"/"+value);	
 			}else if(value.isNumber()){
-				AppInvoker.log("Json "+level, "int: "+name +"/"+value);
+				Initiator.logger.i("Json "+level, "int: "+name +"/"+value);
 			}else{
-				AppInvoker.log("Json "+level, "none: "+name +"/"+value);	
+				Initiator.logger.i("Json "+level, "none: "+name +"/"+value);	
 			}
 		}
 	}
