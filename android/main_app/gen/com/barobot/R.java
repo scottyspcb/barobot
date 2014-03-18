@@ -110,10 +110,15 @@ public final class R {
         public static final int button_menu=0x7f020006;
         public static final int button_red=0x7f020007;
         public static final int button_yellow=0x7f020008;
-        public static final int ingredient_list_background=0x7f020009;
-        public static final int list_selector=0x7f02000a;
-        public static final int recipe_list_bg=0x7f02000b;
-        public static final int test=0x7f02000c;
+        public static final int choose_55=0x7f020009;
+        public static final int create_55=0x7f02000a;
+        public static final int favorite_55=0x7f02000b;
+        public static final int history_55=0x7f02000c;
+        public static final int ingredient_list_background=0x7f02000d;
+        public static final int list_selector=0x7f02000e;
+        public static final int options_55=0x7f02000f;
+        public static final int recipe_list_bg=0x7f020010;
+        public static final int test=0x7f020011;
     }
     public static final class id {
         public static final int SeekBar01=0x7f0c00e4;
