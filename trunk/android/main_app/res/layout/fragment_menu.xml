@@ -29,6 +29,7 @@
         android:layout_margin="2dp"
         android:onClick="onMenuButtonClicked"
         android:enabled="false"
+        android:drawableLeft="@drawable/lucky_55"
         android:text="@string/menu_lucky" />
 
     <Button
@@ -39,19 +40,29 @@
         android:onClick="onMenuButtonClicked"
         android:drawableLeft="@drawable/create_55"
         android:text="@string/menu_create" />
-
+    
     <Button
-        android:id="@+id/menu_bottles"
+        android:id="@+id/menu_history"
         style="@style/MenuButton"
         android:layout_below="@id/menu_create"
         android:layout_margin="2dp"
         android:onClick="onMenuButtonClicked"
+        android:drawableLeft="@drawable/history_55"
+        android:text="@string/menu_history" />
+
+    <Button
+        android:id="@+id/menu_bottles"
+        style="@style/MenuButton"
+        android:layout_below="@id/menu_history"
+        android:layout_margin="2dp"
+        android:onClick="onMenuButtonClicked"
+        android:drawableLeft="@drawable/mobile_55"
         android:text="@string/menu_bottles" />
 
     <Button
         android:id="@+id/menu_options"
         style="@style/MenuButton"
-        android:layout_alignParentBottom="true"
+        android:layout_below="@id/menu_bottles"
         android:layout_margin="2dp"
         android:onClick="onMenuButtonClicked"
         android:drawableLeft="@drawable/options_55"

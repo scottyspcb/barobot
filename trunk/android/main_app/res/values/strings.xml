@@ -122,7 +122,10 @@
     <string name="menu_lucky">I feel lucky</string>
     <string name="menu_create">Create your own</string>
     <string name="menu_bottles">Setup bottles</string>
+    <string name="menu_history">Past orders</string>
+    <string name="menu_mobile">Mobile orders</string>
     <string name="menu_options">Options and Setup</string>
+    
     
     <!-- Create Activity -->
     <string name="create_pour_button">Pour!</string>
