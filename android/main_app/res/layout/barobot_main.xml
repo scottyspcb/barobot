@@ -32,9 +32,11 @@
             android:layout_width="match_parent"
             android:layout_height="100sp"
             style="@style/ButtonGreen"
+            android:textSize="50sp"
             android:layout_alignParentBottom="true"
             android:layout_alignParentLeft="true"
             android:layout_toLeftOf="@id/recipe_list"
+            android:onClick="onPourButtonClicked"
             android:text="@string/create_pour_button" />
         
         <TextView
@@ -43,11 +45,10 @@
             android:layout_height="100sp"
             style="@style/ButtonGreen"
             android:background="@drawable/ingredient_list_background"
-            android:textSize="70sp"
+            android:textSize="50sp"
             android:layout_alignParentTop="true"
             android:layout_alignParentLeft="true"
             android:layout_toLeftOf="@id/recipe_list" />
-        
         <ListView 
             android:id="@+id/ingredient_list"
             android:layout_width="match_parent"
@@ -57,67 +58,19 @@
 			android:layout_toLeftOf="@id/recipe_list" 
             android:layout_alignParentLeft="true"
             android:layout_margin="3dp"
-            android:focusableInTouchMode="true"
-            android:focusable="true"
+            android:divider="@null"
+            android:dividerHeight="0sp"
             android:background="@drawable/ingredient_list_background"/>
 
         </RelativeLayout>
         
         
-     <RelativeLayout
+      <fragment
+        android:id="@+id/fragment_menu"
+        android:name="com.barobot.activity.MenuFragment"
         android:layout_width="0sp"
         android:layout_height="fill_parent"
-        android:layout_weight="1" >
-    	
-    	<Button 
-        	android:id="@+id/menu_favorite"
-        	android:layout_alignParentTop="true"
-        	    	android:layout_margin="2dp"
-        	style="@style/MenuButton"
-        	android:onClick="onMenuButtonClicked"
-        	android:text="@string/menu_favorite"/>
-    	
-    	<Button
-    	    android:id="@+id/menu_choose"
-    	    android:layout_below="@id/menu_favorite"
-    	        	android:layout_margin="2dp"
-    	    style="@style/MenuButton"
-    	    android:onClick="onMenuButtonClicked"
-    	    android:text="@string/menu_choose"
-    	    />
-    	
-    	<Button
-        	android:id="@+id/menu_lucky"
-        	android:layout_below="@id/menu_choose"
-        	    	android:layout_margin="2dp"
-        	style="@style/MenuButton"
-        	android:onClick="onMenuButtonClicked"
-        	android:text="@string/menu_lucky"/>
-    	
-    	<Button
-        	android:id="@+id/menu_create"
-        	android:layout_below="@id/menu_lucky"
-        	    	android:layout_margin="2dp"
-        	style="@style/MenuButton"
-        	android:onClick="onMenuButtonClicked"
-        	android:text="@string/menu_create"/>
-    	
-    	<Button
-        	android:id="@+id/menu_bottles"
-        	android:layout_below="@id/menu_create"
-        	    	android:layout_margin="2dp"
-        	style="@style/MenuButton"
-        	android:onClick="onMenuButtonClicked"
-        	android:text="@string/menu_bottles"/>
-    	
-    	<Button
-        	android:id="@+id/menu_options"
-        	android:layout_alignParentBottom="true"
-        	    	android:layout_margin="2dp"
-        	style="@style/MenuButton"
-        	android:onClick="onMenuButtonClicked"
-        	android:text="@string/menu_options"/>
-    	
-    </RelativeLayout>
+        android:layout_weight="1"
+        tools:layout="@layout/fragment_menu" />
 
 </LinearLayout>

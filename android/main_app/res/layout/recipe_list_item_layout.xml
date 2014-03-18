@@ -5,5 +5,5 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
    			android:background="@drawable/list_selector"
-            android:textSize="70sp"
+            android:textSize="50sp"
             android:textColor="@android:color/black" />

@@ -87,12 +87,9 @@ public class RecipeSetupActivity extends BarobotActivity
 					TextView nameView = (TextView) dialogView.findViewById(R.id.recipe_name);
 					String name = nameView.getText().toString();
 					
-					TextView descriptionView = (TextView) dialogView.findViewById(R.id.recipe_description);
-					String description = descriptionView.getText().toString();
-					
 					Recipe_t recipe = new Recipe_t();
 					recipe.name = name;
-					recipe.Description = description;
+					
 					
 					// TODO: Fix that
 					//Engine.GetInstance(RecipeSetupActivity.this).addRecipe(recipe);

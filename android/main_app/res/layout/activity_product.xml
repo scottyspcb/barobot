@@ -23,9 +23,8 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
-             android:textSize="@dimen/bottle_box_text_size"
-            
-            android:text="[Slot Number]" />
+            android:textSize="@dimen/bottle_box_text_size"
+            />
 
          <TextView
             android:id="@+id/product_capacity_text"
@@ -35,7 +34,7 @@
             android:layout_below="@id/product_slot_number_text"
              android:textSize="@dimen/bottle_box_text_size"
             
-            android:text="[Capacity]" />
+            android:text="@string/product_field_capacity" />
          
           <TextView
             android:id="@+id/product_liquid_text"
@@ -45,7 +44,7 @@
             android:layout_below="@id/product_capacity_text"
              android:textSize="@dimen/bottle_box_text_size"
             
-            android:text="[Name]" />
+            android:text="@string/product_field_liquid" />
         <TextView
             android:id="@+id/product_type_text"
             android:layout_width="wrap_content"
@@ -54,7 +53,7 @@
             android:layout_below="@id/product_liquid_text"
              android:textSize="@dimen/bottle_box_text_size"
             
-            android:text="[Type]" />
+            android:text="@string/product_field_type" />
         
         <Button 
             android:id="@+id/product_button_ok"
@@ -63,7 +62,7 @@
             android:layout_alignParentBottom="true"
             style="@style/ButtonGreen"
             android:onClick="onOKButtonClicked"
-            android:text="[OK]"/>
+            android:text="@string/product_button_ok"/>
         
         <LinearLayout 
             android:layout_width="fill_parent"
@@ -77,8 +76,9 @@
             android:layout_height="50sp"
             android:layout_weight="1"
             style="@style/ButtonRed"
-             android:onClick="onCancelButtonClicked"
-            android:text="[Cancel]"/>
+            android:onClick="onCancelButtonClicked"
+            android:text="@string/product_button_cancel"/>
+    		
         <Button
             android:id="@+id/product_button_empty"
             android:layout_width="0sp"
@@ -86,7 +86,7 @@
             android:layout_weight="1"
             style="@style/ButtonYellow"
             android:onClick="onEmptyButtonClicked"
-            android:text="[Empty]"/>
+            android:text="@string/product_button_empty"/>
         
         
         </LinearLayout>
@@ -97,68 +97,80 @@
         android:layout_width="0dp"
         android:layout_height="fill_parent"
         android:layout_weight="2" >
+        
+		<LinearLayout
+		    android:id="@+id/product_type_layout"
+		    android:layout_width="@dimen/product_list_width"
+		    android:layout_height="fill_parent"
+		    android:layout_alignParentRight="true"
+		    android:orientation="vertical" >
 
-        <Button
-            android:id="@+id/product_type_new_button"
-            android:layout_marginBottom="@dimen/product_button_margin_bottom"
-            android:layout_width="@dimen/product_list_width"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentRight="true"
-            style="@style/ButtonBlue"
-            android:onClick="onAddNewTypeButtonClick"
-            android:text="@string/product_add_new_button" />
+		    <Button
+		        android:id="@+id/product_type_new_button"
+		        style="@style/ButtonBlue"
+		        android:layout_width="fill_parent"
+		        android:layout_height="wrap_content"
+		        android:layout_gravity="center"
+		        android:layout_marginBottom="@dimen/product_button_margin_bottom"
+		        android:onClick="onAddNewTypeButtonClick"
+		        android:text="@string/product_add_new_button" />
 
-        <ListView
-            android:id="@+id/product_types_list"
-            android:layout_width="@dimen/product_list_width"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_below="@id/product_type_new_button"
-            android:choiceMode="singleChoice" />
-            <!--  android:focusableInTouchMode="true"
-            android:focusable="true"
-            android:drawable="@drawable/list_selector"
-            
-            
-             -->
-            
+		    <ListView
+		        android:id="@+id/product_types_list"
+		        style="@style/SmoothList"
+		        android:layout_width="fill_parent"
+		        android:layout_height="wrap_content"
+		        android:choiceMode="singleChoice" />
+		</LinearLayout>
 
+		<LinearLayout
+		    android:id="@+id/product_liquid_layout"
+		    android:layout_width="@dimen/product_list_width"
+		    android:layout_height="fill_parent"
+		    android:layout_toLeftOf="@id/product_type_layout"
+		    android:orientation="vertical" >
         <Button
             android:id="@+id/product_liquid_new_button"
             android:layout_marginBottom="@dimen/product_button_margin_bottom"
-            android:layout_width="@dimen/product_list_width"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_toLeftOf="@id/product_type_new_button"
             style="@style/ButtonBlue"
             android:onClick="onAddNewLiquidButtonClicked"
             android:text="@string/product_add_new_button" />
 
         <ListView
             android:id="@+id/product_liquids_list"
-            android:layout_width="@dimen/product_list_width"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/product_liquid_new_button"
-            android:layout_toLeftOf="@id/product_types_list" />
-
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            
+            android:choiceMode="singleChoice"
+            style="@style/SmoothList" />
+	</LinearLayout>
+	<LinearLayout
+		    android:id="@+id/product_capacity_layout"
+		    android:layout_width="@dimen/product_list_width"
+		    android:layout_height="fill_parent"
+		    android:layout_marginLeft="10dp"
+		    android:layout_toLeftOf="@id/product_liquid_layout"
+		    android:orientation="vertical" >
         <Button
             android:id="@+id/product_capacity_new_button"
             android:layout_marginBottom="@dimen/product_button_margin_bottom"
-            android:layout_width="@dimen/product_list_width"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_toLeftOf="@id/product_liquid_new_button"
             style="@style/ButtonBlue"
             android:onClick="onAddNewProductButtonClicked"
             android:text="@string/product_add_new_button" />
 
         <ListView
             android:id="@+id/product_capacities_list"
-            android:layout_width="@dimen/product_list_width"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/product_capacity_new_button"
-            android:layout_toLeftOf="@id/product_liquids_list" />
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+           
+           
+            android:choiceMode="singleChoice"
+            style="@style/SmoothList" />
+        </LinearLayout>
     </RelativeLayout>
 
 </LinearLayout>
