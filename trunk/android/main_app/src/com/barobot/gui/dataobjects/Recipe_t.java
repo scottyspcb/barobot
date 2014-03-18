@@ -13,8 +13,8 @@ public class Recipe_t extends Model<Recipe_t>{
 	@PrimaryKey (autoIncrement = true)
 	public long id;
 	public String name;
-	public String Description;
 	public boolean favorite;
+	public boolean unlisted;
 	
 	@Override
 	public String toString() {

@@ -13,7 +13,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.AdapterView.OnItemClickListener;
 
-import com.barobot.AppInvoker;
 import com.barobot.R;
 import com.barobot.gui.ArduinoListener;
 import com.barobot.gui.dataobjects.Engine;
@@ -35,10 +34,7 @@ public class BarobotMain extends BarobotActivity implements ArduinoListener {
 		
         super.onCreate(savedInstanceState);
         setContentView(R.layout.barobot_main);
-        AppInvoker.createInstance( this ).onCreate();
 
-        FillRecipeList();
-	    FillRecipeDetails();
     }
     
     @Override
@@ -50,7 +46,6 @@ public class BarobotMain extends BarobotActivity implements ArduinoListener {
     
     public void FillRecipeList()
     {
-    	
     	List<Recipe_t> recipes = Engine.GetInstance(this).getRecipes();
     	
 		ArrayAdapter<Recipe_t> mAdapter = new ArrayAdapter<Recipe_t>(this, R.layout.recipe_list_item_layout, recipes);
@@ -77,11 +72,19 @@ public class BarobotMain extends BarobotActivity implements ArduinoListener {
 			setTextViewText(mCurrentRecipe.name, R.id.recipe_name_textview);
 
 			ArrayAdapter<Ingredient_t> mAdapter = new ArrayAdapter<Ingredient_t>(
-					this, R.layout.recipe_list_item_layout,
+					this, R.layout.ingredient_list_item,
 					mCurrentRecipe.getIngredients());
 			ListView listView = (ListView) findViewById(R.id.ingredient_list);
 			listView.setAdapter(mAdapter);
 		}
+    }
+    
+    public void onPourButtonClicked (View view)
+    {
+    	if (mCurrentRecipe != null)
+    	{
+    		Engine.GetInstance(this).Pour(mCurrentRecipe, this);
+    	}
     }
     
 	@Override

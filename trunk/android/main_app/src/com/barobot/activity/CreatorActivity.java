@@ -146,9 +146,6 @@ public class CreatorActivity extends BarobotActivity implements ArduinoListener{
 				TextView nameView = (TextView) dialogView.findViewById(R.id.recipe_name);
 				String name = nameView.getText().toString();
 				
-				//TextView descriptionView = (TextView) dialogView.findViewById(R.id.recipe_description);
-				//String description = descriptionView.getText().toString();
-				
 				CreateDrink(name);	
 			}
 		});
@@ -158,7 +155,7 @@ public class CreatorActivity extends BarobotActivity implements ArduinoListener{
 	
 	public void onPourRecipeButtonClicked (View view)
 	{
-		Recipe_t tempRecipe = CreateDrink("Unnamed Drink");
+		Recipe_t tempRecipe = CreateDrink("Unnamed Drink", true);
 		Engine.GetInstance(this).Pour(tempRecipe, this);
 	}
 	
@@ -189,8 +186,14 @@ public class CreatorActivity extends BarobotActivity implements ArduinoListener{
 	
 	public Recipe_t CreateDrink(String name)
 	{
+		return CreateDrink(name, false);
+	}
+	
+	public Recipe_t CreateDrink(String name, Boolean unlisted)
+	{
 		Recipe_t recipe = new Recipe_t();
 		recipe.name = name;
+		recipe.unlisted = unlisted;
 		Engine.GetInstance(this).addRecipe(recipe, ingredients);
 		
 		return recipe;

@@ -97,9 +97,7 @@
     <!-- Bottle Setup -->
     <string name="empty_bottle_string">Empty</string>
 
-    <!-- Product Setup -->
    
-    <string name="product_add_new_button">Add New</string>
 
     <!-- Dialog new Type -->
     <string name="dialog_type_name">Liquid type</string>
@@ -143,5 +141,15 @@
     <string name="title_activity_outside_component">Outside Components</string>
     <string name="title_activity_product">ProductActivity</string>
     <string name="title_activity_creator">Drink Creator</string>
+    
+     <!-- Product Setup -->
+   
+    <string name="product_add_new_button">Add New</string>
+    <string name="product_button_cancel">Cancel</string>
+    <string name="product_button_empty">Empty</string>
+    <string name="product_button_ok">OK</string>
+    <string name="product_field_type">[Type]</string>
+    <string name="product_field_liquid">[Name]</string>
+    <string name="product_field_capacity">[Capacity]</string>
 
 </resources>

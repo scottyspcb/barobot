@@ -69,6 +69,7 @@ public class BarobotDataStub {
 		
 		rec = new Recipe_t();
 		rec.name = "Mortus";
+		rec.unlisted = true;
 		rec.insert();
 		
 		rec = new Recipe_t();

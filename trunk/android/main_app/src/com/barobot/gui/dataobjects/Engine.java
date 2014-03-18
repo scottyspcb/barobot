@@ -119,6 +119,21 @@ public class Engine {
 	
 	public List<Recipe_t> getRecipes()
 	{
+		List<Recipe_t> recipes = BarobotData.GetRecipes();
+		List<Recipe_t> result = new ArrayList<Recipe_t>();
+		
+		for(Recipe_t recipe : recipes)
+		{
+			if (CheckRecipe(recipe) && recipe.unlisted == false)
+			{
+				result.add(recipe);
+			}
+		}
+		return result;
+	}
+	
+	public List<Recipe_t> getAllRecipes()
+	{
 		return BarobotData.GetRecipes();
 	}
 	
@@ -137,45 +152,26 @@ public class Engine {
 		ingredient.delete();
 	}
 	
-	public int getIngredientPosition(Ingredient_t ing)
+	public Boolean CheckRecipe(Recipe_t recipe)
 	{
-		List<Slot> slots = getSlots();
-		for(Slot sl : slots)
+		List<Integer> bottleSequence = GenerateSequence(recipe.getIngredients());
+		if (bottleSequence == null)
 		{
-			if (sl.product != null)
-			{
-				if (sl.product.liquid.id == ing.liquid.id)
-				{
-					return sl.position;
-				}
-			}
+			return false; // We could not find some of the ingredients
 		}
-		
-		return -1; // Indicating that ingredient was not found
+		return true;
 	}
 	
 	public Boolean Pour(Recipe_t recipe, final ArduinoListener mListener)
 	{
-		final int VOLUME_DIVIDER = 20;
 		
-		List<Integer> bottleSequence = new ArrayList<Integer>();
-		List<Ingredient_t> ingredients = recipe.getIngredients();
-		List<Slot> slots = getSlots();
-		for(Ingredient_t ing : ingredients)
+		
+		List<Integer> bottleSequence = GenerateSequence(recipe.getIngredients());
+		if (bottleSequence == null)
 		{
-			int position = getIngredientPosition(ing);
-			if (position != -1)
-			{
-				int num = (int) ing.quantity/VOLUME_DIVIDER;
-				for (int iter = 1; iter <= num ; iter++){
-					bottleSequence.add(position);
-				}
-			}
-			else
-			{
-				return false;
-			}
+			return false; // We could not find some of the ingredients
 		}
+		
 		Sequence = "";
 		for (Integer i : bottleSequence){
 			Sequence += i + " ";
@@ -201,6 +197,47 @@ public class Engine {
 		} );
 		ar.send(q);*/
 		return true;
+	}
+	
+	private List<Integer> GenerateSequence(List<Ingredient_t> ingredients)
+	{
+		final int VOLUME_DIVIDER = 20;
+		
+		List<Integer> bottleSequence = new ArrayList<Integer>();
+		for(Ingredient_t ing : ingredients)
+		{
+			int position = getIngredientPosition(ing);
+			if (position != -1)
+			{
+				int num = (int) ing.quantity/VOLUME_DIVIDER;
+				for (int iter = 1; iter <= num ; iter++){
+					bottleSequence.add(position);
+				}
+			}
+			else
+			{
+				return null;
+			}
+		}
+		
+		return bottleSequence;
+	}
+	
+	public int getIngredientPosition(Ingredient_t ing)
+	{
+		List<Slot> slots = getSlots();
+		for(Slot sl : slots)
+		{
+			if (sl.product != null)
+			{
+				if (sl.product.liquid.id == ing.liquid.id)
+				{
+					return sl.position;
+				}
+			}
+		}
+		
+		return -1; // Indicating that ingredient was not found
 	}
 	
 	//---------------------------

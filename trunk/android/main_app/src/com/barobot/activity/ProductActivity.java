@@ -3,14 +3,12 @@ package com.barobot.activity;
 import java.util.List;
 
 import com.barobot.R;
-import com.barobot.R.drawable;
 import com.barobot.gui.dataobjects.Engine;
 import com.barobot.gui.dataobjects.Liquid_t;
 import com.barobot.gui.dataobjects.Product;
 import com.barobot.gui.dataobjects.Type;
 import com.barobot.gui.utils.CapacityProductWrapper;
 
-import android.R.color;
 import android.os.Bundle;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -20,7 +18,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -110,7 +107,7 @@ public class ProductActivity extends BarobotActivity {
 	{
 		List<Liquid_t> liquids = mCurrentType.getLiquids();
 		
-		ArrayAdapter<Liquid_t> mAdapter = new ArrayAdapter<Liquid_t>(this, android.R.layout.simple_list_item_1, liquids);
+		ArrayAdapter<Liquid_t> mAdapter = new ArrayAdapter<Liquid_t>(this, R.layout.item_layout, liquids);
 		ListView listView = (ListView) findViewById(R.id.product_liquids_list);
 		listView.setAdapter(mAdapter);
 		
@@ -136,7 +133,7 @@ public class ProductActivity extends BarobotActivity {
 	{
 		List<CapacityProductWrapper> prods = CapacityProductWrapper.WrapList(mCurrentLiquid.getProducts());
 		
-		ArrayAdapter<CapacityProductWrapper> mAdapter = new ArrayAdapter<CapacityProductWrapper>(this, android.R.layout.simple_list_item_1, prods);
+		ArrayAdapter<CapacityProductWrapper> mAdapter = new ArrayAdapter<CapacityProductWrapper>(this, R.layout.item_layout, prods);
 		ListView listView = (ListView) findViewById(R.id.product_capacities_list);
 		listView.setAdapter(mAdapter);
 		
