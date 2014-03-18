@@ -7,6 +7,7 @@ import android.util.Log;
 
 import com.barobot.activity.BarobotMain;
 import com.barobot.common.DesktopLogger;
+import com.barobot.common.Initiator;
 import com.barobot.hardware.Arduino;
 import com.barobot.hardware.virtualComponents;
 import com.barobot.hardware.serial.AndroidLogger;
@@ -32,14 +33,12 @@ public class AppInvoker {
 			e1.printStackTrace();
 		}*/
 	//	I2C.init();
-
+	    AndroidLogger dl = new AndroidLogger();
+		com.barobot.common.Initiator.setLogger( dl );
 		cm = new CameraManager( main );
 		cm.findCameras();
 		virtualComponents.init( main );
 	    Arduino.getInstance().onStart( main );
-
-	    AndroidLogger dl = new AndroidLogger();
-		com.barobot.common.Initiator.setLogger( dl );
 	}
 	public static AppInvoker createInstance(BarobotMain barobotMain) {
 		ins = new AppInvoker();
@@ -50,18 +49,18 @@ public class AppInvoker {
 		return ins;
 	}
 	public void onPause() {
-		AppInvoker.log("MAINWINDOW", "onPause");
+		Initiator.logger.i("MAINWINDOW", "onPause");
 		cm.onPause();
 	}
 	public void onResume() {
-		AppInvoker.log("MAINWINDOW", "onResume");     
+		Initiator.logger.i("MAINWINDOW", "onResume");     
 		if(cm!=null){
 			cm.onResume();
 		}
         Arduino.getInstance().resume();
 	}
 	public void onDestroy() {
-		AppInvoker.log("MAINWINDOW", "onDestroy");
+		Initiator.logger.i("MAINWINDOW", "onDestroy");
     //	SofaServer.getInstance().stop();
     	Arduino.getInstance().destroy();
     	Iterator<Interval> it = this.inters.iterator();
@@ -70,8 +69,5 @@ public class AppInvoker {
     	}
 	//	I2C.destroy();
         cm.onDestroy();	
-	}
-	public static void log(String tag4, String string) {
-		Log.w(tag4,string);
 	}
 }

@@ -73,6 +73,20 @@ public class Arduino{
 				return true;
 			}});
 		connection.init();
+		connection.setSerialEventListener( new SerialEventListener() {
+			@Override
+			public void onConnect() {
+				main_queue.add( "\n", false );	// clean up input
+				main_queue.add( "\n", false );
+			}
+			@Override
+			public void onClose() {
+				
+			}
+			@Override
+			public void connectedWith(String bt_connected_device, String address) {
+			}
+		});	
 		mb.registerSender( connection );		
 		Queue.enableDevice( mainboardSource );
 	//		prepareDebugConnection();

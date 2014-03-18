@@ -13,11 +13,17 @@ import android.widget.ToggleButton;
 
 public class button_zajedz  implements OnClickListener {
 	@Override
-	public void onClick(View v) {
+	public void onClick(final View v) {
+		new Thread( new Runnable(){
+			@Override
+			public void run() {
+				exec(v);
+			}}).start();
+	}	
+	public void exec(View v) {
 		boolean setting_mode	= false;
 		BarobotMain bb			= BarobotMain.getInstance();
 		boolean autofill		= ( virtualComponents.get("AUTOFILL", "1" )== "1");
-			
 		if(virtualComponents.set_bottle_on){
 			setting_mode = true;
 		}
@@ -109,7 +115,6 @@ public class button_zajedz  implements OnClickListener {
 		  case R.id.nalej8:
 			  if(setting_mode){
 				  virtualComponents.hereIsBottle(7);
-
 			  }else{
 				  virtualComponents.moveToBottle(7, !autofill);
 				  if( autofill){
@@ -120,7 +125,6 @@ public class button_zajedz  implements OnClickListener {
 		  case R.id.nalej9:
 			  if(setting_mode){
 				  virtualComponents.hereIsBottle(8);
-
 			  }else{
 				  virtualComponents.moveToBottle(8, !autofill);
 				  if( autofill){
@@ -131,7 +135,6 @@ public class button_zajedz  implements OnClickListener {
 	      case R.id.nalej10:
 			  if(setting_mode){
 				  virtualComponents.hereIsBottle(9);
-
 			  }else{
 				  virtualComponents.moveToBottle(9, !autofill);
 				  if( autofill){
@@ -161,7 +164,7 @@ public class button_zajedz  implements OnClickListener {
 		      break;
 		}
 	  if(setting_mode){
-		  virtualComponents.set_bottle_on= false;
+		 virtualComponents.set_bottle_on= false;
 		int posx		=  virtualComponents.driver_x.getSPos();;	
 		int posy		=  virtualComponents.getInt("POSY", 0 );
 		Toast.makeText(bb, "Zapisano ["+posx+"/"+posy+"] jako butelka", Toast.LENGTH_LONG).show();

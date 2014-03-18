@@ -138,7 +138,9 @@ public class MyRetReader implements RetReader {
 				if( parts[3] == Constant.DRIVER_X){
 					decoded += "/DRIVER_X";
 					//int pos = parts[4] + (parts[5] << 8) + (parts[6] << 16 + (parts[7] << 24));
-					int hpos = parts[7] + (parts[6] << 8) + (parts[5] << 16 + (parts[4] << 24));
+				//	short hpos = (short)parts[7] + (short)(parts[6] << 8);
+					short hpos = (short) (parts[6] << 8);
+					hpos += (short)parts[7];
 					int spos = virtualComponents.driver_x.hard2soft(hpos);
 					virtualComponents.saveXPos( spos );
 					if(command.startsWith("X")){
@@ -149,7 +151,7 @@ public class MyRetReader implements RetReader {
 				}else if( parts[3] == Constant.DRIVER_Y){
 					int pos = parts[4] + (parts[5] << 8);
 					decoded += "/DRIVER_Y";
-					virtualComponents.set( "POSY",pos);
+					virtualComponents.set( "POSY", pos );
 					if(command.startsWith("Y")){
 						return true;
 					}else{
@@ -248,15 +250,16 @@ public class MyRetReader implements RetReader {
 		return false;
 	}
 
-	private int states = 54;
 	private int state_num = 0;
 	private int fromstart = 0;
 	
+	private int frontNum = 0;
+	private int BackNum = 0;
+
 	private int last_3 = 0;
 	private int last_7 = 0;
 	private boolean was_empty6 = false;
 	private boolean was_empty4 = false;
-	
 	public boolean importantAnalog(AsyncDevice asyncDevice, AsyncMessage wait_for2, String fromArduino, boolean checkInput ) {
 		String command = "";
 		if(wait_for2!= null && wait_for2.command != null && wait_for2.command != "" ){
@@ -295,10 +298,13 @@ public class MyRetReader implements RetReader {
 		//	Initiator.logger.i("input_parser", "software pos: " + spos );
 			int state_name	= parts[2];
 			int dir			= parts[3];
-			int hpos		= parts[7] + (parts[6] << 8) + (parts[5] << 16 + (parts[4] << 24));
+		//	int hpos		= parts[7] + (parts[6] << 8) + (parts[5] << 16 + (parts[4] << 24));
+			short hpos		= (short) (parts[6] << 8);
+			hpos += (short)parts[7];
 			int value		= parts[8] + (parts[9] << 8);
 			int spos		= virtualComponents.driver_x.hard2soft(hpos);
 			decoded += "/@" + hpos;
+			decoded += "/#" + value;
 			virtualComponents.saveXPos( spos );	
 
 			if(virtualComponents.scann_bottles && !checkInput && dir == Methods.DRIVER_DIR_FORWARD ){
@@ -312,17 +318,18 @@ public class MyRetReader implements RetReader {
 						virtualComponents.set( "LENGTHX", "" + spos);
 						virtualComponents.set( "X_GLOBAL_MAX", "" + spos );
 						virtualComponents.hereIsBottle(11, spos, virtualComponents.SERVOY_FRONT_POS );
-						Initiator.logger.i("input_parser "+ virtualComponents.scann_num+" "+virtualComponents.SERVOY_FRONT_POS, "butelka 11: " + spos );
 					}
 					state_num = 0;
 				}else if(state_name == Methods.HX_STATE_2 ){
 					decoded += "/HX_STATE_2";
+					hereIsMagnet( 11, hpos, hpos+500, virtualComponents.BOTTLE_IS_FRONT );
+					frontNum++;
+					last_3 = 0;
 					was_empty6 = false;
 					was_empty4 = false;
 
 				}else if(state_name == Methods.HX_STATE_3 ){
 					if(was_empty4){
-						fromstart++;
 						last_3  = hpos;
 						was_empty4 = false;
 						decoded += "/3 BOTTLE START";
@@ -334,12 +341,9 @@ public class MyRetReader implements RetReader {
 				}else if(state_name == Methods.HX_STATE_4 ){
 					if(last_3 != 0 ){
 						decoded += "/4 BOTTLE END";
-						Initiator.logger.i("bottle "+ fromstart +" BACK", "from " +last_3 + " to " + hpos );
-						int hposx = (hpos + last_3) / 2;
-						int spos2	= virtualComponents.driver_x.hard2soft(hposx);
-						int ypos	= virtualComponents.SERVOY_BACK_POS;
-					//	int num		= virtualComponents.magnet_order[ind];
-						virtualComponents.hereIsBottle(fromstart, spos2, ypos );
+						hereIsMagnet(fromstart, last_3, hpos, virtualComponents.BOTTLE_IS_BACK );
+						BackNum++;
+						fromstart++;
 						last_3 = 0;
 					}else{
 						decoded += "/HX_STATE_4";
@@ -350,24 +354,17 @@ public class MyRetReader implements RetReader {
 				}else if(state_name == Methods.HX_STATE_6 ){
 					if(last_7 != 0 ){
 						decoded += "/6 BOTTLE END";
-						Initiator.logger.i("bottle "+ fromstart +" FRONT", "from " +last_7 + " to " + hpos );
-
-						int hposx = (hpos + last_7) / 2;
-						int spos2	= virtualComponents.driver_x.hard2soft(hposx);
-						int ypos	= virtualComponents.SERVOY_FRONT_POS;
-					//	int num		= virtualComponents.magnet_order[ind];
-						virtualComponents.hereIsBottle(fromstart, spos2, ypos );
+						hereIsMagnet(fromstart, last_7, hpos, virtualComponents.BOTTLE_IS_FRONT );
+						frontNum++;
 						last_7 = 0;
-
+						fromstart++;
 					}else{
 						decoded += "/HX_STATE_6";
-
 						was_empty6 = true;
 					}
 				}else if(state_name == Methods.HX_STATE_7 ){
 					if(was_empty6){
 						last_7  = hpos;
-						fromstart++;
 						was_empty6 = false;
 						decoded += "/7 BOTTLE START";
 					}else{
@@ -375,12 +372,14 @@ public class MyRetReader implements RetReader {
 						last_7 = 0;
 					}
 				}else if(state_name == Methods.HX_STATE_8 ){
-					was_empty6 = false;
-					was_empty4 = false;
+					was_empty6	= false;
+					was_empty4	= false;
+					fromstart 	= 0;
 					decoded += "/HX_STATE_8";
 				}else if(state_name == Methods.HX_STATE_9 ){
 					decoded += "/HX_STATE_9";
-					fromstart =0;
+					last_3 = 0;
+					last_7 = 0;
 					virtualComponents.set( "X_GLOBAL_MIN", "" + hpos );
 					virtualComponents.driver_x.setM(hpos);
 					spos = virtualComponents.driver_x.hard2soft(hpos);		// new software pos (equal 0);
@@ -408,6 +407,39 @@ public class MyRetReader implements RetReader {
 		Initiator.logger.i("MyRetReader.decoded", decoded);
 		return true;
 	}
+	private void hereIsMagnet(int magnetnum, int fromHPos, int toHPos, int bottleIsBack ) {
+		int num		= virtualComponents.magnet_order[magnetnum];
+		int ypos	= virtualComponents.b_pos_y[ num ];
+		int row		= virtualComponents.bottle_row[ num ];
+		if(row == virtualComponents.BOTTLE_IS_BACK){
+			Initiator.logger.i("bottle "+ num +" BACK", "frontNum: "+ frontNum+" BackNum: "+ BackNum+ "from " +fromHPos + " to " + toHPos );
+		}else{
+			Initiator.logger.i("bottle "+ num +" FRONT", "frontNum: "+ frontNum+" BackNum: "+ BackNum+ "from " +fromHPos + " to " + toHPos );
+		}
+		if( bottleIsBack == row ){
+			int hposx = (fromHPos + toHPos) / 2;
+			//int hposx	= fromPos;
+			int spos2	= virtualComponents.driver_x.hard2soft(hposx);
+			int margin	= virtualComponents.margin_x[ num ];
+			virtualComponents.hereIsBottle(num, spos2 + margin, ypos );
+			Upanel up	= virtualComponents.getUpanelBottle(num);
+			Queue q		= Arduino.getInstance().getMainQ();
+		    if( up != null ){
+		    	q.sendNow( Queue.DFAULT_DEVICE, "L"+ up.myaddress + ",02,200" );
+				//up.setLed( q, "ff", 0 );
+			}else{
+				Initiator.logger.i("bottle "+ num +"","nie ma upanela dla id " + num );	
+			}
+		}else{
+			Initiator.logger.i("bottle "+ num +"", "nie zgadza sie");
+			if(row ==  virtualComponents.BOTTLE_IS_BACK ){
+				Initiator.logger.i("bottle "+ num +"", "nie zgadza sie. spodziewano sie back a jest front");	
+			}else if(row ==  virtualComponents.BOTTLE_IS_FRONT ){
+				Initiator.logger.i("bottle "+ num +"", "nie zgadza sie. spodziewano sie front a jest back");
+			}
+		}
+	}
+
 	public boolean deviceFound(AsyncDevice asyncDevice, AsyncMessage wait_for2, String fromArduino){
 		String decoded = "Arduino.GlobalMatch.METHOD_DEVICE_FOUND";
 		int[] parts = Decoder.decodeBytes( fromArduino );

@@ -3,6 +3,7 @@ package com.barobot.activity;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -18,6 +19,7 @@ import android.widget.Toast;
 
 import com.barobot.AppInvoker;
 import com.barobot.R;
+import com.barobot.common.Initiator;
 import com.barobot.common.constant.Constant;
 import com.barobot.hardware.Arduino;
 import com.barobot.hardware.virtualComponents;
@@ -107,22 +109,22 @@ public class BarobotMain extends BarobotActivity {
         super.onDestroy();
     }
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        AppInvoker.log(Constant.TAG, "onActivityResult " + resultCode);
+        Initiator.logger.i(Constant.TAG, "onActivityResult " + resultCode);
         switch (requestCode){
         case UpdateActivity.INTENT_NAME:
-        	AppInvoker.log(Constant.TAG, "END OF UpdateActivity");
+        	Initiator.logger.i(Constant.TAG, "END OF UpdateActivity");
             break;
         case AboutActivity.INTENT_NAME:
-        	AppInvoker.log(Constant.TAG, "END OF AboutActivity");
+        	Initiator.logger.i(Constant.TAG, "END OF AboutActivity");
             break;
         case MainSettingsActivity.INTENT_NAME:
-        	AppInvoker.log(Constant.TAG, "END OF SETTINGS");
+        	Initiator.logger.i(Constant.TAG, "END OF SETTINGS");
             break;
         case DebugActivity.INTENT_NAME:
-        	AppInvoker.log(Constant.TAG, "END OF DebugActivity");
+        	Initiator.logger.i(Constant.TAG, "END OF DebugActivity");
             break;
         case BTListActivity.INTENT_NAME:
-        	AppInvoker.log(Constant.TAG, "REQUEST_CONNECT_DEVICE_SECURE");
+        	Initiator.logger.i(Constant.TAG, "REQUEST_CONNECT_DEVICE_SECURE");
             // When BTListActivity returns with a device to connect
             if (resultCode == Activity.RESULT_OK) {
                 String address = data.getExtras().getString(BluetoothChatService.EXTRA_DEVICE_ADDRESS);           // Get the device MAC address
@@ -130,14 +132,14 @@ public class BarobotMain extends BarobotActivity {
             }
             break;
         case BluetoothChatService.REQUEST_ENABLE_BT:
-        	AppInvoker.log(Constant.TAG, "REQUEST_ENABLE_BT " + resultCode);
+        	Initiator.logger.i(Constant.TAG, "REQUEST_ENABLE_BT " + resultCode);
             // When the request to enable Bluetooth returns
             if (resultCode == Activity.RESULT_OK) {
                 // Bluetooth is now enabled, so set up session
                 Arduino.getInstance().setupBT( this );
             } else {
                 // User did not enable Bluetooth or an error occurred
-                AppInvoker.log(Constant.TAG, "BT not enabled");
+                Initiator.logger.i(Constant.TAG, "BT not enabled");
                 Toast.makeText(this, R.string.bt_not_enabled_leaving, Toast.LENGTH_SHORT).show();
                 finish();
             }
@@ -289,11 +291,11 @@ public class BarobotMain extends BarobotActivity {
 	    	webview.restoreState(savedInstanceState);
 	    }
 	  }*/
-	  public void showError(){  
+	  public void showError(){
 			runOnUiThread(new Runnable() {
 				@Override
 				public void run() {
-					 AlertDialog show = new AlertDialog.Builder(BarobotMain.this)
+					 Builder show = new AlertDialog.Builder(BarobotMain.this)
 					    .setTitle("Kalibracja")
 					    .setMessage("Kalibracja się nie udała. Czy spróbować ponownie?")
 					    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
@@ -306,8 +308,8 @@ public class BarobotMain extends BarobotActivity {
 					        public void onClick(DialogInterface dialog, int which) { 
 					            // do nothing
 					        }
-					     })
-					     .show();
+					     });
+					 show.show();    
 				}
 			});
 	  } 

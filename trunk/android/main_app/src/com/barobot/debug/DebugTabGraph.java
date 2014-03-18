@@ -3,6 +3,7 @@ package com.barobot.debug;
 import com.barobot.AppInvoker;
 import com.barobot.R;
 import com.barobot.activity.DebugActivity;
+import com.barobot.common.Initiator;
 import com.barobot.hardware.Arduino;
 import com.barobot.hardware.RunnableWithData;
 import com.barobot.hardware.virtualComponents;
@@ -441,7 +442,7 @@ public class DebugTabGraph extends Fragment {
 			Queue mq			= Arduino.getInstance().getMainQ();
 			switch (buttonView.getId()) {
 			case R.id.graph_active:
-				AppInvoker.log("graph_active","isChecked: " + isChecked );
+				Initiator.logger.i("graph_active","isChecked: " + isChecked );
 				if(isChecked){
 					initUI( true );
 					enableUI(true);

@@ -4,6 +4,7 @@ import com.barobot.AppInvoker;
 import com.barobot.R;
 import com.barobot.R.id;
 import com.barobot.activity.DebugActivity;
+import com.barobot.common.Initiator;
 import com.barobot.common.constant.Constant;
 import com.barobot.hardware.virtualComponents;
 
@@ -104,7 +105,7 @@ public class DebugTabCommands extends Fragment {
 		for(int i =0; i<buttons.length;i++){
 			View w = rootView.findViewById(buttons[i]);
 			if( w == null){
-				AppInvoker.log(Constant.TAG,"pomijam: "+ buttons[i] );
+				Initiator.logger.i(Constant.TAG,"pomijam: "+ buttons[i] );
 				continue;
 			}
 			String classname = w.getClass().getName();

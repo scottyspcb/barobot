@@ -53,7 +53,7 @@ public class Main{
 	//	w.prepareMBManualReset( hw );
 	//	w.fast_close_test( hw );
 		w.prepareCarret( hw );	
-		//w.checkCarret( hw );
+	//	w.checkCarret( hw );
 	//	w.prepare1Upanel( hw, 4 );
 	//	w.prepareUpanel( hw, 3 );
 	//	w.prepareUpanel( hw, 4 );

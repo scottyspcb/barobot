@@ -116,7 +116,7 @@ public class Methods {
 
 
 
-	public static final int HX_SPEED 	= 50;
+	public static final int HX_SPEED 	= 35;
 
 // HALL X VALUES 
 	public static final int HX_NEODYM_UP_BELOW 	= 750;
