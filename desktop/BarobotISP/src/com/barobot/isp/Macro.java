@@ -1,8 +1,8 @@
 package com.barobot.isp;
 
-import com.barobot.i2c.Carret;
 import com.barobot.i2c.Upanel;
 import com.barobot.parser.Queue;
+import com.barobot.parser.devices.Carret;
 import com.barobot.parser.devices.I2C_Device;
 import com.barobot.parser.utils.Interval;
 

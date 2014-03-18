@@ -1,6 +1,7 @@
 package com.barobot.i2c;
 
 import com.barobot.common.IspSettings;
+import com.barobot.common.constant.Methods;
 
 import com.barobot.isp.Main;
 import com.barobot.parser.Queue;
@@ -40,9 +41,9 @@ public class MainBoard extends I2C_Device_Imp {
 		q.add( new AsyncMessage( command, true ){
 			@Override
 			public boolean isRet(String result, Queue q) {
-				if(result.startsWith("122,")){		//	122,1,188,1
+				if(result.startsWith("" + Methods.METHOD_I2C_SLAVEMSG + ",")){		//	122,1,188,1
 					int[] bytes = Decoder.decodeBytes(result);
-					if(bytes[2] == 188){
+					if(bytes[2] == Methods.METHOD_CHECK_NEXT  ){
 						if(bytes[3] == 1 ){							// has next
 							hasNext = true;
 						}

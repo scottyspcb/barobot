@@ -323,7 +323,8 @@ public class MyRetReader implements RetReader {
 				}else if(state_name == Methods.HX_STATE_2 ){
 					decoded += "/HX_STATE_2";
 					hereIsMagnet( 11, hpos, hpos+500, virtualComponents.BOTTLE_IS_FRONT );
-					frontNum++;
+					frontNum = 0;
+					BackNum = 0;
 					last_3 = 0;
 					was_empty6 = false;
 					was_empty4 = false;
@@ -337,7 +338,6 @@ public class MyRetReader implements RetReader {
 						decoded += "/HX_STATE_3";
 						last_3 = 0;
 					}
-	
 				}else if(state_name == Methods.HX_STATE_4 ){
 					if(last_3 != 0 ){
 						decoded += "/4 BOTTLE END";
@@ -351,6 +351,7 @@ public class MyRetReader implements RetReader {
 					}
 				}else if(state_name == Methods.HX_STATE_5 ){
 					decoded += "/HX_STATE_5";
+
 				}else if(state_name == Methods.HX_STATE_6 ){
 					if(last_7 != 0 ){
 						decoded += "/6 BOTTLE END";
@@ -375,6 +376,8 @@ public class MyRetReader implements RetReader {
 					was_empty6	= false;
 					was_empty4	= false;
 					fromstart 	= 0;
+					frontNum = 0;
+					BackNum = 0;
 					decoded += "/HX_STATE_8";
 				}else if(state_name == Methods.HX_STATE_9 ){
 					decoded += "/HX_STATE_9";
