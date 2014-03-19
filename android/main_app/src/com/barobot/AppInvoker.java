@@ -21,8 +21,6 @@ public class AppInvoker {
 	public CameraManager cm;
     public ArrayList<Interval> inters = new ArrayList<Interval>();
 
-	public void onStart() {	
-    }
 	public void onCreate() {
 		/*
 		SofaServer ss = SofaServer.getInstance();

@@ -1,7 +1,7 @@
 package com.barobot.parser.output;
 
 import com.barobot.common.Initiator;
-import com.barobot.common.constant.Methods;
+import com.barobot.parser.utils.Decoder;
 
 public class Mainboard extends AsyncDevice{
 	public Mainboard() {
@@ -18,6 +18,7 @@ public class Mainboard extends AsyncDevice{
 			return true;
 		}else{
 			Initiator.logger.i("Mainboard.parse", in);	
+			Initiator.logger.i("Mainboard.parse", Decoder.toHexStr(in.getBytes(), in.length()));
 		}
 /*
 		if( in.startsWith( "" + METHOD_DEVICE_FOUND + ",") ){			// device found

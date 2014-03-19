@@ -176,7 +176,7 @@ public class Engine {
 		for (Integer i : bottleSequence){
 			Sequence += i + " ";
 		}
-		
+		virtualComponents.startDoingDrink();
 		Log.i("Prepare Sequence:", Sequence );
 		for (Integer i : bottleSequence){
 			Log.i("Prepare", ""+i );

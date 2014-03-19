@@ -48,7 +48,7 @@ public class Main{
 
 	//	w.fast_close_test( hw );
 	//	w.prepareSlaveMB( hw );
-	//	w.prepareMB( hw );
+		w.prepareMB( hw );
 	//	w.prepareMB2( hw );
 	//	w.prepareMBManualReset( hw );
 	//	w.fast_close_test( hw );
@@ -59,9 +59,9 @@ public class Main{
 	//	w.prepareUpanel( hw, 4 );
 	//	w.test( hw );
 
-		w.findOrder( hw, 3 );
-		w.findOrder( hw, 4 );
-		
+	//	w.findOrder( hw, 3 );
+	//	w.findOrder( hw, 4 );
+
 	//	Macro mm  = new Macro();
 	//	mm.promo1( hw );
 		w.createContstans( hw );
@@ -71,7 +71,7 @@ public class Main{
 	//	w.test( hw );
 	//	w.test_proc( hw );	
 	//	w.swing( hw, 3, 1000, 5000 );
-	//	w.test( hw, 4 );
+		w.test( hw );
 	//	w.findOrder( hw, 3 );
 	//	w.showOrder();
 	//	Wizard.wait(1000);

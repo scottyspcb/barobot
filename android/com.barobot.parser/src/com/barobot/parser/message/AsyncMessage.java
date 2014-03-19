@@ -35,6 +35,9 @@ public class AsyncMessage extends History_item{
 		this.blocking		= blocking;
 		this.direction		= dir;
 	}
+	public String getName(){
+		return this.name;
+	}
 	public void unlockWith( String withCommand ){
 	//	System.out.println("unlockWith "+withCommand);
 	//	System.out.println("\t\t>>>AsyncMessage.unlockWith: " + this.command +" with: "+ withCommand.trim());
@@ -69,9 +72,9 @@ public class AsyncMessage extends History_item{
 		boolean blocing = this.wait4Finish();
 		if( this.command == null || this.command.equals( "") ){
 			if( blocing ){
-				return prefix + "blocking logic ("+name+")\t\t\t\t" + unlocking_command;
+				return prefix + "blocking logic ("+getName()+")\t\t\t\t" + unlocking_command;
 			}else{
-				return prefix + "logic ("+name+")\t\t\t\t" + unlocking_command;
+				return prefix + "logic ("+getName()+")\t\t\t\t" + unlocking_command;
 			}
 		}else if(unlocking_command!=null){
 			String isblocking = blocking ? "(blocking)" : "";

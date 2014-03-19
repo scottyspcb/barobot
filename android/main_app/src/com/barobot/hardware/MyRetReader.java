@@ -1,5 +1,6 @@
 package com.barobot.hardware;
 
+import com.barobot.common.BarobotConnector;
 import com.barobot.common.Initiator;
 import com.barobot.common.constant.Constant;
 import com.barobot.common.constant.Methods;
@@ -255,9 +256,13 @@ public class MyRetReader implements RetReader {
 	
 	private int frontNum = 0;
 	private int BackNum = 0;
-
 	private int last_3 = 0;
 	private int last_7 = 0;
+	
+	private int lastStateNum = 0;
+	
+	
+	
 	private boolean was_empty6 = false;
 	private boolean was_empty4 = false;
 	public boolean importantAnalog(AsyncDevice asyncDevice, AsyncMessage wait_for2, String fromArduino, boolean checkInput ) {
@@ -314,15 +319,13 @@ public class MyRetReader implements RetReader {
 					state_num = 0;
 				}else if(state_name == Methods.HX_STATE_1 ){
 					decoded += "/HX_STATE_1";
-					if(virtualComponents.scann_bottles == true){
-						virtualComponents.set( "LENGTHX", "" + spos);
-						virtualComponents.set( "X_GLOBAL_MAX", "" + spos );
-						virtualComponents.hereIsBottle(11, spos, virtualComponents.SERVOY_FRONT_POS );
-					}
+					virtualComponents.set( "LENGTHX", "" + spos);
+					virtualComponents.set( "X_GLOBAL_MAX", "" + spos );
+					virtualComponents.hereIsBottle(11, spos, BarobotConnector.SERVOY_FRONT_POS );
 					state_num = 0;
 				}else if(state_name == Methods.HX_STATE_2 ){
 					decoded += "/HX_STATE_2";
-					hereIsMagnet( 11, hpos, hpos+500, virtualComponents.BOTTLE_IS_FRONT );
+					hereIsMagnet( 11, hpos, hpos+500, BarobotConnector.BOTTLE_IS_FRONT );
 					frontNum = 0;
 					BackNum = 0;
 					last_3 = 0;
@@ -341,7 +344,7 @@ public class MyRetReader implements RetReader {
 				}else if(state_name == Methods.HX_STATE_4 ){
 					if(last_3 != 0 ){
 						decoded += "/4 BOTTLE END";
-						hereIsMagnet(fromstart, last_3, hpos, virtualComponents.BOTTLE_IS_BACK );
+						hereIsMagnet(fromstart, last_3, hpos, BarobotConnector.BOTTLE_IS_BACK );
 						BackNum++;
 						fromstart++;
 						last_3 = 0;
@@ -355,7 +358,7 @@ public class MyRetReader implements RetReader {
 				}else if(state_name == Methods.HX_STATE_6 ){
 					if(last_7 != 0 ){
 						decoded += "/6 BOTTLE END";
-						hereIsMagnet(fromstart, last_7, hpos, virtualComponents.BOTTLE_IS_FRONT );
+						hereIsMagnet(fromstart, last_7, hpos, BarobotConnector.BOTTLE_IS_FRONT );
 						frontNum++;
 						last_7 = 0;
 						fromstart++;
@@ -386,12 +389,35 @@ public class MyRetReader implements RetReader {
 					virtualComponents.set( "X_GLOBAL_MIN", "" + hpos );
 					virtualComponents.driver_x.setM(hpos);
 					spos = virtualComponents.driver_x.hard2soft(hpos);		// new software pos (equal 0);
-					virtualComponents.hereIsStart(spos, virtualComponents.SERVOY_FRONT_POS );
+					virtualComponents.hereIsStart(spos, BarobotConnector.SERVOY_FRONT_POS );
 			//		Initiator.logger.i("input_parser", "jestem w: " + spos );
 
 				}else if(state_name == Methods.HX_STATE_10 ){		// ERROR not connected
 					decoded += "/HX_STATE_10";
 				}
+			}else{
+				if(state_name == Methods.HX_STATE_0 ){				// ERROR
+				}else if(state_name == Methods.HX_STATE_1 ){
+					decoded += "/HX_STATE_1";
+					virtualComponents.set( "LENGTHX", "" + spos);
+					virtualComponents.set( "X_GLOBAL_MAX", "" + spos );
+					virtualComponents.hereIsBottle(11, spos, BarobotConnector.SERVOY_FRONT_POS );
+					state_num = 0;
+				}else if(state_name == Methods.HX_STATE_2 ){
+				}else if(state_name == Methods.HX_STATE_3 ){
+				}else if(state_name == Methods.HX_STATE_4 ){
+				}else if(state_name == Methods.HX_STATE_5 ){
+				}else if(state_name == Methods.HX_STATE_6 ){
+				}else if(state_name == Methods.HX_STATE_7 ){
+				}else if(state_name == Methods.HX_STATE_8 ){
+				}else if(state_name == Methods.HX_STATE_9 ){
+					virtualComponents.set( "X_GLOBAL_MIN", "" + hpos );
+					virtualComponents.driver_x.setM(hpos);
+					spos = virtualComponents.driver_x.hard2soft(hpos);		// new software pos (equal 0);
+					virtualComponents.hereIsStart(spos, BarobotConnector.SERVOY_FRONT_POS );
+
+				}else if(state_name == Methods.HX_STATE_10 ){		// ERROR not connected
+				}	
 			}
 		//	Initiator.logger.i("INNER_HALL_X", "" + state_name + " / "+ hpos+ " / "+ dir);
 		}else if( parts[1] == Methods.INNER_HALL_Y ){
@@ -411,10 +437,10 @@ public class MyRetReader implements RetReader {
 		return true;
 	}
 	private void hereIsMagnet(int magnetnum, int fromHPos, int toHPos, int bottleIsBack ) {
-		int num		= virtualComponents.magnet_order[magnetnum];
-		int ypos	= virtualComponents.b_pos_y[ num ];
-		int row		= virtualComponents.bottle_row[ num ];
-		if(row == virtualComponents.BOTTLE_IS_BACK){
+		int num		= BarobotConnector.magnet_order[magnetnum];
+		int ypos	= BarobotConnector.b_pos_y[ num ];
+		int row		= BarobotConnector.bottle_row[ num ];
+		if(row == BarobotConnector.BOTTLE_IS_BACK){
 			Initiator.logger.i("bottle "+ num +" BACK", "frontNum: "+ frontNum+" BackNum: "+ BackNum+ "from " +fromHPos + " to " + toHPos );
 		}else{
 			Initiator.logger.i("bottle "+ num +" FRONT", "frontNum: "+ frontNum+" BackNum: "+ BackNum+ "from " +fromHPos + " to " + toHPos );
@@ -423,7 +449,7 @@ public class MyRetReader implements RetReader {
 			int hposx = (fromHPos + toHPos) / 2;
 			//int hposx	= fromPos;
 			int spos2	= virtualComponents.driver_x.hard2soft(hposx);
-			int margin	= virtualComponents.margin_x[ num ];
+			int margin	= BarobotConnector.margin_x[ num ];
 			virtualComponents.hereIsBottle(num, spos2 + margin, ypos );
 			Upanel up	= virtualComponents.getUpanelBottle(num);
 			Queue q		= Arduino.getInstance().getMainQ();
@@ -435,9 +461,9 @@ public class MyRetReader implements RetReader {
 			}
 		}else{
 			Initiator.logger.i("bottle "+ num +"", "nie zgadza sie");
-			if(row ==  virtualComponents.BOTTLE_IS_BACK ){
+			if(row ==  BarobotConnector.BOTTLE_IS_BACK ){
 				Initiator.logger.i("bottle "+ num +"", "nie zgadza sie. spodziewano sie back a jest front");	
-			}else if(row ==  virtualComponents.BOTTLE_IS_FRONT ){
+			}else if(row ==  BarobotConnector.BOTTLE_IS_FRONT ){
 				Initiator.logger.i("bottle "+ num +"", "nie zgadza sie. spodziewano sie front a jest back");
 			}
 		}

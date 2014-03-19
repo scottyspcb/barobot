@@ -73,6 +73,7 @@ public class Arduino{
 				return true;
 			}});
 		connection.init();
+
 		connection.setSerialEventListener( new SerialEventListener() {
 			@Override
 			public void onConnect() {
@@ -81,12 +82,12 @@ public class Arduino{
 			}
 			@Override
 			public void onClose() {
-				
 			}
 			@Override
 			public void connectedWith(String bt_connected_device, String address) {
 			}
-		});	
+		});
+
 		mb.registerSender( connection );		
 		Queue.enableDevice( mainboardSource );
 	//		prepareDebugConnection();
@@ -252,12 +253,12 @@ public class Arduino{
 		new Thread( new Runnable(){
 			@Override
 			public void run() {
-				mConversationHistory.clear();
+				Initiator.logger.i("Arduino.destroy", "--- ON DESTROY3 ---");
 				mConversationHistory = null;
 				ahc					= null;
 				mb					= null;
-				instance = null;
-				Initiator.logger.i("Arduino.destroy", "--- ON DESTROY3 ---");
+				instance			= null;
+				Initiator.logger.i("Arduino.destroy", "--- ON DESTROY4a ---");
 				main_queue.destroy();
 				Initiator.logger.i("Arduino.destroy", "--- ON DESTROY4 ---");
 				main_queue = null;

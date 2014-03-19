@@ -46,11 +46,11 @@ public class MotorDriver {
 	-4000		 = 0	-4000
 	*/
 	public int hard2soft( int pos2 ){
-	//	Initiator.logger.w("MARGIN X1", "Margin: " + m1 + "  hard: " + pos2 + "=> soft " + (pos2 -m1) );
+		Initiator.logger.w("MARGIN X1", "Margin: " + m1 + "  hard: " + pos2 + "=> soft " + (pos2 -m1) );
 		return pos2 - m1;
 	}
 	public int soft2hard( int pos3 ){
-	//	Initiator.logger.w("MARGIN X2", "Margin: " + m1 + "  soft: " + pos3 + " => hard " + (pos3 -( -m1)));
+		Initiator.logger.w("MARGIN X2", "Margin: " + m1 + "  soft: " + pos3 + " => hard " + (pos3 -( -m1)));
 		return pos3 - (- m1);
 	}
 	public void movoTo( final Queue q, final int pos ) {

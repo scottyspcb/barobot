@@ -983,7 +983,8 @@ void send2android( volatile uint8_t buffer[], int length ){
 	Serial.print(buffer[0]);
 	for (int i=1; i<length; i++) { 
 		Serial.print(",");	
-		Serial.print(buffer[i]); 
+		Serial.print(buffer[i]);
+		stepperX.run();
 	}
 }
 void serialEvent(){				             // Runs after every LOOP (means don't run if loop hangs)

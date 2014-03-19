@@ -6,6 +6,11 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.FutureTask;
+
+import com.barobot.common.BarobotConnector;
 import com.barobot.common.IspSettings;
 import com.barobot.i2c.BarobotTester;
 import com.barobot.i2c.MainBoard;
@@ -413,6 +418,8 @@ public class Wizard {
 	}
 	
 	public void test(Hardware hw) {
+		hw.connect();
+		Queue q = hw.getQueue();
 		/*
 		try {
 			FileHandler fh = new FileHandler("log_test.txt");
@@ -422,23 +429,23 @@ public class Wizard {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}*/
+
+		int current_index		= 0;
+
 		
-		hw.connect();
+		LedOrder lo = new LedOrder( q );
+		lo.addOnReady( new OnReadyListener<LedOrder>(){
+			public void onReady(LedOrder res) {
+				BarobotConnector.upanels = res.orderByNum();
+				System.out.println("Tkkkkkkkkkkkkkkkkkkk");
+			}
+		});
+		lo.asyncStart();
+		
+		Main.wait(4000);
+		
 		/*
-		Queue q = hw.getQueue();
-		q.add(new AsyncMessage( "I", true ){
-					@Override
-					public boolean isRet(String result, Queue q) {
-						if( "RI".equals(result)){
-							return true;
-						}
-						return false;
-					}
-					public boolean onInput(String command) {
-						System.out.println("onInput: " + command);
-						return false;
-					}
-		});*/
+		
 		hw.send("I", "RI");
 
 		Operation  op	= new Operation( "runTo" );
@@ -446,8 +453,8 @@ public class Wizard {
 		op.needParam("y" );
 		op.needParam("z", 20 );
 		op.needParam("sth", null );		
-
-		hw.send("TEST", "RTEST");
+*/
+//		hw.send("TEST", "RTEST");
 	//	q.addWaitThread( Main.main );
 		System.out.println("wizard end");
 	}

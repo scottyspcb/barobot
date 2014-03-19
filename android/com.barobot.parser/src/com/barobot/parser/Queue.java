@@ -186,10 +186,10 @@ public class Queue {
 	//		Initiator.logger.i("Queue.run.wait_for1", ""+ wait_for_device_id);
 			if(this.wait_for_device_id > -1 ){
 			//	endRun();
-	//			Initiator.logger.i("Queue.run.wait_for1 stop", ""+ wait_for_device_id);
+		//		Initiator.logger.i("Queue.run.wait_for1 stop", ""+ wait_for_device_id);
 				return;		// jestem w trakcie oczekiwania
 			}else{
-	//			Initiator.logger.w("Queue.run.wait_for1", "no blocked" + wait_for_device_id);	
+		//		Initiator.logger.w("Queue.run.wait_for1", "no blocked" + wait_for_device_id);	
 			}
 	//		boolean wasEmpty = output.isEmpty();
 			while (!output.isEmpty()) {
@@ -198,7 +198,7 @@ public class Queue {
 				//	endRun();
 					return;
 				}
-				AsyncMessage m = output.pop();
+				AsyncMessage m	= output.pop();
 				AsyncDevice dev = m.getDevice();
 				if(dev!=null){
 	//				Initiator.logger.i("Queue.run.start",  m.toString() );
@@ -211,13 +211,13 @@ public class Queue {
 	                	this.wait_for_device_id	= m.getDeviceId();
 	                	dev.waitFor(m, this );
 	            //    	endRun();
-	                //	Initiator.logger.i("Queue.isBlocing true & return", m.toString() );
-	                //	Initiator.logger.i("Queue.isBlocing", "" + wait_for_device_id );
+	           //     	Initiator.logger.i("Queue.isBlocing true & return", m.toString() );
+	          //      	Initiator.logger.i("Queue.isBlocing", "" + wait_for_device_id );
 	                	return;
 	                }else{
 	                	this.wait_for_device_id	= -1;
-	                //	Initiator.logger.i("Queue.no Blocing", m.toString() );
-	                //	Initiator.logger.i("Queue.no Blocing", "" + wait_for_device_id );
+	          //      	Initiator.logger.i("Queue.no Blocing", m.toString() );
+	           //     	Initiator.logger.i("Queue.no Blocing", "" + wait_for_device_id );
 	                }
 				}
 			}
@@ -235,6 +235,7 @@ public class Queue {
 			if(isMainQueue ){
 				Initiator.logger.i("Queue.addFirst", "newsize: "+ this.output.size() );
 			}
+			//show();
 		}
 		exec();
 	}
@@ -373,7 +374,15 @@ public class Queue {
 			devs.clear();
 		}
 	}
-
+	public void show() {
+		String res = "Queue:\n";
+		synchronized (this.lock) {
+			for (AsyncMessage msg : this.output){
+				res += "\t" + msg.toString() + "\n";
+			}	
+			Initiator.logger.w("Queue.show", res);
+		}
+	}
 }
 
 
