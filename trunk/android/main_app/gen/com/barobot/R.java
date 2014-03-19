@@ -124,7 +124,7 @@ public final class R {
         public static final int drink9=0x7f02000f;
         public static final int favorite_55=0x7f020010;
         public static final int history_55=0x7f020011;
-        public static final int ingredient_list_background=0x7f020012;
+        public static final int ingredient_list_bg=0x7f020012;
         public static final int list_selector=0x7f020013;
         public static final int lucky_55=0x7f020014;
         public static final int mobile_55=0x7f020015;

@@ -44,7 +44,7 @@
             android:layout_width="match_parent"
             android:layout_height="100sp"
             style="@style/ButtonGreen"
-            android:background="@drawable/ingredient_list_background"
+            android:background="@drawable/ingredient_list_bg"
             android:textSize="50sp"
             android:layout_alignParentTop="true"
             android:layout_alignParentLeft="true"
@@ -60,7 +60,7 @@
             android:layout_margin="3dp"
             android:divider="@null"
             android:dividerHeight="0sp"
-            android:background="@drawable/ingredient_list_background"/>
+            android:background="@drawable/ingredient_list_bg"/>
 
         </RelativeLayout>
         
