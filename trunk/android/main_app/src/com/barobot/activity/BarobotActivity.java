@@ -1,8 +1,6 @@
 package com.barobot.activity;
 
 import com.barobot.R;
-import com.barobot.gui.MainActivity;
-import com.barobot.gui.OutsideComponentActivity;
 import com.barobot.hardware.Arduino;
 import com.barobot.hardware.virtualComponents;
 
@@ -60,17 +58,11 @@ public class BarobotActivity extends Activity {
     	case R.id.action_panic:
     		virtualComponents.cancel_all();
     		return false;
-    	case R.id.main_feature:
-    		serverIntent = new Intent(this, MainActivity.class);
-    		break;
     	case R.id.action_bottles:
     		serverIntent = new Intent(this, BottleSetupActivity.class);
     		break;
     	case R.id.action_creator:
     		serverIntent = new Intent(this, CreatorActivity.class);
-    		break;
-    	case R.id.action_outside_components:
-    		serverIntent = new Intent(this, OutsideComponentActivity.class);
     		break;
     	case R.id.action_recipes:
     		serverIntent = new Intent(this, RecipeSetupActivity.class);
