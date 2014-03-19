@@ -43,11 +43,11 @@ public final class R {
         /**  Green Button 
          */
         public static final int GreenButtonStartColor=0x7f080004;
-        public static final int Main=0x7f08002c;
-        public static final int MainDark1=0x7f08002d;
-        public static final int MainDark2=0x7f08002e;
-        public static final int MainLight1=0x7f08002a;
-        public static final int MainLight2=0x7f08002b;
+        public static final int Main=0x7f080031;
+        public static final int MainDark1=0x7f080032;
+        public static final int MainDark2=0x7f080033;
+        public static final int MainLight1=0x7f08002f;
+        public static final int MainLight2=0x7f080030;
         public static final int MenuButtonBorderColor=0x7f08001c;
         public static final int MenuButtonDisabledEndColor=0x7f08001b;
         public static final int MenuButtonDisabledStartColor=0x7f08001a;
@@ -62,11 +62,16 @@ public final class R {
         /**  Red Button 
          */
         public static final int RedButtonStartColor=0x7f08000e;
-        public static final int SecondaryB=0x7f080027;
-        public static final int SecondaryBDark1=0x7f080028;
-        public static final int SecondaryBDark2=0x7f080029;
-        public static final int SecondaryBLight1=0x7f080025;
-        public static final int SecondaryBLight2=0x7f080026;
+        public static final int SecondaryB=0x7f08002c;
+        public static final int SecondaryBDark1=0x7f08002d;
+        public static final int SecondaryBDark2=0x7f08002e;
+        public static final int SecondaryBLight1=0x7f08002a;
+        public static final int SecondaryBLight2=0x7f08002b;
+        public static final int TransparentComplementary=0x7f080027;
+        public static final int TransparentComplementaryDark1=0x7f080028;
+        public static final int TransparentComplementaryDark2=0x7f080029;
+        public static final int TransparentComplementaryLight1=0x7f080025;
+        public static final int TransparentComplementaryLight2=0x7f080026;
         public static final int YellowButtonBorderColor=0x7f080017;
         public static final int YellowButtonDisabledEndColor=0x7f080016;
         public static final int YellowButtonDisabledStartColor=0x7f080015;
@@ -112,15 +117,20 @@ public final class R {
         public static final int button_yellow=0x7f020008;
         public static final int choose_55=0x7f020009;
         public static final int create_55=0x7f02000a;
-        public static final int favorite_55=0x7f02000b;
-        public static final int history_55=0x7f02000c;
-        public static final int ingredient_list_background=0x7f02000d;
-        public static final int list_selector=0x7f02000e;
-        public static final int lucky_55=0x7f02000f;
-        public static final int mobile_55=0x7f020010;
-        public static final int options_55=0x7f020011;
-        public static final int recipe_list_bg=0x7f020012;
-        public static final int test=0x7f020013;
+        public static final int drink14=0x7f02000b;
+        public static final int drink16=0x7f02000c;
+        public static final int drink3=0x7f02000d;
+        public static final int drink8=0x7f02000e;
+        public static final int drink9=0x7f02000f;
+        public static final int favorite_55=0x7f020010;
+        public static final int history_55=0x7f020011;
+        public static final int ingredient_list_background=0x7f020012;
+        public static final int list_selector=0x7f020013;
+        public static final int lucky_55=0x7f020014;
+        public static final int mobile_55=0x7f020015;
+        public static final int options_55=0x7f020016;
+        public static final int recipe_list_bg=0x7f020017;
+        public static final int test=0x7f020018;
     }
     public static final class id {
         public static final int SeekBar01=0x7f0c00e4;
@@ -428,14 +438,16 @@ public final class R {
         public static final int dialog_add_type=0x7f030019;
         public static final int dialog_int=0x7f03001a;
         public static final int dialog_ubutton=0x7f03001b;
-        public static final int fragment_menu=0x7f03001c;
-        public static final int fragment_recipe=0x7f03001d;
-        public static final int ingredient_list_item=0x7f03001e;
-        public static final int item_layout=0x7f03001f;
-        public static final int message=0x7f030020;
-        public static final int recipe_list_item_layout=0x7f030021;
-        public static final int recipetile=0x7f030022;
-        public static final int spinner_layout=0x7f030023;
+        public static final int fragment_drink_image=0x7f03001c;
+        public static final int fragment_ingredient_list=0x7f03001d;
+        public static final int fragment_menu=0x7f03001e;
+        public static final int fragment_recipe=0x7f03001f;
+        public static final int ingredient_list_item=0x7f030020;
+        public static final int item_layout=0x7f030021;
+        public static final int message=0x7f030022;
+        public static final int recipe_list_item_layout=0x7f030023;
+        public static final int recipetile=0x7f030024;
+        public static final int spinner_layout=0x7f030025;
     }
     public static final class menu {
         public static final int about=0x7f0b0000;
@@ -501,6 +513,7 @@ public final class R {
          */
         public static final int glass_reminder_title=0x7f090046;
         public static final int hello_world=0x7f090015;
+        public static final int image_desc=0x7f090076;
         public static final int liquid_name=0x7f09003c;
         public static final int liquid_select_title=0x7f09003b;
         public static final int liquid_type=0x7f09003d;
@@ -544,27 +557,27 @@ public final class R {
         public static final int pour_finished_button=0x7f09004d;
         public static final int pour_finished_message=0x7f09004c;
         public static final int pour_finished_title=0x7f09004b;
-        public static final int pref_default_display_name=0x7f09007b;
-        public static final int pref_description_social_recommendations=0x7f090079;
+        public static final int pref_default_display_name=0x7f09007c;
+        public static final int pref_description_social_recommendations=0x7f09007a;
         /**  Example settings for Data & Sync 
          */
-        public static final int pref_header_data_sync=0x7f09007d;
+        public static final int pref_header_data_sync=0x7f09007e;
         /**  Strings related to Settings 
  Example General settings 
          */
-        public static final int pref_header_general=0x7f090077;
+        public static final int pref_header_general=0x7f090078;
         /**  Example settings for Notifications 
          */
-        public static final int pref_header_notifications=0x7f090080;
-        public static final int pref_ringtone_silent=0x7f090083;
-        public static final int pref_title_add_friends_to_messages=0x7f09007c;
-        public static final int pref_title_display_name=0x7f09007a;
-        public static final int pref_title_new_message_notifications=0x7f090081;
-        public static final int pref_title_ringtone=0x7f090082;
-        public static final int pref_title_social_recommendations=0x7f090078;
-        public static final int pref_title_sync_frequency=0x7f09007e;
-        public static final int pref_title_system_sync_settings=0x7f09007f;
-        public static final int pref_title_vibrate=0x7f090084;
+        public static final int pref_header_notifications=0x7f090081;
+        public static final int pref_ringtone_silent=0x7f090084;
+        public static final int pref_title_add_friends_to_messages=0x7f09007d;
+        public static final int pref_title_display_name=0x7f09007b;
+        public static final int pref_title_new_message_notifications=0x7f090082;
+        public static final int pref_title_ringtone=0x7f090083;
+        public static final int pref_title_social_recommendations=0x7f090079;
+        public static final int pref_title_sync_frequency=0x7f09007f;
+        public static final int pref_title_system_sync_settings=0x7f090080;
+        public static final int pref_title_vibrate=0x7f090085;
         public static final int processing_window_title=0x7f090019;
         /**  Product Setup 
          */
@@ -594,7 +607,7 @@ public final class R {
         public static final int title_activity_bottle_setup=0x7f09003f;
         public static final int title_activity_creator=0x7f09006e;
         public static final int title_activity_device_list=0x7f090030;
-        public static final int title_activity_main_settings=0x7f090076;
+        public static final int title_activity_main_settings=0x7f090077;
         public static final int title_activity_outside_component=0x7f09006c;
         public static final int title_activity_product=0x7f09006d;
         public static final int title_activity_recipe_setup=0x7f090040;

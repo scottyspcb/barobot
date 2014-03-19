@@ -58,8 +58,8 @@
     <color name="MenuButtonBorderColor">@color/SecondaryB</color>
     
     <!-- Bottle Buttons -->
-    <color name="BottleStartColor">#DFF4FB</color>
-    <color name="BottleEndColor">#81F4F8</color>
+    <color name="BottleStartColor">#BBDFF4FB</color>
+    <color name="BottleEndColor">#BB81F4F8</color>
     <color name="BottleBorderColor">#FFFFFF</color>
     
     <!-- Colors -->
@@ -68,6 +68,12 @@
     <color name="Complementary">#FFC200</color>
     <color name="ComplementaryDark1">#FFC200</color>
     <color name="ComplementaryDark2">#A67E00</color>
+    
+    <color name="TransparentComplementaryLight1">#AAFFDD73</color>
+    <color name="TransparentComplementaryLight2">#AAFFD140</color>
+    <color name="TransparentComplementary">#AAFFC200</color>
+    <color name="TransparentComplementaryDark1">#AAFFC200</color>
+    <color name="TransparentComplementaryDark2">#AAA67E00</color>
     
     <color name="SecondaryBLight1">#A3F06C</color>
     <color name="SecondaryBLight2">#87F03C</color>
