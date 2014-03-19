@@ -6,5 +6,5 @@
     android:layout_margin="3dp"
     android:src="@drawable/drink3"
     android:scaleType="centerCrop"
-    android:background="@drawable/ingredient_list_background"
+    android:background="@drawable/ingredient_list_bg"
     android:contentDescription="@string/image_desc"/>

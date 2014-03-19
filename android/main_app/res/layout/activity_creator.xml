@@ -105,7 +105,7 @@
                 android:layout_margin="5sp"
                 android:divider="@null"
                 android:dividerHeight="0sp"
-                android:background="@drawable/ingredient_list_background">
+                android:background="@drawable/ingredient_list_bg">
                 
             </ListView>
             <LinearLayout
