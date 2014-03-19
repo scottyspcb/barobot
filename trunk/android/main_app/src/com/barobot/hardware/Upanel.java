@@ -18,7 +18,6 @@ public class Upanel {
 		String command = "L" +myaddress + ","+ selector +"," + pwm;
 		q.add( command, true );
 	}
-	
 
 	public void setAddress(int myaddress) {
 		this.myaddress = myaddress;

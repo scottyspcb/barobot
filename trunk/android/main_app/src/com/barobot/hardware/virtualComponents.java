@@ -3,9 +3,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.barobot.AppInvoker;
-import com.barobot.activity.BarobotMain;
 import com.barobot.activity.DebugActivity;
+import com.barobot.common.BarobotConnector;
 import com.barobot.common.Initiator;
 import com.barobot.common.constant.Constant;
 import com.barobot.common.constant.Methods;
@@ -19,130 +18,17 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 public class virtualComponents {
-	public static final int WITHGLASS = 111;
-	public static final int WITHOUTGLASS = 222;
 
 	public static Activity application;
 	private static SharedPreferences myPrefs;
 	private static SharedPreferences.Editor config_editor;			// config systemu android
 	private static Map<String, String> hashmap = new HashMap<String, String>();
-	public static boolean is_ready = false;
 
-	// todo - porządek z tymi wartościami 
-	public static int mnoznikx = 1;
-	public static int mnozniky = 1;
-//	public static int neutral_pos_y = 200;
-	public static boolean need_glass_fill = false;
 	public static boolean need_glass_up = false;
-	public static int weigh_min_diff = 20;
 	public static boolean pac_enabled = true;
-
-	//config
-//	private static final int SERVOZ_PAC_TIME_UP = 600;
-	private static final int SERVOZ_PAC_POS = 1850;
-	private static final int SERVOZ_PAC_TIME_WAIT = 800;
-	public static final int SERVOZ_POUR_TIME = 3500;
-
-	//public static final int SERVOZ_UP_TIME = 400;
-	//public static final int SERVOZ_DOWN_TIME = 300;
-
-	public static final int SERVOZ_UP_POS = 2100;
-	public static final int SERVOZ_UP_LIGHT_POS = 2050;
-	public static final int SERVOZ_DOWN_POS = 1250;
-	public static final int SERVOZ_TEST_POS = 1300;
-
-	public static final int SERVOY_FRONT_POS = 800;
-	public static final int SERVOY_BACK_POS = 2200;
-	public static final int SERVOY_TEST_POS = 1000;
-	public static final int SERVOY_BACK_NEUTRAL = 1200;
-
-	public static final int BOTTLE_IS_BACK = 2;
-	public static final int BOTTLE_IS_FRONT = 4;
-
-	public static final int DRIVER_X_SPEED = 2500;
-	public static final int DRIVER_Y_SPEED = 30;
-	public static final int DRIVER_Z_SPEED = 250;
-
 	public static final int ANALOG_WAGA = 2;
-	public static final int ANALOG_DIST1 = 20;
-	public static final int ANALOG_DIST2 = 21;
-	public static final int ANALOG_HALL = 10;
 	public static final int SERVOY_REPEAT_TIME = 2000;
 
-	public static int margin_front = 0;
-	public static int margin_back = 0;
-
-	public static int[] upanels = {
-		12,20,23,19,18,17,15,16,21,22,13,14,
-	};
-	public static int[] front_upanels = {
-		12,19,17,20,22,14,
-	};
-
-	// pozycje butelek, sa aktualizowane w trakcie
-	public static int[] times = {
-		SERVOZ_POUR_TIME,		
-		SERVOZ_POUR_TIME, 
-		SERVOZ_POUR_TIME,
-		SERVOZ_POUR_TIME,
-		SERVOZ_POUR_TIME,
-		SERVOZ_POUR_TIME,
-		SERVOZ_POUR_TIME,
-		SERVOZ_POUR_TIME, 
-		SERVOZ_POUR_TIME,
-		SERVOZ_POUR_TIME,
-		SERVOZ_POUR_TIME*2,
-		SERVOZ_POUR_TIME
-	};
-
-	// pozycje butelek, sa aktualizowane w trakcie
-	public static int[] margin_x = {
-		-80,				// 0, num 1,back
-		0,					// 1, num 2,front		
-		-10,				// 2, num 3,back
-		0,					// 3, num 4,front		
-		-30,				// 4, num 5,back		
-		0,					// 5, num 6,front		
-		+20,				// 6, num 7,back
-		-20,				// 7, num 8,front
-		-40,				// 8, num 9,back
-		0,					// 9, num 10,front
-		+40,				// 10, num 11,back		
-		-100,				// 11, num 12,front
-	};
-
-	private static int[] b_pos_x = {207,207, 394,394,581,581,768,768, 955,955,1142,1142};
-	public static int[] b_pos_y = {
-		SERVOY_BACK_POS,					// 0, num 1
-		SERVOY_FRONT_POS,					// 1, num 2
-		SERVOY_BACK_POS,					// 2, num 3
-		SERVOY_FRONT_POS,					// 3, num 4
-		SERVOY_BACK_POS,					// 4, num 5
-		SERVOY_FRONT_POS,					// 5, num 6
-		SERVOY_BACK_POS,					// 6, num 7
-		SERVOY_FRONT_POS,					// 7, num 8
-		SERVOY_BACK_POS,					// 8, num 9
-		SERVOY_FRONT_POS,					// 9, num 10
-		SERVOY_BACK_POS,					// 10, num 11
-		SERVOY_FRONT_POS,					// 11, num 12
-	};
-	
-	public static int[] bottle_row = {
-		BOTTLE_IS_BACK,					// 0, num 1
-		BOTTLE_IS_FRONT,				// 1, num 2
-		BOTTLE_IS_BACK,					// 2, num 3
-		BOTTLE_IS_FRONT,				// 3, num 4
-		BOTTLE_IS_BACK,					// 4, num 5
-		BOTTLE_IS_FRONT,				// 5, num 6
-		BOTTLE_IS_BACK,					// 6, num 7
-		BOTTLE_IS_FRONT,				// 7, num 8
-		BOTTLE_IS_BACK,					// 8, num 9
-		BOTTLE_IS_FRONT,				// 9, num 10
-		BOTTLE_IS_BACK,					// 10, num 11
-		BOTTLE_IS_FRONT,				// 11, num 12
-	};
-
-	public static int[] magnet_order = {0,2,1,4,3,6,5,8,7,10,9,11 };	// numer butelki, odjąc 1 aby numer ID
 	private static String[] persistant = {
 		"POSX",
 		"POSY",
@@ -186,7 +72,7 @@ public class virtualComponents {
 		config_editor		= myPrefs.edit();
 		driver_x			= new MotorDriver();
 		carret				= new Carret( 2, 10 );
-		driver_x.defaultSpeed = virtualComponents.DRIVER_X_SPEED;
+		driver_x.defaultSpeed = BarobotConnector.DRIVER_X_SPEED;
 		driver_x.setSPos( virtualComponents.getInt( "POSX", 0 ) );
 	}
 	public static String get( String name, String def ){
@@ -201,10 +87,10 @@ public class virtualComponents {
 		return ret;
 	}
 	public static int getPourTime( int num ){
-		if( num > 0 && num < times.length){
-			return times[num];
+		if( num > 0 && num < BarobotConnector.times.length){
+			return BarobotConnector.times[num];
 		}
-		return SERVOZ_POUR_TIME;
+		return BarobotConnector.SERVOZ_POUR_TIME;
 	}
 	
 	public static int getInt( String name, int def ){
@@ -227,10 +113,10 @@ public class virtualComponents {
 		}
 	}
 	public static int getBottlePosX( int i ) {
-		return virtualComponents.getInt("BOTTLE_X_" + i, b_pos_x[i]);
+		return virtualComponents.getInt("BOTTLE_X_" + i, BarobotConnector.b_pos_x[i]);
 	}
 	public static int getBottlePosY( int i ) {
-		return virtualComponents.getInt("BOTTLE_Y_" + i, b_pos_y[i]);
+		return virtualComponents.getInt("BOTTLE_Y_" + i, BarobotConnector.b_pos_y[i]);
 	}
 	private static void update(String name, String value) {
 		final DebugActivity dialog = DebugActivity.getInstance();
@@ -258,49 +144,14 @@ public class virtualComponents {
 	public static void pacpac() {
 		Queue q = Arduino.getInstance().getMainQ();
 		Initiator.logger.i(Constant.TAG,"pac");
-/*
-		AsyncMessage moveX = new AsyncMessage(true){
-			@Override
-			public long getTimeout() {
-				return AsyncMessage.DEFAULT_TIME;
-			}
-			@Override
-			public void onException(String input) {
-			}
-
-			@Override
-			public Queue run(AsyncDevice dev) {
-				dev.send("X1000,1000");
-				return null;
-			}
-
-			@Override
-			public boolean wait4Finish() {
-				return true;
-			}
-
-			@Override
-			public boolean isRet(String result, Queue q) {
-				return false;
-			}
-
-			@Override
-			public boolean onInput(String input) {
-				return false;
-			}
-
-			@Override
-			public void afterTimeout() {
-				Initiator.logger.i("pacpac","afterTimeout");
-			}
-		};*/
 	//	q.add( moveX );
 		q.add("EX", true);
 //		q.add("EY", true);
 //		q.add("EZ", true);
-		q.add("Z" + virtualComponents.SERVOZ_PAC_POS+","+virtualComponents.DRIVER_Z_SPEED, true);
-		Initiator.logger.i("pacpac","Z" + virtualComponents.SERVOZ_PAC_POS+","+virtualComponents.DRIVER_Z_SPEED);
+		q.add("Z" + BarobotConnector.SERVOZ_PAC_POS+","+BarobotConnector.DRIVER_Z_SPEED, true);
+		Initiator.logger.i("pacpac","Z" + BarobotConnector.SERVOZ_PAC_POS+","+BarobotConnector.DRIVER_Z_SPEED);
 		virtualComponents.moveZDown(q, true );
+		q.add("DY", true);
 		q.add("DX", true);
 		q.addWait(200);
 		q.add("DZ", true);
@@ -311,7 +162,7 @@ public class virtualComponents {
 		mq.clearAll();
 		mq.add("LIVE A OFF", false );
 //		add("EZ");
-		int poszdown	=  virtualComponents.getInt("ENDSTOP_Z_MIN", SERVOZ_DOWN_POS );
+		int poszdown	=  virtualComponents.getInt("ENDSTOP_Z_MIN", BarobotConnector.SERVOZ_DOWN_POS );
 		mq.add("Z" + poszdown, false );		// zwraca początek operacji a nie koniec
 		mq.add("DX", false );
 		mq.add("DY", false );
@@ -346,16 +197,16 @@ public class virtualComponents {
 					q2.addWait( virtualComponents.SERVOY_REPEAT_TIME );
 				}else if(cx != tx && cy == ty ){		// jade tylem lub przodem
 					virtualComponents.moveZDown(q2, disableOnReady );
-					if( cy > virtualComponents.SERVOY_BACK_NEUTRAL ){
-						virtualComponents.moveY( q2, virtualComponents.SERVOY_BACK_NEUTRAL, true);
+					if( cy > BarobotConnector.SERVOY_BACK_NEUTRAL ){
+						virtualComponents.moveY( q2, BarobotConnector.SERVOY_BACK_NEUTRAL, true);
 					}else{
-						virtualComponents.moveY( q2, virtualComponents.SERVOY_FRONT_POS, true);	
+						virtualComponents.moveY( q2, BarobotConnector.SERVOY_FRONT_POS, true);	
 					}
 					virtualComponents.moveX( q2, tx);
 					virtualComponents.moveY( q2, ty, disableOnReady);		
 				}else{	// jade przodem
 					virtualComponents.moveZDown(q2, disableOnReady );
-					virtualComponents.moveY( q2, virtualComponents.SERVOY_FRONT_POS, true);
+					virtualComponents.moveY( q2, BarobotConnector.SERVOY_FRONT_POS, true);
 					virtualComponents.moveX( q2, tx);
 					virtualComponents.moveY( q2, ty, disableOnReady);
 				}
@@ -374,8 +225,8 @@ public class virtualComponents {
 	}
 
 	static Upanel getUpanelBottle(int num) {
-		if( num >= 0 && num < upanels.length ){
-			int addr = upanels[ num ];
+		if( num >= 0 && num < BarobotConnector.upanels.length ){
+			int addr = BarobotConnector.upanels[ num ];
 			return new Upanel( 0 , addr);
 		}
 		return null;
@@ -416,8 +267,8 @@ public class virtualComponents {
 				this.name		= "pacpac";
 				if(virtualComponents.pac_enabled){
 					Queue	q2	= new Queue();	
-					q2.addWait( virtualComponents.SERVOZ_PAC_TIME_WAIT );
-					q2.add("Z" + virtualComponents.SERVOZ_PAC_POS+",255", true);	
+					q2.addWait( BarobotConnector.SERVOZ_PAC_TIME_WAIT );
+					q2.add("Z" + BarobotConnector.SERVOZ_PAC_POS+",255", true);	
 					virtualComponents.moveZDown(q2, true );
 					return q2;
 				}
@@ -487,19 +338,19 @@ public class virtualComponents {
 				}
 				return false;
 			}
-		} );
+		});
 	}
 	public static void moveX( Queue q, String pos ) {
 		moveX(q, Decoder.toInt(pos));
 	}
 	public static void moveY( Queue q, int pos, boolean disableOnReady ) {
-		q.add("Y" + pos+ ","+virtualComponents.DRIVER_Y_SPEED, true);
+		q.add("Y" + pos+ ","+BarobotConnector.DRIVER_Y_SPEED, true);
 		if(disableOnReady){
 			q.add("DY", true );
 		}
 	}
 	public static void moveY( Queue q, String pos ) {
-		q.add("Y" + pos+ ","+virtualComponents.DRIVER_Y_SPEED, true);	
+		q.add("Y" + pos+ ","+BarobotConnector.DRIVER_Y_SPEED, true);	
 	}
 	public static void hereIsStart( int posx, int posy) {
 		//Constant.log(Constant.TAG,"zapisuje start:" +posx+ " " + posy );
@@ -507,19 +358,19 @@ public class virtualComponents {
 		virtualComponents.set("POS_START_Y", posy );
 	}
 	public static void moveZDown(Queue q, boolean disableOnReady) {
-		int poszdown	=  virtualComponents.getInt("ENDSTOP_Z_MIN", SERVOZ_DOWN_POS );
+		int poszdown	=  virtualComponents.getInt("ENDSTOP_Z_MIN", BarobotConnector.SERVOZ_DOWN_POS );
 		moveZ(q, poszdown );
 		q.add("DZ", true);
 	}
 	private static void moveZ(Queue q, int pos) {
-		q.add("Z" + pos +","+virtualComponents.DRIVER_Z_SPEED, true);
+		q.add("Z" + pos +","+BarobotConnector.DRIVER_Z_SPEED, true);
 		q.addWait(300);
 	}
 
 	private static void moveZLight(Queue q, boolean disableOnReady) {
 //		q.add("EZ", true);
-		int poszup	=  virtualComponents.SERVOZ_UP_LIGHT_POS;
-		q.add("Z" + poszup+","+virtualComponents.DRIVER_Z_SPEED, true);
+		int poszup	=  BarobotConnector.SERVOZ_UP_LIGHT_POS;
+		q.add("Z" + poszup+","+BarobotConnector.DRIVER_Z_SPEED, true);
 	//	q.addWait( virtualComponents.SERVOZ_UP_TIME );	// wiec trzeba poczekać
 		if(disableOnReady){
 			q.addWait(300);
@@ -528,8 +379,8 @@ public class virtualComponents {
 	}
 	public static void moveZUp( Queue q, boolean disableOnReady ) {
 //		q.add("EZ", true);
-		int poszup	=  virtualComponents.SERVOZ_UP_POS;
-		q.add("Z" + poszup+","+virtualComponents.DRIVER_Z_SPEED, true);
+		int poszup	=  BarobotConnector.SERVOZ_UP_POS;
+		q.add("Z" + poszup+","+BarobotConnector.DRIVER_Z_SPEED, true);
 	//	q.addWait( virtualComponents.SERVOZ_UP_TIME );	// wiec trzeba poczekać
 		if(disableOnReady){
 			q.addWait(300);
@@ -553,7 +404,7 @@ public class virtualComponents {
 					Queue	q2	= new Queue();
 					virtualComponents.moveZDown(q2, true );
 					//virtualComponents.moveY( q2, virtualComponents.get("NEUTRAL_POS_Y", "0" ));
-					virtualComponents.moveY( q2, virtualComponents.SERVOY_FRONT_POS, true );
+					virtualComponents.moveY( q2, BarobotConnector.SERVOY_FRONT_POS, true );
 					virtualComponents.moveX( q2, sposx);
 					virtualComponents.moveY( q2, sposy, true );
 					return q2;
@@ -568,17 +419,18 @@ public class virtualComponents {
 		carret.setLed( q, "ff", 0 );
 		carret.setLed( q, "22", 250 );
 
-	    virtualComponents.setLeds( "88", 100 );
-	    virtualComponents.setLeds( "22", 200 );
-
+	    virtualComponents.setLeds( "ff", 0 );
+	    q.addWait(500);
 		Queue q1			= new Queue();
-		for(int i =front_upanels.length-1; i>=0;i--){
-			q1.add("L"+ upanels[i] +",22,200", true);
-			q1.addWait(500);
-			q1.add("L"+ upanels[i] +",22,0", true);
+		for(int i =BarobotConnector.front_upanels.length-1; i>=0;i--){
+			q1.add("L"+ BarobotConnector.upanels[i] +",22,200", true);
+			q1.addWait(100);
+			q1.add("L"+ BarobotConnector.upanels[i] +",22,0", true);
 		}
 		q.add(q1);
-
+		q.addWait(100);
+	    virtualComponents.setLeds( "88", 100 );
+	    virtualComponents.setLeds( "22", 200 );
 		q.addWait(500);
 		carret.setLed( q, "22", 20 );
 		q.addWait(500);
@@ -596,9 +448,9 @@ public class virtualComponents {
 		carret.setLed( q, "ff", 0 );
 		carret.setLed( q, "11", 250 );
 		Queue q1		= new Queue();	
-		for(int i =0; i<upanels.length;i++){
-			q1.add("L"+ upanels[i] +",ff,0", true);
-			q1.add("L"+ upanels[i] +",ff,200", true);
+		for(int i =0; i<BarobotConnector.upanels.length;i++){
+			q1.add("L"+ BarobotConnector.upanels[i] +",ff,0", true);
+			q1.add("L"+ BarobotConnector.upanels[i] +",ff,200", true);
 		}
 		q.add(q1);
 	}
@@ -620,13 +472,13 @@ public class virtualComponents {
 		q.add("EX", true );
 		virtualComponents.moveZDown( q ,true );
 		q.addWait(100);
-		virtualComponents.moveZ( q, virtualComponents.SERVOZ_TEST_POS );
+		virtualComponents.moveZ( q, BarobotConnector.SERVOZ_TEST_POS );
 		q.addWait(100);
 		virtualComponents.moveZDown( q ,true );
 		q.addWait(200);
-		virtualComponents.moveY( q, virtualComponents.SERVOY_TEST_POS, true);
+		virtualComponents.moveY( q, BarobotConnector.SERVOY_TEST_POS, true);
 		q.addWait(200);
-		virtualComponents.moveY( q, virtualComponents.SERVOY_FRONT_POS, true);
+		virtualComponents.moveY( q, BarobotConnector.SERVOY_FRONT_POS, true);
 		q.addWait(200);
 		int lengthx19	=  virtualComponents.getInt("LENGTHX", 60000 );	
 		
@@ -652,7 +504,7 @@ public class virtualComponents {
 			@Override
 			public Queue run(AsyncDevice dev, Queue queue) {
 				this.name		= "scanning back";
-				virtualComponents.driver_x.defaultSpeed = DRIVER_X_SPEED;
+				virtualComponents.driver_x.defaultSpeed = BarobotConnector.DRIVER_X_SPEED;
 				Initiator.logger.i("+find_bottles", "down kalibrcja");
 				return null;
 			}
@@ -674,7 +526,7 @@ public class virtualComponents {
 				}
 				if(error){
 					Initiator.logger.i("+find_bottles", "show error");
-					BarobotMain.getInstance().showError();
+				//	BarobotMain.getInstance().showError();
 				}
 				return null;
 			}
@@ -688,9 +540,9 @@ public class virtualComponents {
 
 		Queue q1			= new Queue();
 		Queue q2			= new Queue();		
-		for(int i =0; i<upanels.length;i++){
-			q1.add("L"+ upanels[i] +",ff,200", true);
-			q2.add("L"+ upanels[i] +",ff,0", true);
+		for(int i =0; i<BarobotConnector.upanels.length;i++){
+			q1.add("L"+ BarobotConnector.upanels[i] +",ff,200", true);
+			q2.add("L"+ BarobotConnector.upanels[i] +",ff,0", true);
 		}
 
 		q.add(q1);
@@ -703,6 +555,17 @@ public class virtualComponents {
 	private static void findOrder(Queue q, int index) {
 		int current_index		= 0;
 
+		final Thread t = new Thread( new Runnable(){
+			@Override
+			public void run() {	
+				
+				
+				
+			}
+		});
+		
+		
+		
 		String command = "N" + index;
 		q.add( new AsyncMessage( command, true ){
 			@Override
@@ -731,9 +594,9 @@ public class virtualComponents {
 	public static void setLeds(String string, int value ) {
 		Queue q1			= new Queue();
 		Queue q2			= new Queue();		
-		for(int i =0; i<upanels.length;i++){
-			q1.add("L"+ upanels[i] +",ff,0", true);
-			q1.add("L"+ upanels[i] +","+ string +"," + value, true);
+		for(int i =0; i<BarobotConnector.upanels.length;i++){
+			q1.add("L"+ BarobotConnector.upanels[i] +",ff,0", true);
+			q1.add("L"+ BarobotConnector.upanels[i] +","+ string +"," + value, true);
 		}
 		Queue q			= Arduino.getInstance().getMainQ();
 		q.add(q1);

@@ -41,7 +41,6 @@ public class CreatorActivity extends BarobotActivity implements ArduinoListener{
 	}
 	
 	private void UpdateData(){
-
 		ids = new int[13];
 		ids[1] = R.id.bottle_button1;
 		ids[2] = R.id.bottle_button2;

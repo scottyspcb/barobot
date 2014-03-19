@@ -68,13 +68,12 @@ public abstract class AsyncDevice {
 	}
 	private boolean useInput(String command) {
 		boolean handled =false;
-		Initiator.logger.e("AsyncDevice.useInput", command );
+		Initiator.logger.w("AsyncDevice.useInput", command );
 		String command2 = this.modyfyInput( command );
 		if( !command2.equals(command)){
 			Initiator.logger.e("AsyncDevice.useInput changed to:", command2 );
 			command = command2;
 		}
-
 		boolean used = false;
 		synchronized (this) {
 		//	Initiator.logger.i("wait_for?: ", ( (this.wait_for == null)? "null" : "nonull") );

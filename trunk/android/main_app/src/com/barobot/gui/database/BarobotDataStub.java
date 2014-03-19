@@ -23,7 +23,7 @@ public class BarobotDataStub {
 		}
 		
 		Type type = new Type();
-		type.name = "Vodka";
+		type.name = "Strong";
 		type.insert();
 		
 		Liquid_t liq = new Liquid_t();
@@ -55,9 +55,15 @@ public class BarobotDataStub {
 		rec.name = "White Rav";
 		rec.insert();
 		
+		Ingredient_t ing = new Ingredient_t();
+		ing.liquid = liq;
+		ing.quantity = 40;
+		ing.insert();
+		
 		rec = new Recipe_t();
 		rec.name = "Lorem";
 		rec.insert();
+		rec.ingredients.add(ing);
 		
 		rec = new Recipe_t();
 		rec.name = "Ipsum";

@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import com.barobot.AppInvoker;
 import com.barobot.R;
+import com.barobot.common.BarobotConnector;
 import com.barobot.common.Initiator;
 import com.barobot.common.constant.Constant;
 import com.barobot.hardware.Arduino;
@@ -123,7 +124,6 @@ public class button_click implements OnClickListener{
 			mq.add(q);
 			break;
 		case R.id.kalibrujy:
-			this.setSpeed();		// jeśli mam szklankę to bardzo wolno
 			virtualComponents.moveZDown( q ,true );
 			virtualComponents.moveY(q, 900, false );
 			virtualComponents.moveY(q, 2100, false );
@@ -136,7 +136,7 @@ public class button_click implements OnClickListener{
 			break;
 		case R.id.machajx:
 			virtualComponents.moveZDown( q ,true );
-			virtualComponents.moveY( q, virtualComponents.SERVOY_FRONT_POS, true);
+			virtualComponents.moveY( q, BarobotConnector.SERVOY_FRONT_POS, true);
 			int lengthx4	=  virtualComponents.getInt("LENGTHX", 600 );
 			for( int i =0; i<10;i++){
 			//	virtualComponents.moveX( q, (lengthx4/4) );
@@ -151,10 +151,10 @@ public class button_click implements OnClickListener{
 		case R.id.machajy:
 			virtualComponents.moveZDown( q ,true );
 			for( int i =0; i<10;i++){
-				virtualComponents.moveY( q, virtualComponents.SERVOY_FRONT_POS, false );
-				virtualComponents.moveY( q, virtualComponents.SERVOY_BACK_POS, false );
+				virtualComponents.moveY( q, BarobotConnector.SERVOY_FRONT_POS, false );
+				virtualComponents.moveY( q, BarobotConnector.SERVOY_BACK_POS, false );
 			}
-			virtualComponents.moveY( q, virtualComponents.SERVOY_FRONT_POS, false );
+			virtualComponents.moveY( q, BarobotConnector.SERVOY_FRONT_POS, false );
 			q.add("DY", true);
 			mq.add(q);
 			break;
@@ -170,7 +170,7 @@ public class button_click implements OnClickListener{
 		case R.id.losujx:
 			Random generator2 = new Random( 19580427 );
 			virtualComponents.moveZDown( q, true  );
-			virtualComponents.moveY( q, virtualComponents.SERVOY_FRONT_POS, true );
+			virtualComponents.moveY( q, BarobotConnector.SERVOY_FRONT_POS, true );
 			int lengthx5	=  virtualComponents.getInt("LENGTHX", 600 );
 		    for(int f = 0;f<20;){
 		    	int left = generator2.nextInt((int)(lengthx5/100 / 2));
@@ -241,7 +241,7 @@ public class button_click implements OnClickListener{
 
 		case R.id.max_y:
 			virtualComponents.moveZDown( q ,true );
-			virtualComponents.moveY( q, virtualComponents.SERVOY_BACK_POS, true );
+			virtualComponents.moveY( q, BarobotConnector.SERVOY_BACK_POS, true );
 			mq.add(q);	
 			break;
 		case R.id.min_x:
@@ -252,7 +252,7 @@ public class button_click implements OnClickListener{
 			break;
 		case R.id.min_y:
 			virtualComponents.moveZDown( q ,true );
-			virtualComponents.moveY( q, virtualComponents.SERVOY_FRONT_POS, true );
+			virtualComponents.moveY( q, BarobotConnector.SERVOY_FRONT_POS, true );
 			mq.add(q);
 			break;	
 		case R.id.unlock:
@@ -335,8 +335,8 @@ public class button_click implements OnClickListener{
 			break;	
 		case R.id.reset_upanels:
 			Queue q1			= new Queue();
-			for(int i =virtualComponents.upanels.length-1; i>=0;i--){
-				q1.add("RESET_NEXT"+ virtualComponents.upanels[i], true);
+			for(int i =BarobotConnector.upanels.length-1; i>=0;i--){
+				q1.add("RESET_NEXT"+ BarobotConnector.upanels[i], true);
 			}
 			Arduino.getInstance().getMainQ().add(q1);
 			break;
@@ -358,23 +358,5 @@ public class button_click implements OnClickListener{
 			Arduino.getInstance().resetSerial();
 			break;	
 	   }
-	}
-
-	private void setSpeed() {
-		if( virtualComponents.hasGlass() ){
-			this.setSpeed( virtualComponents.WITHGLASS );
-		}else{
-			this.setSpeed( virtualComponents.WITHOUTGLASS );
-		}
-	}
-
-	private void setSpeed(int withglass) {
-//		Arduino ar = Arduino.getInstance();
-/*
-		q.add("SX 400", true);
-		q.add("SY 400", true);	
-		q.add("SX 400", true);
-		q.add("SY 400", true);
-	*/	
 	}
 }

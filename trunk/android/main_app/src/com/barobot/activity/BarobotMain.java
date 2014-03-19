@@ -13,6 +13,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.AdapterView.OnItemClickListener;
 
+import com.barobot.AppInvoker;
 import com.barobot.R;
 import com.barobot.gui.ArduinoListener;
 import com.barobot.gui.dataobjects.Engine;
@@ -20,6 +21,18 @@ import com.barobot.gui.dataobjects.Ingredient_t;
 import com.barobot.gui.dataobjects.Recipe_t;
 
 public class BarobotMain extends BarobotActivity implements ArduinoListener {
+
+	@Override
+	protected void onDestroy() {
+		AppInvoker.getInstance().onDestroy();
+		super.onDestroy();
+	}
+
+	@Override
+	protected void onPause() {
+		AppInvoker.getInstance().onPause();
+		super.onPause();
+	}
 
 	private static BarobotMain instance;
 	
@@ -31,14 +44,16 @@ public class BarobotMain extends BarobotActivity implements ArduinoListener {
 		if (getIntent().hasExtra("bundle") && savedInstanceState==null){
 		   savedInstanceState = getIntent().getExtras().getBundle("bundle");
 		}
-		
+		AppInvoker.createInstance(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.barobot_main);
+        AppInvoker.getInstance().onCreate();
 
     }
     
     @Override
     protected void onResume() {
+    	AppInvoker.getInstance().onResume();
     	FillRecipeList();
     	FillRecipeDetails();
     	super.onResume();

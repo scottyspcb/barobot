@@ -44,6 +44,18 @@
                     android:layout_height="match_parent"
                     android:orientation="vertical" >
 
+                    <Button
+                        android:id="@+id/load_poss"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Load" />
+
+                    <Button
+                        android:id="@+id/save_poss"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Save" />
+
                     <EditText
                         android:id="@+id/editb0"
                         android:layout_width="match_parent"
@@ -52,6 +64,7 @@
                         android:inputType="number" >
 
                     </EditText>
+
                     <EditText
                         android:id="@+id/editb1"
                         android:layout_width="match_parent"
