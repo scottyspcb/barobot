@@ -18,12 +18,13 @@
         <RelativeLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/ingredient_list_bg"
             android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp" >
+            android:layout_marginRight="30dp"
+            android:background="@drawable/ingredient_list_bg" >
 
             <TextView
                 android:id="@+id/product_slot_number_text"
+                style="@style/ShadowedText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
@@ -32,6 +33,7 @@
 
             <TextView
                 android:id="@+id/product_capacity_text"
+                style="@style/ShadowedText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/product_slot_number_text"
@@ -41,6 +43,7 @@
 
             <TextView
                 android:id="@+id/product_liquid_text"
+                style="@style/ShadowedText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/product_capacity_text"
@@ -50,6 +53,7 @@
 
             <TextView
                 android:id="@+id/product_type_text"
+                style="@style/ShadowedText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/product_liquid_text"
