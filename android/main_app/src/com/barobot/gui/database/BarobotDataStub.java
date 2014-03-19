@@ -6,6 +6,7 @@ public class BarobotDataStub {
 	
 	public static void SetupDatabase()
 	{
+		BarobotData.ClearAllTables();
 		SetupSlots();
 	}
 	
