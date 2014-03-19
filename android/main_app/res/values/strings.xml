@@ -154,5 +154,7 @@
     <string name="product_field_type">[Type]</string>
     <string name="product_field_liquid">[Name]</string>
     <string name="product_field_capacity">[Capacity]</string>
+    
+    <string name="image_desc">[Drink Image]</string>
 
 </resources>
