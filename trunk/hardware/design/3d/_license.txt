@@ -1,0 +1,12 @@
+Barobot hardware files are released under Creative Commons - Attribution - ShareAlike 3.0
+http://creativecommons.org/licenses/by-sa/3.0/
+
+This means that you are free:
+- to Share—to copy, distribute and transmit the work, and
+- to Remix—to adapt the work
+
+Under the following conditions:
+- Attribution — You must attribute the work in the manner specified by the author or licensor (but not in any way that suggests that they endorse you or your use of the work.)
+- Share Alike — If you alter, transform, or build upon this work, you may distribute the resulting work only under the same, similar or a compatible license.
+
+Notice—For any reuse or distribution, you must make clear to others the license terms of this work. The best way to do that is with a link to http://creativecommons.org/licenses/by-sa/3.0/

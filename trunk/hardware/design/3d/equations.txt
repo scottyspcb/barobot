@@ -1,0 +1,12 @@
+﻿"tolerancja_wpusy"=0.2
+"D4@Szkic5"="tolerancja_wpusy"
+"dlugosc_wpustu_duzy"=20
+"D3@Szkic5"="dlugosc_wpustu_duzy"
+"srednica_otworu_M3"=3.1
+"D1@Szkic9"="srednica_otworu_M3"
+"szerokosc_nogi_T"=3.1
+"dlugosc_T_30"=11
+"grubosc_na_nakretke_kwadrat"=2
+"szerokosc_na_nakretke_kwadrat"=5.85
+"wyokosc_nadstawki_T"=0.5
+"dlugosc_T_20_6"=14
