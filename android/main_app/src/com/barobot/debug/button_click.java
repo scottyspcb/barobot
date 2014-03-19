@@ -13,6 +13,7 @@ import com.barobot.R;
 import com.barobot.common.BarobotConnector;
 import com.barobot.common.Initiator;
 import com.barobot.common.constant.Constant;
+import com.barobot.gui.database.BarobotDataStub;
 import com.barobot.hardware.Arduino;
 import com.barobot.hardware.virtualComponents;
 import com.barobot.parser.Queue;
@@ -262,7 +263,7 @@ public class button_click implements OnClickListener{
 			virtualComponents.pacpac();
 			break;
 		case R.id.smile:
-			AppInvoker.getInstance().cm.doPhoto();
+			BarobotDataStub.SetupDatabase();
 			break;
 		case R.id.kalibrujx:
 			virtualComponents.kalibrcja();

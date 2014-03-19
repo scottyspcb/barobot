@@ -11,4 +11,5 @@
     android:shadowDx="1"
     android:shadowDy="1"
     android:shadowRadius="1"
+    android:textColor="@android:color/white"
     android:textSize="@dimen/bottle_box_text_size" />

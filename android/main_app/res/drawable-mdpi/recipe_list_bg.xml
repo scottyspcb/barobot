@@ -2,7 +2,7 @@
     android:shape="rectangle" >
 
     <gradient
-        android:angle="90"
+        android:angle="270"
         android:endColor="@color/TransparentComplementaryDark2"
         android:startColor="@color/TransparentComplementary" />
 
