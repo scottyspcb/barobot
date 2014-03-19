@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.ArrayList;
 
 import com.barobot.gui.NoticeDialogListener;
-import com.barobot.gui.SelectLiquidDialogFragment;
 import com.barobot.gui.NoticeDialogListener.ReturnStatus;
 import com.barobot.gui.dataobjects.Engine;
 import com.barobot.gui.dataobjects.Ingredient;
@@ -169,17 +168,7 @@ public class RecipeSetupActivity extends BarobotActivity
 		}
 	}
 	
-	public void addIngredient(View view)
-	{		    
-		FragmentTransaction ft = getFragmentManager().beginTransaction();
-
-		// Create and show the dialog.
-		SelectLiquidDialogFragment newFragment = SelectLiquidDialogFragment.newInstance();
-		newFragment.ShowEmptyButton = false;
-		newFragment.ShowAddButton = false;
-		newFragment.ShowVolumeReel = true;
-		newFragment.show(ft, "dialog");
-	}
+	
 	
 
 

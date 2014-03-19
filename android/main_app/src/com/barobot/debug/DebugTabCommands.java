@@ -1,15 +1,11 @@
 package com.barobot.debug;
 
-import com.barobot.AppInvoker;
 import com.barobot.R;
-import com.barobot.R.id;
 import com.barobot.activity.DebugActivity;
 import com.barobot.common.Initiator;
 import com.barobot.common.constant.Constant;
 import com.barobot.hardware.virtualComponents;
 
-import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
