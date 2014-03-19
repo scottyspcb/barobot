@@ -48,15 +48,25 @@
         android:layout_margin="2dp"
         android:onClick="onMenuButtonClicked"
         android:drawableLeft="@drawable/history_55"
+        android:enabled="false"
         android:text="@string/menu_history" />
-
+    
     <Button
-        android:id="@+id/menu_bottles"
+        android:id="@+id/menu_mobile"
         style="@style/MenuButton"
         android:layout_below="@id/menu_history"
         android:layout_margin="2dp"
         android:onClick="onMenuButtonClicked"
         android:drawableLeft="@drawable/mobile_55"
+        android:enabled="false"
+        android:text="@string/menu_mobile" />
+
+    <Button
+        android:id="@+id/menu_bottles"
+        style="@style/MenuButton"
+        android:layout_below="@id/menu_mobile"
+        android:layout_margin="2dp"
+        android:onClick="onMenuButtonClicked"
         android:text="@string/menu_bottles" />
 
     <Button
