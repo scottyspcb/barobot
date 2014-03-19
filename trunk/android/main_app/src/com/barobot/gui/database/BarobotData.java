@@ -29,7 +29,7 @@ public class BarobotData {
 		// Setting up ORMAN
 		Database omdb = new SQLiteAndroid(context, DATABASE_NAME, DATABASE_SCHEMA_VERSION);
 		
-		MappingSession.getConfiguration().setCreationPolicy(SchemaCreationPolicy.CREATE);
+		MappingSession.getConfiguration().setCreationPolicy(SchemaCreationPolicy.CREATE_IF_NOT_EXISTS);
 		
 		MappingSession.registerEntity(Category.class);
 		MappingSession.registerEntity(Type.class);
@@ -45,6 +45,18 @@ public class BarobotData {
 	public static void ClearTable (Class<?> cls)
 	{
 		Model.fetchQuery(ModelQuery.delete().from(cls).getQuery(),cls);
+	}
+	
+	public static void ClearAllTables()
+	{
+		ClearTable(Slot.class);
+		ClearTable(Product.class);
+		ClearTable(Recipe_t.class);
+		ClearTable(Ingredient_t.class);
+		ClearTable(Liquid_t.class);
+		ClearTable(Type.class);
+		ClearTable(Category.class);
+
 	}
 	
 	public static List<Recipe_t> GetRecipes()
