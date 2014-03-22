@@ -16,7 +16,7 @@ public class Upanel extends I2C_Device_Imp {
 	public Upanel can_reset_me_dev	= null;
 	public I2C_Device have_reset_to	= null;
 	public int have_reset_address	= -1;
-	
+
 	public static List<Upanel> list	= new ArrayList<Upanel>();
 	public static int findByI2c(int device_add) {
 		for (I2C_Device s : list){

@@ -148,16 +148,8 @@ public class Macro {
 	public void resetuj(Hardware hw) {
 		Queue q = hw.getQueue();
 		hw.connect();
-		
-		
-		
 		q.add("RESET2", true );
 		Main.wait(50000);
 		q.add("Z1000,100", true );
-
-		
-
-		
-		
 	}
 }

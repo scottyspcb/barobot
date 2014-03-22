@@ -10,9 +10,9 @@ import com.barobot.common.DesktopLogger;
 import com.barobot.common.Initiator;
 import com.barobot.hardware.Arduino;
 import com.barobot.hardware.virtualComponents;
+import com.barobot.hardware.devices.I2C;
 import com.barobot.hardware.serial.AndroidLogger;
 import com.barobot.other.CameraManager;
-import com.barobot.other.I2C;
 import com.barobot.parser.utils.Interval;
 
 public class AppInvoker {

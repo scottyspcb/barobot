@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.app.Activity;
 import android.widget.ArrayAdapter;
-import com.barobot.activity.BarobotMain;
 import com.barobot.common.Initiator;
 import com.barobot.common.constant.Constant;
 import com.barobot.common.constant.Methods;
@@ -33,6 +33,7 @@ public class Arduino{
 	private int mainboardSource;
 	private AndroidHardwareContext ahc;
 	Mainboard mb					= null;
+	private Activity mainView;
 
 	public static Arduino getInstance(){
 		if (instance == null){
@@ -47,7 +48,8 @@ public class Arduino{
 		mConversationHistory = new ArrayList<History_item>();
 		mb					= new Mainboard();
 	}
-	public void onStart(BarobotMain barobotMain) {
+	public void onStart(Activity mainView) {
+		this.mainView = mainView;
 		if( connection != null ){
 			connection.close();
 			connection = null;
@@ -56,7 +58,7 @@ public class Arduino{
 			connection.close();
 		}
 		mainboardSource = main_queue.registerSource( mb );
-		connection		= new Serial_wire( barobotMain );
+		connection		= new Serial_wire( mainView );
 		connection.addOnReceive( new SerialInputListener(){
 			@Override
 			public void onNewData(byte[] data, int length) {
@@ -107,9 +109,9 @@ public class Arduino{
 				int hpos = Decoder.toInt(fromArduino);
 				int spos = virtualComponents.driver_x.hard2soft(hpos);
 				virtualComponents.saveXPos( spos );
-				int lx	=  virtualComponents.getInt("LENGTHX", 600 );
+				int lx	=  virtualComponents.state.getInt("LENGTHX", 600 );
 				if( spos > lx){		// Pozycja wieksza niz długosc? Zwieksz długosc
-					virtualComponents.set( "LENGTHX", "" + spos);
+					virtualComponents.state.set( "LENGTHX", "" + spos);
 				}
 				return true;
 			}
@@ -222,7 +224,7 @@ public class Arduino{
     	if(debugConnection !=null){
     		debugConnection.close();
     	}
-		debugConnection = new BT_wire(BarobotMain.getInstance());
+		debugConnection = new BT_wire(this.mainView);
 		debugConnection.setSerialEventListener( new SerialEventListener() {
 			@Override
 			public void onConnect() {
@@ -234,7 +236,7 @@ public class Arduino{
 			}
 			@Override
 			public void connectedWith(String bt_connected_device, String address) {
-                virtualComponents.set( "LAST_BT_DEVICE", address );    	// remember device ID
+                virtualComponents.state.set( "LAST_BT_DEVICE", address );    	// remember device ID
 			}
 		});	
 		debugConnection.addOnReceive(btl);	
@@ -308,7 +310,7 @@ public class Arduino{
     	}
     	return false;
     }
-	public void setupBT(BarobotMain barobotMain) {
+	public void setupBT() {
 		/*
 		if(connection!=null){
 			connection.setup();
@@ -347,7 +349,7 @@ public class Arduino{
 				mConversationHistory.add( m );
 			}
 			if(this.mConversation !=null){
-				BarobotMain.getInstance().runOnUiThread(new Runnable() {
+				this.mainView.runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
 						if(Arduino.this.mConversation !=null){
@@ -362,7 +364,7 @@ public class Arduino{
 
 	public void addToList(final String string, final boolean direction ) {
 		if(log_active){
-			BarobotMain.getInstance().runOnUiThread(new Runnable() {
+			this.mainView.runOnUiThread(new Runnable() {
 			     public void run() {
 			//    	Log.i(Constant.TAG, "addtohist:[" + string +"]"); 
 			    	History_item hi = new History_item( string.trim(), direction);
@@ -404,7 +406,7 @@ public class Arduino{
 		if( connection != null ){
 			connection.close();
 			connection		= null;
-			connection		= new Serial_wire( BarobotMain.getInstance() );
+			connection		= new Serial_wire( this.mainView );
 			connection.addOnReceive( new SerialInputListener(){
 				@Override
 				public void onNewData(byte[] data, int length) {

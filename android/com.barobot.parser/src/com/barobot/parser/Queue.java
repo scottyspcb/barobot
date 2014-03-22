@@ -125,6 +125,21 @@ public class Queue {
 		}
 		exec();
 	}
+	public void add(String command, final String retcmd) {		// DEFAULT device
+		synchronized (this.lock) {
+			output.add(new AsyncMessage( command, true ){
+				@Override
+				public boolean isRet(String result, Queue q) {
+			//		Initiator.logger.i("Queue.isRet?:", + result );
+					if( retcmd.equals( result )){
+						return true;
+					}
+					return false;
+				}
+			});
+		}
+		exec();
+	}
 	public void add(final int sourceid, String command, final String retcmd) {
 		synchronized (this.lock) {
 			output.add(new AsyncMessage( command, true ){

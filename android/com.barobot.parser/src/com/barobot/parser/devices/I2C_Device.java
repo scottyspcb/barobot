@@ -15,7 +15,7 @@ public interface I2C_Device {
 	public abstract void isp(Queue q );
 
 	public abstract String getReset();
-	public abstract String getIsp();	
+	public abstract String getIsp();
 
 	public abstract void setLed(Queue q, String selector, int pwm);
 

@@ -4,7 +4,4 @@ import com.barobot.common.interfaces.HardwareContext;
 
 public class AndroidHardwareContext implements HardwareContext {
 
-	
-	
-	
 }
