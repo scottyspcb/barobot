@@ -52,45 +52,18 @@ public class BarobotDataStub {
 		prod.liquid = liq;
 		prod.insert();
 		
-		Recipe_t rec = new Recipe_t();
-		rec.name = "White Rav";
-		rec.insert();
 		
 		Ingredient_t ing = new Ingredient_t();
 		ing.liquid = liq;
 		ing.quantity = 40;
 		ing.insert();
 		
-		rec = new Recipe_t();
-		rec.name = "Lorem";
-		rec.insert();
-		rec.ingredients.add(ing);
-		
-		rec = new Recipe_t();
-		rec.name = "Ipsum";
-		rec.insert();
-		
-		rec = new Recipe_t();
-		rec.name = "Dolor";
-		rec.insert();
-		
-		rec = new Recipe_t();
-		rec.name = "Mortus";
-		rec.unlisted = true;
-		rec.insert();
-		
-		rec = new Recipe_t();
-		rec.name = "Ignis";
-		rec.insert();
-		
-		rec = new Recipe_t();
-		rec.name = "Lumen";
-		rec.insert();
 		
 		Slot slot = BarobotData.GetSlot(1);
 		slot.product = prod;
 		slot.status = "OK";
 		slot.currentVolume = prod.capacity;
 		slot.update();
+		
 	}
 }

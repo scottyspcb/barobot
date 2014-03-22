@@ -6,8 +6,8 @@ import com.barobot.parser.utils.Decoder;
 public class Mainboard extends AsyncDevice{
 	public Mainboard() {
 		super("Mainboard");
-		this.addGlobalModifier( new GlobalInputModifier("^(\\d\\d,)", "1$1"));		// add 1 if num < 100
-		this.addGlobalModifier( new GlobalInputModifier("^RR", "R"));				// RR => R
+		this.addGlobalModifier( new GlobalInputModifier("^25", "125"));		// add 1 if num < 100
+		this.addGlobalModifier( new GlobalInputModifier("^RR", "R"));		// RR => R
 	}
 	@Override
 	public boolean parse(String in) {

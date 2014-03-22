@@ -1,10 +1,11 @@
 package com.barobot.hardware;
 
-import com.barobot.common.BarobotConnector;
 import com.barobot.common.Initiator;
 import com.barobot.common.constant.Constant;
 import com.barobot.common.constant.Methods;
 import com.barobot.common.interfaces.HardwareContext;
+import com.barobot.hardware.devices.BarobotConnector;
+import com.barobot.hardware.devices.Upanel;
 import com.barobot.parser.Queue;
 import com.barobot.parser.message.AsyncMessage;
 import com.barobot.parser.output.AsyncDevice;
@@ -55,9 +56,9 @@ public class MyRetReader implements RetReader {
 				int hpos = parts[3] + (parts[4] << 8); 
 				int posx = virtualComponents.driver_x.hard2soft(hpos);
 				virtualComponents.saveXPos( posx);
-				int lx	=  virtualComponents.getInt("LENGTHX", 600 );
+				int lx	=  virtualComponents.state.getInt("LENGTHX", 600 );
 				if( posx > lx){		// Pozycja wieksza niz dlugosc? Zwieksz długosc
-					virtualComponents.set( "LENGTHX", "" + posx);
+					virtualComponents.state.set( "LENGTHX", "" + posx);
 				}
 				if(command.equals("x")){
 					return true;
@@ -68,7 +69,7 @@ public class MyRetReader implements RetReader {
 			}else if( parts[2] == Methods.METHOD_GET_Y_POS ){
 				decoded += "/METHOD_GET_Y_POS";
 				int pos = parts[3] + (parts[4] << 8); 
-				virtualComponents.set( "POSY",""+pos);
+				virtualComponents.state.set( "POSY",""+pos);
 				if(command.equals("y")){
 					return true;
 				}else{
@@ -78,7 +79,7 @@ public class MyRetReader implements RetReader {
 			}else if( parts[2] == Methods.METHOD_GET_Z_POS ){
 				decoded += "/METHOD_GET_Z_POS";
 				int pos = parts[3] + (parts[4] << 8); 
-				virtualComponents.set( "POSZ",""+pos);
+				virtualComponents.state.set( "POSZ",""+pos);
 				if(command.equals("z")){
 					return true;
 				}else{
@@ -152,7 +153,7 @@ public class MyRetReader implements RetReader {
 				}else if( parts[3] == Constant.DRIVER_Y){
 					int pos = parts[4] + (parts[5] << 8);
 					decoded += "/DRIVER_Y";
-					virtualComponents.set( "POSY", pos );
+					virtualComponents.state.set( "POSY", pos );
 					if(command.startsWith("Y")){
 						return true;
 					}else{
@@ -161,7 +162,7 @@ public class MyRetReader implements RetReader {
 				}else if( parts[3] == Constant.DRIVER_Z){
 					int pos = parts[4] + (parts[5] << 8);
 					decoded += "/DRIVER_Z";
-					virtualComponents.set( "POSZ",pos);
+					virtualComponents.state.set( "POSZ",pos);
 					if(command.startsWith("Z")){
 						return true;
 					}else{
@@ -194,20 +195,20 @@ public class MyRetReader implements RetReader {
 				int posx = Decoder.toInt(fromArduino3);	// hardware pos
 				posx = virtualComponents.driver_x.hard2soft(posx);
 				virtualComponents.saveXPos(posx);
-				int lx	=  virtualComponents.getInt("LENGTHX", 600 );
+				int lx	=  virtualComponents.state.getInt("LENGTHX", 600 );
 				if( posx > lx){		// Pozycja wieksza niz długosc? Zwieksz długosc
-					virtualComponents.set( "LENGTHX", "" + posx);
+					virtualComponents.state.set( "LENGTHX", "" + posx);
 				}
 			}else if(fromArduino2.startsWith(Constant.GETYPOS)){
 				decoded += "/GETYPOS";
 				
 				String fromArduino3 = fromArduino2.replace(Constant.GETYPOS, "");
-				virtualComponents.set( "POSY",fromArduino3);
+				virtualComponents.state.set( "POSY",fromArduino3);
 
 			}else if(fromArduino2.startsWith(Constant.GETZPOS)){
 				decoded += "/GETZPOS";
 				String fromArduino3 = fromArduino2.replace(Constant.GETZPOS, "");
-				virtualComponents.set( "POSZ",fromArduino3);
+				virtualComponents.state.set( "POSZ",fromArduino3);
 			}else{
 				decoded += "/????";
 			}
@@ -319,8 +320,8 @@ public class MyRetReader implements RetReader {
 					state_num = 0;
 				}else if(state_name == Methods.HX_STATE_1 ){
 					decoded += "/HX_STATE_1";
-					virtualComponents.set( "LENGTHX", "" + spos);
-					virtualComponents.set( "X_GLOBAL_MAX", "" + spos );
+					virtualComponents.state.set( "LENGTHX", "" + spos);
+					virtualComponents.state.set( "X_GLOBAL_MAX", "" + spos );
 					virtualComponents.hereIsBottle(11, spos, BarobotConnector.SERVOY_FRONT_POS );
 					state_num = 0;
 				}else if(state_name == Methods.HX_STATE_2 ){
@@ -386,11 +387,13 @@ public class MyRetReader implements RetReader {
 					decoded += "/HX_STATE_9";
 					last_3 = 0;
 					last_7 = 0;
-					virtualComponents.set( "X_GLOBAL_MIN", "" + hpos );
+					virtualComponents.state.set( "X_GLOBAL_MIN", "" + hpos );
 					virtualComponents.driver_x.setM(hpos);
+					virtualComponents.state.set("MARGINX", hpos);
 					spos = virtualComponents.driver_x.hard2soft(hpos);		// new software pos (equal 0);
 					virtualComponents.hereIsStart(spos, BarobotConnector.SERVOY_FRONT_POS );
-			//		Initiator.logger.i("input_parser", "jestem w: " + spos );
+					Initiator.logger.i("input_parser", "jestem w: " + spos );
+					virtualComponents.saveXPos( spos );
 
 				}else if(state_name == Methods.HX_STATE_10 ){		// ERROR not connected
 					decoded += "/HX_STATE_10";
@@ -399,8 +402,8 @@ public class MyRetReader implements RetReader {
 				if(state_name == Methods.HX_STATE_0 ){				// ERROR
 				}else if(state_name == Methods.HX_STATE_1 ){
 					decoded += "/HX_STATE_1";
-					virtualComponents.set( "LENGTHX", "" + spos);
-					virtualComponents.set( "X_GLOBAL_MAX", "" + spos );
+					virtualComponents.state.set( "LENGTHX", "" + spos);
+					virtualComponents.state.set( "X_GLOBAL_MAX", "" + spos );
 					virtualComponents.hereIsBottle(11, spos, BarobotConnector.SERVOY_FRONT_POS );
 					state_num = 0;
 				}else if(state_name == Methods.HX_STATE_2 ){
@@ -411,10 +414,13 @@ public class MyRetReader implements RetReader {
 				}else if(state_name == Methods.HX_STATE_7 ){
 				}else if(state_name == Methods.HX_STATE_8 ){
 				}else if(state_name == Methods.HX_STATE_9 ){
-					virtualComponents.set( "X_GLOBAL_MIN", "" + hpos );
+					virtualComponents.state.set( "X_GLOBAL_MIN", "" + hpos );
 					virtualComponents.driver_x.setM(hpos);
+					virtualComponents.state.set("MARGINX", hpos);
 					spos = virtualComponents.driver_x.hard2soft(hpos);		// new software pos (equal 0);
+					virtualComponents.saveXPos( spos );
 					virtualComponents.hereIsStart(spos, BarobotConnector.SERVOY_FRONT_POS );
+					Initiator.logger.i("input_parser", "jestem2 w: " + spos );
 
 				}else if(state_name == Methods.HX_STATE_10 ){		// ERROR not connected
 				}	
@@ -494,6 +500,7 @@ public class MyRetReader implements RetReader {
 			decoded += "/MAINBOARD_DEVICE_TYPE";
 			int cx		= virtualComponents.driver_x.getSPos();;
 			virtualComponents.driver_x.setM(cx);	// ostatnia znana pozycja jest marginesem
+			virtualComponents.state.set("MARGINX", cx);
 			Queue mq = Arduino.getInstance().getMainQ();
 			mq.clearAll();
 		}else if(parts[2] == Constant.UPANEL_DEVICE_TYPE ){		// upaneld

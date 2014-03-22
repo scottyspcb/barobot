@@ -102,17 +102,13 @@ public class button_toggle implements OnClickListener{
 			case R.id.auto_fill_on_ready:
 		  	  	tb.setChecked(isChecked);		//tutaj jednak zmieniaj 
 				if(isChecked){
-					virtualComponents.set("AUTOFILL", "1" );
+					virtualComponents.state.set("AUTOFILL", "1" );
 				}else{
-					virtualComponents.set("AUTOFILL", "0" );
+					virtualComponents.state.set("AUTOFILL", "0" );
 				}
 				break;
 			case R.id.wagi_live:
-	    		if(isChecked){
-	    			virtualComponents.enable_analog(q, virtualComponents.ANALOG_WAGA, 50, 2);
-	    		}else{
-	    			virtualComponents.disable_analog( q, virtualComponents.ANALOG_WAGA ); 			
-	    		}
+
 	    	  	break;
 		}
 	}

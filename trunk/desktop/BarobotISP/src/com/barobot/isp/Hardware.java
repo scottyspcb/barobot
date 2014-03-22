@@ -7,6 +7,7 @@ import com.barobot.parser.Queue;
 import com.barobot.parser.message.AsyncMessage;
 import com.barobot.parser.output.AsyncDevice;
 import com.barobot.parser.output.Mainboard;
+import com.barobot.tester.connection.WindowsSerialPort;
 
 public class Hardware {
 	private WindowsSerialPort serial	= null;
@@ -32,13 +33,6 @@ public class Hardware {
 		Queue.enableDevice( mainboardSource );
 	}
 
-	public void send(String command, final String retcmd) {
-		System.out.println("\t>>>add 2 send: " + command +" / "+retcmd);
-		q.add( mainboardSource, command, retcmd );
-	}
-	public void send(String command) {
-		q.add( command, false );
-	}
 	public void connect() {
 		if(serial.isConnected()){
 			return;
@@ -68,9 +62,6 @@ public class Hardware {
 			e.printStackTrace();
 			System.exit(-1);
 		}
-	}
-	void setProgrammerSpeed(){
-		serial.setBaud(IspSettings.programmspeed);
 	}
 	public void closeOnReady() {
 		q.add( new AsyncMessage( true ){		// na koncu zamknij

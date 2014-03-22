@@ -6,25 +6,18 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.FutureTask;
-
-import com.barobot.common.BarobotConnector;
 import com.barobot.common.IspSettings;
-import com.barobot.i2c.BarobotTester;
+import com.barobot.hardware.devices.BarobotConnector;
 import com.barobot.i2c.MainBoard;
 import com.barobot.i2c.Upanel;
-import com.barobot.parser.Operation;
 import com.barobot.parser.Queue;
+import com.barobot.parser.devices.BarobotTester;
 import com.barobot.parser.devices.Carret;
 import com.barobot.parser.devices.I2C_Device;
-import com.barobot.parser.devices.MotorDriver;
 import com.barobot.parser.message.AsyncMessage;
 import com.barobot.parser.output.AsyncDevice;
 
 public class Wizard {
-	public static int[] magnet_order = {0,2,1,4,3,6,5,8,7,10,9,11 };	// numer butelki, odj¹c 1 aby numer ID
 
 	public static int[] upanelIndex2order = {0,2,4,6,8,10,1,3,5,7,9,11};	// numer butelki, odj¹c 1 aby numer ID
 	public static int[] order2upanelIndex = {0,6,1,7,2,8,3,9,4,10,5,11};	// numer butelki, odj¹c 1 aby numer ID
@@ -432,7 +425,6 @@ public class Wizard {
 
 		int current_index		= 0;
 
-		
 		LedOrder lo = new LedOrder( q );
 		lo.addOnReady( new OnReadyListener<LedOrder>(){
 			public void onReady(LedOrder res) {
@@ -463,9 +455,10 @@ public class Wizard {
 		String command = "";
 		Queue q = hw.getQueue();
 		hw.connect();
-		hw.send("\n");
-		hw.send("\n");
-		hw.send("PING", "PONG");
+		q.add( "\n", false );
+		q.add( "\n", false );
+		
+		q.add("PING", "PONG");
 		Carret current_dev	= new Carret();
 		String carret_code = current_dev.getHexFile();
 		q.addWaitThread(Main.mt);
@@ -506,12 +499,12 @@ public class Wizard {
 	public void prepareMB(final Hardware hw ) {
 		Queue q = hw.getQueue();
 		hw.connect();
-		hw.send("\n");
-		hw.send("\n");
+		q.add( "\n", false );
+		q.add( "\n", false );
 		final I2C_Device current_dev	= new MainBoard();
 		final String upanel_code = current_dev.getHexFile();
 		q.add("", false);		
-		hw.send("PING", "PONG");
+		q.add("PING", "PONG");
 		q.addWaitThread(Main.mt);
 		if(IspSettings.setHex){	
 			current_dev.isp( q );	// mam 2 sek na wystartwanie
@@ -525,7 +518,7 @@ public class Wizard {
 			});
 		}
 		q.addWaitThread(Main.mt);
-		hw.send("");
+		q.add( "\n", false );
 	}
 
 	public void prepareMBManualReset(final Hardware hw) {
@@ -545,8 +538,9 @@ public class Wizard {
 
 		if(IspSettings.setFuseBits){
 			hw.connect();
-			hw.send("\n");
-			hw.send("PING", "PONG");
+			q.add( "\n", false );
+			q.add( "\n", false );
+			q.add("PING", "PONG");
 			q.addWaitThread(Main.mt);
 			current_dev.isp( q );
 			q.add( new AsyncMessage( true ){		// na koncu zamknij
@@ -562,7 +556,7 @@ public class Wizard {
 		}
 		if(IspSettings.setHex){	
 			hw.connect();
-			hw.send("PING", "PONG");
+			q.add("PING", "PONG");
 			current_dev.isp( q );	// mam 2 sek na wystartwanie
 			q.add( new AsyncMessage( true ){		// na koncu zamknij
 				public Queue run(AsyncDevice dev) {
@@ -716,6 +710,7 @@ public class Wizard {
 
 	public void swing(Hardware hw, int i, int min, int max) {
 		hw.connect();
+		/*
 		Queue q						= hw.getQueue();
 		MotorDriver driver_x		= new MotorDriver();
 		driver_x.defaultSpeed		= 2500;
@@ -724,15 +719,13 @@ public class Wizard {
 		driver_x.movoTo(q, 2000);
 		driver_x.movoTo(q, 1000);
 	//	MainBoard mb	= new MainBoard();
-	//	mb.moveX(max);
+	//	mb.moveX(max);*/
 	}
 
 	public void test_proc(Hardware hw) {
 		Queue q = hw.getQueue();
-		hw.send( "P3" );
+		q.add( "P3", false );
 	//	SISP
-
-		hw.send( "P3" );
 /*
 		q.add(new AsyncMessage( "I", true ){
 					@Override
@@ -747,35 +740,36 @@ public class Wizard {
 						return false;
 					}
 		});*/
-		hw.send("I", "RI");
-		hw.send("TEST", "RTEST");
+		q.add("I", "RI");
+		q.add("TEST", "RTEST");
 
 	//	q.addWaitThread( Main.main );
 	}
 
 	public void fast_close_test(Hardware hw) {
+		Queue q = hw.getQueue();
 		I2C_Device current_dev	= new BarobotTester();
 		hw.connect();
-		hw.send("K1","RK1");
+		q.add("K1","RK1");
 
 		hw.close();
 		hw.connect();
-		hw.send("K1","RK1");
+		q.add("K1","RK1");
 		hw.close();
 		
 		hw.connect();
-		hw.send("K1","RK1");
+		q.add("K1","RK1");
 		hw.close();
 
 		hw.connect();
-		hw.send("K1","RK1");
+		q.add("K1","RK1");
 		hw.close();
 	}
 	public void prepareMB2(final Hardware hw) {	
 		Queue q = hw.getQueue();
 		hw.connect();
-		hw.send("\n");
-		hw.send("\n");
+		q.add( "\n", false );
+		q.add( "\n", false );
 		final I2C_Device current_dev	= new MainBoard();
 		final String upanel_code = current_dev.getHexFile();
 		
@@ -784,7 +778,7 @@ public class Wizard {
    	 	
    	 	
 		q.add("", false);		
-		hw.send("PING", "PONG");
+		q.add("PING", "PONG");
 		q.addWaitThread(Main.mt);
 		if(IspSettings.setHex){	
 			current_dev.isp( q );	// mam 2 sek na wystartwanie
@@ -862,21 +856,3 @@ public class Wizard {
 		return readLine;
 	}
 }
-
-/**
- * 			
-    //  run( "tasklist.exe" ); 
-	//	resetDevice( hw, 0, 2 );	// carret
-	//	command = "ping.exe localhost";
-	//	run( command );	
-
-/
-
-	hw.send("RB");
-	wait(1000);
-	hw.send("I2C");
-	wait(3000);
-	hw.send("TEST");
-	wait(5000);
-	uf0.reset( hw );
-*/	

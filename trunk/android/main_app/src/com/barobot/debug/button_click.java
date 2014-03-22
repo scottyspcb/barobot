@@ -10,12 +10,12 @@ import android.widget.Toast;
 
 import com.barobot.AppInvoker;
 import com.barobot.R;
-import com.barobot.common.BarobotConnector;
 import com.barobot.common.Initiator;
 import com.barobot.common.constant.Constant;
 import com.barobot.gui.database.BarobotDataStub;
 import com.barobot.hardware.Arduino;
 import com.barobot.hardware.virtualComponents;
+import com.barobot.hardware.devices.BarobotConnector;
 import com.barobot.parser.Queue;
 public class button_click implements OnClickListener{
 	private Context dbw;
@@ -39,8 +39,9 @@ public class button_click implements OnClickListener{
 		Queue q			= new Queue();
 		Queue mq		= ar.getMainQ();
 		int posx		= virtualComponents.driver_x.getSPos();;
-		int posy		= virtualComponents.getInt("POSY", 0 );
+		int posy		= virtualComponents.state.getInt("POSY", 0 );
 
+		Log.i("currentpos", ""+  posx);
 		switch (v.getId()) {
 		case R.id.set_x_1000:
 	//		Log.i("nextpos-10000", "old: "+posx + " next: "+ ( posx -10000));
@@ -115,12 +116,12 @@ public class button_click implements OnClickListener{
 			break;
 
 		case R.id.set_neutral_y:
-			virtualComponents.set("NEUTRAL_POS_Y", ""+posy );
-			String nn = virtualComponents.get("NEUTRAL_POS_Y", "0" );
+			virtualComponents.state.set("NEUTRAL_POS_Y", ""+posy );
+			String nn = virtualComponents.state.get("NEUTRAL_POS_Y", "0" );
 			Toast.makeText(dbw, "To jest pozycja bezpieczna ("+nn+")...", Toast.LENGTH_LONG).show();
 			break;
 		case R.id.goToNeutralY:
-			virtualComponents.moveY( q, virtualComponents.get("NEUTRAL_POS_Y", "0" ));
+			virtualComponents.moveY( q, virtualComponents.state.get("NEUTRAL_POS_Y", "0" ));
 			q.add("DY", true);
 			mq.add(q);
 			break;
@@ -138,7 +139,7 @@ public class button_click implements OnClickListener{
 		case R.id.machajx:
 			virtualComponents.moveZDown( q ,true );
 			virtualComponents.moveY( q, BarobotConnector.SERVOY_FRONT_POS, true);
-			int lengthx4	=  virtualComponents.getInt("LENGTHX", 600 );
+			int lengthx4	=  virtualComponents.state.getInt("LENGTHX", 600 );
 			for( int i =0; i<10;i++){
 			//	virtualComponents.moveX( q, (lengthx4/4) );
 				//virtualComponents.moveX( q, (lengthx4/4 * 3) );
@@ -172,7 +173,7 @@ public class button_click implements OnClickListener{
 			Random generator2 = new Random( 19580427 );
 			virtualComponents.moveZDown( q, true  );
 			virtualComponents.moveY( q, BarobotConnector.SERVOY_FRONT_POS, true );
-			int lengthx5	=  virtualComponents.getInt("LENGTHX", 600 );
+			int lengthx5	=  virtualComponents.state.getInt("LENGTHX", 600 );
 		    for(int f = 0;f<20;){
 		    	int left = generator2.nextInt((int)(lengthx5/100 / 2));
 		    	int right =generator2.nextInt((int)(lengthx5/100 / 2));
@@ -235,7 +236,7 @@ public class button_click implements OnClickListener{
 
 		case R.id.max_x:
 			virtualComponents.moveZDown( q ,true );
-			int lengthx2	=  virtualComponents.getInt("LENGTHX", 600 );
+			int lengthx2	=  virtualComponents.state.getInt("LENGTHX", 600 );
 			virtualComponents.moveX( q, posx +lengthx2 );
 			mq.add(q);
 			break;
@@ -247,7 +248,7 @@ public class button_click implements OnClickListener{
 			break;
 		case R.id.min_x:
 			virtualComponents.moveZDown( q ,true );
-			int lengthx3	=  virtualComponents.getInt("LENGTHX", 600 );
+			int lengthx3	=  virtualComponents.state.getInt("LENGTHX", 600 );
 			virtualComponents.moveX( q, -lengthx3 );
 			mq.add(q);
 			break;
@@ -331,6 +332,10 @@ public class button_click implements OnClickListener{
 			break;
 		case R.id.reset_margin:
 			virtualComponents.driver_x.setM(0);
+			
+			virtualComponents.state.set("MARGINX", 0);
+			
+			
 			int spos = virtualComponents.driver_x.hard2soft( 0 );
 			virtualComponents.saveXPos( spos );
 			break;	

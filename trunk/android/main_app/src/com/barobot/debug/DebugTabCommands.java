@@ -133,11 +133,11 @@ public class DebugTabCommands extends Fragment {
 
 		TextView ttt = (TextView)rootView.findViewById(R.id.position_z);	
 		if(ttt!=null){
-			ttt.setText(virtualComponents.get( "POSZ","0"));
+			ttt.setText(virtualComponents.state.getInt( "POSZ",0));
 		}
 		ttt = (TextView)rootView.findViewById(R.id.position_y);
 		if(ttt!=null){
-			ttt.setText(virtualComponents.get( "POSY","0"))	;
+			ttt.setText(virtualComponents.state.get( "POSY","0"))	;
 		}
 		ttt = (TextView)rootView.findViewById(R.id.position_x);
 		if(ttt!=null){

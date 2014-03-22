@@ -57,6 +57,4 @@ public class MainBoard extends I2C_Device_Imp {
 		System.out.println("has next?" + (hasNext ? "1" : "0"));
 		return hasNext;
 	}
-	public void moveX(int max) {
-	}
 }

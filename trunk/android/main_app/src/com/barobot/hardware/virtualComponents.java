@@ -1,91 +1,43 @@
 package com.barobot.hardware;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
-import com.barobot.activity.DebugActivity;
-import com.barobot.common.BarobotConnector;
+
 import com.barobot.common.Initiator;
 import com.barobot.common.constant.Constant;
 import com.barobot.common.constant.Methods;
+import com.barobot.hardware.devices.BarobotConnector;
+import com.barobot.hardware.devices.Carret;
+import com.barobot.hardware.devices.MotorDriver;
+import com.barobot.hardware.devices.Upanel;
 import com.barobot.parser.Queue;
-import com.barobot.parser.devices.MotorDriver;
 import com.barobot.parser.message.AsyncMessage;
 import com.barobot.parser.output.AsyncDevice;
 import com.barobot.parser.utils.Decoder;
-
 import android.app.Activity;
-import android.content.Context;
-import android.content.SharedPreferences;
+
 public class virtualComponents {
-
 	public static Activity application;
-	private static SharedPreferences myPrefs;
-	private static SharedPreferences.Editor config_editor;			// config systemu android
-	private static Map<String, String> hashmap = new HashMap<String, String>();
-
 	public static boolean need_glass_up = false;
 	public static boolean pac_enabled = true;
-	public static final int ANALOG_WAGA = 2;
 	public static final int SERVOY_REPEAT_TIME = 2000;
-
-	private static String[] persistant = {
-		"POSX",
-		"POSY",
-		"POSY",
-		"X_GLOBAL_MIN",
-		"X_GLOBAL_MAX",
-		"LENGTHX","LAST_BT_DEVICE",
-		"POS_START_X",
-		"POS_START_Y",
-		"NEUTRAL_POS_Y",
-		"NEUTRAL_POS_Z",
-		"ENDSTOP_X_MIN",
-		"ENDSTOP_X_MAX",
-		"ENDSTOP_Y_MIN",
-		"ENDSTOP_Y_MAX",
-		"ENDSTOP_Z_MIN",
-		"ENDSTOP_Z_MAX",
-		"BOTTLE_X_0","BOTTLE_Y_0",
-		"BOTTLE_X_1","BOTTLE_Y_1",
-		"BOTTLE_X_2","BOTTLE_Y_2",
-		"BOTTLE_X_3","BOTTLE_Y_3",
-		"BOTTLE_X_4","BOTTLE_Y_4",
-		"BOTTLE_X_5","BOTTLE_Y_5",
-		"BOTTLE_X_6","BOTTLE_Y_6",
-		"BOTTLE_X_7","BOTTLE_Y_7",
-		"BOTTLE_X_8","BOTTLE_Y_8",
-		"BOTTLE_X_9","BOTTLE_Y_9",
-		"BOTTLE_X_10","BOTTLE_Y_10",
-		"BOTTLE_X_11","BOTTLE_Y_11",
-	};
 
 	public static MotorDriver driver_x;
 	public static boolean scann_bottles = false;
 	public static boolean set_bottle_on = false;
 	public static boolean ledsReady = false;
 	private static Carret carret;
-	
+	public static AndroidBarobotState state= null;
+
 	public static void init( Activity app ){
-		application			= app;
-		myPrefs				= application.getSharedPreferences(Constant.SETTINGS_TAG, Context.MODE_PRIVATE);
-		config_editor		= myPrefs.edit();
-		driver_x			= new MotorDriver();
-		carret				= new Carret( 2, 10 );
+		application		= app;
+		driver_x		= new MotorDriver();
+		carret			= new Carret( 2, 10 );
+		state			= new AndroidBarobotState(app);
+		
+		driver_x.setM( state.getInt( "MARGINX", 0 ) );
 		driver_x.defaultSpeed = BarobotConnector.DRIVER_X_SPEED;
-		driver_x.setSPos( virtualComponents.getInt( "POSX", 0 ) );
+		driver_x.setSPos( state.getInt( "POSX", 0 ) );
 	}
-	public static String get( String name, String def ){
-		String ret = hashmap.get(name);
-		if( ret == null ){ 
-			if((Arrays.asList(persistant).indexOf(name) > -1 )){
-				ret = myPrefs.getString(name, def );
-			}else{
-				ret = def;
-			}
-		}
-		return ret;
-	}
+
 	public static int getPourTime( int num ){
 		if( num > 0 && num < BarobotConnector.times.length){
 			return BarobotConnector.times[num];
@@ -93,50 +45,27 @@ public class virtualComponents {
 		return BarobotConnector.SERVOZ_POUR_TIME;
 	}
 	
-	public static int getInt( String name, int def ){
-		return Decoder.toInt(virtualComponents.get( name, ""+def ));
-	}
-	public static void set(String name, long value) {
-		virtualComponents.set(name, "" + value );
-	}
-	public static void set( String name, String value ){
-	//	if(name == "POSX"){
-	//		Initiator.logger.i("virtualComponents.set","save: "+name + ": "+ value );	
-	//	}
-		hashmap.put(name, value );
-		virtualComponents.update( name, value );
-
-		int remember = Arrays.asList(persistant).indexOf(name);			// czy zapisac w configu tą wartosc?
-		if(remember > -1){
-			config_editor.putString(name, value);
-			config_editor.commit();
-		}
-	}
+	
 	public static int getBottlePosX( int i ) {
-		return virtualComponents.getInt("BOTTLE_X_" + i, BarobotConnector.b_pos_x[i]);
+		return state.getInt("BOTTLE_X_" + i, BarobotConnector.b_pos_x[i]);
 	}
 	public static int getBottlePosY( int i ) {
-		return virtualComponents.getInt("BOTTLE_Y_" + i, BarobotConnector.b_pos_y[i]);
+		return state.getInt("BOTTLE_Y_" + i, BarobotConnector.b_pos_y[i]);
 	}
-	private static void update(String name, String value) {
-		final DebugActivity dialog = DebugActivity.getInstance();
-		if(dialog!=null){
-			dialog.update(name, value );
-		}
-	}
+
 	// zapisz ze tutaj jest butelka o danym numerze
 	public static void hereIsBottle(int i, int posx, int posy) {
 		//Constant.log(Constant.TAG,"zapisuje pozycje:"+ i + " " +posx+ " " + posy );
-		virtualComponents.set("BOTTLE_X_" + i, ""+posx );
-		virtualComponents.set("BOTTLE_Y_" + i, ""+posy );
+		state.set("BOTTLE_X_" + i, posx );
+		state.set("BOTTLE_Y_" + i, posy );
 	}
 	// zapisz ze tutaj jest butelka o danym numerze
 	public static void hereIsBottle(int i) {
-		String posx		=  virtualComponents.get("POSX", "0" );	
-		String posy		=  virtualComponents.get("POSY", "0" );
+		int posx		=  state.getInt("POSX", 0 );	
+		int posy		=  state.getInt("POSY", 0 );
 	//	Constant.log(Constant.TAG,"zapisuje pozycje:"+ i + " " +posx+ " " + posy );
-		virtualComponents.set("BOTTLE_X_" + i, posx );
-		virtualComponents.set("BOTTLE_Y_" + i, posy );
+		state.set("BOTTLE_X_" + i, posx );
+		state.set("BOTTLE_Y_" + i, posy );
 	}
 	public static boolean hasGlass() {
 		return false;
@@ -162,7 +91,7 @@ public class virtualComponents {
 		mq.clearAll();
 		mq.add("LIVE A OFF", false );
 //		add("EZ");
-		int poszdown	=  virtualComponents.getInt("ENDSTOP_Z_MIN", BarobotConnector.SERVOZ_DOWN_POS );
+		int poszdown	=  state.getInt("ENDSTOP_Z_MIN", BarobotConnector.SERVOZ_DOWN_POS );
 		mq.add("Z" + poszdown, false );		// zwraca początek operacji a nie koniec
 		mq.add("DX", false );
 		mq.add("DY", false );
@@ -184,7 +113,7 @@ public class virtualComponents {
 			public Queue run(AsyncDevice dev, Queue queue) {
 				this.name	= "check position";
 				int cx		= virtualComponents.driver_x.getSPos();		// czy ja juz jestem na tej pozycji?	
-				int cy		= virtualComponents.getInt("POSY", 0 );
+				int cy		= state.getInt("POSY", 0 );
 				int tx 		= getBottlePosX( num );
 				int ty  	= getBottlePosY( num );
 				Queue	q2	= new Queue();
@@ -294,7 +223,7 @@ public class virtualComponents {
 		q.add("LIVE A OFF", false);
 	}
 
-	public static void moveX( final Queue q, int pos ) {
+	public static void moveX( final Queue q, final int pos ) {
 		final int newx		= driver_x.soft2hard(pos);
 		final int currentx	= driver_x.getSPos();
 
@@ -306,6 +235,7 @@ public class virtualComponents {
 			@Override
 			public Queue run(AsyncDevice dev, Queue queue){
 				this.name		= "Check Hall X";
+				Initiator.logger.w("MotorDriver.movoTo.AsyncMessage.run", "want to s:" + pos + " / hpos" + newx );
 				q.sendNow(Queue.DFAULT_DEVICE, "A0");
 				return null;
 			}
@@ -316,14 +246,14 @@ public class virtualComponents {
 					int[] parts = Decoder.decodeBytes( input );
 					boolean can = true;
 					if( parts[2] == Methods.HX_STATE_9 ){		// this is max	//	224,0,100,0,204,3,185,1
-						if(newx < currentx ){		// move backward
+						if(pos < currentx ){		// move backward
 							can = false;
-							Initiator.logger.w("MotorDriver.movoTo.AsyncMessage.onInput", "OVER max" );
+							Initiator.logger.w("MotorDriver.movoTo.AsyncMessage.onInput2", "BELOW MIN1 newx: "+ pos+ "currentx:"+currentx   );
 						}
 					}else if( parts[2] == Methods.HX_STATE_1 ){		// this is min
-						if( newx > currentx ){		// move forward
+						if( pos > currentx ){		// move forward
 							can = false;
-							Initiator.logger.w("MotorDriver.movoTo.AsyncMessage.onInput", "BELOW MIN" );
+							Initiator.logger.w("MotorDriver.movoTo.AsyncMessage.onInput2", "OVER max newx: "+ pos+ "currentx:"+currentx  );
 						}
 					}
 					if( can ){
@@ -354,11 +284,11 @@ public class virtualComponents {
 	}
 	public static void hereIsStart( int posx, int posy) {
 		//Constant.log(Constant.TAG,"zapisuje start:" +posx+ " " + posy );
-		virtualComponents.set("POS_START_X", posx );
-		virtualComponents.set("POS_START_Y", posy );
+		state.set("POS_START_X", posx );
+		state.set("POS_START_Y", posy );
 	}
 	public static void moveZDown(Queue q, boolean disableOnReady) {
-		int poszdown	=  virtualComponents.getInt("ENDSTOP_Z_MIN", BarobotConnector.SERVOZ_DOWN_POS );
+		int poszdown	=  state.getInt("ENDSTOP_Z_MIN", BarobotConnector.SERVOZ_DOWN_POS );
 		moveZ(q, poszdown );
 		q.add("DZ", true);
 	}
@@ -396,9 +326,9 @@ public class virtualComponents {
 			public Queue run(AsyncDevice dev, Queue queue) {
 				this.name		= "check position";
 				int posx		= driver_x.getSPos();;		// czy ja juz jestem na tej pozycji?	
-				int posy		= virtualComponents.getInt("POSY", 0 );
-				int sposx		= virtualComponents.getInt("POS_START_X", 0 );		// tu mam byc
-				int sposy		= virtualComponents.getInt("POS_START_X", 0 );
+				int posy		= state.getInt("POSY", 0 );
+				int sposx		= state.getInt("POS_START_X", 0 );		// tu mam byc
+				int sposy		= state.getInt("POS_START_X", 0 );
 
 				if(posx != sposx || posy != sposy ){		// musze jechac?
 					Queue	q2	= new Queue();
@@ -418,29 +348,33 @@ public class virtualComponents {
 
 		carret.setLed( q, "ff", 0 );
 		carret.setLed( q, "22", 250 );
-
 	    virtualComponents.setLeds( "ff", 0 );
-	    q.addWait(500);
 		Queue q1			= new Queue();
 		for(int i =BarobotConnector.front_upanels.length-1; i>=0;i--){
-			q1.add("L"+ BarobotConnector.upanels[i] +",22,200", true);
+			q1.add("L"+ BarobotConnector.front_upanels[i] +",22,200", true);
 			q1.addWait(100);
-			q1.add("L"+ BarobotConnector.upanels[i] +",22,0", true);
+			q1.add("L"+ BarobotConnector.front_upanels[i] +",22,0", true);
 		}
 		q.add(q1);
 		q.addWait(100);
 	    virtualComponents.setLeds( "88", 100 );
 	    virtualComponents.setLeds( "22", 200 );
+		q.addWait(200);
+		carret.setLed( q, "22", 20 );
+		q.addWait(500);
+		carret.setLed( q, "22", 250 );
+		Queue q2			= new Queue();
+		for(int i =BarobotConnector.front_upanels.length-1; i>=0;i--){
+			q1.add("L"+ BarobotConnector.front_upanels[i] +",88,200", true);
+			q1.add("L"+ BarobotConnector.front_upanels[i] +",04,50", true);
+			q1.add("L"+ BarobotConnector.front_upanels[i] +",10,50", true);
+			q1.add("L"+ BarobotConnector.front_upanels[i] +",08,50", true);
+		}
+		q.add(q2);
 		q.addWait(500);
 		carret.setLed( q, "22", 20 );
 		q.addWait(500);
 		carret.setLed( q, "22", 250 );
-		q.addWait(500);
-		carret.setLed( q, "22", 20 );
-		q.addWait(500);
-		carret.setLed( q, "22", 250 );
-
-		virtualComponents.setLeds( "88", 0 );
 	}
 	
 	public static void startDoingDrink() {
@@ -462,11 +396,11 @@ public class virtualComponents {
 		virtualComponents.setLeds( "ff", 0 );
 		int posx		= driver_x.getSPos();
 		for(int i=0;i<12;i++){
-			virtualComponents.set("BOTTLE_X_" + i, "0" );
-			virtualComponents.set("BOTTLE_Y_" + i, "0" );
+			state.set("BOTTLE_X_" + i, "0" );
+			state.set("BOTTLE_Y_" + i, "0" );
 		}
-		virtualComponents.set("POS_START_X", "0" );
-		virtualComponents.set("POS_START_Y", "0" );
+		state.set("POS_START_X", "0" );
+		state.set("POS_START_Y", "0" );
 
 		Initiator.logger.i("+find_bottles", "start");
 		q.add("EX", true );
@@ -480,7 +414,7 @@ public class virtualComponents {
 		q.addWait(200);
 		virtualComponents.moveY( q, BarobotConnector.SERVOY_FRONT_POS, true);
 		q.addWait(200);
-		int lengthx19	=  virtualComponents.getInt("LENGTHX", 60000 );	
+		int lengthx19	=  state.getInt("LENGTHX", 60000 );	
 		
 		Initiator.logger.i("+find_bottles", "up");
 		virtualComponents.moveX( q, posx + 2000);
@@ -518,8 +452,8 @@ public class virtualComponents {
 				virtualComponents.scann_bottles = false;
 				boolean error = false;
 				for(int i=0;i<12;i++){
-					int xpos = virtualComponents.getInt("BOTTLE_X_" + i, 0 );
-					int ypos = virtualComponents.getInt("BOTTLE_Y_" + i, 0 );
+					int xpos = state.getInt("BOTTLE_X_" + i, 0 );
+					int ypos = state.getInt("BOTTLE_Y_" + i, 0 );
 					if(xpos ==0 || ypos == 0 ){
 						error = true;
 					}
@@ -558,14 +492,8 @@ public class virtualComponents {
 		final Thread t = new Thread( new Runnable(){
 			@Override
 			public void run() {	
-				
-				
-				
 			}
 		});
-		
-		
-		
 		String command = "N" + index;
 		q.add( new AsyncMessage( command, true ){
 			@Override
@@ -588,7 +516,7 @@ public class virtualComponents {
 
 	
 	public static void saveXPos(int spos) {
-		virtualComponents.set( "POSX", "" + spos);
+		state.set( "POSX", spos);
 		driver_x.setSPos( spos );	
 	}
 	public static void setLeds(String string, int value ) {
