@@ -1,0 +1,12 @@
+<?xml version="1.0" ?>
+
+<project  default="CreateJar">
+	<property environment="env"/>
+	<echo message="Test=${project_name}"/>
+	<echo message="Test=${dist}"/>
+	<echo message="Testy=${src}"/>
+	<echo message="Test=${workspace_loc}"/>
+	<target name="CreateJar" description="Create Jar file">
+	<jar jarfile="../build_dist/com.barobot.common.jar"  basedir="./bin" includes="*.class" ></jar>  
+</target>
+</project>

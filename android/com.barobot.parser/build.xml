@@ -1,0 +1,7 @@
+<?xml version="1.0" ?>
+
+<project  default="CreateJar">
+	<target name="CreateJar" description="Create Jar file">
+	<jar jarfile="../build_dist/com.barobot.parser.jar"  basedir="./bin" includes="*.class" ></jar>  
+</target>
+</project>
