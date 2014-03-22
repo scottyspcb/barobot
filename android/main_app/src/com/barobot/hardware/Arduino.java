@@ -44,7 +44,10 @@ public class Arduino{
 	private Arduino() {
 		instance			= this;
 		main_queue  		= new Queue( true );
-		ahc					= new AndroidHardwareContext();
+
+		
+		
+		
 		mConversationHistory = new ArrayList<History_item>();
 		mb					= new Mainboard();
 	}

@@ -9,9 +9,7 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
 
-import com.barobot.AppInvoker;
 import com.barobot.R;
-import com.barobot.activity.BarobotMain;
 import com.barobot.activity.UpdateActivity;
 import com.barobot.common.Initiator;
 import com.eclipsesource.json.JsonArray;
@@ -19,9 +17,7 @@ import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonObject.Member;
 import com.eclipsesource.json.JsonValue;
 
-import android.app.ProgressDialog;
 import android.util.Log;
-import android.widget.TextView;
 
 public class update_drinks {
 	private String metadata	= "http://strych.arczi.info/barobot/database.json";
