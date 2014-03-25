@@ -1,11 +1,9 @@
 package com.barobot.hardware;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import android.app.Activity;
-import android.widget.ArrayAdapter;
+
 import com.barobot.common.Initiator;
 import com.barobot.common.constant.Constant;
 import com.barobot.common.constant.Methods;
@@ -18,8 +16,7 @@ import com.barobot.hardware.serial.BT_wire;
 import com.barobot.hardware.serial.Serial_wire;
 import com.barobot.parser.Queue;
 import com.barobot.parser.message.AsyncMessage;
-import com.barobot.parser.message.History_item;
-import com.barobot.parser.output.AsyncDevice;
+import com.barobot.parser.message.Mainboard;
 import com.barobot.parser.utils.Decoder;
 import com.barobot.parser.utils.GlobalMatch;
 
@@ -29,7 +26,7 @@ public class Arduino{
 	private Wire connection				= null;
 	private Wire debugConnection		= null;
 	public boolean stop_autoconnect		= false;
-	public List<History_item> mConversationHistory;
+	
 	private AndroidHardwareContext ahc;
 	private Activity mainView;
 	private BarobotConnector barobot;
@@ -41,7 +38,6 @@ public class Arduino{
 
 	public Arduino(BarobotConnector barobotInstance, HardwareState state) {
 		instance				= this;
-		mConversationHistory	= new ArrayList<History_item>();
 		this.barobot			= barobotInstance;
 		this.state				= state;	
 	}
@@ -53,21 +49,6 @@ public class Arduino{
 			connection = null;
 		}
 		connection		= new Serial_wire( mainView );
-		connection.addOnReceive( new SerialInputListener(){
-			@Override
-			public void onNewData(byte[] data, int length) {
-				String message = new String(data, 0, length);
-		//		Log.e("Serial addOnReceive", message);
-				barobot.mb.read( message );
-	//			debug( message );
-			}
-			@Override
-			public void onRunError(Exception e) {
-			}
-			@Override
-			public boolean isEnabled() {
-				return true;
-			}});
 		connection.init();
 		connection.setSerialEventListener( new SerialEventListener() {
 			@Override
@@ -83,13 +64,15 @@ public class Arduino{
 			}
 		});
 
-		barobot.mb.registerSender( connection );
-		Queue.enableDevice( barobot.mainboardSource );
+		SerialInputListener listener = barobot.willReadFrom( connection );
+		barobot.willWriteThrough( connection );
+
 	//		prepareDebugConnection();
 
-		BarobotEventListener bel = new AndroidEventListener( barobot, state );
+	//	ahc = new AndroidHardwareContext( barobot, state );
+		BarobotEventListener bel = new AndroidEventListener( barobot );
 
-		final MyRetReader mrr = new MyRetReader( bel, ahc, barobot, state );
+		final MyRetReader mrr = new MyRetReader( bel, barobot );
 
 		barobot.mb.addGlobalRegex( new GlobalMatch(){
 			@Override
@@ -97,7 +80,7 @@ public class Arduino{
 				return "^Rx\\d+$";
 			}
 			@Override
-			public boolean run(AsyncDevice asyncDevice, String fromArduino, String wait4Command, AsyncMessage wait_for) {
+			public boolean run(Mainboard asyncDevice, String fromArduino, String wait4Command, AsyncMessage wait_for) {
 				Initiator.logger.i("Arduino.GlobalMatch.RX", fromArduino);
 				fromArduino = fromArduino.replace("Rx", "");
 				int hpos = Decoder.toInt(fromArduino);
@@ -114,7 +97,7 @@ public class Arduino{
 
 		barobot.mb.addGlobalRegex( new GlobalMatch(){
 			@Override
-			public boolean run(AsyncDevice asyncDevice, String fromArduino, String wait4Command, AsyncMessage wait_for) {
+			public boolean run(Mainboard asyncDevice, String fromArduino, String wait4Command, AsyncMessage wait_for) {
 			//	Initiator.logger.i("Arduino.GlobalMatch.METHOD_IMPORTANT_ANALOG", fromArduino);
 				mrr.importantAnalog(asyncDevice, wait_for, fromArduino, false );
 				return true;
@@ -131,7 +114,7 @@ public class Arduino{
 
 		barobot.mb.addGlobalRegex( new GlobalMatch(){
 			@Override
-			public boolean run(AsyncDevice asyncDevice, String fromArduino, String wait4Command, AsyncMessage wait_for) {
+			public boolean run(Mainboard asyncDevice, String fromArduino, String wait4Command, AsyncMessage wait_for) {
 			//	Initiator.logger.i("Arduino.GlobalMatch.RETURN_PIN_VALUE", fromArduino);
 				//{METHOD_I2C_SLAVEMSG,my_address, RETURN_PIN_VALUE, pin,value}
 				int[] parts = Decoder.decodeBytes( fromArduino );
@@ -159,9 +142,42 @@ public class Arduino{
 		} );
 		barobot.mb.addGlobalRegex( new GlobalMatch(){		// METHOD_DEVICE_FOUND
 			@Override
-			public boolean run(AsyncDevice asyncDevice, String fromArduino, String wait4Command, AsyncMessage wait_for) {
-				mrr.deviceFound(asyncDevice, wait_for, fromArduino);
+			public boolean run(Mainboard asyncDevice, String fromArduino, String wait4Command, AsyncMessage wait_for) {				
+				String decoded = "Arduino.GlobalMatch.METHOD_DEVICE_FOUND";
+				int[] parts = Decoder.decodeBytes( fromArduino );
+				// byte ttt[4] = {METHOD_DEVICE_FOUND,addr,type,ver};
+				// byte ttt[4] = {METHOD_DEVICE_FOUND,I2C_ADR_MAINBOARD,MAINBOARD_DEVICE_TYPE,MAINBOARD_VERSION};
+
+				boolean scanning = true;
+				if( scanning ){
+		/*
+					byte pos = getResetOrder(buffer[1]);
+					i2c_reset_next( buffer[1], false );       // reset next (next to slave)
+					i2c_reset_next( buffer[1], true );
+					}else if( scann_order ){ 
+						if( pos == 0xff ){        // nie ma na liscie?
+							order[nextpos++]  = buffer[1];            // na tm miejscu slave o tym adresie
+						}else{
+							scann_order  =  false;
+						}
+					}
+				*/
+				}
+				if(parts[2] == Constant.MAINBOARD_DEVICE_TYPE ){
+					decoded += "/MAINBOARD_DEVICE_TYPE";
+					int cx		= barobot.driver_x.getSPos();;
+					barobot.driver_x.setM(cx);	// ostatnia znana pozycja jest marginesem
+					state.set("MARGINX", cx);
+					Queue mq = barobot.main_queue;
+					mq.clear();
+				}else if(parts[2] == Constant.UPANEL_DEVICE_TYPE ){		// upaneld
+					decoded += "/UPANEL_DEVICE_TYPE";
+				}else if(parts[2] == Constant.IPANEL_DEVICE_TYPE ){		// wozek
+					decoded += "/IPANEL_DEVICE_TYPE";
+				}
+				//Initiator.logger.i("MyRetReader.decoded", decoded);
 				return true;
+
 			}
 			@Override
 			public String getMatchRet() {
@@ -175,7 +191,7 @@ public class Arduino{
 
 		barobot.mb.addGlobalRegex(  new GlobalMatch(){		// METHOD_TEST_SLAVE
 			@Override
-			public boolean run(AsyncDevice asyncDevice, String fromArduino, String wait4Command, AsyncMessage wait_for) {
+			public boolean run(Mainboard asyncDevice, String fromArduino, String wait4Command, AsyncMessage wait_for) {
 				Initiator.logger.i("Arduino.GlobalMatch.METHOD_TEST_SLAVE", fromArduino);
 				return true;
 			}
@@ -200,7 +216,7 @@ public class Arduino{
 		    public void onNewData(final byte[] data, int length) {
 		    	String message = new String(data, 0, length);
 		  //  	Log.e("Serial input", message);
-		    	barobot.main_queue.read( barobot.mainboardSource, message );
+		    	barobot.main_queue.read( message );
 				try {
 					Arduino.getInstance().low_send(message);
 				} catch (IOException e) {
@@ -219,11 +235,9 @@ public class Arduino{
 		debugConnection.setSerialEventListener( new SerialEventListener() {
 			@Override
 			public void onConnect() {
-				// TODO Auto-generated method stub
 			}
 			@Override
 			public void onClose() {
-				// TODO Auto-generated method stub
 			}
 			@Override
 			public void connectedWith(String bt_connected_device, String address) {
@@ -247,21 +261,17 @@ public class Arduino{
 			@Override
 			public void run() {
 				Initiator.logger.i("Arduino.destroy", "--- ON DESTROY3 ---");
-				mConversationHistory = null;
 				ahc					= null;
-				barobot.mb			= null;
-				instance			= null;
-				Initiator.logger.i("Arduino.destroy", "--- ON DESTROY4a ---");
-				barobot.main_queue.destroy();
 				Initiator.logger.i("Arduino.destroy", "--- ON DESTROY4 ---");
-				barobot.main_queue = null;
+				barobot.destroy();
 				Initiator.logger.i("Arduino.destroy", "--- ON DESTROY5 ---");
+				instance			= null;
 				if(connection!=null){
 					connection.destroy();
 				}
 				Initiator.logger.i("Arduino.destroy", "--- ON DESTROY6 ---");
 			}}).start();
-		Initiator.logger.i("Arduino.destroy", "--- ON DESTROY5 ---");
+		Initiator.logger.i("Arduino.destroy", "--- ON DESTROY7 ---");
 	}
 	public void resume() {
 		if(connection!=null){
@@ -332,94 +342,19 @@ public class Arduino{
 		}
     }
 
-    public boolean log_active	= true;
-	private ArrayAdapter<History_item> mConversation;
-	public void addToList(final History_item m) {
-		if(log_active){
-			synchronized (this.lock) {
-				mConversationHistory.add( m );
-			}
-			if(this.mConversation !=null){
-				this.mainView.runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						if(Arduino.this.mConversation !=null){
-				 			Arduino.this.mConversation.add(m);
-				 			Arduino.this.mConversation.notifyDataSetChanged();
-						}
-					}
-				});
-			}
-		}
-	}
-
-	public void addToList(final String string, final boolean direction ) {
-		if(log_active){
-			this.mainView.runOnUiThread(new Runnable() {
-			     public void run() {
-			//    	Log.i(Constant.TAG, "addtohist:[" + string +"]"); 
-			    	History_item hi = new History_item( string.trim(), direction);
-		    		mConversationHistory.add( hi );
-			 		if(Arduino.this.mConversation !=null){
-			 			Arduino.this.mConversation.add(hi);
-			 			Arduino.this.mConversation.notifyDataSetChanged();
-					} 
-			    }
-			});
-		}
-	}
-	public void clearHistory() {
-		if(log_active){
-			mConversationHistory.clear();
-			if(this.mConversation !=null){
-				this.mConversation.clear();
-			}
-		}
-	}
-	public List<History_item> getHistory(){
-		return mConversationHistory;
-	}
 	public void connectId(String address) {
 		Initiator.logger.i("Arduino.connectId", "autoconnect z: " +address);
 		if(debugConnection!=null){
 			debugConnection.connectToId(address);
 		}
 	}
-	public void getHistory(ArrayAdapter<History_item> mConversation) {
-		this.mConversation = mConversation;
-		this.mConversation.addAll(mConversationHistory);
-	}
+	
 	public void resetSerial() {
 		if( connection != null ){
 			connection.reset();
 		}
 	}
 }
-
-/*
-public boolean addRetToList( final String last, final String ret ) {
-	final DebugWindow dd = DebugWindow.getInstance();
-	if(dd!=null){
-		int count = dd.mConversationArrayAdapter.getCount();
-		for(int i =count-1; i>=0;i--){
-			History_item hi = dd.mConversationArrayAdapter.getItem(i);
-		//	Constant.log("+addRetToList", last + "/" + ret + "/" + i +"/"+ hi.getCommand() );
-			if( hi.direction && hi.getCommand().equals(last)){
-				hi.setRet(ret);
-	//			Constant.log("+addRetToList","ustawiam " + i + " na " + hi.toString() );
-				dd.runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						dd.mConversationArrayAdapter.notifyDataSetChanged();
-					}
-				});
-				return true;
-			}			
-		}
-	}
-	return false;
-}
-*/
 
 /*
 AlertDialog.Builder builder = new AlertDialog.Builder(barobotMain);

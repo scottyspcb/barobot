@@ -34,5 +34,9 @@ public class Constant {
 	public static final int MAINBOARD_DEVICE_TYPE 	= 0x10;
 	public static final int IPANEL_DEVICE_TYPE 		= 0x11;
 	public static final int UPANEL_DEVICE_TYPE 		= 0x13;
+	public static int cdefault_address	= 10;		// 10
+	public static int cdefault_index	= 2;
+	public static int mdefault_address	= 0x01;
+	public static int mdefault_index	= 1;
 
 }

@@ -3,14 +3,10 @@ package com.barobot;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import android.util.Log;
-
 import com.barobot.activity.BarobotMain;
-import com.barobot.common.DesktopLogger;
 import com.barobot.common.Initiator;
 import com.barobot.hardware.Arduino;
 import com.barobot.hardware.virtualComponents;
-import com.barobot.hardware.devices.i2c.I2C;
 import com.barobot.hardware.serial.AndroidLogger;
 import com.barobot.other.CameraManager;
 import com.barobot.parser.utils.Interval;

@@ -36,7 +36,7 @@ public class Macro {
 	public void promo_carret(Hardware hw) {
 		Queue q = hw.getQueue();
 		hw.connect();
-		Carret cc = new Carret();
+		Carret cc = hw.barobot.carret;
 	
 		for (I2C_Device u : UpanelIsp.list){
 			u.setLed( q, "ff", 0 );

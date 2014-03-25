@@ -4,14 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.barobot.common.IspSettings;
+import com.barobot.hardware.devices.BarobotConnector;
 import com.barobot.parser.Queue;
 
 public class Upanel extends I2C_Device_Imp {
 	public Upanel can_reset_me_dev	= null;
 	public I2C_Device have_reset_to	= null;
-
 	public static List<Upanel> list	= new ArrayList<Upanel>();
-	
 	public Upanel(){
 		this.cpuname	= "atmega8";
 		this.lfuse		= "0xA4";
@@ -19,11 +18,13 @@ public class Upanel extends I2C_Device_Imp {
 		this.lock		= "0x3F";
 		this.efuse		= "";
 	}
-	public Upanel(int index, int address ){
+	public Upanel(int index, int num ){
 		this();	// call default constructor
-		this.setAddress(address);
+		this.setAddress( BarobotConnector.upanels[num] );
 		this.setIndex(index);
+		this.setOrder(num);
 	}
+
 	public Upanel(int index, int address, Upanel parent ){
 		this();	// call default constructor
 		this.setAddress(address);
@@ -31,6 +32,7 @@ public class Upanel extends I2C_Device_Imp {
 		this.can_reset_me_dev	= parent;
 		parent.hasResetTo(this);
 	}
+
 	public void hasResetTo(I2C_Device child) {
 		this.have_reset_to	= child;
 	}
@@ -73,39 +75,12 @@ public class Upanel extends I2C_Device_Imp {
 	public String getHexFile() {
 		return IspSettings.upHexPath;
 	}
-
-	
-	
-
 	public void setLed(Queue q, String selector, int pwm) {
 		String command = "L" +myaddress + ","+ selector +"," + pwm;
 		q.add( command, true );
 	}
 
-	public void setAddress(int myaddress) {
-		this.myaddress = myaddress;
-	}
-
-	public int getAddress() {
-		return myaddress;
-	}
-
-	public void setIndex(int myindex) {
-		this.myindex = myindex;
-	}
-
-	public int getIndex() {
-		return myindex;
-	}
-
-	public void setOrder(int order) {
-		this.order = order;
-	}
-
-	public int getOrder() {
-		return order;
-	}
-	public static int findByI2c(int device_add) {
+	public static int findByAddress(int device_add) {
 		for (I2C_Device s : list){
 			if(s.getAddress() == device_add ){
 				return Upanel.list.indexOf(s);

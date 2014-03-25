@@ -11,7 +11,6 @@ public class Test {
 	void run(){
 		logger = Logger.getLogger(Test.class.getName());
 		logger.setLevel(Level.FINE);
-
 		try {
 			FileHandler fh = new FileHandler("log_test.txt");
 			logger.addHandler(fh);
@@ -20,13 +19,7 @@ public class Test {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
 		logger.addHandler(new ConsoleHandler());
-		 
 		logger.log(Level.INFO, "Msg");
-		 
-
-		
-		
 	}
 }

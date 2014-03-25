@@ -1,4 +1,4 @@
-package com.barobot.parser.output;
+package com.barobot.parser.message;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -8,26 +8,31 @@ import java.util.Map.Entry;
 import java.util.regex.PatternSyntaxException;
 
 import com.barobot.common.Initiator;
+import com.barobot.common.interfaces.HardwareState;
 import com.barobot.common.interfaces.serial.CanSend;
 import com.barobot.parser.Queue;
-import com.barobot.parser.message.AsyncMessage;
+import com.barobot.parser.interfaces.RetReader;
+import com.barobot.parser.utils.Decoder;
 import com.barobot.parser.utils.GlobalMatch;
 
-public abstract class AsyncDevice {
-	static StringBuilder buffer = new StringBuilder();
+public class Mainboard{
+	private static StringBuilder buffer = new StringBuilder();
+	
 	private static Map<String, GlobalMatch> globalRegex = new HashMap<String, GlobalMatch>();
-	private static Map<String, GlobalInputModifier> modifiers = new HashMap<String, GlobalInputModifier>();
-	public String name = "";
-	public boolean enabled = true;
+	private static Map<String, String> modifiers = new HashMap<String, String>();
+	
+	
 	public static String separator = "\n";
 	private AsyncMessage wait_for = null;
-	private Queue waiting_queue;
 	private CanSend sender;
 	private RetReader retReader;
 	private Queue mainQueue = null;
+	private HardwareState state;
 
-	public AsyncDevice(String name) {
-		this.name = name;
+	public Mainboard( HardwareState state ) {
+		this.state		= state;
+		this.addGlobalModifier( "^25", "125" );		// add 1 if num < 100
+		this.addGlobalModifier( "^RR", "R" );		// RR => R
 	}
 	public void read(String in) {
 		synchronized (buffer) {
@@ -69,7 +74,11 @@ public abstract class AsyncDevice {
 	private boolean useInput(String command) {
 		boolean handled =false;
 		String wait4Command = "";
-	//	Initiator.logger.w("AsyncDevice.useInput", command );
+
+	//	if( state.getInt("show_reading", 0) > 0 ){
+			Initiator.logger.w("AsyncDevice.useInput", command );
+	//	}
+
 		String command2 = this.modyfyInput( command );
 		if( !command2.equals(command)){
 	//		Initiator.logger.e("AsyncDevice.useInput changed to:", command2 );
@@ -153,21 +162,18 @@ public abstract class AsyncDevice {
 	public void clear() {
 		synchronized (buffer) {
 			buffer =  new StringBuilder();
-			
 		}
 	}
-	public void addGlobalModifier( GlobalInputModifier globalModifier ){
-		modifiers.put(globalModifier.getMatchRet(), globalModifier);
+	public void addGlobalModifier(String string, String string2) {
+		modifiers.put(string, string2 );
 	}
 	public void addGlobalRegex( GlobalMatch globalMatch ){
 		globalRegex.put(globalMatch.getMatchRet(), globalMatch);
 	}
-
 	private String modyfyInput(String command) {
-	    for(Entry<String, GlobalInputModifier> e : modifiers.entrySet()) {
+	    for(Entry<String, String> e : modifiers.entrySet()) {
 	    	try {
-	        //	GlobalInputModifier mod	= ;
-	        	command			= e.getValue().replace(command);	
+	    		command		= command.replaceAll(e.getKey(), e.getValue()); 
 	    	} catch (PatternSyntaxException ex) {
 	    		ex.printStackTrace();
 	    	} catch (IllegalArgumentException ex) {
@@ -177,14 +183,16 @@ public abstract class AsyncDevice {
 	    	}
 	    }
 		return command;
-	}	
+	}
 	public boolean send(String command) {
 		try {
-		//	Initiator.logger.e(">>>AsyncDevice.Send", command.trim());
+			if( state.getInt("show_sending", 0) > 0 ){
+				Initiator.logger.e(">>>AsyncDevice.Send", command.trim());
+			}
 			if( this.sender.isConnected() ){
 		//		synchronized(outputStream){
 				try {
-		//			Initiator.logger.i(registerSender send" , command.trim() );
+					Initiator.logger.i("AsyncDevice.Send" , command.trim() );
 					return this.sender.send(command);
 				} catch (IOException e) {
 				  e.printStackTrace();
@@ -201,26 +209,6 @@ public abstract class AsyncDevice {
 	}
 	public void registerSender(final CanSend connection) {
 		this.sender = connection;
-		/*
-		this.sender = new Sender(){
-			@Override
-			public boolean send(String command){
-				if( connection.isConnected() ){
-			//		synchronized(outputStream){
-					try {
-			//			Initiator.logger.i("registerSender send",  command.trim() );
-						return connection.send(command);
-					} catch (IOException e) {
-					  e.printStackTrace();
-					}
-				//	}
-				}else{
-					Initiator.logger.i("no connect");
-				//	throw new Exception("No connect");
-				}
-				return true;
-			}
-		};*/
 	}
 	public void registerSender(final OutputStream outputStream) {
 		this.sender = new CanSend(){
@@ -242,11 +230,10 @@ public abstract class AsyncDevice {
 			}
 		};
 	}
-	public void waitFor(AsyncMessage m, Queue queue) {
+	public void waitFor(AsyncMessage m) {
 	//	Parser.logger.log(Level.INFO, "waitFor: " +m.toString() );
 		synchronized (this) {
 			this.wait_for		= m;
-			this.waiting_queue	= queue;	
 		}
 	}
 	public void unlockRet(String withCommand, boolean unlockQueue ){
@@ -255,9 +242,7 @@ public abstract class AsyncDevice {
 				Initiator.logger.i(">>>AsyncDevice.unlockRet", this.wait_for.toString() +" with: "+ withCommand.trim());
 				this.wait_for.unlockWith(withCommand);
 				this.wait_for = null;
-				if(unlockQueue){
-					waiting_queue.unlock();
-				}
+				mainQueue.unlock();
 			}
 		}
 	}
@@ -267,25 +252,35 @@ public abstract class AsyncDevice {
 				Initiator.logger.i(">>>AsyncDevice.unlockRet", this.wait_for.toString() +" with: "+ withCommand.trim());
 				this.wait_for.unlockWith(withCommand);
 				this.wait_for = null;
-				waiting_queue.unlock();
+				mainQueue.unlock();
 			}
 		}
 	}
-	abstract public boolean parse(String in);
+	public boolean parse(String in) {
+		if( state.getInt("show_unknown", 0) > 0 ){
+			//Parser.log(Level.INFO, "parse: " + in);
+			// all other messages
 
-	public void disable() {
-		enabled = false;
+			if( in.startsWith( "-") ){			// comment
+				Initiator.logger.i("Mainboard.parse.comment", in);
+				return true;
+			}else{
+				Initiator.logger.i("Mainboard.parse", in);	
+				Initiator.logger.i("Mainboard.parse", Decoder.toHexStr(in.getBytes(), in.length()));
+			}	
+		}
+		return false;
 	}
-	public void enable() {
-		enabled = true;
-	}
+
 	public void destroy() {
 		sender			= null;
 		mainQueue		= null;
 		wait_for		= null;
-		waiting_queue	= null;
-		globalRegex.clear();
-		modifiers.clear();
+		state			= null;
+		globalRegex		= null;
+		modifiers		= null;
+		buffer			= null;
+		retReader		= null;
 	}
 	public void setMainQueue(Queue queue) {
 		this.mainQueue = queue;

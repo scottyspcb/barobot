@@ -7,6 +7,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
 import com.barobot.common.IspSettings;
+import com.barobot.common.constant.Constant;
 import com.barobot.hardware.devices.BarobotConnector;
 import com.barobot.hardware.devices.i2c.BarobotTester;
 import com.barobot.hardware.devices.i2c.Carret;
@@ -16,12 +17,9 @@ import com.barobot.i2c.MainBoardIsp;
 import com.barobot.i2c.UpanelIsp;
 import com.barobot.parser.Queue;
 import com.barobot.parser.message.AsyncMessage;
-import com.barobot.parser.output.AsyncDevice;
+import com.barobot.parser.message.Mainboard;
 
 public class Wizard {
-
-	public static int[] upanelIndex2order = {0,2,4,6,8,10,1,3,5,7,9,11};	// numer butelki, odj¹c 1 aby numer ID
-	public static int[] order2upanelIndex = {0,6,1,7,2,8,3,9,4,10,5,11};	// numer butelki, odj¹c 1 aby numer ID
 
 	/*
 	0	Upanel numer 0, adres: 12, index 3	0
@@ -76,18 +74,18 @@ public class Wizard {
 		for (I2C_Device u : UpanelIsp.list){
 			System.out.println("Upanel numer "+ u.getOrder() + ", adres: "+ u.getAddress() +", index "+ u.getIndex());
 		}
-		if(order2upanelIndex.length == UpanelIsp.list.size()){
+		if(LedOrder.order2upanelIndex.length == UpanelIsp.list.size()){
 			//upanel_order
 			String res = "";
-			for( int i = 0;i<order2upanelIndex.length; i++){
-				int ind		= order2upanelIndex[ i ];
+			for( int i = 0;i<LedOrder.order2upanelIndex.length; i++){
+				int ind		= LedOrder.order2upanelIndex[ i ];
 				int address = UpanelIsp.list.get(ind).getAddress();
 				res = res + address + ",";
 			}
 			System.out.println("Kolejnoœæ: " + res);
-			
+
 		}else{
-			System.out.println("Upaneli: " +UpanelIsp.list.size() +  " a powinno byc: " +  order2upanelIndex.length);
+			System.out.println("Upaneli: " +UpanelIsp.list.size() +  " a powinno byc: " +  LedOrder.order2upanelIndex.length);
 			
 		}
 		
@@ -102,7 +100,7 @@ public class Wizard {
 		if(has_next){
 			int device_found  = current_dev.resetNextAndReadI2c( q );
 			if( device_found > 0 ){		// cos powsta³o na koñcu
-				int index = UpanelIsp.findByI2c( device_found );
+				int index = UpanelIsp.findByAddress( device_found );
 				UpanelIsp u = null;
 				if( index == -1 ){
 					u = new UpanelIsp( 0, device_found, current_dev );
@@ -129,17 +127,17 @@ public class Wizard {
 		}
 	}
 
-	public void prepareUpanel(Hardware hw, int index ) {
+	public void prepareUpanel(Hardware hw, int num ) {
 		Queue q = hw.getQueue();
 		UpanelIsp.list.clear();
-		UpanelIsp.list.add( new UpanelIsp( index, 0 ) );	
+		UpanelIsp.list.add( new UpanelIsp( num, 0 ) );	
 		String command = "";
 
 		hw.connect();
 		int current_index	= 0;
 		UpanelIsp current_dev	= (UpanelIsp)UpanelIsp.list.get(current_index);
 		String upanel_code = current_dev.getHexFile();
-		current_dev.setOrder( index );
+		current_dev.setOrder( num );
 
 		if( IspSettings.setFuseBits){
 			current_dev.isp( q );
@@ -428,12 +426,18 @@ public class Wizard {
 		lo.addOnReady( new OnReadyListener<LedOrder>(){
 			public void onReady(LedOrder res) {
 				BarobotConnector.upanels = res.orderByNum();
+				
+				for (int i=0;i<BarobotConnector.upanels.length;i++){
+					int adr = BarobotConnector.upanels[i];
+					System.out.println("adr " + i + "="+ adr);
+				}
+
 				System.out.println("Tkkkkkkkkkkkkkkkkkkk");
 			}
 		});
 		lo.asyncStart();
 		
-		Main.wait(4000);
+		Main.wait(7000);
 		
 		/*
 		hw.send("I", "RI");
@@ -456,7 +460,7 @@ public class Wizard {
 		q.add( "\n", false );
 		
 		q.add("PING", "PONG");
-		Carret current_dev	= new Carret();
+		Carret current_dev	= hw.barobot.carret;
 		String carret_code = current_dev.getHexFile();
 		q.addWaitThread(Main.mt);
 		if( IspSettings.setFuseBits){
@@ -487,7 +491,7 @@ public class Wizard {
 		Queue q = hw.getQueue();
 		hw.connect();
 		//I2C_Device current_dev	= new Upanel( 3, 0 );
-		I2C_Device current_dev	= new Carret();
+		I2C_Device current_dev	= hw.barobot.carret;
 		current_dev.isp( q );
 		command = current_dev.checkFuseBits( hw.comPort );
 		Main.main.run(command, hw);
@@ -507,7 +511,7 @@ public class Wizard {
 			current_dev.isp( q );	// mam 2 sek na wystartwanie
 			q.add( new AsyncMessage( true ){		// na koncu zamknij
 				@Override
-				public Queue run(AsyncDevice dev, Queue queue) {
+				public Queue run(Mainboard dev, Queue queue) {
 					command = current_dev.uploadCode( upanel_code, hw.comPort);
 					Main.main.run(command, hw);
 					return null;
@@ -542,7 +546,7 @@ public class Wizard {
 			current_dev.isp( q );
 			q.add( new AsyncMessage( true ){		// na koncu zamknij
 				@Override
-				public Queue run(AsyncDevice dev, Queue queue) {
+				public Queue run(Mainboard dev, Queue queue) {
 					String command = current_dev.setFuseBits( hw.comPort );
 					Main.main.run(command, hw);
 					return null;
@@ -556,7 +560,7 @@ public class Wizard {
 			q.add("PING", "PONG");
 			current_dev.isp( q );	// mam 2 sek na wystartwanie
 			q.add( new AsyncMessage( true ){		// na koncu zamknij
-				public Queue run(AsyncDevice dev) {
+				public Queue run(Mainboard dev) {
 					command = current_dev.uploadCode( current_dev.getHexFile(), hw.comPort);
 					Main.main.run(command, hw);
 					return null;
@@ -633,7 +637,7 @@ public class Wizard {
 		hw.connect();
 		Queue q = hw.getQueue();
 	
-		Carret current_dev	= new Carret();
+		Carret current_dev	= hw.barobot.carret;
 		current_dev.setLed( q, "ff", 0 );
 		current_dev.setLed( q, led2, value2 );
 		for (I2C_Device u2 : UpanelIsp.list){
@@ -781,7 +785,7 @@ public class Wizard {
 			current_dev.isp( q );	// mam 2 sek na wystartwanie
 			q.add( new AsyncMessage( true ){		// na koncu zamknij
 				@Override
-				public Queue run(AsyncDevice dev, Queue queue) {
+				public Queue run(Mainboard dev, Queue queue) {
 					command = current_dev.uploadCode( upanel_code, hw.comPort);
 					Main.main.run(command, hw);
 					return null;

@@ -1,4 +1,4 @@
-package com.barobot.hardware;
+package com.barobot.android;
 
 import java.util.Arrays;
 import java.util.HashMap;

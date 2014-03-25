@@ -167,7 +167,7 @@ public abstract class I2C_Device_Imp implements I2C_Device{
 		}
 		return q;
 	}
-	public void hasResetTo(I2C_Device dev2 ) {
+	public void hasResetTo(int index, I2C_Device dev2 ) {
 		dev2.isResetedBy( this );
 		//canReset.add(dev2);
 	}
@@ -187,9 +187,8 @@ public abstract class I2C_Device_Imp implements I2C_Device{
 		}
 		return q;
 	}
-	
-	
-	
-	
-	
+	@Override
+	public void hasResetTo(I2C_Device upanelB1) {
+		// TODO Auto-generated method stub
+	}
 }
