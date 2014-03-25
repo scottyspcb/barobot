@@ -10,7 +10,7 @@ import com.barobot.common.DesktopLogger;
 import com.barobot.common.Initiator;
 import com.barobot.hardware.Arduino;
 import com.barobot.hardware.virtualComponents;
-import com.barobot.hardware.devices.I2C;
+import com.barobot.hardware.devices.i2c.I2C;
 import com.barobot.hardware.serial.AndroidLogger;
 import com.barobot.other.CameraManager;
 import com.barobot.parser.utils.Interval;
@@ -20,6 +20,7 @@ public class AppInvoker {
 	private BarobotMain main;
 	public CameraManager cm;
     public ArrayList<Interval> inters = new ArrayList<Interval>();
+	private static Arduino arduino;
 
 	public void onCreate() {
 		/*
@@ -36,7 +37,9 @@ public class AppInvoker {
 		cm = new CameraManager( main );
 		cm.findCameras();
 		virtualComponents.init( main );
-	    Arduino.getInstance().onStart( main );
+		arduino			= new Arduino( virtualComponents.barobot, virtualComponents.state );
+		arduino.onStart(main);
+		
 	}
 	public static AppInvoker createInstance(BarobotMain barobotMain) {
 		ins = new AppInvoker();
@@ -55,12 +58,12 @@ public class AppInvoker {
 		if(cm!=null){
 			cm.onResume();
 		}
-        Arduino.getInstance().resume();
+		arduino.resume();
 	}
 	public void onDestroy() {
 		Initiator.logger.i("MAINWINDOW", "onDestroy");
     //	SofaServer.getInstance().stop();
-    	Arduino.getInstance().destroy();
+		arduino.destroy();
     	Iterator<Interval> it = this.inters.iterator();
     	while(it.hasNext()){
     		it.next().cancel();

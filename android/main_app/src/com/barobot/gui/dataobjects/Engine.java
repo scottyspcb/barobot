@@ -9,6 +9,9 @@ import android.util.Log;
 import com.barobot.gui.ArduinoListener;
 import com.barobot.gui.database.BarobotData;
 import com.barobot.hardware.virtualComponents;
+import com.barobot.parser.Queue;
+import com.barobot.parser.message.AsyncMessage;
+import com.barobot.parser.output.AsyncDevice;
 
 public class Engine {
 	private static Engine instance;
@@ -18,14 +21,13 @@ public class Engine {
 		}
 		return instance;
 	}
-	
 	private Engine(Context context)
 	{
 		BarobotData.StartOrmanMapping(context);
 		//BarobotDataStub.SetupDatabase();
 	}
 	
-	public List<Slot> getSlots()
+	public static List<Slot> getSlots()
 	{
 		return BarobotData.GetSlots();
 	}
@@ -64,7 +66,6 @@ public class Engine {
 	
 	public List<Product> getProducts()
 	{
-
 		return BarobotData.GetProduct();
 	}
 	
@@ -132,70 +133,59 @@ public class Engine {
 		return true;
 	}
 	
-	public Boolean Pour(Recipe_t recipe, final ArduinoListener mListener)
+	public Boolean Pour(Recipe_t recipe,  final ArduinoListener mListener)
 	{
-		
-		
 		List<Integer> bottleSequence = GenerateSequence(recipe.getIngredients());
-		if (bottleSequence == null)
-		{
+		if (bottleSequence == null){
 			return false; // We could not find some of the ingredients
 		}
-		
 		String Sequence = "";
 		for (Integer i : bottleSequence){
 			Sequence += i + " ";
 		}
-		virtualComponents.startDoingDrink();
+	//	virtualComponents.startDoingDrink();
 		Log.i("Prepare Sequence:", Sequence );
 		for (Integer i : bottleSequence){
 			Log.i("Prepare", ""+i );
 			virtualComponents.moveToBottle( i-1, false );
-			virtualComponents.nalej(i);
+			virtualComponents.nalej(i-1);
 		}
 		virtualComponents.moveToStart();
 
-		
-		/*Queue q	= Arduino.getInstance().getMainQ();
+		Queue q	= virtualComponents.getMainQ();
 		q.add( new AsyncMessage( true ) {
 			@Override
-			public Queue run() {
+			public Queue run(AsyncDevice dev, Queue queue) {
 				this.name		= "onQueueFinished";
 				mListener.onQueueFinished();
 				return null;
 			}
 		} );
-		ar.send(q);*/
+
 		return true;
 	}
 	
-	private List<Integer> GenerateSequence(List<Ingredient_t> ingredients)
+	public static List<Integer> GenerateSequence(List<Ingredient_t> ingredients)
 	{
-		final int VOLUME_DIVIDER = 20;
-		
+		int VOLUME_DIVIDER = 20;
 		List<Integer> bottleSequence = new ArrayList<Integer>();
+		List<Slot> slots = getSlots();
 		for(Ingredient_t ing : ingredients)
 		{
-			int position = getIngredientPosition(ing);
-			if (position != -1)
-			{
+			int position = getIngredientPosition(slots, ing);
+			if (position != -1){
 				int num = (int) ing.quantity/VOLUME_DIVIDER;
 				for (int iter = 1; iter <= num ; iter++){
 					bottleSequence.add(position);
 				}
-			}
-			else
-			{
+			}else{
 				return null;
 			}
 		}
-		
 		return bottleSequence;
 	}
 	
-	public int getIngredientPosition(Ingredient_t ing)
-	{
-		List<Slot> slots = getSlots();
+	public static int getIngredientPosition(List<Slot> slots, Ingredient_t ing){
 		for(Slot sl : slots)
 		{
 			if (sl.product != null)

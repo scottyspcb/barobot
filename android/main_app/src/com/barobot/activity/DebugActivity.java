@@ -3,43 +3,26 @@ package com.barobot.activity;
 import java.util.Locale;
 import java.util.Vector;
 
-import com.barobot.AppInvoker;
-import com.barobot.R;
-import com.barobot.R.id;
-import com.barobot.R.layout;
-import com.barobot.R.menu;
-import com.barobot.R.string;
-import com.barobot.common.Initiator;
-import com.barobot.common.interfaces.RunnableWithData;
-import com.barobot.debug.DebugTabBottles;
-import com.barobot.debug.DebugTabCommands;
-import com.barobot.debug.DebugTabDevices;
-import com.barobot.debug.DebugTabGraph;
-import com.barobot.debug.DebugTabLeds;
-import com.barobot.debug.DebugTabLog;
-import com.barobot.hardware.virtualComponents;
-
 import android.app.ActionBar;
-import android.app.Dialog;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.NavUtils;
 import android.support.v4.view.ViewPager;
-import android.view.Gravity;
 import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.Window;
-import android.view.WindowManager;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.ToggleButton;
+
+import com.barobot.R;
+import com.barobot.common.Initiator;
+import com.barobot.debug.DebugTabBottles;
+import com.barobot.debug.DebugTabCommands;
+import com.barobot.debug.DebugTabDevices;
+import com.barobot.debug.DebugTabGraph;
+import com.barobot.debug.DebugTabLeds;
+import com.barobot.debug.DebugTabLog;
 
 public class DebugActivity extends FragmentActivity implements	ActionBar.TabListener {
 	private static DebugActivity instance;
@@ -244,26 +227,6 @@ public class DebugActivity extends FragmentActivity implements	ActionBar.TabList
 			setText( R.id.position_y, value, false );
 		}else if("POSZ".equals(name) ){
 			setText( R.id.position_z, value, false );
-		}else if("LED1".equals(name) ){
-			setChecked( R.id.led1, "ON".equals(value) );
-		}else if("LED2".equals(name) ){
-			setChecked( R.id.led2, "ON".equals(value) );
-		}else if("LED3".equals(name) ){
-			setChecked( R.id.led3, "ON".equals(value) );
-		}else if("LED4".equals(name) ){
-			setChecked( R.id.led4, "ON".equals(value) );
-		}else if("LED5".equals(name) ){
-			setChecked( R.id.led5, "ON".equals(value) );
-		}else if("LED6".equals(name) ){
-			setChecked( R.id.led6, "ON".equals(value) );
-		}else if("LED7".equals(name) ){
-			setChecked( R.id.led7, "ON".equals(value) );
-		}else if("LED8".equals(name) ){
-			setChecked( R.id.led8, "ON".equals(value) );
-		}else if("LED9".equals(name) ){
-			setChecked( R.id.led9, "ON".equals(value) );
-		}else if("LED10".equals(name) ){
-			setChecked( R.id.led10, "ON".equals(value) );
 		}
 	}
 

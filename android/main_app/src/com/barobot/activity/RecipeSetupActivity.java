@@ -1,26 +1,10 @@
 package com.barobot.activity;
 
 import java.util.List;
-import java.util.ArrayList;
 
-import com.barobot.gui.NoticeDialogListener;
-import com.barobot.gui.NoticeDialogListener.ReturnStatus;
-import com.barobot.gui.dataobjects.Engine;
-import com.barobot.gui.dataobjects.Ingredient;
-import com.barobot.gui.dataobjects.Ingredient_t;
-import com.barobot.gui.dataobjects.Liquid;
-import com.barobot.gui.dataobjects.Liquid_t;
-import com.barobot.gui.dataobjects.Recipe_t;
-import com.barobot.gui.dataobjects.Type;
-import com.barobot.R;
-import com.barobot.gui.dataobjects.Recipe;
-
-import android.os.Bundle;
 import android.app.AlertDialog;
-import android.app.DialogFragment;
-import android.app.FragmentTransaction;
-import android.content.Context;
 import android.content.DialogInterface;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -30,6 +14,13 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
+
+import com.barobot.R;
+import com.barobot.gui.dataobjects.Engine;
+import com.barobot.gui.dataobjects.Ingredient_t;
+import com.barobot.gui.dataobjects.Liquid_t;
+import com.barobot.gui.dataobjects.Recipe_t;
+import com.barobot.gui.dataobjects.Type;
 
 public class RecipeSetupActivity extends BarobotActivity 
 									implements OnItemSelectedListener {

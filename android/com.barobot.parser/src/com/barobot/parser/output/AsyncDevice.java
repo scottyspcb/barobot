@@ -8,7 +8,7 @@ import java.util.Map.Entry;
 import java.util.regex.PatternSyntaxException;
 
 import com.barobot.common.Initiator;
-import com.barobot.common.interfaces.CanSend;
+import com.barobot.common.interfaces.serial.CanSend;
 import com.barobot.parser.Queue;
 import com.barobot.parser.message.AsyncMessage;
 import com.barobot.parser.utils.GlobalMatch;
@@ -68,22 +68,24 @@ public abstract class AsyncDevice {
 	}
 	private boolean useInput(String command) {
 		boolean handled =false;
-		Initiator.logger.w("AsyncDevice.useInput", command );
+		String wait4Command = "";
+	//	Initiator.logger.w("AsyncDevice.useInput", command );
 		String command2 = this.modyfyInput( command );
 		if( !command2.equals(command)){
-			Initiator.logger.e("AsyncDevice.useInput changed to:", command2 );
+	//		Initiator.logger.e("AsyncDevice.useInput changed to:", command2 );
 			command = command2;
 		}
 		boolean used = false;
 		synchronized (this) {
 		//	Initiator.logger.i("wait_for?: ", ( (this.wait_for == null)? "null" : "nonull") );
 			if( this.wait_for != null ){
+				wait4Command = this.wait_for.command;
 				used = true;
 		//		Initiator.logger.i("AsyncDevice.useInput.isRet: ", command );
 				handled = this.wait_for.isRet( command, mainQueue );
 				if(handled){
 			//		Initiator.logger.i("+unlock: ", command );
-					this.unlockRet( command );
+					this.unlockRet( command, true );
 					return true;
 				}
 				handled = this.wait_for.onInput( command, this, mainQueue );
@@ -94,7 +96,7 @@ public abstract class AsyncDevice {
 					handled = this.retReader.isRetOf( this, this.wait_for, command, mainQueue );
 					if(handled){
 						//Initiator.logger.i("+unlock: ", command );
-						this.unlockRet( command );
+						this.unlockRet( command, true );
 						return true;
 					}
 				}
@@ -109,7 +111,7 @@ public abstract class AsyncDevice {
 				}
 			}
 		}
-		handled =  this.machGlobal( command );
+		handled =  this.machGlobal( command, wait4Command );
 		if(handled){
 			return true;
 		}
@@ -124,11 +126,7 @@ public abstract class AsyncDevice {
 	public void setRetReader(RetReader retReader) {
 		this.retReader = retReader;
 	}
-	private boolean machGlobal(String command) {
-		String wait4Command = "";
-		if(this.wait_for != null ){
-			wait4Command = this.wait_for.command;
-		}
+	private boolean machGlobal(String command, String wait4Command) {
 	//	Initiator.logger.i("AsyncDevice.machGlobal", command + "/" + wait4Command);
 	    for(Entry<String, GlobalMatch> e : globalRegex.entrySet()) {
 	        String regex		= e.getKey();	// String matchRet		= value.getMatchRet();
@@ -168,8 +166,8 @@ public abstract class AsyncDevice {
 	private String modyfyInput(String command) {
 	    for(Entry<String, GlobalInputModifier> e : modifiers.entrySet()) {
 	    	try {
-	        	GlobalInputModifier mod	= e.getValue();
-	        	command			= mod.replace(command);	
+	        //	GlobalInputModifier mod	= ;
+	        	command			= e.getValue().replace(command);	
 	    	} catch (PatternSyntaxException ex) {
 	    		ex.printStackTrace();
 	    	} catch (IllegalArgumentException ex) {
@@ -177,14 +175,12 @@ public abstract class AsyncDevice {
 	    	} catch (IndexOutOfBoundsException ex) {
 	    		ex.printStackTrace();
 	    	}
-	     //   String regex		= e.getKey();
-	 //       Initiator.logger.i("AsyncDevice.machGlobal.matches", regex + "=" + command );
 	    }
 		return command;
 	}	
 	public boolean send(String command) {
 		try {
-			Initiator.logger.e(">>>AsyncDevice.Send", command.trim());
+		//	Initiator.logger.e(">>>AsyncDevice.Send", command.trim());
 			if( this.sender.isConnected() ){
 		//		synchronized(outputStream){
 				try {
@@ -253,13 +249,15 @@ public abstract class AsyncDevice {
 			this.waiting_queue	= queue;	
 		}
 	}
-	public void unlockRet(String withCommand){
+	public void unlockRet(String withCommand, boolean unlockQueue ){
 		synchronized (this) {
 			if(this.wait_for!=null){
 				Initiator.logger.i(">>>AsyncDevice.unlockRet", this.wait_for.toString() +" with: "+ withCommand.trim());
 				this.wait_for.unlockWith(withCommand);
 				this.wait_for = null;
-				waiting_queue.unlock();
+				if(unlockQueue){
+					waiting_queue.unlock();
+				}
 			}
 		}
 	}

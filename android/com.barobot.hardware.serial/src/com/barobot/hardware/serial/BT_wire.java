@@ -2,9 +2,9 @@ package com.barobot.hardware.serial;
 
 import java.io.IOException;
 
-import com.barobot.common.interfaces.SerialEventListener;
-import com.barobot.common.interfaces.SerialInputListener;
-import com.barobot.common.interfaces.Wire;
+import com.barobot.common.interfaces.serial.SerialEventListener;
+import com.barobot.common.interfaces.serial.SerialInputListener;
+import com.barobot.common.interfaces.serial.Wire;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
@@ -220,5 +220,10 @@ public class BT_wire implements Wire {
 	@Override
 	public void setSerialEventListener(SerialEventListener iel) {
 		this.iel = iel;
+	}
+	@Override
+	public void reset() {
+		// TODO Auto-generated method stub
+		
 	}
 }

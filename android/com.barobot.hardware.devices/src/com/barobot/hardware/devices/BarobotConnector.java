@@ -1,5 +1,12 @@
 package com.barobot.hardware.devices;
 
+import com.barobot.common.interfaces.HardwareState;
+import com.barobot.hardware.devices.i2c.Carret;
+import com.barobot.hardware.devices.i2c.Upanel;
+import com.barobot.parser.Queue;
+import com.barobot.parser.output.Mainboard;
+
+
 public class BarobotConnector {
 	public static final int SERVOZ_UP_POS = 2100;
 	public static final int SERVOZ_UP_LIGHT_POS = 2050;
@@ -18,10 +25,10 @@ public class BarobotConnector {
 	public static final int DRIVER_Y_SPEED = 30;
 	public static final int DRIVER_Z_SPEED = 250;
 	public static int[] upanels = {
-		21,20,23,13,18,17,19,14,12,22,15,16,
+		13,20,23,14,16,17,19,21,18,22,15,12,
 	};
 	public static int[] front_upanels = {
-		23,19,13,17,15,14,20,18,12,16,21,22,
+		13,20,23,14,16,17,19,21,18,22,15,12,
 	};
 	//config
 	//	private static final int SERVOZ_PAC_TIME_UP = 600;
@@ -90,4 +97,26 @@ public class BarobotConnector {
 		SERVOZ_POUR_TIME
 	};
 
+	public Carret carret		= null;
+	public MotorDriver driver_x	= null;
+	public Mainboard mb			= null;
+	public Queue main_queue		= null;
+	public int mainboardSource	= 0;
+	
+	public BarobotConnector(HardwareState state ){
+		carret				= new Carret();
+		driver_x			= new MotorDriver( state );
+		mb					= new Mainboard();
+		main_queue  		= new Queue( true );
+		driver_x.defaultSpeed = BarobotConnector.DRIVER_X_SPEED;
+		mainboardSource		= main_queue.registerSource( mb );
+	}
+
+	public Upanel getUpanelBottle(int num) {
+		if( num >= 0 && num < upanels.length ){
+			int addr = upanels[ num ];
+			return new Upanel( 0 , addr);
+		}
+		return null;
+	}
 }

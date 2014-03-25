@@ -1,58 +1,45 @@
 package com.barobot.hardware;
 
-
 import com.barobot.common.Initiator;
 import com.barobot.common.constant.Constant;
 import com.barobot.common.constant.Methods;
+import com.barobot.common.interfaces.HardwareState;
 import com.barobot.hardware.devices.BarobotConnector;
-import com.barobot.hardware.devices.Carret;
-import com.barobot.hardware.devices.MotorDriver;
-import com.barobot.hardware.devices.Upanel;
+import com.barobot.hardware.devices.i2c.Upanel;
 import com.barobot.parser.Queue;
 import com.barobot.parser.message.AsyncMessage;
 import com.barobot.parser.output.AsyncDevice;
 import com.barobot.parser.utils.Decoder;
 import android.app.Activity;
+import android.graphics.Color;
 
 public class virtualComponents {
-	public static Activity application;
 	public static boolean need_glass_up = false;
 	public static boolean pac_enabled = true;
 	public static final int SERVOY_REPEAT_TIME = 2000;
 
-	public static MotorDriver driver_x;
 	public static boolean scann_bottles = false;
 	public static boolean set_bottle_on = false;
 	public static boolean ledsReady = false;
-	private static Carret carret;
-	public static AndroidBarobotState state= null;
+	public static HardwareState state= null;
+	public static BarobotConnector barobot;
 
 	public static void init( Activity app ){
-		application		= app;
-		driver_x		= new MotorDriver();
-		carret			= new Carret( 2, 10 );
-		state			= new AndroidBarobotState(app);
-		
-		driver_x.setM( state.getInt( "MARGINX", 0 ) );
-		driver_x.defaultSpeed = BarobotConnector.DRIVER_X_SPEED;
-		driver_x.setSPos( state.getInt( "POSX", 0 ) );
+		state			= new AndroidBarobotState(app);	
+		barobot			= new BarobotConnector( state );	
 	}
-
 	public static int getPourTime( int num ){
 		if( num > 0 && num < BarobotConnector.times.length){
 			return BarobotConnector.times[num];
 		}
 		return BarobotConnector.SERVOZ_POUR_TIME;
 	}
-	
-	
 	public static int getBottlePosX( int i ) {
 		return state.getInt("BOTTLE_X_" + i, BarobotConnector.b_pos_x[i]);
 	}
 	public static int getBottlePosY( int i ) {
 		return state.getInt("BOTTLE_Y_" + i, BarobotConnector.b_pos_y[i]);
 	}
-
 	// zapisz ze tutaj jest butelka o danym numerze
 	public static void hereIsBottle(int i, int posx, int posy) {
 		//Constant.log(Constant.TAG,"zapisuje pozycje:"+ i + " " +posx+ " " + posy );
@@ -61,7 +48,7 @@ public class virtualComponents {
 	}
 	// zapisz ze tutaj jest butelka o danym numerze
 	public static void hereIsBottle(int i) {
-		int posx		=  state.getInt("POSX", 0 );	
+		int posx		=  barobot.driver_x.getSPos();
 		int posy		=  state.getInt("POSY", 0 );
 	//	Constant.log(Constant.TAG,"zapisuje pozycje:"+ i + " " +posx+ " " + posy );
 		state.set("BOTTLE_X_" + i, posx );
@@ -71,7 +58,7 @@ public class virtualComponents {
 		return false;
 	}
 	public static void pacpac() {
-		Queue q = Arduino.getInstance().getMainQ();
+		Queue q = getMainQ();
 		Initiator.logger.i(Constant.TAG,"pac");
 	//	q.add( moveX );
 		q.add("EX", true);
@@ -87,7 +74,7 @@ public class virtualComponents {
 	}
 
 	public static void cancel_all() {
-		Queue mq = Arduino.getInstance().getMainQ();
+		Queue mq = getMainQ();
 		mq.clearAll();
 		mq.add("LIVE A OFF", false );
 //		add("EZ");
@@ -98,21 +85,15 @@ public class virtualComponents {
 		mq.add("DZ", false );
 		mq.add(Constant.GETXPOS, false );
 	}
-	public static void stop_all() {
-		Queue mq = Arduino.getInstance().getMainQ();
-		mq.clearAll();
-	}
-
 	public static void moveToBottle(final int num, final boolean disableOnReady ){
-		Arduino ar		= Arduino.getInstance();
 		Queue q			= new Queue();
-		final Upanel up	= getUpanelBottle(num);
+		final Upanel up	= barobot.getUpanelBottle(num);
 		moveZDown( q ,true );
 		q.add( new AsyncMessage( true ){
 			@Override
 			public Queue run(AsyncDevice dev, Queue queue) {
 				this.name	= "check position";
-				int cx		= virtualComponents.driver_x.getSPos();		// czy ja juz jestem na tej pozycji?	
+				int cx		= virtualComponents.barobot.driver_x.getSPos();		// czy ja juz jestem na tej pozycji?	
 				int cy		= state.getInt("POSY", 0 );
 				int tx 		= getBottlePosX( num );
 				int ty  	= getBottlePosY( num );
@@ -131,12 +112,12 @@ public class virtualComponents {
 					}else{
 						virtualComponents.moveY( q2, BarobotConnector.SERVOY_FRONT_POS, true);	
 					}
-					virtualComponents.moveX( q2, tx);
+					barobot.driver_x.moveX( q2, tx);
 					virtualComponents.moveY( q2, ty, disableOnReady);		
 				}else{	// jade przodem
 					virtualComponents.moveZDown(q2, disableOnReady );
 					virtualComponents.moveY( q2, BarobotConnector.SERVOY_FRONT_POS, true);
-					virtualComponents.moveX( q2, tx);
+					barobot.driver_x.moveX( q2, tx);
 					virtualComponents.moveY( q2, ty, disableOnReady);
 				}
 				if( up != null ){
@@ -150,20 +131,13 @@ public class virtualComponents {
 	    q.add(Constant.GETXPOS, true);
 	    q.add(Constant.GETYPOS, true);
 	    q.add(Constant.GETZPOS, true);
-	    ar.getMainQ().add(q);
+	    getMainQ().add(q);
 	}
 
-	static Upanel getUpanelBottle(int num) {
-		if( num >= 0 && num < BarobotConnector.upanels.length ){
-			int addr = BarobotConnector.upanels[ num ];
-			return new Upanel( 0 , addr);
-		}
-		return null;
-	}
 	public static void nalej(int num) {			// num 0-11
-		Queue q = Arduino.getInstance().getMainQ();
+		Queue q = getMainQ();
 		int time = getPourTime(num);
-		final Upanel up	= getUpanelBottle(num);
+		final Upanel up	= barobot.getUpanelBottle(num);
 		q.add("EX", true);
 //		q.add("EY", true);
 //		q.add("EZ", true);
@@ -175,15 +149,15 @@ public class virtualComponents {
 			q.addWait( 3* time/4 );
 		}else{
 			up.setLed( q, "ff", 0 );
-			up.setLed( q, "04", 20 );
+			up.setLed( q, "04", 110 );
 			q.addWait( time/4 );
 			virtualComponents.moveZLight(q, false);
 			q.add("DY", true);
-			up.setLed( q, "04", 50 );
+			up.setLed( q, "04", 0 );
 			q.addWait( time/4 );
-			up.setLed( q, "04", 100 );
+			up.setLed( q, "04", 110 );
 			q.addWait( time/4 );
-			up.setLed( q, "04", 200 );
+			up.setLed( q, "04", 0 );
 			q.addWait( time/4 );
 			up.setLed( q, "20", 255 );
 			up.setLed( q, "80", 100 );
@@ -195,10 +169,12 @@ public class virtualComponents {
 			public Queue run(AsyncDevice dev, Queue queue) {
 				this.name		= "pacpac";
 				if(virtualComponents.pac_enabled){
-					Queue	q2	= new Queue();	
+					Queue	q2	= new Queue();		
+					up.setLed( q2, "11", 100 );
 					q2.addWait( BarobotConnector.SERVOZ_PAC_TIME_WAIT );
 					q2.add("Z" + BarobotConnector.SERVOZ_PAC_POS+",255", true);	
 					virtualComponents.moveZDown(q2, true );
+					up.setLed( q2, "11", 0 );
 					return q2;
 				}
 				return null;
@@ -215,63 +191,14 @@ public class virtualComponents {
 			up.setLed( q, "ff", 0 );
 		}
 	}
-
 	public static void enable_analog( Queue q, int pin, int time, int repeat) {
 		q.add("LIVE A "+pin+","+time+","+repeat, false);		// repeat pomiary co time na porcie pin
 	}
 	public static void disable_analog(Queue q, int analogWaga) {
 		q.add("LIVE A OFF", false);
 	}
-
-	public static void moveX( final Queue q, final int pos ) {
-		final int newx		= driver_x.soft2hard(pos);
-		final int currentx	= driver_x.getSPos();
-
-		q.add( new AsyncMessage( true, true ) {
-			@Override
-			public boolean isRet(String result, Queue mainQueue) {
-				return false;
-			}
-			@Override
-			public Queue run(AsyncDevice dev, Queue queue){
-				this.name		= "Check Hall X";
-				Initiator.logger.w("MotorDriver.movoTo.AsyncMessage.run", "want to s:" + pos + " / hpos" + newx );
-				q.sendNow(Queue.DFAULT_DEVICE, "A0");
-				return null;
-			}
-			@Override
-			public boolean onInput(String input, AsyncDevice dev, Queue mainQueue) {
-				Initiator.logger.w("MotorDriver.movoTo.AsyncMessage.onInput", input );
-				if(input.matches("^" +  Methods.METHOD_IMPORTANT_ANALOG + ",0,.*" )){		//	224,0,66,0,208,7,15,2
-					int[] parts = Decoder.decodeBytes( input );
-					boolean can = true;
-					if( parts[2] == Methods.HX_STATE_9 ){		// this is max	//	224,0,100,0,204,3,185,1
-						if(pos < currentx ){		// move backward
-							can = false;
-							Initiator.logger.w("MotorDriver.movoTo.AsyncMessage.onInput2", "BELOW MIN1 newx: "+ pos+ "currentx:"+currentx   );
-						}
-					}else if( parts[2] == Methods.HX_STATE_1 ){		// this is min
-						if( pos > currentx ){		// move forward
-							can = false;
-							Initiator.logger.w("MotorDriver.movoTo.AsyncMessage.onInput2", "OVER max newx: "+ pos+ "currentx:"+currentx  );
-						}
-					}
-					if( can ){
-						Initiator.logger.w("MotorDriver.movoTo.AsyncMessage.onInput", "MOVE" );
-						Queue	q2	= new Queue(); 
-						q2.add("X" + newx+ ","+virtualComponents.driver_x.defaultSpeed, true);
-						mainQueue.addFirst(q2);
-						dev.unlockRet(this, "A0 OK");
-						return true;
-					}
-					dev.unlockRet(this, "A0 FAIL");
-				}
-				return false;
-			}
-		});
-	}
 	public static void moveX( Queue q, String pos ) {
-		moveX(q, Decoder.toInt(pos));
+		barobot.driver_x.moveX( q, Decoder.toInt(pos));
 	}
 	public static void moveY( Queue q, int pos, boolean disableOnReady ) {
 		q.add("Y" + pos+ ","+BarobotConnector.DRIVER_Y_SPEED, true);
@@ -319,13 +246,13 @@ public class virtualComponents {
 	}
 
 	public static void moveToStart() {
-		Queue q = Arduino.getInstance().getMainQ();
+		Queue q = getMainQ();
 		moveZDown( q ,true );
 		q.add( new AsyncMessage( true ) {
 			@Override
 			public Queue run(AsyncDevice dev, Queue queue) {
 				this.name		= "check position";
-				int posx		= driver_x.getSPos();;		// czy ja juz jestem na tej pozycji?	
+				int posx		= barobot.driver_x.getSPos();;		// czy ja juz jestem na tej pozycji?	
 				int posy		= state.getInt("POSY", 0 );
 				int sposx		= state.getInt("POS_START_X", 0 );		// tu mam byc
 				int sposy		= state.getInt("POS_START_X", 0 );
@@ -335,7 +262,7 @@ public class virtualComponents {
 					virtualComponents.moveZDown(q2, true );
 					//virtualComponents.moveY( q2, virtualComponents.get("NEUTRAL_POS_Y", "0" ));
 					virtualComponents.moveY( q2, BarobotConnector.SERVOY_FRONT_POS, true );
-					virtualComponents.moveX( q2, sposx);
+					barobot.driver_x.moveX( q2, sposx);
 					virtualComponents.moveY( q2, sposy, true );
 					return q2;
 				}
@@ -346,8 +273,8 @@ public class virtualComponents {
 	    q.add(Constant.GETYPOS, true);
 	    q.add(Constant.GETZPOS, true);
 
-		carret.setLed( q, "ff", 0 );
-		carret.setLed( q, "22", 250 );
+	    barobot.carret.setLed( q, "ff", 0 );
+	    barobot.carret.setLed( q, "22", 250 );
 	    virtualComponents.setLeds( "ff", 0 );
 		Queue q1			= new Queue();
 		for(int i =BarobotConnector.front_upanels.length-1; i>=0;i--){
@@ -360,9 +287,7 @@ public class virtualComponents {
 	    virtualComponents.setLeds( "88", 100 );
 	    virtualComponents.setLeds( "22", 200 );
 		q.addWait(200);
-		carret.setLed( q, "22", 20 );
-		q.addWait(500);
-		carret.setLed( q, "22", 250 );
+		barobot.carret.setLed( q, "22", 20 );
 		Queue q2			= new Queue();
 		for(int i =BarobotConnector.front_upanels.length-1; i>=0;i--){
 			q1.add("L"+ BarobotConnector.front_upanels[i] +",88,200", true);
@@ -372,15 +297,13 @@ public class virtualComponents {
 		}
 		q.add(q2);
 		q.addWait(500);
-		carret.setLed( q, "22", 20 );
-		q.addWait(500);
-		carret.setLed( q, "22", 250 );
+		barobot.carret.setLed( q, "22", 250 );
 	}
 	
 	public static void startDoingDrink() {
-		Queue q = Arduino.getInstance().getMainQ();
-		carret.setLed( q, "ff", 0 );
-		carret.setLed( q, "11", 250 );
+		Queue q = getMainQ();
+		barobot.carret.setLed( q, "ff", 0 );
+		barobot.carret.setLed( q, "11", 250 );
 		Queue q1		= new Queue();	
 		for(int i =0; i<BarobotConnector.upanels.length;i++){
 			q1.add("L"+ BarobotConnector.upanels[i] +",ff,0", true);
@@ -390,11 +313,11 @@ public class virtualComponents {
 	}
 
 	public static void kalibrcja() {
-		Queue q			= Arduino.getInstance().getMainQ();
+		Queue q			= getMainQ();
 		q.add( "\n", false );
 		q.add( "\n", false );
 		virtualComponents.setLeds( "ff", 0 );
-		int posx		= driver_x.getSPos();
+		int posx		= barobot.driver_x.getSPos();
 		for(int i=0;i<12;i++){
 			state.set("BOTTLE_X_" + i, "0" );
 			state.set("BOTTLE_Y_" + i, "0" );
@@ -417,33 +340,33 @@ public class virtualComponents {
 		int lengthx19	=  state.getInt("LENGTHX", 60000 );	
 		
 		Initiator.logger.i("+find_bottles", "up");
-		virtualComponents.moveX( q, posx + 2000);
+		barobot.driver_x.moveX( q, posx + 2000);
 		q.addWait(100);
-		virtualComponents.moveX( q, -70000 );	// read margin
+		barobot.driver_x.moveX( q, -70000 );
+
 		q.addWait(100);
 		// scann Triggers
 		q.add( new AsyncMessage( true ) {			// go up
 			@Override
 			public Queue run(AsyncDevice dev, Queue queue) {
 				this.name		= "scanning up";
-				virtualComponents.driver_x.defaultSpeed = 1000;
+				virtualComponents.barobot.driver_x.defaultSpeed = 1000;
 				Initiator.logger.i("+find_bottles", "up");
 				virtualComponents.scann_bottles = true;
 				return null;
 			}
-		} );
-		virtualComponents.moveX( q, 30000 );		// go down
-		
+		});
+		barobot.driver_x.moveX( q, 30000);		// go down
 		q.add( new AsyncMessage( true ) {
 			@Override
 			public Queue run(AsyncDevice dev, Queue queue) {
 				this.name		= "scanning back";
-				virtualComponents.driver_x.defaultSpeed = BarobotConnector.DRIVER_X_SPEED;
+				virtualComponents.barobot.driver_x.defaultSpeed = BarobotConnector.DRIVER_X_SPEED;
 				Initiator.logger.i("+find_bottles", "down kalibrcja");
 				return null;
 			}
 		} );
-		virtualComponents.moveX( q, -lengthx19);			// down to 0
+		barobot.driver_x.moveX( q, -lengthx19);
 		q.add( new AsyncMessage( true ) {
 			@Override
 			public Queue run(AsyncDevice dev, Queue queue) {
@@ -467,69 +390,52 @@ public class virtualComponents {
 		} );
 		//virtualComponents.scann_leds();
 	}
-	public static void scann_leds() {
-		Queue q			= Arduino.getInstance().getMainQ();
-		findOrder( q, 3 );
-		findOrder( q, 4 );
-
-		Queue q1			= new Queue();
-		Queue q2			= new Queue();		
+	public static void scann_leds(){
+		Queue q			= getMainQ();
+		Queue q1		= new Queue();
+		Queue q2		= new Queue();		
 		for(int i =0; i<BarobotConnector.upanels.length;i++){
-			q1.add("L"+ BarobotConnector.upanels[i] +",ff,200", true);
-			q2.add("L"+ BarobotConnector.upanels[i] +",ff,0", true);
+			q1.add("L"+ BarobotConnector.upanels[i] +",ff,200", true );
+			q2.add("L"+ BarobotConnector.upanels[i] +",ff,0", true );
 		}
-
 		q.add(q1);
 		q.addWait(1000);
 		q.add(q2);
 		ledsReady = true;	
 	}
-
-
-	private static void findOrder(Queue q, int index) {
-		int current_index		= 0;
-
-		final Thread t = new Thread( new Runnable(){
-			@Override
-			public void run() {	
-			}
-		});
-		String command = "N" + index;
-		q.add( new AsyncMessage( command, true ){
-			@Override
-			public boolean isRet(String result, Queue q) {
-				if(result.startsWith("" + Methods.METHOD_I2C_SLAVEMSG + ",")){		//	122,1,188,1
-					int[] bytes = Decoder.decodeBytes(result);
-					if(bytes[2] == Methods.METHOD_CHECK_NEXT){
-						if(bytes[3] == 1 ){							// has next
-							System.out.println("has next? 1");
-						}else{
-							System.out.println("has next? 0");
-						}
-						return true;
-					}
-				}
-				return false;
-			}
-		});
-	}
-
-	
-	public static void saveXPos(int spos) {
-		state.set( "POSX", spos);
-		driver_x.setSPos( spos );	
+	public static Queue getMainQ() {
+		return virtualComponents.barobot.main_queue;
 	}
 	public static void setLeds(String string, int value ) {
-		Queue q1			= new Queue();
-		Queue q2			= new Queue();		
+		Queue q1			= new Queue();	
 		for(int i =0; i<BarobotConnector.upanels.length;i++){
 			q1.add("L"+ BarobotConnector.upanels[i] +",ff,0", true);
 			q1.add("L"+ BarobotConnector.upanels[i] +","+ string +"," + value, true);
 		}
-		Queue q			= Arduino.getInstance().getMainQ();
+		Queue q			= getMainQ();
 		q.add(q1);
-		q.addWait(1000);
-		q.add(q2);
-		ledsReady = true;
+	}
+	public static void setLedsOff(String string ) {
+		Queue q1			= new Queue();	
+		for(int i =0; i<BarobotConnector.upanels.length;i++){
+			q1.add("L"+ BarobotConnector.upanels[i] +",ff,0", true);
+		}
+		Queue q			= getMainQ();
+		q.add(q1);
+	}
+
+	public static void setColor(String leds, int color) {
+		int blue	= Color.blue(color);
+    	int red		= Color.red(color);
+    	int green	= Color.green(color);
+		Queue q1	= new Queue();
+		for(int i =0; i<BarobotConnector.upanels.length;i++){
+			q1.add("L"+ BarobotConnector.upanels[i] +",11," + red, true);
+			q1.add("L"+ BarobotConnector.upanels[i] +",22," + green, true);
+			q1.add("L"+ BarobotConnector.upanels[i] +",44," + blue, true);
+		//	q1.add("L"+ BarobotConnector.upanels[i] +",88," + white, true);
+		}
+		Queue q			= getMainQ();
+		q.add(q1);
 	}
 }

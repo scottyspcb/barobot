@@ -125,7 +125,7 @@ public class BarobotDB {
 	
 	public Bottle[] GetSlots()
 	{
-		final int NUMBER_OF_BOTTLES = 12;
+		int NUMBER_OF_BOTTLES = 12;
 		
 		String query = "SELECT * FROM " + DataContract.Slots.TABLE_NAME
 				+ " INNER JOIN " + DataContract.Liquids.TABLE_NAME

@@ -6,11 +6,6 @@ import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.barobot.parser.output.AsyncDevice;
-import com.barobot.parser.output.Console;
-import com.barobot.parser.output.MainScreen;
-import com.barobot.parser.output.Mainboard;
-
 public class Test {
 	public static Logger logger = null;
 	void run(){

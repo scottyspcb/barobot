@@ -144,4 +144,12 @@
         android:max="32000"
         android:progress="10" />
 
+    <Button
+        android:id="@+id/unlock"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:text="Unlock" />
+
 </RelativeLayout>

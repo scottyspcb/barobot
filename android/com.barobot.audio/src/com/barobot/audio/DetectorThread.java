@@ -3,7 +3,6 @@ package com.barobot.audio;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.barobot.common.interfaces.OnSignalsDetectedListener;
@@ -69,9 +68,11 @@ public class DetectorThread extends Thread{
             sample = (short)((buffer[i]) | buffer[i + 1] << 8);
             totalAbsValue += Math.abs(sample);
         }
+       
         averageAbsValue = totalAbsValue /  frameByteSize / 2;
  //       System.out.println("size99: " +buffer.length );
         onSignalsDetectedListener.peek(averageAbsValue);
+        /*
 		int len = buffer.length;
         for(int i=0; i<len; i++){
             instantBuffer.offer(buffer[i]);
@@ -89,7 +90,7 @@ public class DetectorThread extends Thread{
         	onSignalsDetectedListener.notify("bpm", newbpm );	
         	onSignalsDetectedListener.changeBPM(newbpm);
         	lastbpm = newbpm;
-        }
+        }*/
 	//    log.log(Level.INFO, "calculated BPM: " + processor.getBPM());  
 	}
 }

@@ -36,9 +36,7 @@ public class BottleSetupActivity extends BarobotActivity
 		UpdateSlots();
 	}
 	private void UpdateSlots() {
-		
-		Engine engine = Engine.GetInstance(this);
-		List<Slot> bottles = engine.getSlots();
+		List<Slot> bottles = Engine.getSlots();
 
 		Log.w("BOTTLE_SETUP length",""+bottles.size());
 		

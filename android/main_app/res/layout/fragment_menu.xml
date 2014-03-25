@@ -9,7 +9,6 @@
         android:layout_alignParentTop="true"
         android:layout_margin="2dp"
         android:onClick="onMenuButtonClicked"
-        android:enabled="false"
         android:drawableLeft="@drawable/favorite_55"
         android:text="@string/menu_favorite" />
 
@@ -28,7 +27,6 @@
         android:layout_below="@id/menu_choose"
         android:layout_margin="2dp"
         android:onClick="onMenuButtonClicked"
-        android:enabled="false"
         android:drawableLeft="@drawable/lucky_55"
         android:text="@string/menu_lucky" />
 
@@ -48,7 +46,6 @@
         android:layout_margin="2dp"
         android:onClick="onMenuButtonClicked"
         android:drawableLeft="@drawable/history_55"
-        android:enabled="false"
         android:text="@string/menu_history" />
     
     <Button
@@ -58,7 +55,6 @@
         android:layout_margin="2dp"
         android:onClick="onMenuButtonClicked"
         android:drawableLeft="@drawable/mobile_55"
-        android:enabled="false"
         android:text="@string/menu_mobile" />
 
     <Button

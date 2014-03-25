@@ -26,8 +26,8 @@
             android:name="com.barobot.activity.BarobotMain"
             android:configChanges="orientation"
             android:label="@string/app_name"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
-            android:screenOrientation="sensorLandscape" >
+            android:screenOrientation="sensorLandscape"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -79,8 +79,8 @@
         </activity>
         <activity
             android:name="com.barobot.activity.BottleSetupActivity"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
-            android:label="@string/title_activity_bottle_setup" >
+            android:label="@string/title_activity_bottle_setup"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
         </activity>
         <activity
             android:name="com.barobot.activity.RecipeSetupActivity"
@@ -95,17 +95,31 @@
         </activity>
         <activity
             android:name="com.barobot.activity.ProductActivity"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
-            android:label="@string/title_activity_product" >
+            android:label="@string/title_activity_product"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.barobot.activity.BarobotActivity" />
         </activity>
         <activity
             android:name="com.barobot.activity.CreatorActivity"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
-            android:label="@string/title_activity_creator" >
+            android:label="@string/title_activity_creator"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
         </activity>
+        <activity
+            android:name="com.barobot.activity.RandomActivity"
+            android:label="@string/title_activity_random"
+			android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
+        </activity>
+
+        <activity
+            android:name="net.pocketmagic.android.carousel.MainActivity"
+            android:label=""
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+             >
+        </activity>
+
+
     </application>
 
 </manifest>

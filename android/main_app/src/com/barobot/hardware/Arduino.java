@@ -9,16 +9,17 @@ import android.widget.ArrayAdapter;
 import com.barobot.common.Initiator;
 import com.barobot.common.constant.Constant;
 import com.barobot.common.constant.Methods;
-import com.barobot.common.interfaces.SerialEventListener;
-import com.barobot.common.interfaces.SerialInputListener;
-import com.barobot.common.interfaces.Wire;
+import com.barobot.common.interfaces.HardwareState;
+import com.barobot.common.interfaces.serial.SerialEventListener;
+import com.barobot.common.interfaces.serial.SerialInputListener;
+import com.barobot.common.interfaces.serial.Wire;
+import com.barobot.hardware.devices.BarobotConnector;
 import com.barobot.hardware.serial.BT_wire;
 import com.barobot.hardware.serial.Serial_wire;
-import com.barobot.parser.History_item;
 import com.barobot.parser.Queue;
 import com.barobot.parser.message.AsyncMessage;
+import com.barobot.parser.message.History_item;
 import com.barobot.parser.output.AsyncDevice;
-import com.barobot.parser.output.Mainboard;
 import com.barobot.parser.utils.Decoder;
 import com.barobot.parser.utils.GlobalMatch;
 
@@ -28,46 +29,36 @@ public class Arduino{
 	private Wire connection				= null;
 	private Wire debugConnection		= null;
 	public boolean stop_autoconnect		= false;
-	private Queue main_queue			= null;
 	public List<History_item> mConversationHistory;
-	private int mainboardSource;
 	private AndroidHardwareContext ahc;
-	Mainboard mb					= null;
 	private Activity mainView;
+	private BarobotConnector barobot;
+	private HardwareState state;
 
 	public static Arduino getInstance(){
-		if (instance == null){
-			instance = new Arduino();
-		}
 		return instance;
 	}
-	private Arduino() {
-		instance			= this;
-		main_queue  		= new Queue( true );
 
-		
-		
-		
-		mConversationHistory = new ArrayList<History_item>();
-		mb					= new Mainboard();
+	public Arduino(BarobotConnector barobotInstance, HardwareState state) {
+		instance				= this;
+		mConversationHistory	= new ArrayList<History_item>();
+		this.barobot			= barobotInstance;
+		this.state				= state;	
 	}
+
 	public void onStart(Activity mainView) {
 		this.mainView = mainView;
 		if( connection != null ){
 			connection.close();
 			connection = null;
 		}
-		if(connection !=null){
-			connection.close();
-		}
-		mainboardSource = main_queue.registerSource( mb );
 		connection		= new Serial_wire( mainView );
 		connection.addOnReceive( new SerialInputListener(){
 			@Override
 			public void onNewData(byte[] data, int length) {
 				String message = new String(data, 0, length);
 		//		Log.e("Serial addOnReceive", message);
-				mb.read( message );
+				barobot.mb.read( message );
 	//			debug( message );
 			}
 			@Override
@@ -78,12 +69,11 @@ public class Arduino{
 				return true;
 			}});
 		connection.init();
-
 		connection.setSerialEventListener( new SerialEventListener() {
 			@Override
 			public void onConnect() {
-				main_queue.add( "\n", false );	// clean up input
-				main_queue.add( "\n", false );
+				barobot.main_queue.add( "\n", false );	// clean up input
+				barobot.main_queue.add( "\n", false );
 			}
 			@Override
 			public void onClose() {
@@ -93,14 +83,15 @@ public class Arduino{
 			}
 		});
 
-		mb.registerSender( connection );		
-		Queue.enableDevice( mainboardSource );
+		barobot.mb.registerSender( connection );
+		Queue.enableDevice( barobot.mainboardSource );
 	//		prepareDebugConnection();
-		
 
-		final MyRetReader mrr = new MyRetReader( ahc );
+		BarobotEventListener bel = new AndroidEventListener( barobot, state );
 
-		mb.addGlobalRegex( new GlobalMatch(){
+		final MyRetReader mrr = new MyRetReader( bel, ahc, barobot, state );
+
+		barobot.mb.addGlobalRegex( new GlobalMatch(){
 			@Override
 			public String getMatchRet() {
 				return "^Rx\\d+$";
@@ -110,12 +101,9 @@ public class Arduino{
 				Initiator.logger.i("Arduino.GlobalMatch.RX", fromArduino);
 				fromArduino = fromArduino.replace("Rx", "");
 				int hpos = Decoder.toInt(fromArduino);
-				int spos = virtualComponents.driver_x.hard2soft(hpos);
-				virtualComponents.saveXPos( spos );
-				int lx	=  virtualComponents.state.getInt("LENGTHX", 600 );
-				if( spos > lx){		// Pozycja wieksza niz długosc? Zwieksz długosc
-					virtualComponents.state.set( "LENGTHX", "" + spos);
-				}
+				int spos = barobot.driver_x.hard2soft(hpos);
+				barobot.driver_x.setSPos( spos );	
+
 				return true;
 			}
 			@Override
@@ -124,7 +112,7 @@ public class Arduino{
 			}
 		} );
 
-		mb.addGlobalRegex( new GlobalMatch(){
+		barobot.mb.addGlobalRegex( new GlobalMatch(){
 			@Override
 			public boolean run(AsyncDevice asyncDevice, String fromArduino, String wait4Command, AsyncMessage wait_for) {
 			//	Initiator.logger.i("Arduino.GlobalMatch.METHOD_IMPORTANT_ANALOG", fromArduino);
@@ -141,7 +129,7 @@ public class Arduino{
 			}
 		} );
 
-		mb.addGlobalRegex( new GlobalMatch(){
+		barobot.mb.addGlobalRegex( new GlobalMatch(){
 			@Override
 			public boolean run(AsyncDevice asyncDevice, String fromArduino, String wait4Command, AsyncMessage wait_for) {
 			//	Initiator.logger.i("Arduino.GlobalMatch.RETURN_PIN_VALUE", fromArduino);
@@ -152,7 +140,7 @@ public class Arduino{
 				byte value		= (byte) parts[4];
 				Initiator.logger.i("Arduino.POKE-BUTTON", "Address:" + my_address + ", pin: " + pin+ ", value: " + value );
 
-				Queue q = Arduino.getInstance().getMainQ();
+				Queue q = barobot.main_queue;
 				if(value > 0 ){
 					q.add("L"+my_address+",ff,0", true);
 				}else{
@@ -169,7 +157,7 @@ public class Arduino{
 				return null;		// all
 			}
 		} );
-		mb.addGlobalRegex( new GlobalMatch(){		// METHOD_DEVICE_FOUND
+		barobot.mb.addGlobalRegex( new GlobalMatch(){		// METHOD_DEVICE_FOUND
 			@Override
 			public boolean run(AsyncDevice asyncDevice, String fromArduino, String wait4Command, AsyncMessage wait_for) {
 				mrr.deviceFound(asyncDevice, wait_for, fromArduino);
@@ -185,7 +173,7 @@ public class Arduino{
 			}
 		} );
 
-		mb.addGlobalRegex(  new GlobalMatch(){		// METHOD_TEST_SLAVE
+		barobot.mb.addGlobalRegex(  new GlobalMatch(){		// METHOD_TEST_SLAVE
 			@Override
 			public boolean run(AsyncDevice asyncDevice, String fromArduino, String wait4Command, AsyncMessage wait_for) {
 				Initiator.logger.i("Arduino.GlobalMatch.METHOD_TEST_SLAVE", fromArduino);
@@ -201,7 +189,7 @@ public class Arduino{
 			}
 		} );
 
-		mb.setRetReader( mrr );
+		barobot.mb.setRetReader( mrr );
 	}
     protected void prepareDebugConnection() {
 		SerialInputListener btl = new SerialInputListener() {
@@ -212,7 +200,7 @@ public class Arduino{
 		    public void onNewData(final byte[] data, int length) {
 		    	String message = new String(data, 0, length);
 		  //  	Log.e("Serial input", message);
-		    	main_queue.read( mainboardSource, message );
+		    	barobot.main_queue.read( barobot.mainboardSource, message );
 				try {
 					Arduino.getInstance().low_send(message);
 				} catch (IOException e) {
@@ -239,7 +227,7 @@ public class Arduino{
 			}
 			@Override
 			public void connectedWith(String bt_connected_device, String address) {
-                virtualComponents.state.set( "LAST_BT_DEVICE", address );    	// remember device ID
+                state.set( "LAST_BT_DEVICE", address );    	// remember device ID
 			}
 		});	
 		debugConnection.addOnReceive(btl);	
@@ -261,12 +249,12 @@ public class Arduino{
 				Initiator.logger.i("Arduino.destroy", "--- ON DESTROY3 ---");
 				mConversationHistory = null;
 				ahc					= null;
-				mb					= null;
+				barobot.mb			= null;
 				instance			= null;
 				Initiator.logger.i("Arduino.destroy", "--- ON DESTROY4a ---");
-				main_queue.destroy();
+				barobot.main_queue.destroy();
 				Initiator.logger.i("Arduino.destroy", "--- ON DESTROY4 ---");
-				main_queue = null;
+				barobot.main_queue = null;
 				Initiator.logger.i("Arduino.destroy", "--- ON DESTROY5 ---");
 				if(connection!=null){
 					connection.destroy();
@@ -401,31 +389,9 @@ public class Arduino{
 		this.mConversation = mConversation;
 		this.mConversation.addAll(mConversationHistory);
 	}
-
-	public Queue getMainQ() {
-		return main_queue;
-	}
 	public void resetSerial() {
 		if( connection != null ){
-			connection.close();
-			connection		= null;
-			connection		= new Serial_wire( this.mainView );
-			connection.addOnReceive( new SerialInputListener(){
-				@Override
-				public void onNewData(byte[] data, int length) {
-					String message = new String(data, 0, length);
-			//		Log.e("Serial addOnReceive", message);
-					mb.read( message );
-		//			debug( message );
-				}
-				@Override
-				public void onRunError(Exception e) {
-				}
-				@Override
-				public boolean isEnabled() {
-					return true;
-				}});
-			connection.init();
+			connection.reset();
 		}
 	}
 }

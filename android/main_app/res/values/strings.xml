@@ -5,8 +5,6 @@
     <string name="debug_window">Opcje serwisowe</string>
     <string name="debug_mode_window">Tryb serwisowy</string>
     <string name="do_update">Pobierz aktualizacje drinków</string>
-    
-  
 
     <!-- BluetoothChat -->
     <string name="not_connected">You are not connected to a device</string>
@@ -28,7 +26,6 @@
     <string name="back_to_main_feature">Pij drinki z Barobotem</string>
     <string name="secure_connect">Połącz z Barobotem</string>
     <string name="title_activity_update">Update</string>
-
     <string name="hello_world">Hello world!</string>
     <string name="about_info">Autorzy</string>
     <string name="title_activity_about">O programie</string>
@@ -56,16 +53,15 @@
     <string name="select_timeout">Częstotliwość</string>
     <string name="web_machaj_y">Machaj Y</string>
     <string name="web_machaj_x">Machaj X</string>
-    <string name="title_activity_device_list">Tryb serwisowy</string>
-    <string name="title_section1">Rozkazy</string>
-    <string name="title_section2">Urządzenia</string>
-    <string name="title_section3">Oświetlenie</string>
-    <string name="title_section4">Butelki</string>
-    <string name="title_section5">Analiza wejścia</string>
-    <string name="title_section6">Historia</string>
+    <string name="title_activity_device_list">Barobot</string>
+    <string name="title_section1">Options</string>
+    <string name="title_section2">Settings</string>
+    <string name="title_section3">Lights</string>
+    <string name="title_section4">Bottles</string>
+    <string name="title_section5">Sounds</string>
+    <string name="title_section6">History</string>
 
     <!-- GUI -->
-   
     <string name="edit_message">Enter a message</string>
     <string name="button_send">Send</string>
     <string name="make_button">Make a drink</string>
@@ -97,8 +93,6 @@
     <!-- Bottle Setup -->
     <string name="empty_bottle_string">Empty</string>
 
-   
-
     <!-- Dialog new Type -->
     <string name="dialog_type_name">Liquid type</string>
 
@@ -109,14 +103,13 @@
     <!-- Dialog new Product -->
     <string name="dialog_product_capacity">Bottle capacity</string>
     <string name="dialog_product_name">Product name</string>
-    
-      <!-- Menu items -->
-	<string name="action_settings">Settings</string>
-	<string name="action_main">Make a drink</string>
+
+    <!-- Menu items -->
+    <string name="action_settings">Settings</string>
+    <string name="action_main">Make a drink</string>
     <string name="action_bottle_setup">Setup bottles</string>
     <string name="action_recipe_setup">Customize Recipes</string>
     <string name="action_creator">Create</string>
-    
     <string name="menu_favorite">Try Favorites</string>
     <string name="menu_choose">Choose a drink</string>
     <string name="menu_lucky">I feel lucky</string>
@@ -125,8 +118,7 @@
     <string name="menu_history">Past orders</string>
     <string name="menu_mobile">Mobile orders</string>
     <string name="menu_options">Options and Setup</string>
-    
-    
+
     <!-- Create Activity -->
     <string name="create_pour_button">Pour!</string>
     <string name="create_undo_button">Undo last step</string>
@@ -144,9 +136,9 @@
     <string name="title_activity_outside_component">Outside Components</string>
     <string name="title_activity_product">ProductActivity</string>
     <string name="title_activity_creator">Drink Creator</string>
-    
-     <!-- Product Setup -->
-   
+
+    <!-- Product Setup -->
+
     <string name="product_add_new_button">Add New</string>
     <string name="product_button_cancel">Cancel</string>
     <string name="product_button_empty">Empty</string>
@@ -154,7 +146,7 @@
     <string name="product_field_type">[Type]</string>
     <string name="product_field_liquid">[Name]</string>
     <string name="product_field_capacity">[Capacity]</string>
-    
     <string name="image_desc">[Drink Image]</string>
+    <string name="title_activity_random">Get Random</string>
 
 </resources>

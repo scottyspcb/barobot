@@ -7,7 +7,7 @@ import org.orman.mapper.annotation.PrimaryKey;
 
 @Entity
 public class Slot extends Model<Slot>{
-	public static final String STATUS_EMPTY = "Empty"; 
+	public static String STATUS_EMPTY = "Empty"; 
 	
 	@PrimaryKey(autoIncrement=true)
 	public long id;

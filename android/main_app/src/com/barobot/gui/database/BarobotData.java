@@ -21,16 +21,12 @@ import com.barobot.gui.dataobjects.Slot;
 import com.barobot.gui.dataobjects.Type;
 
 public class BarobotData {
-	
-	public static final String DATABASE_NAME = "BarobotOrman.db";
-	public static final int DATABASE_SCHEMA_VERSION = 1;
-	
+	public static String DATABASE_NAME = "BarobotOrman.db";
+	public static int DATABASE_SCHEMA_VERSION = 1;
 	public static void StartOrmanMapping(Context context){
 		// Setting up ORMAN
-		Database omdb = new SQLiteAndroid(context, DATABASE_NAME, DATABASE_SCHEMA_VERSION);
-		
+		Database omdb = new SQLiteAndroid(context, DATABASE_NAME, DATABASE_SCHEMA_VERSION);	
 		MappingSession.getConfiguration().setCreationPolicy(SchemaCreationPolicy.CREATE_IF_NOT_EXISTS);
-		
 		MappingSession.registerEntity(Category.class);
 		MappingSession.registerEntity(Type.class);
 		MappingSession.registerEntity(Liquid_t.class);
@@ -56,14 +52,13 @@ public class BarobotData {
 		ClearTable(Liquid_t.class);
 		ClearTable(Type.class);
 		ClearTable(Category.class);
-
 	}
-	
+
 	public static List<Recipe_t> GetRecipes()
 	{
 		return Model.fetchAll(Recipe_t.class);
 	}
-	
+
 	public static List<Slot> GetSlots()
 	{
 		return Model.fetchAll(Slot.class);

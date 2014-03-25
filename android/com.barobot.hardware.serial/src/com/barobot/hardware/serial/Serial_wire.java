@@ -21,10 +21,10 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
-import com.barobot.common.interfaces.CanSend;
-import com.barobot.common.interfaces.SerialEventListener;
-import com.barobot.common.interfaces.SerialInputListener;
-import com.barobot.common.interfaces.Wire;
+import com.barobot.common.interfaces.serial.CanSend;
+import com.barobot.common.interfaces.serial.SerialEventListener;
+import com.barobot.common.interfaces.serial.SerialInputListener;
+import com.barobot.common.interfaces.serial.Wire;
 import com.hoho.android.usbserial.driver.UsbSerialDriver;
 import com.hoho.android.usbserial.driver.UsbSerialPort;
 import com.hoho.android.usbserial.driver.UsbSerialProber;
@@ -34,45 +34,42 @@ public class Serial_wire implements CanSend, Wire {
 	private static final int MESSAGE_REFRESH = 101;
     private static final long REFRESH_TIMEOUT_MILLIS = 10000;
 	protected static final String ACTION_USB_PERMISSION = "com.hoho.android.usbserial.USB";
-
+    private static UsbSerialPort sPort = null;
+    
     private UsbManager mUsbManager;
     private boolean mPermissionReceiver_activated = true;
-    private static UsbSerialPort sPort = null;
     private final ExecutorService mExecutor = Executors.newSingleThreadExecutor();
     private SerialInputOutputManager mSerialIoManager;
-
     private int errors = 0;
 	private Activity view;
 	private int baud = 115200;
 	protected Queue<SerialInputListener> listener=new LinkedList<SerialInputListener>();
-    private static SerialInputOutputManager.Listener mListener = null;
+    private SerialInputOutputManager.Listener mListener = null;
 	private SerialEventListener iel = null;
 
 	public Serial_wire(Activity mainActivity) {
 		super();
 		this.view = mainActivity;
-		if( mListener == null ){
-			mListener = new SerialInputOutputManager.Listener() {
-			    @Override
-			    public synchronized void onRunError(Exception e) {
-			        for (SerialInputListener il : listener){
-			        	if(il.isEnabled()){
-			        		il.onRunError( e );
-			        	}
-			        }
-			        stopIoManager();
-			    }
-			    @Override
-			    public synchronized void onNewData( byte[] data) {
-		//	    	Log.e("Serial_wire.onNewData", new String(data, 0, data.length) );
-			        for (SerialInputListener il : listener){
-			        	if(il.isEnabled()){
-			        		il.onNewData( data, data.length );
-			        	}
-			        }
-			    }
-			};
-		}		
+		mListener = new SerialInputOutputManager.Listener() {
+		    @Override
+		    public synchronized void onRunError(Exception e) {
+		        for (SerialInputListener il : listener){
+		        	if(il.isEnabled()){
+		        		il.onRunError( e );
+		        	}
+		        }
+		        stopIoManager();
+		    }
+		    @Override
+		    public synchronized void onNewData( byte[] data) {
+	//	    	Log.e("Serial_wire.onNewData", new String(data, 0, data.length) );
+		        for (SerialInputListener il : listener){
+		        	if(il.isEnabled()){
+		        		il.onNewData( data, data.length );
+		        	}
+		        }
+		    }
+		};
 	}
 	public void setBaud( int baud ) {
 		this.baud = baud;
@@ -358,6 +355,12 @@ public class Serial_wire implements CanSend, Wire {
 	@Override
 	public void setSerialEventListener(SerialEventListener iel) {
 		this.iel  = iel;
+	}
+	@Override
+	public void reset() {
+		this.close();
+		mListener = null;
+		init();
 	}
 }
 

@@ -1,21 +1,28 @@
 package com.barobot.debug;
 
+import yuku.ambilwarna.AmbilWarnaDialog;
+import yuku.ambilwarna.AmbilWarnaDialog.OnAmbilWarnaListener;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.ListView;
+import android.widget.CompoundButton;
+import android.widget.Switch;
 import android.widget.ToggleButton;
-
 import com.barobot.R;
 import com.barobot.activity.DebugActivity;
+import com.barobot.hardware.virtualComponents;
 
 public class DebugTabLeds extends Fragment {
 	public int tab_id	= -1 ;
 	private Activity cc;
+	private int lastcolor = 0xff000000;
+	private View rootView;
 
     public DebugTabLeds(Activity debugActivity, int tabCommandsId) {
     //	Constant.log("DebugTabLeds", "init");
@@ -34,36 +41,86 @@ public class DebugTabLeds extends Fragment {
 
 		int lay = DebugActivity.layouts[tab_id];
 		//View rootView = inflater.inflate( R.layout.fragment_device_list_dummy, container, false);
-		View rootView = inflater.inflate( lay, container, false);
+		this.rootView = inflater.inflate( lay, container, false);
 
+		
 		button_toggle bt = new button_toggle();
 		int[] togglers = {
-				R.id.led1,
-				R.id.led2,
-				R.id.led3,
-				R.id.led4,
-				R.id.led5,
-				R.id.led6,
-				R.id.led7,
-				R.id.led8,
-				R.id.led9,
-				R.id.led10
+			
 		};
 		for(int i =0; i<togglers.length;i++){
 			View w = rootView.findViewById(togglers[i]);
 			String classname = w.getClass().getName();
 			if( "android.widget.ToggleButton".equals( classname )){
 				Button xb3 = (ToggleButton) rootView.findViewById(togglers[i]);	
-				xb3.setOnClickListener(bt);			
+				xb3.setOnClickListener(bt);	
 			}	
 		}
-		ListView  led_list_box = (ListView ) rootView.findViewById(R.id.led_list);
-		if( led_list_box == null){
-	//		Constant.log("DebugTabDevices", "null2");
-		}
 
+		Switch xb5 = (Switch) rootView.findViewById(R.id.light_show);	
+		xb5.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+		    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+		        if (isChecked) {
+		        	
+		        } else {
+		        	
+		        }
+		    }
+		});
+
+		Switch xb6 = (Switch) rootView.findViewById(R.id.all_lights_on);	
+		xb6.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+		    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+		        if (isChecked) {
+		        	virtualComponents.setLeds( "ff", 255 );
+		        } else {
+		        	virtualComponents.setLeds( "ff", 0 );
+		        }
+		    }
+		});
+
+		Button xb1 = (Button) rootView.findViewById(R.id.main_color);
+		xb1.setOnClickListener( new OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				changeColorOf("ff");
+			}
+		});
+		Button xb2 = (Button) rootView.findViewById(R.id.top_color);
+		xb2.setOnClickListener( new OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				changeColorOf("0f");
+			}
+		});
+		Button xb3 = (Button) rootView.findViewById(R.id.bottom_color);
+		xb3.setOnClickListener( new OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				changeColorOf("f0");
+			}
+		});
+		
 		return rootView;
 	}
+
+	private void changeColorOf(final String string) {
+		AmbilWarnaDialog dialog = new AmbilWarnaDialog(rootView.getContext(), lastcolor, 
+				new OnAmbilWarnaListener() {
+		        @Override
+		        public void onOk(AmbilWarnaDialog dialog, int color) {
+		        	Log.i("AmbilWarnaDialog", ""+  color);
+		        	virtualComponents.setColor( string, color );
+					lastcolor = color;
+		        }
+		        @Override
+		        public void onCancel(AmbilWarnaDialog dialog) {
+		        	Log.i("OnAmbilWarnaListener", "onCancel");
+		        }
+		});	
+		dialog.show();
+	};	
+
     public int getDipsFromPixel(float pixels) {
         // Get the screen's density scale
         final float scale = getResources().getDisplayMetrics().density;
