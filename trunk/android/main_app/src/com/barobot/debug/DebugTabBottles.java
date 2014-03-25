@@ -1,15 +1,6 @@
 package com.barobot.debug;
 
-import com.barobot.AppInvoker;
-import com.barobot.R;
-import com.barobot.R.id;
-import com.barobot.activity.DebugActivity;
-import com.barobot.common.Initiator;
-import com.barobot.common.constant.Constant;
-import com.barobot.hardware.virtualComponents;
-
 import android.app.Activity;
-import android.content.Context;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -19,8 +10,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.LinearLayout.LayoutParams;
+import android.widget.TextView;
+
+import com.barobot.R;
+import com.barobot.activity.DebugActivity;
+import com.barobot.common.Initiator;
+import com.barobot.common.constant.Constant;
+import com.barobot.hardware.virtualComponents;
 
 public class DebugTabBottles extends Fragment {
 	public int tab_id	= -1 ;

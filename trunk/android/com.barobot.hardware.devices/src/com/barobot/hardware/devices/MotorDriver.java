@@ -2,6 +2,7 @@ package com.barobot.hardware.devices;
 
 import com.barobot.common.Initiator;
 import com.barobot.common.constant.Methods;
+import com.barobot.common.interfaces.HardwareState;
 import com.barobot.parser.Queue;
 import com.barobot.parser.message.AsyncMessage;
 import com.barobot.parser.output.AsyncDevice;
@@ -15,7 +16,13 @@ public class MotorDriver {
 	int m1 = 0;
 	int m2 = 0;
 	//	todo s = (( (h * p1 + m1) / d ) + m2) * p2 
+	private HardwareState state;
 
+	public MotorDriver(HardwareState state ){
+		this.state = state;
+		this.setM( state.getInt( "MARGINX", 0 ) );
+		this.setSPos( state.getInt( "POSX", 0 ) );
+	}	
 	public void setM( int margin1 ){
 		m1 = margin1;
 		Initiator.logger.w("set MARGIN X", "" + m1);
@@ -26,9 +33,14 @@ public class MotorDriver {
 	public int getHPos(){
 		return hardware_pos;
 	}
-	public void setSPos( int pos2 ){
-		software_pos = pos2;
-		hardware_pos = software_pos + m1;	
+	public void setSPos( int spos ){
+		software_pos = spos;
+		hardware_pos = software_pos + m1;
+		state.set( "POSX", software_pos );
+		int lx	=  state.getInt("LENGTHX", 600 );
+		if( spos > lx){		// Pozycja wieksza niz d³ugosc? Zwieksz d³ugosc
+			state.set( "LENGTHX", spos);
+		}
 	}
 	public void setHPos( int pos2 ){
 		hardware_pos = pos2;
@@ -52,47 +64,51 @@ public class MotorDriver {
 	//	Initiator.logger.w("MARGIN X2", "Margin: " + m1 + "  soft: " + pos3 + " => hard " + (pos3 -( -m1)));
 		return pos3 - (- m1);
 	}
-	public void movoTo( final Queue q, final int pos ) {
-		final int newx		= this.soft2hard(pos);
-		final int currentx	= software_pos;
+	public void moveX( final Queue q, final int pos ) {
+		final int newx		= soft2hard(pos);
+		final int currentx	= getSPos();
 
 		q.add( new AsyncMessage( true, true ) {
 			@Override
-			public Queue run(AsyncDevice dev, Queue queue) {
+			public boolean isRet(String result, Queue mainQueue) {
+				return false;
+			}
+			@Override
+			public Queue run(AsyncDevice dev, Queue queue){
 				this.name		= "Check Hall X";
 				Initiator.logger.w("MotorDriver.movoTo.AsyncMessage.run", "want to s:" + pos + " / hpos" + newx );
 				q.sendNow(Queue.DFAULT_DEVICE, "A0");
 				return null;
 			}
 			@Override
-			public boolean onInput(String input, AsyncDevice dev, Queue mainQueue ) {
-				Initiator.logger.w("MotorDriver.movoTo.AsyncMessage.onInput1", input );
+			public boolean onInput(String input, AsyncDevice dev, Queue mainQueue) {
+				Initiator.logger.w("MotorDriver.movoTo.AsyncMessage.onInput", input );
 				if(input.matches("^" +  Methods.METHOD_IMPORTANT_ANALOG + ",0,.*" )){		//	224,0,66,0,208,7,15,2
 					int[] parts = Decoder.decodeBytes( input );
 					boolean can = true;
 					if( parts[2] == Methods.HX_STATE_9 ){		// this is max	//	224,0,100,0,204,3,185,1
-						if(newx < currentx ){		// move backward
+						if(pos < currentx ){		// move backward
 							can = false;
-							Initiator.logger.w("MotorDriver.movoTo.AsyncMessage.onInput2", "BELOW MIN1" );
+							Initiator.logger.w("MotorDriver.movoTo.AsyncMessage.onInput2", "BELOW MIN1 newx: "+ pos+ "currentx:"+currentx   );
 						}
 					}else if( parts[2] == Methods.HX_STATE_1 ){		// this is min
-						if( newx > currentx ){		// move forward
+						if( pos > currentx ){		// move forward
 							can = false;
-							Initiator.logger.w("MotorDriver.movoTo.AsyncMessage.onInput2", "OVER max1" );
+							Initiator.logger.w("MotorDriver.movoTo.AsyncMessage.onInput2", "OVER max newx: "+ pos+ "currentx:"+currentx  );
 						}
 					}
 					if( can ){
-			//			Initiator.logger.w("MotorDriver.movoTo.AsyncMessage.onInput", "MOVE" );
-						Queue	q2	= new Queue();
+						Initiator.logger.w("MotorDriver.movoTo.AsyncMessage.onInput", "MOVE" );
+						Queue	q2	= new Queue(); 
 						q2.add("X" + newx+ ","+defaultSpeed, true);
-						q.addFirst(q2);
+						mainQueue.addFirst(q2);
 						dev.unlockRet(this, "A0 OK");
 						return true;
 					}
-					dev.unlockRet(this, "A0 OK");
+					dev.unlockRet(this, "A0 FAIL");
 				}
 				return false;
 			}
-		} );
+		});
 	}
 }

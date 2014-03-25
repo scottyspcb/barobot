@@ -3,16 +3,9 @@ package com.barobot.activity;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.barobot.R;
-import com.barobot.gui.ArduinoListener;
-import com.barobot.gui.dataobjects.Engine;
-import com.barobot.gui.dataobjects.Ingredient_t;
-import com.barobot.gui.dataobjects.Liquid_t;
-import com.barobot.gui.dataobjects.Recipe_t;
-import com.barobot.gui.dataobjects.Slot;
-import android.os.Bundle;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -21,16 +14,27 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.barobot.R;
+import com.barobot.gui.ArduinoListener;
+import com.barobot.gui.dataobjects.Engine;
+import com.barobot.gui.dataobjects.Ingredient_t;
+import com.barobot.gui.dataobjects.Liquid_t;
+import com.barobot.gui.dataobjects.Recipe_t;
+import com.barobot.gui.dataobjects.Slot;
+import com.barobot.hardware.virtualComponents;
+import com.barobot.hardware.devices.i2c.Upanel;
+import com.barobot.parser.Queue;
+
 public class CreatorActivity extends BarobotActivity implements ArduinoListener{
 
+	private boolean[] slot_nums = {false, false,false,false,false,false,false,false,false, false,false,false,false};
 	private int[] ids;
 	private List<Ingredient_t> ingredients;
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_creator);
-		
 		ingredients = new ArrayList<Ingredient_t>();
 	}
 	
@@ -39,7 +43,7 @@ public class CreatorActivity extends BarobotActivity implements ArduinoListener{
 		super.onResume();
 		UpdateData();
 	}
-	
+
 	private void UpdateData(){
 		ids = new int[13];
 		ids[1] = R.id.bottle_button1;
@@ -56,11 +60,10 @@ public class CreatorActivity extends BarobotActivity implements ArduinoListener{
 		ids[12] = R.id.bottle_button12;
 		UpdateSlots();	
 	}
-	
+
 	private void UpdateSlots() {
-		
-		Engine engine = Engine.GetInstance(this);
-		List<Slot> bottles = engine.getSlots();
+
+		List<Slot> bottles = Engine.getSlots();
 
 		Log.w("BOTTLE_SETUP length",""+bottles.size());
 		
@@ -76,15 +79,29 @@ public class CreatorActivity extends BarobotActivity implements ArduinoListener{
 				}	
 			}
 		}
+		virtualComponents.setLedsOff("ff");
 	}
 	
 	public void ShowIngredients()
 	{
 		ArrayAdapter<Ingredient_t> mAdapter = new ArrayAdapter<Ingredient_t>(this, R.layout.ingredient_list_item, ingredients);
 		ListView listView = (ListView) findViewById(R.id.ingredient_list);
-		listView.setAdapter(mAdapter);
+		if( listView!= null ){
+			listView.setAdapter(mAdapter);
+		}
+		Thread rr = new Thread( new Runnable() {
+			public void run() {	
+				Queue q	= virtualComponents.getMainQ();
+				for (int i = 1; i<=12 ; i++){
+					if(slot_nums[i]){
+						Upanel u = virtualComponents.barobot.getUpanelBottle(i-1);
+						u.setLed(q, "22", 100);
+					}
+				}
+			}
+		});
+		rr.start();
 	}
-	
 	public void onBottleClicked(View view)
 	{
 		int viewID = view.getId();
@@ -100,28 +117,36 @@ public class CreatorActivity extends BarobotActivity implements ArduinoListener{
 		if (position != 0)
 		{
 			Slot slot = Engine.GetInstance(this).getSlot(position);
-			
 			if (slot.product != null)
 			{
 				Ingredient_t ingredient = new Ingredient_t();
 
 				ingredient.liquid = slot.product.liquid;
 				ingredient.quantity = 20;
-				addIngredient(ingredient);
+				addIngredient(position, ingredient);
 			}
 			ShowIngredients();
-		}
-		else
-		{
+		}else{
 			Log.w("BOTTLE_SETUP", "onBottleClicked called by an unknown view");
 		}
 	}
 	
 	public void onClearButtonClicked(View view)
 	{
-		ingredients.clear();
-		ShowIngredients();
+		clear();
 	}
+	
+	
+	private void clear(){
+		ingredients.clear();
+		for (int i = 1; i<=12 ; i++){
+			slot_nums[i] = true;
+		}
+		virtualComponents.setLedsOff("ff");
+		ShowIngredients();	
+	}
+	
+	
 	
 	public void onAddRecipeButtonClicked (View view)
 	{
@@ -144,7 +169,6 @@ public class CreatorActivity extends BarobotActivity implements ArduinoListener{
 				
 				TextView nameView = (TextView) dialogView.findViewById(R.id.recipe_name);
 				String name = nameView.getText().toString();
-				
 				CreateDrink(name);	
 			}
 		});
@@ -158,15 +182,13 @@ public class CreatorActivity extends BarobotActivity implements ArduinoListener{
 		Engine.GetInstance(this).Pour(tempRecipe, this);
 	}
 	
-	public void addIngredient(Ingredient_t ing)
+	private void addIngredient(int position, Ingredient_t ing)
 	{
+		slot_nums[position] = true;
 		Ingredient_t existing = findIngredient(ing.liquid);
-		if (existing == null)
-		{
+		if (existing == null){
 			ingredients.add(ing);
-		}
-		else
-		{
+		}else{
 			existing.quantity += ing.quantity;
 		}
 	}
@@ -202,7 +224,7 @@ public class CreatorActivity extends BarobotActivity implements ArduinoListener{
 	public boolean onCreateOptionsMenu(Menu menu) {
 		return true;
 	}
-	
+	/*
 	public void FillIngredientList()
 	{
 		List<String> list = new ArrayList<String>();
@@ -218,12 +240,12 @@ public class CreatorActivity extends BarobotActivity implements ArduinoListener{
 		listView.setAdapter(mAdapter);
 		
 	}
-
+*/
 	@Override
 	public void onQueueFinished() {
-		// TODO Auto-generated method stub
+		clear();
 		new AlertDialog.Builder(this)
-	    .setTitle("Success!!!")
+	    .setTitle("Success!")
 	    .setMessage("Finished pouring")
 	    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
 	        public void onClick(DialogInterface dialog, int which) { 

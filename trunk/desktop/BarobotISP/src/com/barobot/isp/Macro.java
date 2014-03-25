@@ -1,9 +1,9 @@
 package com.barobot.isp;
 
-import com.barobot.i2c.Upanel;
+import com.barobot.hardware.devices.i2c.Carret;
+import com.barobot.hardware.devices.i2c.I2C_Device;
+import com.barobot.i2c.UpanelIsp;
 import com.barobot.parser.Queue;
-import com.barobot.parser.devices.Carret;
-import com.barobot.parser.devices.I2C_Device;
 import com.barobot.parser.utils.Interval;
 
 public class Macro {
@@ -12,18 +12,18 @@ public class Macro {
 		hw.connect();
 		int i = 50;
 
-		for (I2C_Device u : Upanel.list){
+		for (I2C_Device u : UpanelIsp.list){
 			u.setLed( q, "ff", 0 );
 		}
 
 		while( i-- >0 ){
-			for (I2C_Device u : Upanel.list){
+			for (I2C_Device u : UpanelIsp.list){
 				u.setLed( q, "80", 0 );
 			}
 			q.addWaitThread(Main.mt);
 			Main.wait(5);
 
-			for (I2C_Device u : Upanel.list){
+			for (I2C_Device u : UpanelIsp.list){
 				u.setLed( q, "80", 255 );
 			}
 		}
@@ -38,7 +38,7 @@ public class Macro {
 		hw.connect();
 		Carret cc = new Carret();
 	
-		for (I2C_Device u : Upanel.list){
+		for (I2C_Device u : UpanelIsp.list){
 			u.setLed( q, "ff", 0 );
 		}
 		int max = 20;
@@ -124,7 +124,7 @@ public class Macro {
 		Interval ii1 = new Interval(new Runnable(){
 			public void run() {
 				System.out.println("teraz");
-				for (I2C_Device u : Upanel.list){
+				for (I2C_Device u : UpanelIsp.list){
 					u.setLed( q, "ff", 255 );
 				}
 			}});
@@ -132,7 +132,7 @@ public class Macro {
 		Interval ii2 = new Interval(new Runnable(){
 			public void run() {
 				System.out.println("teraz2");
-				for (I2C_Device u : Upanel.list){
+				for (I2C_Device u : UpanelIsp.list){
 					u.setLed( q, "ff", 0 );
 				}
 			}});

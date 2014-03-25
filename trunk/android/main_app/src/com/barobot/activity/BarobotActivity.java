@@ -18,8 +18,8 @@ public class BarobotActivity extends Activity {
 	
 	@Override
     public boolean onCreateOptionsMenu(Menu menu) {
-	    MenuInflater inflater = getMenuInflater();
-	    inflater.inflate(R.menu.option_menu, menu);
+	 //   MenuInflater inflater = getMenuInflater();
+	 //   inflater.inflate(R.menu.option_menu, menu);
 	    return true;
     }
 	
@@ -28,10 +28,17 @@ public class BarobotActivity extends Activity {
 		Intent serverIntent = null;
 		switch(view.getId())
 		{
-		case R.id.menu_choose:
+		case R.id.menu_favorite:
 			serverIntent = new Intent(this, BarobotMain.class);
 			break;
 			
+		case R.id.menu_choose:
+			serverIntent = new Intent(this, net.pocketmagic.android.carousel.MainActivity.class);
+			break;
+
+		case R.id.menu_lucky:
+			serverIntent = new Intent(this, RandomActivity.class);
+			break;	
 		case R.id.menu_create:
 			serverIntent = new Intent(this, CreatorActivity.class);
 			break;
@@ -97,7 +104,7 @@ public class BarobotActivity extends Activity {
     				}
     			}
     		});
-    		Arduino.getInstance().getMainQ().unlock();
+    		virtualComponents.getMainQ().unlock();
     		break;    		
     		
     	case R.id.menu_debug_window:

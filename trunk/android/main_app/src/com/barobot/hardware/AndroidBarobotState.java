@@ -10,6 +10,7 @@ import android.content.SharedPreferences;
 
 import com.barobot.activity.DebugActivity;
 import com.barobot.common.constant.Constant;
+import com.barobot.common.interfaces.HardwareState;
 import com.barobot.parser.utils.Decoder;
 
 public class AndroidBarobotState implements HardwareState{
@@ -49,10 +50,11 @@ public class AndroidBarobotState implements HardwareState{
 	};
 	
 	public AndroidBarobotState( Activity application ){
-		myPrefs				= application.getSharedPreferences(Constant.SETTINGS_TAG, Context.MODE_PRIVATE);
-		config_editor		= myPrefs.edit();
+		myPrefs			= application.getSharedPreferences(Constant.SETTINGS_TAG, Context.MODE_PRIVATE);
+		config_editor	= myPrefs.edit();
 	}
 
+	@Override
 	public String get( String name, String def ){
 		String ret = hashmap.get(name);
 		if( ret == null ){ 
@@ -65,19 +67,21 @@ public class AndroidBarobotState implements HardwareState{
 		return ret;
 	}
 
+	@Override
 	public int getInt( String name, int def ){
 		return Decoder.toInt(get( name, ""+def ));
 	}
+	@Override
 	public void set(String name, long value) {
 		set(name, "" + value );
 	}
+	@Override
 	public void set( String name, String value ){
 	//	if(name == "POSX"){
 	//		Initiator.logger.i("virtualComponents.set","save: "+name + ": "+ value );	
 	//	}
 		hashmap.put(name, value );
 		update( name, value );
-
 		int remember = Arrays.asList(persistant).indexOf(name);			// czy zapisac w configu tą wartosc?
 		if(remember > -1){
 			config_editor.putString(name, value);

@@ -16,10 +16,10 @@ import javax.comm.UnsupportedCommOperationException;
 
 import com.barobot.common.Initiator;
 import com.barobot.common.IspSettings;
-import com.barobot.common.interfaces.CanSend;
-import com.barobot.common.interfaces.SerialEventListener;
-import com.barobot.common.interfaces.SerialInputListener;
-import com.barobot.common.interfaces.Wire;
+import com.barobot.common.interfaces.serial.CanSend;
+import com.barobot.common.interfaces.serial.SerialEventListener;
+import com.barobot.common.interfaces.serial.SerialInputListener;
+import com.barobot.common.interfaces.serial.Wire;
 
 public class WindowsSerialPort implements Wire, CanSend{
 	protected static final String APPNAME = "BarobotTester";
@@ -255,5 +255,9 @@ public class WindowsSerialPort implements Wire, CanSend{
 	}
 	public void setSerialEventListener(SerialEventListener iel) {
 		this.iel  = iel;
+	}
+	public void reset() {
+		// TODO Auto-generated method stub
+		
 	}
 }

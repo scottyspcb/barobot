@@ -33,14 +33,14 @@
             android:text="50%" />
 
         <Button
-            android:id="@+id/button2"
+            android:id="@+id/top_color"
             style="?android:attr/buttonStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Mrygaj" />
 
         <Button
-            android:id="@+id/button3"
+            android:id="@+id/bottom_color"
             style="?android:attr/buttonStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

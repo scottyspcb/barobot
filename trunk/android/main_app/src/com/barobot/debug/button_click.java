@@ -35,10 +35,10 @@ public class button_click implements OnClickListener{
 			}}).start();
 	}
 	public void exec(View v) {
-		Arduino ar		= Arduino.getInstance();
 		Queue q			= new Queue();
-		Queue mq		= ar.getMainQ();
-		int posx		= virtualComponents.driver_x.getSPos();;
+		BarobotConnector barobot = virtualComponents.barobot;
+		Queue mq		= barobot.main_queue;
+		int posx		= barobot.driver_x.getSPos();;
 		int posy		= virtualComponents.state.getInt("POSY", 0 );
 
 		Log.i("currentpos", ""+  posx);
@@ -46,28 +46,30 @@ public class button_click implements OnClickListener{
 		case R.id.set_x_1000:
 	//		Log.i("nextpos-10000", "old: "+posx + " next: "+ ( posx -10000));
 			virtualComponents.moveZDown( q ,true );
-			virtualComponents.moveX( q, ( posx -10000));
+
+			barobot.driver_x.moveX( q, ( posx -10000));
+			
+			
 			mq.add(q);
 			break;
 		case R.id.set_x_100:
 	//		Log.i("nextpos-1000", "old: "+posx + " next: "+ ( posx -1000));
 			virtualComponents.moveZDown( q ,true );
-			virtualComponents.moveX( q, ( posx -1000));
+			barobot.driver_x.moveX( q, ( posx -1000));
+			
 			mq.add(q);
 			break;
-		case R.id.set_x_10:
-			
+		case R.id.set_x_10:	
 	//		Log.i("nextpos-100", "old: "+posx + " next: "+ ( posx -100)); 
-
 			virtualComponents.moveZDown( q ,true );
-			virtualComponents.moveX( q, ( posx -100));
+			barobot.driver_x.moveX( q, ( posx -100));
 			mq.add(q);
 			break;
 		case R.id.set_x10:
 
 		//	Log.i("nextpos+100", "old: "+posx + " next: "+ ( posx +100)); 
 			virtualComponents.moveZDown( q ,true );
-			virtualComponents.moveX( q, ( posx +100));
+			barobot.driver_x.moveX( q, ( posx +100));
 			mq.add(q);
 			break;
 		case R.id.set_x100:
@@ -75,13 +77,13 @@ public class button_click implements OnClickListener{
 		//	Log.i("nextpos+1000", "old: "+posx + " next: "+ ( posx +1000));
 			
 			virtualComponents.moveZDown( q ,true );
-			virtualComponents.moveX( q, ( posx +1000));
+			barobot.driver_x.moveX( q, ( posx +1000));
 			mq.add(q);
 			break;
 		case R.id.set_x1000:
 		//	Log.i("nextpos+10000", "old: "+posx + " next: "+ ( posx +10000));
 			virtualComponents.moveZDown( q ,true );
-			virtualComponents.moveX( q, ( posx +10000));
+			barobot.driver_x.moveX( q, ( posx +10000));
 			mq.add(q);
 			break;  
 		case R.id.set_y_600:
@@ -143,9 +145,9 @@ public class button_click implements OnClickListener{
 			for( int i =0; i<10;i++){
 			//	virtualComponents.moveX( q, (lengthx4/4) );
 				//virtualComponents.moveX( q, (lengthx4/4 * 3) );
-				
-				virtualComponents.moveX( q, 0 );
-				virtualComponents.moveX( q, lengthx4 );
+				barobot.driver_x.moveX( q, 0);
+				q.addWait(50);
+				barobot.driver_x.moveX( q, lengthx4);
 			}
 			q.add("DX", true);
 			mq.add(q);
@@ -178,8 +180,8 @@ public class button_click implements OnClickListener{
 		    	int left = generator2.nextInt((int)(lengthx5/100 / 2));
 		    	int right =generator2.nextInt((int)(lengthx5/100 / 2));
 		    	right+= lengthx5/100 / 2;
-				virtualComponents.moveX( q, (left * 100) );
-				virtualComponents.moveX( q, (right * 100) );
+				barobot.driver_x.moveX( q, (left * 100));
+				barobot.driver_x.moveX( q, (right * 100) );
 		        f=f+2;
 		      }
 		    mq.add(q);
@@ -237,7 +239,8 @@ public class button_click implements OnClickListener{
 		case R.id.max_x:
 			virtualComponents.moveZDown( q ,true );
 			int lengthx2	=  virtualComponents.state.getInt("LENGTHX", 600 );
-			virtualComponents.moveX( q, posx +lengthx2 );
+			barobot.driver_x.moveX( q, posx +lengthx2);
+		
 			mq.add(q);
 			break;
 
@@ -249,7 +252,9 @@ public class button_click implements OnClickListener{
 		case R.id.min_x:
 			virtualComponents.moveZDown( q ,true );
 			int lengthx3	=  virtualComponents.state.getInt("LENGTHX", 600 );
-			virtualComponents.moveX( q, -lengthx3 );
+
+			barobot.driver_x.moveX( q, -lengthx3);
+
 			mq.add(q);
 			break;
 		case R.id.min_y:
@@ -331,20 +336,20 @@ public class button_click implements OnClickListener{
 			virtualComponents.setLeds( "11", 200 );
 			break;
 		case R.id.reset_margin:
-			virtualComponents.driver_x.setM(0);
+			barobot.driver_x.setM(0);
 			
 			virtualComponents.state.set("MARGINX", 0);
 			
 			
-			int spos = virtualComponents.driver_x.hard2soft( 0 );
-			virtualComponents.saveXPos( spos );
+			int spos = barobot.driver_x.hard2soft( 0 );
+			barobot.driver_x.setSPos( spos );
 			break;	
 		case R.id.reset_upanels:
 			Queue q1			= new Queue();
 			for(int i =BarobotConnector.upanels.length-1; i>=0;i--){
 				q1.add("RESET_NEXT"+ BarobotConnector.upanels[i], true);
 			}
-			Arduino.getInstance().getMainQ().add(q1);
+			virtualComponents.getMainQ().add(q1);
 			break;
 		case R.id.scann_i2c:
 			mq.add("I", true );
@@ -358,7 +363,6 @@ public class button_click implements OnClickListener{
 		case R.id.clear_queue:
 			mq.clearAll();
 			break;
-			
 		case R.id.reset_serial:
 			mq.clearAll();
 			Arduino.getInstance().resetSerial();

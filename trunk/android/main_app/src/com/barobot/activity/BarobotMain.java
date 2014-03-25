@@ -19,6 +19,9 @@ import com.barobot.gui.ArduinoListener;
 import com.barobot.gui.dataobjects.Engine;
 import com.barobot.gui.dataobjects.Ingredient_t;
 import com.barobot.gui.dataobjects.Recipe_t;
+import com.barobot.hardware.virtualComponents;
+import com.barobot.hardware.devices.i2c.Upanel;
+import com.barobot.parser.Queue;
 
 public class BarobotMain extends BarobotActivity implements ArduinoListener {
 
@@ -35,7 +38,6 @@ public class BarobotMain extends BarobotActivity implements ArduinoListener {
 	}
 
 	private static BarobotMain instance;
-	
 	private Recipe_t mCurrentRecipe;
 
     @Override
@@ -48,7 +50,6 @@ public class BarobotMain extends BarobotActivity implements ArduinoListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.barobot_main);
         AppInvoker.getInstance().onCreate();
-
     }
     
     @Override
@@ -66,7 +67,6 @@ public class BarobotMain extends BarobotActivity implements ArduinoListener {
 		ArrayAdapter<Recipe_t> mAdapter = new ArrayAdapter<Recipe_t>(this, R.layout.recipe_list_item_layout, recipes);
 		ListView listView = (ListView) findViewById(R.id.recipe_list);
 		listView.setAdapter(mAdapter);
-		
 		listView.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
@@ -91,13 +91,26 @@ public class BarobotMain extends BarobotActivity implements ArduinoListener {
 					mCurrentRecipe.getIngredients());
 			ListView listView = (ListView) findViewById(R.id.ingredient_list);
 			listView.setAdapter(mAdapter);
+
+			Thread rr = new Thread( new Runnable() {
+				public void run() {	
+					virtualComponents.setLedsOff("ff");
+					List<Integer> bottleSequence = Engine.GenerateSequence(mCurrentRecipe.getIngredients());
+					if (bottleSequence != null){
+						Queue q	= virtualComponents.getMainQ();
+						for (Integer i : bottleSequence){
+							Upanel u = virtualComponents.barobot.getUpanelBottle(i-1);
+							u.setLed(q, "22", 100);
+						}
+					}
+				}
+			});
+			rr.start();
 		}
     }
-    
-    public void onPourButtonClicked (View view)
-    {
-    	if (mCurrentRecipe != null)
-    	{
+
+    public void onPourButtonClicked (View view) {
+    	if (mCurrentRecipe != null){
     		Engine.GetInstance(this).Pour(mCurrentRecipe, this);
     	}
     }
@@ -110,6 +123,7 @@ public class BarobotMain extends BarobotActivity implements ArduinoListener {
        }
        if(keyCode==KeyEvent.KEYCODE_BACK){
     	   Log.i("onKeyDown","KEYCODE_BACK");
+    	   virtualComponents.barobot.main_queue.unlock();
            //finish();
     	   return true;
        }

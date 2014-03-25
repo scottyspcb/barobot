@@ -52,8 +52,8 @@ public class AsyncMessage extends History_item{
 			nextq = this.run(dev, queue);
 		}
 		if(this.wait4Finish()){
-			this.send_timestamp	= System.currentTimeMillis();
-			this.wait_until		= this.send_timestamp + this.getTimeout();
+		//	this.send_timestamp	= System.currentTimeMillis();
+		//	this.wait_until		= this.send_timestamp + this.getTimeout();
 		}
 		return nextq;
 	}

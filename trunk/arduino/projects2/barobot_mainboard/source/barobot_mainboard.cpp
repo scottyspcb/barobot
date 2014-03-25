@@ -708,7 +708,7 @@ void read_prog_settings( String input, byte ns ){
 	//DEBUGLN();
 	Serial.flush();
 
-	send_prog_mode(METHOD_PROG_MODE_ON);
+	//send_prog_mode(METHOD_PROG_MODE_ON);
 	prog_mode = true;
 	// disable stepper
 	stepperX.disableOutputs();
@@ -736,7 +736,7 @@ void read_prog_settings( String input, byte ns ){
 		}
 	}
 }
-
+/*
 void send_prog_mode( byte command ){
 	byte ee =checkAddress(I2C_ADR_RESERVED);
 	if(ee == 6 ){
@@ -751,7 +751,7 @@ void send_prog_mode( byte command ){
 		}
 	}
 } 
- 
+ */
 byte checkAddress( byte address ){
 	Wire.beginTransmission(address);
 	return Wire.endTransmission();
@@ -1102,7 +1102,7 @@ void end_programmer_mode(){
 	Serial.flush();
 	Serial.begin(MAINBOARD_SERIAL0_BOUND);
 
-	send_prog_mode(METHOD_PROG_MODE_OFF);
+	//send_prog_mode(METHOD_PROG_MODE_OFF);
 
 	if(reprogramm_address){		// unlock device
 		reset_device_next_to( reprogramm_address, HIGH);

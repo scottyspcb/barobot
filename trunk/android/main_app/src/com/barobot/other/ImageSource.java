@@ -1,8 +1,5 @@
 package com.barobot.other;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import android.content.Context;
 
 public class ImageSource {

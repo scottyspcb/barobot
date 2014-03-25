@@ -16,7 +16,8 @@ import com.barobot.R;
 import com.barobot.activity.DebugActivity;
 import com.barobot.common.constant.Constant;
 import com.barobot.hardware.Arduino;
-import com.barobot.parser.History_item;
+import com.barobot.hardware.virtualComponents;
+import com.barobot.parser.message.History_item;
 
 public class DebugTabLog extends Fragment {
 	public int tab_id	= -1 ;
@@ -71,7 +72,7 @@ public class DebugTabLog extends Fragment {
 		xb3.setOnClickListener( new OnClickListener(){
 			@Override
 			public void onClick(View v) {
-				Arduino.getInstance().getMainQ().unlock();
+				virtualComponents.getMainQ().unlock();
 			};
 		});
 

@@ -1,15 +1,5 @@
 package com.barobot.debug;
 
-import com.barobot.AppInvoker;
-import com.barobot.R;
-import com.barobot.activity.DebugActivity;
-import com.barobot.common.Initiator;
-import com.barobot.common.interfaces.RunnableWithData;
-import com.barobot.hardware.Arduino;
-import com.barobot.hardware.virtualComponents;
-import com.barobot.other.AJS;
-import com.barobot.parser.Queue;
-
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
@@ -22,8 +12,8 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.webkit.ConsoleMessage;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
@@ -31,12 +21,20 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.CompoundButton;
-import android.widget.EditText;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.EditText;
 import android.widget.FrameLayout;
-import android.widget.Toast;
 import android.widget.LinearLayout.LayoutParams;
+import android.widget.Toast;
 import android.widget.ToggleButton;
+
+import com.barobot.R;
+import com.barobot.activity.DebugActivity;
+import com.barobot.common.Initiator;
+import com.barobot.common.interfaces.RunnableWithData;
+import com.barobot.hardware.virtualComponents;
+import com.barobot.other.AJS;
+import com.barobot.parser.Queue;
 
 /**
  * A dummy fragment representing a section of the app
@@ -365,7 +363,7 @@ public class DebugTabGraph extends Fragment {
 
 		@Override
 		public void onClick(View v) {
-			final Queue mq			= Arduino.getInstance().getMainQ();
+			final Queue mq			= virtualComponents.getMainQ();
 			switch (v.getId()) {
 			case R.id.graph_source:
 	  	  		((ToggleButton) rootView.findViewById(R.id.graph_active)).setChecked(true);
@@ -439,7 +437,7 @@ public class DebugTabGraph extends Fragment {
 
 		@Override
 		public void onCheckedChanged(CompoundButton buttonView,boolean isChecked) {
-			Queue mq			= Arduino.getInstance().getMainQ();
+			Queue mq			= virtualComponents.getMainQ();
 			switch (buttonView.getId()) {
 			case R.id.graph_active:
 				Initiator.logger.i("graph_active","isChecked: " + isChecked );

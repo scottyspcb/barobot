@@ -4,9 +4,9 @@ import java.io.IOException;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 
-import com.barobot.common.interfaces.SerialInputListener;
-import com.barobot.common.interfaces.IspCommunicator;
-import com.barobot.common.interfaces.Wire;
+import com.barobot.common.interfaces.serial.IspCommunicator;
+import com.barobot.common.interfaces.serial.SerialInputListener;
+import com.barobot.common.interfaces.serial.Wire;
 
 public class IspOverSerial implements SerialInputListener, IspCommunicator {
 	public boolean enabled = true;

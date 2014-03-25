@@ -24,8 +24,8 @@ public class Main{
 		DesktopLogger dl = new DesktopLogger();
 		com.barobot.common.Initiator.setLogger( dl );
 
-		mt = Thread.currentThread();
-		main = new Main();
+		mt		= Thread.currentThread();
+		main	= new Main();
 		main.start();
 		/*
 		 for (String s: args) {
@@ -62,7 +62,7 @@ public class Main{
 		w.findOrder( hw, 3 );
 		w.findOrder( hw, 4 );
 		
-		w.findOrder2( hw, 3 );
+	//	w.findOrder2( hw );
 		
 
 	//	Macro mm  = new Macro();

@@ -7,18 +7,19 @@ public class History_item{
 	public static final boolean INPUT = false;
 
 	public String command			= "";
-	protected boolean direction			= History_item.OUTOUT;
+	protected boolean direction		= History_item.OUTOUT;
 
 	public History_item() {
 	}
 	public History_item(String cmd, boolean dir) {
 		this.command	= cmd;
 		this.direction	= dir;
+		/*
 		if(dir){
 			Initiator.logger.d("OUTOUT: ", cmd);
 		}else{
 			Initiator.logger.d("INPUT: ", cmd);
-		}
+		}*/
 	}
 
 	public String toString(){
