@@ -8,6 +8,7 @@
 	<classpathentry exported="true" kind="src" path="/com.barobot.parser"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/com.barobot.hardware.serial"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/com.barobot.common"/>
-	<classpathentry kind="src" path="/com.barobot.isp"/>
+	<classpathentry exported="true" kind="src" path="/com.barobot.isp"/>
+	<classpathentry exported="true" kind="src" path="/com.barobot.hardware.devices"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

@@ -7,76 +7,12 @@ import com.barobot.common.constant.LowHardware;
 import com.barobot.common.constant.Methods;
 import com.barobot.parser.Queue;
 import com.barobot.parser.message.AsyncMessage;
-import com.barobot.parser.output.AsyncDevice;
-import com.barobot.parser.output.Mainboard;
+import com.barobot.parser.message.Mainboard;
 
 public class I2C{
 	static List<I2C_Device> lista = new ArrayList<I2C_Device>();
 	boolean inScanning = false;
 
-	public static void init(){
-		MainBoard MainBoard	= new MainBoard();
-		I2C_Device Carret	= new Carret();
-		I2C_Device UpanelF0 = new Upanel( 3, 0);
-		I2C_Device UpanelF1 = new Upanel( 0, 0);
-		I2C_Device UpanelF2 = new Upanel( 0, 0);
-		I2C_Device UpanelF3 = new Upanel( 0, 0);
-		I2C_Device UpanelF4 = new Upanel( 0, 0);
-		I2C_Device UpanelF5 = new Upanel( 0, 0);
-		I2C_Device UpanelB0 = new Upanel( 4, 0);
-		I2C_Device UpanelB1 = new Upanel( 0, 0);
-		I2C_Device UpanelB2 = new Upanel( 0, 0);
-		I2C_Device UpanelB3 = new Upanel( 0, 0);
-		I2C_Device UpanelB4 = new Upanel( 0, 0);
-		I2C_Device UpanelB5 = new Upanel( 0, 0);
-
-		MainBoard.hasResetTo( Carret );
-		MainBoard.hasResetTo( UpanelF0 );
-		MainBoard.hasResetTo( UpanelB0 );
-		MainBoard.hasResetTo( MainBoard );
-
-
-		UpanelB0.hasResetTo( UpanelB1 );
-		UpanelB1.hasResetTo( UpanelB2 );
-		UpanelB2.hasResetTo( UpanelB3 );
-		UpanelB3.hasResetTo( UpanelB4 );
-		UpanelB4.hasResetTo( UpanelB5 );
-
-
-		
-		UpanelF0.hasResetTo( UpanelF1 );
-		UpanelF1.hasResetTo( UpanelF2 );
-		UpanelF2.hasResetTo( UpanelF3 );
-		UpanelF3.hasResetTo( UpanelF4 );
-		UpanelF4.hasResetTo( UpanelF5 );
-
-
-
-		lista.add( MainBoard );
-		lista.add( Carret );
-		lista.add( UpanelF0 );
-		lista.add( UpanelF1 );
-		lista.add( UpanelF2 );
-		lista.add( UpanelF3 );
-		lista.add( UpanelF4 );
-		lista.add( UpanelF5 );
-		lista.add( UpanelB0 );
-		lista.add( UpanelB1 );
-		lista.add( UpanelB2 );
-		lista.add( UpanelB3 );	
-		lista.add( UpanelB4 );
-		lista.add( UpanelB5 );
-	}
-	public static void destroy(){
-		lista.clear();
-	}
-	public static I2C_Device getByAddress( int address ){
-		I2C_Device t = null;
-		for (I2C_Device v : lista){
-		    System.out.print(v + " ");
-		}
-		return t;
-	}
 	public static String createCommand( int address, int why_code, byte[] params ){
 		String res = ""+Methods.METHOD_SEND2SLAVE + (char)address + (char)why_code;
 		if(params!=null){
@@ -109,7 +45,7 @@ public class I2C{
 				return false;
 			}
 			@Override
-			public Queue run(AsyncDevice dev, Queue queue) {
+			public Queue run(Mainboard dev, Queue queue) {
 				return null;
 			}
 		};

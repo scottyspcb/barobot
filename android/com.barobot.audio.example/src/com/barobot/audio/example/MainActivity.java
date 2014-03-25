@@ -1,32 +1,29 @@
 package com.barobot.audio.example;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.barobot.audio.DetectorThread;
-import com.barobot.common.interfaces.serial.SerialEventListener;
-import com.barobot.common.interfaces.serial.SerialInputListener;
-import com.barobot.common.interfaces.HardwareState;
-import com.barobot.common.interfaces.OnSignalsDetectedListener;
-import com.barobot.common.interfaces.serial.Wire;
-import com.barobot.hardware.devices.BarobotConnector;
-import com.barobot.hardware.serial.AndroidBarobotState;
-import com.barobot.hardware.serial.Serial_wire;
-import com.barobot.parser.utils.Interval;
-import com.barobot.parser.Queue;
-import com.barobot.parser.output.Mainboard;
-
+import android.app.Activity;
 import android.media.AudioFormat;
 import android.media.MediaRecorder;
 import android.os.Bundle;
-import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import com.barobot.audio.DetectorThread;
+import com.barobot.common.interfaces.HardwareState;
+import com.barobot.common.interfaces.OnSignalsDetectedListener;
+import com.barobot.common.interfaces.serial.SerialEventListener;
+import com.barobot.common.interfaces.serial.SerialInputListener;
+import com.barobot.common.interfaces.serial.Wire;
+import com.barobot.hardware.devices.BarobotConnector;
+import com.barobot.hardware.serial.AndroidBarobotState;
+import com.barobot.hardware.serial.Serial_wire;
+import com.barobot.parser.utils.Interval;
 
 public class MainActivity extends Activity implements OnSignalsDetectedListener{
 	private DetectorThread detectorThread;
@@ -40,8 +37,6 @@ public class MainActivity extends Activity implements OnSignalsDetectedListener{
 	public long min			= 10000;
 	Wire connection			= null;
 	public boolean sync		= false;
-	
-	private int mainboardSource;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -55,8 +50,7 @@ public class MainActivity extends Activity implements OnSignalsDetectedListener{
 		textView.setMax(1024);
     	
 		startConnection();
-		System.out.println("koniec test connection ");
-		
+
 		Map<String, Integer> config = new HashMap<String, Integer>();
 		config.put("source",  MediaRecorder.AudioSource.MIC);
 		config.put("frameByteSize", 2048);
@@ -73,13 +67,8 @@ public class MainActivity extends Activity implements OnSignalsDetectedListener{
 		detectorThread = new DetectorThread( config, recorderThread);
 		detectorThread.setOnSignalsDetectedListener(this);
 		detectorThread.start();
-		
-		final Mainboard mb	= new Mainboard();
-		//	AsyncDevice c	= new Console();
-		//	AsyncDevice u	= new MainScreen();
-		mb.registerSender( connection );
+
     //	init();
-    	
 		Button xb1 = (Button) findViewById(R.id.unlock);
 		xb1.setOnClickListener( new OnClickListener(){
 			@Override
@@ -91,28 +80,14 @@ public class MainActivity extends Activity implements OnSignalsDetectedListener{
 
 	private void startConnection() {
 		this.state			= new AndroidBarobotState(this);	
-		this.barobot		= new BarobotConnector( state );	
+		this.barobot		= new BarobotConnector( state );
+		state.set("show_unknown", 0 );
+
 		if( connection != null ){
 			connection.close();
 			connection = null;
 		}
 		connection		= new Serial_wire( this );
-		connection.addOnReceive( new SerialInputListener(){
-			@Override
-			public void onNewData(byte[] data, int length) {
-				String message = new String(data, 0, length);
-		//		Log.e("Serial addOnReceive", message);
-				barobot.mb.read( message );
-	//			debug( message );
-			}
-			@Override
-			public void onRunError(Exception e) {
-			}
-			@Override
-			public boolean isEnabled() {
-				return true;
-			}});
-		connection.init();
 		connection.setSerialEventListener( new SerialEventListener() {
 			@Override
 			public void onConnect() {
@@ -126,10 +101,10 @@ public class MainActivity extends Activity implements OnSignalsDetectedListener{
 			public void connectedWith(String bt_connected_device, String address) {
 			}
 		});
-		barobot.mb.registerSender( connection );
-		Queue.enableDevice( barobot.mainboardSource );
-		barobot.main_queue.add( "\n", true );
-		barobot.main_queue.add( "\n", true );
+		connection.init();
+		SerialInputListener listener = barobot.willReadFrom( connection );
+		barobot.willWriteThrough( connection );
+
 		for( int i=0;i<BarobotConnector.upanels.length ;i++){
 			barobot.main_queue.add( "L"+ BarobotConnector.upanels[i] + ",ff,0", true );
 		}
@@ -176,7 +151,7 @@ public class MainActivity extends Activity implements OnSignalsDetectedListener{
 	}
 	protected void onDestroy() {
 		max = 10;
-		barobot.main_queue.clear(mainboardSource);
+		barobot.destroy();
 		setContentView(mainView);
 		if (recorderThread != null) {
 			recorderThread.stopRecording();
@@ -229,9 +204,10 @@ public class MainActivity extends Activity implements OnSignalsDetectedListener{
 		final float div = (( (float) current - (float) min)/ (float) max);
 		final int norm = (int) (div * 1024);
 	//	System.out.println("\t>>>add: " + current);
-		if( Math.abs(norm - last) > 4 ){
+		if( Math.abs(norm - last) > 6 ){
 			float b = div * 255;
 			b = Math.min(b, 255);
+
 			final String command1 = ",11," + ((int) b);
 			final String command2 = ",22," + ((int) b);
 			final String command3 = ",44," + ((int) b);

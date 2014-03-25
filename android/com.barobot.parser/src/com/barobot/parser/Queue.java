@@ -1,14 +1,12 @@
 package com.barobot.parser;
 
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import com.barobot.common.Initiator;
 import com.barobot.parser.message.AsyncMessage;
-import com.barobot.parser.output.AsyncDevice;
-
+import com.barobot.parser.message.Mainboard;
 
 /*
  * LinkedList<E>
@@ -29,83 +27,41 @@ ArrayList<E>
  */
 
 public class Queue {
-	private static LinkedList<AsyncDevice> devs = new LinkedList<AsyncDevice>();
-	
-	public static final int DFAULT_DEVICE = 0;
+//	private static LinkedList<Mainboard> devs = new LinkedList<Mainboard>();
 	protected final Object lock = new Object();
+	protected final Object lock_exec = new Object();
 	protected LinkedList<AsyncMessage> output = new LinkedList<AsyncMessage>();
-	protected int wait_for_device_id = -1;
-	private boolean isMainQueue = false;
+	protected boolean wait_for_device = false;
+	protected boolean isMainQueue = false;
+	protected Mainboard mb;
 
-	public Queue( boolean isMainQueue ){
-		this.isMainQueue = isMainQueue;
-	}
 	public Queue(){
-		//	t = new Thread(this);
 	}
 
-	public int registerSource( AsyncDevice dev ) {
-	//	synchronized(devs){
-		Queue.devs.add(dev);
-			dev.setMainQueue( this );
-			return devs.size() - 1;
-	//	}
-	}
-	public static AsyncDevice getDevice(int devindex) {
-		return devs.get(devindex);
+	public Queue(Mainboard mb2){
+		this.isMainQueue	= true;
+		this.mb				= mb2;
+		mb.setMainQueue( this );
 	}
 
-	public void clear(int devindex ) {
+	public void clear() {
+		Initiator.logger.i("Queue","clearAll");
 		synchronized (this.lock) {
-			Initiator.logger.i("Queue.clear", ""+devindex );
-			AsyncDevice dev = devs.get(devindex);
-			dev.unlockRet("<close>", true );
-			wait_for_device_id = -1;
+			mb.unlockRet("<clear>", true );
+			wait_for_device = false;
 			this.output.clear();
 		}
 	}
-
-	public void clearAll() {
-		Initiator.logger.i("Queue","clearAll");
-		synchronized (this.lock) {
-			wait_for_device_id = -1;
-			output.clear();
-			for (AsyncDevice dev : devs){
-				dev.clear();
-			}
-		}
+	public void destroy() {
+		wait_for_device =  false;
+		mb.destroy();
+		this.output		= null;
 	}
 
-	public void read(int sourceid, String in) {
-		devs.get(sourceid).read( in );
+	public void read( String in) {
+		mb.read( in );
 	}
-	public void add(final int sourceid, final String command, boolean blocking) {
-		if(blocking){
-			final String retcmd = "R" + command;
-			AsyncMessage am = new AsyncMessage( command, blocking ){
-				@Override
-				public boolean isRet(String result, Queue q) {
-					if( retcmd.equals(result)){
-					//	Initiator.logger.i("Queue", "isret: " + result+" for "  + command);
-						return true;
-					}
-					return false;
-				}
-				@Override
-				public int getDeviceId() {
-					return sourceid;
-				}
-			};
-			synchronized (this.lock) {
-				output.add(am );
-			}
-		}else{
-			synchronized (this.lock) {
-				output.add(new AsyncMessage( command, blocking ));
-			}
-		}
-		exec();
-	}
+
 	public void add( String command, boolean blocking) {
 		synchronized (this.lock) {
 			if(blocking){
@@ -126,7 +82,7 @@ public class Queue {
 		}
 		exec();
 	}
-	public void add(String command, final String retcmd) {		// DEFAULT device
+	public void add(String command, final String retcmd) {
 		synchronized (this.lock) {
 			output.add(new AsyncMessage( command, true ){
 				@Override
@@ -136,25 +92,6 @@ public class Queue {
 						return true;
 					}
 					return false;
-				}
-			});
-		}
-		exec();
-	}
-	public void add(final int sourceid, String command, final String retcmd) {
-		synchronized (this.lock) {
-			output.add(new AsyncMessage( command, true ){
-				@Override
-				public boolean isRet(String result, Queue q) {
-			//		Initiator.logger.i("Queue.isRet?:", + result );
-					if( retcmd.equals( result )){
-						return true;
-					}
-					return false;
-				}
-				@Override
-				public int getDeviceId() {
-					return sourceid;
 				}
 			});
 		}
@@ -169,121 +106,101 @@ public class Queue {
 	}
 
 	public void add(Queue q2) {
-	//	synchronized (this.lock) {
+		synchronized (this.lock) {
 			output.addAll(q2.output);
-	//	}
+		}
 		exec();
-	}	
-	/*
-	private void exec() {
-		synchronized(this.t){
-			t.
-			if(!t.isAlive() && !running){
-				Initiator.logger.i("Queue.exec.start", "start"+ (t.isAlive() ? "A" :"nA")  );
-				running = true;
-				t.start();
-			}else{
-				Initiator.logger.i("Queue.exec.start", "no start" );
-			}
-		}
 	}
-	private void endRun() {
-		synchronized(this.t){
-			running = false;
-		}
-	}
-	boolean running = false;*/
-
 	public void exec() {
 		if(!isMainQueue){
 			return;
 		}
-		synchronized (this.lock) {
-	//		Initiator.logger.i("Queue.run.wait_for1", ""+ wait_for_device_id);
-			if(this.wait_for_device_id > -1 ){
-			//	endRun();
-		//		Initiator.logger.i("Queue.run.wait_for1 stop", ""+ wait_for_device_id);
-				return;		// jestem w trakcie oczekiwania
-			}else{
-		//		Initiator.logger.w("Queue.run.wait_for1", "no blocked" + wait_for_device_id);	
-			}
-	//		boolean wasEmpty = output.isEmpty();
-			while (!output.isEmpty()) {
-				if(this.wait_for_device_id > -1 ){		// 0 or more is blocked
-	//				Initiator.logger.i("Queue.wait_for2", "" + wait_for_device_id);
+		if(Thread.holdsLock(this.lock_exec)){	// don't do it if other is doing
+			return;
+		}
+		synchronized (this.lock_exec) {
+			synchronized (this.lock) {
+		//		Initiator.logger.i("Queue.run.wait_for1", ""+ wait_for_device_id);
+				if(this.wait_for_device ){
 				//	endRun();
-					return;
+			//		Initiator.logger.i("Queue.run.wait_for1 stop", ""+ wait_for_device_id);
+					return;		// jestem w trakcie oczekiwania
+				}else{
+			//		Initiator.logger.w("Queue.run.wait_for1", "no blocked" + wait_for_device_id);	
 				}
-				AsyncMessage m	= output.pop();
-				AsyncDevice dev = m.getDevice();
-//				Initiator.logger.i("Queue.run.start",  m.toString() );
-				Queue nextq = m.start( dev, this );
-			//	moveToHistory( m );
-				if( nextq != null ){
-					this.addFirst(nextq);	// add on front
+		//		show("exec");
+		//		boolean wasEmpty = output.isEmpty();
+				while (!output.isEmpty()) {
+					if(this.wait_for_device ){		// 0 or more is blocked
+		//				Initiator.logger.i("Queue.wait_for2", "" + wait_for_device_id);
+					//	endRun();
+						return;
+					}
+					AsyncMessage m	= output.pop();
+	//				Initiator.logger.i("Queue.run.start",  m.toString() );
+					Queue nextq = m.start( mb, this );
+				//	moveToHistory( m );
+					if( nextq != null ){
+						this.addFirst(nextq);	// add on front
+					}
+					if(m.wait4Finish()){
+	                	this.wait_for_device	= true;
+	                	mb.waitFor( m );
+	            //    	endRun();
+	                	Initiator.logger.i("Queue.isBlocing true & return", m.toString() );
+	               // 	Initiator.logger.i("Queue.isBlocing", "" + wait_for_device_id );
+	                	return;
+	                }else{
+	                	Initiator.logger.i("Queue.no Blocing", m.toString() );
+	                //	Initiator.logger.i("Queue.no Blocing", "" + wait_for_device_id );
+	                }
+	
 				}
-				if(m.wait4Finish()){
-                	this.wait_for_device_id	= m.getDeviceId();
-                	dev.waitFor(m, this );
-            //    	endRun();
-           //     	Initiator.logger.i("Queue.isBlocing true & return", m.toString() );
-          //      	Initiator.logger.i("Queue.isBlocing", "" + wait_for_device_id );
-                	return;
-                }else{
-                	this.wait_for_device_id	= -1;
-          //      	Initiator.logger.i("Queue.no Blocing", m.toString() );
-           //     	Initiator.logger.i("Queue.no Blocing", "" + wait_for_device_id );
-                }
-
+			//	if(output.isEmpty()){
+			//		Initiator.logger.i("Queue.run", "empty");
+			//	}
 			}
-		//	if(output.isEmpty()){
-		//		Initiator.logger.i("Queue.run", "empty");
-		//	}
 		}
 	//	endRun();
 	}
-
-
 	public void addFirst(Queue q2) {
 		synchronized (this.lock) {
 			this.output.addAll( 0, q2.output);		// add on start
 			if(isMainQueue ){
 				Initiator.logger.i("Queue.addFirst", "newsize: "+ this.output.size() );
 			}
-			//show();
+	//		show("addFirst");
 		}
 		exec();
 	}
 
-    public void sendNow( int devindex, String command ) {	 // send without waiting
+    public void sendNow( String command ) {	 // send without waiting
 		synchronized (this.lock) {
-			devs.get(devindex).send(command + "\n");
+			mb.send(command + "\n");
 		}
     }
 	public void unlock() {
 		synchronized (this.lock) {
-			if(this.wait_for_device_id != -1 ){
-				AsyncDevice dev = devs.get(this.wait_for_device_id);
+			if(this.wait_for_device ){
 			//	Initiator.logger.i("Queue", "unlock id:" + this.wait_for_device_id );
-				dev.unlockRet("force unlock", false);
-				this.wait_for_device_id = -1;
+				mb.unlockRet("force unlock", false);
+				this.wait_for_device =  false;
 			}
 		}
 	//	Initiator.logger.i("Queue", "unlock()");
 		exec();
 	}
-
-	private void moveToHistory(AsyncMessage m) {
-		// TODO Auto-generated method stub
-	}
-	
 	public void addWaitThread(final Object thread) {
 	//	Initiator.logger.i("Queue", "add thread wait");
 		synchronized(this.output){
-			if( this.wait_for_device_id >= 0 || this.output.size() > 0 ){
+			if( this.wait_for_device || this.output.size() > 0 ){
 				this.add( new AsyncMessage( true ){
 					@Override
-					public Queue run(AsyncDevice dev, Queue queue) {
+					public String getName() {
+						return "WAIT4THREAD";
+					}
+					@Override
+					public Queue run(Mainboard dev, Queue queue) {
 			//			Initiator.logger.i("Queue","thread notify");
 						synchronized(thread){
 							thread.notify();
@@ -307,7 +224,7 @@ public class Queue {
 	public void addWait2(final int time) {
 		final AsyncMessage m2 = new AsyncMessage( true ) {
 			@Override
-			public Queue run(AsyncDevice dev, Queue queue) {
+			public Queue run(Mainboard dev, Queue queue) {
 				this.name				= "wait " + time;
 				return null;
 			}
@@ -333,7 +250,7 @@ public class Queue {
 	public void addWait(final int time) {
 		final AsyncMessage m2 = new AsyncMessage( true, true ) {
 			@Override
-			public Queue run(final AsyncDevice dev, Queue queue) {
+			public Queue run(final Mainboard dev, Queue queue) {
 				Initiator.logger.w("Queue.addWait.run", "time: " +time);
 				this.name				= "wait " + time;
 				final AsyncMessage msg	= this;
@@ -361,16 +278,9 @@ public class Queue {
 		};
 		output.add( m2 );		
 	}
-
-	public static void disableDevice(int mainboardSource) {
-		getDevice(mainboardSource).disable();
-	}
-	public static void enableDevice(int mainboardSource) {
-		getDevice(mainboardSource).enable();
-	}
 	public boolean isBusy() {
 		synchronized (this.lock) {
-			if( this.wait_for_device_id >= 0){
+			if( this.wait_for_device){
 				return true;
 			}
 			if( this.output.size() > 0 ){
@@ -379,18 +289,9 @@ public class Queue {
 		}
 		return false;
 	}
-	public void destroy() {
-		synchronized (this.lock) {
-			wait_for_device_id = -1;
-			for (AsyncDevice dev : devs){
-				dev.destroy();
-			}
-			this.output.clear();
-			devs.clear();
-		}
-	}
-	public void show() {
-		String res = "Queue:\n";
+
+	public void show( String prefix ) {
+		String res = "Queue (" + prefix + "):\n";
 		synchronized (this.lock) {
 			for (AsyncMessage msg : this.output){
 				res += "\t" + msg.toString() + "\n";

@@ -3,31 +3,28 @@ package com.barobot.hardware;
 import com.barobot.common.Initiator;
 import com.barobot.common.constant.Constant;
 import com.barobot.common.constant.Methods;
-import com.barobot.common.interfaces.HardwareContext;
 import com.barobot.common.interfaces.HardwareState;
 import com.barobot.hardware.devices.BarobotConnector;
 import com.barobot.hardware.devices.i2c.Upanel;
 import com.barobot.parser.Queue;
+import com.barobot.parser.interfaces.RetReader;
 import com.barobot.parser.message.AsyncMessage;
-import com.barobot.parser.output.AsyncDevice;
-import com.barobot.parser.output.RetReader;
+import com.barobot.parser.message.Mainboard;
 import com.barobot.parser.utils.Decoder;
 
 public class MyRetReader implements RetReader {
-	private HardwareContext hwc;
 	private BarobotConnector barobot;
 	private HardwareState state;
 	private BarobotEventListener bel;
 
-	MyRetReader( BarobotEventListener bel, HardwareContext hwc, BarobotConnector barobotInstance, HardwareState state ){
-		this.hwc		= hwc;
-		this.barobot	= barobotInstance;
-		this.state		= state;
+	MyRetReader( BarobotEventListener bel, BarobotConnector brb ){
+		this.barobot	= brb;
+		this.state		= brb.state;
 		this.bel		= bel;
 	}
 
 	@Override
-	public boolean isRetOf(AsyncDevice asyncDevice,
+	public boolean isRetOf(Mainboard asyncDevice,
 			AsyncMessage wait_for2, String fromArduino, Queue mainQueue ) {
 
 		String command = "";
@@ -264,7 +261,7 @@ public class MyRetReader implements RetReader {
 	
 	private boolean was_empty6 = false;
 	private boolean was_empty4 = false;
-	public boolean importantAnalog(AsyncDevice asyncDevice, AsyncMessage wait_for2, String fromArduino, boolean checkInput ) {
+	public boolean importantAnalog(Mainboard asyncDevice, AsyncMessage wait_for2, String fromArduino, boolean checkInput ) {
 		String command = "";
 		if(wait_for2!= null && wait_for2.command != null && wait_for2.command != "" ){
 			command = wait_for2.command;
@@ -458,7 +455,7 @@ public class MyRetReader implements RetReader {
 			Upanel up	= barobot.getUpanelBottle(num);
 			Queue q		= barobot.main_queue;
 		    if( up != null ){
-		    	q.sendNow( Queue.DFAULT_DEVICE, "L"+ up.getAddress() + ",02,200" );
+		    	q.sendNow(  "L"+ up.getAddress() + ",02,200" );
 				//up.setLed( q, "ff", 0 );
 			}else{
 				Initiator.logger.i("bottle "+ num +"","nie ma upanela dla id " + num );	
@@ -471,42 +468,5 @@ public class MyRetReader implements RetReader {
 				Initiator.logger.i("bottle "+ num +"", "nie zgadza sie. spodziewano sie front a jest back");
 			}
 		}
-	}
-
-	public boolean deviceFound(AsyncDevice asyncDevice, AsyncMessage wait_for2, String fromArduino){
-		String decoded = "Arduino.GlobalMatch.METHOD_DEVICE_FOUND";
-		int[] parts = Decoder.decodeBytes( fromArduino );
-		// byte ttt[4] = {METHOD_DEVICE_FOUND,addr,type,ver};
-		// byte ttt[4] = {METHOD_DEVICE_FOUND,I2C_ADR_MAINBOARD,MAINBOARD_DEVICE_TYPE,MAINBOARD_VERSION};
-
-		boolean scanning = true;
-		if( scanning ){
-/*
-			byte pos = getResetOrder(buffer[1]);
-			i2c_reset_next( buffer[1], false );       // reset next (next to slave)
-			i2c_reset_next( buffer[1], true );
-			}else if( scann_order ){ 
-				if( pos == 0xff ){        // nie ma na liscie?
-					order[nextpos++]  = buffer[1];            // na tm miejscu slave o tym adresie
-				}else{
-					scann_order  =  false;
-				}
-			}
-		*/
-		}
-		if(parts[2] == Constant.MAINBOARD_DEVICE_TYPE ){
-			decoded += "/MAINBOARD_DEVICE_TYPE";
-			int cx		= barobot.driver_x.getSPos();;
-			barobot.driver_x.setM(cx);	// ostatnia znana pozycja jest marginesem
-			state.set("MARGINX", cx);
-			Queue mq = barobot.main_queue;
-			mq.clearAll();
-		}else if(parts[2] == Constant.UPANEL_DEVICE_TYPE ){		// upaneld
-			decoded += "/UPANEL_DEVICE_TYPE";
-		}else if(parts[2] == Constant.IPANEL_DEVICE_TYPE ){		// wozek
-			decoded += "/IPANEL_DEVICE_TYPE";
-		}
-		//Initiator.logger.i("MyRetReader.decoded", decoded);
-		return true;
 	}
 }

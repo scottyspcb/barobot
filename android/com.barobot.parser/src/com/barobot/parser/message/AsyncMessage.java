@@ -1,7 +1,6 @@
 package com.barobot.parser.message;
 
 import com.barobot.parser.Queue;
-import com.barobot.parser.output.AsyncDevice;
 
 public class AsyncMessage extends History_item{
 	protected static final long NO_TIMEOUT		= -1;
@@ -44,7 +43,7 @@ public class AsyncMessage extends History_item{
 		this.unlocking_command = withCommand;
 		blocking= false;
 	}
-	public Queue start(AsyncDevice dev, Queue queue) {
+	public Queue start(Mainboard dev, Queue queue) {
 		Queue nextq = null;
 		if(this.command != ""){
 			dev.send( addSufix() ? ( command + "\n") : command );
@@ -56,10 +55,6 @@ public class AsyncMessage extends History_item{
 		//	this.wait_until		= this.send_timestamp + this.getTimeout();
 		}
 		return nextq;
-	}
-	public AsyncDevice getDevice() {
-		int devid		= this.getDeviceId();
-		return Queue.getDevice(devid);
 	}
 	@Override
 	public String toString(){
@@ -86,11 +81,8 @@ public class AsyncMessage extends History_item{
 		}
 	}
 	// do nadpisania:
-	public Queue run(AsyncDevice dev, Queue queue) {
+	public Queue run(Mainboard dev, Queue queue) {
 		return null;
-	}
-	public int getDeviceId() {
-		return Queue.DFAULT_DEVICE;
 	}
 	public boolean wait4Finish() {
 		return this.blocking;
@@ -110,7 +102,7 @@ public class AsyncMessage extends History_item{
 	public boolean addSufix() {			// add new line after command
 		return true;
 	}
-	public boolean onInput(String input, AsyncDevice dev, Queue mainQueue) {	// some input while waiting for ret
+	public boolean onInput(String input, Mainboard dev, Queue mainQueue) {	// some input while waiting for ret
 		return false;
 	}
 }

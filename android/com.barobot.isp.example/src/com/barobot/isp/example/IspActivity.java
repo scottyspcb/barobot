@@ -1,9 +1,22 @@
 package com.barobot.isp.example;
 
 import java.io.IOException;
+
+import android.app.Activity;
+import android.os.Bundle;
+import android.os.Handler;
+import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+
+import com.barobot.common.EmptyBarobotState;
 import com.barobot.common.IspOverSerial;
-import com.barobot.common.interfaces.SerialInputListener;
-import com.barobot.common.interfaces.Wire;
+import com.barobot.common.interfaces.HardwareState;
+import com.barobot.common.interfaces.serial.SerialInputListener;
+import com.barobot.common.interfaces.serial.Wire;
+import com.barobot.hardware.devices.BarobotConnector;
 import com.barobot.hardware.serial.AndroidLogger;
 import com.barobot.hardware.serial.Serial_wire;
 import com.barobot.isp.Uploader;
@@ -11,16 +24,6 @@ import com.barobot.isp.enums.Board;
 import com.barobot.isp.enums.UploadErrors;
 import com.barobot.isp.interfaces.UploadCallBack;
 import com.barobot.parser.Queue;
-import com.barobot.parser.output.Mainboard;
-
-import android.os.Bundle;
-import android.os.Handler;
-import android.app.Activity;
-import android.util.Log;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 
 public class IspActivity extends Activity {
 	private static final String TAG = IspActivity.class.getSimpleName();
@@ -29,7 +32,9 @@ public class IspActivity extends Activity {
 	private static final String ASSET_FILE_NAME_PRO        	= "Blink.cpp.hex";
     private Wire connection		= null;
 	private Queue q				= new Queue();
-	private int mainboardSource;
+	private BarobotConnector barobot	= null;
+	public static HardwareState state	= null;
+
 	private Uploader mPhysicaloid;
     private Board mSelectedBoard;
     private IspOverSerial mSerial;
@@ -46,7 +51,8 @@ public class IspActivity extends Activity {
 		AndroidLogger al = new AndroidLogger();
 		com.barobot.common.Initiator.setLogger( al );
 
-		q				= new Queue();
+		state			= new EmptyBarobotState();
+		barobot			= new BarobotConnector(state);
         mPhysicaloid	= new Uploader();
 
         // Shows last selected board
@@ -56,29 +62,15 @@ public class IspActivity extends Activity {
      	}
     	connection = new Serial_wire( this );
     	connection.setBaud( mSelectedBoard.uploadBaudrate );
-    	connection.addOnReceive( new SerialInputListener(){
-	 		@Override
-	 		public void onNewData(byte[] data, int length) {
-	 		//		String message = new String(data, 0, length);
-	 		//	   	Log.e("Serial addOnReceive", Decoder.toHexStr(data, data.length) );
-	 		//		q.read( mainboardSource, message );
-	 		}
-	 		@Override
-	 		public void onRunError(Exception e) {
-	 		}
-	 		@Override
-	 		public boolean isEnabled() {
-	 			return true;
- 		}});
    	 	connection.init();
+
+		SerialInputListener listener = barobot.willReadFrom( connection );
+		barobot.willWriteThrough( connection );
+
    	 	mSerial			= new IspOverSerial(connection);
-     	Mainboard mb	= new Mainboard();
- 		mb.registerSender( connection );
- 		mainboardSource = Queue.registerSource( mb );
  		mPhysicaloid.setSerial(mSerial);
         mPhysicaloid.setBoard( mSelectedBoard );
         mPhysicaloid.setCallBack( mUploadCallback );
- 		Queue.enableDevice( mainboardSource );
 
 		tstart.setOnClickListener( new OnClickListener(){
 			@Override
@@ -131,8 +123,7 @@ public class IspActivity extends Activity {
 
     @Override
     protected void onDestroy() {
-    	q.clear(mainboardSource);
-    	q.destroy(); 
+    	q.destroy();
     	q= null;
     	if(connection !=null){
     		connection.destroy();

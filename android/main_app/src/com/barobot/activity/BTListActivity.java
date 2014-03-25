@@ -1,16 +1,6 @@
 package com.barobot.activity;
 import java.util.Set;
 
-import com.barobot.AppInvoker;
-import com.barobot.R;
-import com.barobot.R.id;
-import com.barobot.R.layout;
-import com.barobot.R.string;
-import com.barobot.common.Initiator;
-import com.barobot.common.constant.Constant;
-import com.barobot.hardware.Arduino;
-import com.barobot.hardware.serial.BluetoothChatService;
-
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -19,17 +9,21 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.view.Window;
 import android.view.View.OnClickListener;
+import android.view.Window;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.AdapterView.OnItemClickListener;
+
+import com.barobot.R;
+import com.barobot.common.Initiator;
+import com.barobot.common.constant.Constant;
+import com.barobot.hardware.Arduino;
+import com.barobot.hardware.serial.BluetoothChatService;
 
 /**
  * This Activity appears as a dialog. It lists any paired devices and

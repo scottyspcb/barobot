@@ -11,7 +11,7 @@ import com.barobot.gui.database.BarobotData;
 import com.barobot.hardware.virtualComponents;
 import com.barobot.parser.Queue;
 import com.barobot.parser.message.AsyncMessage;
-import com.barobot.parser.output.AsyncDevice;
+import com.barobot.parser.message.Mainboard;
 
 public class Engine {
 	private static Engine instance;
@@ -154,8 +154,12 @@ public class Engine {
 
 		Queue q	= virtualComponents.getMainQ();
 		q.add( new AsyncMessage( true ) {
+			@Override	
+			public String getName() {
+				return "on drink ready";
+			}
 			@Override
-			public Queue run(AsyncDevice dev, Queue queue) {
+			public Queue run(Mainboard dev, Queue queue) {
 				this.name		= "onQueueFinished";
 				mListener.onQueueFinished();
 				return null;

@@ -3,14 +3,12 @@ package com.barobot.hardware.devices.i2c;
 import com.barobot.common.IspSettings;
 import com.barobot.parser.Queue;
 
-public class MainBoard extends I2C_Device_Imp {
-	private int default_address	= 0x01;
-	private int default_index	= 1;
+public class MainboardI2c extends I2C_Device_Imp {
 
-	public MainBoard(){
+	public MainboardI2c(int index, int address ){
 		this.cpuname		= "m328p";
-		this.myaddress		= default_address;
-		this.myindex		= default_index;
+		this.myaddress		= address;
+		this.myindex		= index;
 		this.protocol		= "arduino";
 	//	this.bspeed			= 57600;		// arduino bootloader
 		this.bspeed			= 115200;		// optiboot can faster
@@ -27,4 +25,5 @@ public class MainBoard extends I2C_Device_Imp {
 	public String getHexFile() {
 		return IspSettings.mbHexPath;
 	}
+
 }

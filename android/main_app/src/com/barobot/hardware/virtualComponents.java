@@ -1,5 +1,6 @@
 package com.barobot.hardware;
 
+import com.barobot.android.AndroidBarobotState;
 import com.barobot.common.Initiator;
 import com.barobot.common.constant.Constant;
 import com.barobot.common.constant.Methods;
@@ -8,7 +9,7 @@ import com.barobot.hardware.devices.BarobotConnector;
 import com.barobot.hardware.devices.i2c.Upanel;
 import com.barobot.parser.Queue;
 import com.barobot.parser.message.AsyncMessage;
-import com.barobot.parser.output.AsyncDevice;
+import com.barobot.parser.message.Mainboard;
 import com.barobot.parser.utils.Decoder;
 import android.app.Activity;
 import android.graphics.Color;
@@ -75,7 +76,7 @@ public class virtualComponents {
 
 	public static void cancel_all() {
 		Queue mq = getMainQ();
-		mq.clearAll();
+		mq.clear();
 		mq.add("LIVE A OFF", false );
 //		add("EZ");
 		int poszdown	=  state.getInt("ENDSTOP_Z_MIN", BarobotConnector.SERVOZ_DOWN_POS );
@@ -90,8 +91,12 @@ public class virtualComponents {
 		final Upanel up	= barobot.getUpanelBottle(num);
 		moveZDown( q ,true );
 		q.add( new AsyncMessage( true ){
+			@Override	
+			public String getName() {
+				return "moveToBottle" ;
+			}
 			@Override
-			public Queue run(AsyncDevice dev, Queue queue) {
+			public Queue run(Mainboard dev, Queue queue) {
 				this.name	= "check position";
 				int cx		= virtualComponents.barobot.driver_x.getSPos();		// czy ja juz jestem na tej pozycji?	
 				int cy		= state.getInt("POSY", 0 );
@@ -112,12 +117,12 @@ public class virtualComponents {
 					}else{
 						virtualComponents.moveY( q2, BarobotConnector.SERVOY_FRONT_POS, true);	
 					}
-					barobot.driver_x.moveX( q2, tx);
+					barobot.driver_x.moveTo( q2, tx);
 					virtualComponents.moveY( q2, ty, disableOnReady);		
 				}else{	// jade przodem
 					virtualComponents.moveZDown(q2, disableOnReady );
 					virtualComponents.moveY( q2, BarobotConnector.SERVOY_FRONT_POS, true);
-					barobot.driver_x.moveX( q2, tx);
+					barobot.driver_x.moveTo( q2, tx);
 					virtualComponents.moveY( q2, ty, disableOnReady);
 				}
 				if( up != null ){
@@ -165,9 +170,12 @@ public class virtualComponents {
 		q.add("DY", true);
 		virtualComponents.moveZDown(q,false);
 		q.add( new AsyncMessage( true ) {
+			@Override	
+			public String getName() {
+				return "pac pac" ;
+			}
 			@Override
-			public Queue run(AsyncDevice dev, Queue queue) {
-				this.name		= "pacpac";
+			public Queue run(Mainboard dev, Queue queue) {
 				if(virtualComponents.pac_enabled){
 					Queue	q2	= new Queue();		
 					up.setLed( q2, "11", 100 );
@@ -196,9 +204,6 @@ public class virtualComponents {
 	}
 	public static void disable_analog(Queue q, int analogWaga) {
 		q.add("LIVE A OFF", false);
-	}
-	public static void moveX( Queue q, String pos ) {
-		barobot.driver_x.moveX( q, Decoder.toInt(pos));
 	}
 	public static void moveY( Queue q, int pos, boolean disableOnReady ) {
 		q.add("Y" + pos+ ","+BarobotConnector.DRIVER_Y_SPEED, true);
@@ -249,8 +254,12 @@ public class virtualComponents {
 		Queue q = getMainQ();
 		moveZDown( q ,true );
 		q.add( new AsyncMessage( true ) {
+			@Override	
+			public String getName() {
+				return "moveToStart" ;
+			}
 			@Override
-			public Queue run(AsyncDevice dev, Queue queue) {
+			public Queue run(Mainboard dev, Queue queue) {
 				this.name		= "check position";
 				int posx		= barobot.driver_x.getSPos();;		// czy ja juz jestem na tej pozycji?	
 				int posy		= state.getInt("POSY", 0 );
@@ -262,7 +271,7 @@ public class virtualComponents {
 					virtualComponents.moveZDown(q2, true );
 					//virtualComponents.moveY( q2, virtualComponents.get("NEUTRAL_POS_Y", "0" ));
 					virtualComponents.moveY( q2, BarobotConnector.SERVOY_FRONT_POS, true );
-					barobot.driver_x.moveX( q2, sposx);
+					barobot.driver_x.moveTo( q2, sposx);
 					virtualComponents.moveY( q2, sposy, true );
 					return q2;
 				}
@@ -340,15 +349,19 @@ public class virtualComponents {
 		int lengthx19	=  state.getInt("LENGTHX", 60000 );	
 		
 		Initiator.logger.i("+find_bottles", "up");
-		barobot.driver_x.moveX( q, posx + 2000);
+		barobot.driver_x.moveTo( q, posx + 2000);
 		q.addWait(100);
-		barobot.driver_x.moveX( q, -70000 );
+		barobot.driver_x.moveTo( q, -70000 );
 
 		q.addWait(100);
 		// scann Triggers
 		q.add( new AsyncMessage( true ) {			// go up
+			@Override	
+			public String getName() {
+				return "kalibrcja" ;
+			}
 			@Override
-			public Queue run(AsyncDevice dev, Queue queue) {
+			public Queue run(Mainboard dev, Queue queue) {
 				this.name		= "scanning up";
 				virtualComponents.barobot.driver_x.defaultSpeed = 1000;
 				Initiator.logger.i("+find_bottles", "up");
@@ -356,20 +369,20 @@ public class virtualComponents {
 				return null;
 			}
 		});
-		barobot.driver_x.moveX( q, 30000);		// go down
+		barobot.driver_x.moveTo( q, 30000);		// go down
 		q.add( new AsyncMessage( true ) {
 			@Override
-			public Queue run(AsyncDevice dev, Queue queue) {
+			public Queue run(Mainboard dev, Queue queue) {
 				this.name		= "scanning back";
 				virtualComponents.barobot.driver_x.defaultSpeed = BarobotConnector.DRIVER_X_SPEED;
 				Initiator.logger.i("+find_bottles", "down kalibrcja");
 				return null;
 			}
 		} );
-		barobot.driver_x.moveX( q, -lengthx19);
+		barobot.driver_x.moveTo( q, -lengthx19);
 		q.add( new AsyncMessage( true ) {
 			@Override
-			public Queue run(AsyncDevice dev, Queue queue) {
+			public Queue run(Mainboard dev, Queue queue) {
 				this.name		= "end scanning";
 				Initiator.logger.i("+find_bottles", "koniec kalibrcja");
 				virtualComponents.scann_bottles = false;

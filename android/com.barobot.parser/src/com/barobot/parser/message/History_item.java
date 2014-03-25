@@ -1,6 +1,5 @@
 package com.barobot.parser.message;
 
-import com.barobot.common.Initiator;
 
 public class History_item{
 	public static final boolean OUTOUT = true;

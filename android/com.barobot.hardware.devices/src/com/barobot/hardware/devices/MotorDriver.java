@@ -5,7 +5,7 @@ import com.barobot.common.constant.Methods;
 import com.barobot.common.interfaces.HardwareState;
 import com.barobot.parser.Queue;
 import com.barobot.parser.message.AsyncMessage;
-import com.barobot.parser.output.AsyncDevice;
+import com.barobot.parser.message.Mainboard;
 import com.barobot.parser.utils.Decoder;
 
 public class MotorDriver {
@@ -13,6 +13,8 @@ public class MotorDriver {
 	int software_pos		= 0;
 	int direction			= Methods.DRIVER_DIR_STOP;
 	public int defaultSpeed = 0;
+	public String axis		= "X";
+
 	int m1 = 0;
 	int m2 = 0;
 	//	todo s = (( (h * p1 + m1) / d ) + m2) * p2 
@@ -64,24 +66,28 @@ public class MotorDriver {
 	//	Initiator.logger.w("MARGIN X2", "Margin: " + m1 + "  soft: " + pos3 + " => hard " + (pos3 -( -m1)));
 		return pos3 - (- m1);
 	}
-	public void moveX( final Queue q, final int pos ) {
+	public void moveTo( final Queue q, final int pos ) {
 		final int newx		= soft2hard(pos);
 		final int currentx	= getSPos();
 
 		q.add( new AsyncMessage( true, true ) {
 			@Override
+			public String getName() {
+				return axis + " moveTo logic";
+			}
+			@Override
 			public boolean isRet(String result, Queue mainQueue) {
 				return false;
 			}
 			@Override
-			public Queue run(AsyncDevice dev, Queue queue){
+			public Queue run(Mainboard dev, Queue queue){
 				this.name		= "Check Hall X";
 				Initiator.logger.w("MotorDriver.movoTo.AsyncMessage.run", "want to s:" + pos + " / hpos" + newx );
-				q.sendNow(Queue.DFAULT_DEVICE, "A0");
+				q.sendNow("A0");
 				return null;
 			}
 			@Override
-			public boolean onInput(String input, AsyncDevice dev, Queue mainQueue) {
+			public boolean onInput(String input, Mainboard dev, Queue mainQueue) {
 				Initiator.logger.w("MotorDriver.movoTo.AsyncMessage.onInput", input );
 				if(input.matches("^" +  Methods.METHOD_IMPORTANT_ANALOG + ",0,.*" )){		//	224,0,66,0,208,7,15,2
 					int[] parts = Decoder.decodeBytes( input );

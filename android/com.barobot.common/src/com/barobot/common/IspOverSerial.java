@@ -52,7 +52,7 @@ public class IspOverSerial implements SerialInputListener, IspCommunicator {
 		}
 		return size;
 	}
-	public synchronized boolean isOpened() {
+	public synchronized boolean isConnected() {
 		return this.connection.isConnected(); 
 	}
     public void reset(boolean b){

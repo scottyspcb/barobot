@@ -30,10 +30,9 @@ public class DebugTabLog extends Fragment {
     	this.tab_id = tabCommandsId;
     	this.cc		= debugActivity;
     	mConversation = new ArrayAdapter<History_item>(cc, R.layout.message);
-   
-    	Arduino.getInstance().getHistory( mConversation );
 
-    	
+    	//Arduino.getInstance().getHistory( mConversation );
+
 	}
 	@Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -52,7 +51,7 @@ public class DebugTabLog extends Fragment {
 		xb1.setOnClickListener( new OnClickListener(){
 			@Override
 			public void onClick(View v) {
-				Arduino.getInstance().clearHistory();
+				//Arduino.getInstance().clearHistory();
 			};			
 		});
 		
@@ -87,6 +86,6 @@ public class DebugTabLog extends Fragment {
   	  	if(isChecked){
   	//  		Constant.log("DebugTabLog", "enable");		  	  		
   	  	}
-  	  	Arduino.getInstance().log_active = isChecked;
+  	  	//Arduino.getInstance().log_active = isChecked;
 	}
 }

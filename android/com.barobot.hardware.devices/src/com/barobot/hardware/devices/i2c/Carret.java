@@ -3,12 +3,11 @@ package com.barobot.hardware.devices.i2c;
 import com.barobot.common.IspSettings;
 
 public class Carret extends I2C_Device_Imp {
-	private int default_address	= 0x0A;		// 10
-	private int default_index	= 2;
-	public Carret(){
+
+	public Carret(int index, int address ){
 		this.cpuname	= "m328p";
-		this.myaddress	= default_address;
-		this.myindex	= default_index;
+		this.myaddress	= address;
+		this.myindex	= index;
 		this.lfuse		= "0xFF";
 		this.hfuse		= "0xDB";
 		this.lock		= "";
@@ -24,5 +23,4 @@ public class Carret extends I2C_Device_Imp {
 	public String getHexFile() {
 		return IspSettings.carretHexPath;
 	}
-
 }
