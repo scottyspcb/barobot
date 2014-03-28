@@ -23,7 +23,7 @@ public class MotorDriver {
 	public MotorDriver(HardwareState state ){
 		this.state = state;
 		this.setM( state.getInt( "MARGINX", 0 ) );
-		this.setSPos( state.getInt( "POSX", 0 ) );
+		//this.setSPos( state.getInt( "POSX", 0 ) );
 	}	
 	public void setM( int margin1 ){
 		m1 = margin1;

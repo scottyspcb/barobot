@@ -35,6 +35,8 @@ public interface I2C_Device {
 	
 	public abstract void isResetedBy(I2C_Device i2c_device);
 
-	public abstract void hasResetTo(I2C_Device upanelB1);
+	public void hasResetTo(int index, I2C_Device dev2 );
+
+	public abstract String checkExists(Queue q);
 
 }

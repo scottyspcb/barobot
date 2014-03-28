@@ -16,6 +16,7 @@ import com.barobot.gui.database.BarobotDataStub;
 import com.barobot.hardware.Arduino;
 import com.barobot.hardware.virtualComponents;
 import com.barobot.hardware.devices.BarobotConnector;
+import com.barobot.hardware.devices.i2c.Upanel;
 import com.barobot.parser.Queue;
 public class button_click implements OnClickListener{
 	private Context dbw;
@@ -345,9 +346,10 @@ public class button_click implements OnClickListener{
 			barobot.driver_x.setSPos( spos );
 			break;	
 		case R.id.reset_upanels:
-			Queue q1			= new Queue();
-			for(int i =BarobotConnector.upanels.length-1; i>=0;i--){
-				q1.add("RESET_NEXT"+ BarobotConnector.upanels[i], true);
+			Queue q1		= new Queue();
+			Upanel[] up		= barobot.i2c.getUpanels();
+			for(int i =up.length-1; i>=0;i--){
+				q1.add("RESET_NEXT"+ up[i], true);
 			}
 			virtualComponents.getMainQ().add(q1);
 			break;

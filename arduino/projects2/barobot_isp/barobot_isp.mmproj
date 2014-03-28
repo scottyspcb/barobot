@@ -1,6 +1,6 @@
 <mm_project serial_port="COM40" board="!Barobot MB 16 MHz ATmega328+xtal [Optiboot]" programmer="" includePaths="" libPaths="" libs="" default="no" useCodeAutomation="yes" linkPrintfVersion="1" serialPortSpeed="" >
   <files>
-    <file name="barobot_isp_main.cpp" open="no" />
+    <file name="barobot_isp_main.cpp" open="yes" />
     <file name="barobot_isp_main.h" open="no" />
   </files>
   <extras>

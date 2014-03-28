@@ -3,7 +3,6 @@ package com.barobot.hardware.devices.i2c;
 import java.io.File;
 
 import com.barobot.common.IspSettings;
-import com.barobot.common.constant.LowHardware;
 import com.barobot.common.constant.Methods;
 import com.barobot.parser.Queue;
 import com.barobot.parser.message.AsyncMessage;
@@ -26,12 +25,23 @@ public abstract class I2C_Device_Imp implements I2C_Device{
 
 	public I2C_Device_Imp() {
 	}
+
 	@Override
-	public void setLed(Queue q, String selector, int pwm) {
+	public void setLed(Queue q, String selector, int pwm ) {
 		String command = "L" + myaddress + ","+ selector +"," + pwm;
 		q.add( command, true );
 	}
 
+	@Override
+	public String checkExists(Queue q) {
+		if( myaddress > 0 ){
+			return "n"+ this.myaddress;
+		}else if( myindex > 0 ){
+			return "N"+ this.myindex;
+		}
+		return "";
+	}
+	
 	@Override
 	public void setAddress(int myaddress) {
 		this.myaddress = myaddress;
@@ -134,6 +144,7 @@ public abstract class I2C_Device_Imp implements I2C_Device{
 	public static String verbose( int verbose ) {
 		return Decoder.strRepeat(" -v", verbose);
 	}
+	/*
 	public Queue progStartCommand() {
 		Queue q = new Queue();
 		// prog mode on, powiadom wszystkich
@@ -155,8 +166,8 @@ public abstract class I2C_Device_Imp implements I2C_Device{
 			}
 		}
 		return q;
-	}
-
+	}*/
+/*
 	public Queue progEndCommand() {
 		Queue q = new Queue();
 		// prog mode off, powiadom wszystkich
@@ -166,7 +177,7 @@ public abstract class I2C_Device_Imp implements I2C_Device{
 		    }
 		}
 		return q;
-	}
+	}*/
 	public void hasResetTo(int index, I2C_Device dev2 ) {
 		dev2.isResetedBy( this );
 		//canReset.add(dev2);
@@ -174,6 +185,7 @@ public abstract class I2C_Device_Imp implements I2C_Device{
 	public void isResetedBy(I2C_Device i2c_device) {
 		canBeResetedBy = i2c_device;
 	}
+	/*
 	public Queue resetCommand() {
 		Queue q = new Queue();
 		if( myindex > 0 ){
@@ -186,9 +198,5 @@ public abstract class I2C_Device_Imp implements I2C_Device{
 			}
 		}
 		return q;
-	}
-	@Override
-	public void hasResetTo(I2C_Device upanelB1) {
-		// TODO Auto-generated method stub
-	}
+	}*/
 }

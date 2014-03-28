@@ -13,7 +13,6 @@ public class Carret extends I2C_Device_Imp {
 		this.lock		= "";
 		this.efuse		= "0x05";
 	}
-
 	public String getReset() {
 		return "RESET"+ this.myindex;
 	}

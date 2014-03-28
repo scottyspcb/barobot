@@ -1,6 +1,7 @@
 package com.barobot.hardware.devices.i2c;
 
 import com.barobot.common.IspSettings;
+import com.barobot.common.constant.Constant;
 import com.barobot.parser.Queue;
 
 public class MainboardI2c extends I2C_Device_Imp {
@@ -12,6 +13,9 @@ public class MainboardI2c extends I2C_Device_Imp {
 		this.protocol		= "arduino";
 	//	this.bspeed			= 57600;		// arduino bootloader
 		this.bspeed			= 115200;		// optiboot can faster
+	}
+	public MainboardI2c() {
+		this(Constant.mdefault_index, Constant.mdefault_address);
 	}
 	public String setFuseBits(Queue q) {
 		return "";
@@ -25,5 +29,4 @@ public class MainboardI2c extends I2C_Device_Imp {
 	public String getHexFile() {
 		return IspSettings.mbHexPath;
 	}
-
 }

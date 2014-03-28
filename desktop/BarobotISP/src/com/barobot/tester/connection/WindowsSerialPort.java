@@ -82,15 +82,19 @@ public class WindowsSerialPort implements Wire, CanSend{
 					 }
 				}
 			}};
+			/*
 		try {
 			serialPort.addEventListener( lis );
 		} catch (TooManyListenersException e) {
 			e.printStackTrace();
 			return false;
-		}
+		}*/
 		System.out.println("Set speed " + IspSettings.fullspeed );
-		serialPort.notifyOnDataAvailable(true);
+		//serialPort.notifyOnDataAvailable(true);
 		connected			= true;
+
+	    new Thread(new PortReader()).start();
+
     	if(iel!=null){
     		iel.onConnect();
     	}
@@ -258,6 +262,24 @@ public class WindowsSerialPort implements Wire, CanSend{
 	}
 	public void reset() {
 		// TODO Auto-generated method stub
-		
+	}
+	private final class PortReader implements Runnable{
+		public void run(){
+			try{
+				// This will timeout if nothing is received in the specified time.
+				InputStream aStream = serialPort.getInputStream();
+				byte[] buff = new byte[1];
+				while (  aStream.read(buff) > 0 ){
+					for (SerialInputListener il : listener){
+						if(il.isEnabled()){
+							il.onNewData( buff, 1 );
+				        }
+					 }	
+				}
+			}
+			catch ( Exception exc ){
+				exc.printStackTrace();
+			}
+		}
 	}
 }

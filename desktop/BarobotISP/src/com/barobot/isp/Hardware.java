@@ -9,6 +9,7 @@ import com.barobot.parser.Queue;
 import com.barobot.parser.message.AsyncMessage;
 import com.barobot.parser.message.Mainboard;
 import com.barobot.tester.connection.WindowsSerialPort;
+import com.barobot.tester.connection.WindowsSerialPort2;
 
 public class Hardware {
 	private WindowsSerialPort connection	= null;
@@ -19,8 +20,9 @@ public class Hardware {
 	public Hardware(String comPort) {
 		this.state		= new EmptyBarobotState();	
 		this.barobot	= new BarobotConnector( state );
-		this.state.set("show_sending", 1);
-		this.state.set("show_reading", 1);
+		this.state.set("show_unknown", 1 );
+		this.state.set("show_sending", 1 );
+		this.state.set("show_reading", 1 );
 
 		this.comPort	= comPort;
 		this.connection	= new WindowsSerialPort( comPort, IspSettings.fullspeed );
