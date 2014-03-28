@@ -99,7 +99,7 @@ public class BarobotMain extends BarobotActivity implements ArduinoListener {
 					if (bottleSequence != null){
 						Queue q	= virtualComponents.getMainQ();
 						for (Integer i : bottleSequence){
-							Upanel u = virtualComponents.barobot.getUpanelBottle(i-1);
+							Upanel u = virtualComponents.barobot.i2c.getUpanelByBottle(i-1);
 							u.setLed(q, "22", 100);
 						}
 					}

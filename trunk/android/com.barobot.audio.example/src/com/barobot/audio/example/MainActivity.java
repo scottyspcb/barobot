@@ -21,6 +21,7 @@ import com.barobot.common.interfaces.serial.SerialEventListener;
 import com.barobot.common.interfaces.serial.SerialInputListener;
 import com.barobot.common.interfaces.serial.Wire;
 import com.barobot.hardware.devices.BarobotConnector;
+import com.barobot.hardware.devices.i2c.Upanel;
 import com.barobot.hardware.serial.AndroidBarobotState;
 import com.barobot.hardware.serial.Serial_wire;
 import com.barobot.parser.utils.Interval;
@@ -104,38 +105,39 @@ public class MainActivity extends Activity implements OnSignalsDetectedListener{
 		connection.init();
 		SerialInputListener listener = barobot.willReadFrom( connection );
 		barobot.willWriteThrough( connection );
-
-		for( int i=0;i<BarobotConnector.upanels.length ;i++){
-			barobot.main_queue.add( "L"+ BarobotConnector.upanels[i] + ",ff,0", true );
+		Upanel[] up		= barobot.i2c.getUpanels();
+		for( int i=0;i<up.length ;i++){
+			barobot.main_queue.add( "L"+ up[i] + ",ff,0", true );
 		}
 	}
 
 	public void init() {
+		final Upanel[] up		= barobot.i2c.getUpanels();
 		ii1 = new Interval(new Runnable(){
 			public void run() {
 				toggled1 = !toggled1;
 				if(toggled1){
-					barobot.main_queue.add( "L"+ BarobotConnector.upanels[0] +",04,0", sync);
+					barobot.main_queue.add( "L"+ up[0] +",04,0", sync);
 				}else{
-					barobot.main_queue.add( "L"+ BarobotConnector.upanels[0] +",04,255", sync);
+					barobot.main_queue.add( "L"+ up[0] +",04,255", sync);
 				}
 			}});
 		ii2 = new Interval(new Runnable(){
 			public void run() {
 				toggled2 = !toggled2;
 				if(toggled2){
-					barobot.main_queue.add( "L"+ BarobotConnector.upanels[2] +",01,0", sync);
+					barobot.main_queue.add( "L"+ up[2] +",01,0", sync);
 				}else{
-					barobot.main_queue.add( "L"+ BarobotConnector.upanels[2] +",01,255", sync);
+					barobot.main_queue.add( "L"+ up[2] +",01,255", sync);
 				}
 			}});
 		ii3 = new Interval(new Runnable(){
 			public void run() {
 				toggled3 = !toggled3;
 				if(toggled3){
-					barobot.main_queue.add( "L"+ BarobotConnector.upanels[4] +",02,0", sync);
+					barobot.main_queue.add( "L"+ up[4] +",02,0", sync);
 				}else{
-					barobot.main_queue.add( "L"+ BarobotConnector.upanels[4] +",02,255", sync);
+					barobot.main_queue.add( "L"+ up[4] +",02,255", sync);
 				}
 			}});
 
@@ -143,9 +145,9 @@ public class MainActivity extends Activity implements OnSignalsDetectedListener{
 			public void run() {
 				toggled0 = !toggled0;
 				if(toggled0){
-					barobot.main_queue.add( "L"+ BarobotConnector.upanels[6] +",01,0", sync);
+					barobot.main_queue.add( "L"+ up[6] +",01,0", sync);
 				}else{
-					barobot.main_queue.add( "L"+ BarobotConnector.upanels[6] +",01,255", sync);
+					barobot.main_queue.add( "L"+ up[6] +",01,255", sync);
 				}
 			}});
 	}
@@ -184,7 +186,6 @@ public class MainActivity extends Activity implements OnSignalsDetectedListener{
 	private float oldbpm;
 	public void peek(final float averageAbsValue) {
 		//final int current = (int) averageAbsValue;
-
 		final long current = (long) (averageAbsValue * (averageAbsValue));
 		if( current > max ){
 			max = current;
@@ -201,7 +202,8 @@ public class MainActivity extends Activity implements OnSignalsDetectedListener{
 		if( current < min ){
 			min = current;
 		}
-		final float div = (( (float) current - (float) min)/ (float) max);
+		Upanel[] up				= barobot.i2c.getUpanels();
+		final float div 		= (( (float) current - (float) min)/ (float) max);
 		final int norm = (int) (div * 1024);
 	//	System.out.println("\t>>>add: " + current);
 		if( Math.abs(norm - last) > 6 ){
@@ -213,19 +215,19 @@ public class MainActivity extends Activity implements OnSignalsDetectedListener{
 			final String command3 = ",44," + ((int) b);
 	//		System.out.println("\t>>>add: " + command);
 
-			barobot.main_queue.add( "L"+ BarobotConnector.upanels[1] +command3, sync);
-			barobot.main_queue.add( "L"+ BarobotConnector.upanels[3] +command2, sync);
-			barobot.main_queue.add( "L"+ BarobotConnector.upanels[5] +command1, sync);
-			barobot.main_queue.add( "L"+ BarobotConnector.upanels[7] +command1, sync);
-			barobot.main_queue.add( "L"+ BarobotConnector.upanels[9] +command2, sync);
-			barobot.main_queue.add( "L"+ BarobotConnector.upanels[11] +command3, sync);
+			barobot.main_queue.add( "L"+ up[1] +command3, sync);
+			barobot.main_queue.add( "L"+ up[3] +command2, sync);
+			barobot.main_queue.add( "L"+ up[5] +command1, sync);
+			barobot.main_queue.add( "L"+ up[7] +command1, sync);
+			barobot.main_queue.add( "L"+ up[9] +command2, sync);
+			barobot.main_queue.add( "L"+ up[11] +command3, sync);
 			/*
-			barobot.main_queue.add( "L"+ BarobotConnector.upanels[6] +command1, sync);
-			barobot.main_queue.add( "L"+ BarobotConnector.upanels[7] +command1, sync);
-			barobot.main_queue.add( "L"+ BarobotConnector.upanels[9] +command1, sync);
-			barobot.main_queue.add( "L"+ BarobotConnector.upanels[10] +command1, sync);
-			barobot.main_queue.add( "L"+ BarobotConnector.upanels[10] +command1, sync);
-			barobot.main_queue.add( "L"+ BarobotConnector.upanels[11] +command1, sync);
+			barobot.main_queue.add( "L"+ up[6] +command1, sync);
+			barobot.main_queue.add( "L"+ up[7] +command1, sync);
+			barobot.main_queue.add( "L"+ up[9] +command1, sync);
+			barobot.main_queue.add( "L"+ up[10] +command1, sync);
+			barobot.main_queue.add( "L"+ up[10] +command1, sync);
+			barobot.main_queue.add( "L"+ up[11] +command1, sync);
 			*/
 			last = norm;
 		}
@@ -278,7 +280,7 @@ public class MainActivity extends Activity implements OnSignalsDetectedListener{
 			b = Math.min(b, 255);
 //			final String command2 = ",11," + ((int) b);
 	//		System.out.println("\t>>>add: " + command);
-//			barobot.main_queue.add( "L"+ BarobotConnector.upanels[] +""+command2, true);
+//			barobot.main_queue.add( "L"+ up[] +""+command2, true);
 			runOnUiThread(new Runnable() {
 				public void run() {
 					TextView textView = (TextView) mainView.findViewById(R.id.beats);

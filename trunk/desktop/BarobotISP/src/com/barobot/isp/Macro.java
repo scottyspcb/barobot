@@ -2,7 +2,6 @@ package com.barobot.isp;
 
 import com.barobot.hardware.devices.i2c.Carret;
 import com.barobot.hardware.devices.i2c.I2C_Device;
-import com.barobot.i2c.UpanelIsp;
 import com.barobot.parser.Queue;
 import com.barobot.parser.utils.Interval;
 
@@ -12,18 +11,18 @@ public class Macro {
 		hw.connect();
 		int i = 50;
 
-		for (I2C_Device u : UpanelIsp.list){
+		for (I2C_Device u : hw.barobot.i2c.list){
 			u.setLed( q, "ff", 0 );
 		}
 
 		while( i-- >0 ){
-			for (I2C_Device u : UpanelIsp.list){
+			for (I2C_Device u : hw.barobot.i2c.list){
 				u.setLed( q, "80", 0 );
 			}
 			q.addWaitThread(Main.mt);
 			Main.wait(5);
 
-			for (I2C_Device u : UpanelIsp.list){
+			for (I2C_Device u : hw.barobot.i2c.list){
 				u.setLed( q, "80", 255 );
 			}
 		}
@@ -36,9 +35,9 @@ public class Macro {
 	public void promo_carret(Hardware hw) {
 		Queue q = hw.getQueue();
 		hw.connect();
-		Carret cc = hw.barobot.carret;
+		Carret cc = hw.barobot.i2c.carret;
 	
-		for (I2C_Device u : UpanelIsp.list){
+		for (I2C_Device u : hw.barobot.i2c.list){
 			u.setLed( q, "ff", 0 );
 		}
 		int max = 20;
@@ -96,8 +95,7 @@ public class Macro {
 				cc.setLed(q, "20", 0 );
 				Main.wait(time);
 			}
-			
-			
+
 			i = max;
 			while( i-- >0 ){
 				cc.setLed(q, "40", 255 );
@@ -124,7 +122,7 @@ public class Macro {
 		Interval ii1 = new Interval(new Runnable(){
 			public void run() {
 				System.out.println("teraz");
-				for (I2C_Device u : UpanelIsp.list){
+				for (I2C_Device u : hw.barobot.i2c.list){
 					u.setLed( q, "ff", 255 );
 				}
 			}});
@@ -132,7 +130,7 @@ public class Macro {
 		Interval ii2 = new Interval(new Runnable(){
 			public void run() {
 				System.out.println("teraz2");
-				for (I2C_Device u : UpanelIsp.list){
+				for (I2C_Device u : hw.barobot.i2c.list){
 					u.setLed( q, "ff", 0 );
 				}
 			}});
@@ -141,15 +139,7 @@ public class Macro {
 
 		Main.wait(50000);
 		ii1.cancel();
-		ii2.cancel();
-		
+		ii2.cancel();		
 	}
 
-	public void resetuj(Hardware hw) {
-		Queue q = hw.getQueue();
-		hw.connect();
-		q.add("RESET2", true );
-		Main.wait(50000);
-		q.add("Z1000,100", true );
-	}
 }

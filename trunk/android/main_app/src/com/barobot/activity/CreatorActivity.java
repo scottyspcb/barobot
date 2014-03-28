@@ -94,7 +94,7 @@ public class CreatorActivity extends BarobotActivity implements ArduinoListener{
 				Queue q	= virtualComponents.getMainQ();
 				for (int i = 1; i<=12 ; i++){
 					if(slot_nums[i]){
-						Upanel u = virtualComponents.barobot.getUpanelBottle(i-1);
+						Upanel u = virtualComponents.barobot.i2c.getUpanelByBottle(i-1);
 						u.setLed(q, "22", 100);
 					}
 				}

@@ -78,7 +78,6 @@ void i2c_analog_off( byte slave_address, byte analog );
 void i2c_analog( byte slave_address, byte analog );
 byte reset_device_next_to( byte slave_address, boolean pin_value );
 byte checkAddress( byte address );
-void send_prog_mode( byte command );
 void read_prog_settings( String input, byte ns );
 byte get_local_pin( byte index );
 void i2c_test_slaves();

@@ -17,11 +17,9 @@ import com.barobot.parser.utils.GlobalMatch;
 
 public class Mainboard{
 	private static StringBuilder buffer = new StringBuilder();
-	
 	private static Map<String, GlobalMatch> globalRegex = new HashMap<String, GlobalMatch>();
 	private static Map<String, String> modifiers = new HashMap<String, String>();
-	
-	
+
 	public static String separator = "\n";
 	private AsyncMessage wait_for = null;
 	private CanSend sender;
@@ -258,13 +256,13 @@ public class Mainboard{
 	}
 	public boolean parse(String in) {
 		if( state.getInt("show_unknown", 0) > 0 ){
-			//Parser.log(Level.INFO, "parse: " + in);
-			// all other messages
-
 			if( in.startsWith( "-") ){			// comment
 				Initiator.logger.i("Mainboard.parse.comment", in);
 				return true;
 			}else{
+				if(in.matches("^.*[^-a-zA-Z0-9_.,].*")){		// unusual characters
+					// log command to db
+				}
 				Initiator.logger.i("Mainboard.parse", in);	
 				Initiator.logger.i("Mainboard.parse", Decoder.toHexStr(in.getBytes(), in.length()));
 			}	

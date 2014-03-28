@@ -88,7 +88,7 @@ public class virtualComponents {
 	}
 	public static void moveToBottle(final int num, final boolean disableOnReady ){
 		Queue q			= new Queue();
-		final Upanel up	= barobot.getUpanelBottle(num);
+		final Upanel up	= barobot.i2c.getUpanelByBottle(num);
 		moveZDown( q ,true );
 		q.add( new AsyncMessage( true ){
 			@Override	
@@ -142,7 +142,7 @@ public class virtualComponents {
 	public static void nalej(int num) {			// num 0-11
 		Queue q = getMainQ();
 		int time = getPourTime(num);
-		final Upanel up	= barobot.getUpanelBottle(num);
+		final Upanel up	= barobot.i2c.getUpanelByBottle(num);
 		q.add("EX", true);
 //		q.add("EY", true);
 //		q.add("EZ", true);
@@ -282,41 +282,43 @@ public class virtualComponents {
 	    q.add(Constant.GETYPOS, true);
 	    q.add(Constant.GETZPOS, true);
 
-	    barobot.carret.setLed( q, "ff", 0 );
-	    barobot.carret.setLed( q, "22", 250 );
+	    barobot.i2c.carret.setLed( q, "ff", 0 );
+	    barobot.i2c.carret.setLed( q, "22", 250 );
 	    virtualComponents.setLeds( "ff", 0 );
 		Queue q1			= new Queue();
-		for(int i =BarobotConnector.front_upanels.length-1; i>=0;i--){
-			q1.add("L"+ BarobotConnector.front_upanels[i] +",22,200", true);
+		Upanel[] up 		= barobot.i2c.getUpanels();
+		for(int i =up.length-1; i>=0;i--){
+			q1.add("L"+ up[i] +",22,200", true);
 			q1.addWait(100);
-			q1.add("L"+ BarobotConnector.front_upanels[i] +",22,0", true);
+			q1.add("L"+ up[i] +",22,0", true);
 		}
 		q.add(q1);
 		q.addWait(100);
 	    virtualComponents.setLeds( "88", 100 );
 	    virtualComponents.setLeds( "22", 200 );
 		q.addWait(200);
-		barobot.carret.setLed( q, "22", 20 );
+		barobot.i2c.carret.setLed( q, "22", 20 );
 		Queue q2			= new Queue();
-		for(int i =BarobotConnector.front_upanels.length-1; i>=0;i--){
-			q1.add("L"+ BarobotConnector.front_upanels[i] +",88,200", true);
-			q1.add("L"+ BarobotConnector.front_upanels[i] +",04,50", true);
-			q1.add("L"+ BarobotConnector.front_upanels[i] +",10,50", true);
-			q1.add("L"+ BarobotConnector.front_upanels[i] +",08,50", true);
+		for(int i =up.length-1; i>=0;i--){
+			q1.add("L"+ up[i] +",88,200", true);
+			q1.add("L"+ up[i] +",04,50", true);
+			q1.add("L"+ up[i] +",10,50", true);
+			q1.add("L"+ up[i] +",08,50", true);
 		}
 		q.add(q2);
 		q.addWait(500);
-		barobot.carret.setLed( q, "22", 250 );
+		barobot.i2c.carret.setLed( q, "22", 250 );
 	}
 	
 	public static void startDoingDrink() {
 		Queue q = getMainQ();
-		barobot.carret.setLed( q, "ff", 0 );
-		barobot.carret.setLed( q, "11", 250 );
+		barobot.i2c.carret.setLed( q, "ff", 0 );
+		barobot.i2c.carret.setLed( q, "11", 250 );
 		Queue q1		= new Queue();	
-		for(int i =0; i<BarobotConnector.upanels.length;i++){
-			q1.add("L"+ BarobotConnector.upanels[i] +",ff,0", true);
-			q1.add("L"+ BarobotConnector.upanels[i] +",ff,200", true);
+		Upanel[] up		= barobot.i2c.getUpanels();
+		for(int i =0; i<up.length;i++){
+			q1.add("L"+ up[i] +",ff,0", true);
+			q1.add("L"+ up[i] +",ff,200", true);
 		}
 		q.add(q1);
 	}
@@ -406,10 +408,11 @@ public class virtualComponents {
 	public static void scann_leds(){
 		Queue q			= getMainQ();
 		Queue q1		= new Queue();
-		Queue q2		= new Queue();		
-		for(int i =0; i<BarobotConnector.upanels.length;i++){
-			q1.add("L"+ BarobotConnector.upanels[i] +",ff,200", true );
-			q2.add("L"+ BarobotConnector.upanels[i] +",ff,0", true );
+		Queue q2		= new Queue();	
+		Upanel[] up		= barobot.i2c.getUpanels();
+		for(int i =0; i<up.length;i++){
+			q1.add("L"+ up[i] +",ff,200", true );
+			q2.add("L"+ up[i] +",ff,0", true );
 		}
 		q.add(q1);
 		q.addWait(1000);
@@ -420,18 +423,20 @@ public class virtualComponents {
 		return virtualComponents.barobot.main_queue;
 	}
 	public static void setLeds(String string, int value ) {
-		Queue q1			= new Queue();	
-		for(int i =0; i<BarobotConnector.upanels.length;i++){
-			q1.add("L"+ BarobotConnector.upanels[i] +",ff,0", true);
-			q1.add("L"+ BarobotConnector.upanels[i] +","+ string +"," + value, true);
+		Queue q1		= new Queue();	
+		Upanel[] up		= barobot.i2c.getUpanels();
+		for(int i =0; i<up.length;i++){
+			q1.add("L"+ up[i] +",ff,0", true);
+			q1.add("L"+ up[i] +","+ string +"," + value, true);
 		}
 		Queue q			= getMainQ();
 		q.add(q1);
 	}
 	public static void setLedsOff(String string ) {
-		Queue q1			= new Queue();	
-		for(int i =0; i<BarobotConnector.upanels.length;i++){
-			q1.add("L"+ BarobotConnector.upanels[i] +",ff,0", true);
+		Queue q1		= new Queue();	
+		Upanel[] up		= barobot.i2c.getUpanels();
+		for(int i =0; i<up.length;i++){
+			q1.add("L"+ up[i] +",ff,0", true);
 		}
 		Queue q			= getMainQ();
 		q.add(q1);
@@ -442,11 +447,13 @@ public class virtualComponents {
     	int red		= Color.red(color);
     	int green	= Color.green(color);
 		Queue q1	= new Queue();
-		for(int i =0; i<BarobotConnector.upanels.length;i++){
-			q1.add("L"+ BarobotConnector.upanels[i] +",11," + red, true);
-			q1.add("L"+ BarobotConnector.upanels[i] +",22," + green, true);
-			q1.add("L"+ BarobotConnector.upanels[i] +",44," + blue, true);
-		//	q1.add("L"+ BarobotConnector.upanels[i] +",88," + white, true);
+
+		Upanel[] up = barobot.i2c.getUpanels();
+		for(int i =0; i<up.length;i++){
+			q1.add("L"+ up[i] +",11," + red, true);
+			q1.add("L"+ up[i] +",22," + green, true);
+			q1.add("L"+ up[i] +",44," + blue, true);
+		//	q1.add("L"+ up[i] +",88," + white, true);
 		}
 		Queue q			= getMainQ();
 		q.add(q1);

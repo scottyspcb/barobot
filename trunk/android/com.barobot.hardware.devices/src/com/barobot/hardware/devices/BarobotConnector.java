@@ -1,19 +1,10 @@
 package com.barobot.hardware.devices;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import com.barobot.common.constant.Constant;
 import com.barobot.common.interfaces.HardwareState;
 import com.barobot.common.interfaces.serial.CanSend;
 import com.barobot.common.interfaces.serial.SerialInputListener;
 import com.barobot.common.interfaces.serial.Wire;
-import com.barobot.hardware.devices.i2c.Carret;
-import com.barobot.hardware.devices.i2c.I2C_Device;
-import com.barobot.hardware.devices.i2c.MainboardI2c;
-import com.barobot.hardware.devices.i2c.Upanel;
+import com.barobot.hardware.devices.i2c.I2C;
 import com.barobot.parser.Queue;
 import com.barobot.parser.message.Mainboard;
 
@@ -34,12 +25,8 @@ public class BarobotConnector {
 	public static final int DRIVER_X_SPEED = 2500;
 	public static final int DRIVER_Y_SPEED = 30;
 	public static final int DRIVER_Z_SPEED = 250;
-	public static int[] upanels = {
-		13,20,23,14,16,17,19,21,18,22,15,12,
-	};
-	public static int[] front_upanels = {
-		13,20,23,14,16,17,19,21,18,22,15,12,
-	};
+//	public static int[] upanels = {13,20,23,14,16,17,19,21,18,22,15,12,};
+
 	//config
 	//	private static final int SERVOZ_PAC_TIME_UP = 600;
 	public static final int SERVOZ_PAC_POS = 1850;
@@ -107,82 +94,24 @@ public class BarobotConnector {
 		SERVOZ_POUR_TIME
 	};
 
-	public Carret carret		= null;
 	public MotorDriver driver_x	= null;
 	public Mainboard mb			= null;
 	public Queue main_queue		= null;
 	public Servo driver_y		= null;
 	public Servo driver_z		= null;
 	public HardwareState state	= null;
-	
-	public List<I2C_Device> i2c = new ArrayList<I2C_Device>();
-	
+	public I2C i2c				= null;
+
 	public BarobotConnector(HardwareState state ){
 		state.set("show_unknown", 1 );
 
-		carret				= new Carret(Constant.cdefault_index, Constant.cdefault_address);
-		mb					= new Mainboard( state );
-		driver_x			= new MotorDriver( state );
-		driver_y			= new Servo( state, "Y" );
-		driver_z			= new Servo( state, "Z" );
-		main_queue  		= new Queue( mb );
+		mb			= new Mainboard( state );
+		driver_x	= new MotorDriver( state );
+		driver_y	= new Servo( state, "Y" );
+		driver_z	= new Servo( state, "Z" );
+		main_queue  = new Queue( mb );
+		i2c  		= new I2C();
 		driver_x.defaultSpeed = BarobotConnector.DRIVER_X_SPEED;
-
-		MainboardI2c MainBoard	= new MainboardI2c(Constant.mdefault_index, Constant.mdefault_address);
-
-		I2C_Device UpanelF0 = new Upanel( 3, 0 );
-		I2C_Device UpanelF1 = new Upanel( 0, 1 );
-		I2C_Device UpanelF2 = new Upanel( 0, 2 );
-		I2C_Device UpanelF3 = new Upanel( 0, 3 );
-		I2C_Device UpanelF4 = new Upanel( 0, 4 );
-		I2C_Device UpanelF5 = new Upanel( 0, 5 );
-		I2C_Device UpanelB0 = new Upanel( 4, 6 );
-		I2C_Device UpanelB1 = new Upanel( 0, 7 );
-		I2C_Device UpanelB2 = new Upanel( 0, 8 );
-		I2C_Device UpanelB3 = new Upanel( 0, 9 );
-		I2C_Device UpanelB4 = new Upanel( 0, 10 );
-		I2C_Device UpanelB5 = new Upanel( 0, 11 );
-
-		MainBoard.hasResetTo( 2, carret );
-		MainBoard.hasResetTo( 3, UpanelF0 );
-		MainBoard.hasResetTo( 4, UpanelB0 );
-		MainBoard.hasResetTo( 1, MainBoard );
-
-		UpanelB0.hasResetTo( UpanelB1 );
-		UpanelB1.hasResetTo( UpanelB2 );
-		UpanelB2.hasResetTo( UpanelB3 );
-		UpanelB3.hasResetTo( UpanelB4 );
-		UpanelB4.hasResetTo( UpanelB5 );
-
-		UpanelF0.hasResetTo( UpanelF1 );
-		UpanelF1.hasResetTo( UpanelF2 );
-		UpanelF2.hasResetTo( UpanelF3 );
-		UpanelF3.hasResetTo( UpanelF4 );
-		UpanelF4.hasResetTo( UpanelF5 );
-
-		i2c.add( MainBoard );
-		i2c.add( carret );
-		i2c.add( UpanelF0 );
-		i2c.add( UpanelF1 );
-		i2c.add( UpanelF2 );
-		i2c.add( UpanelF3 );
-		i2c.add( UpanelF4 );
-		i2c.add( UpanelF5 );
-		i2c.add( UpanelB0 );
-		i2c.add( UpanelB1 );
-		i2c.add( UpanelB2 );
-		i2c.add( UpanelB3 );	
-		i2c.add( UpanelB4 );
-		i2c.add( UpanelB5 );
-	}
-
-	public Upanel getUpanelBottle(int num) {
-		for (I2C_Device u2 : i2c){
-			if(u2.getOrder() == num ){
-				return (Upanel) u2;
-			}
-		}
-		return null;
 	}
 
 	public SerialInputListener willReadFrom(Wire connection) {
@@ -208,7 +137,6 @@ public class BarobotConnector {
 	}
 
 	public void destroy() {
-		carret				= null;
 		mb					= null;
 		driver_x			= null;
 		driver_y			= null;
@@ -216,14 +144,6 @@ public class BarobotConnector {
 		state				= null;
 		main_queue.destroy();
 		main_queue  		= null;
+		i2c					= null;
 	}
-
-	public I2C_Device getByAddress( int address ){
-		I2C_Device t = null;
-		for (I2C_Device v : i2c){
-		    System.out.print(v + " ");
-		}
-		return t;
-	}
-	
 }

@@ -166,9 +166,10 @@ public class Queue {
 	public void addFirst(Queue q2) {
 		synchronized (this.lock) {
 			this.output.addAll( 0, q2.output);		// add on start
+			/*
 			if(isMainQueue ){
 				Initiator.logger.i("Queue.addFirst", "newsize: "+ this.output.size() );
-			}
+			}*/
 	//		show("addFirst");
 		}
 		exec();

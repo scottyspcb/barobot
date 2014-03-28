@@ -452,7 +452,7 @@ public class MyRetReader implements RetReader {
 			int spos2	= barobot.driver_x.hard2soft(hposx);
 			int margin	= BarobotConnector.margin_x[ num ];
 			virtualComponents.hereIsBottle(num, spos2 + margin, ypos );
-			Upanel up	= barobot.getUpanelBottle(num);
+			Upanel up	= barobot.i2c.getUpanelByBottle(num);
 			Queue q		= barobot.main_queue;
 		    if( up != null ){
 		    	q.sendNow(  "L"+ up.getAddress() + ",02,200" );

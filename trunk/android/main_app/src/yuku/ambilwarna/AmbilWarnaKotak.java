@@ -1,6 +1,5 @@
 package yuku.ambilwarna;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -26,7 +25,8 @@ public class AmbilWarnaKotak extends View {
 		super(context, attrs, defStyle);
 	}
 
-	@SuppressLint("DrawAllocation") @Override protected void onDraw(Canvas canvas) {
+	@Override
+	protected void onDraw(Canvas canvas) {
 		super.onDraw(canvas);
 		if (paint == null) {
 			paint = new Paint();

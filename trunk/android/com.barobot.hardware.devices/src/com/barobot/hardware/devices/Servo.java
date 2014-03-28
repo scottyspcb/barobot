@@ -30,7 +30,7 @@ public class Servo {
 	}
 	public void setM( int margin1 ){
 		m1 = margin1;
-		Initiator.logger.w("set MARGIN " + this.axis, "" + m1);
+		//Initiator.logger.w("set MARGIN " + this.axis, "" + m1);
 	}
 	public int getSPos(){
 		return software_pos;

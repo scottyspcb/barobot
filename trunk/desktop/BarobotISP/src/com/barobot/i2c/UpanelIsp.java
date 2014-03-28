@@ -10,16 +10,11 @@ import com.barobot.parser.utils.Decoder;
 public class UpanelIsp extends Upanel {
 	private boolean hasNext = false;
 
-	public UpanelIsp(int index, int address ){
-		super(index, address);
+	public UpanelIsp(int index ){
+		super();
+		setIndex(index);
 	}
-	public UpanelIsp(int index, int address, Upanel parent ){
-		super(index, address, parent);
-	}
-	public UpanelIsp(int index, int address, int order ){
-		super(index, order);
-		setAddress(address);
-	}
+
 	public boolean readHasNext( Queue q ) {
 		hasNext = false;
 		String command = "n" + this.myaddress;

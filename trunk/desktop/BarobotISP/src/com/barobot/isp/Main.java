@@ -38,7 +38,7 @@ public class Main{
 		loadProps();
 		//String[] comlist = list();
 		Wizard w	= new Wizard();
-		Hardware hw = new Hardware("COM39");
+		Hardware hw = new Hardware("COM7");
 
 		IspSettings.safeMode = false;
 		IspSettings.setFuseBits = false;
@@ -46,7 +46,7 @@ public class Main{
 		IspSettings.setHex	= true;
 		IspSettings.force = false;
 
-	//	w.fast_close_test( hw );
+		w.fast_close_test( hw );
 	//	w.prepareSlaveMB( hw );
 	//	w.prepareMB( hw );
 	//	w.prepareMB2( hw );
@@ -59,14 +59,11 @@ public class Main{
 	//	w.prepareUpanel( hw, 4 );
 	//	w.test( hw );
 
-	//	w.findOrder( hw, 3 );
-	//	w.findOrder( hw, 4 );
-		
-		w.findOrder2( hw );
+		w.findOrder( hw );
 
 	//	Macro mm  = new Macro();
 	//	mm.promo1( hw );
-		w.createContstans( hw );
+	//	w.createContstans( hw );
 	//	mm.resetuj( hw );
 	//	mm.testBpm( hw );
 	//	mm.promo_carret( hw );
@@ -118,7 +115,7 @@ public class Main{
 			e.printStackTrace();
 		}
 	}
-	void run(String command, Hardware closeSerial ) {
+	public void runCommand(String command, Hardware closeSerial ) {
         Process p;
         if(closeSerial != null ){
         	System.out.println("bclose");
