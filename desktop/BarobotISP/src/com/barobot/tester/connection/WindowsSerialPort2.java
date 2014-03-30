@@ -3,16 +3,16 @@ package com.barobot.tester.connection;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Queue;
-import java.util.TooManyListenersException;
 
-import javax.comm.CommPortIdentifier;
-import javax.comm.SerialPort;
-import javax.comm.SerialPortEvent;
-import javax.comm.SerialPortEventListener;
-import javax.comm.UnsupportedCommOperationException;
+
+import com.engidea.winjcom.CommPortIdentifier;
+import com.engidea.winjcom.SerialPort;
+import com.engidea.winjcom.SerialPortEvent;
+import com.engidea.winjcom.SerialPortEventListener;
+import com.engidea.winjcom.exception.UnsupportedCommOperationException;
 
 import com.barobot.common.Initiator;
 import com.barobot.common.IspSettings;
@@ -21,7 +21,7 @@ import com.barobot.common.interfaces.serial.SerialEventListener;
 import com.barobot.common.interfaces.serial.SerialInputListener;
 import com.barobot.common.interfaces.serial.Wire;
 
-public class WindowsSerialPort implements Wire, CanSend{
+public class WindowsSerialPort2 implements Wire, CanSend{
 	protected static final String APPNAME = "BarobotTester";
 	protected static final int timeout = 5000;
 	protected SerialPort serialPort=null;
@@ -32,12 +32,10 @@ public class WindowsSerialPort implements Wire, CanSend{
 	protected boolean connected	= false;
 	protected Queue<SerialInputListener> listener=new LinkedList<SerialInputListener>();
 	private SerialEventListener iel = null;
-	private boolean fast		= false;
 
-	public WindowsSerialPort(String comPort, int speed, boolean fast ) {
+	public WindowsSerialPort2(String comPort, int speed ) {
 		this.comPort 	= comPort;
 		this.baud		= speed;
-		this.fast		= fast;		// fats but cant close properly
 	}
 	public boolean init() {
 		return true;
@@ -65,36 +63,63 @@ public class WindowsSerialPort implements Wire, CanSend{
 			e.printStackTrace();
 			return false;
 		}
-		if(this.fast){
-			try {
-				SerialPortEventListener lis = new MySerialPortEventListener();
-				serialPort.addEventListener( lis );
-			} catch (TooManyListenersException e) {
-				e.printStackTrace();
-				return false;
-			}
-			serialPort.notifyOnDataAvailable(true);	
-		}else{
-			new Thread(new PortReader()).start();
-		}
-	//	System.out.println("Set speed " + IspSettings.fullspeed );
+
+		SerialPortEventListener lis = new SerialPortEventListener(){
+			public void serialEvent(SerialPortEvent arg0) {
+				if( arg0.getEventType() ==  SerialPortEvent.DATA_AVAILABLE ){
+					Thread t = new Thread(new Runnable() {
+						public void run() {
+							byte[] readBuffer = new byte[128];
+							try {
+							     while ( connected && inputStream.available() > 0){
+							         int bytesRead = inputStream.read(readBuffer);
+							          System.out.println("in" + new String(readBuffer,0,bytesRead ) );
+								        for (SerialInputListener il : listener){
+								        	if(il.isEnabled()){
+								        		il.onNewData( readBuffer, bytesRead );
+								        	}
+								        }
+							         if(!connected ){ 
+							          doError(); // bad hack - throw indirect exception
+							         }
+							     }
+							 } catch (IOException e) {
+							   e.printStackTrace(); 
+							 }
+						}
+					});
+					t.start();
+				}
+			}};
+
+		serialPort.addEventListener( new EventListener() );
+
+		System.out.println("Set speed " + IspSettings.fullspeed );
+		serialPort.notifyOnDataAvailable(true);
 		connected			= true;
+
+	    new Thread(new PortReader()).start();
+
     	if(iel!=null){
     		iel.onConnect();
     	}
 		return true;
 	}
 	protected boolean openPort( String name ) throws Exception {
-		Enumeration  portList = CommPortIdentifier.getPortIdentifiers();
-		System.out.println("openPort:" + name);	
-		while (portList.hasMoreElements()) {
-			CommPortIdentifier portId = (CommPortIdentifier) portList.nextElement();
-			//System.out.println("found port :" + portId.getName());		
-			if( portId.getPortType() == CommPortIdentifier.PORT_SERIAL && portId.getName().equals(name)){
-				serialPort =  (SerialPort) portId.open( WindowsSerialPort.APPNAME , WindowsSerialPort.timeout);
-			  return true;
-		  }
-		}
+		Iterator<CommPortIdentifier> iter = CommPortIdentifier.getPortIdentifiers();
+
+
+	    while ( iter.hasNext() ) {
+	    	CommPortIdentifier identifier = (CommPortIdentifier)iter.next();
+	    	System.out.println("Available port name="+identifier.getName()+" type="+identifier.getPortType());
+	    	if( identifier.getPortType() == CommPortIdentifier.PORT_SERIAL && identifier.getName().equals(name)){
+				serialPort = (SerialPort) identifier.open( WindowsSerialPort2.APPNAME , WindowsSerialPort2.timeout);
+				return true;
+	    	}  
+	      }	
+
+
+
 		return false;
 	}
 	protected byte doError() {
@@ -104,32 +129,21 @@ public class WindowsSerialPort implements Wire, CanSend{
 
 	public void close() {
 		if( serialPort != null && connected){
-			System.out.println("WindowsSerialPort, close");	
-			synchronized(listener){
-				this.listener.clear();
-			}
+			this.listener.clear();
 			System.out.println("serial close");
 			serialPort.notifyOnDataAvailable(false);
-			serialPort.disableReceiveFraming();
-			
+	//		serialPort.disableReceiveFraming();
 			serialPort.disableReceiveTimeout();
-			serialPort.disableReceiveThreshold();
+	//		serialPort.disableReceiveThreshold();
 			synchronized(serialPort){
 				serialPort.notify();
 				serialPort.notifyAll();
 			}
-
+			serialPort.notifyOnDataAvailable(false);
 			System.out.println("removeEventListener");
 			serialPort.removeEventListener();
 			synchronized(serialPort){
 				serialPort.notify();
-			}
-			try {
-				serialPort.enableReceiveTimeout(0);
-			} catch (UnsupportedCommOperationException e) {
-				e.printStackTrace();
-
-
 			}
 			serialPort.close();
 			serialPort = null;
@@ -162,7 +176,7 @@ public class WindowsSerialPort implements Wire, CanSend{
 		}
 	}
 	public boolean send(String command) throws IOException{
-	//	System.out.println("\t>>>Sending: " + command.trim());
+		System.out.println("\t>>>Sending1: " + command.trim());
 		try {
 			outputStream.write(command.getBytes());
 			return true;
@@ -172,7 +186,7 @@ public class WindowsSerialPort implements Wire, CanSend{
 		return false;
 	}
 	public boolean send(byte[] buf, int size) throws IOException {
-	//	System.out.println("\t>>>Sending: " + command);
+		System.out.println("\t>>>Sending2: " + new String(buf,0,size ));
 		try {
 			outputStream.write(buf, 0, size);
 			return true;
@@ -191,16 +205,12 @@ public class WindowsSerialPort implements Wire, CanSend{
 
 	//@Override
 	public void addOnReceive(SerialInputListener inputListener) {
-		synchronized(listener){
-			this.listener.add( inputListener );
-		}
+		this.listener.add( inputListener );
 		Initiator.logger.i("serial", "listeners: " +this.listener.size() );
 	}
 	//@Override
 	public void removeOnReceive(SerialInputListener inputListener) {
-		synchronized(listener){
-			this.listener.remove(inputListener);
-		}
+		this.listener.remove(inputListener);
 	}
 
 	public void resume() {
@@ -232,7 +242,6 @@ public class WindowsSerialPort implements Wire, CanSend{
 
 	public void destroy() {
 		close();
-		System.out.println("WindowsSerialPort, destroy");	
 	    listener.clear();
 	}
 
@@ -259,58 +268,54 @@ public class WindowsSerialPort implements Wire, CanSend{
 	public void reset() {
 		// TODO Auto-generated method stub
 	}
+
+	private final class EventListener implements SerialPortEventListener{
+		public void serialEvent(SerialPortEvent ev){
+			if( ev.getEventType() ==  SerialPortEvent.DATA_AVAILABLE ){
+				byte[] readBuffer = new byte[128];
+				try {
+				     while ( connected && inputStream.available() > 0){
+				         int bytesRead = inputStream.read(readBuffer);
+				         System.out.println("in" + new String(readBuffer,0,bytesRead ) );
+					        for (SerialInputListener il : listener){
+					        	if(il.isEnabled()){
+					        		il.onNewData( readBuffer, bytesRead );
+					        	}
+					        }
+				         if(!connected ){ 
+				          doError(); // bad hack - throw indirect exception
+				         }
+				     }
+				 } catch (IOException e) {
+				   e.printStackTrace(); 
+				 }
+			}
+	    }
+	}	
 	private final class PortReader implements Runnable{
 		public void run(){
 			try{
 				InputStream aStream = serialPort.getInputStream();
 				byte[] buff = new byte[100];
 				int length = 0;
-				while ( true ){
-					length = aStream.read(buff);
+				while ( true ){	
+				//	System.out.println("aaaaa start");	
+					length = aStream.read(buff, 0, 1 );
+				//	System.out.println("in" + new String(buff,0,length ) );
 					if(length > 0 ){
-						synchronized(listener){
-							for (SerialInputListener il : listener){
-								if(il.isEnabled()){
-									il.onNewData( buff, length );
-						        }
-							}
-						}
+						for (SerialInputListener il : listener){
+							if(il.isEnabled()){
+								il.onNewData( buff, length );
+					        }
+						}	
 					}else{
 						break;
 					}
 				}
-			}catch ( Exception exc ){
+			}
+			catch ( Exception exc ){
 				exc.printStackTrace();
 			}
 		}
 	}
-	public class MySerialPortEventListener implements SerialPortEventListener{
-		public void serialEvent(SerialPortEvent arg0) {
-			if( arg0.getEventType() ==  SerialPortEvent.DATA_AVAILABLE ){
-				Thread t = new Thread(new Runnable() {
-					public void run() {
-						byte[] readBuffer = new byte[128];
-						try {
-						     while ( connected && inputStream.available() > 0){
-						         int bytesRead = inputStream.read(readBuffer);
-						    //      System.out.println("in" + in );
-							         synchronized(listener){
-								        for (SerialInputListener il : listener){
-								        	if(il.isEnabled()){
-								        		il.onNewData( readBuffer, bytesRead );
-								        	}
-								        }
-							         }
-						         if(!connected ){ 
-						          doError(); // bad hack - throw indirect exception
-						         }
-						     }
-						 } catch (IOException e) {
-						   e.printStackTrace(); 
-						 }
-					}
-				});
-				t.start();
-			}
-		}}
 }

@@ -71,6 +71,18 @@ public class Serial_wire implements CanSend, Wire {
 		    }
 		};
 	}
+	@Override
+	public boolean open() {
+		Log.e("Serial_wire.resume", "Resumed, sDriver=" + sPort);
+        if (sPort == null) {
+        	Log.e("Serial_wire.resume","No serial device.");
+        	mHandler.sendEmptyMessage(MESSAGE_REFRESH);
+        } else if(!sPort.isOpen()){
+        	Log.e("Serial", "Resumed openPort");
+        	openPort();
+        }
+		return true;
+	}
 	public void setBaud( int baud ) {
 		this.baud = baud;
 		Log.e("Serial_wire", "setBaud " + baud );
@@ -90,18 +102,16 @@ public class Serial_wire implements CanSend, Wire {
 	}
 
 	public void setSearching(boolean active) {
+		if(active){
+			mHandler.sendEmptyMessage(MESSAGE_REFRESH);
+		}else{
+			mHandler.removeMessages(MESSAGE_REFRESH);
+		}
 	}
 
 	@Override
 	public void resume() {
-		Log.e("Serial_wire.resume", "Resumed, sDriver=" + sPort);
-        if (sPort == null) {
-        	Log.e("Serial_wire.resume","No serial device.");
-        	mHandler.sendEmptyMessage(MESSAGE_REFRESH);
-        } else if(!sPort.isOpen()){
-        	Log.e("Serial", "Resumed openPort");
-        	openPort();
-        }
+		this.open();
 	}
 	@Override
 	public boolean isConnected() {
@@ -123,6 +133,7 @@ public class Serial_wire implements CanSend, Wire {
 	public void close() {
 		mHandler.removeMessages(MESSAGE_REFRESH);
 		stopIoManager();
+		this.listener.clear();
 		if (sPort != null) {
 			if(sPort.isOpen()){
 				try {
@@ -362,7 +373,5 @@ public class Serial_wire implements CanSend, Wire {
 		mListener = null;
 		init();
 	}
+
 }
-
-
-

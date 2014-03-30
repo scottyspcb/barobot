@@ -9,7 +9,7 @@ public class BarobotTester extends I2C_Device_Imp {
 
 	public BarobotTester(){
 		this.cpuname	= "m328p";
-		this.myindex	= default_index;
+		this.row	= default_index;
 		this.speed		= 16000000L;
 		this.lfuse		= "0xFF";
 		this.hfuse		= "0xDE";
@@ -17,14 +17,14 @@ public class BarobotTester extends I2C_Device_Imp {
 		this.efuse		= "0x05";
 	}
 	public String getReset() {
-		return "RESET"+ this.myindex;
+		return "RESET"+ this.row;
 	}
 	public String getIsp() {
-		return "P"+ this.myindex;
+		return "P"+ this.row;
 	}
 	@Override
 	public void isp(Queue q) {
-		q.add( "P"+ getIndex(), "SISP" );		// and wait for device
+		q.add( "P"+ getRow(), "SISP" );		// and wait for device
 	}
 	public String getHexFile() {
 		return IspSettings.mbBootloaderPath;

@@ -6,7 +6,7 @@
 #include <barobot_common.h>
 #include <constants.h>
 #include <i2c_helpers.h>
-#include <AccelStepper.h>
+#include <AsyncDriver.h>
 #include <FlexiTimer2.h>
 #include <avr/io.h>
 #include <avr/wdt.h>
@@ -43,6 +43,7 @@ void disableWd(){
 	//    WDTCSR = 0;
 	//wdt_disable();
 }
+
 void setup(){
 	pinMode(PIN_PROGRAMMER_RESET_UPANEL_FRONT, INPUT);
 	pinMode(PIN_PROGRAMMER_RESET_UPANEL_BACK, INPUT);
@@ -64,6 +65,7 @@ void setup(){
 	DEBUGINIT();
 	DEBUGLN("-MSTART");
 	setupStepper();
+
 	pinMode(PIN_PROGRAMMER_LED_ACTIVE, OUTPUT);
 	pinMode(PIN_PROGRAMMER_LED_ERROR, OUTPUT);
 	pinMode(PIN_PROGRAMMER_LED_STATE, OUTPUT);
@@ -80,14 +82,13 @@ void setup(){
 }
 
 #if MAINBOARD_SERVO_4PIN==true
-	AccelStepper stepperX(AccelStepper::HALF4WIRE, PIN_MAINBOARD_STEPPER_STEP0, PIN_MAINBOARD_STEPPER_STEP1, PIN_MAINBOARD_STEPPER_STEP2, PIN_MAINBOARD_STEPPER_STEP3 );
+	AsyncDriver stepperX(AsyncDriver::HALF4WIRE, PIN_MAINBOARD_STEPPER_STEP0, PIN_MAINBOARD_STEPPER_STEP1, PIN_MAINBOARD_STEPPER_STEP2, PIN_MAINBOARD_STEPPER_STEP3 );
 #else
-	AccelStepper stepperX(AccelStepper::DRIVER, PIN_MAINBOARD_STEPPER_STEP, PIN_MAINBOARD_STEPPER_DIR);      // Step, DIR
+	AsyncDriver stepperX(PIN_MAINBOARD_STEPPER_STEP, PIN_MAINBOARD_STEPPER_DIR, PIN_MAINBOARD_STEPPER_ENABLE);      // Step, DIR, ENABLE
 #endif
 
 void setupStepper(){
 	stepperX.disable_on_ready = true;
-	stepperX.setDisablePin(PIN_MAINBOARD_STEPPER_ENABLE);
 	stepperX.disableOutputs();
 	stepperX.setAcceleration(MAINBOARD_ACCELERX);
 	stepperX.setMaxSpeed(MAINBOARD_SPEEDX);

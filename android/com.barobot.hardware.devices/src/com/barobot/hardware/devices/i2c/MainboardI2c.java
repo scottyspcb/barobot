@@ -9,7 +9,9 @@ public class MainboardI2c extends I2C_Device_Imp {
 	public MainboardI2c(int index, int address ){
 		this.cpuname		= "m328p";
 		this.myaddress		= address;
-		this.myindex		= index;
+		this.row			= index;
+		this.index			= index;
+		this.numInRow		= 0;
 		this.protocol		= "arduino";
 	//	this.bspeed			= 57600;		// arduino bootloader
 		this.bspeed			= 115200;		// optiboot can faster
@@ -18,13 +20,10 @@ public class MainboardI2c extends I2C_Device_Imp {
 		this(Constant.mdefault_index, Constant.mdefault_address);
 	}
 	public String setFuseBits(Queue q) {
-		return "";
-	}
-	public String getReset() {
-		return "RESET"+ this.myindex;
+		return "-setFuseBits";
 	}
 	public String getIsp() {
-		return "RESET"+ this.myindex;
+		return "RESET"+ this.row;
 	}
 	public String getHexFile() {
 		return IspSettings.mbHexPath;

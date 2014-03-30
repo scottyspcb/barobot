@@ -34,36 +34,49 @@ public class Main{
 		// System.getProperty("path.separator"); 
 	}
 
-	 private void start() {
+	private void start() {
 		loadProps();
 		//String[] comlist = list();
 		Wizard w	= new Wizard();
-		Hardware hw = new Hardware("COM7");
+		Hardware hw = new Hardware("COM39");
 
-		IspSettings.safeMode = false;
-		IspSettings.setFuseBits = false;
+		IspSettings.safeMode = true;
 		IspSettings.verbose = 2;
-		IspSettings.setHex	= true;
+		IspSettings.setFuseBits = true;
+		IspSettings.setHex	= false;
 		IspSettings.force = false;
 
-		w.fast_close_test( hw );
+
+		UploadCode uc = new UploadCode();
+		//uc.prepareUpanels( hw );
+		uc.prepareCarret( hw );
+		
+	//	w.fast_close_test( hw );
 	//	w.prepareSlaveMB( hw );
 	//	w.prepareMB( hw );
 	//	w.prepareMB2( hw );
 	//	w.prepareMBManualReset( hw );
 	//	w.fast_close_test( hw );
-	//	w.prepareCarret( hw );	
+	//
 	//	w.checkCarret( hw );
 	//	w.prepare1Upanel( hw, 4 );
+
 	//	w.prepareUpanel( hw, 3 );
 	//	w.prepareUpanel( hw, 4 );
 	//	w.test( hw );
 
-		w.findOrder( hw );
+	//	w.findOrder( hw );
 
 	//	Macro mm  = new Macro();
 	//	mm.promo1( hw );
 	//	w.createContstans( hw );
+		
+		
+	//	MetaRendering mr = new MetaRendering();
+	//	mr.createContstans();
+		
+		
+		
 	//	mm.resetuj( hw );
 	//	mm.testBpm( hw );
 	//	mm.promo_carret( hw );
@@ -115,11 +128,11 @@ public class Main{
 			e.printStackTrace();
 		}
 	}
-	public void runCommand(String command, Hardware closeSerial ) {
+	public void runCommand(String command, Hardware hw ) {
         Process p;
-        if(closeSerial != null ){
+        if(hw != null ){
         	System.out.println("bclose");
-        	closeSerial.close();
+        	hw.closeNow();
         	System.out.println("wait");
         	System.out.println("aclose");
         }
@@ -149,8 +162,8 @@ public class Main{
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
-		if(closeSerial != null ){
-			closeSerial.connect();
+		if(hw != null ){
+			hw.connectIfDisconnected();
 	    }
 	}
 	public static void wait(int ms) {

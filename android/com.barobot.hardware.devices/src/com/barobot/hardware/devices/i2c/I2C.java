@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import com.barobot.common.constant.Constant;
 import com.barobot.common.constant.LowHardware;
 import com.barobot.common.constant.Methods;
@@ -77,6 +78,10 @@ public class I2C{
 		q.add("I2C", true );
 		// skanuj magistralę. Gdy znaleziono wyslij informację o sprzęcie
 		AsyncMessage m =  new AsyncMessage( true ){
+			@Override
+			public String getName() {
+				return "findNodes";
+			}
 			@Override
 			public boolean isRet( String command, Queue queue ){
 				if (command == "EI2C"){	// jesli nie znaleziono zadnego

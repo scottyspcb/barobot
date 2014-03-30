@@ -3,15 +3,13 @@ package com.barobot.hardware.devices.i2c;
 import java.io.File;
 
 import com.barobot.common.IspSettings;
-import com.barobot.common.constant.Methods;
 import com.barobot.parser.Queue;
-import com.barobot.parser.message.AsyncMessage;
 import com.barobot.parser.utils.Decoder;
 
 public abstract class I2C_Device_Imp implements I2C_Device{
 	protected int myaddress = 0;
-	protected int myindex = 0;
-	protected int order = -1;
+	protected int row = 0;
+	protected int numInRow = -1;
 	protected String cpuname = "";
 	protected String protocol = "stk500v1";
 	protected int bspeed = IspSettings.programmspeed;
@@ -22,6 +20,7 @@ public abstract class I2C_Device_Imp implements I2C_Device{
 	protected String lock = "";
 	protected String efuse = "";
 	protected I2C_Device canBeResetedBy;
+	protected int index	= -1;
 
 	public I2C_Device_Imp() {
 	}
@@ -36,12 +35,12 @@ public abstract class I2C_Device_Imp implements I2C_Device{
 	public String checkExists(Queue q) {
 		if( myaddress > 0 ){
 			return "n"+ this.myaddress;
-		}else if( myindex > 0 ){
-			return "N"+ this.myindex;
+		}else if( row > 0 ){
+			return "N"+ this.row;
 		}
-		return "";
+		return "-checkExists";
 	}
-	
+
 	@Override
 	public void setAddress(int myaddress) {
 		this.myaddress = myaddress;
@@ -53,23 +52,29 @@ public abstract class I2C_Device_Imp implements I2C_Device{
 	}
 
 	@Override
-	public void setIndex(int myindex) {
-		this.myindex = myindex;
+	public void setRow(int myindex) {
+		this.row = myindex;
 	}
 
 	@Override
-	public int getIndex() {
-		return myindex;
+	public int getRow() {
+		return row;
+	}
+
+	public void setIndex(int index) {
+		this.index = index;
+		this.numInRow = 0;
+	}
+	
+	
+	@Override
+	public void setNumInRow(int order) {
+		this.numInRow = order;
 	}
 
 	@Override
-	public void setOrder(int order) {
-		this.order = order;
-	}
-
-	@Override
-	public int getOrder() {
-		return order;
+	public int getNumInRow() {
+		return numInRow;
 	}
 
 	@Override
@@ -117,6 +122,7 @@ public abstract class I2C_Device_Imp implements I2C_Device{
 		return command;
 	}
 
+	//public String uploadCode( Queue doAfter, String filePath, String comPort ) {
 	@Override
 	public String uploadCode( String filePath, String comPort ) {
 		String command = IspSettings.avrDudePath + " -C"+ IspSettings.configPath +" "+ I2C_Device_Imp.verbose( IspSettings.verbose )+ " " +
@@ -134,13 +140,29 @@ public abstract class I2C_Device_Imp implements I2C_Device{
 	}
 	@Override
 	public void reset(Queue q ) {
-		q.add( this.getReset(), false );
+		q.add( this.getReset(), true );
 	}
 	@Override
 	public void isp(Queue q) {
-		q.add( this.getIsp(), false );
+		q.add( this.getIsp(), "SISP" );
 	}
-
+	@Override
+	public String getIsp() {
+		if( index > 0 && index < 5 && numInRow == 0 ){
+			return "P"+ this.row;
+		}else if( canBeResetedBy != null ){
+			return "p"+ canBeResetedBy.getAddress();
+		}
+		return "-getIsp";
+	}
+	public String getReset() {
+		if( index > 0 ){
+			return "RESET"+ this.index;
+		}else if( canBeResetedBy != null ){
+			return "RESET_NEXT" + canBeResetedBy.getAddress();
+		}
+		return "-getReset";
+	}
 	public static String verbose( int verbose ) {
 		return Decoder.strRepeat(" -v", verbose);
 	}

@@ -47,9 +47,9 @@ public class Mainboard{
 					}else{
 					//	History_item hi = new History_item( command, History_item.INPUT );	
 						final String theCommand = command;
-					//	new Thread( new Runnable(){		// geto out of the serial port thread
-					//		@Override
-					//		public void run() {
+						new Thread( new Runnable(){		// geto out of the serial port thread
+							@Override
+							public void run() {
 								try {
 									useInput( theCommand );
 								} catch (java.lang.NullPointerException e) {
@@ -61,8 +61,8 @@ public class Mainboard{
 								} catch (Exception e) {
 									e.printStackTrace();
 								}
-					//		}
-					//	}).start();
+							}
+						}).start();
 					}
 					end		= buffer.indexOf(separator);
 				}
@@ -74,12 +74,12 @@ public class Mainboard{
 		String wait4Command = "";
 
 	//	if( state.getInt("show_reading", 0) > 0 ){
-			Initiator.logger.w("AsyncDevice.useInput", command );
+			Initiator.logger.w("Mainboard.useInput", command );
 	//	}
 
 		String command2 = this.modyfyInput( command );
 		if( !command2.equals(command)){
-	//		Initiator.logger.e("AsyncDevice.useInput changed to:", command2 );
+	//		Initiator.logger.e("Mainboard.useInput changed to:", command2 );
 			command = command2;
 		}
 		boolean used = false;
@@ -88,7 +88,7 @@ public class Mainboard{
 			if( this.wait_for != null ){
 				wait4Command = this.wait_for.command;
 				used = true;
-		//		Initiator.logger.i("AsyncDevice.useInput.isRet: ", command );
+		//		Initiator.logger.i("Mainboard.useInput.isRet: ", command );
 				handled = this.wait_for.isRet( command, mainQueue );
 				if(handled){
 			//		Initiator.logger.i("+unlock: ", command );
@@ -127,32 +127,32 @@ public class Mainboard{
 			return true;
 		}
 		//	Log.i("command", command);
-	//	Initiator.logger.i("AsyncDevice.useInput.nohandler", command);
+	//	Initiator.logger.i("Mainboard.useInput.nohandler", command);
 		return false;
 	}
 	public void setRetReader(RetReader retReader) {
 		this.retReader = retReader;
 	}
 	private boolean machGlobal(String command, String wait4Command) {
-	//	Initiator.logger.i("AsyncDevice.machGlobal", command + "/" + wait4Command);
+	//	Initiator.logger.i("Mainboard.machGlobal", command + "/" + wait4Command);
 	    for(Entry<String, GlobalMatch> e : globalRegex.entrySet()) {
 	        String regex		= e.getKey();	// String matchRet		= value.getMatchRet();
-	 //       Initiator.logger.i("AsyncDevice.machGlobal.matches", regex + "=" + command );
+	 //       Initiator.logger.i("Mainboard.machGlobal.matches", regex + "=" + command );
 	        if( command.matches(regex)){
-	      //  	Initiator.logger.i("AsyncDevice.machGlobal ok: ", regex + "=" + command );
+	      //  	Initiator.logger.i("Mainboard.machGlobal ok: ", regex + "=" + command );
 	        	GlobalMatch value	= e.getValue();
 	        	String matchCommand	= value.getMatchCommand();
-	       // 	Initiator.logger.i("AsyncDevice.machGlobal ok1: ", regex + "=" + command );
+	       // 	Initiator.logger.i("Mainboard.machGlobal ok1: ", regex + "=" + command );
 	        	if( matchCommand == null || wait4Command.matches(matchCommand)){
-	        //		Initiator.logger.i("AsyncDevice.machGlobal ok2", wait4Command );
+	        //		Initiator.logger.i("Mainboard.machGlobal ok2", wait4Command );
 					boolean stopnow	= value.run( this, command, wait4Command, wait_for );
 					if(stopnow){
 						return true;
 					}
 	        	}else{
-	       // 		Initiator.logger.i("AsyncDevice.machGlobal.matches no ok2", wait4Command );
+	       // 		Initiator.logger.i("Mainboard.machGlobal.matches no ok2", wait4Command );
 	        	}
-	       // 	Initiator.logger.i("AsyncDevice.machGlobal ok3 ", regex + "=" + command );
+	       // 	Initiator.logger.i("Mainboard.machGlobal ok3 ", regex + "=" + command );
 		    }
 	    }
 		return false;
@@ -185,19 +185,19 @@ public class Mainboard{
 	public boolean send(String command) {
 		try {
 			if( state.getInt("show_sending", 0) > 0 ){
-				Initiator.logger.e(">>>AsyncDevice.Send", command.trim());
+				Initiator.logger.e(">>>Mainboard.Send", command.trim());
 			}
 			if( this.sender.isConnected() ){
 		//		synchronized(outputStream){
 				try {
-					Initiator.logger.i("AsyncDevice.Send" , command.trim() );
+					Initiator.logger.i("Mainboard.Send" , command.trim() );
 					return this.sender.send(command);
 				} catch (IOException e) {
 				  e.printStackTrace();
 				}
 			//	}
 			}else{
-				Initiator.logger.i("AsyncDevice.Send", "no connect");
+				Initiator.logger.i("Mainboard.Send", "no connect");
 			//	throw new Exception("No connect");
 			}
 		} catch (Exception e) {
@@ -237,7 +237,7 @@ public class Mainboard{
 	public void unlockRet(String withCommand, boolean unlockQueue ){
 		synchronized (this) {
 			if(this.wait_for!=null){
-				Initiator.logger.i(">>>AsyncDevice.unlockRet", this.wait_for.toString() +" with: "+ withCommand.trim());
+		//		Initiator.logger.i(">>>Mainboard.unlockRet", this.wait_for.toString() +" with: "+ withCommand.trim());
 				this.wait_for.unlockWith(withCommand);
 				this.wait_for = null;
 				mainQueue.unlock();
@@ -247,7 +247,7 @@ public class Mainboard{
 	public void unlockRet(AsyncMessage asyncMessage, String withCommand) {
 		synchronized (this) {
 			if(this.wait_for == asyncMessage ){
-				Initiator.logger.i(">>>AsyncDevice.unlockRet", this.wait_for.toString() +" with: "+ withCommand.trim());
+			//	Initiator.logger.i(">>>Mainboard.unlockRet", this.wait_for.toString() +" with: "+ withCommand.trim());
 				this.wait_for.unlockWith(withCommand);
 				this.wait_for = null;
 				mainQueue.unlock();
@@ -255,7 +255,7 @@ public class Mainboard{
 		}
 	}
 	public boolean parse(String in) {
-		if( state.getInt("show_unknown", 0) > 0 ){
+	//	if( state.getInt("show_unknown", 0) > 0 ){
 			if( in.startsWith( "-") ){			// comment
 				Initiator.logger.i("Mainboard.parse.comment", in);
 				return true;
@@ -265,8 +265,9 @@ public class Mainboard{
 				}
 				Initiator.logger.i("Mainboard.parse", in);	
 				Initiator.logger.i("Mainboard.parse", Decoder.toHexStr(in.getBytes(), in.length()));
-			}	
-		}
+			//	mainQueue.show("Mainboard.parse");
+			}
+	//	}
 		return false;
 	}
 
@@ -282,5 +283,13 @@ public class Mainboard{
 	}
 	public void setMainQueue(Queue queue) {
 		this.mainQueue = queue;
+	}
+	public String showWaiting() {
+		synchronized (this) {
+			if(this.wait_for!=null){
+				return this.wait_for.toString();
+			}
+		}
+		return "";
 	}
 }

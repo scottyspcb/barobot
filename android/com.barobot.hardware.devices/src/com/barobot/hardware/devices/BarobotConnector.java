@@ -21,17 +21,15 @@ public class BarobotConnector {
 	
 	public static final int BOTTLE_IS_BACK = 2;
 	public static final int BOTTLE_IS_FRONT = 4;
-	
+
 	public static final int DRIVER_X_SPEED = 2500;
 	public static final int DRIVER_Y_SPEED = 30;
 	public static final int DRIVER_Z_SPEED = 250;
-//	public static int[] upanels = {13,20,23,14,16,17,19,21,18,22,15,12,};
 
-	//config
 	//	private static final int SERVOZ_PAC_TIME_UP = 600;
 	public static final int SERVOZ_PAC_POS = 1850;
 	public static final int SERVOZ_PAC_TIME_WAIT = 800;
-	public static final int SERVOZ_POUR_TIME = 3500;
+	public static final int SERVOZ_POUR_TIME = 3500 / 20;		// predkosc nalewania 20ml
 
 	// pozycje butelek, sa aktualizowane w trakcie
 	public static int[] margin_x = {
@@ -77,21 +75,20 @@ public class BarobotConnector {
 		SERVOY_BACK_POS,					// 10, num 11
 		SERVOY_FRONT_POS,					// 11, num 12
 	};
-	public static int[] b_pos_x = {207,207, 394,394,581,581,768,768, 955,955,1142,1142};
 	// pozycje butelek, sa aktualizowane w trakcie
-	public static int[] times = {
-		SERVOZ_POUR_TIME,		
-		SERVOZ_POUR_TIME, 
-		SERVOZ_POUR_TIME,
-		SERVOZ_POUR_TIME,
-		SERVOZ_POUR_TIME,
-		SERVOZ_POUR_TIME,
-		SERVOZ_POUR_TIME,
-		SERVOZ_POUR_TIME, 
-		SERVOZ_POUR_TIME,
-		SERVOZ_POUR_TIME,
-		SERVOZ_POUR_TIME*2,
-		SERVOZ_POUR_TIME
+	public static int[] capacity = {
+		20,		
+		20, 
+		20,
+		20,
+		20,
+		20,
+		20,
+		20, 
+		20,
+		20,
+		50,
+		20
 	};
 
 	public MotorDriver driver_x	= null;
@@ -103,8 +100,6 @@ public class BarobotConnector {
 	public I2C i2c				= null;
 
 	public BarobotConnector(HardwareState state ){
-		state.set("show_unknown", 1 );
-
 		mb			= new Mainboard( state );
 		driver_x	= new MotorDriver( state );
 		driver_y	= new Servo( state, "Y" );
@@ -137,12 +132,12 @@ public class BarobotConnector {
 	}
 
 	public void destroy() {
+		main_queue.destroy();
 		mb					= null;
 		driver_x			= null;
 		driver_y			= null;
 		driver_z			= null;
 		state				= null;
-		main_queue.destroy();
 		main_queue  		= null;
 		i2c					= null;
 	}
