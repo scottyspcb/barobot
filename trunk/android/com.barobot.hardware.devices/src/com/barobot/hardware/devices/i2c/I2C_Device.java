@@ -6,8 +6,9 @@ public interface I2C_Device {
 
 	public abstract String setFuseBits(String comPort);
 	public abstract String checkFuseBits(String comPort);
-	
-	public abstract String uploadCode(String filePath, String comPort);
+
+	//public abstract String uploadCode(Queue doAfter, String filePath, String comPort);
+	public abstract String uploadCode( String filePath, String comPort);
 
 	public abstract String erase( String filePath, String comPort);
 
@@ -21,13 +22,13 @@ public interface I2C_Device {
 
 	public abstract String getHexFile();
 
-	public abstract int getOrder();
+	public abstract int getNumInRow();
 
-	public abstract void setOrder(int order);
+	public abstract void setNumInRow(int order);
 
-	public abstract int getIndex();
+	public abstract int getRow();
 
-	public abstract void setIndex(int myindex);
+	public abstract void setRow(int myindex);
 
 	public abstract int getAddress();
 
@@ -38,5 +39,6 @@ public interface I2C_Device {
 	public void hasResetTo(int index, I2C_Device dev2 );
 
 	public abstract String checkExists(Queue q);
+	
 
 }

@@ -8,7 +8,7 @@ import com.barobot.parser.utils.Interval;
 public class Macro {
 	public void promo1(Hardware hw) {
 		Queue q = hw.getQueue();
-		hw.connect();
+		hw.connectIfDisconnected();
 		int i = 50;
 
 		for (I2C_Device u : hw.barobot.i2c.list){
@@ -34,7 +34,7 @@ public class Macro {
 
 	public void promo_carret(Hardware hw) {
 		Queue q = hw.getQueue();
-		hw.connect();
+		hw.connectIfDisconnected();
 		Carret cc = hw.barobot.i2c.carret;
 	
 		for (I2C_Device u : hw.barobot.i2c.list){

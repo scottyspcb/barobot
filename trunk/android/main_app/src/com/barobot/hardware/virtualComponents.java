@@ -30,16 +30,17 @@ public class virtualComponents {
 		barobot			= new BarobotConnector( state );	
 	}
 	public static int getPourTime( int num ){
-		if( num > 0 && num < BarobotConnector.times.length){
-			return BarobotConnector.times[num];
+		if( num > 0 && num < BarobotConnector.capacity.length){
+			int capacity	= BarobotConnector.capacity[ num ];
+			return capacity * BarobotConnector.SERVOZ_POUR_TIME;
 		}
 		return BarobotConnector.SERVOZ_POUR_TIME;
 	}
 	public static int getBottlePosX( int i ) {
-		return state.getInt("BOTTLE_X_" + i, BarobotConnector.b_pos_x[i]);
+		return state.getInt("BOTTLE_X_" + i, 0 );
 	}
 	public static int getBottlePosY( int i ) {
-		return state.getInt("BOTTLE_Y_" + i, BarobotConnector.b_pos_y[i]);
+		return state.getInt("BOTTLE_Y_" + i, 0 );
 	}
 	// zapisz ze tutaj jest butelka o danym numerze
 	public static void hereIsBottle(int i, int posx, int posy) {

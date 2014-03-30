@@ -15,6 +15,6 @@
     <external name="D:\PROG\arduino-1.0.5\libraries\Servo\Servo.h" />
     <external name="D:\PROG\arduino-1.0.5\libraries\FlexiTimer2\FlexiTimer2.h" />
     <external name="D:\PROG\arduino-1.0.5\libraries\FlexiTimer2\FlexiTimer2.cpp" />
-    <external name="D:\PROG\arduino-1.0.5\libraries\AccelStepper\AccelStepper.cpp" />
+    <external name="D:\PROG\arduino-1.0.5\libraries\AsyncDriver\AsyncDriver.cpp" />
   </externals>
 </mm_project>

@@ -61,22 +61,11 @@ public class BT_wire implements Wire {
 
 	@Override
 	public void setSearching(boolean active) {
-		// TODO Auto-generated method stub
 	}
 
 	@Override
 	public void resume() {
-        Log.d(TAG, "+ ON RESUME +");
-        // Performing this check in onResume() covers the case in which BT was
-        // not enabled during onStart(), so we were paused to enable it...
-        // onResume() will be called when ACTION_REQUEST_ENABLE activity returns.
-        if (mChatService != null) {
-            // Only if the state is STATE_NONE, do we know that we haven't started already
-            if (mChatService.getState() == BluetoothChatService.STATE_NONE) {
-              // Start the Bluetooth chat services
-              mChatService.start();
-            }
-         }
+        this.open();
 	}
 
 	@Override
@@ -89,6 +78,7 @@ public class BT_wire implements Wire {
 
 	@Override
 	public void close() {
+		this.listener = null;
         if (mChatService != null){ 
         	mChatService.stop();
         }
@@ -100,10 +90,22 @@ public class BT_wire implements Wire {
 			Log.d(TAG, "BT SEND:["+ command +"]");
 			String command2 = command;
         	byte[] send = command2.getBytes();
-        	mChatService.write(send);
+        	mChatService.write(send, send.length);
+        	return true;
 		}
 		return false;
 	}
+	@Override
+	public boolean send(byte[] buf, int size) throws IOException {
+		if(mChatService!=null && mChatService.getState() == BluetoothChatService.STATE_CONNECTED ) {
+		//	Log.d(TAG, "BT SEND:["+ command +"]");
+        	mChatService.write(buf, size);
+        	return true;
+		}
+		return false;
+	}
+	
+	
 	public boolean implementAutoConnect() {
 		return true;
 	}
@@ -205,14 +207,8 @@ public class BT_wire implements Wire {
 
 	@Override
 	public void removeOnReceive(SerialInputListener inputListener) {
-		// TODO Auto-generated method stub
 	}
 
-	@Override
-	public boolean send(byte[] buf, int size) throws IOException {
-		// TODO Auto-generated method stub
-		return false;
-	}
 	@Override
 	public SerialEventListener getSerialEventListener() {
 		return iel;
@@ -222,8 +218,21 @@ public class BT_wire implements Wire {
 		this.iel = iel;
 	}
 	@Override
-	public void reset() {
-		// TODO Auto-generated method stub
-		
+	public void reset() {		
+	}
+	@Override
+	public boolean open() {
+		Log.d(TAG, "+ ON RESUME +");
+        // Performing this check in onResume() covers the case in which BT was
+        // not enabled during onStart(), so we were paused to enable it...
+        // onResume() will be called when ACTION_REQUEST_ENABLE activity returns.
+        if (mChatService != null) {
+            // Only if the state is STATE_NONE, do we know that we haven't started already
+            if (mChatService.getState() == BluetoothChatService.STATE_NONE) {
+              // Start the Bluetooth chat services
+              mChatService.start();
+            }
+         }
+		return true;
 	}
 }

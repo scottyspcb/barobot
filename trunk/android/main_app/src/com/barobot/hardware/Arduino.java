@@ -253,9 +253,6 @@ public class Arduino{
 	}
 	public void destroy() {
 		Initiator.logger.i("Arduino.destroy", "--- ON DESTROY1 ---");
-		if(debugConnection!=null){
-			debugConnection.destroy();
-		}
 		Initiator.logger.i("Arduino.destroy", "--- ON DESTROY2 ---");
 		new Thread( new Runnable(){
 			@Override
@@ -272,6 +269,10 @@ public class Arduino{
 				Initiator.logger.i("Arduino.destroy", "--- ON DESTROY6 ---");
 			}}).start();
 		Initiator.logger.i("Arduino.destroy", "--- ON DESTROY7 ---");
+		if(debugConnection!=null){
+			debugConnection.destroy();
+		}
+		Initiator.logger.i("Arduino.destroy", "--- ON DESTROY8 ---");
 	}
 	public void resume() {
 		if(connection!=null){

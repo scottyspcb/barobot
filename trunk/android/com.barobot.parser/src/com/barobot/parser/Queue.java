@@ -47,12 +47,13 @@ public class Queue {
 	public void clear() {
 		Initiator.logger.i("Queue","clearAll");
 		synchronized (this.lock) {
-			mb.unlockRet("<clear>", true );
-			wait_for_device = false;
 			this.output.clear();
+			wait_for_device = false;
+			mb.unlockRet("<clear>", true );
 		}
 	}
 	public void destroy() {
+		output.clear();
 		wait_for_device =  false;
 		mb.destroy();
 		this.output		= null;
@@ -147,11 +148,11 @@ public class Queue {
 	                	this.wait_for_device	= true;
 	                	mb.waitFor( m );
 	            //    	endRun();
-	                	Initiator.logger.i("Queue.isBlocing true & return", m.toString() );
+	               // 	Initiator.logger.i("Queue.isBlocing true & return", m.toString() );
 	               // 	Initiator.logger.i("Queue.isBlocing", "" + wait_for_device_id );
 	                	return;
 	                }else{
-	                	Initiator.logger.i("Queue.no Blocing", m.toString() );
+	                //	Initiator.logger.i("Queue.no Blocing", m.toString() );
 	                //	Initiator.logger.i("Queue.no Blocing", "" + wait_for_device_id );
 	                }
 	
@@ -225,8 +226,11 @@ public class Queue {
 	public void addWait2(final int time) {
 		final AsyncMessage m2 = new AsyncMessage( true ) {
 			@Override
+			public String getName() {
+				return "addWait2: " + time;
+			}
+			@Override
 			public Queue run(Mainboard dev, Queue queue) {
-				this.name				= "wait " + time;
 				return null;
 			}
 			@Override
@@ -251,9 +255,12 @@ public class Queue {
 	public void addWait(final int time) {
 		final AsyncMessage m2 = new AsyncMessage( true, true ) {
 			@Override
+			public String getName() {
+				return "addWait" + time;
+			}
+			@Override
 			public Queue run(final Mainboard dev, Queue queue) {
 				Initiator.logger.w("Queue.addWait.run", "time: " +time);
-				this.name				= "wait " + time;
 				final AsyncMessage msg	= this;
 				/*
 				final Handler handler	= new Handler();
@@ -294,6 +301,10 @@ public class Queue {
 	public void show( String prefix ) {
 		String res = "Queue (" + prefix + "):\n";
 		synchronized (this.lock) {
+			if( this.wait_for_device){
+				String s = mb.showWaiting();
+				res += "\tWaiting for:"+  s + "\n";				
+			}
 			for (AsyncMessage msg : this.output){
 				res += "\t" + msg.toString() + "\n";
 			}	

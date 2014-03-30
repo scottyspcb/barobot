@@ -26,46 +26,52 @@ public class LedOrder {
 		this.mq = q;
 		this.barobot = barobot;	
 
+		LedOrder.this.findOrder( Upanel.BACK  );	
+		LedOrder.this.findOrder( Upanel.FRONT  );
+		LedOrder.this.mq.add( new AsyncMessage( true ){
+			@Override	
+			public String getName() {
+				return "onReady LedOrder" ;
+			}
+			@Override
+			public Queue run(Mainboard dev, Queue queue) {
+				onReadyListener.onReady(LedOrder.this);
+				return null;
+			}
+		});
+		LedOrder.this.mq.show("LedOrder");
+		/*
 		Thread t = new Thread( new Runnable(){
 			public synchronized void run() {
 				synchronized(LedOrder.this){
-					LedOrder.this.findOrder( Upanel.BACK  );	
-					LedOrder.this.findOrder( Upanel.FRONT  );
-					LedOrder.this.mq.add( new AsyncMessage( true ){
-						@Override	
-						public String getName() {
-							return "onReady LedOrder" ;
-						}
-						@Override
-						public Queue run(Mainboard dev, Queue queue) {
-							onReadyListener.onReady(LedOrder.this);
-							return null;
-						}
-					});
-					LedOrder.this.mq.show("LedOrder");
+
 				}
 			}
 		});
-		t.start();
+		t.start();*/
 	}
 	private void findOrder(final int row ) {
 		final Queue nq3 = new Queue();
 		nq3.add( new AsyncMessage( "RESET"+ row, true ){
 			@Override
+			public boolean onInput(String input, Mainboard dev, Queue mainQueue) {
+				if( input.equals("RESET"+row) ){
+					return true;		// its me, ignore message
+				}
+				return false;
+			}
+			@Override
 			public boolean isRet(String result, Queue q) {
 				if(result.startsWith(""+ Methods.METHOD_DEVICE_FOUND +",")){		//	112,18,19,1
 					int[] bytes = Decoder.decodeBytes(result);	// HELLO, ADDRESS, TYPE, VERSION
-
 					Upanel u = new Upanel();
 					u.setAddress( bytes[1] );
-					u.setIndex( row );	// first in row
-					u.setRow( row );
-					u.setInRow( num );
-
+					u.setRow( row );	// first in row
+					u.setIndex( row );
+					u.setNumInRow( num );
 					barobot.i2c.add(u);
-
 					System.out.println("UPANEL dla butelki "+ u.getBottleNum() 
-							+" o numerze: " + u.getInRow() 
+							+" o numerze: " + u.getNumInRow() 
 							+" w rzedzie: " + u.getRow()
 							+ " ma adres:" + u.getAddress() );
 					num++;
@@ -99,8 +105,15 @@ public class LedOrder {
 	}
 	public Queue resetNextTo( final Upanel u) {
 		final Queue nq = new Queue();
-		String command2 = "RESET_NEXT"+ u.getAddress();
+		final String command2 = "RESET_NEXT"+ u.getAddress();
 		nq.add( new AsyncMessage( command2, true ){
+			@Override
+			public boolean onInput(String input, Mainboard dev, Queue mainQueue) {
+				if( input.equals( "R" + command2) ){
+					return true;		// its me, ignore message
+				}
+				return false;
+			}
 			@Override
 			public boolean isRet(String result, Queue q) {
 				if(result.startsWith(""+ Methods.METHOD_DEVICE_FOUND +",")){		//	112,18,19,1
@@ -108,14 +121,14 @@ public class LedOrder {
 
 					Upanel u2 = new Upanel();
 					u2.setAddress( bytes[1] );
-					u2.setIndex( 0 );
+					u2.setRow( 0 );
 					u2.setRow( u.getRow() );
-					u2.setInRow( num );
-					u2.canResetMe(u);
+					u2.setNumInRow( num );
+					u2.isResetedBy(u);
 					barobot.i2c.list.add(u2);
 
 					System.out.println("UPANEL dla butelki "+ u2.getBottleNum() 
-							+" o numerze: " + u2.getInRow() 
+							+" o numerze: " + u2.getNumInRow() 
 							+" w rzedzie: " + u2.getRow()
 							+ " ma adres:" + u2.getAddress() );
 			
