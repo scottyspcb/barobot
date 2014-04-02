@@ -24,14 +24,14 @@ public class DebugTabBottles extends Fragment {
 	private Activity cc;
 
     public DebugTabBottles(Activity debugActivity, int tabCommandsId) {
-    //	Constant.log("DebugTabBottles", "init");
+    //	Initiator.logger.i("DebugTabBottles", "init");
     	this.tab_id = tabCommandsId;
     	this.cc=debugActivity;
 	}
 	@Override
     public void onActivityCreated(Bundle savedInstanceState) {
 		//Integer.toString(getArguments().getInt(DebugActivity.ARG_SECTION_NUMBER))
-    //	Constant.log("DebugTabBottles", "onActivityCreated");
+    //	Initiator.logger.i("DebugTabBottles", "onActivityCreated");
         super.onActivityCreated(savedInstanceState);
     }
 	public Point getScreenSize( ) {
@@ -44,7 +44,7 @@ public class DebugTabBottles extends Fragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
-		//Constant.log("DebugTabBottles", "onCreateView");
+		//Initiator.logger.i("DebugTabBottles", "onCreateView");
 		int lay = DebugActivity.layouts[tab_id];
 		//View rootView = inflater.inflate( R.layout.fragment_device_list_dummy, container, false);
 		View rootView = inflater.inflate( lay, container, false);

@@ -26,7 +26,7 @@ public class DebugTabLog extends Fragment {
     private ArrayAdapter<History_item> mConversation;
 
     public DebugTabLog(Activity debugActivity, int tabCommandsId) {
-   // 	Constant.log("DebugTabLog", "init");
+   // 	Initiator.logger.i("DebugTabLog", "init");
     	this.tab_id = tabCommandsId;
     	this.cc		= debugActivity;
     	mConversation = new ArrayAdapter<History_item>(cc, R.layout.message);
@@ -37,12 +37,12 @@ public class DebugTabLog extends Fragment {
 	@Override
     public void onActivityCreated(Bundle savedInstanceState) {
 		//Integer.toString(getArguments().getInt(DebugActivity.ARG_SECTION_NUMBER))
-    //	Constant.log("DebugTabLog", "onActivityCreated");
+    //	Initiator.logger.i("DebugTabLog", "onActivityCreated");
         super.onActivityCreated(savedInstanceState);
     }
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
-	//	Constant.log("DebugTabLog", "onCreateView");
+	//	Initiator.logger.i("DebugTabLog", "onCreateView");
 
 		int lay = DebugActivity.layouts[tab_id];
 		//View rootView = inflater.inflate( R.layout.fragment_device_list_dummy, container, false);
@@ -84,7 +84,7 @@ public class DebugTabLog extends Fragment {
 	}
 	protected void enableLogs(boolean isChecked) {
   	  	if(isChecked){
-  	//  		Constant.log("DebugTabLog", "enable");		  	  		
+  	//  		Initiator.logger.i("DebugTabLog", "enable");		  	  		
   	  	}
   	  	//Arduino.getInstance().log_active = isChecked;
 	}

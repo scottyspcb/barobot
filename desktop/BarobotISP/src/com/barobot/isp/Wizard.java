@@ -1,15 +1,6 @@
 package com.barobot.isp;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.PrintStream;
-
 import com.barobot.common.IspSettings;
-import com.barobot.common.constant.Methods;
-import com.barobot.hardware.devices.BarobotConnector;
 import com.barobot.hardware.devices.LedOrder;
 import com.barobot.hardware.devices.OnReadyListener;
 import com.barobot.hardware.devices.i2c.BarobotTester;
@@ -20,7 +11,6 @@ import com.barobot.hardware.devices.i2c.Upanel;
 import com.barobot.parser.Queue;
 import com.barobot.parser.message.AsyncMessage;
 import com.barobot.parser.message.Mainboard;
-import com.barobot.parser.utils.Decoder;
 
 public class Wizard {
 
@@ -228,13 +218,19 @@ public class Wizard {
 	
 	public void findOrder(final Hardware hw) {
 		hw.connectIfDisconnected();
-		Queue q = hw.getQueue();
-
+		Queue q		= hw.getQueue();
 		LedOrder lo = new LedOrder();
-		lo.addOnReady( new OnReadyListener<LedOrder>(){
-			public void onReady(LedOrder res) {
-				for (I2C_Device u2 : hw.barobot.i2c.list){
-					Upanel uu = (Upanel)u2;
+		lo.asyncStart(hw.barobot, q);
+		q.add( new AsyncMessage( true ){
+			@Override	
+			public String getName() {
+				return "onReady LedOrder" ;
+			}
+			@Override
+			public Queue run(Mainboard dev, Queue queue) {
+				Upanel[] up		= hw.barobot.i2c.getUpanels();
+				for(int i =up.length-1; i>=0;i--){
+					Upanel uu = up[i];
 					System.out.println("+Upanel "
 							+ "dla butelki: " + uu.getBottleNum() 
 							+ " w wierszu " + uu.getRow()
@@ -242,14 +238,12 @@ public class Wizard {
 							+ " o indeksie " + uu.getRow()
 							+ " ma adres " + uu.getAddress() );
 				}
-				System.out.println("Tkkkkkkkkkkkkkkkkkkk");
+				return null;
 			}
 		});
-		lo.asyncStart(hw.barobot, q);
-		
-		Main.wait(7000);
-		hw.closeNow();
-		
+
+		hw.closeOnReady();
+
 		/*
 		hw.send("I", "RI");
 		Operation  op	= new Operation( "runTo" );

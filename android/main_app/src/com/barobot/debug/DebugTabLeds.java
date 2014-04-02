@@ -14,8 +14,10 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.ToggleButton;
+
 import com.barobot.R;
 import com.barobot.activity.DebugActivity;
+import com.barobot.common.Initiator;
 import com.barobot.hardware.virtualComponents;
 
 public class DebugTabLeds extends Fragment {
@@ -25,19 +27,19 @@ public class DebugTabLeds extends Fragment {
 	private View rootView;
 
     public DebugTabLeds(Activity debugActivity, int tabCommandsId) {
-    //	Constant.log("DebugTabLeds", "init");
+    	Initiator.logger.i("DebugTabLeds", "init");
     	this.tab_id = tabCommandsId;
     	this.cc=debugActivity;
 	}
 	@Override
     public void onActivityCreated(Bundle savedInstanceState) {
 		//Integer.toString(getArguments().getInt(DebugActivity.ARG_SECTION_NUMBER))
-   // 	Constant.log("DebugTabLeds", "onActivityCreated");
+   // 	Initiator.logger.i("DebugTabLeds", "onActivityCreated");
         super.onActivityCreated(savedInstanceState);
     }
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
-	//	Constant.log("DebugTabLeds", "onCreateView");
+	//	Initiator.logger.i("DebugTabLeds", "onCreateView");
 
 		int lay = DebugActivity.layouts[tab_id];
 		//View rootView = inflater.inflate( R.layout.fragment_device_list_dummy, container, false);

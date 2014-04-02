@@ -66,7 +66,7 @@ public class MotorDriver {
 	//	Initiator.logger.w("MARGIN X2", "Margin: " + m1 + "  soft: " + pos3 + " => hard " + (pos3 -( -m1)));
 		return pos3 - (- m1);
 	}
-	public void moveTo( final Queue q, final int pos ) {
+	public void moveTo( Queue q, final int pos ) {
 		final int newx		= soft2hard(pos);
 		final int currentx	= getSPos();
 
@@ -83,7 +83,7 @@ public class MotorDriver {
 			public Queue run(Mainboard dev, Queue queue){
 				this.name		= "Check Hall X";
 				Initiator.logger.w("MotorDriver.movoTo.AsyncMessage.run", "want to s:" + pos + " / hpos" + newx );
-				q.sendNow("A0");
+				queue.sendNow("A0");
 				return null;
 			}
 			@Override

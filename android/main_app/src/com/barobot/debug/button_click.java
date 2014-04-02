@@ -7,8 +7,6 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Toast;
-
-import com.barobot.AppInvoker;
 import com.barobot.R;
 import com.barobot.common.Initiator;
 import com.barobot.common.constant.Constant;
@@ -47,10 +45,7 @@ public class button_click implements OnClickListener{
 		case R.id.set_x_1000:
 	//		Log.i("nextpos-10000", "old: "+posx + " next: "+ ( posx -10000));
 			virtualComponents.moveZDown( q ,true );
-
 			barobot.driver_x.moveTo( q, ( posx -10000));
-			
-			
 			mq.add(q);
 			break;
 		case R.id.set_x_100:
@@ -328,7 +323,6 @@ public class button_click implements OnClickListener{
 				virtualComponents.scann_leds();
 			}
 			virtualComponents.setLeds( "44", 200 );
-			
 			break;
 		case R.id.led_red_on:
 			if(!virtualComponents.ledsReady){
@@ -338,10 +332,7 @@ public class button_click implements OnClickListener{
 			break;
 		case R.id.reset_margin:
 			barobot.driver_x.setM(0);
-			
-			virtualComponents.state.set("MARGINX", 0);
-			
-			
+			virtualComponents.state.set("MARGINX", 0);	
 			int spos = barobot.driver_x.hard2soft( 0 );
 			barobot.driver_x.setSPos( spos );
 			break;	

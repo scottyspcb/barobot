@@ -284,11 +284,11 @@ public class Arduino{
 	}
 	public boolean allowAutoconnect() {
 		if( debugConnection == null ){
-			//	Constant.log(Constant.TAG, "nie autoconnect bo juz połączony");
+			//	Initiator.logger.i(Constant.TAG, "nie autoconnect bo juz połączony");
 				return false;
 		}
 		if( debugConnection.isConnected() ){
-		//	Constant.log(Constant.TAG, "nie autoconnect bo juz połączony");
+		//	Initiator.logger.i(Constant.TAG, "nie autoconnect bo juz połączony");
 			return false;
 		}
 		if( !debugConnection.implementAutoConnect() ){
@@ -430,7 +430,7 @@ builder.show();
 		        if( ar.allowAutoconnect()){
 		        	count++;
 		        	if(count > 2){		// po 10 sek
-		//        		Constant.log("RUNNABLE", "3 try autoconnect" );
+		//        		Initiator.logger.i("RUNNABLE", "3 try autoconnect" );
 		        		connection.setAutoConnect( true ); 
 		        	}
 			    }else{

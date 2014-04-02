@@ -240,7 +240,7 @@ public class DebugActivity extends FragmentActivity implements	ActionBar.TabList
 				if (text_field != null) {
 					text_field.setText(result);
 				}else{
-				//	Constant.log("nie ma setText",result + " / " +target) ;
+				//	Initiator.logger.i("nie ma setText",result + " / " +target) ;
 				}
 			}else{
 				if (text_field != null) {

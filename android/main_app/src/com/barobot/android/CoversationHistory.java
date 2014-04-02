@@ -83,10 +83,10 @@ public boolean addRetToList( final String last, final String ret ) {
 		int count = dd.mConversationArrayAdapter.getCount();
 		for(int i =count-1; i>=0;i--){
 			History_item hi = dd.mConversationArrayAdapter.getItem(i);
-		//	Constant.log("+addRetToList", last + "/" + ret + "/" + i +"/"+ hi.getCommand() );
+		//	Initiator.logger.i("+addRetToList", last + "/" + ret + "/" + i +"/"+ hi.getCommand() );
 			if( hi.direction && hi.getCommand().equals(last)){
 				hi.setRet(ret);
-	//			Constant.log("+addRetToList","ustawiam " + i + " na " + hi.toString() );
+	//			Initiator.logger.i("+addRetToList","ustawiam " + i + " na " + hi.toString() );
 				dd.runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
