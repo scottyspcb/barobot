@@ -34,27 +34,29 @@ public class I2C{
 	public I2C_Device getByAddress( int address ){
 		return byaddress.get(address);
 	}
-
 	public Upanel getUpanelByBottle( int num ) {
 		return bybottle.get(num);
 	}
 	public void add(Upanel u) {
 		this.list.add(u);
-		byaddress.put( u.getAddress(), u );		// index by ADDRESS
-		bybottle.put( u.getBottleNum(), u );	// index by BUTTLE NUM
+		reloadIndex();
 	}
-
+	public void reloadIndex() {
+		byaddress.clear();
+		bybottle.clear();
+		for (I2C_Device u2 : list){
+			if(  u2 instanceof Upanel ){
+				Upanel uu = (Upanel)u2;
+				byaddress.put( uu.getAddress(), uu );	// index by ADDRESS
+				bybottle.put( uu.getBottleNum(), uu );	// index by BUTTLE NUM
+			}
+		}
+	}
 	public Upanel[] getUpanels() {
-		Upanel[] a = null;
+		Upanel[] a = {};
 		return bybottle.values().toArray(a);
 	}
 
-	
-	
-	
-	
-	
-	
 	private static String createCommand( int address, int why_code, byte[] params ){
 		String res = ""+Methods.METHOD_SEND2SLAVE + (char)address + (char)why_code;
 		if(params!=null){

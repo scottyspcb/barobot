@@ -65,7 +65,7 @@ public class Main{
 	//	w.prepareUpanel( hw, 4 );
 	//	w.test( hw );
 
-	//	w.findOrder( hw );
+		w.findOrder( hw );
 
 	//	Macro mm  = new Macro();
 	//	mm.promo1( hw );

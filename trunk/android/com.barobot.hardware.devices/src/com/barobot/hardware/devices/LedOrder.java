@@ -9,7 +9,6 @@ import com.barobot.parser.utils.Decoder;
 
 public class LedOrder {
 	private Queue mq;
-	private OnReadyListener<LedOrder> onReadyListener;
 	private int num = 0;
 	private BarobotConnector barobot;
 
@@ -23,32 +22,11 @@ public class LedOrder {
 	// address	- adres i2c
 
 	public void asyncStart(BarobotConnector barobot, Queue q) {
-		this.mq = q;
+		this.mq		= q;
 		this.barobot = barobot;	
-
 		LedOrder.this.findOrder( Upanel.BACK  );	
 		LedOrder.this.findOrder( Upanel.FRONT  );
-		LedOrder.this.mq.add( new AsyncMessage( true ){
-			@Override	
-			public String getName() {
-				return "onReady LedOrder" ;
-			}
-			@Override
-			public Queue run(Mainboard dev, Queue queue) {
-				onReadyListener.onReady(LedOrder.this);
-				return null;
-			}
-		});
-		LedOrder.this.mq.show("LedOrder");
-		/*
-		Thread t = new Thread( new Runnable(){
-			public synchronized void run() {
-				synchronized(LedOrder.this){
-
-				}
-			}
-		});
-		t.start();*/
+		//LedOrder.this.mq.show("LedOrder");
 	}
 	private void findOrder(final int row ) {
 		final Queue nq3 = new Queue();
@@ -91,10 +69,12 @@ public class LedOrder {
 					int[] bytes = Decoder.decodeBytes(result);
 					if(bytes[2] == Methods.METHOD_CHECK_NEXT  ){
 						if(bytes[3] == 1 ){							// has next
-							System.out.println("has next ROW "+row+"- OK");
+							System.out.println("Has next on row "+row+": TRUE");
 							q.show("run");
 							num		= 0;
 							q.addFirst(nq3);
+						}else{
+							System.out.println("Has next on row "+row+": FALSE");
 						}
 						return true;
 					}
@@ -159,9 +139,6 @@ public class LedOrder {
 			}
 		});
 		return nq2;
-	}
-	public void addOnReady(OnReadyListener<LedOrder> onReadyListener) {
-		this.onReadyListener = onReadyListener;
 	}
 }
 

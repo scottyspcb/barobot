@@ -46,16 +46,20 @@ public class Queue {
 
 	public void clear() {
 		Initiator.logger.i("Queue","clearAll");
-		synchronized (this.lock) {
-			this.output.clear();
-			wait_for_device = false;
-			mb.unlockRet("<clear>", true );
+		if(isMainQueue){
+			synchronized (this.lock) {
+				this.output.clear();
+				wait_for_device = false;
+				mb.unlockRet("<clear>", true );
+			}
 		}
 	}
 	public void destroy() {
 		output.clear();
-		wait_for_device =  false;
-		mb.destroy();
+		if(isMainQueue){
+			wait_for_device =  false;
+			mb.destroy();
+		}
 		this.output		= null;
 	}
 
@@ -182,15 +186,17 @@ public class Queue {
 		}
     }
 	public void unlock() {
-		synchronized (this.lock) {
-			if(this.wait_for_device ){
-			//	Initiator.logger.i("Queue", "unlock id:" + this.wait_for_device_id );
-				mb.unlockRet("force unlock", false);
-				this.wait_for_device =  false;
+		if(isMainQueue){
+			synchronized (this.lock) {
+				if(this.wait_for_device ){
+				//	Initiator.logger.i("Queue", "unlock id:" + this.wait_for_device_id );
+					mb.unlockRet("force unlock", false);
+					this.wait_for_device =  false;
+				}
 			}
+			exec();
 		}
 	//	Initiator.logger.i("Queue", "unlock()");
-		exec();
 	}
 	public void addWaitThread(final Object thread) {
 	//	Initiator.logger.i("Queue", "add thread wait");
@@ -301,9 +307,11 @@ public class Queue {
 	public void show( String prefix ) {
 		String res = "Queue (" + prefix + "):\n";
 		synchronized (this.lock) {
-			if( this.wait_for_device){
-				String s = mb.showWaiting();
-				res += "\tWaiting for:"+  s + "\n";				
+			if(isMainQueue){
+				if( this.wait_for_device){
+					String s = mb.showWaiting();
+					res += "\tWaiting for:"+  s + "\n";				
+				}
 			}
 			for (AsyncMessage msg : this.output){
 				res += "\t" + msg.toString() + "\n";

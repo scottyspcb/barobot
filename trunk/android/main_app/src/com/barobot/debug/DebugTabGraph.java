@@ -58,13 +58,13 @@ public class DebugTabGraph extends Fragment {
 	private boolean firstTime = true;
 
     public DebugTabGraph(Activity debugActivity, int tabCommandsId) {
-    //	Constant.log("DebugTabGraph", "init");
+    //	Initiator.logger.i("DebugTabGraph", "init");
     	this.tab_id = tabCommandsId;
     	this.cc=debugActivity;
 	}
 	@Override
     public void onActivityCreated(Bundle savedInstanceState) {
-  //  	Constant.log("DebugTabGraph", "onActivityCreated");
+  //  	Initiator.logger.i("DebugTabGraph", "onActivityCreated");
         super.onActivityCreated(savedInstanceState);
         if(savedInstanceState!=null && !savedInstanceState.isEmpty()){
         	 webview.restoreState(savedInstanceState);
@@ -73,12 +73,12 @@ public class DebugTabGraph extends Fragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
-	//	Constant.log("DebugTabGraph", "onCreateView");
+	//	Initiator.logger.i("DebugTabGraph", "onCreateView");
 		//View rootView = inflater.inflate( R.layout.fragment_device_list_dummy, container, false);
 		View rootView	= inflater.inflate(  DebugActivity.layouts[tab_id], container, false);
 		this.rootView	= rootView;
 		if(firstTime){
-		//	Constant.log("DebugTabGraph", "firstTime");
+		//	Initiator.logger.i("DebugTabGraph", "firstTime");
 			ToggleButton xb1 = (ToggleButton) rootView.findViewById(R.id.graph_lines);
 			xb1.setChecked(true);
 			ToggleButton xb2 = (ToggleButton) rootView.findViewById(R.id.graph_scale);
@@ -104,7 +104,7 @@ public class DebugTabGraph extends Fragment {
 		for(int i =0; i<buttons.length;i++){
 			View w = rootView.findViewById(buttons[i]);
 			if( w == null){
-	//			Constant.log(Constant.TAG,"pomijam: "+ buttons[i] );
+	//			Initiator.logger.i(Constant.TAG,"pomijam: "+ buttons[i] );
 				continue;
 			}
 			String classname = w.getClass().getName();
@@ -127,7 +127,7 @@ public class DebugTabGraph extends Fragment {
 	}
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
-//		Constant.log("DebugTabGraph", "onConfigurationChanged");
+//		Initiator.logger.i("DebugTabGraph", "onConfigurationChanged");
 		super.onConfigurationChanged(newConfig);
 		if (webview != null)	{
 		  // Remove the WebView from the old placeholder
@@ -138,22 +138,22 @@ public class DebugTabGraph extends Fragment {
 	}
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
-	//	Constant.log("DebugTabGraph", "onContextItemSelected");
+	//	Initiator.logger.i("DebugTabGraph", "onContextItemSelected");
 		return super.onContextItemSelected(item);
 	}
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-	//	Constant.log("DebugTabGraph", "onCreate");
+	//	Initiator.logger.i("DebugTabGraph", "onCreate");
 		super.onCreate(savedInstanceState);
 	}
 	@Override
 	public void onDestroyOptionsMenu() {
-//		Constant.log("DebugTabGraph", "onDestroyOptionsMenu");
+//		Initiator.logger.i("DebugTabGraph", "onDestroyOptionsMenu");
 		super.onDestroyOptionsMenu();
 	}
 	@Override
 	public void onDestroyView() {
-	//	Constant.log("DebugTabGraph", "onDestroyView");
+	//	Initiator.logger.i("DebugTabGraph", "onDestroyView");
 		if (webview != null){
 			webViewPlaceholder.removeView(webview);	  // Remove the WebView from the old placeholder
 		}
@@ -161,76 +161,76 @@ public class DebugTabGraph extends Fragment {
 	}
 	@Override
 	public void onDetach() {
-	//	Constant.log("DebugTabGraph", "onDetach");
+	//	Initiator.logger.i("DebugTabGraph", "onDetach");
 		super.onDetach();
 	}
 	@Override
 	public void onHiddenChanged(boolean hidden) {
 		super.onHiddenChanged(hidden);
-	//	Constant.log("DebugTabGraph", "onHiddenChanged");
+	//	Initiator.logger.i("DebugTabGraph", "onHiddenChanged");
 	}
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-	//	Constant.log("DebugTabGraph", "onOptionsItemSelected");
+	//	Initiator.logger.i("DebugTabGraph", "onOptionsItemSelected");
 		return super.onOptionsItemSelected(item);
 	}
 	@Override
 	public void onOptionsMenuClosed(Menu menu) {
-	//	Constant.log("DebugTabGraph", "onOptionsMenuClosed");
+	//	Initiator.logger.i("DebugTabGraph", "onOptionsMenuClosed");
 		super.onOptionsMenuClosed(menu);
 	}
 	@Override
 	public void onPause() {
-	//	Constant.log("DebugTabGraph", "onPause");
+	//	Initiator.logger.i("DebugTabGraph", "onPause");
 		super.onPause();
 	}
 	@Override
 	public void onPrepareOptionsMenu(Menu menu) {
-	//	Constant.log("DebugTabGraph", "onPrepareOptionsMenu");
+	//	Initiator.logger.i("DebugTabGraph", "onPrepareOptionsMenu");
 		super.onPrepareOptionsMenu(menu);
 	}
 	@Override
 	public void onResume() {
-	//	Constant.log("DebugTabGraph", "onResume");
+	//	Initiator.logger.i("DebugTabGraph", "onResume");
 		super.onResume();
 	}
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
-	//	Constant.log("DebugTabGraph", "onSaveInstanceState");
+	//	Initiator.logger.i("DebugTabGraph", "onSaveInstanceState");
 		if(webview!=null && outState!= null){
 			webview.saveState(outState);
 		}
 	}
 	@Override
 	public void onStart() {
-	//	Constant.log("DebugTabGraph", "onStart");
+	//	Initiator.logger.i("DebugTabGraph", "onStart");
 		super.onStart();
 	}
 	@Override
 	public void onStop() {
-	//	Constant.log("DebugTabGraph", "onStop");
+	//	Initiator.logger.i("DebugTabGraph", "onStop");
 		super.onStop();
 	}
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
-	//	Constant.log("DebugTabGraph", "onViewCreated");
+	//	Initiator.logger.i("DebugTabGraph", "onViewCreated");
 		super.onViewCreated(view, savedInstanceState);
 	}
 	@Override
 	public void onViewStateRestored(Bundle savedInstanceState) {
-	//	Constant.log("DebugTabGraph", "onViewStateRestored");
+	//	Initiator.logger.i("DebugTabGraph", "onViewStateRestored");
 		super.onViewStateRestored(savedInstanceState);
 	}
 
 	@Override
 	public void setMenuVisibility(boolean menuVisible) {
-	//	Constant.log("DebugTabGraph", "setMenuVisibility");
+	//	Initiator.logger.i("DebugTabGraph", "setMenuVisibility");
 		super.setMenuVisibility(menuVisible);
 	}
 	@Override
 	public void startActivity(Intent intent) {
-	//	Constant.log("DebugTabGraph", "startActivity");
+	//	Initiator.logger.i("DebugTabGraph", "startActivity");
 		super.startActivity(intent);
 	}
 
@@ -313,7 +313,7 @@ public class DebugTabGraph extends Fragment {
 	    if(activated){
 		    this.webViewPlaceholder = (FrameLayout) this.rootView.findViewById(R.id.webViewPlaceholder2);
 		    if(this.webViewPlaceholder == null){
-		  //  	Constant.log(Constant.TAG,"webViewPlaceholder null" );
+		  //  	Initiator.logger.i(Constant.TAG,"webViewPlaceholder null" );
 		    }else{
 		    	int cc = this.webViewPlaceholder.getChildCount();
 		    	if(cc == 0){
@@ -328,7 +328,7 @@ public class DebugTabGraph extends Fragment {
 	// gdy zamkne panel serwisowy
     public void onDestroy() {
     	uiEnabled =false;
-  //  	Constant.log("DebugTabGraph", "onDestroy");
+  //  	Initiator.logger.i("DebugTabGraph", "onDestroy");
     	super.onDestroy();
     }
 

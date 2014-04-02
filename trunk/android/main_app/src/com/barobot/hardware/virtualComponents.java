@@ -3,14 +3,13 @@ package com.barobot.hardware;
 import com.barobot.android.AndroidBarobotState;
 import com.barobot.common.Initiator;
 import com.barobot.common.constant.Constant;
-import com.barobot.common.constant.Methods;
 import com.barobot.common.interfaces.HardwareState;
 import com.barobot.hardware.devices.BarobotConnector;
+import com.barobot.hardware.devices.LedOrder;
 import com.barobot.hardware.devices.i2c.Upanel;
 import com.barobot.parser.Queue;
 import com.barobot.parser.message.AsyncMessage;
 import com.barobot.parser.message.Mainboard;
-import com.barobot.parser.utils.Decoder;
 import android.app.Activity;
 import android.graphics.Color;
 
@@ -18,7 +17,6 @@ public class virtualComponents {
 	public static boolean need_glass_up = false;
 	public static boolean pac_enabled = true;
 	public static final int SERVOY_REPEAT_TIME = 2000;
-
 	public static boolean scann_bottles = false;
 	public static boolean set_bottle_on = false;
 	public static boolean ledsReady = false;
@@ -28,7 +26,11 @@ public class virtualComponents {
 	public static void init( Activity app ){
 		state			= new AndroidBarobotState(app);	
 		barobot			= new BarobotConnector( state );	
+		state.set("show_unknown", 1 );
+		state.set("show_sending", 1 );
+		state.set("show_reading", 1 );
 	}
+
 	public static int getPourTime( int num ){
 		if( num > 0 && num < BarobotConnector.capacity.length){
 			int capacity	= BarobotConnector.capacity[ num ];
@@ -36,15 +38,18 @@ public class virtualComponents {
 		}
 		return BarobotConnector.SERVOZ_POUR_TIME;
 	}
+
 	public static int getBottlePosX( int i ) {
 		return state.getInt("BOTTLE_X_" + i, 0 );
 	}
+
 	public static int getBottlePosY( int i ) {
 		return state.getInt("BOTTLE_Y_" + i, 0 );
 	}
+
 	// zapisz ze tutaj jest butelka o danym numerze
 	public static void hereIsBottle(int i, int posx, int posy) {
-		//Constant.log(Constant.TAG,"zapisuje pozycje:"+ i + " " +posx+ " " + posy );
+		//Initiator.logger.i(Constant.TAG,"zapisuje pozycje:"+ i + " " +posx+ " " + posy );
 		state.set("BOTTLE_X_" + i, posx );
 		state.set("BOTTLE_Y_" + i, posy );
 	}
@@ -52,7 +57,7 @@ public class virtualComponents {
 	public static void hereIsBottle(int i) {
 		int posx		=  barobot.driver_x.getSPos();
 		int posy		=  state.getInt("POSY", 0 );
-	//	Constant.log(Constant.TAG,"zapisuje pozycje:"+ i + " " +posx+ " " + posy );
+	//	Initiator.logger.i(Constant.TAG,"zapisuje pozycje:"+ i + " " +posx+ " " + posy );
 		state.set("BOTTLE_X_" + i, posx );
 		state.set("BOTTLE_Y_" + i, posy );
 	}
@@ -216,7 +221,7 @@ public class virtualComponents {
 		q.add("Y" + pos+ ","+BarobotConnector.DRIVER_Y_SPEED, true);	
 	}
 	public static void hereIsStart( int posx, int posy) {
-		//Constant.log(Constant.TAG,"zapisuje start:" +posx+ " " + posy );
+		//Initiator.logger.i(Constant.TAG,"zapisuje start:" +posx+ " " + posy );
 		state.set("POS_START_X", posx );
 		state.set("POS_START_Y", posy );
 	}
@@ -408,17 +413,39 @@ public class virtualComponents {
 	}
 	public static void scann_leds(){
 		Queue q			= getMainQ();
-		Queue q1		= new Queue();
-		Queue q2		= new Queue();	
-		Upanel[] up		= barobot.i2c.getUpanels();
-		for(int i =0; i<up.length;i++){
-			q1.add("L"+ up[i] +",ff,200", true );
-			q2.add("L"+ up[i] +",ff,0", true );
-		}
-		q.add(q1);
-		q.addWait(1000);
-		q.add(q2);
-		ledsReady = true;	
+		LedOrder lo = new LedOrder();
+		lo.asyncStart(barobot, q);
+		q.add( new AsyncMessage( true ){
+			@Override	
+			public String getName() {
+				return "onReady LedOrder" ;
+			}
+			@Override
+			public Queue run(Mainboard dev, Queue queue) {
+				Upanel[] up		= barobot.i2c.getUpanels();
+				for(int i =up.length-1; i>=0;i--){
+					Upanel uu = up[i];
+					System.out.println("+Upanel "
+							+ "dla butelki: " + uu.getBottleNum() 
+							+ " w wierszu " + uu.getRow()
+							+ " pod numerem " + uu.getNumInRow()
+							+ " o indeksie " + uu.getRow()
+							+ " ma adres " + uu.getAddress() );
+				}
+				ledsReady	= true;
+				Queue q1	= new Queue();
+				Queue q2	= new Queue();
+				Queue q3	= new Queue();
+				for(int i =0; i<up.length;i++){
+					up[i].setLed(q1, "ff", 200);
+					up[i].setLed(q2, "ff", 0);
+				}
+				q3.add(q1);
+				q3.addWait(500);
+				q3.add(q2);
+				return q3;
+			}
+		});
 	}
 	public static Queue getMainQ() {
 		return virtualComponents.barobot.main_queue;

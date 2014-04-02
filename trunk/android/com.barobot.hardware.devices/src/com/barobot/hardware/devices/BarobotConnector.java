@@ -100,13 +100,14 @@ public class BarobotConnector {
 	public I2C i2c				= null;
 
 	public BarobotConnector(HardwareState state ){
-		mb			= new Mainboard( state );
-		driver_x	= new MotorDriver( state );
-		driver_y	= new Servo( state, "Y" );
-		driver_z	= new Servo( state, "Z" );
-		main_queue  = new Queue( mb );
-		i2c  		= new I2C();
-		driver_x.defaultSpeed = BarobotConnector.DRIVER_X_SPEED;
+		this.state	= state;
+		this.mb			= new Mainboard( state );
+		this.driver_x	= new MotorDriver( state );
+		this.driver_y	= new Servo( state, "Y" );
+		this.driver_z	= new Servo( state, "Z" );
+		this.main_queue = new Queue( mb );
+		this.i2c  		= new I2C();
+		this.driver_x.defaultSpeed = BarobotConnector.DRIVER_X_SPEED;
 	}
 
 	public SerialInputListener willReadFrom(Wire connection) {

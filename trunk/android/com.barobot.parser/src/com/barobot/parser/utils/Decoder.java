@@ -18,7 +18,7 @@ public class Decoder {
 		} catch (NumberFormatException e) {
 			return 0;
 		}
-	//	Constant.log(Constant.TAG,"toInt:"+ input + "/ "+ res );
+	//	Initiator.logger.i(Constant.TAG,"toInt:"+ input + "/ "+ res );
 		return res;
 	}
 	public static String strRepeat(  String input, int times ){

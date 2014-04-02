@@ -20,19 +20,19 @@ public class DebugTabCommands extends Fragment {
 	private DebugActivity cc;
 
     public DebugTabCommands(DebugActivity debugActivity, int tabCommandsId) {
-    //	Constant.log("DebugTabCommands", "init");
+    //	Initiator.logger.i("DebugTabCommands", "init");
     	this.tab_id = tabCommandsId;
     	this.cc=debugActivity;
 	}
 	@Override
     public void onActivityCreated(Bundle savedInstanceState) {
 		//Integer.toString(getArguments().getInt(DebugActivity.ARG_SECTION_NUMBER))
-    //	Constant.log("DebugTabCommands", "onActivityCreated");
+    //	Initiator.logger.i("DebugTabCommands", "onActivityCreated");
         super.onActivityCreated(savedInstanceState);
     }
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
-	//	Constant.log("DebugTabCommands", "onCreateView");
+	//	Initiator.logger.i("DebugTabCommands", "onCreateView");
 
 		int lay = DebugActivity.layouts[tab_id];
 		//View rootView = inflater.inflate( R.layout.fragment_device_list_dummy, container, false);
