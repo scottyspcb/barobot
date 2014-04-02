@@ -8,6 +8,7 @@ import android.util.Log;
 
 import com.barobot.gui.ArduinoListener;
 import com.barobot.gui.database.BarobotData;
+import com.barobot.gui.database.BarobotDataStub;
 import com.barobot.hardware.virtualComponents;
 import com.barobot.parser.Queue;
 import com.barobot.parser.message.AsyncMessage;
@@ -24,7 +25,7 @@ public class Engine {
 	private Engine(Context context)
 	{
 		BarobotData.StartOrmanMapping(context);
-		//BarobotDataStub.SetupDatabase();
+		BarobotDataStub.SetupDatabase();
 	}
 	
 	public static List<Slot> getSlots()

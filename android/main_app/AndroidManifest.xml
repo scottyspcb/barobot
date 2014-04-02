@@ -109,17 +109,18 @@
         <activity
             android:name="com.barobot.activity.RandomActivity"
             android:label="@string/title_activity_random"
-			android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
         </activity>
-
         <activity
             android:name="net.pocketmagic.android.carousel.MainActivity"
             android:label=""
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
-             >
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
         </activity>
-
-
+        <activity
+            android:name="com.barobot.activity.OptionsActivity"
+            android:label="@string/title_activity_options"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
+        </activity>
     </application>
 
 </manifest>
