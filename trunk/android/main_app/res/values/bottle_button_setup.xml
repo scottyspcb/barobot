@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
-    <style name="BottleButtonCreator" parent="@android:style/TextAppearance.Medium">
-        <item name="android:layout_width">90sp</item>
-        <item name="android:layout_height">110sp</item>
+    <style name="BottleButtonSetup" parent="@android:style/TextAppearance.Medium">
+        <item name="android:layout_width">@dimen/bottle_box_width</item>
+        <item name="android:layout_height">@dimen/bottle_box_height</item>
         <item name="android:layout_gravity">center</item>
         <item name="android:gravity">center</item>
         <item name="android:background">@drawable/bottle</item>

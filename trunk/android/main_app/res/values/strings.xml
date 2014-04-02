@@ -118,6 +118,16 @@
     <string name="menu_history">Past orders</string>
     <string name="menu_mobile">Mobile orders</string>
     <string name="menu_options">Options and Setup</string>
+    
+    <!-- Options Activity -->
+    <string name="options_bottle_setup_button">Bottle Setup</string>
+    <string name="options_recipe_setup_button">Recipe Setup</string>
+    <string name="options_extra_setup_button">External Ingredient Setup</string>
+    <string name="options_lights_button">Lights Presets</string>
+    <string name="options_demo_button">Demo mode</string>
+    <string name="options_advanced_button">Advanced Setup</string>
+    <string name="options_about_button">About Barobot</string>
+    <string name="options_turn_off_button">Turn Off</string>
 
     <!-- Create Activity -->
     <string name="create_pour_button">Pour!</string>
@@ -148,5 +158,6 @@
     <string name="product_field_capacity">[Capacity]</string>
     <string name="image_desc">[Drink Image]</string>
     <string name="title_activity_random">Get Random</string>
+    <string name="title_activity_options">Options and Setup</string>
 
 </resources>

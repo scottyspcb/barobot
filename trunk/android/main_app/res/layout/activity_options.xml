@@ -1,0 +1,96 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context=".OptionsActivity" >
+
+    <RelativeLayout
+        android:layout_width="0sp"
+        android:layout_height="fill_parent"
+        android:layout_weight="3" >
+
+        <Button
+            android:id="@+id/options_bottle_setup_button"
+            style="@style/OptionsMenuButton"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:onClick="onOptionsButtonClicked"
+            android:text="@string/options_bottle_setup_button" />
+
+        <Button
+            android:id="@+id/options_recipe_setup_button"
+            style="@style/OptionsMenuButton"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@id/options_bottle_setup_button"
+            android:onClick="onOptionsButtonClicked"
+            android:text="@string/options_recipe_setup_button" />
+
+        <Button
+            android:id="@+id/options_extra_setup_button"
+            style="@style/OptionsMenuButton"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@id/options_recipe_setup_button"
+            android:enabled="false"
+            android:onClick="onOptionsButtonClicked"
+            android:text="@string/options_extra_setup_button" />
+
+        <Button
+            android:id="@+id/options_lights_button"
+            style="@style/OptionsMenuButton"
+            android:layout_alignParentTop="true"
+            android:layout_toRightOf="@id/options_bottle_setup_button"
+            android:enabled="false"
+            android:onClick="onOptionsButtonClicked"
+            android:text="@string/options_lights_button" />
+
+        <Button
+            android:id="@+id/options_demo_button"
+            style="@style/OptionsMenuButton"
+            android:layout_below="@id/options_lights_button"
+            android:layout_toRightOf="@id/options_bottle_setup_button"
+            android:enabled="false"
+            android:onClick="onOptionsButtonClicked"
+            android:text="@string/options_demo_button" />
+
+        <Button
+            android:id="@+id/options_advanced_button"
+            style="@style/OptionsMenuButton"
+            android:layout_alignParentTop="true"
+            android:layout_toRightOf="@id/options_lights_button"
+            android:onClick="onOptionsButtonClicked"
+            android:text="@string/options_advanced_button" />
+
+        <Button
+            android:id="@+id/options_about_button"
+            style="@style/OptionsMenuButton"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:enabled="false"
+            android:onClick="onOptionsButtonClicked"
+            android:text="@string/options_about_button" />
+
+        <Button
+            android:id="@+id/options_turn_off_button"
+            style="@style/ButtonRed"
+            android:layout_width="@dimen/OptionsMenuButtonWidth"
+            android:layout_height="@dimen/MenuButtonHeight"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_margin="@dimen/OptionsMenuButtonMargin"
+            android:enabled="false"
+            android:text="@string/options_turn_off_button" />
+    </RelativeLayout>
+
+    <fragment
+        android:id="@+id/fragment_menu"
+        android:name="com.barobot.activity.MenuFragment"
+        android:layout_width="0sp"
+        android:layout_height="fill_parent"
+        android:layout_weight="1"
+        tools:layout="@layout/fragment_menu" />
+
+</LinearLayout>

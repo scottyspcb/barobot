@@ -62,6 +62,11 @@
     <color name="MenuButtonDisabledStartColor">#565051</color>
     <color name="MenuButtonDisabledEndColor">#736F6E</color>
     <color name="MenuButtonBorderColor">@color/SecondaryB</color>
+    <dimen name="MenuButtonHeight">53dp</dimen>
+    
+    <!-- Options -->
+    <dimen name="OptionsMenuButtonWidth">150dp</dimen>
+    <dimen name="OptionsMenuButtonMargin">10dp</dimen>
     
     <!-- Bottle Buttons -->
     <color name="BottleStartColor">#BBDFF4FB</color>

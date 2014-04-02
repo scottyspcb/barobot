@@ -43,12 +43,8 @@ public class BarobotActivity extends Activity {
 			serverIntent = new Intent(this, CreatorActivity.class);
 			break;
 			
-		case R.id.menu_bottles:
-			serverIntent = new Intent(this, BottleSetupActivity.class);
-			break;
-			
 		case R.id.menu_options:
-			serverIntent = new Intent(this, DebugActivity.class);
+			serverIntent = new Intent(this, OptionsActivity.class);
 			break;
 		}
 		

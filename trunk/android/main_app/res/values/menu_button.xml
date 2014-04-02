@@ -2,10 +2,10 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
     <style name="MenuButton" parent="@android:style/TextAppearance.Medium">
         <item name="android:layout_width">fill_parent</item>
-        <item name="android:layout_height">59dp</item>
+        <item name="android:layout_height">@dimen/MenuButtonHeight</item>
         <item name="android:gravity">center</item>
         <item name="android:textColor">@android:color/black</item>
-        <item name="android:textSize">20sp</item>
+        <item name="android:textSize">17sp</item>
         <item name="android:padding">5dp</item>
         <item name="android:background">@drawable/button_menu</item>
         <item name="android:shadowRadius">1</item>
