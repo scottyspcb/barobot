@@ -160,4 +160,10 @@
     <string name="title_activity_random">Get Random</string>
     <string name="title_activity_options">Options and Setup</string>
 
+    
+    <!-- Progress Bars -->
+    <string name="progress_bar_sweet_name">Sweet</string>
+    <string name="progress_bar_sour_name">Sour</string>
+    <string name="progress_bar_bitter_name">Bitter</string>
+    <string name="progress_bar_strength_name">Strength</string>
 </resources>
