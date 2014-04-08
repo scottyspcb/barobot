@@ -28,6 +28,9 @@
     <color name="pressed_color">#4d90fe</color>
     <color name="default_color">#0000ff</color>
     
+    <!-- Progress Bars -->
+    <dimen name="progress_bar_name_width">60dp</dimen>
+    
     <!-- Green Button -->
     <color name="GreenButtonStartColor">#4AA02C</color>
     <color name="GreenButtonEndColor">#348017</color>
@@ -74,6 +77,8 @@
     <color name="BottleBorderColor">#FFFFFF</color>
     
     <!-- Colors -->
+    <color name="Transparent">#00000000</color>
+    
     <color name="ComplementaryLight1">#FFDD73</color>
     <color name="ComplementaryLight2">#FFD140</color>
     <color name="Complementary">#FFC200</color>
@@ -97,6 +102,19 @@
     <color name="Main">#0C0874</color>
     <color name="MainDark1">#0C0874</color>
     <color name="MainDark2">#0C0874</color>
+    
+    <!-- Progress Bars Colors -->
+    <color name="SweetStart">#ff920a</color>
+    <color name="SweetEnd">#ff670f</color>
+    
+    <color name="SourStart">#00ff00</color>
+    <color name="SourEnd">#00bf00</color>
+    
+    <color name="BitterStart">#cae00d</color>
+    <color name="BitterEnd">#97a809</color>
+    
+    <color name="StrengthStart">#4169e1</color>
+    <color name="StrengthEnd">#1d45bb</color>
     
 
 </resources>

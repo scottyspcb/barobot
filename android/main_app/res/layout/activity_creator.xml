@@ -97,25 +97,27 @@
             android:layout_height="fill_parent"
             android:layout_below="@id/bottom_bottle_shelf"
             android:orientation="horizontal" >
-            <ListView
-                android:id="@+id/ingredient_list"
-                android:layout_width="0sp"
-                android:layout_height="fill_parent"
-                android:layout_weight="2"
-                android:layout_margin="5sp"
-                android:divider="@null"
-                android:dividerHeight="0sp"
-                android:background="@drawable/ingredient_list_bg">
+            
+            <fragment
+                android:id="@+id/fragment_ingredient_list"
                 
-            </ListView>
-            <LinearLayout
-                android:layout_width="0sp"
-                android:layout_height="fill_parent"
-                android:layout_weight="2"
-                android:layout_margin="5sp"
-                >
-                
-            </LinearLayout>
+                android:name="com.barobot.activity.IngredientListFragment"
+        		android:layout_width="0sp"
+        		android:layout_height="fill_parent"
+        		android:layout_weight="2"
+        		android:layout_margin="3dp"
+        		tools:layout="@layout/fragment_ingredient_list" />
+            
+            
+            <fragment 
+                android:id="@+id/fragment_attributes"
+                android:name="com.barobot.activity.RecipeAttributesFragment"
+        		android:layout_width="0sp"
+        		android:layout_height="fill_parent"
+        		android:layout_weight="2"
+        		android:layout_margin="3dp"
+        		tools:layout="@layout/fragment_recipe_attributes" />
+
             <LinearLayout
                 android:layout_width="0sp"
                 android:layout_height="fill_parent"

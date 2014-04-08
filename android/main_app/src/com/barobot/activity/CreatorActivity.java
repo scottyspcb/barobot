@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.AlertDialog;
+import android.app.Fragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
@@ -84,12 +85,10 @@ public class CreatorActivity extends BarobotActivity implements ArduinoListener{
 	
 	public void ShowIngredients()
 	{
-		ArrayAdapter<Ingredient_t> mAdapter = new ArrayAdapter<Ingredient_t>(this, R.layout.ingredient_list_item, ingredients);
-		ListView listView = (ListView) findViewById(R.id.ingredient_list);
-		if( listView!= null ){
-			listView.setAdapter(mAdapter);
-		}
-		Thread rr = new Thread( new Runnable() {
+		IngredientListFragment frag = (IngredientListFragment) getFragmentManager().findFragmentById(R.id.fragment_ingredient_list);
+		frag.ShowIngredients(ingredients);
+		
+	/*	Thread rr = new Thread( new Runnable() {
 			public void run() {	
 				Queue q	= virtualComponents.getMainQ();
 				for (int i = 1; i<=12 ; i++){
@@ -100,7 +99,7 @@ public class CreatorActivity extends BarobotActivity implements ArduinoListener{
 				}
 			}
 		});
-		rr.start();
+		rr.start();*/
 	}
 	public void onBottleClicked(View view)
 	{
