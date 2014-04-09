@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -12,13 +12,14 @@
 
     <RelativeLayout
         android:id="@+id/page_layout"
-        android:layout_width="0sp"
+        android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_weight="3" >
+        android:layout_alignParentLeft="true"
+        android:layout_toLeftOf="@id/fragment_menu" >
 
         <ListView
             android:id="@+id/recipe_list"
-            android:layout_width="300sp"
+            android:layout_width="250sp"
             android:layout_height="fill_parent"
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
@@ -27,7 +28,7 @@
             android:focusable="true"
             android:focusableInTouchMode="true" />
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="fill_parent"
             android:layout_alignParentBottom="true"
@@ -40,53 +41,69 @@
                 android:id="@+id/recipe_name_textview"
                 style="@style/ButtonGreen"
                 android:layout_width="match_parent"
-                android:layout_height="0sp"
-                android:layout_weight="1"
+                android:layout_height="80dp"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentLeft="true"
                 android:background="@drawable/ingredient_list_bg"
                 android:textSize="25sp" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="0sp"
-                android:layout_weight="2">
+            
+            <Button
+                android:id="@+id/choose_pour_button"
+                style="@style/ButtonGreen"
+                android:layout_width="200dp"
+                android:layout_height="80dp"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentBottom="true"
                 
+                android:onClick="onPourButtonClicked"
+                android:text="@string/create_pour_button"
+                android:textSize="50sp" />
+            
             <fragment
-                android:id="@+id/fragment_attributes"
-                android:name="com.barobot.activity.RecipeAttributesFragment"
-                android:layout_width="0sp"
+                android:id="@+id/fragment_drink_image"
+                android:name="com.barobot.gui.fragment.DrinkImageFragment"
+                android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:layout_margin="3dp"
-                android:layout_weight="1"
+                android:layout_alignParentLeft="true"
+                android:layout_alignRight="@id/choose_pour_button"
+                android:layout_below="@id/recipe_name_textview"
+                android:layout_above="@id/choose_pour_button"
+                tools:layout="@layout/fragment_drink_image" />
+            
+            
+
+            
+            <fragment
+                android:id="@+id/fragment_attributes"
+                android:name="com.barobot.gui.fragment.RecipeAttributesFragment"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="3dp"
+                android:layout_below="@id/recipe_name_textview"
+                android:layout_toRightOf="@id/fragment_drink_image"
                 tools:layout="@layout/fragment_recipe_attributes" />
 
             <fragment
                 android:id="@+id/fragment_ingredient_list"
-                android:name="com.barobot.activity.IngredientListFragment"
-                android:layout_width="0sp"
+                android:name="com.barobot.gui.fragment.IngredientListFragment"
+                android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:layout_margin="3dp"
-                android:layout_weight="1"
+                android:layout_toRightOf="@id/fragment_drink_image"
+                android:layout_below="@id/fragment_attributes"
                 tools:layout="@layout/fragment_ingredient_list" />
-            </LinearLayout>
 
-            <Button
-                android:id="@+id/choose_pour_button"
-                style="@style/ButtonGreen"
-                android:layout_width="fill_parent"
-                android:layout_height="0sp"
-                android:layout_weight="1"
-                android:onClick="onPourButtonClicked"
-                android:text="@string/create_pour_button"
-                android:textSize="50sp" />
-        </LinearLayout>
+            
+        </RelativeLayout>
     </RelativeLayout>
 
     <fragment
         android:id="@+id/fragment_menu"
-        android:name="com.barobot.activity.MenuFragment"
-        android:layout_width="0sp"
+        android:name="com.barobot.gui.fragment.MenuFragment"
+        android:layout_width="@dimen/main_menu_width"
         android:layout_height="fill_parent"
-        android:layout_weight="1"
+        android:layout_alignParentRight="true"
         tools:layout="@layout/fragment_menu" />
 
-</LinearLayout>
+</RelativeLayout>

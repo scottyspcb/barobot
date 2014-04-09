@@ -28,6 +28,9 @@
     <color name="pressed_color">#4d90fe</color>
     <color name="default_color">#0000ff</color>
     
+    <!-- Main Menu -->
+    <dimen name="main_menu_width">150dp</dimen>
+    
     <!-- Progress Bars -->
     <dimen name="progress_bar_name_width">60dp</dimen>
     

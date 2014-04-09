@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <ListView
-        android:id="@+id/dupa_dupa"
+        android:id="@+id/ingredient_list"
         style="@style/SmoothList"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

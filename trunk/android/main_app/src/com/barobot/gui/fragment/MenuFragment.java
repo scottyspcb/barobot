@@ -1,4 +1,4 @@
-package com.barobot.activity;
+package com.barobot.gui.fragment;
 
 
 import com.barobot.R;
