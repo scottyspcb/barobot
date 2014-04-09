@@ -84,15 +84,15 @@ public class BarobotMain extends BarobotActivity implements ArduinoListener {
     public void FillRecipeDetails()
     {
 		if (mCurrentRecipe != null) {
+			// Set the name
 			setTextViewText(mCurrentRecipe.name, R.id.recipe_name_textview);
 
-			ArrayAdapter<Ingredient_t> mAdapter = new ArrayAdapter<Ingredient_t>(
-					this, R.layout.ingredient_list_item,
-					mCurrentRecipe.getIngredients());
-			ListView listView = (ListView) findViewById(R.id.ingredient_list);
-			listView.setAdapter(mAdapter);
+			// Set ingredients
+			IngredientListFragment frag = (IngredientListFragment) getFragmentManager().findFragmentById(R.id.fragment_ingredient_list);
+			frag.ShowIngredients(mCurrentRecipe.getIngredients());
 
-			Thread rr = new Thread( new Runnable() {
+
+			/*Thread rr = new Thread( new Runnable() {
 				public void run() {	
 					virtualComponents.setLedsOff("ff");
 					List<Integer> bottleSequence = Engine.GenerateSequence(mCurrentRecipe.getIngredients());
@@ -105,7 +105,7 @@ public class BarobotMain extends BarobotActivity implements ArduinoListener {
 					}
 				}
 			});
-			rr.start();
+			rr.start();*/
 		}
     }
 

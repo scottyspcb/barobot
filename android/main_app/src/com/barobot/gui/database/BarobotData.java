@@ -22,11 +22,11 @@ import com.barobot.gui.dataobjects.Type;
 
 public class BarobotData {
 	public static String DATABASE_NAME = "BarobotOrman.db";
-	public static int DATABASE_SCHEMA_VERSION = 1;
+	public static int DATABASE_SCHEMA_VERSION = 3;
 	public static void StartOrmanMapping(Context context){
 		// Setting up ORMAN
 		Database omdb = new SQLiteAndroid(context, DATABASE_NAME, DATABASE_SCHEMA_VERSION);	
-		MappingSession.getConfiguration().setCreationPolicy(SchemaCreationPolicy.CREATE_IF_NOT_EXISTS);
+		MappingSession.getConfiguration().setCreationPolicy(SchemaCreationPolicy.CREATE);
 		MappingSession.registerEntity(Category.class);
 		MappingSession.registerEntity(Type.class);
 		MappingSession.registerEntity(Liquid_t.class);
