@@ -58,6 +58,20 @@ public class BarobotData {
 	{
 		return Model.fetchAll(Recipe_t.class);
 	}
+	
+	public static List<Recipe_t> GetListedRecipes()
+	{
+		return Model.fetchQuery(ModelQuery.select().from(Recipe_t.class).where(C.eq("unlisted", false)).getQuery(),Recipe_t.class);
+	}
+	
+	public static List<Recipe_t> GetFavoriteRecipes()
+	{
+		return Model.fetchQuery(ModelQuery.select().from(Recipe_t.class).where(
+				C.and(
+						C.eq("unlisted", false),
+						C.eq("favorite", true)
+						)).getQuery(),Recipe_t.class);
+	}
 
 	public static List<Slot> GetSlots()
 	{

@@ -9,6 +9,7 @@ import org.orman.mapper.annotation.OneToMany;
 import org.orman.mapper.annotation.PrimaryKey;
 
 import com.barobot.gui.database.BarobotData;
+import com.barobot.gui.utils.Distillery;
 
 @Entity
 public class Recipe_t extends Model<Recipe_t>{
@@ -17,6 +18,7 @@ public class Recipe_t extends Model<Recipe_t>{
 	public String name;
 	public boolean favorite;
 	public boolean unlisted;
+	public int photoID;
 	
 	@Override
 	public String toString() {
@@ -29,18 +31,6 @@ public class Recipe_t extends Model<Recipe_t>{
 	public List<Ingredient_t> getIngredients()
 	{
 		ingredients.refreshList();
-		return ingredients;
-	}
-
-	// array of 1-12
-	public List<Ingredient_t> getSlots()
-	{
-		ingredients.refreshList();
-		List<Slot> slots = BarobotData.GetSlots();
-		for(Ingredient_t ing : ingredients)
-		{
-			int s = Engine.getIngredientPosition(slots,ing);
-		}
 		return ingredients;
 	}
 	
@@ -72,5 +62,23 @@ public class Recipe_t extends Model<Recipe_t>{
 		return null;
 	}
 	
+	public int GetSweet()
+	{
+		return Distillery.getSweet(getIngredients());
+	}
 	
+	public int GetSour()
+	{
+		return Distillery.getSour(getIngredients());
+	}
+	
+	public int GetBitter()
+	{
+		return Distillery.getBitter(getIngredients());
+	}
+	
+	public int GetStrength()
+	{
+		return Distillery.getStrength(getIngredients());
+	}
 }

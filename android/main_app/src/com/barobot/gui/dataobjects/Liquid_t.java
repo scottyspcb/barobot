@@ -14,7 +14,12 @@ public class Liquid_t extends Model<Liquid_t> {
 	@PrimaryKey (autoIncrement = true)
 	public long id;
 	public String name;
-	public float voltage;
+	
+	// properties range 0-100 (%)
+	public int sweet;
+	public int sour;
+	public int bitter;
+	public int strenght;
 	
 	@ManyToOne
 	public Type type;

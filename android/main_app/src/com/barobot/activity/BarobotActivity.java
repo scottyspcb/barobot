@@ -30,14 +30,19 @@ public class BarobotActivity extends Activity {
 		{
 		case R.id.menu_favorite:
 			serverIntent = new Intent(this, BarobotMain.class);
+			serverIntent.putExtra(BarobotMain.MODE_NAME, BarobotMain.Mode.Favorite.ordinal());
+			
+			serverIntent.putExtra("Test", "Test2");
 			break;
 			
 		case R.id.menu_choose:
-			serverIntent = new Intent(this, net.pocketmagic.android.carousel.MainActivity.class);
+			serverIntent = new Intent(this, BarobotMain.class);
+			serverIntent.putExtra(BarobotMain.MODE_NAME, BarobotMain.Mode.Normal.ordinal());
 			break;
 
 		case R.id.menu_lucky:
-			serverIntent = new Intent(this, RandomActivity.class);
+			serverIntent = new Intent(this, BarobotMain.class);
+			serverIntent.putExtra(BarobotMain.MODE_NAME, BarobotMain.Mode.Random.ordinal());
 			break;	
 		case R.id.menu_create:
 			serverIntent = new Intent(this, CreatorActivity.class);

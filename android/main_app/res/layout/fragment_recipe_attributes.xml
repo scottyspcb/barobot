@@ -1,81 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:components="http://schemas.android.com/apk/res/com.barobot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_margin="5dp"
     android:background="@drawable/ingredient_list_bg"
     android:orientation="vertical" >
 
-    <LinearLayout
+    <com.barobot.gui.TextProgressBar
+        android:id="@+id/progress_bar_sweet"
         style="@style/ProgressBarLayout"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content" >
-
-        <TextView
-            style="@style/ProgressBarLabel"
-            android:text="@string/progress_bar_sweet_name" />
-
-        <ProgressBar
-            android:id="@+id/progress_bar_sweet"
-            style="@android:style/Widget.ProgressBar.Horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:progress="50"
-            android:progressDrawable="@drawable/progress_bar_sweet" />
-    </LinearLayout>
-
-    <LinearLayout
+        android:layout_height="wrap_content"
+        android:progress="50"
+        android:progressDrawable="@drawable/progress_bar_sweet"
+        components:text="@string/progress_bar_sweet_name" />
+    
+    <com.barobot.gui.TextProgressBar
+        android:id="@+id/progress_bar_sour"
         style="@style/ProgressBarLayout"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content" >
-
-        <TextView
-            style="@style/ProgressBarLabel"
-            android:text="@string/progress_bar_sour_name" />
-
-        <ProgressBar
-            android:id="@+id/progress_bar_sour"
-            style="@android:style/Widget.ProgressBar.Horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:progress="30"
-            android:progressDrawable="@drawable/progress_bar_sour" />
-    </LinearLayout>
-
-    <LinearLayout
+        android:layout_height="wrap_content"
+        android:progress="25"
+        android:progressDrawable="@drawable/progress_bar_sour"
+        components:text="@string/progress_bar_sour_name" />
+    
+    <com.barobot.gui.TextProgressBar
+        android:id="@+id/progress_bar_bitter"
         style="@style/ProgressBarLayout"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content" >
-
-        <TextView
-            style="@style/ProgressBarLabel"
-            android:text="@string/progress_bar_bitter_name" />
-
-        <ProgressBar
-            android:id="@+id/progress_bar_bitter"
-            style="@android:style/Widget.ProgressBar.Horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:progress="75"
-            android:progressDrawable="@drawable/progress_bar_bitter" />
-    </LinearLayout>
-
-    <LinearLayout
+        android:layout_height="wrap_content"
+        android:progress="70"
+        android:progressDrawable="@drawable/progress_bar_bitter"
+        components:text="@string/progress_bar_bitter_name" />
+    
+    <com.barobot.gui.TextProgressBar
+        android:id="@+id/progress_bar_strength"
         style="@style/ProgressBarLayout"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content" >
-
-        <TextView
-            style="@style/ProgressBarLabel"
-            android:text="@string/progress_bar_strength_name" />
-
-        <ProgressBar
-            android:id="@+id/progress_bar_strength"
-            style="@android:style/Widget.ProgressBar.Horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:progress="90"
-            android:progressDrawable="@drawable/progress_bar_strenght" />
-    </LinearLayout>
+        android:layout_height="wrap_content"
+        android:progress="95"
+        android:progressDrawable="@drawable/progress_bar_strength"
+        components:text="@string/progress_bar_strength_name" />
 
 </LinearLayout>

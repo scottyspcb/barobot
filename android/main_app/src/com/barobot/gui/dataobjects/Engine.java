@@ -91,12 +91,21 @@ public class Engine {
 	
 	public List<Recipe_t> getRecipes()
 	{
-		List<Recipe_t> recipes = BarobotData.GetRecipes();
+		return Filter(BarobotData.GetListedRecipes());
+	}
+	
+	public List<Recipe_t> getFavoriteRecipes()
+	{
+		return Filter(BarobotData.GetFavoriteRecipes());
+	}
+	
+	private List<Recipe_t> Filter(List<Recipe_t> recipes)
+	{
 		List<Recipe_t> result = new ArrayList<Recipe_t>();
 		
 		for(Recipe_t recipe : recipes)
 		{
-			if (CheckRecipe(recipe) && recipe.unlisted == false)
+			if (CheckRecipe(recipe))
 			{
 				result.add(recipe);
 			}

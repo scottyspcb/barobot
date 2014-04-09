@@ -22,13 +22,16 @@ import com.barobot.gui.dataobjects.Ingredient_t;
 import com.barobot.gui.dataobjects.Liquid_t;
 import com.barobot.gui.dataobjects.Recipe_t;
 import com.barobot.gui.dataobjects.Slot;
+import com.barobot.gui.fragment.IngredientListFragment;
+import com.barobot.gui.fragment.RecipeAttributesFragment;
+import com.barobot.gui.utils.Distillery;
 import com.barobot.hardware.virtualComponents;
 import com.barobot.hardware.devices.i2c.Upanel;
 import com.barobot.parser.Queue;
 
 public class CreatorActivity extends BarobotActivity implements ArduinoListener{
 
-	private boolean[] slot_nums = {false, false,false,false,false,false,false,false,false, false,false,false,false};
+	//private boolean[] slot_nums = {false, false,false,false,false,false,false,false,false, false,false,false,false};
 	private int[] ids;
 	private List<Ingredient_t> ingredients;
 
@@ -88,6 +91,10 @@ public class CreatorActivity extends BarobotActivity implements ArduinoListener{
 		IngredientListFragment frag = (IngredientListFragment) getFragmentManager().findFragmentById(R.id.fragment_ingredient_list);
 		frag.ShowIngredients(ingredients);
 		
+		RecipeAttributesFragment attrFrag = (RecipeAttributesFragment) getFragmentManager().findFragmentById(R.id.fragment_attributes);
+		attrFrag.SetAttributes(Distillery.getSweet(ingredients), Distillery.getSour(ingredients)
+				, Distillery.getBitter(ingredients), Distillery.getStrength(ingredients));
+		
 	/*	Thread rr = new Thread( new Runnable() {
 			public void run() {	
 				Queue q	= virtualComponents.getMainQ();
@@ -138,10 +145,10 @@ public class CreatorActivity extends BarobotActivity implements ArduinoListener{
 	
 	private void clear(){
 		ingredients.clear();
-		for (int i = 1; i<=12 ; i++){
+		/*for (int i = 1; i<=12 ; i++){
 			slot_nums[i] = true;
 		}
-		virtualComponents.setLedsOff("ff");
+		virtualComponents.setLedsOff("ff");*/
 		ShowIngredients();	
 	}
 	
@@ -183,7 +190,8 @@ public class CreatorActivity extends BarobotActivity implements ArduinoListener{
 	
 	private void addIngredient(int position, Ingredient_t ing)
 	{
-		slot_nums[position] = true;
+		//slot_nums[position] = true;
+		
 		Ingredient_t existing = findIngredient(ing.liquid);
 		if (existing == null){
 			ingredients.add(ing);

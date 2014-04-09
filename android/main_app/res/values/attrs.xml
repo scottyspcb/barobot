@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="TextProgressBar">
+        <attr name="text" format="string" />
+        <attr name="textColor" format="color"></attr>
+        <attr name="textSize" format="dimension"></attr>
+        <attr name="shadowRadius" format="dimension"></attr>
+        <attr name="shadowDx" format="dimension"></attr>
+        <attr name="shadowDy" format="dimension"></attr>
+        <attr name="shadowColor" format="color"></attr>
+    </declare-styleable>
+</resources>

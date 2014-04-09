@@ -30,16 +30,19 @@ public class BarobotDataStub {
 		Liquid_t liq = new Liquid_t();
 		liq.name = "Wyborowa";
 		liq.type = type;
+		liq.sweet = 10;
 		liq.insert();
 		
 		liq = new Liquid_t();
-		liq.name = "Żubrówka";
+		liq.name = "Rum";
 		liq.type = type;
+		liq.sweet = 25;
 		liq.insert();
 		
 		Liquid_t liq2 = new Liquid_t();
-		liq2.name = "Smirnoff";
+		liq2.name = "Samo Dobro";
 		liq2.type = type;
+		liq2.sweet = 75;
 		liq2.insert();
 		
 		Liquid_t liq3 = new Liquid_t();
@@ -84,6 +87,18 @@ public class BarobotDataStub {
 		rec.ingredients.add(ing2);
 		rec.ingredients.add(ing3);
 		
+		rec = new Recipe_t();
+		rec.name = "My favorite drink";
+		rec.favorite = true;
+		rec.photoID = 2;
+		rec.insert();
+		rec.ingredients.add(ing2);
+		
+		rec = new Recipe_t();
+		rec.name = "You should not see me!";
+		rec.unlisted = true;
+		rec.insert();
+		rec.ingredients.add(ing3);
 		
 		Slot slot = BarobotData.GetSlot(1);
 		slot.product = prod;
