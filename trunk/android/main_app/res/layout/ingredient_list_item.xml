@@ -4,10 +4,11 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_centerHorizontal="true"
-    android:padding="10sp"
+    android:paddingLeft="3sp"
+    android:paddingRight="3sp"
     android:shadowColor="@android:color/black"
     android:shadowDx="1"
     android:shadowDy="1"
     android:shadowRadius="1"
-    android:textColor="@android:color/black"
-    android:textSize="20sp" />
+    android:textColor="@android:color/white"
+    android:textSize="16sp" />
