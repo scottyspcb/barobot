@@ -54,17 +54,17 @@
                 android:layout_height="80dp"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentBottom="true"
-                
+                android:layout_margin="3dp"
                 android:onClick="onPourButtonClicked"
                 android:text="@string/create_pour_button"
-                android:textSize="50sp" />
+                android:textSize="35sp" />
             
             <fragment
                 android:id="@+id/fragment_drink_image"
                 android:name="com.barobot.gui.fragment.DrinkImageFragment"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
-                android:layout_margin="3dp"
+                
                 android:layout_alignParentLeft="true"
                 android:layout_alignRight="@id/choose_pour_button"
                 android:layout_below="@id/recipe_name_textview"
