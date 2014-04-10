@@ -1,17 +1,28 @@
 package com.barobot.activity;
 
 import com.barobot.R;
+import com.barobot.gui.fragment.MenuFragment;
+
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Intent;
 import android.view.View;
 
-public class OptionsActivity extends Activity {
+public class OptionsActivity extends BarobotActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_options);
+	}
+	
+	@Override
+	protected void onResume() {
+		
+		super.onResume();
+		
+		MenuFragment menuFrag = (MenuFragment) getFragmentManager().findFragmentById(R.id.fragment_menu);
+		menuFrag.SetBreadcrumb(MenuFragment.MenuItem.Options);
 	}
 	
 	public void onOptionsButtonClicked(View view)

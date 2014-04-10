@@ -65,6 +65,8 @@
     <!-- Menu Button -->
     <color name="MenuButtonStartColor">@color/SecondaryBLight2</color>
     <color name="MenuButtonEndColor">@color/SecondaryB</color>
+    <color name="MenuButtonSelectedStartColor">@color/ComplementaryLight2</color>
+    <color name="MenuButtonSelectedEndColor">@color/Complementary</color>
     <color name="MenuButtonDisabledStartColor">#565051</color>
     <color name="MenuButtonDisabledEndColor">#736F6E</color>
     <color name="MenuButtonBorderColor">@color/SecondaryB</color>

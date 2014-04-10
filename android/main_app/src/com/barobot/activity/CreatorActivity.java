@@ -23,6 +23,7 @@ import com.barobot.gui.dataobjects.Liquid_t;
 import com.barobot.gui.dataobjects.Recipe_t;
 import com.barobot.gui.dataobjects.Slot;
 import com.barobot.gui.fragment.IngredientListFragment;
+import com.barobot.gui.fragment.MenuFragment;
 import com.barobot.gui.fragment.RecipeAttributesFragment;
 import com.barobot.gui.utils.Distillery;
 import com.barobot.hardware.virtualComponents;
@@ -45,6 +46,10 @@ public class CreatorActivity extends BarobotActivity implements ArduinoListener{
 	@Override
 	protected void onResume() {
 		super.onResume();
+		
+		MenuFragment menuFrag = (MenuFragment) getFragmentManager().findFragmentById(R.id.fragment_menu);
+		menuFrag.SetBreadcrumb(MenuFragment.MenuItem.Create);
+		
 		UpdateData();
 	}
 

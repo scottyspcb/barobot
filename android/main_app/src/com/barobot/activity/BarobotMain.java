@@ -22,6 +22,7 @@ import com.barobot.gui.dataobjects.Ingredient_t;
 import com.barobot.gui.dataobjects.Recipe_t;
 import com.barobot.gui.fragment.DrinkImageFragment;
 import com.barobot.gui.fragment.IngredientListFragment;
+import com.barobot.gui.fragment.MenuFragment;
 import com.barobot.gui.fragment.RecipeAttributesFragment;
 import com.barobot.hardware.virtualComponents;
 import com.barobot.hardware.devices.i2c.Upanel;
@@ -77,11 +78,35 @@ public class BarobotMain extends BarobotActivity implements ArduinoListener {
 		int modeInt = getIntent().getIntExtra(MODE_NAME, 0);
 		mode = Mode.values()[modeInt];
 		
+		SetBreadcrumb();
+		
+		
 		AppInvoker.getInstance().onResume();
 		
 		FillRecipeList();
 		FillRecipeDetails();
 		super.onResume();
+	}
+	
+	public void SetBreadcrumb()
+	{
+		MenuFragment menuFrag = (MenuFragment) getFragmentManager().findFragmentById(R.id.fragment_menu);
+		switch(mode)
+		{
+		case Favorite:
+			menuFrag.SetBreadcrumb(MenuFragment.MenuItem.Favorite);
+			break;
+		case Normal:
+			menuFrag.SetBreadcrumb(MenuFragment.MenuItem.Choose);
+			break;
+		case Random:
+			menuFrag.SetBreadcrumb(MenuFragment.MenuItem.Lucky);
+			break;
+		default:
+			menuFrag.SetBreadcrumb(MenuFragment.MenuItem.Choose);
+			break;
+		
+		}
 	}
 
 	public void FillRecipeList() {
