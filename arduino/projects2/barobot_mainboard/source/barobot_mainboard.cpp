@@ -531,6 +531,7 @@ void stepperReady( long int pos ){		// in interrupt
 			return;
 		}
 	}*/
+	bytepos.i= pos;
 	out_buffer[0]  = METHOD_STEPPER_MOVING;           // wyslij do wozka ze jade
 	out_buffer[1]  = DRIVER_X;
 	out_buffer[2]  = DRIVER_DIR_STOP;
@@ -548,13 +549,14 @@ void stepperReady( long int pos ){		// in interrupt
 	};
 	send2android(ttt,8);
 	Serial.println();
-	ttt[2] = RETURN_DRIVER_READY_REPEAT;
-	send2android(ttt,8);
-	Serial.println();
 	Serial.flush();
-	//Serial.println("Rx" + String(pos));
-
+	//ttt[2] = RETURN_DRIVER_READY_REPEAT;
+	//send2android(ttt,8);
+	//Serial.println();
+	//Serial.flush();
+	Serial.println("Rx" + String(pos));
 }
+
 void paserDeriver( byte driver, String input ){   // odczytaj komende silnika
 	input.trim();
 	int comma      = input.indexOf(',');
