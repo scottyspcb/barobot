@@ -333,14 +333,13 @@ public class button_click implements OnClickListener{
 		case R.id.reset_margin:
 			barobot.driver_x.setM(0);
 			virtualComponents.state.set("MARGINX", 0);	
-			int spos = barobot.driver_x.hard2soft( 0 );
-			barobot.driver_x.setSPos( spos );
+			barobot.driver_x.setHPos( 0 );
 			break;	
 		case R.id.reset_upanels:
 			Queue q1		= new Queue();
 			Upanel[] up		= barobot.i2c.getUpanels();
 			for(int i =up.length-1; i>=0;i--){
-				q1.add("RESET_NEXT"+ up[i], true);
+				q1.add("RESET_NEXT"+ up[i].getAddress(), true);
 			}
 			virtualComponents.getMainQ().add(q1);
 			break;

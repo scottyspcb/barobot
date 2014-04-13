@@ -2,9 +2,10 @@ package com.barobot.activity;
 
 import java.util.List;
 
+import com.barobot.R;
 import com.barobot.gui.dataobjects.Engine;
 import com.barobot.gui.dataobjects.Slot;
-import com.barobot.R;
+
 import android.os.Bundle;
 import android.content.Intent;
 import android.util.Log;

@@ -40,13 +40,20 @@ public class MotorDriver {
 		hardware_pos = software_pos + m1;
 		state.set( "POSX", software_pos );
 		int lx	=  state.getInt("LENGTHX", 600 );
-		if( spos > lx){		// Pozycja wieksza niz d³ugosc? Zwieksz d³ugosc
-			state.set( "LENGTHX", spos);
+		if( software_pos > lx){		// Pozycja wieksza niz d³ugosc? Zwieksz d³ugosc
+			state.set( "LENGTHX", software_pos);
 		}
+		Initiator.logger.w("MotorDriver setSPos1", "" + software_pos + ", setHPos1: "+hardware_pos );
 	}
-	public void setHPos( int pos2 ){
-		hardware_pos = pos2;
+	public void setHPos( int hpos ){
+		hardware_pos = hpos;
 		software_pos = hardware_pos - m1;
+		state.set( "POSX", software_pos );
+		int lx	=  state.getInt("LENGTHX", 600 );
+		if( software_pos > lx){		// Pozycja wieksza niz d³ugosc? Zwieksz d³ugosc
+			state.set( "LENGTHX", software_pos);
+		}
+		Initiator.logger.w("MotorDriver setSPos2", "" + software_pos+ ", setHPos2: "+hardware_pos );
 	}
 	public int getDirection() {
 		return direction;
@@ -104,7 +111,7 @@ public class MotorDriver {
 						}
 					}
 					if( can ){
-						Initiator.logger.w("MotorDriver.movoTo.AsyncMessage.onInput", "MOVE" );
+				//		Initiator.logger.w("MotorDriver.movoTo.AsyncMessage.onInput", "MOVE" );
 						Queue	q2	= new Queue(); 
 						q2.add("X" + newx+ ","+defaultSpeed, true);
 						mainQueue.addFirst(q2);

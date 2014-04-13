@@ -30,11 +30,8 @@ public class Upanel extends I2C_Device_Imp {
 		parent.isResetedBy(this);
 	}
 	public int getBottleNum() {
-		if( numInRow > -1 ){
-			return numInRow;
-		}else if( row < 5 && numInRow < 6){
-			numInRow = row2index[row][numInRow];
-			return numInRow;
+		if( row < 5 && numInRow < 6){
+			return row2index[row][numInRow];
 		}
 		return -1;
 	}
@@ -48,9 +45,5 @@ public class Upanel extends I2C_Device_Imp {
 	}
 	public String getHexFile() {
 		return IspSettings.upHexPath;
-	}
-	public void setLed(Queue q, String selector, int pwm) {
-		String command = "L" +myaddress + ","+ selector +"," + pwm;
-		q.add( command, true );
 	}
 }

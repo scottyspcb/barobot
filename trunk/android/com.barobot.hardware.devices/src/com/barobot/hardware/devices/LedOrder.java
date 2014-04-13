@@ -23,7 +23,8 @@ public class LedOrder {
 
 	public void asyncStart(BarobotConnector barobot, Queue q) {
 		this.mq		= q;
-		this.barobot = barobot;	
+		this.barobot = barobot;
+		barobot.i2c.clear();
 		LedOrder.this.findOrder( Upanel.BACK  );	
 		LedOrder.this.findOrder( Upanel.FRONT  );
 		//LedOrder.this.mq.show("LedOrder");
@@ -33,8 +34,11 @@ public class LedOrder {
 		nq3.add( new AsyncMessage( "RESET"+ row, true ){
 			@Override
 			public boolean onInput(String input, Mainboard dev, Queue mainQueue) {
-				if( input.equals("RESET"+row) ){
+				if( input.equals("RRESET"+row) ){
+					System.out.println("its me, ignore");
 					return true;		// its me, ignore message
+				}else{
+					System.out.println("otherwise ignore:" + input);
 				}
 				return false;
 			}
@@ -57,6 +61,8 @@ public class LedOrder {
 					Queue q2 = resetNextTo( u );
 					q.addFirst(q2);
 					return true;
+				}else{
+					System.out.println("findOrder no isRet:" + result);
 				}
 				return false;
 			}
@@ -78,6 +84,8 @@ public class LedOrder {
 						}
 						return true;
 					}
+				}else{
+					System.out.println(command + " no isRet:" + result);
 				}
 				return false;
 			}
@@ -105,7 +113,7 @@ public class LedOrder {
 					u2.setRow( u.getRow() );
 					u2.setNumInRow( num );
 					u2.isResetedBy(u);
-					barobot.i2c.list.add(u2);
+					barobot.i2c.add(u2);
 
 					System.out.println("UPANEL dla butelki "+ u2.getBottleNum() 
 							+" o numerze: " + u2.getNumInRow() 
@@ -116,6 +124,8 @@ public class LedOrder {
 					Queue q2 = resetNextTo( u2 );
 					q.addFirst(q2);
 					return true;
+				}else{
+					System.out.println(command + " no isRet:" + result);
 				}
 				return false;
 			}

@@ -27,9 +27,9 @@ public class Constant {
 	public static final String PING = "PING";
 	public static final String PONG = "PONG";
 
-    public static final int DRIVER_X 		= 4;
-	public static final int DRIVER_Y 		= 8;
-	public static final int DRIVER_Z 		= 16;
+ //   public static final int DRIVER_X 		= 4;
+//	public static final int DRIVER_Y 		= 8;
+//	public static final int DRIVER_Z 		= 16;
 
 	public static final int MAINBOARD_DEVICE_TYPE 	= 0x10;
 	public static final int IPANEL_DEVICE_TYPE 		= 0x11;

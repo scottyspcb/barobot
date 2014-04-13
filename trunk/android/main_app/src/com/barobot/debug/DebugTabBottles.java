@@ -22,7 +22,6 @@ import com.barobot.hardware.virtualComponents;
 public class DebugTabBottles extends Fragment {
 	public int tab_id	= -1 ;
 	private Activity cc;
-
     public DebugTabBottles(Activity debugActivity, int tabCommandsId) {
     //	Initiator.logger.i("DebugTabBottles", "init");
     	this.tab_id = tabCommandsId;
@@ -66,9 +65,7 @@ public class DebugTabBottles extends Fragment {
 				R.id.nalej11,
 				R.id.nalej12
 				};
-		
 		int button_width = (size.x -100) / nalejs.length * 2;
-
 		for(int i =0; i<nalejs.length;i++){
 			View w = rootView.findViewById(nalejs[i]);
 			String classname = w.getClass().getName();

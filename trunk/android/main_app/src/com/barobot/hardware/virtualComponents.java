@@ -184,11 +184,15 @@ public class virtualComponents {
 			public Queue run(Mainboard dev, Queue queue) {
 				if(virtualComponents.pac_enabled){
 					Queue	q2	= new Queue();		
-					up.setLed( q2, "11", 100 );
+					if( up != null ){
+						up.setLed( q2, "11", 100 );
+					}
 					q2.addWait( BarobotConnector.SERVOZ_PAC_TIME_WAIT );
 					q2.add("Z" + BarobotConnector.SERVOZ_PAC_POS+",255", true);	
 					virtualComponents.moveZDown(q2, true );
-					up.setLed( q2, "11", 0 );
+					if( up != null ){
+						up.setLed( q2, "11", 0 );
+					}
 					return q2;
 				}
 				return null;
@@ -294,9 +298,9 @@ public class virtualComponents {
 		Queue q1			= new Queue();
 		Upanel[] up 		= barobot.i2c.getUpanels();
 		for(int i =up.length-1; i>=0;i--){
-			q1.add("L"+ up[i] +",22,200", true);
+			up[i].setLed(q1, "22", 200);
 			q1.addWait(100);
-			q1.add("L"+ up[i] +",22,0", true);
+			up[i].setLed(q1, "22", 0);
 		}
 		q.add(q1);
 		q.addWait(100);
@@ -306,10 +310,10 @@ public class virtualComponents {
 		barobot.i2c.carret.setLed( q, "22", 20 );
 		Queue q2			= new Queue();
 		for(int i =up.length-1; i>=0;i--){
-			q1.add("L"+ up[i] +",88,200", true);
-			q1.add("L"+ up[i] +",04,50", true);
-			q1.add("L"+ up[i] +",10,50", true);
-			q1.add("L"+ up[i] +",08,50", true);
+			up[i].setLed(q1, "88", 200);
+			up[i].setLed(q1, "04", 50);
+			up[i].setLed(q1, "10", 50);
+			up[i].setLed(q1, "08", 50);
 		}
 		q.add(q2);
 		q.addWait(500);
@@ -323,8 +327,8 @@ public class virtualComponents {
 		Queue q1		= new Queue();	
 		Upanel[] up		= barobot.i2c.getUpanels();
 		for(int i =0; i<up.length;i++){
-			q1.add("L"+ up[i] +",ff,0", true);
-			q1.add("L"+ up[i] +",ff,200", true);
+			up[i].setLed(q1, "ff", 0);
+			up[i].setLed(q1, "ff", 200);
 		}
 		q.add(q1);
 	}
@@ -423,7 +427,7 @@ public class virtualComponents {
 			@Override
 			public Queue run(Mainboard dev, Queue queue) {
 				Upanel[] up		= barobot.i2c.getUpanels();
-				for(int i =up.length-1; i>=0;i--){
+				for(int i =0; i<up.length;i++){
 					Upanel uu = up[i];
 					System.out.println("+Upanel "
 							+ "dla butelki: " + uu.getBottleNum() 
@@ -432,10 +436,11 @@ public class virtualComponents {
 							+ " o indeksie " + uu.getRow()
 							+ " ma adres " + uu.getAddress() );
 				}
+				barobot.i2c.rememberStructure();
 				ledsReady	= true;
+				Queue q3	= new Queue();
 				Queue q1	= new Queue();
 				Queue q2	= new Queue();
-				Queue q3	= new Queue();
 				for(int i =0; i<up.length;i++){
 					up[i].setLed(q1, "ff", 200);
 					up[i].setLed(q2, "ff", 0);
@@ -454,8 +459,8 @@ public class virtualComponents {
 		Queue q1		= new Queue();	
 		Upanel[] up		= barobot.i2c.getUpanels();
 		for(int i =0; i<up.length;i++){
-			q1.add("L"+ up[i] +",ff,0", true);
-			q1.add("L"+ up[i] +","+ string +"," + value, true);
+			up[i].setLed(q1, "ff", 0);
+			up[i].setLed(q1, string, value);
 		}
 		Queue q			= getMainQ();
 		q.add(q1);
@@ -464,7 +469,7 @@ public class virtualComponents {
 		Queue q1		= new Queue();	
 		Upanel[] up		= barobot.i2c.getUpanels();
 		for(int i =0; i<up.length;i++){
-			q1.add("L"+ up[i] +",ff,0", true);
+			up[i].setLed(q1, "ff", 0);
 		}
 		Queue q			= getMainQ();
 		q.add(q1);
@@ -474,14 +479,11 @@ public class virtualComponents {
 		int blue	= Color.blue(color);
     	int red		= Color.red(color);
     	int green	= Color.green(color);
+    	int white	= 0;
 		Queue q1	= new Queue();
-
 		Upanel[] up = barobot.i2c.getUpanels();
 		for(int i =0; i<up.length;i++){
-			q1.add("L"+ up[i] +",11," + red, true);
-			q1.add("L"+ up[i] +",22," + green, true);
-			q1.add("L"+ up[i] +",44," + blue, true);
-		//	q1.add("L"+ up[i] +",88," + white, true);
+			up[i].setRgbW(q1, red,green,blue,white);
 		}
 		Queue q			= getMainQ();
 		q.add(q1);

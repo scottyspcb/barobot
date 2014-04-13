@@ -84,9 +84,7 @@ public class Arduino{
 				Initiator.logger.i("Arduino.GlobalMatch.RX", fromArduino);
 				fromArduino = fromArduino.replace("Rx", "");
 				int hpos = Decoder.toInt(fromArduino);
-				int spos = barobot.driver_x.hard2soft(hpos);
-				barobot.driver_x.setSPos( spos );	
-
+				barobot.driver_x.setHPos( hpos );	
 				return true;
 			}
 			@Override
@@ -147,7 +145,6 @@ public class Arduino{
 				int[] parts = Decoder.decodeBytes( fromArduino );
 				// byte ttt[4] = {METHOD_DEVICE_FOUND,addr,type,ver};
 				// byte ttt[4] = {METHOD_DEVICE_FOUND,I2C_ADR_MAINBOARD,MAINBOARD_DEVICE_TYPE,MAINBOARD_VERSION};
-
 				boolean scanning = true;
 				if( scanning ){
 		/*
@@ -175,9 +172,8 @@ public class Arduino{
 				}else if(parts[2] == Constant.IPANEL_DEVICE_TYPE ){		// wozek
 					decoded += "/IPANEL_DEVICE_TYPE";
 				}
-				//Initiator.logger.i("MyRetReader.decoded", decoded);
+				Initiator.logger.i("MyRetReader.decoded", decoded);
 				return true;
-
 			}
 			@Override
 			public String getMatchRet() {
