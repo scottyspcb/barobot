@@ -58,11 +58,8 @@ public class MyRetReader implements RetReader {
 			if( parts[2] == Methods.METHOD_GET_X_POS ){
 				decoded += "/METHOD_GET_X_POS";
 				int hpos = parts[3] + (parts[4] << 8);
-				int posx = barobot.driver_x.hard2soft(hpos);
-				
 				//BarobotCommandResult
-				
-				barobot.driver_x.setSPos( posx );	
+				barobot.driver_x.setHPos( hpos );	
 				if(command.equals("x")){
 					return true;
 				}else{
@@ -90,13 +87,13 @@ public class MyRetReader implements RetReader {
 				}
 			}else if( parts[2] == Methods.METHOD_DRIVER_DISABLE ){
 				decoded += "/METHOD_DRIVER_DISABLE";
-				if( parts[3] == Constant.DRIVER_X){
+				if( parts[3] == Methods.DRIVER_X){
 					decoded += "/DRIVER_X";
 					retLike = "DX";
-				}else if( parts[3] == Constant.DRIVER_Y){
+				}else if( parts[3] == Methods.DRIVER_Y){
 					decoded += "/DRIVER_Y";
 					retLike = "DY";
-				}else if( parts[3] == Constant.DRIVER_Z){
+				}else if( parts[3] == Methods.DRIVER_Z){
 					decoded += "/DRIVER_Z";
 					retLike = "DZ";
 				}else{
@@ -107,19 +104,19 @@ public class MyRetReader implements RetReader {
 				if(command.equals(retLike)){		// DX, DY, DZ
 					return true;
 				}else{
-					Initiator.logger.e("MyRetReader.decoded.wrong", command);
+					Initiator.logger.e("MyRetReader.decoded.wrong", command + ", expected:" + retLike+ " because of " + decoded );
 					return false;
 				}
 				
 			}else if( parts[2] == Methods.METHOD_DRIVER_ENABLE ){
 				decoded += "/METHOD_DRIVER_ENABLE";
-				if( parts[3] == Constant.DRIVER_X){
+				if( parts[3] == Methods.DRIVER_X){
 					decoded += "/DRIVER_X";
 					retLike = "REX";
-				}else if( parts[3] == Constant.DRIVER_Y){
+				}else if( parts[3] == Methods.DRIVER_Y){
 					decoded += "/DRIVER_Y";
 					retLike = "REY";
-				}else if( parts[3] == Constant.DRIVER_Z){
+				}else if( parts[3] == Methods.DRIVER_Z){
 					decoded += "/DRIVER_Z";
 					retLike = "REZ";
 				}else{
@@ -130,46 +127,47 @@ public class MyRetReader implements RetReader {
 				if(command.startsWith("E")){		// EX, EY, EZ
 					return true;
 				}else{
-					Initiator.logger.e("MyRetReader.decoded.wrong", command);
+					Initiator.logger.e("MyRetReader.decoded.wrong", command + ", expected output:" + "E..." );
 					return false;
 				}
-				
 			}else if( parts[2] == Methods.RETURN_DRIVER_READY || parts[2] == Methods.RETURN_DRIVER_READY_REPEAT){
 				if(parts[2] == Methods.RETURN_DRIVER_READY){
 					decoded += "/RETURN_DRIVER_READY";
 				}else{
 					decoded += "/RETURN_DRIVER_READY_REPEAT";
 				}
-				if( parts[3] == Constant.DRIVER_X){
+				if( parts[3] == Methods.DRIVER_X){
 					decoded += "/DRIVER_X";
 					//int pos = parts[4] + (parts[5] << 8) + (parts[6] << 16 + (parts[7] << 24));
 				//	short hpos = (short)parts[7] + (short)(parts[6] << 8);
 					short hpos = (short) (parts[6] << 8);
 					hpos += (short)parts[7];
-					int spos = barobot.driver_x.hard2soft(hpos);
-					barobot.driver_x.setSPos( spos );
+					barobot.driver_x.setHPos( hpos );
 					if(command.startsWith("X")){
+						Initiator.logger.i("MyRetReader.decoded OK", decoded);
 						return true;
 					}else{
-						Initiator.logger.e("MyRetReader.decoded.wrong", command);
+						Initiator.logger.e("MyRetReader.decoded.wrong", command + ", expected output:" + "X..." + " because of " + decoded );
 					}
-				}else if( parts[3] == Constant.DRIVER_Y){
+				}else if( parts[3] == Methods.DRIVER_Y){
 					int pos = parts[4] + (parts[5] << 8);
 					decoded += "/DRIVER_Y";
 					state.set( "POSY", pos );
 					if(command.startsWith("Y")){
+						Initiator.logger.i("MyRetReader.decoded OK", decoded);
 						return true;
 					}else{
-						Initiator.logger.e("MyRetReader.decoded.wrong", command);
+						Initiator.logger.e("MyRetReader.decoded.wrong", command + ", expected output:" + "Y..." + " because of " + decoded );
 					}
-				}else if( parts[3] == Constant.DRIVER_Z){
+				}else if( parts[3] == Methods.DRIVER_Z){
 					int pos = parts[4] + (parts[5] << 8);
 					decoded += "/DRIVER_Z";
 					state.set( "POSZ",pos);
 					if(command.startsWith("Z")){
+						Initiator.logger.i("MyRetReader.decoded OK", decoded);
 						return true;
 					}else{
-						Initiator.logger.e("MyRetReader.decoded.wrong", command);
+						Initiator.logger.e("MyRetReader.decoded.wrong", command + ", expected output:" + "Z..." + " because of " + decoded );
 					}
 				}else{
 					decoded += "/???";
@@ -195,9 +193,8 @@ public class MyRetReader implements RetReader {
 			if(fromArduino2.startsWith(Constant.GETXPOS)){
 				decoded += "/GETXPOS";
 				String fromArduino3 = fromArduino2.replace(Constant.GETXPOS, "");	
-				int posx = Decoder.toInt(fromArduino3);	// hardware pos
-				posx = barobot.driver_x.hard2soft(posx);
-				barobot.driver_x.setSPos( posx );
+				int hpos = Decoder.toInt(fromArduino3);	// hardware pos
+				barobot.driver_x.setHPos( hpos );
 			}else if(fromArduino2.startsWith(Constant.GETYPOS)){
 				decoded += "/GETYPOS";
 				
@@ -231,13 +228,13 @@ public class MyRetReader implements RetReader {
 			decoded += "/METHOD_EXEC_ERROR";
 			int[] parts = Decoder.decodeBytes( fromArduino );
 			String retLike = fromArduino;
-			if( parts[3] == Constant.DRIVER_X){
+			if( parts[3] == Methods.DRIVER_X){
 				decoded += "/Rx";
 				retLike = "Rx";
-			}else if( parts[3] == Constant.DRIVER_Y){
+			}else if( parts[3] == Methods.DRIVER_Y){
 				decoded += "/Ry";
 				retLike = "Ry";
-			}else if( parts[3] == Constant.DRIVER_Z){
+			}else if( parts[3] == Methods.DRIVER_Z){
 				decoded += "/Rz";
 				retLike = "Rz";
 			}else{
@@ -304,9 +301,10 @@ public class MyRetReader implements RetReader {
 			hpos += (short)parts[7];
 			int value		= parts[8] + (parts[9] << 8);
 			int spos		= barobot.driver_x.hard2soft(hpos);
-			decoded += "/@" + hpos;
+			decoded += "/@s:" + spos;
+			decoded += "/@h:" + hpos;
 			decoded += "/#" + value;
-			barobot.driver_x.setSPos( spos );
+			barobot.driver_x.setHPos( hpos );
 
 			if(virtualComponents.scann_bottles && !checkInput && dir == Methods.DRIVER_DIR_FORWARD ){
 				state_num++;
@@ -385,7 +383,8 @@ public class MyRetReader implements RetReader {
 					state.set( "X_GLOBAL_MIN", hpos );
 					barobot.driver_x.setM(hpos);
 					state.set("MARGINX", hpos);
-					spos = barobot.driver_x.hard2soft(hpos);		// new software pos (equal 0);
+					// new software pos (equal 0);
+					spos = barobot.driver_x.hard2soft(hpos);
 					virtualComponents.hereIsStart(spos, BarobotConnector.SERVOY_FRONT_POS );
 					Initiator.logger.i("input_parser", "jestem w: " + spos );
 					barobot.driver_x.setSPos( spos );
@@ -412,7 +411,8 @@ public class MyRetReader implements RetReader {
 					state.set( "X_GLOBAL_MIN", hpos );
 					barobot.driver_x.setM(hpos);
 					state.set("MARGINX", hpos);
-					spos = barobot.driver_x.hard2soft(hpos);		// new software pos (equal 0);
+					// new software pos (equal 0)
+					spos = barobot.driver_x.hard2soft(hpos);
 					barobot.driver_x.setSPos( spos );
 					virtualComponents.hereIsStart(spos, BarobotConnector.SERVOY_FRONT_POS );
 					Initiator.logger.i("input_parser", "jestem2 w: " + spos );

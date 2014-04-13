@@ -15,6 +15,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.barobot.audio.DetectorThread;
+import com.barobot.common.Initiator;
 import com.barobot.common.interfaces.HardwareState;
 import com.barobot.common.interfaces.OnSignalsDetectedListener;
 import com.barobot.common.interfaces.serial.SerialEventListener;
@@ -24,6 +25,9 @@ import com.barobot.hardware.devices.BarobotConnector;
 import com.barobot.hardware.devices.i2c.Upanel;
 import com.barobot.hardware.serial.AndroidBarobotState;
 import com.barobot.hardware.serial.Serial_wire;
+import com.barobot.parser.Queue;
+import com.barobot.parser.message.AsyncMessage;
+import com.barobot.parser.message.Mainboard;
 import com.barobot.parser.utils.Interval;
 
 public class MainActivity extends Activity implements OnSignalsDetectedListener{
@@ -52,24 +56,6 @@ public class MainActivity extends Activity implements OnSignalsDetectedListener{
     	
 		startConnection();
 
-		Map<String, Integer> config = new HashMap<String, Integer>();
-		config.put("source",  MediaRecorder.AudioSource.MIC);
-		config.put("frameByteSize", 2048);
-		config.put("channelDef", AudioFormat.CHANNEL_IN_MONO);
-		config.put("channels", 1 );
-		config.put("sampleSize", 2048 );
-		config.put("averageLength", 2048 );
-		config.put("audioEncoding",  AudioFormat.ENCODING_PCM_16BIT);
-		config.put("bitDepth",   16 );
-		config.put("sampleRate", 44100);
-
-		recorderThread = new AndroidRecorderThread( config );
-		recorderThread.start();
-		detectorThread = new DetectorThread( config, recorderThread);
-		detectorThread.setOnSignalsDetectedListener(this);
-		detectorThread.start();
-
-    //	init();
 		Button xb1 = (Button) findViewById(R.id.unlock);
 		xb1.setOnClickListener( new OnClickListener(){
 			@Override
@@ -77,6 +63,37 @@ public class MainActivity extends Activity implements OnSignalsDetectedListener{
 				barobot.main_queue.unlock();
 			}
 		});
+		
+		barobot.main_queue.add( new AsyncMessage( true ) {
+			@Override
+			public Queue run(Mainboard dev, Queue queue) {
+				this.name		= "scanning back";
+
+				Map<String, Integer> config = new HashMap<String, Integer>();
+				config.put("source",  MediaRecorder.AudioSource.MIC);
+				config.put("frameByteSize", 2048);
+				config.put("channelDef", AudioFormat.CHANNEL_IN_MONO);
+				config.put("channels", 1 );
+				config.put("sampleSize", 2048 );
+				config.put("averageLength", 2048 );
+				config.put("audioEncoding",  AudioFormat.ENCODING_PCM_16BIT);
+				config.put("bitDepth",   16 );
+				config.put("sampleRate", 44100);
+			
+				recorderThread = new AndroidRecorderThread( config );
+				recorderThread.start();
+				detectorThread = new DetectorThread( config, recorderThread);
+				detectorThread.setOnSignalsDetectedListener(MainActivity.this);
+				detectorThread.start();
+
+				return null;
+			}
+		} );
+		
+		
+
+    //	init();
+
 	}
 
 	private void startConnection() {
@@ -107,7 +124,7 @@ public class MainActivity extends Activity implements OnSignalsDetectedListener{
 		barobot.willWriteThrough( connection );
 		Upanel[] up		= barobot.i2c.getUpanels();
 		for( int i=0;i<up.length ;i++){
-			barobot.main_queue.add( "L"+ up[i] + ",ff,0", true );
+			barobot.main_queue.add( "L"+ up[i].getAddress() + ",ff,0", true );
 		}
 	}
 
@@ -117,25 +134,26 @@ public class MainActivity extends Activity implements OnSignalsDetectedListener{
 			public void run() {
 				toggled1 = !toggled1;
 				if(toggled1){
-					barobot.main_queue.add( "L"+ up[0] +",04,0", sync);
+				//	up[0].setLed(barobot.main_queue, "04", 0);	
+					barobot.main_queue.add( "L"+ up[0].getAddress() +",04,0", sync);
 				}else{
-					barobot.main_queue.add( "L"+ up[0] +",04,255", sync);
+					barobot.main_queue.add( "L"+ up[0].getAddress() +",04,255", sync);
 				}
 			}});
 		ii2 = new Interval(new Runnable(){
 			public void run() {
 				toggled2 = !toggled2;
 				if(toggled2){
-					barobot.main_queue.add( "L"+ up[2] +",01,0", sync);
+					barobot.main_queue.add( "L"+ up[2].getAddress() +",01,0", sync);
 				}else{
-					barobot.main_queue.add( "L"+ up[2] +",01,255", sync);
+					barobot.main_queue.add( "L"+ up[2].getAddress() +",01,255", sync);
 				}
 			}});
 		ii3 = new Interval(new Runnable(){
 			public void run() {
 				toggled3 = !toggled3;
 				if(toggled3){
-					barobot.main_queue.add( "L"+ up[4] +",02,0", sync);
+					barobot.main_queue.add( "L"+ up[4].getAddress() +",02,0", sync);
 				}else{
 					barobot.main_queue.add( "L"+ up[4] +",02,255", sync);
 				}
@@ -145,9 +163,9 @@ public class MainActivity extends Activity implements OnSignalsDetectedListener{
 			public void run() {
 				toggled0 = !toggled0;
 				if(toggled0){
-					barobot.main_queue.add( "L"+ up[6] +",01,0", sync);
+					barobot.main_queue.add( "L"+ up[6].getAddress() +",01,0", sync);
 				}else{
-					barobot.main_queue.add( "L"+ up[6] +",01,255", sync);
+					barobot.main_queue.add( "L"+ up[6].getAddress() +",01,255", sync);
 				}
 			}});
 	}
@@ -215,19 +233,19 @@ public class MainActivity extends Activity implements OnSignalsDetectedListener{
 			final String command3 = ",44," + ((int) b);
 	//		System.out.println("\t>>>add: " + command);
 
-			barobot.main_queue.add( "L"+ up[1] +command3, sync);
-			barobot.main_queue.add( "L"+ up[3] +command2, sync);
-			barobot.main_queue.add( "L"+ up[5] +command1, sync);
-			barobot.main_queue.add( "L"+ up[7] +command1, sync);
-			barobot.main_queue.add( "L"+ up[9] +command2, sync);
-			barobot.main_queue.add( "L"+ up[11] +command3, sync);
+			barobot.main_queue.add( "L"+ up[1].getAddress() +command3, sync);
+			barobot.main_queue.add( "L"+ up[3].getAddress() +command2, sync);
+			barobot.main_queue.add( "L"+ up[5].getAddress() +command1, sync);
+			barobot.main_queue.add( "L"+ up[7].getAddress() +command1, sync);
+			barobot.main_queue.add( "L"+ up[9].getAddress() +command2, sync);
+			barobot.main_queue.add( "L"+ up[11].getAddress() +command3, sync);
 			/*
-			barobot.main_queue.add( "L"+ up[6] +command1, sync);
-			barobot.main_queue.add( "L"+ up[7] +command1, sync);
-			barobot.main_queue.add( "L"+ up[9] +command1, sync);
-			barobot.main_queue.add( "L"+ up[10] +command1, sync);
-			barobot.main_queue.add( "L"+ up[10] +command1, sync);
-			barobot.main_queue.add( "L"+ up[11] +command1, sync);
+			barobot.main_queue.add( "L"+ up[6].getAddress() +command1, sync);
+			barobot.main_queue.add( "L"+ up[7].getAddress() +command1, sync);
+			barobot.main_queue.add( "L"+ up[9].getAddress() +command1, sync);
+			barobot.main_queue.add( "L"+ up[10].getAddress() +command1, sync);
+			barobot.main_queue.add( "L"+ up[10].getAddress() +command1, sync);
+			barobot.main_queue.add( "L"+ up[11].getAddress() +command1, sync);
 			*/
 			last = norm;
 		}
@@ -280,7 +298,7 @@ public class MainActivity extends Activity implements OnSignalsDetectedListener{
 			b = Math.min(b, 255);
 //			final String command2 = ",11," + ((int) b);
 	//		System.out.println("\t>>>add: " + command);
-//			barobot.main_queue.add( "L"+ up[] +""+command2, true);
+//			barobot.main_queue.add( "L"+ up[].getAddress() +""+command2, true);
 			runOnUiThread(new Runnable() {
 				public void run() {
 					TextView textView = (TextView) mainView.findViewById(R.id.beats);

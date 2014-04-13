@@ -10,17 +10,16 @@ public abstract class I2C_Device_Imp implements I2C_Device{
 	protected int myaddress = 0;
 	protected int row = 0;
 	protected int numInRow = -1;
+	protected int index	= -1;
 	protected String cpuname = "";
 	protected String protocol = "stk500v1";
 	protected int bspeed = IspSettings.programmspeed;
-	public int have_reset_address	= -1;
-
 	protected String lfuse = "";
 	protected String hfuse = "";
 	protected String lock = "";
 	protected String efuse = "";
 	protected I2C_Device canBeResetedBy;
-	protected int index	= -1;
+	protected Runnable onchange = null;
 
 	public I2C_Device_Imp() {
 	}
@@ -29,6 +28,12 @@ public abstract class I2C_Device_Imp implements I2C_Device{
 	public void setLed(Queue q, String selector, int pwm ) {
 		String command = "L" + myaddress + ","+ selector +"," + pwm;
 		q.add( command, true );
+	}
+	public void setRgbW(Queue q1, int red, int green, int blue, int white) {
+		this.setLed(q1, "11", red);
+		this.setLed(q1, "22", green);
+		this.setLed(q1, "44", blue);
+	//	this.setLed(q1, "88", white);
 	}
 
 	@Override
@@ -44,6 +49,9 @@ public abstract class I2C_Device_Imp implements I2C_Device{
 	@Override
 	public void setAddress(int myaddress) {
 		this.myaddress = myaddress;
+		if(onchange!=null){
+			onchange.run();
+		}
 	}
 
 	@Override
@@ -54,6 +62,9 @@ public abstract class I2C_Device_Imp implements I2C_Device{
 	@Override
 	public void setRow(int myindex) {
 		this.row = myindex;
+		if(onchange!=null){
+			onchange.run();
+		}
 	}
 
 	@Override
@@ -64,12 +75,18 @@ public abstract class I2C_Device_Imp implements I2C_Device{
 	public void setIndex(int index) {
 		this.index = index;
 		this.numInRow = 0;
+		if(onchange!=null){
+			onchange.run();
+		}
 	}
 	
 	
 	@Override
 	public void setNumInRow(int order) {
 		this.numInRow = order;
+		if(onchange!=null){
+			onchange.run();
+		}
 	}
 
 	@Override
@@ -206,6 +223,9 @@ public abstract class I2C_Device_Imp implements I2C_Device{
 	}
 	public void isResetedBy(I2C_Device i2c_device) {
 		canBeResetedBy = i2c_device;
+		if(onchange!=null){
+			onchange.run();
+		}
 	}
 	/*
 	public Queue resetCommand() {
@@ -221,4 +241,8 @@ public abstract class I2C_Device_Imp implements I2C_Device{
 		}
 		return q;
 	}*/
+
+	public void onchange(Runnable runnable) {
+		this.onchange = runnable;
+	}
 }

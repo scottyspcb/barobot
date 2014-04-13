@@ -73,15 +73,16 @@ public class Mainboard{
 		boolean handled =false;
 		String wait4Command = "";
 
-	//	if( state.getInt("show_reading", 0) > 0 ){
-			Initiator.logger.w("Mainboard.useInput", command );
-	//	}
-
 		String command2 = this.modyfyInput( command );
 		if( !command2.equals(command)){
 	//		Initiator.logger.e("Mainboard.useInput changed to:", command2 );
 			command = command2;
 		}
+
+		//	if( state.getInt("show_reading", 0) > 0 ){
+				Initiator.logger.w("Mainboard.useInput", command );
+		//	}
+
 		boolean used = false;
 		synchronized (this) {
 		//	Initiator.logger.i("wait_for?: ", ( (this.wait_for == null)? "null" : "nonull") );
@@ -255,10 +256,11 @@ public class Mainboard{
 		}
 	}
 	public boolean parse(String in) {
-	//	if( state.getInt("show_unknown", 0) > 0 ){
+		if( state.getInt("show_unknown", 0) > 0 ){
 			if( in.startsWith( "-") ){			// comment
 				Initiator.logger.i("Mainboard.parse.comment", in);
 				return true;
+			}else if( in.equals("NO_CMD []" ) ){
 			}else{
 				if(in.matches("^.*[^-a-zA-Z0-9_.,].*")){		// unusual characters
 					// log command to db
@@ -267,7 +269,7 @@ public class Mainboard{
 				Initiator.logger.i("Mainboard.parse", Decoder.toHexStr(in.getBytes(), in.length()));
 			//	mainQueue.show("Mainboard.parse");
 			}
-	//	}
+		}
 		return false;
 	}
 
