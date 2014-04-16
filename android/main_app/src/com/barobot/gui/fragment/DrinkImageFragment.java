@@ -36,5 +36,4 @@ public class DrinkImageFragment extends Fragment {
 		ImageView iView = (ImageView) getView().findViewById(R.id.drink_image);
 		iView.setImageResource(0);
 	}
-		
 }

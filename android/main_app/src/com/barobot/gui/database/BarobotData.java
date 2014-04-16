@@ -26,7 +26,7 @@ public class BarobotData {
 	public static void StartOrmanMapping(Context context){
 		// Setting up ORMAN
 		Database omdb = new SQLiteAndroid(context, DATABASE_NAME, DATABASE_SCHEMA_VERSION);	
-		MappingSession.getConfiguration().setCreationPolicy(SchemaCreationPolicy.CREATE);
+		MappingSession.getConfiguration().setCreationPolicy(SchemaCreationPolicy.CREATE_IF_NOT_EXISTS);
 		MappingSession.registerEntity(Category.class);
 		MappingSession.registerEntity(Type.class);
 		MappingSession.registerEntity(Liquid_t.class);

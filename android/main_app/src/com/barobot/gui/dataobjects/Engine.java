@@ -25,7 +25,7 @@ public class Engine {
 	private Engine(Context context)
 	{
 		BarobotData.StartOrmanMapping(context);
-		BarobotDataStub.SetupDatabase();
+	//	BarobotDataStub.SetupDatabase();
 	}
 	
 	public static List<Slot> getSlots()
