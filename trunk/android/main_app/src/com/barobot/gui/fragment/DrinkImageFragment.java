@@ -6,6 +6,7 @@ import com.barobot.gui.utils.PhotoGallery;
 
 import android.app.Fragment;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,17 +18,17 @@ public class DrinkImageFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 
+		Log.w("DrinkImageFragment","onCreateView");
 		pGallery = new PhotoGallery();
 		return inflater.inflate(R.layout.fragment_drink_image, container, false);
-	
 		// TODO: Add onClickListener to all buttons on this fragment
 	}
 	
 	public void SetImage(int photoId)
 	{
 		int id = pGallery.getImageID(photoId);
-		
 		ImageView iView = (ImageView) getView().findViewById(R.id.drink_image);
+		Log.w("photoId SetImage",""+id + "/" + photoId);
 		iView.setImageResource(id);
 	}
 	

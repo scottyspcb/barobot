@@ -23,7 +23,9 @@ public class Type extends Model<Type>{
 	
 	public List<Liquid_t> getLiquids()
 	{
-		liquids.refreshList();
+		if(liquids.size() == 0 ){
+			liquids.refreshList();
+		}
 		return liquids;
 	}
 	
