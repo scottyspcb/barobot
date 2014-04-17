@@ -30,7 +30,9 @@ public class Recipe_t extends Model<Recipe_t>{
 	
 	public List<Ingredient_t> getIngredients()
 	{
-		ingredients.refreshList();
+		if(ingredients.size() == 0 ){
+			ingredients.refreshList();
+		}
 		return ingredients;
 	}
 	
@@ -41,6 +43,7 @@ public class Recipe_t extends Model<Recipe_t>{
 		{
 			ing.insert();
 			this.ingredients.add(ing);
+			this.ingredients.refreshList();
 			this.update();
 		}
 		else

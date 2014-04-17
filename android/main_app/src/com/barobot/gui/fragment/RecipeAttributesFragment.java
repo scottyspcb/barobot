@@ -27,10 +27,10 @@ public class RecipeAttributesFragment extends Fragment {
 		TextProgressBar bitterPB = (TextProgressBar) getView().findViewById(R.id.progress_bar_bitter);
 		TextProgressBar strengthPB = (TextProgressBar) getView().findViewById(R.id.progress_bar_strength);
 		
-		sweetPB.setProgress(Normalize(sweet));
-		sourPB.setProgress(Normalize(sour));
-		bitterPB.setProgress(Normalize(bitter));
-		strengthPB.setProgress(Normalize(strength));
+		sweetPB.setProgress(Normalize(sweet, 100) );
+		sourPB.setProgress(Normalize(sour, 100 ));
+		bitterPB.setProgress(Normalize(bitter, 100 ));
+		strengthPB.setProgress(Normalize(strength, 40 ));
 	}
 	
 	public void ClearAttributes()
@@ -46,10 +46,11 @@ public class RecipeAttributesFragment extends Fragment {
 		strengthPB.setProgress(0);
 	}
 	
-	private int Normalize(int value)
+	private int Normalize(int value, int max)
 	{
-		if (value > 100) return 100;
+		if (value > max) return 100;
 		if (value < 0) return 0;
-		return value;
+
+		return (int) ((float)((float)value / (float)max)  * 100);
 	}
 }

@@ -3,7 +3,7 @@ package com.barobot.gui.utils;
 import com.barobot.R;
 
 public class PhotoGallery {
-	private final int galerySize = 16;
+	private final int galerySize = 21;
 	private int[] ids;
 	private int defaultImageID;
 	
@@ -14,9 +14,9 @@ public class PhotoGallery {
 	
 	private void Setup()
 	{
-		defaultImageID = R.drawable.image_drink_03;
+		defaultImageID = R.drawable.image_drink_default;
 		ids = new int [galerySize+1];
-		ids[0] = R.drawable.image_drink_00;
+		ids[0] = R.drawable.image_drink_default;
 		ids[1] = R.drawable.image_drink_01;
 		ids[2] = R.drawable.image_drink_02;
 		ids[3] = R.drawable.image_drink_03;
@@ -31,9 +31,14 @@ public class PhotoGallery {
 		ids[12] = R.drawable.image_drink_12;
 		ids[13] = R.drawable.image_drink_13;
 		ids[14] = R.drawable.image_drink_14;
-		ids[15] = R.drawable.image_drink_15;	
+		ids[15] = R.drawable.image_drink_15;
+		ids[16] = R.drawable.image_drink_16;
+		ids[17] = R.drawable.image_drink_17;
+		ids[18] = R.drawable.image_drink_18;
+		ids[19] = R.drawable.image_drink_19;
+		ids[20] = R.drawable.image_drink_20;	
 	}
-	
+
 	public int getImageID(int photoId)
 	{
 		if (photoId < 1 || photoId > galerySize)
