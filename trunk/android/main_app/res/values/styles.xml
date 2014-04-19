@@ -12,10 +12,10 @@
 
     <!-- Buttons -->
 
-    <style name="ButtonDefault" parent="@android:style/TextAppearance.Medium">
+    <style name="TextDefault" parent="@android:style/TextAppearance.Medium">
         <item name="android:gravity">center</item>
         <item name="android:textColor">@android:color/white</item>
-        <item name="android:textSize">18sp</item>
+        <item name="android:textSize">25sp</item>
         <item name="android:shadowRadius">1</item>
         <item name="android:shadowDx">1</item>
         <item name="android:shadowDy">1</item>
@@ -24,20 +24,40 @@
         
     </style>
 
-    <style name="ButtonBlue" parent="ButtonDefault">
+    <style name="ButtonBlue" parent="TextDefault">
         <item name="android:background">@drawable/button_blue</item>
     </style>
 
-    <style name="ButtonGreen" parent="ButtonDefault">
+    <style name="ButtonGreen" parent="TextDefault">
         <item name="android:background">@drawable/button_green</item>
     </style>
 
-    <style name="ButtonRed" parent="ButtonDefault">
+    <style name="ButtonRed" parent="TextDefault">
         <item name="android:background">@drawable/button_red</item>
     </style>
 
-    <style name="ButtonYellow" parent="ButtonDefault">
+    <style name="ButtonYellow" parent="TextDefault">
         <item name="android:background">@drawable/button_yellow</item>
+    </style>
+    
+    <style name="MenuButton" parent="@android:style/TextAppearance.Medium">
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">@dimen/MenuButtonHeight</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">@android:color/black</item>
+        <item name="android:textSize">25sp</item>
+        <item name="android:padding">5dp</item>
+        <item name="android:background">@drawable/button_menu</item>
+        <item name="android:shadowRadius">1</item>
+        <item name="android:shadowDx">1</item>
+        <item name="android:shadowDy">1</item>
+        <item name="android:shadowColor">@android:color/white</item>
+    </style>
+    
+    <style name="OptionsMenuButton" parent="@style/MenuButton">
+        <item name="android:layout_width">@dimen/OptionsMenuButtonWidth</item>
+        <item name="android:layout_height">@dimen/OptionsMenuButtonHeight</item>
+        <item name="android:layout_margin">@dimen/OptionsMenuButtonMargin</item>
     </style>
     
     <!-- Misc -->
@@ -46,6 +66,20 @@
         <item name="android:shadowDx">1</item>
         <item name="android:shadowDy">1</item>
         <item name="android:shadowColor">@android:color/black</item>
+    </style>
+    
+    <style name="ProductConfigurationText" parent="ShadowedText">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_centerHorizontal">true</item>
+        <item name="android:layout_margin">15dp</item>
+        <item name="android:textSize">@dimen/bottle_box_text_size</item>
+                
+    </style>
+    
+     <style name="SmoothList" parent="@android:style/TextAppearance.Medium">
+        <item name="android:divider">@null</item>
+        <item name="android:dividerHeight">0sp</item>
     </style>
 
 </resources>

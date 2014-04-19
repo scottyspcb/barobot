@@ -22,14 +22,13 @@
     <dimen name="product_list_width">160dp</dimen>
     <dimen name="product_button_margin_bottom">30sp</dimen>
     
-     <dimen name="recipe_list_width">160dp</dimen>
+    <dimen name="recipe_list_width">160dp</dimen>
     <dimen name="recipe_button_margin_bottom">30sp</dimen>
     
     <color name="pressed_color">#4d90fe</color>
     <color name="default_color">#0000ff</color>
     
-    <!-- Main Menu -->
-    <dimen name="main_menu_width">150dp</dimen>
+    
     
     <!-- Progress Bars -->
     <dimen name="progress_bar_name_width">60dp</dimen>
@@ -62,6 +61,9 @@
     <color name="YellowButtonDisabledEndColor">#736F6E</color>
     <color name="YellowButtonBorderColor">#254117</color>
     
+    <!-- Main Menu -->
+    <dimen name="main_menu_width">220dp</dimen>
+    
     <!-- Menu Button -->
     <color name="MenuButtonStartColor">@color/SecondaryBLight2</color>
     <color name="MenuButtonEndColor">@color/SecondaryB</color>
@@ -70,11 +72,15 @@
     <color name="MenuButtonDisabledStartColor">#565051</color>
     <color name="MenuButtonDisabledEndColor">#736F6E</color>
     <color name="MenuButtonBorderColor">@color/SecondaryB</color>
-    <dimen name="MenuButtonHeight">53dp</dimen>
+    <dimen name="MenuButtonHeight">75dp</dimen>
     
     <!-- Options -->
-    <dimen name="OptionsMenuButtonWidth">150dp</dimen>
+    <dimen name="OptionsMenuButtonWidth">250dp</dimen>
+    <dimen name="OptionsMenuButtonHeight">100dp</dimen>
     <dimen name="OptionsMenuButtonMargin">10dp</dimen>
+    
+    <!-- Recipes -->
+    <dimen name="RecipeListWidth">300dp</dimen>
     
     <!-- Bottle Buttons -->
     <color name="BottleStartColor">#BBDFF4FB</color>
@@ -102,11 +108,17 @@
     <color name="SecondaryBDark1">#5FA92A</color>
     <color name="SecondaryBDark2">#3D9200</color>
     
-    <color name="MainLight1">#7673D9</color>
-    <color name="MainLight2">#0C0874</color>
+    <color name="MainLight1">#5E5BBA</color>
+    <color name="MainLight2">#3D38BA</color>
     <color name="Main">#0C0874</color>
-    <color name="MainDark1">#0C0874</color>
-    <color name="MainDark2">#0C0874</color>
+    <color name="MainDark1">#1D1A57</color>
+    <color name="MainDark2">#05034B</color>
+    
+    <color name="TransparentMainLight1">#AA5E5BBA</color>
+    <color name="TransparentMainLight2">#AA3D38BA</color>
+    <color name="TransparentMain">#AA0C0874</color>
+    <color name="TransparentMainDark1">#AA1D1A57</color>
+    <color name="TransparentMainDark2">#AA05034B</color>
     
     <!-- Progress Bars Colors -->
     <color name="SweetStart">#ff920a</color>

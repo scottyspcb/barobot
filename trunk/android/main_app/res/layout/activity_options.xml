@@ -35,7 +35,6 @@
             style="@style/OptionsMenuButton"
             android:layout_alignParentLeft="true"
             android:layout_below="@id/options_recipe_setup_button"
-            android:enabled="false"
             android:onClick="onOptionsButtonClicked"
             android:text="@string/options_extra_setup_button" />
 
@@ -44,7 +43,6 @@
             style="@style/OptionsMenuButton"
             android:layout_alignParentTop="true"
             android:layout_toRightOf="@id/options_bottle_setup_button"
-            android:enabled="false"
             android:onClick="onOptionsButtonClicked"
             android:text="@string/options_lights_button" />
 
@@ -53,7 +51,6 @@
             style="@style/OptionsMenuButton"
             android:layout_below="@id/options_lights_button"
             android:layout_toRightOf="@id/options_bottle_setup_button"
-            android:enabled="false"
             android:onClick="onOptionsButtonClicked"
             android:text="@string/options_demo_button" />
 
@@ -68,21 +65,17 @@
         <Button
             android:id="@+id/options_about_button"
             style="@style/OptionsMenuButton"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentLeft="true"
-            android:enabled="false"
+            android:layout_below="@id/options_demo_button"
+            android:layout_toRightOf="@id/options_lights_button"
             android:onClick="onOptionsButtonClicked"
             android:text="@string/options_about_button" />
 
         <Button
             android:id="@+id/options_turn_off_button"
-            style="@style/ButtonRed"
-            android:layout_width="@dimen/OptionsMenuButtonWidth"
-            android:layout_height="@dimen/MenuButtonHeight"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentRight="true"
+            style="@style/OptionsMenuButton"
+            android:layout_below="@id/options_demo_button"
+            android:layout_toRightOf="@id/options_bottle_setup_button"
             android:layout_margin="@dimen/OptionsMenuButtonMargin"
-            android:enabled="false"
             android:text="@string/options_turn_off_button" />
     </RelativeLayout>
 

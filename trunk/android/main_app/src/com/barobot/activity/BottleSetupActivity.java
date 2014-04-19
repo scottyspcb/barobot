@@ -5,6 +5,7 @@ import java.util.List;
 import com.barobot.R;
 import com.barobot.gui.dataobjects.Engine;
 import com.barobot.gui.dataobjects.Slot;
+import com.barobot.gui.fragment.MenuFragment;
 
 import android.os.Bundle;
 import android.content.Intent;
@@ -37,7 +38,7 @@ public class BottleSetupActivity extends BarobotActivity
 		UpdateSlots();
 	}
 	private void UpdateSlots() {
-		List<Slot> bottles = Engine.getSlots();
+		List<Slot> bottles = Engine.GetInstance(this).getSlots();
 
 		Log.w("BOTTLE_SETUP length",""+bottles.size());
 		
@@ -86,9 +87,11 @@ public class BottleSetupActivity extends BarobotActivity
 	
 	@Override
 	protected void onResume() {
-		UpdateSlots();
 		super.onResume();
 		
+		MenuFragment menuFrag = (MenuFragment) getFragmentManager().findFragmentById(R.id.fragment_menu);
+		menuFrag.SetBreadcrumb(MenuFragment.MenuItem.Options);
 		
+		UpdateSlots();
 	}
 }

@@ -61,7 +61,7 @@ public class BarobotData {
 	
 	public static List<Recipe_t> GetListedRecipes()
 	{
-		return Model.fetchQuery(ModelQuery.select().from(Recipe_t.class).where(C.eq("unlisted", false)).getQuery(),Recipe_t.class);
+		return Model.fetchQuery(ModelQuery.select().from(Recipe_t.class).where(C.eq("unlisted", false)).orderBy("Recipe_t.name").getQuery(),Recipe_t.class);
 	}
 	
 	public static List<Recipe_t> GetFavoriteRecipes()
@@ -70,7 +70,7 @@ public class BarobotData {
 				C.and(
 						C.eq("unlisted", false),
 						C.eq("favorite", true)
-						)).getQuery(),Recipe_t.class);
+						)).orderBy("Recipe_t.name").getQuery(),Recipe_t.class);
 	}
 
 	public static List<Slot> GetSlots()

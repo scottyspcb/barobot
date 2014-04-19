@@ -4,15 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.AlertDialog;
-import android.app.Fragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.barobot.R;
@@ -27,8 +24,6 @@ import com.barobot.gui.fragment.MenuFragment;
 import com.barobot.gui.fragment.RecipeAttributesFragment;
 import com.barobot.gui.utils.Distillery;
 import com.barobot.hardware.virtualComponents;
-import com.barobot.hardware.devices.i2c.Upanel;
-import com.barobot.parser.Queue;
 
 public class CreatorActivity extends BarobotActivity implements ArduinoListener{
 
@@ -72,7 +67,7 @@ public class CreatorActivity extends BarobotActivity implements ArduinoListener{
 
 	private void UpdateSlots() {
 
-		List<Slot> bottles = Engine.getSlots();
+		List<Slot> bottles = Engine.GetInstance(this).getSlots();
 
 		Log.w("BOTTLE_SETUP length",""+bottles.size());
 		

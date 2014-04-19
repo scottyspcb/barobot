@@ -22,15 +22,22 @@ public class Engine {
 		}
 		return instance;
 	}
+	
+	private List<Slot> slots;
+	
 	private Engine(Context context)
 	{
 		BarobotData.StartOrmanMapping(context);
 	//	BarobotDataStub.SetupDatabase();
 	}
 	
-	public static List<Slot> getSlots()
+	public List<Slot> getSlots()
 	{
-		return BarobotData.GetSlots();
+		if (slots == null)
+		{
+			slots = BarobotData.GetSlots(); 
+		}
+		return slots;
 	}
 	
 	public Slot getSlot(int position)
@@ -54,15 +61,32 @@ public class Engine {
 		
 			slot.update();
 		}
+		invalidateData();
 	}
 	
 	public void emptySlot(int position)
 	{
-		Slot slot = BarobotData.GetSlot(position);
+		Slot slot = getSlot(position);
 		slot.product = null;
 		slot.status = "Empty";
 		slot.currentVolume = 0;
 		slot.update();
+		invalidateData();
+	}
+	
+	private void invalidateData()
+	{
+		slots = null;
+		recipes = null;
+		favoriteRecipes = null;
+	}
+	
+	public void CacheDatabase()
+	{
+		invalidateData();
+		getSlots();
+		getRecipes();
+		getFavoriteRecipes();
 	}
 	
 	public List<Product> getProducts()
@@ -89,14 +113,26 @@ public class Engine {
 		product.insert();	
 	}
 	
+	private List<Recipe_t> recipes;
+	
 	public List<Recipe_t> getRecipes()
 	{
-		return Filter(BarobotData.GetListedRecipes());
+		if (recipes == null)
+		{
+			recipes = Filter(BarobotData.GetListedRecipes()); 
+		}
+		return recipes;
 	}
+	
+	private List<Recipe_t> favoriteRecipes;
 	
 	public List<Recipe_t> getFavoriteRecipes()
 	{
-		return Filter(BarobotData.GetFavoriteRecipes());
+		if (favoriteRecipes == null)
+		{
+			favoriteRecipes =Filter(BarobotData.GetFavoriteRecipes()); 
+		}
+		return favoriteRecipes;
 	}
 	
 	private List<Recipe_t> Filter(List<Recipe_t> recipes)
@@ -179,7 +215,7 @@ public class Engine {
 		return true;
 	}
 	
-	public static List<Integer> GenerateSequence(List<Ingredient_t> ingredients)
+	public List<Integer> GenerateSequence(List<Ingredient_t> ingredients)
 	{
 		int VOLUME_DIVIDER = 20;
 		List<Integer> bottleSequence = new ArrayList<Integer>();
