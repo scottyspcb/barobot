@@ -19,7 +19,7 @@
 
         <ListView
             android:id="@+id/recipe_list"
-            android:layout_width="250sp"
+            android:layout_width="@dimen/RecipeListWidth"
             android:layout_height="fill_parent"
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
@@ -39,19 +39,19 @@
 
             <TextView
                 android:id="@+id/recipe_name_textview"
-                style="@style/ButtonGreen"
+                style="@style/TextDefault"
                 android:layout_width="match_parent"
                 android:layout_height="80dp"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentLeft="true"
                 android:background="@drawable/ingredient_list_bg"
-                android:textSize="25sp" />
+                android:textSize="35sp" />
             
             <Button
                 android:id="@+id/choose_pour_button"
                 style="@style/ButtonGreen"
-                android:layout_width="200dp"
-                android:layout_height="80dp"
+                android:layout_width="300dp"
+                android:layout_height="100dp"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentBottom="true"
                 android:layout_margin="3dp"

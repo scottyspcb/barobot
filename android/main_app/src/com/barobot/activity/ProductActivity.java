@@ -77,7 +77,7 @@ public class ProductActivity extends BarobotActivity {
 
 		
 		ArrayAdapter<Type> mAdapter = new ArrayAdapter<Type>(this, R.layout.item_layout, types);
-		ListView listView = (ListView) findViewById(R.id.product_types_list);
+		ListView listView = (ListView) findViewById(R.id.product_type_list);
 		listView.setAdapter(mAdapter);
 		
 		listView.setOnItemClickListener(new OnItemClickListener() {

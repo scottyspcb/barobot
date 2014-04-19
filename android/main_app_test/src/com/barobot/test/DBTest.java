@@ -302,7 +302,7 @@ public class DBTest extends AndroidTestCase {
 	{
 		Liquid_t liq = new Liquid_t();
 		liq.name = "LiquidName" + suffix;
-		liq.voltage = 2;
+		
 		
 		return liq;
 	}

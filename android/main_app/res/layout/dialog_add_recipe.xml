@@ -10,5 +10,6 @@
         android:layout_marginLeft="4dp"
         android:layout_marginRight="4dp"
         android:layout_marginBottom="4dp"
+        android:inputType="textCapWords"
         android:hint="@string/recipe_name" />
 </LinearLayout>

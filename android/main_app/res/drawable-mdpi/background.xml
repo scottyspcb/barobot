@@ -1,5 +1,5 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle" > 
-<item android:drawable="@drawable/image_drink_03">
+<item android:drawable="@drawable/image_bg">
 <shape>
    <gradient android:angle="315" android:startColor="@color/Main" android:endColor="@color/MainDark2"/>
    <stroke android:width="1dip" android:color="@color/MainDark2"/>

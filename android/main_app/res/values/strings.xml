@@ -156,6 +156,11 @@
     <string name="product_field_type">[Type]</string>
     <string name="product_field_liquid">[Name]</string>
     <string name="product_field_capacity">[Capacity]</string>
+    <string name="product_liquid_label">Liquids</string>
+    <string name="product_type_label">Types</string>
+    <string name="product_capacity_label">Capacities</string>
+    
+    
     <string name="image_desc">[Drink Image]</string>
     <string name="title_activity_random">Get Random</string>
     <string name="title_activity_options">Options and Setup</string>
