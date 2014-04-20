@@ -79,12 +79,23 @@ public class BarobotMain extends BarobotActivity implements ArduinoListener {
 		mode = Mode.values()[modeInt];
 		
 		SetBreadcrumb();
-		
-		
 		AppInvoker.getInstance().onResume();
 		
 		FillRecipeList();
+		
+		int position = 0;
+		ListView listView = (ListView) findViewById(R.id.recipe_list);
+		if (mode == Mode.Random) {
+			position = (int) (Math.random()*listView.getAdapter().getCount());
+		}
+		
+		listView.setSelection(position);
+		listView.setItemChecked(position, true);
+
+		mCurrentRecipe = (Recipe_t) listView.getItemAtPosition(position);
+
 		FillRecipeDetails();
+
 		super.onResume();
 	}
 	

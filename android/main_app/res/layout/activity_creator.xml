@@ -26,6 +26,7 @@
             <TextView
                 android:id="@+id/bottle_button1"
                 style="@style/BottleButtonCreator"
+                android:drawableBottom="@drawable/drop_3"
                 android:onClick="onBottleClicked" />
 
             <TextView
