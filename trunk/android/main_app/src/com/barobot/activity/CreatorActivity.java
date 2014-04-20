@@ -5,6 +5,7 @@ import java.util.List;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -29,6 +30,8 @@ public class CreatorActivity extends BarobotActivity implements ArduinoListener{
 
 	//private boolean[] slot_nums = {false, false,false,false,false,false,false,false,false, false,false,false,false};
 	private int[] ids;
+	private int[] drops;
+	private int[] dropIds;
 	private List<Ingredient_t> ingredients;
 
 	@Override
@@ -49,6 +52,13 @@ public class CreatorActivity extends BarobotActivity implements ArduinoListener{
 	}
 
 	private void UpdateData(){
+		SetupBottles();
+		SetupDrops();
+		UpdateSlots();	
+	}
+	
+	private void SetupBottles()
+	{
 		ids = new int[13];
 		ids[1] = R.id.bottle_button1;
 		ids[2] = R.id.bottle_button2;
@@ -62,7 +72,23 @@ public class CreatorActivity extends BarobotActivity implements ArduinoListener{
 		ids[10] = R.id.bottle_button10;
 		ids[11] = R.id.bottle_button11;
 		ids[12] = R.id.bottle_button12;
-		UpdateSlots();	
+	}
+	
+	private void SetupDrops()
+	{
+		drops = new int[13];
+		for(int idx=1; idx <= 12 ; idx++)
+		{
+			drops[idx] = 0;
+		}
+		
+		dropIds = new int[6];
+		dropIds[0] = 0;
+		dropIds[1] = R.drawable.drop_1;
+		dropIds[2] = R.drawable.drop_2;
+		dropIds[3] = R.drawable.drop_3;
+		dropIds[4] = R.drawable.drop_4;
+		dropIds[5] = R.drawable.drop_5;
 	}
 
 	private void UpdateSlots() {
@@ -132,6 +158,7 @@ public class CreatorActivity extends BarobotActivity implements ArduinoListener{
 				addIngredient(position, ingredient);
 			}
 			ShowIngredients();
+			CalculateDrops();
 		}else{
 			Log.w("BOTTLE_SETUP", "onBottleClicked called by an unknown view");
 		}
@@ -149,10 +176,10 @@ public class CreatorActivity extends BarobotActivity implements ArduinoListener{
 			slot_nums[i] = true;
 		}
 		virtualComponents.setLedsOff("ff");*/
-		ShowIngredients();	
+		
+		ShowIngredients();
+		CalculateDrops();
 	}
-	
-	
 	
 	public void onAddRecipeButtonClicked (View view)
 	{
@@ -212,6 +239,32 @@ public class CreatorActivity extends BarobotActivity implements ArduinoListener{
 		return null;
 	}
 	
+	public void CalculateDrops()
+	{
+		SetupDrops();
+		
+		List<Integer> sequence = Engine.GetInstance(this).GenerateSequence(ingredients);
+		
+		for(Integer num : sequence) {
+			drops[num]++;
+		}
+		
+		for (int idx=1; idx <= 12 ; idx ++)
+		{
+			TextView tview = (TextView) findViewById(ids[idx]);
+			int counter = drops[idx];
+			if (counter > 5) counter = 5;
+			
+			for(Drawable myOldDrawable : tview.getCompoundDrawables())
+			{
+				if (myOldDrawable != null) {
+					myOldDrawable.setCallback(null);
+				}
+			}
+			tview.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, dropIds[counter]);
+		}
+	}
+	
 	public Recipe_t CreateDrink(String name)
 	{
 		return CreateDrink(name, false);
@@ -231,23 +284,7 @@ public class CreatorActivity extends BarobotActivity implements ArduinoListener{
 	public boolean onCreateOptionsMenu(Menu menu) {
 		return true;
 	}
-	/*
-	public void FillIngredientList()
-	{
-		List<String> list = new ArrayList<String>();
-		list.add("Test");
-		list.add("Test");
-		list.add("Test");
-		list.add("Test");
-		list.add("Test");
-		list.add("Test");
-		
-		ArrayAdapter<String> mAdapter = new ArrayAdapter<String>(this, R.layout.ingredient_list_item, list);
-		ListView listView = (ListView) findViewById(R.id.ingredient_list);
-		listView.setAdapter(mAdapter);
-		
-	}
-*/
+
 	@Override
 	public void onQueueFinished() {
 		clear();
