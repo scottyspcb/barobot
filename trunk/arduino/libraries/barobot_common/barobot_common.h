@@ -81,7 +81,7 @@
 		// domyslnie ustawienie mocy silnikow Xy
 		#if MAINBOARD_SERVO_4PIN==true
 			#define MAINBOARD_SPEEDX 400
-			#define MAINBOARD_ACCELERX 1050
+			#define MAINBOARD_ACCELERX 950
 			#define MAINBOARD_XLENGTH 1700
 			#define PIN_MAINBOARD_STEPPER_STEP0 14			// A0
 			#define PIN_MAINBOARD_STEPPER_STEP1 15			// A1
@@ -89,7 +89,7 @@
 			#define PIN_MAINBOARD_STEPPER_STEP3 17			// A3
 		#else
 			// driver 4-pin (LMxxxx)
-			#define MAINBOARD_SPEEDX 4000
+			#define MAINBOARD_SPEEDX 2500
 			#define MAINBOARD_ACCELERX 9000
 			#define MAINBOARD_XLENGTH 12700
 			#define PIN_MAINBOARD_STEPPER_ENABLE 14			// A0
@@ -217,10 +217,10 @@
 		#define LED_TOP_GREEN				PIN_PANEL_LED1_NUM
 		#define LED_TOP_BLUE				PIN_PANEL_LED2_NUM
 		#define LED_TOP_WHITE				PIN_PANEL_LED3_NUM
-		#define LED_BOTTOM_RED				PIN_PANEL_LED4_NUM
-		#define LED_BOTTOM_GREEN			PIN_PANEL_LED5_NUM
-		#define LED_BOTTOM_BLUE				PIN_PANEL_LED6_NUM
-		#define LED_BOTTOM_WHITE			PIN_PANEL_LED7_NUM
+		#define LED_BOTTOM_RED				PIN_PANEL_LED7_NUM
+		#define LED_BOTTOM_GREEN			PIN_PANEL_LED4_NUM
+		#define LED_BOTTOM_BLUE				PIN_PANEL_LED5_NUM
+		#define LED_BOTTOM_WHITE			PIN_PANEL_LED6_NUM
 
 		// EEPROM content:
 		/*
@@ -336,23 +336,6 @@
 	#define DRIVER_DIR_BACKWARD 64
 	#define DRIVER_DIR_STOP		0
 
-	#define INNER_SERVOY  0
-	#define INNER_SERVOZ  1
-
-	#define DRIVER_X 	4
-	#define DRIVER_Y 	8
-	#define DRIVER_Z 	16
-
-	#define INNER_HALL_X 0
-	#define INNER_HALL_Y 0
-	#define INNER_WEIGHT 1
-
-	#define HALL_GLOBAL_MIN 1
-	#define HALL_GLOBAL_MAX 2
-	#define HALL_LOCAL_MAX 4
-	#define HALL_LOCAL_MIN 8
-
-
 	#if HAS_LEDS
 		typedef struct{ 
 		  uint8_t pin;      // hardware I/O port and pin for this channel
@@ -407,7 +390,6 @@ union byteword{
     byte bytes[2];
     word i;
 };
-
 
 /* 
 ARDUINO DIP to TQFP
