@@ -1,20 +1,13 @@
 #include <FlexiTimer2.h>
 #include <Servo.h>
 
-#if 1
-#define DEBUG(sth) (Serial.print(String(sth)))
-#define DEBUGLN(sth) (Serial.println(String(sth)))
-#else
-#define DEBUG(sth)
-#define DEBUGLN(sth)
-#endif
-
 String serial0Buffer = "";
 boolean Console0Complete = false;   // This will be set to true once we have a full string
 boolean dir = true;
 Servo servoZ;
 
-#define STEPPER_Z_PWM 6
+#define STEPPER_Z_PWM 9
+#define USETIMER false
 #define SEPARATOR_CHAR '\n'
 boolean enabled = false;
 
@@ -29,16 +22,24 @@ volatile boolean pos_changed = false;
 
 void setup(){
   Serial.begin(115200); 
-  DEBUG("HELLO");
-  DEBUG("przyklad: 10,1900");
-  enabled = false;
+  Serial.println("HELLO");
+  Serial.println("przyklad: 10,1900");
+
+  pinMode(STEPPER_Z_PWM, OUTPUT );
+ 
 //  FlexiTimer2::set(40, 1.0/1000, flash); // call every 500 1ms "ticks"
-  FlexiTimer2::set(40, 1.0/100, flash);
   // FlexiTimer2::set(500, flash); // MsTimer2 style is also supported
-  FlexiTimer2::start();
-//  in = analogRead(A0);
-//  target_pos = map(in, 0, 1023, SERVO_MIN_POS,  SERVO_MAX_POS);
-//  last_pos = target_pos;
+
+  if(USETIMER){
+    FlexiTimer2::set(40, 1.0/100, flash);
+    FlexiTimer2::start();
+  }
+  
+  servoZ.writeMicroseconds(1100);
+  servoZ.attach(STEPPER_Z_PWM); 
+  
+  Serial.println("START"); 
+  Serial.flush();
 }
 
 byte sp = 1;
@@ -55,13 +56,13 @@ void flash(){
     if( this_distance < quoter){                                // ostatnia cwiatrka = zwalniaj
       delta = (delta_pos * this_distance);
       delta = delta /quoter;
-//      DEBUG("delta4 = " ); 
+//      Serial.print("delta4 = " ); 
     }else if( this_distance > (last_distance - quoter)){        // pierwsza cwiatrka = przyspieszaj. tu zawsze this_distance > 3/4 * last_distance
       delta = (delta_pos * (last_distance - this_distance ) );      // tu zawsze (last_distance - this_distance ) < quoter
       delta = delta /quoter;
-//      DEBUG("delta1 = " ); 
+//      Serial.print("delta1 = " ); 
     }else{  // na maxa
-//      DEBUG("delta2 = " ); 
+//      Serial.print("delta2 = " ); 
       delta = delta_pos;
     }
     if(delta_pos > 0){
@@ -73,7 +74,7 @@ void flash(){
           delta = -10;
         }
     }
- //   DEBUGLN(String(delta)); 
+ //   Serial.println(String(delta)); 
     last_pos = last_pos + delta;
     if( delta_pos > 0 && last_pos > target_pos ){
       last_pos = target_pos;
@@ -85,12 +86,12 @@ void flash(){
 }
 
 void loop(){
-  if(pos_changed){  // mam byc gdzie indziej
-    DEBUG("\tpos= " + String(last_pos) );
-    DEBUG("\ttarget_pos= " + String(target_pos) );
-    DEBUGLN();
+  if(USETIMER && pos_changed){  // mam byc gdzie indziej
+    Serial.print("\tpos= " + String(last_pos) );
+    Serial.print("\ttarget_pos= " + String(target_pos) );
+    Serial.println();
     if( last_pos == target_pos){
-      DEBUGLN( "gotowe" ); 
+      Serial.println( "gotowe" ); 
     }else{
       servoZ.writeMicroseconds(last_pos);
     }
@@ -103,14 +104,14 @@ void loop(){
   }
 }
 
-//  format:  MAXSPEED,ACCELERATION,TARGET,MICROSTEPPING
+//  format:  MAXSPEED,POS
 // np 111,222,333,444
 
 void parseInput( String input ){   // zrozum co sie dzieje
   input.trim();
   int comma = input.indexOf(',');
   byte byte_pos = 0;
-  DEBUGLN("------------------NOWY CONFIG-----------------"); 
+  Serial.println("------------------NOWY CONFIG-----------------"); 
   while( comma != -1 ){
       String current  = input.substring(0, comma);
       input           = input.substring(comma + 1 );    // wytnij od tego znaku
@@ -121,7 +122,7 @@ void parseInput( String input ){   // zrozum co sie dzieje
   if( input.length() > 0 ){
       setValue( byte_pos, input );
   }  
-  DEBUGLN("----------------------------------------------"); 
+  Serial.println("----------------------------------------------"); 
 }
 
 // MAXSPEED,TARGET
@@ -129,7 +130,7 @@ void setValue(byte byte_pos, String value ){
   long unsigned val = decodeInt( value, 0 );
   if( byte_pos == 0 ){               // MAXSPEED
     sp = val;
-    DEBUGLN("setMaxSpeed: " + String(sp) );    
+    Serial.println("setMaxSpeed: " + String(sp) );    
   }else if( byte_pos == 1 ){                  // TARGET
     target_pos = val;
     if( target_pos == last_pos ){  // rowne? nigdzie nie jedz
@@ -140,15 +141,13 @@ void setValue(byte byte_pos, String value ){
       delta_pos = sp;
       last_distance = target_pos - last_pos;
     }
-    if(!enabled){
-      servoZ.attach(STEPPER_Z_PWM);
-    }
-    DEBUGLN("\tmoveTo: " + String(target_pos) );
-    DEBUGLN("\tlast_pos: " + String(last_pos) );
-    DEBUGLN("\tdelta= " + String(delta_pos) );
-    DEBUGLN();
-  }else if( byte_pos == 2 ){
-  }else if( byte_pos == 3 ){
+   if(!USETIMER){
+     servoZ.writeMicroseconds(target_pos);
+   }
+    Serial.println("\tmoveTo: " + String(target_pos) );
+    Serial.println("\tlast_pos: " + String(last_pos) );
+    Serial.println("\tdelta= " + String(delta_pos) );
+    Serial.println();
   }
 }
 
