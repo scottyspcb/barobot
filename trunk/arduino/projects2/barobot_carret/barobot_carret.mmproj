@@ -6,14 +6,14 @@
   <extras>
   </extras>
   <externals>
-    <external name="D:\PROG\arduino-1.0.5\libraries\WSWire\WSWire.cpp" />
-    <external name="D:\PROG\arduino-1.0.5\libraries\WSWire\utility\twi.c" />
-    <external name="D:\PROG\arduino-1.0.5\libraries\i2c_helpers\i2c_helpers.h" />
-    <external name="D:\PROG\arduino-1.0.5\libraries\i2c_helpers\i2c_helpers.cpp" />
-    <external name="D:\PROG\arduino-1.0.5\libraries\barobot_common\barobot_common.h" />
-    <external name="D:\PROG\arduino-1.0.5\libraries\Servo\Servo.cpp" />
-    <external name="D:\PROG\arduino-1.0.5\libraries\Servo\Servo.h" />
-    <external name="D:\PROG\arduino-1.0.5\libraries\FlexiTimer2\FlexiTimer2.h" />
-    <external name="D:\PROG\arduino-1.0.5\libraries\FlexiTimer2\FlexiTimer2.cpp" />
+    <external name="C:\PROG\arduino\libraries\WSWire\WSWire.cpp" />
+    <external name="C:\PROG\arduino\libraries\WSWire\utility\twi.c" />
+    <external name="C:\PROG\arduino\libraries\i2c_helpers\i2c_helpers.h" />
+    <external name="C:\PROG\arduino\libraries\i2c_helpers\i2c_helpers.cpp" />
+    <external name="C:\PROG\arduino\libraries\barobot_common\barobot_common.h" />
+    <external name="C:\PROG\arduino\libraries\Servo\Servo.cpp" />
+    <external name="C:\PROG\arduino\libraries\Servo\Servo.h" />
+    <external name="C:\PROG\arduino\libraries\FlexiTimer2\FlexiTimer2.h" />
+    <external name="C:\PROG\arduino\libraries\FlexiTimer2\FlexiTimer2.cpp" />
   </externals>
 </mm_project>
