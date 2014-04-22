@@ -30,7 +30,7 @@
 		void	setOnReady( void (*)(long int) );
 		void	stop();
 		void	stop( float multispeed );
-		void	stopNow();
+		void	stopNow();
 		void	debug();
 		void	disableOutputs();
 		void	enableOutputs();
