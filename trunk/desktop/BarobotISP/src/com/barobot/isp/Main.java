@@ -10,6 +10,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.Properties;
 
+import jssc.SerialPortList;
+
 import com.barobot.common.DesktopLogger;
 import com.barobot.common.IspSettings;
 import com.barobot.parser.utils.CopyStream;
@@ -21,6 +23,11 @@ public class Main{
 	public static Main main = null;
 
 	public static void main(String[] args) {
+		String[] portNames = SerialPortList.getPortNames();
+        for(int i = 0; i < portNames.length; i++){
+            System.out.println(portNames[i]);
+        }
+
 		DesktopLogger dl = new DesktopLogger();
 		com.barobot.common.Initiator.setLogger( dl );
 
@@ -38,17 +45,19 @@ public class Main{
 		loadProps();
 		//String[] comlist = list();
 		Wizard w	= new Wizard();
-		Hardware hw = new Hardware("COM39");
+		Hardware hw = new Hardware("COM3");
 
-		IspSettings.safeMode = true;
+		IspSettings.safeMode = false;
 		IspSettings.verbose = 2;
-		IspSettings.setFuseBits = true;
-		IspSettings.setHex	= false;
+		IspSettings.setFuseBits = false;
+		IspSettings.setHex	= true;
 		IspSettings.force = false;
 
-
 		UploadCode uc = new UploadCode();
-		//uc.prepareUpanels( hw );
+		
+	//	hw.connectIfDisconnected();
+	//uc.prepareUpanels( hw );
+		
 		uc.prepareCarret( hw );
 		
 	//	w.fast_close_test( hw );
@@ -65,18 +74,13 @@ public class Main{
 	//	w.prepareUpanel( hw, 4 );
 	//	w.test( hw );
 
-		w.findOrder( hw );
+	//	w.findOrder( hw );
 
 	//	Macro mm  = new Macro();
 	//	mm.promo1( hw );
-	//	w.createContstans( hw );
-		
-		
+	//	w.createContstans( hw );	
 	//	MetaRendering mr = new MetaRendering();
 	//	mr.createContstans();
-		
-		
-		
 	//	mm.resetuj( hw );
 	//	mm.testBpm( hw );
 	//	mm.promo_carret( hw );
@@ -97,6 +101,7 @@ public class Main{
 	//	w.zapal( hw );
 	//	w.zgas( hw );
 	//	hw.close();
+
 		hw.closeOnReady();
 		System.out.println("koniec");
 	}

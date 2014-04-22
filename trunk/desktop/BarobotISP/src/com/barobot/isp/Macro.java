@@ -2,6 +2,7 @@ package com.barobot.isp;
 
 import com.barobot.hardware.devices.i2c.Carret;
 import com.barobot.hardware.devices.i2c.I2C_Device;
+import com.barobot.hardware.devices.i2c.Upanel;
 import com.barobot.parser.Queue;
 import com.barobot.parser.utils.Interval;
 
@@ -11,18 +12,18 @@ public class Macro {
 		hw.connectIfDisconnected();
 		int i = 50;
 
-		for (I2C_Device u : hw.barobot.i2c.list){
+		Upanel[] list = hw.barobot.i2c.getUpanels();
+		
+		for (I2C_Device u : list){
 			u.setLed( q, "ff", 0 );
 		}
 
 		while( i-- >0 ){
-			for (I2C_Device u : hw.barobot.i2c.list){
+			for (I2C_Device u : list){
 				u.setLed( q, "80", 0 );
 			}
-			q.addWaitThread(Main.mt);
-			Main.wait(5);
-
-			for (I2C_Device u : hw.barobot.i2c.list){
+			q.addWait(5 );
+			for (I2C_Device u : list){
 				u.setLed( q, "80", 255 );
 			}
 		}
@@ -36,8 +37,9 @@ public class Macro {
 		Queue q = hw.getQueue();
 		hw.connectIfDisconnected();
 		Carret cc = hw.barobot.i2c.carret;
-	
-		for (I2C_Device u : hw.barobot.i2c.list){
+
+		Upanel[] list = hw.barobot.i2c.getUpanels();
+		for (I2C_Device u : list){
 			u.setLed( q, "ff", 0 );
 		}
 		int max = 20;
@@ -47,9 +49,9 @@ public class Macro {
 		while( repeat-- >0 ){
 			while( i-- >0 ){
 				cc.setLed(q, "01", 255 );
-				Main.wait(time);
+				q.addWait(time );
 				cc.setLed(q, "01", 0 );
-				Main.wait(time);
+				q.addWait(time );
 			}
 			cc.setLed(q, "ff", 0 );
 			q.addWaitThread(Main.mt);
@@ -83,46 +85,46 @@ public class Macro {
 			i = max;
 			while( i-- >0 ){
 				cc.setLed(q, "10", 255 );
-				Main.wait(time);
+				q.addWait(time );
 				cc.setLed(q, "10", 0 );
-				Main.wait(time);
+				q.addWait(time );
 			}
 	
 			i = max;
 			while( i-- >0 ){
 				cc.setLed(q, "20", 255 );
-				Main.wait(time);
+				q.addWait(time );
 				cc.setLed(q, "20", 0 );
-				Main.wait(time);
+				q.addWait(time );
 			}
 
 			i = max;
 			while( i-- >0 ){
 				cc.setLed(q, "40", 255 );
-				Main.wait(time);
+				q.addWait(time );
 				cc.setLed(q, "40", 0 );
-				Main.wait(time);
+				q.addWait(time );
 			}	
 
 			i = max;
 			while( i-- >0 ){
 				cc.setLed(q, "80", 255 );
-				Main.wait(time);
+				q.addWait(time );
 				cc.setLed(q, "80", 0 );
-				Main.wait(time);
+				q.addWait(time );
 			}
-			Main.wait(2000);	
 		}
 		q.addWaitThread(Main.mt);
 	}
 
 	public void testBpm(final Hardware hw) {
 		int bpm = 235;
+		final Upanel[] list = hw.barobot.i2c.getUpanels();
 		final Queue q = hw.getQueue();
 		Interval ii1 = new Interval(new Runnable(){
 			public void run() {
 				System.out.println("teraz");
-				for (I2C_Device u : hw.barobot.i2c.list){
+				for (I2C_Device u : list){
 					u.setLed( q, "ff", 255 );
 				}
 			}});
@@ -130,14 +132,16 @@ public class Macro {
 		Interval ii2 = new Interval(new Runnable(){
 			public void run() {
 				System.out.println("teraz2");
-				for (I2C_Device u : hw.barobot.i2c.list){
+				for (I2C_Device u : list){
 					u.setLed( q, "ff", 0 );
 				}
 			}});
 
 		ii2.run(200, 60 * 1000 /bpm );
 
-		Main.wait(50000);
+
+		q.addWait( 50000 );
+
 		ii1.cancel();
 		ii2.cancel();		
 	}

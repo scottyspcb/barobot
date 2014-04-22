@@ -10,7 +10,6 @@ import com.barobot.parser.Queue;
 import com.barobot.parser.message.AsyncMessage;
 import com.barobot.parser.message.Mainboard;
 import com.barobot.tester.connection.WindowsSerialPort;
-import com.barobot.tester.connection.WindowsSerialPort2;
 
 public class Hardware {
 	private Wire connection					= null;

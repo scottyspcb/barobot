@@ -18,8 +18,9 @@ public class UploadCode {
 		prepareUpanel2( Upanel.FRONT, q, hw.barobot, hw );
 	}
 	private void prepareUpanel2(final int row, Queue q, final BarobotConnector barobot, final Hardware hw ) {
-		barobot.i2c.list.clear();
-
+		hw.barobot.i2c.clear();
+		
+		
 		final int current_index		= 0;
 		final Upanel firstInRow	= new Upanel();
 		firstInRow.setRow(row);
@@ -36,7 +37,7 @@ public class UploadCode {
 						if(bytes[3] == 1 ){							// has next
 							System.out.println("has next ROW "+row+"- OK");
 							q.show("run");
-							barobot.i2c.list.add( firstInRow );
+							hw.barobot.i2c.add( firstInRow );
 							Queue qq2	= UploadFirst( firstInRow, barobot, hw);
 							q.addFirst(qq2);
 						}else{
@@ -146,7 +147,7 @@ public class UploadCode {
 							next_device.setRow( current_dev.getRow() );
 							next_device.isResetedBy( current_dev );
 							next_device.setNumInRow( current_dev.getBottleNum()+1 );
-							barobot.i2c.list.add( next_device );
+							hw.barobot.i2c.add( next_device );
 							Queue qq2	= UploadFirst( next_device, barobot, hw);
 							q.addFirst(qq2);
 						}else if( current_dev.getNumInRow() >= 5 ){	// all found
@@ -223,9 +224,9 @@ public class UploadCode {
 			});
 		}
 	}
-
 	public void clearUpanel(Hardware hw) {
-		while(hw.barobot.i2c.list.size() > 0 ){
+		Upanel[] list = hw.barobot.i2c.getUpanels();
+		while(list.length > 0 ){
 			boolean found = false;
 			/*
 			for (Upanel u : hw.barobot.i2c.list){

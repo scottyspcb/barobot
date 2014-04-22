@@ -20,7 +20,6 @@ public class RandomActivity extends BarobotActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_random);
 		ImageView iw= (ImageView)findViewById(R.id.dice1);  
-		//	InputStream ims = getAssets().open("dice.png");
 			/* 
 			int resID = getResources().getIdentifier("dice.png", "drawable",  getPackageName());
 			iw.setImageResource(resID);
