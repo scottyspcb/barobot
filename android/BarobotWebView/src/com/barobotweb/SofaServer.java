@@ -14,10 +14,6 @@ import java.util.StringTokenizer;
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.util.Log;
-import com.barobot.hardware.Android;
-import com.barobot.web.route.EmptyRoute;
-import com.barobot.web.route.MainPage;
-import com.barobot.web.route.RPCPage;
 import com.x5.template.Chunk;
 import com.x5.template.Theme;
 import com.x5.template.providers.AndroidTemplates;
@@ -60,7 +56,6 @@ public class SofaServer extends NanoHTTPD {
 	        	String ext = path.substring(dotpos+1);
 	        	if(MIME_TYPES.containsKey(ext)){
 	        		String mime = MIME_TYPES.get(ext) + ";encoding=utf-8;charset=UTF-8";
-	        		InputStream mbuffer = null;
 	        		try {
 						mbuffer		= am.open(uri.substring(1));
 						Response r	= new NanoHTTPD.Response(Status.OK, mime, mbuffer);

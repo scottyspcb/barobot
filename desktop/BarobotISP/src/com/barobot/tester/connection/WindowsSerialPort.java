@@ -3,16 +3,16 @@ package com.barobot.tester.connection;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.Queue;
-import java.util.TooManyListenersException;
 
-import javax.comm.CommPortIdentifier;
-import javax.comm.SerialPort;
-import javax.comm.SerialPortEvent;
-import javax.comm.SerialPortEventListener;
-import javax.comm.UnsupportedCommOperationException;
+import jssc.SerialPort;
+import jssc.SerialPortEvent;
+import jssc.SerialPortEventListener;
+import jssc.SerialPortException;
+import jssc.SerialPortList;
 
 import com.barobot.common.Initiator;
 import com.barobot.common.IspSettings;
@@ -26,8 +26,8 @@ public class WindowsSerialPort implements Wire, CanSend{
 	protected static final int timeout = 5000;
 	protected SerialPort serialPort=null;
 	protected String comPort = "COM39";
-	protected OutputStream outputStream;
-	protected InputStream inputStream; 
+//	protected OutputStream outputStream;
+//	protected InputStream inputStream; 
 	protected int baud = 115200;
 	protected boolean connected	= false;
 	protected Queue<SerialInputListener> listener=new LinkedList<SerialInputListener>();
@@ -45,38 +45,37 @@ public class WindowsSerialPort implements Wire, CanSend{
 
 	public boolean open() {
 		System.out.println("WindowsSerialPort open " );
+		serialPort = new SerialPort(comPort); 
 		try {
-			boolean res = this.openPort(this.comPort);
-			if(!res){
-				throw new Exception("no port " + this.comPort );
-			}
-			this.outputStream	= serialPort.getOutputStream();
-			this.inputStream	= serialPort.getInputStream();
+            serialPort.openPort();//Open port
+            serialPort.setParams(baud,  SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
+            serialPort.setEventsMask(SerialPort.MASK_RXCHAR);
+            serialPort.addEventListener(new SerialPortReader());
+     //       System.out.println("Set speed " + baud );
 
-			serialPort.setSerialPortParams( baud,
-				  SerialPort.DATABITS_8,
-				  SerialPort.STOPBITS_1,
-				  SerialPort.PARITY_NONE);
-
-		} catch (UnsupportedCommOperationException e) {
-			e.printStackTrace();
-			return false;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return false;
-		}
+        }catch (SerialPortException ex) {
+            System.out.println(ex);
+            listPorts();
+            return false;
+        }
+/*
 		if(this.fast){
-			try {
+	//		try {
+			
 				SerialPortEventListener lis = new MySerialPortEventListener();
 				serialPort.addEventListener( lis );
-			} catch (TooManyListenersException e) {
-				e.printStackTrace();
-				return false;
-			}
-			serialPort.notifyOnDataAvailable(true);	
+				int mask = SerialPort.MASK_RXCHAR + SerialPort.MASK_CTS + SerialPort.MASK_DSR;//Prepare mask
+		        serialPort.setEventsMask(mask);//Set mask
+
+	//		} catch (TooManyListenersException e) {
+	//			e.printStackTrace();
+	//			return false;
+	//		}
+	//		serialPort.notifyOnDataAvailable(true);	
 		}else{
 			new Thread(new PortReader()).start();
 		}
+		*/
 	//	System.out.println("Set speed " + IspSettings.fullspeed );
 		connected			= true;
     	if(iel!=null){
@@ -84,8 +83,17 @@ public class WindowsSerialPort implements Wire, CanSend{
     	}
 		return true;
 	}
-	protected boolean openPort( String name ) throws Exception {
-		Enumeration  portList = CommPortIdentifier.getPortIdentifiers();
+	private void listPorts() {
+		String[] portNames = SerialPortList.getPortNames();
+		for(int i = 0; i < portNames.length; i++){
+			System.out.println("Existing port: "+portNames[i]);
+		}
+	}
+	/*protected boolean openPort( String name ) throws Exception {
+		return true;
+		
+		
+		Enumeration  portList = (Enumeration) CommPortIdentifier.getPortIdentifiers();
 		System.out.println("openPort:" + name);	
 		while (portList.hasMoreElements()) {
 			CommPortIdentifier portId = (CommPortIdentifier) portList.nextElement();
@@ -95,8 +103,7 @@ public class WindowsSerialPort implements Wire, CanSend{
 			  return true;
 		  }
 		}
-		return false;
-	}
+	}*/
 	protected byte doError() {
 		byte[] bytes = new byte[1];		// ver very very bad hack to stop listener thread in lib
 		return bytes[10];
@@ -109,30 +116,41 @@ public class WindowsSerialPort implements Wire, CanSend{
 				this.listener.clear();
 			}
 			System.out.println("serial close");
-			serialPort.notifyOnDataAvailable(false);
-			serialPort.disableReceiveFraming();
+		//	serialPort.notifyOnDataAvailable(false);
+		//	serialPort.disableReceiveFraming();
 			
-			serialPort.disableReceiveTimeout();
-			serialPort.disableReceiveThreshold();
+		//	serialPort.disableReceiveTimeout();
+		//	serialPort.disableReceiveThreshold();
 			synchronized(serialPort){
 				serialPort.notify();
 				serialPort.notifyAll();
 			}
 
 			System.out.println("removeEventListener");
-			serialPort.removeEventListener();
+			try {
+				serialPort.removeEventListener();
+			} catch (SerialPortException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			synchronized(serialPort){
 				serialPort.notify();
 			}
+			/*
 			try {
 				serialPort.enableReceiveTimeout(0);
 			} catch (UnsupportedCommOperationException e) {
 				e.printStackTrace();
-
-
+			}*/
+			
+			try {
+				serialPort.closePort();
+			} catch (SerialPortException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-			serialPort.close();
 			serialPort = null;
+			/*
 			if (outputStream != null) {
 				try {
 					synchronized(outputStream){
@@ -154,7 +172,7 @@ public class WindowsSerialPort implements Wire, CanSend{
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-			}
+			}*/
 			connected = false;
 	    	if(iel!=null){
 	    		iel.onClose();
@@ -164,27 +182,28 @@ public class WindowsSerialPort implements Wire, CanSend{
 	public boolean send(String command) throws IOException{
 	//	System.out.println("\t>>>Sending: " + command.trim());
 		try {
-			outputStream.write(command.getBytes());
+	//		outputStream.write(command.getBytes());
+			serialPort.writeBytes(command.getBytes());
 			return true;
-		} catch (IOException e) {
-		  e.printStackTrace();
+		} catch (SerialPortException e) {
+			e.printStackTrace();
 		}
 		return false;
 	}
 	public boolean send(byte[] buf, int size) throws IOException {
 	//	System.out.println("\t>>>Sending: " + command);
 		try {
-			outputStream.write(buf, 0, size);
+			byte [] subArray = Arrays.copyOfRange(buf, 0, size);
+			serialPort.writeBytes(subArray);
 			return true;
-		} catch (IOException e) {
-		  e.printStackTrace();
+		} catch (SerialPortException e) {
+			e.printStackTrace();
 		}
 		return false;
 	}
 	public boolean isConnected() {
 		return connected;
 	}
-
 	public String getName() {
 		return "COM Serial Port";
 	}
@@ -240,13 +259,12 @@ public class WindowsSerialPort implements Wire, CanSend{
 	public void connectToId(String address) {}
 
 	public void setBaud(int speed) {
+	
 		try {
-			serialPort.setSerialPortParams(speed,
-					  SerialPort.DATABITS_8,
-					  SerialPort.STOPBITS_1,
-					  SerialPort.PARITY_NONE);
+			serialPort.setParams(speed,  SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
 			System.out.println("Set speed " + speed );
-		} catch (UnsupportedCommOperationException e) {
+		} catch (SerialPortException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -259,6 +277,7 @@ public class WindowsSerialPort implements Wire, CanSend{
 	public void reset() {
 		// TODO Auto-generated method stub
 	}
+	/*
 	private final class PortReader implements Runnable{
 		public void run(){
 			try{
@@ -283,10 +302,37 @@ public class WindowsSerialPort implements Wire, CanSend{
 				exc.printStackTrace();
 			}
 		}
-	}
+	}*/
+
+	class SerialPortReader implements SerialPortEventListener {
+        public void serialEvent(SerialPortEvent event) {
+            if(event.isRXCHAR()){//If data is available
+                if(event.getEventValue() > 0 ){
+                    try {
+						byte buffer[] = serialPort.readBytes();
+						synchronized(listener){
+							for (SerialInputListener il : listener){
+								if(il.isEnabled()){
+									il.onNewData( buffer, buffer.length );
+						        }
+							}
+						}
+                    } catch (SerialPortException ex) {
+                        System.out.println(ex);
+                    }
+                }
+            }
+        }
+    }
+
+	/*
+	
+	
+	
+	
 	public class MySerialPortEventListener implements SerialPortEventListener{
 		public void serialEvent(SerialPortEvent arg0) {
-			if( arg0.getEventType() ==  SerialPortEvent.DATA_AVAILABLE ){
+			if( arg0.getEventType() ==  SerialPortEvent.RXCHAR  ){
 				Thread t = new Thread(new Runnable() {
 					public void run() {
 						byte[] readBuffer = new byte[128];
@@ -312,5 +358,5 @@ public class WindowsSerialPort implements Wire, CanSend{
 				});
 				t.start();
 			}
-		}}
+		}}*/
 }
