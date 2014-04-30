@@ -6,7 +6,7 @@
 #include <barobot_common.h>
 #include <constants.h>
 #include <i2c_helpers.h>
-#include <AsyncDriver.h>
+#include <AccelStepper.h>
 #include <FlexiTimer2.h>
 #include <avr/io.h>
 #include <avr/wdt.h>
@@ -43,7 +43,6 @@ void disableWd(){
 	//    WDTCSR = 0;
 	//wdt_disable();
 }
-
 void setup(){
 	pinMode(PIN_PROGRAMMER_RESET_UPANEL_FRONT, INPUT);
 	pinMode(PIN_PROGRAMMER_RESET_UPANEL_BACK, INPUT);
@@ -65,7 +64,6 @@ void setup(){
 	DEBUGINIT();
 	DEBUGLN("-MSTART");
 	setupStepper();
-
 	pinMode(PIN_PROGRAMMER_LED_ACTIVE, OUTPUT);
 	pinMode(PIN_PROGRAMMER_LED_ERROR, OUTPUT);
 	pinMode(PIN_PROGRAMMER_LED_STATE, OUTPUT);
@@ -82,13 +80,14 @@ void setup(){
 }
 
 #if MAINBOARD_SERVO_4PIN==true
-	AsyncDriver stepperX(AsyncDriver::HALF4WIRE, PIN_MAINBOARD_STEPPER_STEP0, PIN_MAINBOARD_STEPPER_STEP1, PIN_MAINBOARD_STEPPER_STEP2, PIN_MAINBOARD_STEPPER_STEP3 );
+	AccelStepper stepperX(AccelStepper::HALF4WIRE, PIN_MAINBOARD_STEPPER_STEP0, PIN_MAINBOARD_STEPPER_STEP1, PIN_MAINBOARD_STEPPER_STEP2, PIN_MAINBOARD_STEPPER_STEP3 );
 #else
-	AsyncDriver stepperX(PIN_MAINBOARD_STEPPER_STEP, PIN_MAINBOARD_STEPPER_DIR, PIN_MAINBOARD_STEPPER_ENABLE);      // Step, DIR, ENABLE
+	AccelStepper stepperX(AccelStepper::DRIVER, PIN_MAINBOARD_STEPPER_STEP, PIN_MAINBOARD_STEPPER_DIR);      // Step, DIR
 #endif
 
 void setupStepper(){
 	stepperX.disable_on_ready = true;
+	stepperX.setDisablePin(PIN_MAINBOARD_STEPPER_ENABLE);
 	stepperX.disableOutputs();
 	stepperX.setAcceleration(MAINBOARD_ACCELERX);
 	stepperX.setMaxSpeed(MAINBOARD_SPEEDX);
@@ -250,27 +249,31 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 			}
 		}
 
-	}else if( input.startsWith("K")) {
-		String digits     = input.substring( 2 );
-		char charBuf[16];
-		digits.toCharArray(charBuf,16);
-		unsigned int num  	= 0;
-		unsigned int led  	= 0;
-		unsigned int power  = 0;
-		//sscanf(charBuf,"%i,%x,%i", &num, &led, &power );
-		sscanf(charBuf,"%i", &num );
-		DEBUG("-num: ");
-		DEBUG(String(num));
-		DEBUG(" led: ");
-		DEBUG(String(led));
-		DEBUG(" power: ");
-		DEBUG(String(power));
+	}else if( command == METHOD_MSET_TOP_COLOR || command == METHOD_MSET_BOTTOM_COLOR ) {    // CAaRrGgBbWw		// set TOP /BOTTOM color for Aa to Rr Gg Bb Ww
+		String digits    	= input.substring( 1 );
+		char charBuf[12];
+		input.toCharArray(charBuf,12);
+		uint16_t address	= 0;
+		uint16_t red		= 0;
+		uint16_t green		= 0;
+		uint16_t blue		= 0;
+		uint16_t white		= 0;
+		sscanf(charBuf,"%x%x%x%x", &address, &red, &green, &blue, &white );
+		DEBUG("-adr: ");
+		DEBUG(String(address));
+		DEBUG(" r: ");	DEBUG(String(red));
+		DEBUG(" g: ");	DEBUG(String(green));
+		DEBUG(" b: ");	DEBUG(String(blue));
+		DEBUG(" w: ");	DEBUG(String(white));
 		DEBUGLN();
-		byte error =checkAddress(num);
-		if(error != 0 ){
-			out_buffer[0]  = METHOD_SETPWM;
-			writeRegisters(num, 1, false );
-		}
+
+		out_buffer[0]  = ((command == METHOD_MSET_TOP_COLOR) ? METHOD_SET_TOP_COLOR : METHOD_SET_BOTTOM_COLOR);
+		out_buffer[1]  = red;
+		out_buffer[2]  = green;
+		out_buffer[3]  = blue;
+		out_buffer[4]  = white;
+		writeRegisters(address, 5, false );
+		delay(2);
 
 	}else if(command == METHOD_MSET_LED ) {    // L12,ff,211		// zgaœ wszystkie na upanelu 0x0C
 		String digits     = input.substring( 1 );
@@ -386,8 +389,8 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 		read_prog_settings(input, 2 );
 		defaultResult = false;
 		
-	}else if( command == 'C' ) {    // can fill // MASTER_CAN_FILL
-	
+	}else if( command == METHOD_MASTER_CAN_FILL ) {    // can fill // F METHOD_MASTER_CAN_FILL
+
 	}else if(  command == 'P' ) {    	// P1; P2,0; P3,1; P4,1;   - programuj urzadzenie 0x0A z predkosca 19200, PROG 0,0 - force first, PROG 0A,0 - wozek
 		read_prog_settings(input, 1 );
 		defaultResult = false;

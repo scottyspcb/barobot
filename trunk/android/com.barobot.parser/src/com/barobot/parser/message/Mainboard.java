@@ -35,6 +35,7 @@ public class Mainboard{
 	public void read(String in) {
 		synchronized (buffer) {
 			buffer.append(in);
+		//	System.out.println(new String(buffer));
 			int end = buffer.indexOf(separator);
 			if( end!=-1){
 				while( end != -1 ){		// podziel to na kawalki
@@ -72,16 +73,15 @@ public class Mainboard{
 	private boolean useInput(String command) {
 		boolean handled =false;
 		String wait4Command = "";
-
 		String command2 = this.modyfyInput( command );
 		if( !command2.equals(command)){
 	//		Initiator.logger.e("Mainboard.useInput changed to:", command2 );
 			command = command2;
 		}
-
-		//	if( state.getInt("show_reading", 0) > 0 ){
-				Initiator.logger.w("Mainboard.useInput", command );
-		//	}
+		
+		if( state.getInt("show_reading", 0) > 0 ){
+			Initiator.logger.w("Mainboard.useInput", command );
+		}
 
 		boolean used = false;
 		synchronized (this) {
@@ -89,7 +89,7 @@ public class Mainboard{
 			if( this.wait_for != null ){
 				wait4Command = this.wait_for.command;
 				used = true;
-		//		Initiator.logger.i("Mainboard.useInput.isRet: ", command );
+				Initiator.logger.i("Mainboard.useInput.isRet: ", command );
 				handled = this.wait_for.isRet( command, mainQueue );
 				if(handled){
 			//		Initiator.logger.i("+unlock: ", command );
@@ -230,7 +230,7 @@ public class Mainboard{
 		};
 	}
 	public void waitFor(AsyncMessage m) {
-	//	Parser.logger.log(Level.INFO, "waitFor: " +m.toString() );
+		Initiator.logger.i( "waitFor: ", m.toString() );
 		synchronized (this) {
 			this.wait_for		= m;
 		}
@@ -238,7 +238,7 @@ public class Mainboard{
 	public void unlockRet(String withCommand, boolean unlockQueue ){
 		synchronized (this) {
 			if(this.wait_for!=null){
-		//		Initiator.logger.i(">>>Mainboard.unlockRet", this.wait_for.toString() +" with: "+ withCommand.trim());
+				Initiator.logger.i(">>>Mainboard.unlockRet", this.wait_for.toString() +" with: "+ withCommand.trim());
 				this.wait_for.unlockWith(withCommand);
 				this.wait_for = null;
 				mainQueue.unlock();
@@ -248,14 +248,14 @@ public class Mainboard{
 	public void unlockRet(AsyncMessage asyncMessage, String withCommand) {
 		synchronized (this) {
 			if(this.wait_for == asyncMessage ){
-			//	Initiator.logger.i(">>>Mainboard.unlockRet", this.wait_for.toString() +" with: "+ withCommand.trim());
+				Initiator.logger.i(">>>Mainboard.unlockRet", this.wait_for.toString() +" with: "+ withCommand.trim());
 				this.wait_for.unlockWith(withCommand);
 				this.wait_for = null;
 				mainQueue.unlock();
 			}
 		}
 	}
-	public boolean parse(String in) {
+	public synchronized boolean parse(String in) {
 		if( state.getInt("show_unknown", 0) > 0 ){
 			if( in.startsWith( "-") ){			// comment
 				Initiator.logger.i("Mainboard.parse.comment", in);
@@ -265,8 +265,9 @@ public class Mainboard{
 				if(in.matches("^.*[^-a-zA-Z0-9_.,].*")){		// unusual characters
 					// log command to db
 				}
-				Initiator.logger.i("Mainboard.parse", in);	
-				Initiator.logger.i("Mainboard.parse", Decoder.toHexStr(in.getBytes(), in.length()));
+				Initiator.logger.i("Mainboard.length", "("+in+") "+in.length() );
+				Initiator.logger.i("Mainboard.length", "("+in+") "+ in.getBytes().length );
+				Initiator.logger.i("Mainboard.parse", "("+in+") "+Decoder.toHexStr(in.getBytes(), in.length()));
 			//	mainQueue.show("Mainboard.parse");
 			}
 		}

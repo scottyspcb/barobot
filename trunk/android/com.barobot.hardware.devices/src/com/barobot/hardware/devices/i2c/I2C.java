@@ -28,7 +28,7 @@ public class I2C{
 		mainBoard.hasResetTo( 1, mainBoard );
 
 		byaddress.put( mainBoard.getAddress(), mainBoard );		// index by ADDRESS
-		byaddress.put( carret.getAddress(), carret );		// index by ADDRESS		
+		byaddress.put( carret.getAddress(), carret );			// index by ADDRESS		
 	}
 
 	public I2C_Device getByAddress( int address ){
@@ -59,12 +59,16 @@ public class I2C{
 		}
 		byaddress.put( mainBoard.getAddress(), mainBoard );
 		byaddress.put( carret.getAddress(), carret );
-
 	}
 	public Upanel[] getUpanels() {
 		Upanel[] a = {};
 		return bybottle.values().toArray(a);
 	}
+	public I2C_Device[] getDevices() {
+		I2C_Device[] a = {};
+		return byaddress.values().toArray(a);
+	}	
+	
 	private static String createCommand( int address, int why_code, byte[] params ){
 		String res = ""+Methods.METHOD_SEND2SLAVE + (char)address + (char)why_code;
 		if(params!=null){

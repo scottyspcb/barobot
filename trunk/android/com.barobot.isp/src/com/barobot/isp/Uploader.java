@@ -5,7 +5,6 @@ import com.barobot.common.interfaces.CanLog;
 import com.barobot.common.interfaces.serial.IspCommunicator;
 import com.barobot.isp.enums.Board;
 import com.barobot.isp.enums.UploadErrors;
-import com.barobot.isp.interfaces.UploadCallBack;
 import com.barobot.isp.programmer.AvrConf;
 import com.barobot.isp.programmer.AvrMem;
 import com.barobot.isp.programmer.IntelHexFileToBuf;
@@ -40,27 +39,7 @@ public final class Uploader {
         if (mCallBack == null) {
         	return;
         }
-        mUploadThread = new Thread(new Runnable() {
-            public void run() {
-                synchronized (LOCK) {
-                    if(mSerial.isConnected()){
-                    } else {
-                    	 if(!mSerial.open()) {
-                             if(DEBUG_SHOW) { 
-                            	 Initiator.logger.d(TAG, "upload : cannot mSerial.open"); 
-                             }
-                             return;
-                         }
-                         if(DEBUG_SHOW) { 
-                        	 Initiator.logger.d(TAG, "upload : open successful");
-                         }
-                    }
-                    mSerial.clearBuffer();
-                    uploadCode();
-                    mSerial.clearBuffer();
-                }
-			}
-        });
+        mUploadThread = new UploadThread();
         mUploadThread.start();
     }
 	public void setBoard(Board mSelectedBoard) {
@@ -195,5 +174,27 @@ public final class Uploader {
         	Utils.dumpHex( byteLength, mAVRMem.buf );
         }
     }
+    
+   private class UploadThread extends Thread {
+        public void run() {
+            synchronized (LOCK) {
+                if(mSerial.isConnected()){
+                } else {
+                	 if(!mSerial.open()) {
+                         if(DEBUG_SHOW) { 
+                        	 Initiator.logger.d(TAG, "upload : cannot mSerial.open"); 
+                         }
+                         return;
+                     }
+                     if(DEBUG_SHOW) { 
+                    	 Initiator.logger.d(TAG, "upload : open successful");
+                     }
+                }
+                mSerial.clearBuffer();
+                uploadCode();
+                mSerial.clearBuffer();
+            }
+		}
+    } 
 }
 

@@ -12,8 +12,7 @@ public class Macro {
 		hw.connectIfDisconnected();
 		int i = 50;
 
-		Upanel[] list = hw.barobot.i2c.getUpanels();
-		
+		I2C_Device[] list = hw.barobot.i2c.getDevices();
 		for (I2C_Device u : list){
 			u.setLed( q, "ff", 0 );
 		}

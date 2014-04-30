@@ -13,7 +13,10 @@ public class EmptyBarobotState implements HardwareState {
 	}
 	@Override
 	public int getInt( String name, int def ){
-		return  0;
+		if(  hashmap.get(name) == null){
+			return 0;
+		}
+		return Integer.parseInt( hashmap.get(name));
 	}
 
 	@Override

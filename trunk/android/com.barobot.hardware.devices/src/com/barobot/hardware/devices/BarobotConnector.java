@@ -75,10 +75,11 @@ public class BarobotConnector {
 		SERVOY_BACK_POS,					// 10, num 11
 		SERVOY_FRONT_POS,					// 11, num 12
 	};
+
 	// pozycje butelek, sa aktualizowane w trakcie
 	public static int[] capacity = {
-		20,		
-		20, 
+		50,		
+		50, 
 		20,
 		20,
 		20,
