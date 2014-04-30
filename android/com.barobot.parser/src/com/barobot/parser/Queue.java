@@ -189,7 +189,7 @@ public class Queue {
 		if(isMainQueue){
 			synchronized (this.lock) {
 				if(this.wait_for_device ){
-				//	Initiator.logger.i("Queue", "unlock id:" + this.wait_for_device_id );
+					Initiator.logger.i("Queue", "unlock id:" + this.wait_for_device );
 					mb.unlockRet("force unlock", false);
 					this.wait_for_device =  false;
 				}
@@ -259,6 +259,9 @@ public class Queue {
 		output.add( m2 );		
 	}
 	public void addWait(final int time) {
+		if(time <= 0 ){
+			return;
+		}
 		final AsyncMessage m2 = new AsyncMessage( true, true ) {
 			@Override
 			public String getName() {

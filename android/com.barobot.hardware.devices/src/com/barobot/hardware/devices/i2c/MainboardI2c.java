@@ -25,6 +25,10 @@ public class MainboardI2c extends I2C_Device_Imp {
 	public String getIsp() {
 		return "RESET"+ this.row;
 	}
+	@Override
+	public void isp(Queue q) {
+		q.add( this.getIsp(), false );		// dont wait
+	}
 	public String getHexFile() {
 		return IspSettings.mbHexPath;
 	}

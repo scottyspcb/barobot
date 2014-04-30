@@ -4,7 +4,9 @@
 //-------------------------------------------------------------------
  
 #include <arduino.h>
+#include <AccelStepper.h>
 
+ 
  
 uint8_t GetTemp();
  

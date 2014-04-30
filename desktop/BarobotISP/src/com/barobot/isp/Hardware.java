@@ -32,7 +32,7 @@ public class Hardware {
 		if(connection != null && connection.isConnected()){
 			return;
 		}
-		this.connection	= new WindowsSerialPort( comPort, IspSettings.fullspeed, false );
+		this.connection	= new WindowsSerialPort( comPort, IspSettings.fullspeed );
 		boolean res = connection.open();
 		if(!res ){
 			System.exit(-1);
@@ -64,5 +64,11 @@ public class Hardware {
 	}
 	public Queue getQueue() {
 		return barobot.main_queue;
+	}
+	public void synchro() {
+		barobot.main_queue.add( "\n", false );
+		barobot.main_queue.add( "\n", false );
+		barobot.main_queue.add( "PING", "PONG" );
+		barobot.main_queue.add( "PING", "PONG" );
 	}
 }

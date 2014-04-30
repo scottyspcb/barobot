@@ -356,7 +356,7 @@ void parseInput( String input ){
   }else if( command == '-'){
     if(value < 10){
       bitClear(sending,  value);
-    } 
+    }
     sendstats();
   }else if( command == 'r'){
     repeat = value;
@@ -560,6 +560,17 @@ void proceed( volatile byte buffer[MAXCOMMAND_CARRET] ){
 				set_pin(i, (buffer[2] > 0));
 			}
 		}
+	}else if( command == METHOD_SET_TOP_COLOR ){
+		set_pin(0, (buffer[0] > 0));
+		set_pin(1, (buffer[1] > 0));
+		set_pin(2, (buffer[2] > 0));
+		set_pin(3, (buffer[3] > 0));
+	}else if( command == METHOD_SET_BOTTOM_COLOR ){
+		set_pin(4, (buffer[0] > 0));
+		set_pin(5, (buffer[1] > 0));
+		set_pin(6, (buffer[2] > 0));
+		set_pin(7, (buffer[3] > 0));
+	
 	}else if( command == METHOD_SET_Y_POS ){
 		// on wire: low_byte, high_byte, speed
 		// in memory: 1=low_byte, 2=high_byte, 3=speed

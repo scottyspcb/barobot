@@ -1,3 +1,4 @@
+
 package com.barobot.common.constant;
 
 public class LowHardware {

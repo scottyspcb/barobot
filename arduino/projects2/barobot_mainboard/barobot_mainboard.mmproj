@@ -1,4 +1,4 @@
-<mm_project serial_port="COM3" board="!Barobot MB 16 MHz ATmega328+xtal [Optiboot]" programmer="" includePaths="" libPaths="" libs="" default="yes" useCodeAutomation="yes" linkPrintfVersion="1" serialPortSpeed="" >
+<mm_project serial_port="COM4" board="!Barobot MB 16 MHz ATmega328+xtal [Optiboot]" programmer="" includePaths="" libPaths="" libs="" default="yes" useCodeAutomation="yes" linkPrintfVersion="1" serialPortSpeed="" >
   <files>
     <file name="barobot_mainboard_main.h" open="no" />
     <file name="barobot_mainboard.cpp" open="yes" />
@@ -15,6 +15,9 @@
     <external name="C:\PROG\arduino\libraries\Servo\Servo.h" />
     <external name="C:\PROG\arduino\libraries\FlexiTimer2\FlexiTimer2.h" />
     <external name="C:\PROG\arduino\libraries\FlexiTimer2\FlexiTimer2.cpp" />
+    <external name="C:\PROG\arduino\libraries\AsyncDriver\AsyncDriver.h" />
     <external name="C:\PROG\arduino\libraries\AsyncDriver\AsyncDriver.cpp" />
+    <external name="C:\PROG\arduino\libraries\AccelStepper\AccelStepper.h" />
+    <external name="C:\PROG\arduino\libraries\AccelStepper\AccelStepper.cpp" />
   </externals>
 </mm_project>

@@ -45,7 +45,7 @@ public class Main{
 		loadProps();
 		//String[] comlist = list();
 		Wizard w	= new Wizard();
-		Hardware hw = new Hardware("COM3");
+		Hardware hw = new Hardware("COM4");
 
 		IspSettings.safeMode = false;
 		IspSettings.verbose = 2;
@@ -58,15 +58,14 @@ public class Main{
 	//	hw.connectIfDisconnected();
 	//uc.prepareUpanels( hw );
 		
-		uc.prepareCarret( hw );
-		
+//		uc.prepareCarret( hw );
 	//	w.fast_close_test( hw );
 	//	w.prepareSlaveMB( hw );
 	//	w.prepareMB( hw );
 	//	w.prepareMB2( hw );
-	//	w.prepareMBManualReset( hw );
+		w.prepareMBManualReset( hw );
 	//	w.fast_close_test( hw );
-	//
+
 	//	w.checkCarret( hw );
 	//	w.prepare1Upanel( hw, 4 );
 
@@ -76,7 +75,7 @@ public class Main{
 
 	//	w.findOrder( hw );
 
-	//	Macro mm  = new Macro();
+		Macro mm  = new Macro();
 	//	mm.promo1( hw );
 	//	w.createContstans( hw );	
 	//	MetaRendering mr = new MetaRendering();
@@ -84,7 +83,8 @@ public class Main{
 	//	mm.resetuj( hw );
 	//	mm.testBpm( hw );
 	//	mm.promo_carret( hw );
-	//	w.test( hw );
+	
+	
 	//	w.test_proc( hw );	
 	//	w.swing( hw, 3, 1000, 5000 );
 	//	w.test( hw );
@@ -92,12 +92,15 @@ public class Main{
 	//	w.showOrder();
 	//	Wizard.wait(1000);
 	//	w.clearUpanel( hw );
-	//	w.mrygaj( hw );
-		
-	//	w.illumination1( hw );
-	//	w.ilumination3( hw, "88", 255, "00", 2 );
-	//	w.fadeButelka( hw, 4, 200 );
 	//	w.mrygaj( hw, 10 );
+	//	w.illumination1( hw );
+	////	w.ilumination2( hw );
+
+	//	w.ilumination3( hw, "88", 255, "00", 2 );
+	//	w.zamrugaj(hw, 10, 10 );
+
+	//w.fadeButelka( hw, 4, 200 );
+	//	w.fadeAll( hw, 4 );
 	//	w.zapal( hw );
 	//	w.zgas( hw );
 	//	hw.close();

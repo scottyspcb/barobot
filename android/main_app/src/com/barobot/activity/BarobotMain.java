@@ -16,6 +16,7 @@ import android.widget.AdapterView.OnItemClickListener;
 
 import com.barobot.AppInvoker;
 import com.barobot.R;
+import com.barobot.common.Initiator;
 import com.barobot.gui.ArduinoListener;
 import com.barobot.gui.dataobjects.Engine;
 import com.barobot.gui.dataobjects.Ingredient_t;
@@ -92,8 +93,14 @@ public class BarobotMain extends BarobotActivity implements ArduinoListener {
 		listView.setSelection(position);
 		listView.setItemChecked(position, true);
 
-		mCurrentRecipe = (Recipe_t) listView.getItemAtPosition(position);
+		Initiator.logger.i("BarobotMain.onResume", "" + position);
 
+		try {
+			mCurrentRecipe = (Recipe_t) listView.getItemAtPosition(position);
+		} catch (IndexOutOfBoundsException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		FillRecipeDetails();
 
 		super.onResume();

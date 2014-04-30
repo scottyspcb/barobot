@@ -148,6 +148,8 @@ public class virtualComponents {
 	public static void nalej(int num) {			// num 0-11
 		Queue q = getMainQ();
 		int time = getPourTime(num);
+		Initiator.logger.i("nalej bottle: "+ num, "czas: "+ time);
+
 		final Upanel up	= barobot.i2c.getUpanelByBottle(num);
 		q.add("EX", true);
 //		q.add("EY", true);
@@ -155,7 +157,7 @@ public class virtualComponents {
 		virtualComponents.moveZUp(q, false);
 		if( up == null ){
 			q.addWait( time/4 );
-			virtualComponents.moveZLight(q, false);
+		//	virtualComponents.moveZLight(q, false);
 			q.add("DY", true);
 			q.addWait( 3* time/4 );
 		}else{
