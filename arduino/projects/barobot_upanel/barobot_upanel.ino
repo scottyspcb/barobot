@@ -21,7 +21,7 @@ volatile uint8_t checktime= 0;
 boolean buttonState = HIGH;
 boolean lastButtonState = HIGH;            // default pull-up
 uint8_t lastDebounceTime = 0;
-uint8_t const debounceDelay = 50;
+uint8_t const debounceDelay = 40;
 
 void setup(){
   wdt_disable();
@@ -130,7 +130,6 @@ void loop() {
 static void reset_wire(){
   _pwm_channels[4].pwmup = 255;    // RED
   DW(LED_BOTTOM_RED, buttonState );    // RED
-
   delay2(100);
 //  reset_next( LOW );
   wdt_enable(WDTO_15MS); 
@@ -141,16 +140,15 @@ static void reset_wire(){
 static void read_i2c(){
   if( use_local&& in_buffer1[0] ){          // komendy bez wymaganej odpowiedzi do mastera obsluguj tutaj:
     byte command = in_buffer1[0];
-    if( command == METHOD_SETPWM ){                // PWM     3 bajty
-   //         PWMSet(in_buffer1[1],in_buffer1[2]);
-   //           leds[in_buffer1[1]].wypelnienie = in_buffer1[2];
-     reset_wire();
-  
-    }else if( command == METHOD_CHECK_NEXT ){
-      byte value  = digitalRead( PIN_UPANEL_LEFT_RESET );
-      byte ttt[4] = {METHOD_I2C_SLAVEMSG, my_address, METHOD_CHECK_NEXT, value };		// 0 = no device found (cant have device)
-      send(ttt,4);
-
+    if( command == METHOD_ONECOLOR ){
+      byte i = COUNT_UPANEL_ONBOARD_LED;
+      while(i--){
+        if( bitRead(in_buffer1[1], i) ){
+          _pwm_channels[i].pwmup = in_buffer1[2];
+        }else{
+          _pwm_channels[i].pwmup = 0;
+        }
+      }
     }else if( command ==  METHOD_SETLEDS ){
       byte i = COUNT_UPANEL_ONBOARD_LED;
       while(i--){
@@ -158,18 +156,32 @@ static void read_i2c(){
           _pwm_channels[i].pwmup = in_buffer1[2];
         }
       }
-  //      }else if( command == METHOD_RESETCYCLES ){         // reset
+  //      }else if( command == METHOD_RESETCYCLES ){     // reset
   //      }else if( command == METHOD_SETTIME ){         // set time
-  //      }else if( command == METHOD_SETFADING ){         // fadein out
+  //      }else if( command == METHOD_SETFADING ){       // fadein out
+    }else if( command == METHOD_SET_TOP_COLOR )
+        _pwm_channels[0].pwmup = in_buffer1[1];
+        _pwm_channels[1].pwmup = in_buffer1[2];
+        _pwm_channels[2].pwmup = in_buffer1[3];
+        _pwm_channels[3].pwmup = in_buffer1[4]; 
+    }else if( command == METHOD_SET_BOTTOM_COLOR ){
+        _pwm_channels[4].pwmup = in_buffer1[1];
+        _pwm_channels[5].pwmup = in_buffer1[2];
+        _pwm_channels[6].pwmup = in_buffer1[3];
+        _pwm_channels[7].pwmup = in_buffer1[4]; 
+
+    }else if( command == METHOD_CHECK_NEXT ){
+      byte value  = digitalRead( PIN_UPANEL_LEFT_RESET );
+      byte ttt[4] = {METHOD_I2C_SLAVEMSG, my_address, METHOD_CHECK_NEXT, value };		// 0 = no device found (cant have device)
+      send(ttt,4);
+
     }else if( command == METHOD_PROG_MODE_ON ){         // i2c in prog mode (master programuje jakis slave, ale nie mnie)
       byte i = COUNT_UPANEL_ONBOARD_LED;
       while(i--){
           _pwm_channels[i].pwmup = 0;
       }
-      
       _pwm_channels[1].pwmup = 255;    // GREEN
        DW(LED_TOP_GREEN, buttonState );    // RED
-      
       /*
       if(in_buffer1[1] == my_address){
         prog_me = true;
@@ -193,7 +205,6 @@ static void read_i2c(){
       reset_next( LOW );
     }else if( command == METHOD_RUN_NEXT ){               // Koniec resetu urządzenia obok, ustaw pin w stan wysokiej impedancji
       reset_next( HIGH );
-    }else if( command == METHOD_RESETSLAVEADDRESS ){      // zmien address
 
     }else if( command ==  METHOD_EEPROM_WRITE_I2C ){
       eeprom_write_byte((uint8_t*)in_buffer1[1],in_buffer1[2]);    // remember delay
@@ -225,6 +236,7 @@ void set_pin( byte pin, boolean value ){
 	 *_pwm_channels[pin].outport &= ~(_pwm_channels[pin].pinmask);
 	}
 }
+
 /*
 void show_error(byte value){
    while( (value--) > 0 ){
@@ -282,10 +294,12 @@ void send_pin_value( byte pin, byte value ){
   send(ttt,5);
  // Serial.println("out "+ String( my_address ) +" / "+ String( pin ) +"/"+ String(value));
 }
+
 static void send_here_i_am(){
   byte ttt[4] = {METHOD_HERE_I_AM,my_address,UPANEL_DEVICE_TYPE,UPANEL_VERSION};
   send(ttt,4);
 }
+
 void send( byte buffer[], byte length ){
   if(prog_mode){
     return;
