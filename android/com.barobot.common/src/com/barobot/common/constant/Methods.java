@@ -8,7 +8,7 @@ public class Methods {
 	public static final int METHOD_PROG_MODE_OFF 	= 114;
 	public static final int METHOD_TEST_SLAVE 	= 119;
 	public static final int METHOD_RESETCYCLES 	= 120;
-	public static final int METHOD_SETPWM 	= 138;
+	public static final int METHOD_ONECOLOR 	= 138;
 	public static final int METHOD_SETTIME 	= 142;
 	public static final int METHOD_SETFADING 	= 146;
 	public static final int METHOD_RESETSLAVEADDRESS 	= 150;
@@ -39,6 +39,8 @@ public class Methods {
 	public static final int METHOD_EXEC_ERROR 	= 133;
 	public static final int METHOD_DEVICE_FOUND 	= 112;
 	public static final int METHOD_SETLED 	= 140;
+	public static final int METHOD_SET_TOP_COLOR 	= 148;
+	public static final int METHOD_SET_BOTTOM_COLOR 	= 152;
 	public static final int METHOD_SETLEDS 	= 144;
 	public static final int METHOD_CHECK_NEXT 	= 188;
 	public static final int METHOD_EEPROM_READ_I2C 	= 190;
@@ -47,7 +49,7 @@ public class Methods {
 
 
 	public static final String METHOD_SET_X_ACCELERATION	= "AX";
-	public static final String METHOD_MASTER_CAN_FILL	= "C";
+	public static final String METHOD_MASTER_CAN_FILL	= "F";
 	public static final String METHOD_SET_X_DISABLE	= "DX";
 	public static final String METHOD_ERROR	= "E";
 	public static final String METHOD_SET_X_ENABLE	= "EX";
@@ -60,10 +62,15 @@ public class Methods {
 	public static final String METHOD_RWIRE	= "RWIRE";
 	public static final String METHOD_SEND2SLAVE	= "S";
 	public static final String METHOD_TRIGGER	= "T";
+	public static final String METHOD_M_ONECOLOR	= "B";
 	public static final String METHOD_WAIT_READY	= "WR";
 	public static final String METHOD_SET_X_POS	= "X";
 	public static final String METHOD_GET_TEMP	= "T";
 	public static final String METHOD_MSET_LED	= "L";
+// set top color
+	public static final String METHOD_MSET_TOP_COLOR	= "C";
+// set bottom color
+	public static final String METHOD_MSET_BOTTOM_COLOR	= "c";
 	public static final String METHOD_HAS_NEXT	= "N";
 	public static final String METHOD_SLAVE_HAS_NEXT	= "n";
 	public static final String METHOD_EEPROM_READ	= "M";

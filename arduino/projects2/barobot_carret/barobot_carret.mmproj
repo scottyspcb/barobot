@@ -1,4 +1,4 @@
-<mm_project serial_port="COM39" board="!Barobot CARRET 16 MHz ATmega328+xtal 32KB" programmer="Arduino as ISP" includePaths="" libPaths="" libs="" default="no" useCodeAutomation="yes" linkPrintfVersion="1" serialPortSpeed="" >
+<mm_project serial_port="COM39" board="!Barobot CARRET 16 MHz ATmega328+xtal 32KB" programmer="Arduino as ISP" includePaths="" libPaths="" libs="" default="yes" useCodeAutomation="yes" linkPrintfVersion="1" serialPortSpeed="" >
   <files>
     <file name="barobot_carret_main.h" open="no" />
     <file name="barobot_carret.cpp" open="yes" />

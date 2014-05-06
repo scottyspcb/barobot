@@ -9,7 +9,7 @@ import java.io.PrintStream;
 
 public class MetaRendering {
 	public void createContstans() {
-		String source = "D:\\PROG\\arduino-1.0.5\\libraries\\barobot_common\\constants.h";
+		String source = "C:\\PROG\\arduino\\libraries\\barobot_common\\constants.h";
 		String detsination = "C:\\workspace\\Barobot\\android\\com.barobot.common\\src\\com\\barobot\\common\\constant\\Methods.java";	
 
 		BufferedReader br = null;

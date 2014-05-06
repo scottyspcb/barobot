@@ -45,7 +45,7 @@ public class Main{
 		loadProps();
 		//String[] comlist = list();
 		Wizard w	= new Wizard();
-		Hardware hw = new Hardware("COM4");
+		Hardware hw = new Hardware("COM3");
 
 		IspSettings.safeMode = false;
 		IspSettings.verbose = 2;
@@ -54,39 +54,42 @@ public class Main{
 		IspSettings.force = false;
 
 		UploadCode uc = new UploadCode();
-		
+		Macro mm  = new Macro();
+
 	//	hw.connectIfDisconnected();
-	//uc.prepareUpanels( hw );
+//		uc.prepareUpanels( hw );
 		
-//		uc.prepareCarret( hw );
-	//	w.fast_close_test( hw );
-	//	w.prepareSlaveMB( hw );
-	//	w.prepareMB( hw );
-	//	w.prepareMB2( hw );
-		w.prepareMBManualReset( hw );
+	//	
 	//	w.fast_close_test( hw );
 
+	//	uc.prepareSlaveMB( hw );
+	//	uc.prepareMB( hw );
+	//	uc.prepareMB2( hw );
+	//	uc.prepareMBManualReset( hw );
+	//	uc.prepareCarret( hw );
+
+	//	w.fast_close_test( hw );
 	//	w.checkCarret( hw );
 	//	w.prepare1Upanel( hw, 4 );
 
 	//	w.prepareUpanel( hw, 3 );
 	//	w.prepareUpanel( hw, 4 );
 	//	w.test( hw );
+		w.findOrder( hw );
 
-	//	w.findOrder( hw );
-
-		Macro mm  = new Macro();
 	//	mm.promo1( hw );
-	//	w.createContstans( hw );	
+		
+	//	MetaRendering mr = new MetaRendering();
+	//	mr.createContstans();	
 	//	MetaRendering mr = new MetaRendering();
 	//	mr.createContstans();
 	//	mm.resetuj( hw );
 	//	mm.testBpm( hw );
 	//	mm.promo_carret( hw );
 	
-	
+
 	//	w.test_proc( hw );	
-	//	w.swing( hw, 3, 1000, 5000 );
+//		w.swing( hw, 3, 1000, 5000 );
 	//	w.test( hw );
 	//	w.findOrder( hw, 3 );
 	//	w.showOrder();
@@ -103,6 +106,9 @@ public class Main{
 	//	w.fadeAll( hw, 4 );
 	//	w.zapal( hw );
 	//	w.zgas( hw );
+		
+		w.zapalPrzod( hw );
+		
 	//	hw.close();
 
 		hw.closeOnReady();

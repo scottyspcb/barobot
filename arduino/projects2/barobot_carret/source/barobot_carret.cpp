@@ -560,6 +560,17 @@ void proceed( volatile byte buffer[MAXCOMMAND_CARRET] ){
 				set_pin(i, (buffer[2] > 0));
 			}
 		}
+    }else if( command == METHOD_ONECOLOR ){
+		byte i = COUNT_UPANEL_ONBOARD_LED;
+		while(i--){
+			if( bitRead(buffer[1], i) ){
+			  _pwm_channels[i].pwmup = buffer[2];
+			  set_pin(i, (buffer[2] > 0));
+			}else{
+			  _pwm_channels[i].pwmup = 0;
+			  set_pin(i, 0 );
+			}
+		}
 	}else if( command == METHOD_SET_TOP_COLOR ){
 		set_pin(0, (buffer[0] > 0));
 		set_pin(1, (buffer[1] > 0));
@@ -591,14 +602,6 @@ void proceed( volatile byte buffer[MAXCOMMAND_CARRET] ){
 		target+= buffer[1];    // little endian
 		run_to(INNER_SERVOZ,sspeed,target);
 
-	}else if( command == METHOD_SETPWM ){
-		byte led    = buffer[1];
-		byte level  = buffer[2];
-		if( level > 127){
-			DW(led, HIGH);
-		}else{
-			DW(led, LOW);
-		}
 	}else if( command == METHOD_GET_Y_POS ){
 		byte ttt[5] = {METHOD_I2C_SLAVEMSG, my_address, METHOD_GET_Y_POS, (servos[INNER_SERVOY].last_pos & 0xFF),(servos[INNER_SERVOY].last_pos >>8) };
 		send(ttt,5);
@@ -847,7 +850,7 @@ void send( byte buffer[], byte length ){
 		}
 	}
 }
- 
+
 byte globalToLocal( byte ind ){      // get global device index used in android
 	if( ind == DRIVER_Y ){
 		return INNER_SERVOY;
