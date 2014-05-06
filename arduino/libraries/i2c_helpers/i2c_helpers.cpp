@@ -164,17 +164,17 @@ boolean init_i2c(){
 
 	byte ad1 = eeprom_read_byte((unsigned char *) 0x00);
 	byte ad2 = eeprom_read_byte((unsigned char *) 0x01);  
-	byte ad3 = eeprom_read_byte((unsigned char *) 0x02);  
+//	byte ad3 = eeprom_read_byte((unsigned char *) 0x02);  
 
-	if(ad1 == ad2 && ad1 == ad3 ){
+	if(ad1 == ad2 ){		// && ad1 == ad3
 		my_address   = ad1;
 	}else{    // znajdz ten co sie nei zgadza i go zapisz
 		if( ad1 == ad2 ){        // ad3 sie nie zgadza
 			eeprom_write_byte((unsigned char *) 0x03, ad1);
-		}else if( ad2 == ad3 ){  // ad1 sie nie zgadza
-			eeprom_write_byte((unsigned char *) 0x01, ad1);
-		}else if( ad1 == ad3 ){  // ad2 sie nie zgadza
-			eeprom_write_byte((unsigned char *) 0x02, ad1);
+	//	}else if( ad2 == ad3 ){  // ad1 sie nie zgadza
+	//		eeprom_write_byte((unsigned char *) 0x01, ad1);
+	//	}else if( ad1 == ad3 ){  // ad2 sie nie zgadza
+	//		eeprom_write_byte((unsigned char *) 0x02, ad1);
 		}
 	}
 	delay2(my_address);
@@ -202,8 +202,6 @@ boolean init_i2c(){
 	save_i2c_address( 0x00, my_address, ad1 );    // zapisuje gdy my_address != oa
 	return true;
 }
-
-
 
 /*
 
