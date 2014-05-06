@@ -251,14 +251,14 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 
 	}else if( command == METHOD_MSET_TOP_COLOR || command == METHOD_MSET_BOTTOM_COLOR ) {    // CAaRrGgBbWw		// set TOP /BOTTOM color for Aa to Rr Gg Bb Ww
 		String digits    	= input.substring( 1 );
-		char charBuf[12];
-		input.toCharArray(charBuf,12);
+		char charBuf[10];
+		input.toCharArray(charBuf,10);
 		uint16_t address	= 0;
 		uint16_t red		= 0;
 		uint16_t green		= 0;
 		uint16_t blue		= 0;
 		uint16_t white		= 0;
-		sscanf(charBuf,"%x%x%x%x", &address, &red, &green, &blue, &white );
+		sscanf(charBuf,"%x%x%x%x%x", &address, &red, &green, &blue, &white );
 		DEBUG("-adr: ");
 		DEBUG(String(address));
 		DEBUG(" r: ");	DEBUG(String(red));
@@ -273,9 +273,9 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 		out_buffer[3]  = blue;
 		out_buffer[4]  = white;
 		writeRegisters(address, 5, false );
-		delay(2);
+		delay(1);
 
-	}else if(command == METHOD_MSET_LED ) {    // L12,ff,211		// zgaœ wszystkie na upanelu 0x0C
+	}else if(command == METHOD_MSET_LED || command == METHOD_M_ONECOLOR ) {    // L12,ff,211 or  B12,ff,211		// zgaœ wszystkie na upanelu 0x0C OR set color and disable other leds
 		String digits     = input.substring( 1 );
 		char charBuf[10];
 		digits.toCharArray(charBuf,10);
@@ -283,11 +283,11 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 		unsigned int leds 	= 0;
 		unsigned int power  = 0;
 		sscanf(charBuf,"%i,%x,%i", &num, &leds, &power );
-		out_buffer[0]  = METHOD_SETLEDS;
+		out_buffer[0]  = (command == METHOD_M_ONECOLOR) ? METHOD_ONECOLOR : METHOD_SETLEDS;
 		out_buffer[1]  = leds;
 		out_buffer[2]  = power;
 		writeRegisters(num, 3, false );
-		delay(2);
+		delay(1);
 
 	}else if( command == 'x') {
 		long int pos = stepperX.currentPosition();
@@ -416,7 +416,7 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 		sscanf(charBuf,"%i", &num );
 		boolean ret = reset_device_num(num, LOW);
 		if(ret){
-			delay(100);
+			delay(20);
 			reset_device_num(num, HIGH);
 		}else{  //error
 			defaultResult = false;

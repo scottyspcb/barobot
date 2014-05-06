@@ -3,7 +3,10 @@ package com.barobot.isp;
 import com.barobot.common.IspSettings;
 import com.barobot.common.constant.Methods;
 import com.barobot.hardware.devices.BarobotConnector;
+import com.barobot.hardware.devices.i2c.BarobotTester;
 import com.barobot.hardware.devices.i2c.Carret;
+import com.barobot.hardware.devices.i2c.I2C_Device;
+import com.barobot.hardware.devices.i2c.MainboardI2c;
 import com.barobot.hardware.devices.i2c.Upanel;
 import com.barobot.parser.Queue;
 import com.barobot.parser.message.AsyncMessage;
@@ -19,8 +22,7 @@ public class UploadCode {
 	}
 	private void prepareUpanel2(final int row, Queue q, final BarobotConnector barobot, final Hardware hw ) {
 		hw.barobot.i2c.clear();
-		
-		
+
 		final int current_index		= 0;
 		final Upanel firstInRow	= new Upanel();
 		firstInRow.setRow(row);
@@ -165,9 +167,7 @@ public class UploadCode {
 	public void prepareCarret(final Hardware hw) {
 		Queue q = hw.getQueue();
 		hw.connectIfDisconnected();
-		q.add( "\n", false );
-		q.add( "\n", false );
-		q.add("PING", "PONG");
+		hw.synchro();
 		final Carret current_dev	= hw.barobot.i2c.carret;
 		final String carret_code = current_dev.getHexFile();
 		if( IspSettings.setFuseBits){
@@ -244,5 +244,168 @@ public class UploadCode {
 			}
 		}
 		System.out.println("Lista pusta" );
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+	public void prepareMB(final Hardware hw ) {
+		Queue q = hw.getQueue();
+		hw.connectIfDisconnected();
+		hw.synchro();
+		final I2C_Device current_dev	= new MainboardI2c();
+		final String upanel_code = current_dev.getHexFile();
+		q.add("", false);		
+		q.add("PING", "PONG");
+		q.addWaitThread(Main.mt);
+		if(IspSettings.setHex){	
+			current_dev.isp( q );	// mam 2 sek na wystartwanie
+			q.add( new AsyncMessage( true ){		// na koncu zamknij
+				@Override
+				public String getName() {
+					return "prepareMB";
+				}
+				@Override
+				public Queue run(Mainboard dev, Queue queue) {
+					command = current_dev.uploadCode( upanel_code, hw.comPort);
+					Main.main.runCommand(command, hw);
+					return null;
+				}
+			});
+		}
+		q.addWaitThread(Main.mt);
+		hw.synchro();
+	}
+
+	public void prepareMB2(final Hardware hw) {	
+		Queue q = hw.getQueue();
+
+		hw.connectIfDisconnected();
+		hw.synchro();
+		final I2C_Device current_dev	= new MainboardI2c();
+		final String upanel_code = current_dev.getHexFile();
+
+   	 //	com.barobot.isp.IspOverComSerial mSerial = new IspOverComSerial();
+
+		hw.synchro();
+		q.addWaitThread(Main.mt);
+		if(IspSettings.setHex){	
+			current_dev.isp( q );	// mam 2 sek na wystartwanie
+			q.add( new AsyncMessage( true ){		// na koncu zamknij
+				@Override
+				public String getName() {
+					return "prepareMB2";
+				}
+				@Override
+				public Queue run(Mainboard dev, Queue queue) {
+					command = current_dev.uploadCode( upanel_code, hw.comPort);
+					Main.main.runCommand(command, hw);
+					return null;
+				}
+			});
+		}
+		q.addWaitThread(Main.mt);
+	}
+
+	public void checkCarret(Hardware hw) {
+		String command = "";
+		Queue q = hw.getQueue();
+		hw.connectIfDisconnected();
+		//I2C_Device current_dev	= new Upanel( 3, 0 );
+		I2C_Device current_dev	= hw.barobot.i2c.carret;
+		current_dev.isp( q );
+		command = current_dev.checkFuseBits( hw.comPort );
+		Main.main.runCommand(command, hw);
+	}
+
+	public void prepareMBManualReset(final Hardware hw) {
+		String command					= "";
+		Queue q							= hw.getQueue();
+		final I2C_Device current_dev	= new MainboardI2c();
+		final String upanel_code		= current_dev.getHexFile();
+		if(IspSettings.setHex){	
+			command = current_dev.uploadCode(upanel_code, hw.comPort);
+			Main.main.runCommand(command, hw);
+		}
+	}
+
+	public void prepareSlaveMB(final Hardware hw) {
+		final I2C_Device current_dev	= new BarobotTester();
+		Queue q = hw.getQueue();
+
+		if(IspSettings.setFuseBits){
+			hw.connectIfDisconnected();
+			hw.synchro();
+			q.addWaitThread(Main.mt);
+			current_dev.isp( q );
+			q.add( new AsyncMessage( true ){		// na koncu zamknij
+				@Override
+				public String getName() {
+					return "prepareSlaveMB2";
+				}
+				@Override
+				public Queue run(Mainboard dev, Queue queue) {
+					String command = current_dev.setFuseBits( hw.comPort );
+					Main.main.runCommand(command, hw);
+					return null;
+				}
+			});
+			hw.closeOnReady();
+			q.addWaitThread(Main.main);
+		}
+		if(IspSettings.setHex){	
+			hw.connectIfDisconnected();
+			hw.synchro();
+			current_dev.isp( q );	// mam 2 sek na wystartwanie
+			q.add( new AsyncMessage( true ){		// na koncu zamknij
+				@Override
+				public String getName() {
+					return "prepareSlaveMB";
+				}
+				@Override
+				public Queue run(Mainboard dev, Queue queue) {
+					command = current_dev.uploadCode( current_dev.getHexFile(), hw.comPort);
+					Main.main.runCommand(command, hw);
+					return null;
+				}
+			});
+			hw.closeOnReady();
+			q.addWaitThread(Main.main);
+		}
+	}
+
+	public void prepare1Upanel(Hardware hw, int index ) {
+		String command = "";
+		hw.synchro();
+		Queue q = hw.getQueue();
+		hw.connectIfDisconnected();
+		Upanel current_dev	= new Upanel();
+		current_dev.setRow(index);
+		current_dev.setIndex(index);
+		
+		String upanel_code = current_dev.getHexFile();
+		if( IspSettings.setFuseBits){
+			current_dev.isp( q );
+			command = current_dev.setFuseBits(hw.comPort);
+			Main.main.runCommand(command, hw);
+			Main.wait(2000);
+		}
+		if(IspSettings.setHex){
+			current_dev.isp( q );
+			command = current_dev.uploadCode( upanel_code, hw.comPort );
+			Main.main.runCommand(command, hw);
+			Main.wait(2000);
+		}
+		System.out.println("koniec prepare1Upanel");
 	}
 }
