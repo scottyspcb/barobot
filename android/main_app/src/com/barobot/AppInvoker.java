@@ -33,7 +33,7 @@ public class AppInvoker {
 		cm = new CameraManager( main );
 		cm.findCameras();
 		virtualComponents.init( main );
-		arduino			= new Arduino( virtualComponents.barobot, virtualComponents.state );
+		arduino			= new Arduino( virtualComponents.barobot, virtualComponents.barobot.state );
 		arduino.onStart(main);
 		
 	}

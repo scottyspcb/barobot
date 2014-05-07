@@ -28,9 +28,9 @@ public class button_toggle implements OnClickListener{
 			case R.id.auto_fill_on_ready:
 		  	  	tb.setChecked(isChecked);		//tutaj jednak zmieniaj 
 				if(isChecked){
-					virtualComponents.state.set("AUTOFILL", "1" );
+					virtualComponents.barobot.state.set("AUTOFILL", "1" );
 				}else{
-					virtualComponents.state.set("AUTOFILL", "0" );
+					virtualComponents.barobot.state.set("AUTOFILL", "0" );
 				}
 				break;
 			case R.id.wagi_live:

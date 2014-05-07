@@ -30,7 +30,7 @@ public class Upanel extends I2C_Device_Imp {
 		parent.isResetedBy(this);
 	}
 	public int getBottleNum() {
-		if( row < 5 && numInRow < 6){
+		if( row >=0 && row < 5 && numInRow < 6 && numInRow >= 0){
 			return row2index[row][numInRow];
 		}
 		return -1;

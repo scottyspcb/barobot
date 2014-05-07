@@ -1,4 +1,4 @@
-package com.barobot.hardware;
+package com.barobot.hardware.devices;
 
 public interface BarobotEventListener {
 

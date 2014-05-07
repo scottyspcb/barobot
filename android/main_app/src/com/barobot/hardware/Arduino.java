@@ -12,6 +12,8 @@ import com.barobot.common.interfaces.serial.SerialEventListener;
 import com.barobot.common.interfaces.serial.SerialInputListener;
 import com.barobot.common.interfaces.serial.Wire;
 import com.barobot.hardware.devices.BarobotConnector;
+import com.barobot.hardware.devices.BarobotEventListener;
+import com.barobot.hardware.devices.MyRetReader;
 import com.barobot.hardware.serial.BT_wire;
 import com.barobot.hardware.serial.Serial_wire;
 import com.barobot.parser.Queue;
@@ -116,11 +118,10 @@ public class Arduino{
 			//	Initiator.logger.i("Arduino.GlobalMatch.RETURN_PIN_VALUE", fromArduino);
 				//{METHOD_I2C_SLAVEMSG,my_address, RETURN_PIN_VALUE, pin,value}
 				int[] parts = Decoder.decodeBytes( fromArduino );
-				byte my_address = (byte) parts[1];
-				byte pin		= (byte) parts[3];
-				byte value		= (byte) parts[4];
+				short my_address	= (short) parts[1];
+				short pin			= (short) parts[3];
+				short value			= (short) parts[4];
 				Initiator.logger.i("Arduino.POKE-BUTTON", "Address:" + my_address + ", pin: " + pin+ ", value: " + value );
-
 				Queue q = barobot.main_queue;
 				if(value > 0 ){
 					q.add("L"+my_address+",ff,0", true);
@@ -143,12 +144,12 @@ public class Arduino{
 			public boolean run(Mainboard asyncDevice, String fromArduino, String wait4Command, AsyncMessage wait_for) {				
 				String decoded = "Arduino.GlobalMatch.METHOD_DEVICE_FOUND";
 				int[] parts = Decoder.decodeBytes( fromArduino );
-				// byte ttt[4] = {METHOD_DEVICE_FOUND,addr,type,ver};
-				// byte ttt[4] = {METHOD_DEVICE_FOUND,I2C_ADR_MAINBOARD,MAINBOARD_DEVICE_TYPE,MAINBOARD_VERSION};
+				// short ttt[4] = {METHOD_DEVICE_FOUND,addr,type,ver};
+				// short ttt[4] = {METHOD_DEVICE_FOUND,I2C_ADR_MAINBOARD,MAINBOARD_DEVICE_TYPE,MAINBOARD_VERSION};
 				boolean scanning = true;
 				if( scanning ){
 		/*
-					byte pos = getResetOrder(buffer[1]);
+					short pos = getResetOrder(buffer[1]);
 					i2c_reset_next( buffer[1], false );       // reset next (next to slave)
 					i2c_reset_next( buffer[1], true );
 					}else if( scann_order ){ 

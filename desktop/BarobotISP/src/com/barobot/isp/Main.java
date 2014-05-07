@@ -14,6 +14,7 @@ import jssc.SerialPortList;
 
 import com.barobot.common.DesktopLogger;
 import com.barobot.common.IspSettings;
+import com.barobot.hardware.devices.i2c.Upanel;
 import com.barobot.parser.utils.CopyStream;
 
 public class Main{
@@ -45,69 +46,81 @@ public class Main{
 		loadProps();
 		//String[] comlist = list();
 		Wizard w	= new Wizard();
-		Hardware hw = new Hardware("COM3");
+		Hardware hw = new Hardware("COM4");
 
-		IspSettings.safeMode = false;
-		IspSettings.verbose = 2;
+		IspSettings.safeMode	= false;
+		IspSettings.verbose		= 2;
 		IspSettings.setFuseBits = false;
-		IspSettings.setHex	= true;
-		IspSettings.force = false;
+		IspSettings.setHex		= true;
+		IspSettings.force		= false;
 
-		UploadCode uc = new UploadCode();
-		Macro mm  = new Macro();
+		UploadCode uc			= new UploadCode();
+		Macro mm				= new Macro();
+		MetaRendering mr		= new MetaRendering();
+/*
+		for( int i =0; i<255;i++){
+			int p = com.barobot.common.constant.Pwm.linear2log(i );
+			System.out.println(""+i + "," + p);
+		}
+		*/
 
 	//	hw.connectIfDisconnected();
-//		uc.prepareUpanels( hw );
-		
-	//	
 	//	w.fast_close_test( hw );
-
 	//	uc.prepareSlaveMB( hw );
 	//	uc.prepareMB( hw );
 	//	uc.prepareMB2( hw );
 	//	uc.prepareMBManualReset( hw );
 	//	uc.prepareCarret( hw );
+		
+	//	uc.prepareUpanels( hw );
+	//	uc.prepareUpanelNextTo( hw, 15 );
 
 	//	w.fast_close_test( hw );
-	//	w.checkCarret( hw );
-	//	w.prepare1Upanel( hw, 4 );
+	//	uc.prepare1Upanel( hw, hw.barobot, Upanel.FRONT );
 
-	//	w.prepareUpanel( hw, 3 );
-	//	w.prepareUpanel( hw, 4 );
-	//	w.test( hw );
-		w.findOrder( hw );
+	//	w.findOrder( hw );
 
 	//	mm.promo1( hw );
-		
-	//	MetaRendering mr = new MetaRendering();
-	//	mr.createContstans();	
-	//	MetaRendering mr = new MetaRendering();
 	//	mr.createContstans();
 	//	mm.resetuj( hw );
 	//	mm.testBpm( hw );
 	//	mm.promo_carret( hw );
-	
 
 	//	w.test_proc( hw );	
-//		w.swing( hw, 3, 1000, 5000 );
-	//	w.test( hw );
-	//	w.findOrder( hw, 3 );
-	//	w.showOrder();
-	//	Wizard.wait(1000);
-	//	w.clearUpanel( hw );
+	//	w.swing( hw, 3, 1000, 5000 );
+
 	//	w.mrygaj( hw, 10 );
-	//	w.illumination1( hw );
-	////	w.ilumination2( hw );
+		//w.illumination1( hw );
+		
+	//	w.strobo( hw, 309 );
+		
+	/*
+		w.loading( hw, 6 );
+		w.strobo( hw, 6 );
+		w.nazmiane( hw, 6 );
+		w.linijka( hw, 6 );
+		
+		w.tecza( hw, 6 );
+		*/
+	//	w.flaga( hw, 6 );
+		
+		w.findStops(hw);
+		
+		
+	//	w.mrygaj(hw, 10);
+		
+		
+	//	w.mrygaj_po_butelkach( hw, 100 );
 
+	//	w.fadeButelka( hw, 5, 20 );
+	//	w.ilumination2( hw );
 	//	w.ilumination3( hw, "88", 255, "00", 2 );
-	//	w.zamrugaj(hw, 10, 10 );
-
-	//w.fadeButelka( hw, 4, 200 );
+	//	w.zamrugaj(hw, 200, 50 );
 	//	w.fadeAll( hw, 4 );
 	//	w.zapal( hw );
 	//	w.zgas( hw );
 		
-		w.zapalPrzod( hw );
+	//	w.zapalPrzod( hw );
 		
 	//	hw.close();
 

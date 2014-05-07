@@ -17,10 +17,10 @@ public class UploadCode {
 	public void prepareUpanels(Hardware hw ) {
 		Queue q = hw.getQueue();
 		hw.connectIfDisconnected();
-		prepareUpanel2( Upanel.BACK, q, hw.barobot, hw );
-		prepareUpanel2( Upanel.FRONT, q, hw.barobot, hw );
+	//	prepareUpanel2( Upanel.BACK, q, hw.barobot, hw, false );
+		prepareUpanel2( Upanel.FRONT, q, hw.barobot, hw, false );
 	}
-	private void prepareUpanel2(final int row, Queue q, final BarobotConnector barobot, final Hardware hw ) {
+	private void prepareUpanel2(final int row, Queue q, final BarobotConnector barobot, final Hardware hw, final boolean firstOnly ) {
 		hw.barobot.i2c.clear();
 
 		final int current_index		= 0;
@@ -40,7 +40,7 @@ public class UploadCode {
 							System.out.println("has next ROW "+row+"- OK");
 							q.show("run");
 							hw.barobot.i2c.add( firstInRow );
-							Queue qq2	= UploadFirst( firstInRow, barobot, hw);
+							Queue qq2	= UploadFirst( firstInRow, barobot, hw, firstOnly );
 							q.addFirst(qq2);
 						}else{
 							System.out.println("ERROR: No device on ROW "+ row );
@@ -53,7 +53,7 @@ public class UploadCode {
 		});
 	}
 
-	private Queue UploadFirst(final Upanel current_dev, final BarobotConnector barobot, final Hardware hw) {
+	private Queue UploadFirst(final Upanel current_dev, final BarobotConnector barobot, final Hardware hw, boolean firstOnly) {
 		final String hex_code = current_dev.getHexFile();
 		Queue nq = new Queue();
 		if( IspSettings.setFuseBits ){
@@ -108,29 +108,31 @@ public class UploadCode {
 				}
 			});
 		}
-		final String resetCmd	= current_dev.getReset();
-		nq.add( new AsyncMessage( resetCmd, true ){		// read address of the first upanel
-			@Override
-			public boolean onInput(String input, Mainboard dev, Queue mainQueue) {
-				if( input.equals("R"+resetCmd) ){
-					return true;		// its me, ignore message
+		if( !firstOnly ){
+			final String resetCmd	= current_dev.getReset();
+			nq.add( new AsyncMessage( resetCmd, true ){		// read address of the first upanel
+				@Override
+				public boolean onInput(String input, Mainboard dev, Queue mainQueue) {
+					if( input.equals("R"+resetCmd) ){
+						return true;		// its me, ignore message
+					}
+					return false;
 				}
-				return false;
-			}
-			@Override
-			public boolean isRet(String result, Queue q) {
-				if(result.startsWith(""+ Methods.METHOD_DEVICE_FOUND +",")){		//	112,18,19,1
-					int[] bytes = Decoder.decodeBytes(result);	// HELLO, ADDRESS, TYPE, VERSION
-					current_dev.setAddress(bytes[1]);
-					System.out.println("+Upanel " + current_dev.getNumInRow() + " ma adres " + current_dev.getAddress());
-					Queue qq2	= checkHasNext( hw, barobot, current_dev, hex_code );	
-					current_dev.setLed( qq2, "22", 255 );
-					q.addFirst(qq2);
-					return true;
+				@Override
+				public boolean isRet(String result, Queue q) {
+					if(result.startsWith(""+ Methods.METHOD_DEVICE_FOUND +",")){		//	112,18,19,1
+						int[] bytes = Decoder.decodeBytes(result);	// HELLO, ADDRESS, TYPE, VERSION
+						current_dev.setAddress(bytes[1]);
+						System.out.println("+Upanel " + current_dev.getNumInRow() + " ma adres " + current_dev.getAddress());
+						Queue qq2	= checkHasNext( hw, barobot, current_dev, hex_code );	
+						current_dev.addLed( qq2, "22", 100 );	// na pocz¹tek daæ
+						q.addFirst(qq2);
+						return true;
+					}
+					return false;
 				}
-				return false;
-			}
-		});
+			});
+		}
 		return nq;
 	}
 
@@ -148,9 +150,11 @@ public class UploadCode {
 							Upanel next_device	= new Upanel();
 							next_device.setRow( current_dev.getRow() );
 							next_device.isResetedBy( current_dev );
-							next_device.setNumInRow( current_dev.getBottleNum()+1 );
+							if( current_dev.getBottleNum() != -1 ){
+								next_device.setNumInRow( current_dev.getBottleNum()+1 );
+							}
 							hw.barobot.i2c.add( next_device );
-							Queue qq2	= UploadFirst( next_device, barobot, hw);
+							Queue qq2	= UploadFirst( next_device, barobot, hw, false );
 							q.addFirst(qq2);
 						}else if( current_dev.getNumInRow() >= 5 ){	// all found
 						}else{
@@ -330,7 +334,6 @@ public class UploadCode {
 
 	public void prepareMBManualReset(final Hardware hw) {
 		String command					= "";
-		Queue q							= hw.getQueue();
 		final I2C_Device current_dev	= new MainboardI2c();
 		final String upanel_code		= current_dev.getHexFile();
 		if(IspSettings.setHex){	
@@ -383,29 +386,43 @@ public class UploadCode {
 			q.addWaitThread(Main.main);
 		}
 	}
-
-	public void prepare1Upanel(Hardware hw, int index ) {
-		String command = "";
-		hw.synchro();
-		Queue q = hw.getQueue();
+	public void prepare1Upanel(final Hardware hw, final BarobotConnector barobot, final int row ) {
 		hw.connectIfDisconnected();
-		Upanel current_dev	= new Upanel();
-		current_dev.setRow(index);
-		current_dev.setIndex(index);
-		
-		String upanel_code = current_dev.getHexFile();
-		if( IspSettings.setFuseBits){
-			current_dev.isp( q );
-			command = current_dev.setFuseBits(hw.comPort);
-			Main.main.runCommand(command, hw);
-			Main.wait(2000);
-		}
-		if(IspSettings.setHex){
-			current_dev.isp( q );
-			command = current_dev.uploadCode( upanel_code, hw.comPort );
-			Main.main.runCommand(command, hw);
-			Main.wait(2000);
-		}
-		System.out.println("koniec prepare1Upanel");
+		Queue q = hw.getQueue();
+		prepareUpanel2( row, q, hw.barobot, hw, true );	
+	}
+	
+
+	public void prepareUpanelNextTo(final Hardware hw, final int nexto ) {
+		final Upanel prev			= new Upanel();
+		prev.setAddress(nexto);
+		final String hex_code		= prev.getHexFile();
+
+		hw.connectIfDisconnected();
+		Queue q = hw.getQueue();
+		String command = "n" + nexto;
+		q.add( new AsyncMessage( command, true ){			// has first upanel?
+			@Override
+			public boolean isRet(String result, Queue q) {
+				if(result.startsWith("" + Methods.METHOD_I2C_SLAVEMSG + ",")){		//	122,1,188,1
+					int[] bytes = Decoder.decodeBytes(result);
+					if(bytes[2] == Methods.METHOD_CHECK_NEXT  ){
+						if(bytes[3] == 1 ){							// has next
+							q.show("run");
+
+							Queue qq2	= checkHasNext( hw, hw.barobot, prev, hex_code );
+							
+							
+							
+							q.addFirst(qq2);
+						}else{
+							System.out.println("ERROR: No device next to "+nexto );
+						}
+						return true;
+					}
+				}
+				return false;
+			}
+		});
 	}
 }

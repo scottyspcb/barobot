@@ -89,7 +89,7 @@ public class Mainboard{
 			if( this.wait_for != null ){
 				wait4Command = this.wait_for.command;
 				used = true;
-				Initiator.logger.i("Mainboard.useInput.isRet: ", command );
+	//			Initiator.logger.i("Mainboard.useInput.isRet", command );
 				handled = this.wait_for.isRet( command, mainQueue );
 				if(handled){
 			//		Initiator.logger.i("+unlock: ", command );
@@ -191,7 +191,7 @@ public class Mainboard{
 			if( this.sender.isConnected() ){
 		//		synchronized(outputStream){
 				try {
-					Initiator.logger.i("Mainboard.Send" , command.trim() );
+		//			Initiator.logger.i("Mainboard.Send" , command.trim() );
 					return this.sender.send(command);
 				} catch (IOException e) {
 				  e.printStackTrace();
@@ -201,6 +201,9 @@ public class Mainboard{
 				Initiator.logger.i("Mainboard.Send", "no connect");
 			//	throw new Exception("No connect");
 			}
+		} catch (NullPointerException e) {	
+			Initiator.logger.i("Mainboard.Send", "no connect");
+			e.printStackTrace();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -230,7 +233,7 @@ public class Mainboard{
 		};
 	}
 	public void waitFor(AsyncMessage m) {
-		Initiator.logger.i( "waitFor: ", m.toString() );
+	//	Initiator.logger.i( "waitFor:", "["+m.toString()+"]" );
 		synchronized (this) {
 			this.wait_for		= m;
 		}
@@ -238,7 +241,7 @@ public class Mainboard{
 	public void unlockRet(String withCommand, boolean unlockQueue ){
 		synchronized (this) {
 			if(this.wait_for!=null){
-				Initiator.logger.i(">>>Mainboard.unlockRet", this.wait_for.toString() +" with: "+ withCommand.trim());
+	//			Initiator.logger.i(">>>Mainboard.unlockRet", "["+this.wait_for.toString() +"] with: ["+ withCommand.trim()+"]");
 				this.wait_for.unlockWith(withCommand);
 				this.wait_for = null;
 				mainQueue.unlock();
@@ -248,7 +251,7 @@ public class Mainboard{
 	public void unlockRet(AsyncMessage asyncMessage, String withCommand) {
 		synchronized (this) {
 			if(this.wait_for == asyncMessage ){
-				Initiator.logger.i(">>>Mainboard.unlockRet", this.wait_for.toString() +" with: "+ withCommand.trim());
+	//			Initiator.logger.i(">>>Mainboard.unlockRet", "["+this.wait_for.toString() +"] with: ["+ withCommand.trim()+"]");
 				this.wait_for.unlockWith(withCommand);
 				this.wait_for = null;
 				mainQueue.unlock();

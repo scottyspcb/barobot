@@ -38,7 +38,7 @@ public class LedOrder {
 					System.out.println("its me, ignore");
 					return true;		// its me, ignore message
 				}else{
-					System.out.println("otherwise ignore:" + input);
+					System.out.println("otherwise ignore[" + input+"]");
 				}
 				return false;
 			}
@@ -62,7 +62,7 @@ public class LedOrder {
 					q.addFirst(q2);
 					return true;
 				}else{
-					System.out.println("findOrder no isRet:" + result);
+					System.out.println("findOrder isRet false:" + result);
 				}
 				return false;
 			}

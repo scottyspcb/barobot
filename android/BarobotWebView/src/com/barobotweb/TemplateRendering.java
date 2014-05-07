@@ -1,9 +1,5 @@
 package com.barobotweb;
 
-import java.util.List;
-import java.util.Map;
-import android.util.Log;
-import com.x5.template.Chunk;
 import com.x5.template.Theme;
 
 import fi.iki.elonen.NanoHTTPD.IHTTPSession;

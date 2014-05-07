@@ -3,6 +3,7 @@ package com.barobot.activity;
 import com.barobot.R;
 import com.barobot.hardware.Arduino;
 import com.barobot.hardware.virtualComponents;
+import com.barobot.hardware.devices.BarobotConnector;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -64,7 +65,7 @@ public class BarobotActivity extends Activity {
     	Intent serverIntent = null;
     	switch (item.getItemId()) {
     	case R.id.action_panic:
-    		virtualComponents.cancel_all();
+    		virtualComponents.barobot.cancel_all();
     		return false;
     	case R.id.action_bottles:
     		serverIntent = new Intent(this, BottleSetupActivity.class);
@@ -85,7 +86,7 @@ public class BarobotActivity extends Activity {
     		
        	case R.id.kalibracja:
 
-       		virtualComponents.kalibrcja();
+       		virtualComponents.barobot.kalibrcja();
     		break;	
 
     	case R.id.update_drinks:

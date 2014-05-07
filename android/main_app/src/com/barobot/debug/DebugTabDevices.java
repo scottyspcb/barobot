@@ -60,7 +60,7 @@ public class DebugTabDevices extends Fragment {
 				for(int i=0;i<12;i++){
 					EditText editb0 = (EditText) rootView.findViewById( buttons[i] );
 					Initiator.logger.i("DebugTabDevices.zapisuje", "BOTTLE_X_" + i + "= " +editb0.getText().toString() );
-	        		virtualComponents.state.set("BOTTLE_X_" + i, editb0.getText().toString() ); 
+	        		virtualComponents.barobot.state.set("BOTTLE_X_" + i, editb0.getText().toString() ); 
 	        	
 				}
 			}
@@ -70,7 +70,7 @@ public class DebugTabDevices extends Fragment {
 			@Override
 			public void onClick(View v) {
 				for(int i=0;i<12;i++){
-					int xpos = virtualComponents.state.getInt("BOTTLE_X_" + i, 0 );
+					int xpos = virtualComponents.barobot.state.getInt("BOTTLE_X_" + i, 0 );
 					EditText editb0 = (EditText) rootView.findViewById( buttons[i] );
 					int num = i;
 					Initiator.logger.i("DebugTabDevices", "set input BOTTLE_X_" + num + "= " +xpos );
@@ -79,7 +79,7 @@ public class DebugTabDevices extends Fragment {
 			}
 		});
 		for(int i=0;i<12;i++){
-			int xpos = virtualComponents.state.getInt("BOTTLE_X_" + i, 0 );
+			int xpos = virtualComponents.barobot.state.getInt("BOTTLE_X_" + i, 0 );
 			//int ypos = virtualComponents.state.getInt("BOTTLE_Y_" + i, 0 );
 			// Initiator.logger.i("DebugTabDevices.zapisuje", "butelki" );
 			final EditText editb0 = (EditText) rootView.findViewById( buttons[i] );
@@ -88,7 +88,7 @@ public class DebugTabDevices extends Fragment {
 			editb0.setText(""+xpos );
 		}
 		for(int i=0;i<12;i++){
-			int xpos = virtualComponents.state.getInt("BOTTLE_X_" + i, 0 );
+			int xpos = virtualComponents.barobot.state.getInt("BOTTLE_X_" + i, 0 );
 			//int ypos = virtualComponents.state.getInt("BOTTLE_Y_" + i, 0 );
 			// Initiator.logger.i("DebugTabDevices.zapisuje", "butelki" );
 			final EditText editb0 = (EditText) rootView.findViewById( buttons[i] );
