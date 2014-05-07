@@ -189,7 +189,7 @@ public class Queue {
 		if(isMainQueue){
 			synchronized (this.lock) {
 				if(this.wait_for_device ){
-					Initiator.logger.i("Queue", "unlock id:" + this.wait_for_device );
+		//			Initiator.logger.i("Queue", "unlock id:" + this.wait_for_device );
 					mb.unlockRet("force unlock", false);
 					this.wait_for_device =  false;
 				}

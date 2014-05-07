@@ -11,6 +11,7 @@
 #include <avr/io.h>
 #include <avr/wdt.h>
 #define INBFLENGTH 	5
+#define I2CDELAY	1
 byte in_buffer[INBFLENGTH];
 
 volatile uint8_t input_buffer[MAINBOARD_BUFFER_LENGTH][MAXCOMMAND] = {{0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0}};
@@ -251,29 +252,29 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 
 	}else if( command == METHOD_MSET_TOP_COLOR || command == METHOD_MSET_BOTTOM_COLOR ) {    // CAaRrGgBbWw		// set TOP /BOTTOM color for Aa to Rr Gg Bb Ww
 		String digits    	= input.substring( 1 );
-		char charBuf[10];
-		input.toCharArray(charBuf,10);
+		char charBuf[12];
+		digits.toCharArray(charBuf,12);
 		uint16_t address	= 0;
 		uint16_t red		= 0;
 		uint16_t green		= 0;
 		uint16_t blue		= 0;
 		uint16_t white		= 0;
-		sscanf(charBuf,"%x%x%x%x%x", &address, &red, &green, &blue, &white );
+		sscanf(charBuf,"%2x%2x%2x%2x%2x", &address, &red, &green, &blue, &white );
+		/*
 		DEBUG("-adr: ");
 		DEBUG(String(address));
 		DEBUG(" r: ");	DEBUG(String(red));
 		DEBUG(" g: ");	DEBUG(String(green));
 		DEBUG(" b: ");	DEBUG(String(blue));
 		DEBUG(" w: ");	DEBUG(String(white));
-		DEBUGLN();
-
+		DEBUGLN();*/
 		out_buffer[0]  = ((command == METHOD_MSET_TOP_COLOR) ? METHOD_SET_TOP_COLOR : METHOD_SET_BOTTOM_COLOR);
 		out_buffer[1]  = red;
 		out_buffer[2]  = green;
 		out_buffer[3]  = blue;
 		out_buffer[4]  = white;
 		writeRegisters(address, 5, false );
-		delay(1);
+		delayMicroseconds(100);
 
 	}else if(command == METHOD_MSET_LED || command == METHOD_M_ONECOLOR ) {    // L12,ff,211 or  B12,ff,211		// zgaœ wszystkie na upanelu 0x0C OR set color and disable other leds
 		String digits     = input.substring( 1 );
@@ -282,12 +283,12 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 		unsigned int num    = 0;
 		unsigned int leds 	= 0;
 		unsigned int power  = 0;
-		sscanf(charBuf,"%i,%x,%i", &num, &leds, &power );
+		sscanf(charBuf,"%i,%2x,%i", &num, &leds, &power );
 		out_buffer[0]  = (command == METHOD_M_ONECOLOR) ? METHOD_ONECOLOR : METHOD_SETLEDS;
 		out_buffer[1]  = leds;
 		out_buffer[2]  = power;
 		writeRegisters(num, 3, false );
-		delay(1);
+		delayMicroseconds(100);
 
 	}else if( command == 'x') {
 		long int pos = stepperX.currentPosition();
@@ -323,7 +324,6 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 		out_buffer[0]  = METHOD_GET_Z_POS;
 		writeRegisters(I2C_ADR_CARRET, 1, false );
 		defaultResult = false;
-
 	}else if( command == 'E' ) {    // enable
 		byte command2 = serialBuff[1];
 		defaultResult = false;
@@ -394,40 +394,44 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 	}else if(  command == 'P' ) {    	// P1; P2,0; P3,1; P4,1;   - programuj urzadzenie 0x0A z predkosca 19200, PROG 0,0 - force first, PROG 0A,0 - wozek
 		read_prog_settings(input, 1 );
 		defaultResult = false;
-	}else if( input.startsWith("RESET_NEXT")) {			// RESET12
+	}else if( input.startsWith("RESET_NEXT")) {			// RESET_NEXT12
 		String digits     = input.substring( 10 );
-		char charBuf[4];
-		digits.toCharArray(charBuf,4);
-		unsigned int num    = 0;
-		sscanf(charBuf,"%i", &num );
+		unsigned int num  = digits.toInt();
+	//	char charBuf[4];
+	//	digits.toCharArray(charBuf,4);
+	//	unsigned int num    = 0;
+	//	sscanf(charBuf,"%i", &num );
 		byte error =reset_device_next_to(num, LOW);
 		if (error == 0){
-			delay(20);
+			delay(5);
 			reset_device_next_to(num, HIGH);
 		}else{  //error
 			defaultResult = false;
 			send_error(input);
 		}
 	}else if( input.startsWith("RESET")) {    // RESET0; RESET1; RESET2 
-		String digits     = input.substring( 5 );
-		char charBuf[10];
-		digits.toCharArray(charBuf,10);
-		unsigned int num    = 0;
-		sscanf(charBuf,"%i", &num );
+		String digits   = input.substring( 5 );
+		int num  		= digits.toInt();
+	//	char charBuf[10];
+	//	digits.toCharArray(charBuf,10);
+	//	unsigned int num    = 0;
+	//	sscanf(charBuf,"%i", &num );
 		boolean ret = reset_device_num(num, LOW);
 		if(ret){
-			delay(20);
+			delay(5);
 			reset_device_num(num, HIGH);
 		}else{  //error
 			defaultResult = false;
 			send_error(input);
 		}
 	}else if( command == 'N' ){		// HAS NEXT, N2,N3,N4
-		String digits         		  = input.substring( 1 );
-		unsigned int target           = 0;
-		char charBuf[3];
-		digits.toCharArray(charBuf, 3);
-		sscanf(charBuf,"%i", &target );
+		String digits    	 = input.substring( 1 );
+		unsigned int target  = digits.toInt();
+
+	//	unsigned int target           = 0;
+	//	char charBuf[3];
+	//	digits.toCharArray(charBuf, 3);
+	//	sscanf(charBuf,"%i", &target );
 		defaultResult = false;
 		byte pin		= get_local_pin(target);
 		if(pin == 0xff){
@@ -441,12 +445,14 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 		}
 
 	}else if( command == 'n' ){			// h10,h11,h12,13   - id selected i2c device has next node
-		String digits         		  = input.substring( 1 );
-		unsigned int target           = 0;
-		char charBuf[3];
-		digits.toCharArray(charBuf, 3);
-		sscanf(charBuf,"%i", &target );
-		defaultResult = false;
+		String digits        = input.substring( 1 );
+		unsigned int target  = digits.toInt();
+		
+	//	unsigned int target  = 0;
+	//	char charBuf[3];
+	//	digits.toCharArray(charBuf, 3);
+	//	sscanf(charBuf,"%i", &target );
+	//	defaultResult = false;
 		byte adr 		= (byte) target;
 		out_buffer[0] 	= METHOD_CHECK_NEXT;
 		byte error		= writeRegisters(adr, 1, true );
@@ -461,7 +467,7 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 		for(byte addr2 = 1; addr2 < I2C_ADR_UEND; addr2++ )   {
 			error =checkAddress(addr2);
 			if (error == 0){
-				delay(20);
+				delay(I2CDELAY);
 				uint16_t readed = i2c_getVersion(addr2);
 				i2c_device_found( addr2,(readed & 0xff),(readed>>8) );
 				nDevices++;
@@ -642,7 +648,7 @@ void i2c_test_slaves(){
 	for(byte aaa = I2C_ADR_MAINBOARD; aaa < I2C_ADR_UEND; aaa++ ) {
 		error =checkAddress(aaa);
 		if (error == 0){
-			delay(20);
+			delay(I2CDELAY);
 			uint16_t readed = i2c_getVersion(aaa);
 			if( (readed>>8) > 0 && ((readed & 0xff) >0)){
 			}else{
@@ -937,6 +943,7 @@ byte readRegisters(byte deviceAddress, byte length){
 // wysyla dowolnÄ… ilosc liczb na kanal
 #define DEBUG_SEND	false
 
+
 byte writeRegisters(int deviceAddress, byte length, boolean wait) {
 	Wire.beginTransmission(deviceAddress); // start transmission to device
 
@@ -969,7 +976,7 @@ byte writeRegisters(int deviceAddress, byte length, boolean wait) {
 		return error;
 	}
 	if(wait){
-		delay(20);
+		delay(I2CDELAY);
 	}
 	return 0;
 }
@@ -1104,12 +1111,12 @@ void end_programmer_mode(){
 	pinMode(MISO, INPUT);
 	pinMode(MOSI, INPUT);
 	pinMode(SCK, INPUT);
-	prog_mode = false;
 	Serial.flush();
-	Serial.begin(MAINBOARD_SERIAL0_BOUND);
-
 	//send_prog_mode(METHOD_PROG_MODE_OFF);
-
+	delay(50);
+	Serial.begin(MAINBOARD_SERIAL0_BOUND);
+	delay(50);
+	prog_mode = false;
 	if(reprogramm_address){		// unlock device
 		reset_device_next_to( reprogramm_address, HIGH);
 	}else if(reprogramm_index){

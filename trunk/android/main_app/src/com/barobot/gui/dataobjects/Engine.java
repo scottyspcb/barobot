@@ -193,10 +193,10 @@ public class Engine {
 		Log.i("Prepare Sequence:", Sequence );
 		for (Integer i : bottleSequence){
 			Log.i("Prepare", ""+i );
-			virtualComponents.moveToBottle( i-1, false );
-			virtualComponents.nalej(i-1);
+			virtualComponents.barobot.moveToBottle( i-1, false );
+			virtualComponents.barobot.nalej(i-1);
 		}
-		virtualComponents.moveToStart();
+		virtualComponents.barobot.moveToStart();
 
 		Queue q	= virtualComponents.getMainQ();
 		q.add( new AsyncMessage( true ) {

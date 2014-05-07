@@ -19,6 +19,7 @@ import com.barobot.R;
 import com.barobot.activity.DebugActivity;
 import com.barobot.common.Initiator;
 import com.barobot.hardware.virtualComponents;
+import com.barobot.hardware.devices.BarobotConnector;
 
 public class DebugTabLeds extends Fragment {
 	public int tab_id	= -1 ;
@@ -74,9 +75,9 @@ public class DebugTabLeds extends Fragment {
 		xb6.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 		    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 		        if (isChecked) {
-		        	virtualComponents.setLeds( "ff", 255 );
+		        	virtualComponents.barobot.setLeds( "ff", 255 );
 		        } else {
-		        	virtualComponents.setLeds( "ff", 0 );
+		        	virtualComponents.barobot.setLeds( "ff", 0 );
 		        }
 		    }
 		});
@@ -102,7 +103,6 @@ public class DebugTabLeds extends Fragment {
 				changeColorOf("f0");
 			}
 		});
-		
 		return rootView;
 	}
 
@@ -119,7 +119,7 @@ public class DebugTabLeds extends Fragment {
 		        public void onCancel(AmbilWarnaDialog dialog) {
 		        	Log.i("OnAmbilWarnaListener", "onCancel");
 		        }
-		});	
+		});
 		dialog.show();
 	};	
 

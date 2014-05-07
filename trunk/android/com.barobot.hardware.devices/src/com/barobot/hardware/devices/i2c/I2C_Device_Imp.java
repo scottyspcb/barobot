@@ -3,12 +3,13 @@ package com.barobot.hardware.devices.i2c;
 import java.io.File;
 
 import com.barobot.common.IspSettings;
+import com.barobot.common.constant.Pwm;
 import com.barobot.parser.Queue;
 import com.barobot.parser.utils.Decoder;
 
 public abstract class I2C_Device_Imp implements I2C_Device{
 	protected int myaddress = 0;
-	protected int row = 0;
+	protected int row = -1;
 	protected int numInRow = -1;
 	protected int index	= -1;
 	protected String cpuname = "";
@@ -25,15 +26,49 @@ public abstract class I2C_Device_Imp implements I2C_Device{
 	}
 
 	@Override
-	public void setLed(Queue q, String selector, int pwm ) {
-		String command = "L" + myaddress + ","+ selector +"," + pwm;
+	public void addLed(Queue q, String selector, int pwm ) {
+		pwm				= Pwm.linear2log(pwm);
+		String command	= "L" + myaddress + ","+ selector +"," + pwm;
+		System.out.println("+addLed " +command);
 		q.add( command, true );
 	}
-	public void setRgbW(Queue q1, int red, int green, int blue, int white) {
-		this.setLed(q1, "11", red);
-		this.setLed(q1, "22", green);
-		this.setLed(q1, "44", blue);
+
+	public void setRgbw(Queue q1, int red, int green, int blue, int white) {
+		red		= Pwm.linear2log(red);
+		green	= Pwm.linear2log(green);	
+		blue	= Pwm.linear2log(blue);
+		white	= Pwm.linear2log(white);
+		this.addLed(q1, "11", red);
+		this.addLed(q1, "22", green);
+		this.addLed(q1, "44", blue);
 	//	this.setLed(q1, "88", white);
+	}
+	
+	@Override
+	public void setLed(Queue q, String selector, int pwm ) {
+		pwm				= Pwm.linear2log(pwm);
+		String command	= "B" + myaddress + ","+ selector +"," + pwm;
+		q.add( command, true );
+	}
+
+	@Override
+	public void setColor(Queue q, boolean top, int red, int green, int blue, int white) {
+		red		= Pwm.linear2log(red);
+		green	= Pwm.linear2log(green);	
+		blue	= Pwm.linear2log(blue);
+		white	= Pwm.linear2log(white);
+		String command;
+		if(top){
+			 command	= "C";
+		}else{
+			 command	= "c";
+		}
+		command += String.format("%02x", myaddress ) 
+				+ String.format("%02x", red )
+				+ String.format("%02x", green )
+				+ String.format("%02x", blue  )
+				+ String.format("%02x", white );
+		q.add( command, true );
 	}
 
 	@Override

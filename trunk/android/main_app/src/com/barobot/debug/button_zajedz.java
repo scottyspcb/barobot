@@ -5,6 +5,7 @@ import com.barobot.activity.BarobotMain;
 import com.barobot.activity.DebugActivity;
 import com.barobot.common.constant.Constant;
 import com.barobot.hardware.virtualComponents;
+import com.barobot.hardware.devices.BarobotConnector;
 
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -23,150 +24,151 @@ public class button_zajedz  implements OnClickListener {
 	public void exec(View v) {
 		boolean setting_mode	= false;
 		BarobotMain bb			= BarobotMain.getInstance();
-		boolean autofill		= ( virtualComponents.state.get("AUTOFILL", "1" )== "1");
+		BarobotConnector barobot = virtualComponents.barobot;
+		
+		boolean autofill		= ( barobot.state.get("AUTOFILL", "1" )== "1");
 		if(virtualComponents.set_bottle_on){
 			setting_mode = true;
 		}
 		switch (v.getId()) {
 		  case R.id.start_pos:
 			  if(setting_mode){
-				int posx		=  virtualComponents.barobot.driver_x.getSPos();;	
-				int posy		=  virtualComponents.state.getInt("POSY", 0 );
-				virtualComponents.hereIsStart(posx, posy);
+				int posx		=  barobot.driver_x.getSPos();;	
+				int posy		=  barobot.state.getInt("POSY", 0 );
+				barobot.hereIsStart(posx, posy);
 			  }else{
-				  virtualComponents.moveToStart();
+				  barobot.moveToStart();
 			  }
 			  break;
 		
 		  case R.id.nalej1:
 			  if(setting_mode){
-				  virtualComponents.hereIsBottle(0);
+				  barobot.hereIsBottle(0);
 			  }else{
-				  virtualComponents.moveToBottle(0, !autofill);
+				  barobot.moveToBottle(0, !autofill);
 				  if( autofill){
-					  virtualComponents.nalej(0);
+					  barobot.nalej(0);
 				  }
 			  }
 		    break;
 		  case R.id.nalej2:
 			  if(setting_mode){
-				  virtualComponents.hereIsBottle(1);
+				  barobot.hereIsBottle(1);
 			  }else{
-				  virtualComponents.moveToBottle(1, !autofill);
+				  barobot.moveToBottle(1, !autofill);
 				  if( autofill){
-					  virtualComponents.nalej(1);
+					  barobot.nalej(1);
 				  }
 			  }	
 			  break;
 		  case R.id.nalej3:
 			  if(setting_mode){
-				  virtualComponents.hereIsBottle(2);
+				  barobot.hereIsBottle(2);
 
 			  }else{
-				  virtualComponents.moveToBottle(2, !autofill);
+				  barobot.moveToBottle(2, !autofill);
 				  if( autofill){
-					  virtualComponents.nalej(2);
+					  barobot.nalej(2);
 				  }
 			  }	    	  
 		      break;
 		  case R.id.nalej4:
 			  if(setting_mode){
-				  virtualComponents.hereIsBottle(3);
+				  barobot.hereIsBottle(3);
 			  }else{
-				  virtualComponents.moveToBottle(3, !autofill);
+				  barobot.moveToBottle(3, !autofill);
 				  if( autofill){
-					  virtualComponents.nalej(3);
+					  barobot.nalej(3);
 				  }
 			  }
 		      break;
 		  case R.id.nalej5:
 			  if(setting_mode){
-				  virtualComponents.hereIsBottle(4);
-
+				  barobot.hereIsBottle(4);
 			  }else{
-				  virtualComponents.moveToBottle(4, !autofill);
+				  barobot.moveToBottle(4, !autofill);
 				  if( autofill){
-					  virtualComponents.nalej(4);
+					  barobot.nalej(4);
 				  }
 			  }
 		      break;
 		  case R.id.nalej6:
 			  if(setting_mode){
-				  virtualComponents.hereIsBottle(5);
+				  barobot.hereIsBottle(5);
 
 			  }else{
-				  virtualComponents.moveToBottle(5, !autofill);
+				  barobot.moveToBottle(5, !autofill);
 				  if( autofill){
-					  virtualComponents.nalej(5);
+					  barobot.nalej(5);
 				  }
 			  }
 		      break;
 		  case R.id.nalej7:
 			  if(setting_mode){
-				  virtualComponents.hereIsBottle(6);
+				  barobot.hereIsBottle(6);
 
 			  }else{
-				  virtualComponents.moveToBottle(6, !autofill);
+				  barobot.moveToBottle(6, !autofill);
 				  if( autofill){
-					  virtualComponents.nalej(6);
+					  barobot.nalej(6);
 				  }
 			  }
 		      break;
 		  case R.id.nalej8:
 			  if(setting_mode){
-				  virtualComponents.hereIsBottle(7);
+				  barobot.hereIsBottle(7);
 			  }else{
-				  virtualComponents.moveToBottle(7, !autofill);
+				  barobot.moveToBottle(7, !autofill);
 				  if( autofill){
-					  virtualComponents.nalej(7);
+					  barobot.nalej(7);
 				  }
 			  }	  
 		      break;
 		  case R.id.nalej9:
 			  if(setting_mode){
-				  virtualComponents.hereIsBottle(8);
+				  barobot.hereIsBottle(8);
 			  }else{
-				  virtualComponents.moveToBottle(8, !autofill);
+				  barobot.moveToBottle(8, !autofill);
 				  if( autofill){
-					  virtualComponents.nalej(8);
+					  barobot.nalej(8);
 				  }
 			  }
 			  break;
 	      case R.id.nalej10:
 			  if(setting_mode){
-				  virtualComponents.hereIsBottle(9);
+				  barobot.hereIsBottle(9);
 			  }else{
-				  virtualComponents.moveToBottle(9, !autofill);
+				  barobot.moveToBottle(9, !autofill);
 				  if( autofill){
-					  virtualComponents.nalej(9);
+					  barobot.nalej(9);
 				  }
 			  }
 		      break;
 	      case R.id.nalej11:
 			  if(setting_mode){
-				  virtualComponents.hereIsBottle(10);
+				  barobot.hereIsBottle(10);
 			  }else{
-				  virtualComponents.moveToBottle(10, !autofill);
+				  barobot.moveToBottle(10, !autofill);
 				  if( autofill){
-					  virtualComponents.nalej(10);
+					  barobot.nalej(10);
 				  }
 			  }
 		      break;
 	      case R.id.nalej12:
 			  if(setting_mode){
-				  virtualComponents.hereIsBottle(11);
+				  barobot.hereIsBottle(11);
 			  }else{
-				  virtualComponents.moveToBottle(11, !autofill);
+				  barobot.moveToBottle(11, !autofill);
 				  if( autofill){
-					  virtualComponents.nalej(11);
+					  barobot.nalej(11);
 				  }
 			  }	    	  
 		      break;
 		}
 	  if(setting_mode){
 		 virtualComponents.set_bottle_on= false;
-		int posx		=  virtualComponents.barobot.driver_x.getSPos();;	
-		int posy		=  virtualComponents.state.getInt("POSY", 0 );
+		int posx		=  barobot.driver_x.getSPos();;	
+		int posy		=  barobot.state.getInt("POSY", 0 );
 		Toast.makeText(bb, "Zapisano ["+posx+"/"+posy+"] jako butelka", Toast.LENGTH_LONG).show();
 	  }
 	}

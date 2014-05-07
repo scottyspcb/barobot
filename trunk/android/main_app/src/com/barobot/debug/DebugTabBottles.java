@@ -18,6 +18,7 @@ import com.barobot.activity.DebugActivity;
 import com.barobot.common.Initiator;
 import com.barobot.common.constant.Constant;
 import com.barobot.hardware.virtualComponents;
+import com.barobot.hardware.devices.BarobotConnector;
 
 public class DebugTabBottles extends Fragment {
 	public int tab_id	= -1 ;
@@ -101,8 +102,8 @@ public class DebugTabBottles extends Fragment {
 
 		for(int i =0; i<wagi.length;i++){
 			TextView waga1 = (TextView) rootView.findViewById(wagi[i]);
-			int x		=  virtualComponents.getBottlePosX( i );
-			int y		=  virtualComponents.getBottlePosY( i );
+			int x		=  virtualComponents.barobot.getBottlePosX( i );
+			int y		=  virtualComponents.barobot.getBottlePosY( i );
 			String pos = "" + x +"/"+ y;
 		//	waga1.setOnClickListener( list1 );
 			LinearLayout.LayoutParams params = (LayoutParams) waga1.getLayoutParams();
@@ -140,8 +141,8 @@ public class DebugTabBottles extends Fragment {
 
 		for(int i =0; i<wagi.length;i++){
 			TextView waga1 = (TextView) cc.findViewById(wagi[i]);
-			int x	=  virtualComponents.getBottlePosX( i );
-			int y	=  virtualComponents.getBottlePosY( i );
+			int x	=  virtualComponents.barobot.getBottlePosX( i );
+			int y	=  virtualComponents.barobot.getBottlePosY( i );
 			String pos = "" + x +"/"+ y;			
 			waga1.setText(pos);
 		}

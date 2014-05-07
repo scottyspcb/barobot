@@ -14,16 +14,16 @@ public class Macro {
 
 		I2C_Device[] list = hw.barobot.i2c.getDevices();
 		for (I2C_Device u : list){
-			u.setLed( q, "ff", 0 );
+			u.addLed( q, "ff", 0 );
 		}
 
 		while( i-- >0 ){
 			for (I2C_Device u : list){
-				u.setLed( q, "80", 0 );
+				u.addLed( q, "80", 0 );
 			}
 			q.addWait(5 );
 			for (I2C_Device u : list){
-				u.setLed( q, "80", 255 );
+				u.addLed( q, "80", 255 );
 			}
 		}
 		q.addWaitThread(Main.mt);
@@ -39,7 +39,7 @@ public class Macro {
 
 		Upanel[] list = hw.barobot.i2c.getUpanels();
 		for (I2C_Device u : list){
-			u.setLed( q, "ff", 0 );
+			u.addLed( q, "ff", 0 );
 		}
 		int max = 20;
 		int i = max;
@@ -47,12 +47,12 @@ public class Macro {
 		int time = 100;
 		while( repeat-- >0 ){
 			while( i-- >0 ){
-				cc.setLed(q, "01", 255 );
+				cc.addLed(q, "01", 255 );
 				q.addWait(time );
-				cc.setLed(q, "01", 0 );
+				cc.addLed(q, "01", 0 );
 				q.addWait(time );
 			}
-			cc.setLed(q, "ff", 0 );
+			cc.addLed(q, "ff", 0 );
 			q.addWaitThread(Main.mt);
 /*
 			i = max;
@@ -83,33 +83,33 @@ public class Macro {
 	
 			i = max;
 			while( i-- >0 ){
-				cc.setLed(q, "10", 255 );
+				cc.addLed(q, "10", 255 );
 				q.addWait(time );
-				cc.setLed(q, "10", 0 );
+				cc.addLed(q, "10", 0 );
 				q.addWait(time );
 			}
 	
 			i = max;
 			while( i-- >0 ){
-				cc.setLed(q, "20", 255 );
+				cc.addLed(q, "20", 255 );
 				q.addWait(time );
-				cc.setLed(q, "20", 0 );
+				cc.addLed(q, "20", 0 );
 				q.addWait(time );
 			}
 
 			i = max;
 			while( i-- >0 ){
-				cc.setLed(q, "40", 255 );
+				cc.addLed(q, "40", 255 );
 				q.addWait(time );
-				cc.setLed(q, "40", 0 );
+				cc.addLed(q, "40", 0 );
 				q.addWait(time );
 			}	
 
 			i = max;
 			while( i-- >0 ){
-				cc.setLed(q, "80", 255 );
+				cc.addLed(q, "80", 255 );
 				q.addWait(time );
-				cc.setLed(q, "80", 0 );
+				cc.addLed(q, "80", 0 );
 				q.addWait(time );
 			}
 		}
@@ -124,7 +124,7 @@ public class Macro {
 			public void run() {
 				System.out.println("teraz");
 				for (I2C_Device u : list){
-					u.setLed( q, "ff", 255 );
+					u.addLed( q, "ff", 255 );
 				}
 			}});
 		ii1.run(100, 60 * 1000 /bpm );
@@ -132,7 +132,7 @@ public class Macro {
 			public void run() {
 				System.out.println("teraz2");
 				for (I2C_Device u : list){
-					u.setLed( q, "ff", 0 );
+					u.addLed( q, "ff", 0 );
 				}
 			}});
 
