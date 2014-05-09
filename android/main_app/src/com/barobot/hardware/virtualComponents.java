@@ -7,8 +7,6 @@ import com.barobot.common.interfaces.HardwareState;
 import com.barobot.hardware.devices.BarobotConnector;
 import com.barobot.hardware.devices.i2c.Upanel;
 import com.barobot.parser.Queue;
-import com.barobot.parser.message.AsyncMessage;
-import com.barobot.parser.message.Mainboard;
 
 import android.app.Activity;
 import android.graphics.Color;

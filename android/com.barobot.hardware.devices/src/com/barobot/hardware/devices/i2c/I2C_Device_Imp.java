@@ -29,7 +29,7 @@ public abstract class I2C_Device_Imp implements I2C_Device{
 	public void addLed(Queue q, String selector, int pwm ) {
 		pwm				= Pwm.linear2log(pwm);
 		String command	= "L" + myaddress + ","+ selector +"," + pwm;
-		System.out.println("+addLed " +command);
+	//	System.out.println("+addLed " +command);
 		q.add( command, true );
 	}
 

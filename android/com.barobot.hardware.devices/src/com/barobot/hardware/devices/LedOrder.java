@@ -31,6 +31,10 @@ public class LedOrder {
 	}
 	private void findOrder(final int row ) {
 		final Queue nq3 = new Queue();
+		
+		System.out.println("scann_leds1");
+		
+		
 		nq3.add( new AsyncMessage( "RESET"+ row, true ){
 			@Override
 			public boolean onInput(String input, Mainboard dev, Queue mainQueue) {
@@ -82,8 +86,8 @@ public class LedOrder {
 						}else{
 							System.out.println("Has next on row "+row+": FALSE");
 						}
-						return true;
 					}
+					return true;
 				}else{
 					System.out.println(command + " no isRet:" + result);
 				}
@@ -131,7 +135,15 @@ public class LedOrder {
 			}
 		});
 		Queue nq2 = new Queue();
-		nq2.add( new AsyncMessage( "n" + u.getAddress(), true ){
+		final String command3 = "n" + u.getAddress();
+		nq2.add( new AsyncMessage( command3, true ){
+			@Override
+			public boolean onInput(String input, Mainboard dev, Queue mainQueue) {
+				if( input.equals("R"+command3) ){
+					return true;		// its me, ignore message
+				}
+				return false;
+			}
 			@Override
 			public boolean isRet(String result, Queue q) {
 				if(result.startsWith("" + Methods.METHOD_I2C_SLAVEMSG + ",")){		//	122,1,188,1

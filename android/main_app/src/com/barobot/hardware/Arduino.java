@@ -6,7 +6,6 @@ import android.app.Activity;
 
 import com.barobot.common.Initiator;
 import com.barobot.common.constant.Constant;
-import com.barobot.common.constant.Methods;
 import com.barobot.common.interfaces.HardwareState;
 import com.barobot.common.interfaces.serial.SerialEventListener;
 import com.barobot.common.interfaces.serial.SerialInputListener;
@@ -16,11 +15,7 @@ import com.barobot.hardware.devices.BarobotEventListener;
 import com.barobot.hardware.devices.MyRetReader;
 import com.barobot.hardware.serial.BT_wire;
 import com.barobot.hardware.serial.Serial_wire;
-import com.barobot.parser.Queue;
-import com.barobot.parser.message.AsyncMessage;
-import com.barobot.parser.message.Mainboard;
-import com.barobot.parser.utils.Decoder;
-import com.barobot.parser.utils.GlobalMatch;
+
 
 public class Arduino{
 	private final Object lock			= new Object();
@@ -28,7 +23,7 @@ public class Arduino{
 	private Wire connection				= null;
 	private Wire debugConnection		= null;
 	public boolean stop_autoconnect		= false;
-	
+
 	private AndroidHardwareContext ahc;
 	private Activity mainView;
 	private BarobotConnector barobot;
@@ -74,134 +69,7 @@ public class Arduino{
 	//	ahc = new AndroidHardwareContext( barobot, state );
 		BarobotEventListener bel = new AndroidEventListener( barobot );
 
-		final MyRetReader mrr = new MyRetReader( bel, barobot );
-
-		barobot.mb.addGlobalRegex( new GlobalMatch(){
-			@Override
-			public String getMatchRet() {
-				return "^Rx\\d+$";
-			}
-			@Override
-			public boolean run(Mainboard asyncDevice, String fromArduino, String wait4Command, AsyncMessage wait_for) {
-				Initiator.logger.i("Arduino.GlobalMatch.RX", fromArduino);
-				fromArduino = fromArduino.replace("Rx", "");
-				int hpos = Decoder.toInt(fromArduino);
-				barobot.driver_x.setHPos( hpos );	
-				return true;
-			}
-			@Override
-			public String getMatchCommand() {
-				return null;		// all
-			}
-		} );
-
-		barobot.mb.addGlobalRegex( new GlobalMatch(){
-			@Override
-			public boolean run(Mainboard asyncDevice, String fromArduino, String wait4Command, AsyncMessage wait_for) {
-			//	Initiator.logger.i("Arduino.GlobalMatch.METHOD_IMPORTANT_ANALOG", fromArduino);
-				mrr.importantAnalog(asyncDevice, wait_for, fromArduino, false );
-				return true;
-			}
-			@Override
-			public String getMatchRet() {
-				return "^" +  Methods.METHOD_IMPORTANT_ANALOG + ",.*";
-			}
-			@Override
-			public String getMatchCommand() {
-				return null;		// all
-			}
-		} );
-
-		barobot.mb.addGlobalRegex( new GlobalMatch(){
-			@Override
-			public boolean run(Mainboard asyncDevice, String fromArduino, String wait4Command, AsyncMessage wait_for) {
-			//	Initiator.logger.i("Arduino.GlobalMatch.RETURN_PIN_VALUE", fromArduino);
-				//{METHOD_I2C_SLAVEMSG,my_address, RETURN_PIN_VALUE, pin,value}
-				int[] parts = Decoder.decodeBytes( fromArduino );
-				short my_address	= (short) parts[1];
-				short pin			= (short) parts[3];
-				short value			= (short) parts[4];
-				Initiator.logger.i("Arduino.POKE-BUTTON", "Address:" + my_address + ", pin: " + pin+ ", value: " + value );
-				Queue q = barobot.main_queue;
-				if(value > 0 ){
-					q.add("L"+my_address+",ff,0", true);
-				}else{
-					q.add("L"+my_address+",ff,200", true);
-				}
-				return true;
-			}
-			@Override
-			public String getMatchRet() {
-				return "^" +  Methods.METHOD_I2C_SLAVEMSG + ",\\d+," + Methods.RETURN_PIN_VALUE + ",.*";
-			}
-			@Override
-			public String getMatchCommand() {
-				return null;		// all
-			}
-		} );
-		barobot.mb.addGlobalRegex( new GlobalMatch(){		// METHOD_DEVICE_FOUND
-			@Override
-			public boolean run(Mainboard asyncDevice, String fromArduino, String wait4Command, AsyncMessage wait_for) {				
-				String decoded = "Arduino.GlobalMatch.METHOD_DEVICE_FOUND";
-				int[] parts = Decoder.decodeBytes( fromArduino );
-				// short ttt[4] = {METHOD_DEVICE_FOUND,addr,type,ver};
-				// short ttt[4] = {METHOD_DEVICE_FOUND,I2C_ADR_MAINBOARD,MAINBOARD_DEVICE_TYPE,MAINBOARD_VERSION};
-				boolean scanning = true;
-				if( scanning ){
-		/*
-					short pos = getResetOrder(buffer[1]);
-					i2c_reset_next( buffer[1], false );       // reset next (next to slave)
-					i2c_reset_next( buffer[1], true );
-					}else if( scann_order ){ 
-						if( pos == 0xff ){        // nie ma na liscie?
-							order[nextpos++]  = buffer[1];            // na tm miejscu slave o tym adresie
-						}else{
-							scann_order  =  false;
-						}
-					}
-				*/
-				}
-				if(parts[2] == Constant.MAINBOARD_DEVICE_TYPE ){
-					decoded += "/MAINBOARD_DEVICE_TYPE";
-					int cx		= barobot.driver_x.getSPos();;
-					barobot.driver_x.setM(cx);	// ostatnia znana pozycja jest marginesem
-					state.set("MARGINX", cx);
-					Queue mq = barobot.main_queue;
-					mq.clear();
-				}else if(parts[2] == Constant.UPANEL_DEVICE_TYPE ){		// upaneld
-					decoded += "/UPANEL_DEVICE_TYPE";
-				}else if(parts[2] == Constant.IPANEL_DEVICE_TYPE ){		// wozek
-					decoded += "/IPANEL_DEVICE_TYPE";
-				}
-				Initiator.logger.i("MyRetReader.decoded", decoded);
-				return true;
-			}
-			@Override
-			public String getMatchRet() {
-				return "^" +  Methods.METHOD_DEVICE_FOUND + ",.*";
-			}
-			@Override
-			public String getMatchCommand() {
-				return null;
-			}
-		} );
-
-		barobot.mb.addGlobalRegex(  new GlobalMatch(){		// METHOD_TEST_SLAVE
-			@Override
-			public boolean run(Mainboard asyncDevice, String fromArduino, String wait4Command, AsyncMessage wait_for) {
-				Initiator.logger.i("Arduino.GlobalMatch.METHOD_TEST_SLAVE", fromArduino);
-				return true;
-			}
-			@Override
-			public String getMatchRet() {
-				return "^" +  Methods.METHOD_TEST_SLAVE + ",.*";
-			}
-			@Override
-			public String getMatchCommand() {
-				return null;
-			}
-		} );
-
+		MyRetReader mrr			= new MyRetReader( bel, barobot );
 		barobot.mb.setRetReader( mrr );
 	}
     protected void prepareDebugConnection() {

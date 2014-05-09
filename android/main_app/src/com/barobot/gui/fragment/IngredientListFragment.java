@@ -4,6 +4,7 @@ package com.barobot.gui.fragment;
 import java.util.List;
 
 import com.barobot.R;
+import com.barobot.activity.BarobotMain;
 import com.barobot.gui.dataobjects.Ingredient_t;
 
 import android.app.Fragment;
@@ -26,14 +27,20 @@ public class IngredientListFragment extends Fragment {
 	
 	public void ShowIngredients(List<Ingredient_t> ingredients)
 	{
-		ArrayAdapter<Ingredient_t> mAdapter = new ArrayAdapter<Ingredient_t>(getActivity(), R.layout.ingredient_list_item, ingredients);
+		final ArrayAdapter<Ingredient_t> mAdapter = new ArrayAdapter<Ingredient_t>(getActivity(), R.layout.ingredient_list_item, ingredients);
 		
 		//ListView view = (ListView)  getView();
-		ListView listView = (ListView) getView().findViewById(R.id.ingredient_list);
+		final ListView listView = (ListView) getView().findViewById(R.id.ingredient_list);
 		
 		//view.setAdapter(mAdapter);
 		if( listView!= null ){
-			listView.setAdapter(mAdapter);
+			BarobotMain.getInstance().runOnUiThread(new Runnable() {  
+                 @Override
+                 public void run() {
+                     // TODO Auto-generated method stub
+                	 listView.setAdapter(mAdapter);
+                 }
+			 });
 		}
 	}
 	

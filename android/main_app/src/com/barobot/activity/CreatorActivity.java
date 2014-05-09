@@ -25,10 +25,12 @@ import com.barobot.gui.fragment.MenuFragment;
 import com.barobot.gui.fragment.RecipeAttributesFragment;
 import com.barobot.gui.utils.Distillery;
 import com.barobot.hardware.virtualComponents;
+import com.barobot.hardware.devices.BarobotConnector;
+import com.barobot.hardware.devices.i2c.Upanel;
+import com.barobot.parser.Queue;
 
 public class CreatorActivity extends BarobotActivity implements ArduinoListener{
-
-	//private boolean[] slot_nums = {false, false,false,false,false,false,false,false,false, false,false,false,false};
+	private boolean[] slot_nums = {false, false,false,false,false,false,false,false,false, false,false,false,false};
 	private int[] ids;
 	private int[] drops;
 	private int[] dropIds;
@@ -121,18 +123,20 @@ public class CreatorActivity extends BarobotActivity implements ArduinoListener{
 		attrFrag.SetAttributes(Distillery.getSweet(ingredients), Distillery.getSour(ingredients)
 				, Distillery.getBitter(ingredients), Distillery.getStrength(ingredients));
 		
-	/*	Thread rr = new Thread( new Runnable() {
+		Thread rr = new Thread( new Runnable() {
 			public void run() {	
 				Queue q	= virtualComponents.getMainQ();
 				for (int i = 1; i<=12 ; i++){
 					if(slot_nums[i]){
 						Upanel u = virtualComponents.barobot.i2c.getUpanelByBottle(i-1);
-						u.setLed(q, "22", 100);
+						if(u!=null){
+							u.setLed(q, "22", 200);
+						}
 					}
 				}
 			}
 		});
-		rr.start();*/
+		rr.start();
 	}
 	public void onBottleClicked(View view)
 	{
@@ -152,9 +156,8 @@ public class CreatorActivity extends BarobotActivity implements ArduinoListener{
 			if (slot.product != null)
 			{
 				Ingredient_t ingredient = new Ingredient_t();
-
 				ingredient.liquid = slot.product.liquid;
-				ingredient.quantity = 20;
+				ingredient.quantity = BarobotConnector.getCapacity( slot.position - 1);
 				addIngredient(position, ingredient);
 			}
 			ShowIngredients();
@@ -172,13 +175,16 @@ public class CreatorActivity extends BarobotActivity implements ArduinoListener{
 	
 	private void clear(){
 		ingredients.clear();
-		/*for (int i = 1; i<=12 ; i++){
-			slot_nums[i] = true;
+		for (int i = 1; i<=12 ; i++){
+			slot_nums[i] = false;
 		}
-		virtualComponents.setLedsOff("ff");*/
-		
+		virtualComponents.setLedsOff("ff");
 		ShowIngredients();
-		CalculateDrops();
+		runOnUiThread(new Runnable() {  
+             @Override
+             public void run() {
+            	 CalculateDrops();
+             }});
 	}
 	
 	public void onAddRecipeButtonClicked (View view)
@@ -217,8 +223,7 @@ public class CreatorActivity extends BarobotActivity implements ArduinoListener{
 	
 	private void addIngredient(int position, Ingredient_t ing)
 	{
-		//slot_nums[position] = true;
-		
+		slot_nums[position] = true;
 		Ingredient_t existing = findIngredient(ing.liquid);
 		if (existing == null){
 			ingredients.add(ing);
