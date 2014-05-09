@@ -192,15 +192,25 @@ public class BarobotMain extends BarobotActivity implements ArduinoListener {
 			attributesFragment.SetAttributes(mCurrentRecipe.GetSweet(), mCurrentRecipe.GetSour(), 
 					mCurrentRecipe.GetBitter(), mCurrentRecipe.GetStrength());
 
-			/*
-			 * Thread rr = new Thread( new Runnable() { public void run() {
-			 * virtualComponents.setLedsOff("ff"); List<Integer> bottleSequence
-			 * = Engine.GenerateSequence(mCurrentRecipe.getIngredients()); if
-			 * (bottleSequence != null){ Queue q = virtualComponents.getMainQ();
-			 * for (Integer i : bottleSequence){ Upanel u =
-			 * virtualComponents.barobot.i2c.getUpanelByBottle(i-1); u.setLed(q,
-			 * "22", 100); } } } }); rr.start();
-			 */
+			
+			 Thread rr = new Thread( 
+					 new Runnable() { public void run() {
+			 virtualComponents.setLedsOff("ff"); 
+			 
+				 List<Ingredient_t> a = mCurrentRecipe.getIngredients();
+				 List<Integer> bottleSequence= Engine.GetInstance(BarobotMain.this).GenerateSequence(a); 
+				 if(bottleSequence != null){ 
+					 Queue q = virtualComponents.getMainQ();
+					 for (Integer i : bottleSequence){ 
+						 Upanel u =virtualComponents.barobot.i2c.getUpanelByBottle(i-1); 
+						 if(u!=null){
+							 u.setLed(q, "22", 100);
+						 }
+						 } }
+				 }
+			}); 
+			rr.start();
+			
 		}
 	}
 

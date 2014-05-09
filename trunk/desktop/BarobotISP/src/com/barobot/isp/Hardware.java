@@ -6,6 +6,8 @@ import com.barobot.common.interfaces.HardwareState;
 import com.barobot.common.interfaces.serial.SerialInputListener;
 import com.barobot.common.interfaces.serial.Wire;
 import com.barobot.hardware.devices.BarobotConnector;
+import com.barobot.hardware.devices.BarobotEventListener;
+import com.barobot.hardware.devices.MyRetReader;
 import com.barobot.parser.Queue;
 import com.barobot.parser.message.AsyncMessage;
 import com.barobot.parser.message.Mainboard;
@@ -24,6 +26,9 @@ public class Hardware {
 		this.state.set("show_sending", 1 );
 		this.state.set("show_reading", 1 );
 		this.comPort	= comPort;
+		BarobotEventListener bel = new DesktopEventListener( barobot );
+		MyRetReader mrr = new MyRetReader( bel, barobot );
+		barobot.mb.setRetReader( mrr );
 	}
 
 	SerialInputListener listener = null;

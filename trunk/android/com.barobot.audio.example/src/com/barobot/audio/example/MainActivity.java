@@ -45,6 +45,7 @@ public class MainActivity extends Activity implements OnSignalsDetectedListener{
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		System.out.println("before onCreate");
 
 		// set views
 		LayoutInflater inflater = LayoutInflater.from(this);
@@ -63,35 +64,7 @@ public class MainActivity extends Activity implements OnSignalsDetectedListener{
 				barobot.main_queue.unlock();
 			}
 		});
-		
-		barobot.main_queue.add( new AsyncMessage( true ) {
-			@Override
-			public Queue run(Mainboard dev, Queue queue) {
-				this.name		= "scanning back";
-
-				Map<String, Integer> config = new HashMap<String, Integer>();
-				config.put("source",  MediaRecorder.AudioSource.MIC);
-				config.put("frameByteSize", 2048);
-				config.put("channelDef", AudioFormat.CHANNEL_IN_MONO);
-				config.put("channels", 1 );
-				config.put("sampleSize", 2048 );
-				config.put("averageLength", 2048 );
-				config.put("audioEncoding",  AudioFormat.ENCODING_PCM_16BIT);
-				config.put("bitDepth",   16 );
-				config.put("sampleRate", 44100);
-			
-				recorderThread = new AndroidRecorderThread( config );
-				recorderThread.start();
-				detectorThread = new DetectorThread( config, recorderThread);
-				detectorThread.setOnSignalsDetectedListener(MainActivity.this);
-				detectorThread.start();
-
-				return null;
-			}
-		} );
-		
-		
-
+		System.out.println("before scann_leds");
     //	init();
 
 	}
@@ -111,6 +84,8 @@ public class MainActivity extends Activity implements OnSignalsDetectedListener{
 			public void onConnect() {
 				barobot.main_queue.add( "\n", false );	// clean up input
 				barobot.main_queue.add( "\n", false );
+				barobot.main_queue.addWait(600);
+				startQueue();
 			}
 			@Override
 			public void onClose() {
@@ -122,10 +97,50 @@ public class MainActivity extends Activity implements OnSignalsDetectedListener{
 		connection.init();
 		SerialInputListener listener = barobot.willReadFrom( connection );
 		barobot.willWriteThrough( connection );
-		Upanel[] up		= barobot.i2c.getUpanels();
-		for( int i=0;i<up.length ;i++){
-			barobot.main_queue.add( "L"+ up[i].getAddress() + ",ff,0", true );
-		}
+	}
+
+	protected void startQueue() {
+		barobot.scann_leds();
+		barobot.main_queue.add( new AsyncMessage( true ) {
+			@Override
+			public Queue run(Mainboard dev, Queue queue) {
+
+				this.name		= "turnoff";
+				
+				System.out.println("turnoff");
+				
+				Upanel[] up		= barobot.i2c.getUpanels();
+				for( int i=0;i<up.length ;i++){
+					barobot.main_queue.add( "L"+ up[i].getAddress() + ",ff,0", true );
+				}
+				return null;
+			}
+		} );
+		barobot.main_queue.add( new AsyncMessage( true ) {
+			@Override
+			public Queue run(Mainboard dev, Queue queue) {
+				this.name		= "scanning";
+
+				Map<String, Integer> config = new HashMap<String, Integer>();
+				config.put("source",  MediaRecorder.AudioSource.MIC);
+				config.put("frameByteSize", 2048);
+				config.put("channelDef", AudioFormat.CHANNEL_IN_MONO);
+				config.put("channels", 1 );
+				config.put("sampleSize", 2048 );
+				config.put("averageLength", 2048 );
+				config.put("audioEncoding",  AudioFormat.ENCODING_PCM_16BIT);
+				config.put("bitDepth",   16 );
+				config.put("sampleRate", 44100);
+
+				recorderThread = new AndroidRecorderThread( config );
+				recorderThread.start();
+				detectorThread = new DetectorThread( config, recorderThread);
+				detectorThread.setOnSignalsDetectedListener(MainActivity.this);
+				detectorThread.start();
+
+				return null;
+			}
+		} );
 	}
 
 	public void init() {

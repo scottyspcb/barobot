@@ -1,6 +1,7 @@
 package com.barobot.gui.database;
 
 import com.barobot.gui.dataobjects.*;
+import com.barobot.hardware.devices.BarobotConnector;
 
 public class BarobotDataStub {
 	
@@ -77,9 +78,9 @@ public class BarobotDataStub {
 		
 		Ingredient_t ing3 = new Ingredient_t();
 		ing3.liquid = liq3;
-		ing3.quantity = 20;
+		ing3.quantity = 20;//BarobotConnector.getCapacity();
 		ing3.insert();
-		
+
 		Recipe_t rec = new Recipe_t();
 		rec.name = "A long drink name to see how it fits";
 		rec.insert();

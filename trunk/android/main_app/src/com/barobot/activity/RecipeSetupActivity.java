@@ -21,6 +21,7 @@ import com.barobot.gui.dataobjects.Ingredient_t;
 import com.barobot.gui.dataobjects.Liquid_t;
 import com.barobot.gui.dataobjects.Recipe_t;
 import com.barobot.gui.dataobjects.Type;
+import com.barobot.hardware.devices.BarobotConnector;
 
 public class RecipeSetupActivity extends BarobotActivity 
 									implements OnItemSelectedListener {
@@ -184,7 +185,6 @@ public class RecipeSetupActivity extends BarobotActivity
 				
 				Type type = (Type) parent.getItemAtPosition(position);
 				SetCurrentType(type);
-				
 				FillLiquidList();
 			}
 			
@@ -211,6 +211,7 @@ public class RecipeSetupActivity extends BarobotActivity
 				
 				ing.liquid = liquid;
 				ing.quantity = 20;
+				int a = BarobotConnector.getCapacity(8);
 				
 				currentRecipe.addIngredient(ing);
 				UpdateRecipeDetails();

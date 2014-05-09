@@ -4,7 +4,9 @@ import com.barobot.R;
 import com.barobot.activity.DebugActivity;
 import com.barobot.common.Initiator;
 import com.barobot.common.constant.Constant;
+import com.barobot.common.interfaces.HardwareState;
 import com.barobot.hardware.virtualComponents;
+import com.barobot.hardware.devices.BarobotConnector;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -131,19 +133,23 @@ public class DebugTabCommands extends Fragment {
 		ToggleButton toggle = (ToggleButton)rootView.findViewById(R.id.auto_fill_on_ready);		
 		toggle.setChecked(true);
 
-		TextView ttt = (TextView)rootView.findViewById(R.id.position_z);	
+		TextView ttt = (TextView)rootView.findViewById(R.id.position_z);
+		
+		BarobotConnector barobot = virtualComponents.barobot;
+		HardwareState state = barobot.state;
 		if(ttt!=null){
-			String posz = "" + virtualComponents.barobot.state.getInt( "POSZ",0);
+			String posz = "" + state.getInt( "POSZ",0);
 			ttt.setText(posz);
 		}
 		ttt = (TextView)rootView.findViewById(R.id.position_y);
 		if(ttt!=null){
-			String posy = "" + virtualComponents.barobot.state.get( "POSY","0");
+			String posy = "" + state.get( "POSY","0");
 			ttt.setText(posy);
 		}
+		
 		ttt = (TextView)rootView.findViewById(R.id.position_x);
 		if(ttt!=null){
-			String posx = "" + virtualComponents.barobot.driver_x.getSPos();
+			String posx = "" + barobot.driver_x.getSPos();
 			ttt.setText(posx);
 		}
 		return rootView;

@@ -38,6 +38,7 @@ public class button_zajedz  implements OnClickListener {
 				barobot.hereIsStart(posx, posy);
 			  }else{
 				  barobot.moveToStart();
+				  barobot.onDrinkFinish();
 			  }
 			  break;
 		

@@ -15,6 +15,7 @@ import jssc.SerialPortList;
 import com.barobot.common.DesktopLogger;
 import com.barobot.common.IspSettings;
 import com.barobot.hardware.devices.i2c.Upanel;
+import com.barobot.parser.Queue;
 import com.barobot.parser.utils.CopyStream;
 
 public class Main{
@@ -78,7 +79,7 @@ public class Main{
 	//	w.fast_close_test( hw );
 	//	uc.prepare1Upanel( hw, hw.barobot, Upanel.FRONT );
 
-	//	w.findOrder( hw );
+		w.findOrder( hw );
 
 	//	mm.promo1( hw );
 	//	mr.createContstans();
@@ -88,28 +89,38 @@ public class Main{
 
 	//	w.test_proc( hw );	
 	//	w.swing( hw, 3, 1000, 5000 );
+	
+	//	w.loading(hw, 6);
+		w.mrygaj( hw, 10 );
+		w.mrygaj_po_butelkach( hw, 100 );
+	
+		Queue q = hw.getQueue();
+		q.addWaitThread( Main.main );
+		
+		q.addWait(100);
+		w.mrygaj_grb( hw, 30 );
+		w.illumination1( hw );
+		
 
-	//	w.mrygaj( hw, 10 );
-		//w.illumination1( hw );
+		q.addWaitThread( Main.main );
+		q.addWait(100);
 		
-	//	w.strobo( hw, 309 );
-		
-	/*
-		w.loading( hw, 6 );
-		w.strobo( hw, 6 );
+		w.flaga( hw, 6 );
 		w.nazmiane( hw, 6 );
+
 		w.linijka( hw, 6 );
-		
 		w.tecza( hw, 6 );
-		*/
-	//	w.flaga( hw, 6 );
+
+		w.strobo( hw, 109 );
+		w.zapal(hw);
+		w.koniec( hw );
 		
-		w.findStops(hw);
 		
 		
+	//	w.findStops(hw);
+	//	hw.connectIfDisconnected();	
+	//	hw.barobot.kalibrcja();
 	//	w.mrygaj(hw, 10);
-		
-		
 	//	w.mrygaj_po_butelkach( hw, 100 );
 
 	//	w.fadeButelka( hw, 5, 20 );

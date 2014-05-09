@@ -13,38 +13,37 @@ import com.barobot.parser.message.AsyncMessage;
 import com.barobot.parser.message.Mainboard;
 
 public class BarobotConnector {
-	
 	public static boolean ledsReady = false;
 
 	// pozycje butelek, sa aktualizowane w trakcie
 	public static int[] margin_x = {
-		-70,			// 0, num 1,back
-		-150,			// 1, num 2,front		
-		-60,			// 2, num 3,back
-		-150,			// 3, num 4,front		
-		-40,			// 4, num 5,back		
-		-140,			// 5, num 6,front
-		-30,			// 6, num 7,back
-		-150,			// 7, num 8,front
-		-40,			// 8, num 9,back
-		-140,			// 9, num 10,front
-		-80,			// 10, num 11,back		
-		-100,			// 11, num 12,front
+		-70,		// 0, num 1,back
+		-150,		// 1, num 2,front		
+		-60,		// 2, num 3,back
+		-150,		// 3, num 4,front		
+		-40,		// 4, num 5,back		
+		-140,		// 5, num 6,front
+		-30,		// 6, num 7,back
+		-150,		// 7, num 8,front
+		-40,		// 8, num 9,back
+		-140,		// 9, num 10,front
+		-80,		// 10, num 11,back		
+		-100,		// 11, num 12,front
 	};
 	// pozycje butelek, sa aktualizowane w trakcie
 	public static int[] capacity = {
-		50,		
-		50, 
-		20,
-		20,
-		20,
-		20,
-		20,
-		20, 
-		20,
-		20,
-		50,
-		20
+		20,			// 0, num 1,back
+		20, 		// 1, num 2,front
+		50,			// 2, num 3,back
+		20,			// 3, num 4,front		
+		20,			// 4, num 5,back		
+		20,			// 5, num 6,front
+		20,			// 6, num 7,back
+		20, 		// 7, num 8,front
+		20,			// 8, num 9,back
+		20,			// 9, num 10,front
+		50,			// 10, num 11,back
+		50			// 11, num 12,front
 	};
 
 	public MotorDriver driver_x	= null;
@@ -102,6 +101,9 @@ public class BarobotConnector {
 	public void scann_leds(){
 		Queue q			= main_queue;
 		LedOrder lo = new LedOrder();
+		
+		System.out.println("add scann_leds55");
+		
 		lo.asyncStart(this, q);
 		q.add( new AsyncMessage( true ){
 			@Override	
@@ -110,6 +112,7 @@ public class BarobotConnector {
 			}
 			@Override
 			public Queue run(Mainboard dev, Queue queue) {
+				System.out.println(" run scann_leds");
 				Upanel[] up		= i2c.getUpanels();
 				for(int i =0; i<up.length;i++){
 					Upanel uu = up[i];
@@ -135,14 +138,6 @@ public class BarobotConnector {
 				return q3;
 			}
 		});
-	}
-
-	public int getPourTime( int num ){
-		if( num > 0 && num < capacity.length){
-			int capacity	= BarobotConnector.capacity[ num ];
-			return capacity * Constant.SERVOZ_POUR_TIME;
-		}
-		return Constant.SERVOZ_POUR_TIME;
 	}
 
 	public void cancel_all() {
@@ -274,7 +269,7 @@ public class BarobotConnector {
 		int lengthx19	=  state.getInt("LENGTHX", 60000 );
 		
 		Initiator.logger.i("+find_bottles", "up");
-		driver_x.moveTo( q, posx + 2000);
+		driver_x.moveTo( q, posx + 1000);
 		q.addWait(100);
 		driver_x.moveTo( q, -70000 );
 
@@ -374,6 +369,9 @@ public class BarobotConnector {
 	    q.add(Constant.GETYPOS, true);
 	    q.add(Constant.GETZPOS, true);
 
+	}
+	public void onDrinkFinish() {
+		Queue q = main_queue;
 	    i2c.carret.addLed( q, "ff", 0 );
 	    i2c.carret.addLed( q, "22", 250 );
 	    setLeds( "ff", 0 );
@@ -399,15 +397,8 @@ public class BarobotConnector {
 		}
 		q.add(q2);
 		q.addWait(500);
-		i2c.carret.addLed( q, "22", 250 );
+		i2c.carret.addLed( q, "22", 250 );	
 	}
-	
-	
-	
-	
-	
-	
-	
 
 	public void moveToBottle(final int num, final boolean disableOnReady ){
 		Queue q			= new Queue();
@@ -425,6 +416,11 @@ public class BarobotConnector {
 				int cy		= state.getInt("POSY", 0 );
 				int tx 		= getBottlePosX( num );
 				int ty  	= getBottlePosY( num );
+
+				if( tx == 0 && ty == 0 ){
+					return null;
+				}
+
 				Queue	q2	= new Queue();
 				if( up != null ){
 					up.addLed( q2, "ff", 0 );
@@ -471,11 +467,12 @@ public class BarobotConnector {
 		q.add("EX", true);
 //		q.add("EY", true);
 //		q.add("EZ", true);
+		q.add("DY", true);
 		BarobotConnector.moveZUp(q, false);
 		if( up == null ){
 			q.addWait( time/4 );
 		//	virtualComponents.moveZLight(q, false);
-			q.add("DY", true);
+			
 			q.addWait( 3* time/4 );
 		}else{
 			up.addLed( q, "ff", 0 );
@@ -529,4 +526,18 @@ public class BarobotConnector {
 		}
 	}
 
+	// todo move to slot
+	public int getPourTime( int num ){			// 0 - 11
+		int capacity	= getCapacity( num );
+		return capacity * Constant.SERVOZ_POUR_TIME;
+	}
+
+	// todo move to slot
+	public static int getCapacity( int num ){			// 0 - 11
+		if( num >= 0 && num < capacity.length){
+			return BarobotConnector.capacity[ num ];
+		}else{
+			return 20;		
+		}
+	}
 }

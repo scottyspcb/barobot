@@ -29,8 +29,8 @@ public class Mainboard{
 
 	public Mainboard( HardwareState state ) {
 		this.state		= state;
-		this.addGlobalModifier( "^25", "125" );		// add 1 if num < 100
-		this.addGlobalModifier( "^RR", "R" );		// RR => R
+		this.addGlobalModifier( "^([0-9][0-9]),", "1$1," );	// add 1 if command num < 100
+		this.addGlobalModifier( "^RR", "R" );			// RR => R
 	}
 	public void read(String in) {
 		synchronized (buffer) {
@@ -75,7 +75,7 @@ public class Mainboard{
 		String wait4Command = "";
 		String command2 = this.modyfyInput( command );
 		if( !command2.equals(command)){
-	//		Initiator.logger.e("Mainboard.useInput changed to:", command2 );
+			Initiator.logger.e("Mainboard.useInput changed to:", command2 );
 			command = command2;
 		}
 		
@@ -261,16 +261,16 @@ public class Mainboard{
 	public synchronized boolean parse(String in) {
 		if( state.getInt("show_unknown", 0) > 0 ){
 			if( in.startsWith( "-") ){			// comment
-				Initiator.logger.i("Mainboard.parse.comment", in);
+				Initiator.logger.i("Mainboard.unknown.comment", in);
 				return true;
 			}else if( in.equals("NO_CMD []" ) ){
 			}else{
 				if(in.matches("^.*[^-a-zA-Z0-9_.,].*")){		// unusual characters
 					// log command to db
 				}
-				Initiator.logger.i("Mainboard.length", "("+in+") "+in.length() );
-				Initiator.logger.i("Mainboard.length", "("+in+") "+ in.getBytes().length );
-				Initiator.logger.i("Mainboard.parse", "("+in+") "+Decoder.toHexStr(in.getBytes(), in.length()));
+				Initiator.logger.i("Mainboard.unknown.length", "("+in+") "+in.length() );
+				Initiator.logger.i("Mainboard.unknown.length", "("+in+") "+ in.getBytes().length );
+				Initiator.logger.i("Mainboard.unknown", "("+in+") "+Decoder.toHexStr(in.getBytes(), in.length()));
 			//	mainQueue.show("Mainboard.parse");
 			}
 		}

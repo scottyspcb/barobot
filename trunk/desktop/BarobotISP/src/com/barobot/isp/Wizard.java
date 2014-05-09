@@ -33,7 +33,6 @@ public class Wizard {
 
 	public void mrygaj(Hardware hw, int repeat ) {
 		hw.getQueue().addWaitThread( Main.main );
-		hw.synchro();
 
 		I2C_Device[] list = hw.barobot.i2c.getDevices();
 		final Queue q = hw.getQueue();
@@ -41,7 +40,6 @@ public class Wizard {
 			System.out.println("Pusto" );
 			return;
 		}
-		hw.connectIfDisconnected();
 		System.out.println("Start" );
 		int time =10;
 		while (repeat-- > 0){
@@ -80,7 +78,6 @@ public class Wizard {
 			}
 			q.addWait(time );
 			
-
 			for (I2C_Device u : list){
 				u.addLed( q, "ff", 0 );	// off
 				u.addLed( q, "20", 255 );
@@ -110,14 +107,13 @@ public class Wizard {
 	}
 
 	public void mrygaj_po_butelkach(Hardware hw, int time ) {
-		I2C_Device[] list = hw.barobot.i2c.getDevices();
+		hw.getQueue().addWaitThread( Main.main );
+		I2C_Device[] list = hw.barobot.i2c.getUpanels();
 		if(list.length == 0 ){
 			System.out.println("Pusto" );
 			return;
 		}
-		hw.connectIfDisconnected();
 		Queue q = hw.getQueue();
-
 		for (I2C_Device u2 : list){
 			u2.addLed( q, "ff", 0 );	// off
 		}
@@ -131,8 +127,7 @@ public class Wizard {
 			u.addLed( q, "01", 255 );
 			
 			q.addWait(time );
-			
-	
+
 			u.addLed( q, "ff", 0 );	// off
 			u.addLed( q, "02", 255 );
 			
@@ -175,6 +170,7 @@ public class Wizard {
 	}
 
 	public void mrygaj_grb(Hardware hw, int repeat) {
+		hw.getQueue().addWaitThread( Main.main );
 		I2C_Device[] list = hw.barobot.i2c.getUpanels();
 		if(list.length == 0 ){
 			System.out.println("Pusto" );
@@ -255,7 +251,7 @@ public class Wizard {
 		int repeat = 1;
 		while(repeat-->0){
 		
-	//		this.mrygaj_po_butelkach( hw, 100 );
+	//		
 		//	hw.getQueue().addWaitThread( Main.main );
 			
 			this.mrygaj_grb( hw, 30 );
@@ -487,7 +483,6 @@ public class Wizard {
 
 	public void strobo(Hardware hw, int repeat) {
 		hw.getQueue().addWaitThread( Main.main );
-		hw.synchro();
 
 		I2C_Device[] list = hw.barobot.i2c.getDevices();
 		final Queue q = hw.getQueue();
@@ -497,25 +492,27 @@ public class Wizard {
 		}
 		hw.connectIfDisconnected();
 		System.out.println("Start" );
-		int time =10;
+		int time =5000;
 
 		while (repeat-- > 0){
 			for (I2C_Device u : list){
 				u.addLed( q, "ff", 0 );	// off
 			}
-		//	q.addWait(time );
+			if(time>0){
+				q.addWait(	time / 100 );
+			}
 			for (I2C_Device u : list){
 				u.addLed( q, "ff", 255 );		// on
 			}
+			time=time-10;
 		}
 	}
 
 	public void nazmiane(final Hardware hw, final int repeat) {
 		Queue q = hw.getQueue();
 		q.addWaitThread( Main.main );
-		hw.synchro();
 		final int time =700;
-		final int colile = 20;
+		final int colile = 40;
 
 		q.add( new AsyncMessage( true ){		// na koncu zamknij
 			@Override
@@ -560,8 +557,8 @@ public class Wizard {
 
 	public void linijka(final Hardware hw, final int repeat) {
 		Queue q = hw.getQueue();
+		hw.getQueue().addWaitThread( Main.main );
 		q.addWaitThread( Main.main );
-		hw.synchro();
 		final int time =700;
 		final int colile = 20;
 
@@ -606,7 +603,6 @@ public class Wizard {
 	public void flaga(final Hardware hw, final int repeat) {
 		Queue q = hw.getQueue();
 		q.addWaitThread( Main.main );
-		hw.synchro();
 		final int time =700;
 		final int colile = 20;
 
@@ -626,7 +622,7 @@ public class Wizard {
 				}
 				int i=0;
 				boolean top = true;
-				for (;i<2620;i+=10){
+				for (;i<2620;i+=20){
 					int b	= 0;
 				//	System.out.println("aaaa: " + a);
 
@@ -656,9 +652,9 @@ public class Wizard {
 	}
 
 	public void loading(final Hardware hw, final int repeat) {
+		hw.getQueue().addWaitThread( Main.main );
 		Queue q = hw.getQueue();
 		q.addWaitThread( Main.main );
-		hw.synchro();
 		final int time =100;
 		final int colile = 20;
 
@@ -678,8 +674,7 @@ public class Wizard {
 				}
 				int i=0;
 				boolean top = true;
-				for (;i<10;i+=1){
-
+				for (;i<10;i+=2){
 					list[ 1].setColor(q2, top, 200, 0, 0, 0);	q2.addWait( time );list[ 1].setColor(q2, top, 0, 0, 0, 0);	
 					list[ 3].setColor(q2, top, 200, 0, 0, 0);	q2.addWait( time );list[ 3].setColor(q2, top, 0, 0, 0, 0);	
 					list[ 5].setColor(q2, top, 200, 0, 0, 0);	q2.addWait( time );list[ 5].setColor(q2, top, 0, 0, 0, 0);	
@@ -690,7 +685,6 @@ public class Wizard {
 					list[ 7].setColor(q2, top, 200, 0, 0, 0);	q2.addWait( time );list[ 7].setColor(q2, top, 0, 0, 0, 0);	
 					list[ 5].setColor(q2, top, 200, 0, 0, 0);	q2.addWait( time );list[ 5].setColor(q2, top, 0, 0, 0, 0);	
 					list[ 3].setColor(q2, top, 200, 0, 0, 0);	q2.addWait( time );list[ 3].setColor(q2, top, 0, 0, 0, 0);	
-
 				}
 				System.out.println("koniec fadeButelka");
 				return q2;
@@ -703,9 +697,8 @@ public class Wizard {
 	public void tecza(final Hardware hw, final int repeat) {
 		Queue q = hw.getQueue();
 		q.addWaitThread( Main.main );
-		hw.synchro();
 		final int time =100;
-		final int colile = 20;
+		final int colile = 40;
 
 		q.add( new AsyncMessage( true ){		// na koncu zamknij
 			@Override
@@ -723,7 +716,7 @@ public class Wizard {
 				}
 				int i=0;
 				boolean top = true;
-				for (;i<4620;i+=20){
+				for (;i<4620;i+=40){
 					int b	= 0;
 					list[ 0].setColor(q2, top, flag( i + 00 ), 0, flag( i + 180 ), 0);
 					list[ 1].setColor(q2, top, flag( i + 30 ), 0, flag( i + 210 ), 0);
@@ -751,11 +744,17 @@ public class Wizard {
 					list[10].setColor(q2, false, flag( i + 300 ), 0, flag( i + 120 ), 0);
 					list[11].setColor(q2, false, flag( i + 310 ), 0, flag( i + 150 ), 0);		
 				}
-
 				System.out.println("koniec fadeButelka");
 				return q2;
 			}
 		});
+	}
+
+	public void koniec(Hardware hw) {
+		hw.getQueue().addWaitThread( Main.main );
+		Queue q = hw.getQueue();
+		q.addWait(5000 );
+		this.zgas(hw, q);
 	}
 
 }
