@@ -158,7 +158,6 @@ public class Engine {
 	
 	public void addRecipe(Recipe_t recipe, List<Ingredient_t> ingredients)
 	{
-		recipe.insert();
 		for(Ingredient_t ing : ingredients)
 		{
 			ing.insert();
@@ -185,7 +184,7 @@ public class Engine {
 		if (bottleSequence == null){
 			return false; // We could not find some of the ingredients
 		}
-		virtualComponents.barobot.startDoingDrink();
+	//	virtualComponents.barobot.startDoingDrink();
 		for (Integer i : bottleSequence){
 			Log.i("Prepare", ""+i );
 			virtualComponents.barobot.moveToBottle( i-1, false );

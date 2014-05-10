@@ -14,6 +14,8 @@ import jssc.SerialPortList;
 
 import com.barobot.common.DesktopLogger;
 import com.barobot.common.IspSettings;
+import com.barobot.hardware.devices.LightManager;
+import com.barobot.hardware.devices.i2c.I2C_Device;
 import com.barobot.hardware.devices.i2c.Upanel;
 import com.barobot.parser.Queue;
 import com.barobot.parser.utils.CopyStream;
@@ -72,47 +74,58 @@ public class Main{
 	//	uc.prepareMB2( hw );
 	//	uc.prepareMBManualReset( hw );
 	//	uc.prepareCarret( hw );
-		
+	//	mr.createContstans();
 	//	uc.prepareUpanels( hw );
 	//	uc.prepareUpanelNextTo( hw, 15 );
 
 	//	w.fast_close_test( hw );
 	//	uc.prepare1Upanel( hw, hw.barobot, Upanel.FRONT );
 
-		w.findOrder( hw );
-
-	//	mm.promo1( hw );
-	//	mr.createContstans();
-	//	mm.resetuj( hw );
-	//	mm.testBpm( hw );
+		hw.connectIfDisconnected();
+		hw.barobot.scann_leds();
+		I2C_Device[] list = hw.barobot.i2c.getDevices();
+		if(list.length == 0 ){
+			System.out.println("Pusto" );
+			return;
+		}
+		w.mrygaj( hw, 10 );
 	//	mm.promo_carret( hw );
+		
+	//	mm.promo1( hw );
 
+
+		/*
+		mm.testBpm( hw );
 	//	w.test_proc( hw );	
 	//	w.swing( hw, 3, 1000, 5000 );
 	
-	//	w.loading(hw, 6);
-		w.mrygaj( hw, 10 );
 		w.mrygaj_po_butelkach( hw, 100 );
 	
 		Queue q = hw.getQueue();
 		q.addWaitThread( Main.main );
 		
-		q.addWait(100);
+
 		w.mrygaj_grb( hw, 30 );
 		w.illumination1( hw );
+*/
+	//	q.addWaitThread( Main.main );
+	//	q.addWait(100);
+		
 		
 
-		q.addWaitThread( Main.main );
-		q.addWait(100);
+
+
 		
-		w.flaga( hw, 6 );
-		w.nazmiane( hw, 6 );
-
-		w.linijka( hw, 6 );
-		w.tecza( hw, 6 );
-
-		w.strobo( hw, 109 );
-		w.zapal(hw);
+	/*
+		LightManager lm = new LightManager();
+		lm.flaga( hw.barobot, q, 6 );
+		lm.nazmiane( hw.barobot, q, 6 );
+		lm.loading(hw.barobot, q, 6);
+		lm.linijka( hw.barobot, q, 6 );
+		lm.tecza( hw.barobot, q, 6 );
+		lm.strobo( hw.barobot, q, 109 );
+		lm.zapal(hw.barobot, q);
+		*/
 		w.koniec( hw );
 		
 		

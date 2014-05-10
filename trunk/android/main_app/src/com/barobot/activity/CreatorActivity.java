@@ -30,7 +30,7 @@ import com.barobot.hardware.devices.i2c.Upanel;
 import com.barobot.parser.Queue;
 
 public class CreatorActivity extends BarobotActivity implements ArduinoListener{
-	private boolean[] slot_nums = {false, false,false,false,false,false,false,false,false, false,false,false,false};
+	private int[] slot_nums = {0,0,0,0,0,0,0,0,0,0,0,0,0};
 	private int[] ids;
 	private int[] drops;
 	private int[] dropIds;
@@ -122,21 +122,11 @@ public class CreatorActivity extends BarobotActivity implements ArduinoListener{
 		RecipeAttributesFragment attrFrag = (RecipeAttributesFragment) getFragmentManager().findFragmentById(R.id.fragment_attributes);
 		attrFrag.SetAttributes(Distillery.getSweet(ingredients), Distillery.getSour(ingredients)
 				, Distillery.getBitter(ingredients), Distillery.getStrength(ingredients));
-		
-		Thread rr = new Thread( new Runnable() {
-			public void run() {	
-				Queue q	= virtualComponents.getMainQ();
-				for (int i = 1; i<=12 ; i++){
-					if(slot_nums[i]){
-						Upanel u = virtualComponents.barobot.i2c.getUpanelByBottle(i-1);
-						if(u!=null){
-							u.setLed(q, "22", 200);
-						}
-					}
-				}
-			}
-		});
-		rr.start();
+
+		for (int i = 1; i<=12 ; i++){											// 1 - 12
+			virtualComponents.barobot.bottleBacklight( i-1, slot_nums[i] );		// 0 -11
+		}
+
 	}
 	public void onBottleClicked(View view)
 	{
@@ -176,7 +166,7 @@ public class CreatorActivity extends BarobotActivity implements ArduinoListener{
 	private void clear(){
 		ingredients.clear();
 		for (int i = 1; i<=12 ; i++){
-			slot_nums[i] = false;
+			slot_nums[i] = 0;
 		}
 		virtualComponents.setLedsOff("ff");
 		ShowIngredients();
@@ -223,7 +213,7 @@ public class CreatorActivity extends BarobotActivity implements ArduinoListener{
 	
 	private void addIngredient(int position, Ingredient_t ing)
 	{
-		slot_nums[position] = true;
+		slot_nums[position]++;
 		Ingredient_t existing = findIngredient(ing.liquid);
 		if (existing == null){
 			ingredients.add(ing);
@@ -280,8 +270,8 @@ public class CreatorActivity extends BarobotActivity implements ArduinoListener{
 		Recipe_t recipe = new Recipe_t();
 		recipe.name = name;
 		recipe.unlisted = unlisted;
+		recipe.insert();
 		Engine.GetInstance(this).addRecipe(recipe, ingredients);
-		
 		return recipe;
 	}
 
