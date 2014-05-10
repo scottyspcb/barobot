@@ -101,9 +101,6 @@ public class BarobotConnector {
 	public void scann_leds(){
 		Queue q			= main_queue;
 		LedOrder lo = new LedOrder();
-		
-		System.out.println("add scann_leds55");
-		
 		lo.asyncStart(this, q);
 		q.add( new AsyncMessage( true ){
 			@Override	
@@ -133,13 +130,15 @@ public class BarobotConnector {
 					up[i].addLed(q2, "ff", 0);
 				}
 				q3.add(q1);
-				q3.addWait(500);
+				q3.addWait(200);
 				q3.add(q2);
 				return q3;
 			}
 		});
 	}
 
+	
+	
 	public void cancel_all() {
 			Queue mq = main_queue;
 			mq.clear();
@@ -538,6 +537,30 @@ public class BarobotConnector {
 			return BarobotConnector.capacity[ num ];
 		}else{
 			return 20;		
+		}
+	}
+
+	public void startDemo() {
+		LightManager.startDemo();
+	}
+
+	public void bottleBacklight( final int bottleNum, final int count ) {
+		Queue q	= main_queue;
+		Upanel u = i2c.getUpanelByBottle(bottleNum);
+		if(u!=null){
+			String leds = "22";			// green
+			if(count == 2 ){
+				leds	= "44";			// blue
+			}else if( count == 3 ){
+				leds	= "66";			// green + blue
+			}else if( count == 4 ){
+				leds	= "77";			// green + blue + red
+			}else if( count == 5 ){
+				leds	= "88";			// white
+			}else if( count == 6 ){
+				leds	= "ff";			// whiallte
+			}
+			u.setLed(q, leds, 255);
 		}
 	}
 }

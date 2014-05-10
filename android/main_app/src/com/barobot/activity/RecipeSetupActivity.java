@@ -2,6 +2,10 @@ package com.barobot.activity;
 
 import java.util.List;
 
+import org.orman.mapper.Model;
+import org.orman.mapper.ModelQuery;
+import org.orman.sql.C;
+
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -65,37 +69,36 @@ public class RecipeSetupActivity extends BarobotActivity
 
 	    builder.setView(dialogView)
 			.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-				
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
 				}
 			})
 			.setPositiveButton("Add", new DialogInterface.OnClickListener() {
-				
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
-					
 					TextView nameView = (TextView) dialogView.findViewById(R.id.recipe_name);
 					String name = nameView.getText().toString();
-					
 					Recipe_t recipe = new Recipe_t();
 					recipe.name = name;
-					
-					
-					// TODO: Fix that
-					//Engine.GetInstance(RecipeSetupActivity.this).addRecipe(recipe);
-					
+					recipe.unlisted = false;
+					System.out.println("onAddRecipeButtonClicked: insert" );
+					recipe.insert();
 					UpdateRecipes(recipe.id);
 				}
 			});
 		AlertDialog ad = builder.create();
 		ad.show();
 	}
-	
-	/*public void removeRecipe(View view) {
-		Engine.GetInstance(this).RemoveRecipe(currentRecipe.getId());
+
+	public void removeRecipe(View view) {
+		System.out.println("removeRecipe: " + currentRecipe.id );
+		Recipe_t recipe = Model.fetchSingle(ModelQuery.select().from(Recipe_t.class).where(C.eq("id", currentRecipe.id)).limit(1).getQuery(),Recipe_t.class);
+		if(recipe!=null){
+			System.out.println("removeRecipe delete: " + currentRecipe.id );
+			recipe.delete();
+		}
 		UpdateRecipes();
-	}*/
+	}
 
 
 	@Override

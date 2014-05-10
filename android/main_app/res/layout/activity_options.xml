@@ -77,6 +77,15 @@
             android:layout_toRightOf="@id/options_bottle_setup_button"
             android:layout_margin="@dimen/OptionsMenuButtonMargin"
             android:text="@string/options_turn_off_button" />
+
+        <Button
+            android:id="@+id/options_calibrate_button"
+            style="@style/OptionsMenuButton"
+            android:layout_below="@id/options_bottle_setup_button"
+            android:layout_toRightOf="@+id/options_demo_button"
+            android:onClick="onOptionsButtonClicked"
+            android:text="@string/options_calibrate" />
+
     </RelativeLayout>
 
     <fragment

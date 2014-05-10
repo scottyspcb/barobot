@@ -75,14 +75,12 @@ public class Mainboard{
 		String wait4Command = "";
 		String command2 = this.modyfyInput( command );
 		if( !command2.equals(command)){
-			Initiator.logger.e("Mainboard.useInput changed to:", command2 );
+		//	Initiator.logger.e("Mainboard.useInput changed to:", command2 );
 			command = command2;
 		}
-		
 		if( state.getInt("show_reading", 0) > 0 ){
 			Initiator.logger.w("Mainboard.useInput", command );
 		}
-
 		boolean used = false;
 		synchronized (this) {
 		//	Initiator.logger.i("wait_for?: ", ( (this.wait_for == null)? "null" : "nonull") );

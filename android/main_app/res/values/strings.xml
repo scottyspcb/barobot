@@ -171,4 +171,5 @@
     <string name="progress_bar_sour_name">Sour</string>
     <string name="progress_bar_bitter_name">Bitter</string>
     <string name="progress_bar_strength_name">Strength</string>
+    <string name="options_calibrate">Calibration</string>
 </resources>
