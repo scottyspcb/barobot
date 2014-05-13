@@ -13,7 +13,7 @@ import com.barobot.parser.message.AsyncMessage;
 import com.barobot.parser.message.Mainboard;
 
 public class BarobotConnector {
-	public static boolean ledsReady = false;
+	public boolean ledsReady = false;
 
 	// pozycje butelek, sa aktualizowane w trakcie
 	public static int[] margin_x = {
@@ -23,11 +23,11 @@ public class BarobotConnector {
 		-150,		// 3, num 4,front		
 		-40,		// 4, num 5,back		
 		-140,		// 5, num 6,front
-		-30,		// 6, num 7,back
+		-100,		// 6, num 7,back
 		-150,		// 7, num 8,front
-		-40,		// 8, num 9,back
+		-20,		// 8, num 9,back
 		-140,		// 9, num 10,front
-		-80,		// 10, num 11,back		
+		-20,		// 10, num 11,back		
 		-100,		// 11, num 12,front
 	};
 	// pozycje butelek, sa aktualizowane w trakcie
@@ -40,9 +40,9 @@ public class BarobotConnector {
 		20,			// 5, num 6,front
 		20,			// 6, num 7,back
 		20, 		// 7, num 8,front
-		20,			// 8, num 9,back
+		50,			// 8, num 9,back
 		20,			// 9, num 10,front
-		50,			// 10, num 11,back
+		20,			// 10, num 11,back
 		50			// 11, num 12,front
 	};
 
@@ -195,13 +195,11 @@ public class BarobotConnector {
 
 	public void startDoingDrink() {
 		Queue q = main_queue;
-		i2c.carret.addLed( q, "ff", 0 );
-		i2c.carret.addLed( q, "11", 250 );
+		i2c.carret.setLed( q, "11", 250 );
 		Queue q1		= new Queue();	
 		Upanel[] up		= i2c.getUpanels();
 		for(int i =0; i<up.length;i++){
-			up[i].addLed(q1, "ff", 0);
-			up[i].addLed(q1, "ff", 200);
+			up[i].setLed(q1, "ff", 200);
 		}
 		q.add(q1);
 	}
@@ -330,8 +328,7 @@ public class BarobotConnector {
 		Queue q1		= new Queue();	
 		Upanel[] up		= i2c.getUpanels();
 		for(int i =0; i<up.length;i++){
-			up[i].addLed(q1, "ff", 0);
-			up[i].addLed(q1, string, value);
+			up[i].setLed(q1, string, value);
 		}
 		main_queue.add(q1);
 	}	
@@ -371,8 +368,7 @@ public class BarobotConnector {
 	}
 	public void onDrinkFinish() {
 		Queue q = main_queue;
-	    i2c.carret.addLed( q, "ff", 0 );
-	    i2c.carret.addLed( q, "22", 250 );
+	    i2c.carret.setLed( q, "22", 250 );
 	    setLeds( "ff", 0 );
 		Queue q1			= new Queue();
 		Upanel[] up 		= i2c.getUpanels();
@@ -422,8 +418,7 @@ public class BarobotConnector {
 
 				Queue	q2	= new Queue();
 				if( up != null ){
-					up.addLed( q2, "ff", 0 );
-					up.addLed( q2, "11", 200 );
+					up.setLed( q2, "11", 200 );
 				}
 				Initiator.logger.i("moveToBottle","(cx == tx && cy == ty)("+cx+" == "+tx+" && "+cy+" == "+ty+")");
 				if(cx == tx && cy == ty ){		// nie musze jechac
@@ -444,8 +439,7 @@ public class BarobotConnector {
 					BarobotConnector.moveY( q2, ty, disableOnReady);
 				}
 				if( up != null ){
-					up.addLed( q2, "ff", 0 );
-					up.addLed( q2, "44", 200 );
+					up.setLed( q2, "44", 200 );
 				}
 				return q2;
 			}
@@ -474,8 +468,7 @@ public class BarobotConnector {
 			
 			q.addWait( 3* time/4 );
 		}else{
-			up.addLed( q, "ff", 0 );
-			up.addLed( q, "04", 110 );
+			up.setLed( q, "04", 110 );
 			q.addWait( time/4 );
 			BarobotConnector.moveZLight(q, false);
 			q.add("DY", true);
@@ -541,26 +534,31 @@ public class BarobotConnector {
 	}
 
 	public void startDemo() {
-		LightManager.startDemo();
+		if(!this.ledsReady){
+			this.scann_leds();
+		}
+		LightManager.startDemo( this );
 	}
 
 	public void bottleBacklight( final int bottleNum, final int count ) {
 		Queue q	= main_queue;
 		Upanel u = i2c.getUpanelByBottle(bottleNum);
 		if(u!=null){
-			String leds = "22";			// green
-			if(count == 2 ){
-				leds	= "44";			// blue
+			if(count == 1 ){
+				u.setLed(q, "22", 255);			// green
+			}else if( count == 2 ){
+				u.setLed(q, "44", 255);			// blue
 			}else if( count == 3 ){
-				leds	= "66";			// green + blue
+				u.setLed(q, "66", 255);			// green + blue
 			}else if( count == 4 ){
-				leds	= "77";			// green + blue + red
+				u.setLed(q, "77", 255);			// green + blue + red
 			}else if( count == 5 ){
-				leds	= "88";			// white
+				u.setLed(q, "88", 255);			// white
 			}else if( count == 6 ){
-				leds	= "ff";			// whiallte
+				u.setLed(q, "ff", 255);		// white
+			}else{
+				u.setLed(q, "ff", 0);
 			}
-			u.setLed(q, leds, 255);
 		}
 	}
 }

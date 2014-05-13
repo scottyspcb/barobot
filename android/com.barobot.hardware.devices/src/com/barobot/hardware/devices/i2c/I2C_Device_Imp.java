@@ -2,6 +2,7 @@ package com.barobot.hardware.devices.i2c;
 
 import java.io.File;
 
+import com.barobot.common.Initiator;
 import com.barobot.common.IspSettings;
 import com.barobot.common.constant.Pwm;
 import com.barobot.parser.Queue;
@@ -11,7 +12,7 @@ public abstract class I2C_Device_Imp implements I2C_Device{
 	protected int myaddress = 0;
 	protected int row = -1;
 	protected int numInRow = -1;
-	protected int index	= -1;
+	protected int resetIndex	= -1;
 	protected String cpuname = "";
 	protected String protocol = "stk500v1";
 	protected int bspeed = IspSettings.programmspeed;
@@ -22,12 +23,22 @@ public abstract class I2C_Device_Imp implements I2C_Device{
 	protected I2C_Device canBeResetedBy;
 	protected Runnable onchange = null;
 
+	protected int ledOrderType =1;		// RED GREEN BLUE
+	//protected int ledOrderType =2;		// RED BLUE GREEN
+
+	
 	public I2C_Device_Imp() {
 	}
 
 	@Override
 	public void addLed(Queue q, String selector, int pwm ) {
 		pwm				= Pwm.linear2log(pwm);
+		if(ledOrderType == 1){
+		}else{
+			selector = selector.replaceAll("2$", "a");
+			selector = selector.replaceAll("4$", "2");
+			selector = selector.replaceAll("a$", "4");
+		}
 		String command	= "L" + myaddress + ","+ selector +"," + pwm;
 	//	System.out.println("+addLed " +command);
 		q.add( command, true );
@@ -39,16 +50,29 @@ public abstract class I2C_Device_Imp implements I2C_Device{
 		blue	= Pwm.linear2log(blue);
 		white	= Pwm.linear2log(white);
 		this.addLed(q1, "11", red);
-		this.addLed(q1, "22", green);
-		this.addLed(q1, "44", blue);
-	//	this.setLed(q1, "88", white);
+		if(ledOrderType == 1){
+			this.addLed(q1, "22", green);
+			this.addLed(q1, "44", blue);
+		}else{
+			this.addLed(q1, "24", green);
+			this.addLed(q1, "42", blue);
+		}
+		//	this.setLed(q1, "88", white);
 	}
 	
 	@Override
 	public void setLed(Queue q, String selector, int pwm ) {
 		pwm				= Pwm.linear2log(pwm);
-		String command	= "B" + myaddress + ","+ selector +"," + pwm;
-		q.add( command, true );
+		if(ledOrderType == 1){
+			String command	= "B" + myaddress + ","+ selector +"," + pwm;
+			q.add( command, true );
+		}else{
+			selector = selector.replaceAll("2$", "a");
+			selector = selector.replaceAll("4$", "2");
+			selector = selector.replaceAll("a$", "4");
+			String command	= "B" + myaddress + ","+ selector +"," + pwm;
+			q.add( command, true );
+		}
 	}
 
 	@Override
@@ -63,11 +87,19 @@ public abstract class I2C_Device_Imp implements I2C_Device{
 		}else{
 			 command	= "c";
 		}
-		command += String.format("%02x", myaddress ) 
-				+ String.format("%02x", red )
-				+ String.format("%02x", green )
-				+ String.format("%02x", blue  )
-				+ String.format("%02x", white );
+		if(ledOrderType == 1 || !top ){
+			command += String.format("%02x", myaddress ) 
+					+ String.format("%02x", red )
+					+ String.format("%02x", green )
+					+ String.format("%02x", blue  )
+					+ String.format("%02x", white );
+		}else{
+			command += String.format("%02x", myaddress ) 
+					+ String.format("%02x", red )
+					+ String.format("%02x", blue )
+					+ String.format("%02x", green  )
+					+ String.format("%02x", white );
+		}
 		q.add( command, true );
 	}
 
@@ -108,7 +140,7 @@ public abstract class I2C_Device_Imp implements I2C_Device{
 	}
 
 	public void setIndex(int index) {
-		this.index = index;
+		this.resetIndex = index;
 		this.numInRow = 0;
 		if(onchange!=null){
 			onchange.run();
@@ -121,6 +153,10 @@ public abstract class I2C_Device_Imp implements I2C_Device{
 		this.numInRow = order;
 		if(onchange!=null){
 			onchange.run();
+		}
+		if( order == 5 && row == Upanel.BACK ){
+			ledOrderType = 2;
+			Initiator.logger.i("setNumInRow ledOrderType", "order" + order + ", row= " +row );
 		}
 	}
 
@@ -200,7 +236,7 @@ public abstract class I2C_Device_Imp implements I2C_Device{
 	}
 	@Override
 	public String getIsp() {
-		if( index > 0 && index < 5 && numInRow == 0 ){
+		if( resetIndex > 0 && resetIndex < 5 && numInRow == 0 ){
 			return "P"+ this.row;
 		}else if( canBeResetedBy != null ){
 			return "p"+ canBeResetedBy.getAddress();
@@ -208,8 +244,8 @@ public abstract class I2C_Device_Imp implements I2C_Device{
 		return "-getIsp";
 	}
 	public String getReset() {
-		if( index > 0 ){
-			return "RESET"+ this.index;
+		if( resetIndex > 0 ){
+			return "RESET"+ this.resetIndex;
 		}else if( canBeResetedBy != null ){
 			return "RESET_NEXT" + canBeResetedBy.getAddress();
 		}

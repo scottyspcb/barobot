@@ -1,6 +1,7 @@
 package com.barobot.hardware.devices.i2c;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -127,8 +128,6 @@ public class I2C{
 		for (I2C_Device u2 : list){
 			if(  u2 instanceof Upanel ){
 				Upanel uu = (Upanel)u2;
-				
-				
 				System.out.println("+Upanel "
 						+ "dla butelki: " + uu.getBottleNum() 
 						+ " w wierszu " + uu.getRow()
@@ -140,5 +139,13 @@ public class I2C{
 				bybottle.put( uu.getBottleNum(), uu );	// index by BUTTLE NUM
 			}
 		}
+	}
+
+	public I2C_Device[] getDevicesWithLeds() {
+		I2C_Device[] a = {};
+		Collection<I2C_Device> aa = byaddress.values();
+		aa.remove(mainBoard);
+		
+		return aa.toArray(a);
 	}
 }
