@@ -12,7 +12,7 @@ public class Macro {
 		hw.connectIfDisconnected();
 		int i = 50;
 
-		I2C_Device[] list = hw.barobot.i2c.getDevices();
+		I2C_Device[] list = hw.barobot.i2c.getDevicesWithLeds();
 		for (I2C_Device u : list){
 			u.addLed( q, "ff", 0 );
 		}

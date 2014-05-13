@@ -40,6 +40,7 @@ public class UploadCode {
 							System.out.println("has next ROW "+row+"- OK");
 							q.show("run");
 							hw.barobot.i2c.add( firstInRow );
+							q.addWait(100);
 							Queue qq2	= UploadFirst( firstInRow, barobot, hw, firstOnly );
 							q.addFirst(qq2);
 						}else{
@@ -80,7 +81,8 @@ public class UploadCode {
 					});
 					return doAfter;
 				}
-			});	
+			});
+			nq.addWait(100);
 		}
 		if(IspSettings.setHex){
 			nq.add( new AsyncMessage( true ){
@@ -107,6 +109,7 @@ public class UploadCode {
 					return doAfter;
 				}
 			});
+			nq.addWait(100);
 		}
 		if( !firstOnly ){
 			final String resetCmd	= current_dev.getReset();
@@ -132,14 +135,23 @@ public class UploadCode {
 					return false;
 				}
 			});
+			nq.addWait(100);
 		}
 		return nq;
 	}
 
 	private Queue checkHasNext( final Hardware hw, final BarobotConnector barobot, final Upanel current_dev, String upanel_code ) {
 		Queue nq = new Queue();	
-		String command = "n" + current_dev.getAddress();
-		nq.add( new AsyncMessage( command, true ){			// has first upanel?
+		final String nextCommand = "n" + current_dev.getAddress();
+		nq.addWait(100);
+		nq.add( new AsyncMessage( nextCommand, true ){			// has first upanel?
+			@Override
+			public boolean onInput(String input, Mainboard dev, Queue mainQueue) {
+				if( input.equals("n"+nextCommand) ){
+					return true;		// its me, ignore message
+				}
+				return false;
+			}
 			@Override
 			public boolean isRet(String result, Queue q) {
 				if(result.startsWith("" + Methods.METHOD_I2C_SLAVEMSG + ",")){		//	122,1,188,1
@@ -175,6 +187,7 @@ public class UploadCode {
 		final Carret current_dev	= hw.barobot.i2c.carret;
 		final String carret_code = current_dev.getHexFile();
 		if( IspSettings.setFuseBits){
+			q.addWait(100);
 			q.add( new AsyncMessage( true ){
 				@Override
 				public String getName() {
@@ -201,6 +214,7 @@ public class UploadCode {
 			});
 		}
 		if(IspSettings.setHex){
+			q.addWait(100);
 			q.add( new AsyncMessage( true ){
 				@Override	
 				public String getName() {
@@ -350,6 +364,7 @@ public class UploadCode {
 			hw.connectIfDisconnected();
 			hw.synchro();
 			q.addWaitThread(Main.mt);
+			q.addWait(100);
 			current_dev.isp( q );
 			q.add( new AsyncMessage( true ){		// na koncu zamknij
 				@Override
@@ -401,6 +416,7 @@ public class UploadCode {
 		hw.connectIfDisconnected();
 		Queue q = hw.getQueue();
 		String command = "n" + nexto;
+		q.addWait(100);
 		q.add( new AsyncMessage( command, true ){			// has first upanel?
 			@Override
 			public boolean isRet(String result, Queue q) {
@@ -409,11 +425,8 @@ public class UploadCode {
 					if(bytes[2] == Methods.METHOD_CHECK_NEXT  ){
 						if(bytes[3] == 1 ){							// has next
 							q.show("run");
-
 							Queue qq2	= checkHasNext( hw, hw.barobot, prev, hex_code );
-							
-							
-							
+							qq2.addWait(100);
 							q.addFirst(qq2);
 						}else{
 							System.out.println("ERROR: No device next to "+nexto );

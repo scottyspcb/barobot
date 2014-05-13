@@ -76,7 +76,7 @@ public class Engine {
 		invalidateData();
 	}
 	
-	private void invalidateData()
+	public void invalidateData()
 	{
 		slots = null;
 		recipes = null;
@@ -125,7 +125,7 @@ public class Engine {
 		}
 		return recipes;
 	}
-	
+
 	private List<Recipe_t> favoriteRecipes;
 	
 	public List<Recipe_t> getFavoriteRecipes()

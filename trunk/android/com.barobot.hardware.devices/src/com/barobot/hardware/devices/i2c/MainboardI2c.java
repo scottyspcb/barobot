@@ -10,7 +10,7 @@ public class MainboardI2c extends I2C_Device_Imp {
 		this.cpuname		= "m328p";
 		this.myaddress		= address;
 		this.row			= index;
-		this.index			= index;
+		this.resetIndex			= index;
 		this.numInRow		= 0;
 		this.protocol		= "arduino";
 	//	this.bspeed			= 57600;		// arduino bootloader

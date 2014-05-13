@@ -131,12 +131,9 @@ public class BarobotMain extends BarobotActivity implements ArduinoListener {
 		mCurrentRecipe = null;
 		List<Recipe_t> recipes;
 		
-		if (mode == Mode.Favorite)
-		{
+		if (mode == Mode.Favorite){
 			recipes = Engine.GetInstance(this).getFavoriteRecipes();
-		}
-		else
-		{
+		}else{
 			recipes = Engine.GetInstance(this).getRecipes();
 		}
 

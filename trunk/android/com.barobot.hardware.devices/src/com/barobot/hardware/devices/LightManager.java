@@ -9,7 +9,18 @@ import com.barobot.parser.message.Mainboard;
 public class LightManager {
 
 	String[] defaultDemo = {"","",""};
-	public static void startDemo() {	
+	public static void startDemo(BarobotConnector barobot) {
+		Queue q = barobot.main_queue;
+		LightManager lm = new LightManager();
+
+		lm.loading(barobot, q, 10);
+		lm.linijka( barobot, q, 10 );
+		lm.flaga( barobot, q, 10 );
+		lm.mrygajRGB( barobot, q, 60 );
+		lm.nazmiane( barobot, q, 10 );
+		lm.tecza( barobot, q, 10 );
+		lm.strobo( barobot, q, 60 );
+		lm.zapal(barobot, q);
 	}
 
 	public void loading(final BarobotConnector barobot, final Queue q, final int repeat) {
@@ -64,7 +75,7 @@ public class LightManager {
 	}
 
 	public void strobo(final BarobotConnector barobot, final Queue q, int repeat) {
-		I2C_Device[] list = barobot.i2c.getDevices();
+		I2C_Device[] list = barobot.i2c.getDevicesWithLeds();
 		int time =5000;
 		while (repeat-- > 0){
 			for (I2C_Device u : list){
@@ -262,7 +273,7 @@ public class LightManager {
 	}
 
 	public void zapal(BarobotConnector barobot, Queue q) {
-		I2C_Device[] list = barobot.i2c.getDevices();
+		I2C_Device[] list = barobot.i2c.getDevicesWithLeds();
 		for (I2C_Device u2 : list){
 			u2.addLed( q, "ff", 255 );
 		}
@@ -270,11 +281,67 @@ public class LightManager {
 	}
 
 	public static void zgas(BarobotConnector barobot, Queue q ) {
-		I2C_Device[] list = barobot.i2c.getDevices();
+		I2C_Device[] list = barobot.i2c.getDevicesWithLeds();
 		for (I2C_Device u2 : list){
 			u2.addLed( q, "ff", 0 );
 		}
 		System.out.println("koniec zgas");
+	}
+	
+	
+
+	public void mrygajRGB(BarobotConnector barobot, Queue q, int repeat  ) {
+		I2C_Device[] list = barobot.i2c.getDevicesWithLeds();
+		if(list.length == 0 ){
+			System.out.println("Pusto" );
+			return;
+		}
+		int time =1000;
+		while (repeat-- > 0){
+			for (I2C_Device u : list){
+				u.addLed( q, "ff", 0 );	// off
+			}
+			q.addWait(time );
+			for (I2C_Device u : list){
+				u.setLed( q, "01", 255 );
+			}
+			q.addWait(time );
+			
+			for (I2C_Device u : list){
+				u.setLed( q, "02", 255 );
+			}
+			q.addWait(time );
+
+			for (I2C_Device u : list){
+				u.setLed( q, "04", 255 );
+			}
+			q.addWait(time );
+
+			for (I2C_Device u : list){
+				u.setLed( q, "08", 255 );
+			}
+			q.addWait(time );
+
+			for (I2C_Device u : list){
+				u.setLed( q, "10", 255 );
+			}
+			q.addWait(time );
+			
+			for (I2C_Device u : list){
+				u.setLed( q, "20", 255 );
+			}
+			q.addWait(time );
+			
+			for (I2C_Device u : list){
+				u.setLed( q, "40", 255 );
+			}
+			q.addWait(time );
+
+			for (I2C_Device u : list){
+				u.setLed( q, "80", 255 );
+			}
+			q.addWait(time );
+		}
 	}
 }
 

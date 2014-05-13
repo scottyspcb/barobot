@@ -11,7 +11,8 @@
 #include <avr/io.h>
 #include <avr/wdt.h>
 #define INBFLENGTH 	5
-#define I2CDELAY	1
+#define I2CDELAY	10
+#define DELAY4RESET	20
 byte in_buffer[INBFLENGTH];
 
 volatile uint8_t input_buffer[MAINBOARD_BUFFER_LENGTH][MAXCOMMAND] = {{0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0}};
@@ -403,7 +404,7 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 	//	sscanf(charBuf,"%i", &num );
 		byte error =reset_device_next_to(num, LOW);
 		if (error == 0){
-			delay(5);
+			delay(DELAY4RESET);
 			reset_device_next_to(num, HIGH);
 		}else{  //error
 			defaultResult = false;
@@ -418,7 +419,7 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 	//	sscanf(charBuf,"%i", &num );
 		boolean ret = reset_device_num(num, LOW);
 		if(ret){
-			delay(5);
+			delay(DELAY4RESET);
 			reset_device_num(num, HIGH);
 		}else{  //error
 			defaultResult = false;

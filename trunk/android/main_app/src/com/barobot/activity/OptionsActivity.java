@@ -3,6 +3,7 @@ package com.barobot.activity;
 import com.barobot.R;
 import com.barobot.gui.fragment.MenuFragment;
 import com.barobot.hardware.virtualComponents;
+import com.barobot.parser.Queue;
 
 import android.os.Bundle;
 import android.app.Activity;
@@ -27,24 +28,26 @@ public class OptionsActivity extends BarobotActivity {
 	public void onOptionsButtonClicked(View view)
 	{
 		Intent serverIntent = null;
+		Queue mq;
 		switch(view.getId())
 		{
 		case R.id.options_bottle_setup_button:
 			serverIntent = new Intent(this, BottleSetupActivity.class);
 			break;
-
 		case R.id.options_recipe_setup_button:
 			serverIntent = new Intent(this, RecipeSetupActivity.class);
 			break;
-
+		case R.id.options_stop:
+			mq = virtualComponents.barobot.main_queue;
+			mq.clear();
+			virtualComponents.barobot.moveToStart();
+			break;
 		case R.id.options_advanced_button:
 			serverIntent  = new Intent(this, DebugActivity.class);
 			break;
-
 		case R.id.options_calibrate_button:
 			virtualComponents.barobot.kalibrcja();
 			break;
-
 		case R.id.options_demo_button:
 			virtualComponents.barobot.startDemo();
 			break;

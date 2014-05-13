@@ -53,13 +53,16 @@ public class Main{
 
 		IspSettings.safeMode	= false;
 		IspSettings.verbose		= 2;
-		IspSettings.setFuseBits = false;
+		IspSettings.setFuseBits = true;
 		IspSettings.setHex		= true;
 		IspSettings.force		= false;
 
 		UploadCode uc			= new UploadCode();
 		Macro mm				= new Macro();
 		MetaRendering mr		= new MetaRendering();
+		Queue q					= hw.getQueue();
+		LightManager lm			= new LightManager();
+
 /*
 		for( int i =0; i<255;i++){
 			int p = com.barobot.common.constant.Pwm.linear2log(i );
@@ -67,7 +70,7 @@ public class Main{
 		}
 		*/
 
-	//	hw.connectIfDisconnected();
+		hw.connectIfDisconnected();
 	//	w.fast_close_test( hw );
 	//	uc.prepareSlaveMB( hw );
 	//	uc.prepareMB( hw );
@@ -76,60 +79,51 @@ public class Main{
 	//	uc.prepareCarret( hw );
 	//	mr.createContstans();
 	//	uc.prepareUpanels( hw );
-	//	uc.prepareUpanelNextTo( hw, 15 );
-
+	//	uc.prepareUpanelNextTo( hw, 22 );
 	//	w.fast_close_test( hw );
 	//	uc.prepare1Upanel( hw, hw.barobot, Upanel.FRONT );
 
-		hw.connectIfDisconnected();
+		q.addWaitThread( Main.main );
 		hw.barobot.scann_leds();
-		I2C_Device[] list = hw.barobot.i2c.getDevices();
+		q.addWaitThread( Main.main );
+
+		I2C_Device[] list = hw.barobot.i2c.getDevicesWithLeds();
 		if(list.length == 0 ){
 			System.out.println("Pusto" );
 			return;
 		}
-		w.mrygaj( hw, 10 );
-	//	mm.promo_carret( hw );
 		
-	//	mm.promo1( hw );
 
+	//	mm.promo_carret( hw );
+	//	mm.promo1( hw );
 
 		/*
 		mm.testBpm( hw );
 	//	w.test_proc( hw );	
 	//	w.swing( hw, 3, 1000, 5000 );
-	
 		w.mrygaj_po_butelkach( hw, 100 );
-	
-		Queue q = hw.getQueue();
-		q.addWaitThread( Main.main );
-		
-
 		w.mrygaj_grb( hw, 30 );
 		w.illumination1( hw );
 */
 	//	q.addWaitThread( Main.main );
-	//	q.addWait(100);
 		
 		
+		q.addWaitThread( Main.main );
+		q.addWait(100);
 
-
-
-		
-	/*
-		LightManager lm = new LightManager();
 		lm.flaga( hw.barobot, q, 6 );
+		q.addWaitThread( Main.main );
+		lm.mrygajRGB( hw.barobot, q, 60 );
+		q.addWaitThread( Main.main );
 		lm.nazmiane( hw.barobot, q, 6 );
+		q.addWaitThread( Main.main );
 		lm.loading(hw.barobot, q, 6);
 		lm.linijka( hw.barobot, q, 6 );
 		lm.tecza( hw.barobot, q, 6 );
 		lm.strobo( hw.barobot, q, 109 );
 		lm.zapal(hw.barobot, q);
-		*/
 		w.koniec( hw );
-		
-		
-		
+	
 	//	w.findStops(hw);
 	//	hw.connectIfDisconnected();	
 	//	hw.barobot.kalibrcja();

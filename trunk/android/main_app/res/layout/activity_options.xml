@@ -86,6 +86,16 @@
             android:onClick="onOptionsButtonClicked"
             android:text="@string/options_calibrate" />
 
+        <Button
+            android:id="@+id/options_stop"
+            style="@style/OptionsMenuButton"
+            android:layout_alignLeft="@array/pref_example_list_titles"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/options_extra_setup_button"
+            android:layout_marginTop="24dp"
+            android:onClick="onOptionsButtonClicked"
+            android:text="@string/options_stop" />
+
     </RelativeLayout>
 
     <fragment

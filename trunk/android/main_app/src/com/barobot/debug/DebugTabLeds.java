@@ -3,6 +3,7 @@ package com.barobot.debug;
 import yuku.ambilwarna.AmbilWarnaDialog;
 import yuku.ambilwarna.AmbilWarnaDialog.OnAmbilWarnaListener;
 import android.app.Activity;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -20,6 +21,8 @@ import com.barobot.activity.DebugActivity;
 import com.barobot.common.Initiator;
 import com.barobot.hardware.virtualComponents;
 import com.barobot.hardware.devices.BarobotConnector;
+import com.barobot.hardware.devices.i2c.Upanel;
+import com.barobot.parser.Queue;
 
 public class DebugTabLeds extends Fragment {
 	public int tab_id	= -1 ;
@@ -103,15 +106,72 @@ public class DebugTabLeds extends Fragment {
 				changeColorOf("f0");
 			}
 		});
+		
+		
+		Switch whto = (Switch) rootView.findViewById(R.id.white_top_on);	
+		whto.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+		    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+		        if (isChecked) {
+		        	virtualComponents.barobot.setLeds( "08", 255 );
+		        } else {
+		        	virtualComponents.barobot.setLeds( "08", 0 );
+		        }
+		    }
+		});
+		Switch whbo = (Switch) rootView.findViewById(R.id.white_bottom_on);	
+		whbo.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+		    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+		        if (isChecked) {
+		        	virtualComponents.barobot.setLeds( "80", 255 );
+		        } else {
+		        	virtualComponents.barobot.setLeds( "80", 0 );
+		        }
+		    }
+		});
+		Button cc = (Button) rootView.findViewById(R.id.carret_color);
+		cc.setOnClickListener( new OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				changeCarretColor();
+			}
+		});
+		
+	
+		/*
+		light_scale
+		white_scale
+		*/
+		
 		return rootView;
 	}
 
+	private void changeCarretColor() {
+		AmbilWarnaDialog dialog = new AmbilWarnaDialog(rootView.getContext(), lastcolor, 
+				new OnAmbilWarnaListener() {
+		        @Override
+		        public void onOk(AmbilWarnaDialog dialog, int color) {
+		    		int blue	= Color.blue(color);
+		        	int red		= Color.red(color);
+		        	int green	= Color.green(color);
+		        	int white	= 0;
+		    		Queue q1	= new Queue();
+		    		Queue q		= virtualComponents.barobot.main_queue;
+		    		q.add(q1);
+		  		  	virtualComponents.barobot.i2c.carret.setRgbw(q1, red,green,blue,white);
+					lastcolor = color;
+		        }
+		        @Override
+		        public void onCancel(AmbilWarnaDialog dialog) {
+		        	Log.i("OnAmbilWarnaListener", "onCancel");
+		        }
+		});
+		dialog.show();
+	};	
 	private void changeColorOf(final String string) {
 		AmbilWarnaDialog dialog = new AmbilWarnaDialog(rootView.getContext(), lastcolor, 
 				new OnAmbilWarnaListener() {
 		        @Override
 		        public void onOk(AmbilWarnaDialog dialog, int color) {
-		        	Log.i("AmbilWarnaDialog", ""+  color);
 		        	virtualComponents.setColor( string, color );
 					lastcolor = color;
 		        }
