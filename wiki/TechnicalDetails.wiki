@@ -9,3 +9,8 @@ No robot is complete without software. Barobot Android application is under heav
 
 
 On the microchip side the software will allow for driving hardware and collecting sensor inputs. Anybody will be able to change it using well known Arduino language and console. On top of that a clever trick we used allows for easy firmware update of the whole distributed system. So if you feel less programing saavy you will be able to just press a button on Android to update the all the microchips with newest firmware.
+
+
+
+More info: 
+http://barobot.com/barobot/
