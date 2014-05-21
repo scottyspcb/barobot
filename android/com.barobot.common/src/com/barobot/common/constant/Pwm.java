@@ -1,6 +1,7 @@
 package com.barobot.common.constant;
 
 public class Pwm {
+/*
 	private static short[] levels = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 
 	0x01, 0x01, 0x01,
 	0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02,
@@ -22,8 +23,8 @@ public class Pwm {
 	public static int linear2log8( int value ){
 		return levels[ (value & 0xff ) ];
 	}
-
-	public static int linear2log(int percentage){
+*/
+	public static int linear2log(int percentage, float ratio ){
 		if( percentage <=0){
 			return 0;
 		}
@@ -32,9 +33,7 @@ public class Pwm {
 		double a = 0.9784;
 		double b = 0.02183;
 		double d = (a * java.lang.Math.exp(b*percentage)+0.5);
-		return Math.min( 255, (int) (Math.floor(d)-1));
-		
+		return Math.min( 255, (int) ((Math.floor(d)-1) * ratio ) );
 	//	return Math.min( 255, percentage);
-		
 	}
 }

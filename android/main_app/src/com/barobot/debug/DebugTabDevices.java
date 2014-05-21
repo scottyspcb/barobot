@@ -17,6 +17,8 @@ import com.barobot.R;
 import com.barobot.activity.DebugActivity;
 import com.barobot.common.Initiator;
 import com.barobot.hardware.virtualComponents;
+import com.barobot.hardware.devices.BarobotConnector;
+import com.barobot.hardware.devices.i2c.I2C_Device_Imp;
 
 public class DebugTabDevices extends Fragment {
 	public int tab_id	= -1 ;
@@ -36,7 +38,6 @@ public class DebugTabDevices extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
 		int lay = DebugActivity.layouts[tab_id];
 		final View rootView = inflater.inflate( lay, container, false);
-
 		final int[] buttons = {
 				R.id.editb0,
 				R.id.editb1,
@@ -48,54 +49,58 @@ public class DebugTabDevices extends Fragment {
 				R.id.editb7,		
 				R.id.editb8,
 				R.id.editb9,
-				R.id.editb10,		
-				R.id.editb11		
+				R.id.editb10,
+				R.id.editb11	
 		};
 
-		Button xb1 = (Button) rootView.findViewById(R.id.save_poss);	
-
+		Button xb1 = (Button) rootView.findViewById(R.id.save_poss);
 		xb1.setOnClickListener( new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				for(int i=0;i<12;i++){
 					EditText editb0 = (EditText) rootView.findViewById( buttons[i] );
-					Initiator.logger.i("DebugTabDevices.zapisuje", "BOTTLE_X_" + i + "= " +editb0.getText().toString() );
-	        		virtualComponents.barobot.state.set("BOTTLE_X_" + i, editb0.getText().toString() ); 
-	        	
+					Initiator.logger.i("DebugTabDevices.zapisuje", "BOTTLE_OFFSETX_" + i + "= " +editb0.getText().toString() );
+					int a = Integer.parseInt(editb0.getText().toString());
+					virtualComponents.barobot.setMarginX(i, a );
 				}
 			}
 		});
-		Button xb2 = (Button) rootView.findViewById(R.id.load_poss);	
+
+		Button xb2 = (Button) rootView.findViewById(R.id.reset_margins);
 		xb2.setOnClickListener( new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				for(int i=0;i<12;i++){
-					int xpos = virtualComponents.barobot.state.getInt("BOTTLE_X_" + i, 0 );
-					EditText editb0 = (EditText) rootView.findViewById( buttons[i] );
-					int num = i;
-					Initiator.logger.i("DebugTabDevices", "set input BOTTLE_X_" + num + "= " +xpos );
+					int xpos = BarobotConnector.margin_x[i];
+					final EditText editb0 = (EditText) rootView.findViewById( buttons[i] );
+					virtualComponents.barobot.setMarginX( i, xpos );
+					editb0.setText(""+xpos );
+				}	
+			}
+		});
+
+		Button xb20 = (Button) rootView.findViewById(R.id.load_poss);	
+		xb20.setOnClickListener( new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				for(int i=0;i<12;i++){
+					int xpos = virtualComponents.barobot.getMarginX( i );
+					final EditText editb0= (EditText) rootView.findViewById( buttons[i] );
+					final int num			= i;
+					Initiator.logger.i("DebugTabDevices", "set input BOTTLE_OFFSETX_" + num + "= " +xpos );
 					editb0.setText(""+xpos );
 				}
 			}
 		});
+
 		for(int i=0;i<12;i++){
-			int xpos = virtualComponents.barobot.state.getInt("BOTTLE_X_" + i, 0 );
-			//int ypos = virtualComponents.state.getInt("BOTTLE_Y_" + i, 0 );
-			// Initiator.logger.i("DebugTabDevices.zapisuje", "butelki" );
+			int xpos = virtualComponents.barobot.getMarginX( i );
 			final EditText editb0 = (EditText) rootView.findViewById( buttons[i] );
 			final int num = i;
-			Initiator.logger.i("DebugTabDevices", "set input BOTTLE_X_" + num + "= " +xpos );
+			Initiator.logger.i("DebugTabDevices", "set input BOTTLE_OFFSETX_" + num + "= " +xpos );
 			editb0.setText(""+xpos );
 		}
-		for(int i=0;i<12;i++){
-			int xpos = virtualComponents.barobot.state.getInt("BOTTLE_X_" + i, 0 );
-			//int ypos = virtualComponents.state.getInt("BOTTLE_Y_" + i, 0 );
-			// Initiator.logger.i("DebugTabDevices.zapisuje", "butelki" );
-			final EditText editb0 = (EditText) rootView.findViewById( buttons[i] );
-			final int num = i;
-			Initiator.logger.i("DebugTabDevices", "set input BOTTLE_X_" + num + "= " +xpos );
-			editb0.setText(""+xpos );
-		}
+		
 		return rootView;
 	}
 }

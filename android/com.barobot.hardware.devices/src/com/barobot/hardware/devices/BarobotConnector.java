@@ -30,17 +30,20 @@ public class BarobotConnector {
 		-20,		// 10, num 11,back		
 		-100,		// 11, num 12,front
 	};
+	
+	public static boolean pureCrystal = false;
+
 	// pozycje butelek, sa aktualizowane w trakcie
 	public static int[] capacity = {
 		20,			// 0, num 1,back
-		20, 		// 1, num 2,front
+		50, 		// 1, num 2,front
 		50,			// 2, num 3,back
 		20,			// 3, num 4,front		
 		20,			// 4, num 5,back		
 		20,			// 5, num 6,front
 		20,			// 6, num 7,back
 		20, 		// 7, num 8,front
-		50,			// 8, num 9,back
+		10,			// 8, num 9,back
 		20,			// 9, num 10,front
 		20,			// 10, num 11,back
 		50			// 11, num 12,front
@@ -465,7 +468,6 @@ public class BarobotConnector {
 		if( up == null ){
 			q.addWait( time/4 );
 		//	virtualComponents.moveZLight(q, false);
-			
 			q.addWait( 3* time/4 );
 		}else{
 			up.setLed( q, "04", 110 );
@@ -555,10 +557,17 @@ public class BarobotConnector {
 			}else if( count == 5 ){
 				u.setLed(q, "88", 255);			// white
 			}else if( count == 6 ){
-				u.setLed(q, "ff", 255);		// white
+				u.setLed(q, "ff", 255);			// white
 			}else{
 				u.setLed(q, "ff", 0);
 			}
 		}
+	}
+	public void setMarginX( int num, int newx ) {
+		this.state.set("BOTTLE_OFFSETX_" + num, newx );	
+	}
+	public int getMarginX(int num) {
+		int margin = state.getInt("BOTTLE_OFFSETX_" + num, BarobotConnector.margin_x[ num ] );
+		return margin;			
 	}
 }

@@ -36,7 +36,7 @@
         	    android:layout_weight="4" />
 
         	<Button
-        	    android:id="@+id/button1"
+        	    android:id="@+id/reset_margins"
         	    android:layout_width="wrap_content"
         	    android:layout_height="match_parent"
         	    android:onClick="removeRecipe"
@@ -58,38 +58,17 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="2">
-        <Button
-            android:id="@+id/recipe_type_new_button"
-            android:layout_marginBottom="@dimen/recipe_button_margin_bottom"
-            android:layout_width="@dimen/recipe_list_width"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentRight="true"
-            android:onClick="onAddNewTypeButtonClick"
-            android:text="@string/recipe_add_new_button" />
 
         <ListView
             android:id="@+id/recipe_types_list"
             android:layout_width="@dimen/recipe_list_width"
             android:layout_height="wrap_content"
-            android:layout_below="@id/recipe_type_new_button"
             android:layout_alignParentRight="true" />
-
-        <Button
-            android:id="@+id/recipe_liquid_new_button"
-            android:layout_marginBottom="@dimen/recipe_button_margin_bottom"
-            android:layout_width="@dimen/recipe_list_width"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_toLeftOf="@id/recipe_type_new_button"
-            android:onClick="onAddNewLiquidButtonClicked"
-            android:text="@string/recipe_add_new_button" />
 
         <ListView
             android:id="@+id/recipe_liquids_list"
             android:layout_width="@dimen/recipe_list_width"
             android:layout_height="wrap_content"
-            android:layout_below="@id/recipe_liquid_new_button"
             android:layout_toLeftOf="@id/recipe_types_list" />
         
     </RelativeLayout>
