@@ -54,6 +54,7 @@ public class Queue {
 			}
 		}
 	}
+
 	public void destroy() {
 		output.clear();
 		if(isMainQueue){
@@ -116,6 +117,7 @@ public class Queue {
 		}
 		exec();
 	}
+
 	public void exec() {
 		if(!isMainQueue){
 			return;

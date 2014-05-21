@@ -47,7 +47,7 @@ public class RecipeSetupActivity extends BarobotActivity
 		UpdateRecipes();
 		FillTypesList();
 		
-		ButtonEnabled(false, R.id.recipe_liquid_new_button);
+	//	ButtonEnabled(false, R.id.recipe_liquid_new_button);
 	}
 	
 	private Recipe_t currentRecipe;
@@ -213,7 +213,7 @@ public class RecipeSetupActivity extends BarobotActivity
 	
 	private void SetCurrentType(Type type){
 		mCurrentType = type;
-		ButtonEnabled(true, R.id.recipe_liquid_new_button);
+	//	ButtonEnabled(true, R.id.recipe_liquid_new_button);
 	}
 
 }

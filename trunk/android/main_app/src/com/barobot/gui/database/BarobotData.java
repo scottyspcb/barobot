@@ -37,9 +37,7 @@ public class BarobotData {
 		MappingSession.registerDatabase(omdb);
 		MappingSession.start();
 	}
-	
-	public static void ClearTable (Class<?> cls)
-	{
+	public static void ClearTable (Class<?> cls){
 		Model.fetchQuery(ModelQuery.delete().from(cls).getQuery(),cls);
 	}
 	
@@ -54,13 +52,11 @@ public class BarobotData {
 		ClearTable(Category.class);
 	}
 
-	public static List<Recipe_t> GetRecipes()
-	{
+	public static List<Recipe_t> GetRecipes(){
 		return Model.fetchAll(Recipe_t.class);
 	}
 	
-	public static List<Recipe_t> GetListedRecipes()
-	{
+	public static List<Recipe_t> GetListedRecipes(){
 		return Model.fetchQuery(ModelQuery.select().from(Recipe_t.class).where(C.eq("unlisted", false)).orderBy("Recipe_t.name").getQuery(),Recipe_t.class);
 	}
 	

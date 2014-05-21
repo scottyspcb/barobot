@@ -5,10 +5,14 @@ import java.io.File;
 import com.barobot.common.Initiator;
 import com.barobot.common.IspSettings;
 import com.barobot.common.constant.Pwm;
+import com.barobot.hardware.devices.BarobotConnector;
 import com.barobot.parser.Queue;
 import com.barobot.parser.utils.Decoder;
 
 public abstract class I2C_Device_Imp implements I2C_Device{
+	public static int level = 10000;
+	public static int MAX_LEVEL = 10000;
+
 	protected int myaddress = 0;
 	protected int row = -1;
 	protected int numInRow = -1;
@@ -25,14 +29,14 @@ public abstract class I2C_Device_Imp implements I2C_Device{
 
 	protected int ledOrderType =1;		// RED GREEN BLUE
 	//protected int ledOrderType =2;		// RED BLUE GREEN
-
 	
 	public I2C_Device_Imp() {
 	}
 
 	@Override
 	public void addLed(Queue q, String selector, int pwm ) {
-		pwm				= Pwm.linear2log(pwm);
+		float ratio		= ((float)I2C_Device_Imp.level)/I2C_Device_Imp.MAX_LEVEL;
+		pwm				= Pwm.linear2log(pwm, ratio );
 		if(ledOrderType == 1){
 		}else{
 			selector = selector.replaceAll("2$", "a");
@@ -45,10 +49,11 @@ public abstract class I2C_Device_Imp implements I2C_Device{
 	}
 
 	public void setRgbw(Queue q1, int red, int green, int blue, int white) {
-		red		= Pwm.linear2log(red);
-		green	= Pwm.linear2log(green);	
-		blue	= Pwm.linear2log(blue);
-		white	= Pwm.linear2log(white);
+		float ratio		= ((float)I2C_Device_Imp.level)/I2C_Device_Imp.MAX_LEVEL;
+		red		= Pwm.linear2log(red, ratio);
+		green	= Pwm.linear2log(green, ratio);	
+		blue	= Pwm.linear2log(blue, ratio);
+		white	= Pwm.linear2log(white, ratio);
 		this.addLed(q1, "11", red);
 		if(ledOrderType == 1){
 			this.addLed(q1, "22", green);
@@ -62,7 +67,8 @@ public abstract class I2C_Device_Imp implements I2C_Device{
 	
 	@Override
 	public void setLed(Queue q, String selector, int pwm ) {
-		pwm				= Pwm.linear2log(pwm);
+		float ratio		= ((float)I2C_Device_Imp.level)/I2C_Device_Imp.MAX_LEVEL;
+		pwm				= Pwm.linear2log(pwm, ratio);
 		if(ledOrderType == 1){
 			String command	= "B" + myaddress + ","+ selector +"," + pwm;
 			q.add( command, true );
@@ -77,10 +83,11 @@ public abstract class I2C_Device_Imp implements I2C_Device{
 
 	@Override
 	public void setColor(Queue q, boolean top, int red, int green, int blue, int white) {
-		red		= Pwm.linear2log(red);
-		green	= Pwm.linear2log(green);	
-		blue	= Pwm.linear2log(blue);
-		white	= Pwm.linear2log(white);
+		float ratio		= ((float)I2C_Device_Imp.level)/I2C_Device_Imp.MAX_LEVEL;
+		red		= Pwm.linear2log(red, ratio);
+		green	= Pwm.linear2log(green, ratio);	
+		blue	= Pwm.linear2log(blue, ratio);
+		white	= Pwm.linear2log(white, ratio);
 		String command;
 		if(top){
 			 command	= "C";
@@ -154,7 +161,7 @@ public abstract class I2C_Device_Imp implements I2C_Device{
 		if(onchange!=null){
 			onchange.run();
 		}
-		if( order == 5 && row == Upanel.BACK ){
+		if(BarobotConnector.pureCrystal && order == 5 && row == Upanel.BACK ){
 			ledOrderType = 2;
 			Initiator.logger.i("setNumInRow ledOrderType", "order" + order + ", row= " +row );
 		}
@@ -292,12 +299,14 @@ public abstract class I2C_Device_Imp implements I2C_Device{
 		dev2.isResetedBy( this );
 		//canReset.add(dev2);
 	}
+	
 	public void isResetedBy(I2C_Device i2c_device) {
 		canBeResetedBy = i2c_device;
 		if(onchange!=null){
 			onchange.run();
 		}
 	}
+
 	/*
 	public Queue resetCommand() {
 		Queue q = new Queue();

@@ -274,7 +274,6 @@ public class Mainboard{
 		}
 		return false;
 	}
-
 	public void destroy() {
 		sender			= null;
 		mainQueue		= null;

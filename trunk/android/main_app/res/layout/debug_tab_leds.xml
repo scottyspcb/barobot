@@ -17,7 +17,6 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/relativeLayout1"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="69dp"
         android:text="Change main color" />
 
     <Button
@@ -62,7 +61,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/carret_color"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="74dp"
+        android:layout_marginTop="14dp"
         android:text="Light show for your music"
         android:textSize="16dp" />
 

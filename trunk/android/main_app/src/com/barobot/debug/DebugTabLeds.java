@@ -13,6 +13,8 @@ import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.EditText;
+import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.ToggleButton;
 
@@ -21,6 +23,7 @@ import com.barobot.activity.DebugActivity;
 import com.barobot.common.Initiator;
 import com.barobot.hardware.virtualComponents;
 import com.barobot.hardware.devices.BarobotConnector;
+import com.barobot.hardware.devices.i2c.I2C_Device_Imp;
 import com.barobot.hardware.devices.i2c.Upanel;
 import com.barobot.parser.Queue;
 
@@ -107,7 +110,6 @@ public class DebugTabLeds extends Fragment {
 			}
 		});
 		
-		
 		Switch whto = (Switch) rootView.findViewById(R.id.white_top_on);	
 		whto.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 		    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -135,13 +137,15 @@ public class DebugTabLeds extends Fragment {
 				changeCarretColor();
 			}
 		});
-		
-	
-		/*
-		light_scale
-		white_scale
-		*/
-		
+
+		SeekBar light_scale = (SeekBar) rootView.findViewById( R.id.light_scale );
+		if(light_scale!=null){
+			light_scale.setProgress(I2C_Device_Imp.level);	
+		}
+		SeekBar white_scale = (SeekBar) rootView.findViewById( R.id.white_scale );
+		if(white_scale!=null){
+			
+		}
 		return rootView;
 	}
 
@@ -188,6 +192,5 @@ public class DebugTabLeds extends Fragment {
         final float scale = getResources().getDisplayMetrics().density;
         // Convert the dps to pixels, based on density scale
         return (int) (pixels * scale + 0.5f);
-    }
- 
+    } 
 }
