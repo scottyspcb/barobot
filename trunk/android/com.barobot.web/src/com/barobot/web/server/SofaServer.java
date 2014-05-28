@@ -32,9 +32,6 @@ public class SofaServer extends NanoHTTPD {
 	public SofaServer() {
     	super(8000);
     }
-	public static void main(String[] args) {
-        ServerRunner.run(SofaServer.class);
-    }
 	public static InputStream assetExists(AssetManager am, String path) {
 	    try {
 	        InputStream stream = am.open(path);
@@ -84,6 +81,9 @@ public class SofaServer extends NanoHTTPD {
 		}else{
 			String system_action_res = route.run( this, theme, session);
 			Response r = null;
+			if(system_action_res == null){
+				 return null;
+			}
 			if(route.use_raw_output){
 		//		Log.i("SofaServer use_raw_output true", route.getClass().toString() );
 				r = new Response( system_action_res );
@@ -202,12 +202,7 @@ public class SofaServer extends NanoHTTPD {
 
 		theme.setLocale("pl_PL");
 		Chunk c = theme.makeChunk();
-		
-		
-		
 		c.append("_[That's it!]  _[Localization].");
-		
-		
 	}
 }
 /*

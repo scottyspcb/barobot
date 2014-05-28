@@ -18,6 +18,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 
     <application
         android:icon="@drawable/app_icon"
@@ -49,13 +50,6 @@
             android:name="com.barobot.DebugWindow"
             android:label="@string/debug_window"
             android:screenOrientation="sensorLandscape" >
-        </activity>
-        <activity
-            android:name="com.barobot.activity.MainSettingsActivitysActivity"
-            android:label="@string/title_activity_main_settings"
-            android:screenOrientation="sensorLandscape"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" 
-             >
         </activity>
         <activity
             android:name="com.barobot.activity.UpdateActivityeActivity"

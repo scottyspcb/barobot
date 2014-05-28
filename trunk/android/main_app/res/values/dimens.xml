@@ -83,8 +83,8 @@
     <dimen name="RecipeListWidth">300dp</dimen>
     
     <!-- Bottle Buttons -->
-    <color name="BottleStartColor">#BBDFF4FB</color>
-    <color name="BottleEndColor">#BB81F4F8</color>
+    <color name="BottleStartColor">#DBFFFFFB</color>
+    <color name="BottleEndColor">#DBA1FFF8</color>
     <color name="BottleBorderColor">#FFFFFF</color>
     
     <!-- Colors -->

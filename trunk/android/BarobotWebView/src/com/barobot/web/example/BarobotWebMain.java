@@ -1,4 +1,4 @@
-package com.barobotweb;
+package com.barobot.web.example;
 
 import java.io.IOException;
 

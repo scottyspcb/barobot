@@ -209,6 +209,7 @@ public class CreatorActivity extends BarobotActivity implements ArduinoListener{
 	{
 		Recipe_t tempRecipe = CreateDrink("Unnamed Drink", true);
 		Engine.GetInstance(this).Pour(tempRecipe, this);
+		clear();
 	}
 	
 	private void addIngredient(int position, Ingredient_t ing)

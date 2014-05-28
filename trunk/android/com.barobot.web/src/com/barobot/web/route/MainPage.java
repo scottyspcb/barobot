@@ -16,7 +16,11 @@ public class MainPage extends EmptyRoute{
 	}
 	public final static String regex = "^\\/$";
 
+	
 	public String run(SofaServer sofaServer, Theme theme, IHTTPSession session){
+		if(theme == null){
+			return null;
+		}
 		Chunk action_chunk			= theme.makeChunk("main#body");
 		Map<String, List<String>> decodedQueryParameters =sofaServer.decodeParameters(session.getQueryParameterString());
 
