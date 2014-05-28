@@ -48,6 +48,9 @@ public class OptionsActivity extends BarobotActivity {
 		case R.id.options_calibrate_button:
 			virtualComponents.barobot.kalibrcja();
 			break;
+		case R.id.settings_unlock:
+			virtualComponents.barobot.main_queue.unlock();
+			break;	
 		case R.id.options_demo_button:
 			virtualComponents.barobot.startDemo();
 			break;

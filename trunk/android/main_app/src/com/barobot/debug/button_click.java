@@ -84,32 +84,32 @@ public class button_click implements OnClickListener{
 			break;  
 		case R.id.set_y_600:
 			virtualComponents.barobot.moveZDown( q ,true );
-			BarobotConnector.moveY( q, ( posy -1000), true);
+			virtualComponents.barobot.moveY( q, ( posy -1000), true);
 			mq.add(q);
 			break;
 		case R.id.set_y_100:
 			virtualComponents.barobot.moveZDown( q ,true );
-			BarobotConnector.moveY( q, ( posy -100), true);
+			virtualComponents.barobot.moveY( q, ( posy -100), true);
 			mq.add(q);
 			break;
 		case R.id.set_y_10:
 			virtualComponents.barobot.moveZDown( q ,true );
-			BarobotConnector.moveY( q, ( posy -10), true);
+			virtualComponents.barobot.moveY( q, ( posy -10), true);
 			mq.add(q);
 			break;
 		case R.id.set_y10:
 			virtualComponents.barobot.moveZDown( q ,true );
-			BarobotConnector.moveY( q, ( posy +10), true);
+			virtualComponents.barobot.moveY( q, ( posy +10), true);
 			mq.add(q);
 			break;
 		case R.id.set_y100:
 			virtualComponents.barobot.moveZDown( q ,true );
-			BarobotConnector.moveY( q, ( posy +100), true);
+			virtualComponents.barobot.moveY( q, ( posy +100), true);
 			mq.add(q);
 			break;
 		case R.id.set_y600:
 			virtualComponents.barobot.moveZDown( q ,true );
-			BarobotConnector.moveY( q, ( posy +1000), true);
+			virtualComponents.barobot.moveY( q, ( posy +1000), true);
 			mq.add(q);
 			break;
 
@@ -125,9 +125,9 @@ public class button_click implements OnClickListener{
 			break;
 		case R.id.kalibrujy:
 			virtualComponents.barobot.moveZDown( q ,true );
-			BarobotConnector.moveY(q, 900, false );
-			BarobotConnector.moveY(q, 2100, false );
-			BarobotConnector.moveY(q, 900, false );
+			virtualComponents.barobot.moveY(q, 900, false );
+			virtualComponents.barobot.moveY(q, 2100, false );
+			virtualComponents.barobot.moveY(q, 900, false );
 			mq.add(q);
 			break;
 		case R.id.kalibrujz:
@@ -136,7 +136,7 @@ public class button_click implements OnClickListener{
 			break;
 		case R.id.machajx:
 			virtualComponents.barobot.moveZDown( q ,true );
-			BarobotConnector.moveY( q, Constant.SERVOY_FRONT_POS, true);
+			virtualComponents.barobot.moveY( q, Constant.SERVOY_FRONT_POS, true);
 			int lengthx4	=  barobot.state.getInt("LENGTHX", 600 );
 			for( int i =0; i<10;i++){
 			//	virtualComponents.moveX( q, (lengthx4/4) );
@@ -151,10 +151,10 @@ public class button_click implements OnClickListener{
 		case R.id.machajy:
 			virtualComponents.barobot.moveZDown( q ,true );
 			for( int i =0; i<10;i++){
-				BarobotConnector.moveY( q, Constant.SERVOY_FRONT_POS, false );
-				BarobotConnector.moveY( q, Constant.SERVOY_BACK_POS, false );
+				virtualComponents.barobot.moveY( q, Constant.SERVOY_FRONT_POS, false );
+				virtualComponents.barobot.moveY( q, Constant.SERVOY_BACK_POS, false );
 			}
-			BarobotConnector.moveY( q, Constant.SERVOY_FRONT_POS, false );
+			virtualComponents.barobot.moveY( q, Constant.SERVOY_FRONT_POS, false );
 			q.add("DY", true);
 			mq.add(q);
 			break;
@@ -170,7 +170,7 @@ public class button_click implements OnClickListener{
 		case R.id.losujx:
 			Random generator2 = new Random( 19580427 );
 			virtualComponents.barobot.moveZDown( q, true  );
-			BarobotConnector.moveY( q, Constant.SERVOY_FRONT_POS, true );
+			virtualComponents.barobot.moveY( q, Constant.SERVOY_FRONT_POS, true );
 			int lengthx5	=  barobot.state.getInt("LENGTHX", 600 );
 		    for(int f = 0;f<20;){
 		    	int left = generator2.nextInt((int)(lengthx5/100 / 2));
@@ -242,20 +242,19 @@ public class button_click implements OnClickListener{
 
 		case R.id.max_y:
 			virtualComponents.barobot.moveZDown( q ,true );
-			BarobotConnector.moveY( q, Constant.SERVOY_BACK_POS, true );
+			virtualComponents.barobot.moveY( q, Constant.SERVOY_BACK_POS, true );
 			mq.add(q);	
 			break;
 		case R.id.min_x:
 			virtualComponents.barobot.moveZDown( q ,true );
 			int lengthx3	=  barobot.state.getInt("LENGTHX", 600 );
-
 			barobot.driver_x.moveTo( q, -lengthx3);
 
 			mq.add(q);
 			break;
 		case R.id.min_y:
 			virtualComponents.barobot.moveZDown( q ,true );
-			BarobotConnector.moveY( q, Constant.SERVOY_FRONT_POS, true );
+			virtualComponents.barobot.moveY( q, Constant.SERVOY_FRONT_POS, true );
 			mq.add(q);
 			break;	
 		case R.id.unlock:
@@ -265,7 +264,10 @@ public class button_click implements OnClickListener{
 			virtualComponents.pacpac();
 			break;
 		case R.id.smile:
-			BarobotDataStub.SetupDatabase();
+			q.add("Y" + Constant.SERVOY_FRONT_POS+ ","+Constant.DRIVER_Y_SPEED, true);
+			q.addWait(5000);
+			q.add("DY", true );
+			mq.add(q);
 			break;
 		case R.id.kalibrujx:
 			virtualComponents.barobot.kalibrcja();

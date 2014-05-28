@@ -52,6 +52,9 @@ public class Arduino{
 			public void onConnect() {
 				barobot.main_queue.add( "\n", false );	// clean up input
 				barobot.main_queue.add( "\n", false );
+				barobot.main_queue.add(Constant.GETXPOS, true);
+				barobot.main_queue.add(Constant.GETYPOS, true);
+				barobot.main_queue.add(Constant.GETZPOS, true);
 			}
 			@Override
 			public void onClose() {
@@ -60,12 +63,9 @@ public class Arduino{
 			public void connectedWith(String bt_connected_device, String address) {
 			}
 		});
-
 		SerialInputListener listener = barobot.willReadFrom( connection );
 		barobot.willWriteThrough( connection );
-
 	//		prepareDebugConnection();
-
 	//	ahc = new AndroidHardwareContext( barobot, state );
 		BarobotEventListener bel = new AndroidEventListener( barobot );
 
@@ -139,6 +139,7 @@ public class Arduino{
 		}
 		Initiator.logger.i("Arduino.destroy", "--- ON DESTROY8 ---");
 	}
+
 	public void resume() {
 		if(connection!=null){
 			connection.resume();
@@ -147,6 +148,16 @@ public class Arduino{
 			debugConnection.resume();
 		}
 	}
+
+	public void onPause() {
+		if(connection!=null){
+			connection.onPause();
+		}
+		if(debugConnection!=null){
+			debugConnection.onPause();
+		}
+	}
+
 	public boolean allowAutoconnect() {
 		if( debugConnection == null ){
 			//	Initiator.logger.i(Constant.TAG, "nie autoconnect bo juz połączony");

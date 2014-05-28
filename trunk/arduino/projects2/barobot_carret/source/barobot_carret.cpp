@@ -328,9 +328,10 @@ void update_servo( byte index ) {           // synchroniczne
 		servos[index].pos_changed = false;
 		if( servos[index].last_pos == servos[index].target_pos){
 			DEBUGLN( "-gotowe servo" );
+			/*
 			if( index == INNER_SERVOY ){
 				uint16_t margin = servos[index].last_pos;    // odwrotnie do ostatniej komendy
-				if(  servos[index].delta_pos > 0 ){      // jechalem w gore
+				if( servos[index].delta_pos > 0 ){      // jechalem w gore
 					DEBUGLN( "- -100" );
 					margin -= 20;
 				}else if(  servos[index].delta_pos < 0){  // jechalem w dol
@@ -338,7 +339,7 @@ void update_servo( byte index ) {           // synchroniczne
 					margin += 20;
 				}
 				servo_lib[index].writeMicroseconds(margin);				
-			}
+			}*/
 			send_servo(false, localToGlobal(index), servos[index].target_pos );
 		}
 	//	Serial.println("po2");
@@ -528,7 +529,7 @@ void proceed( volatile byte buffer[MAXCOMMAND_CARRET] ){
 		servo_lib[index].attach(servos[index].pin);
 		servos[index].enabled= true;
 
-		byte ttt[4] = {METHOD_I2C_SLAVEMSG, my_address, METHOD_DRIVER_ENABLE, index };
+		byte ttt[4] = {METHOD_I2C_SLAVEMSG, my_address, METHOD_DRIVER_ENABLE, buffer[1] };
 		send(ttt,4);
 
 	}else if( command == METHOD_DRIVER_DISABLE ){

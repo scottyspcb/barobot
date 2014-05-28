@@ -12,7 +12,7 @@ import com.barobot.common.constant.Constant;
 import com.barobot.common.interfaces.HardwareState;
 import com.barobot.parser.utils.Decoder;
 
-public class AndroidBarobotState implements HardwareState{
+public class AndroidBarobotState2 implements HardwareState{
 	private SharedPreferences.Editor config_editor;			// config systemu android
 	private Map<String, String> hashmap = new HashMap<String, String>();
 	private SharedPreferences myPrefs;
@@ -34,6 +34,21 @@ public class AndroidBarobotState implements HardwareState{
 		"ENDSTOP_Y_MAX",
 		"ENDSTOP_Z_MIN",
 		"ENDSTOP_Z_MAX",
+		
+		"BOTTLE_OFFSETX_0",
+		"BOTTLE_OFFSETX_1",
+		"BOTTLE_OFFSETX_2",
+		"BOTTLE_OFFSETX_3",
+		"BOTTLE_OFFSETX_4",
+		"BOTTLE_OFFSETX_5",
+		"BOTTLE_OFFSETX_6",
+		"BOTTLE_OFFSETX_7",
+		"BOTTLE_OFFSETX_8",
+		"BOTTLE_OFFSETX_9",
+		"BOTTLE_OFFSETX_10",
+		"BOTTLE_OFFSETX_11",
+		"BOTTLE_OFFSETX_12",
+		
 		"BOTTLE_X_0","BOTTLE_Y_0",
 		"BOTTLE_X_1","BOTTLE_Y_1",
 		"BOTTLE_X_2","BOTTLE_Y_2",
@@ -48,7 +63,7 @@ public class AndroidBarobotState implements HardwareState{
 		"BOTTLE_X_11","BOTTLE_Y_11",
 	};
 	
-	public AndroidBarobotState( Activity application ){
+	public AndroidBarobotState2( Activity application ){
 		myPrefs			= application.getSharedPreferences(Constant.SETTINGS_TAG, Context.MODE_PRIVATE);
 		config_editor	= myPrefs.edit();
 	}
