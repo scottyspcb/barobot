@@ -123,13 +123,13 @@ public class ProductActivity extends BarobotActivity {
 				
 				setTextViewText(liquid.toString(), R.id.product_liquid_text);
 				
-				FillProductCapacities();
+				FillProductCapacities(mCurrentLiquid);
 			}
 			
 		});
 		
 	}
-	public void FillProductCapacities()
+	public void FillProductCapacities(Liquid_t mCurrentLiquid2)
 	{
 		List<Product> products = mCurrentLiquid.getProducts();
 		List<CapacityProductWrapper> prods = CapacityProductWrapper.WrapList(products);
@@ -263,9 +263,9 @@ public class ProductActivity extends BarobotActivity {
 						product.liquid = liquid;
 						engine.addProduct(product);
 					}
-					engine.CacheDatabase();
+					engine.invalidateData();
 					mCurrentLiquid = liquid;
-					FillProductCapacities();
+					FillProductCapacities(liquid);
 					FillLiquidList();
 				}
 			});
@@ -294,10 +294,9 @@ public class ProductActivity extends BarobotActivity {
 				
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
-					
 					Product product = new Product();
 					TextView tView = (TextView) dialogView.findViewById(R.id.dialog_product_capacity);
-					
+
 					product.capacity = Integer.parseInt(tView.getText().toString());
 					product.liquid = mCurrentLiquid;
 
@@ -305,7 +304,7 @@ public class ProductActivity extends BarobotActivity {
 					engine.addProduct(product);
 					engine.invalidateData();
 
-					FillProductCapacities();
+					FillProductCapacities(mCurrentLiquid);
 				}
 			});
 		AlertDialog ad = builder.create();

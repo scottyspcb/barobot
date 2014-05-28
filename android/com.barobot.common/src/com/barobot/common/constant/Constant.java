@@ -31,6 +31,8 @@ public class Constant {
 //	public static final int DRIVER_Y 		= 8;
 //	public static final int DRIVER_Z 		= 16;
 
+	public static final int SOFA_SERVER_PORT 	= 8000;
+
 	public static final int MAINBOARD_DEVICE_TYPE 	= 0x10;
 	public static final int IPANEL_DEVICE_TYPE 		= 0x11;
 	public static final int UPANEL_DEVICE_TYPE 		= 0x13;

@@ -18,7 +18,7 @@ public class MenuFragment extends Fragment {
 			Bundle savedInstanceState) {
 		
 		buttons = new Hashtable<MenuFragment.MenuItem, Integer>();
-		buttons.put(MenuItem.Favorite, R.id.menu_favorite);
+	//	buttons.put(MenuItem.Favorite, R.id.menu_favorite);
 		buttons.put(MenuItem.Choose, R.id.menu_choose);
 		buttons.put(MenuItem.Lucky, R.id.menu_lucky);
 		buttons.put(MenuItem.Create, R.id.menu_create);
@@ -33,7 +33,7 @@ public class MenuFragment extends Fragment {
 	
 	public enum MenuItem
 	{
-		Favorite,
+	//	Favorite,
 		Choose,
 		Lucky,
 		Create,

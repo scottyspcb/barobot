@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import android.util.Log;
+
 import com.barobot.web.server.SofaServer;
 import com.x5.template.Chunk;
 import com.x5.template.Theme;
@@ -11,13 +12,12 @@ import com.x5.template.Theme;
 import fi.iki.elonen.NanoHTTPD.IHTTPSession;
 
 public class TemplateRendering extends EmptyRoute {
-	public static String regex = "^\\/tpl$";
-	public TemplateRendering(String uri) {
-		super(uri);
+	public TemplateRendering() {
 		use_raw_output = true;
+		this.regex	=  "^\\/tpl$";
 	}
 	@Override
-	public String run(SofaServer sofaServer, Theme theme, IHTTPSession session){
+	public String run(String url, SofaServer sofaServer, Theme theme, IHTTPSession session){
 		String tpl = session.getParms().get("command");
 		Log.i("RPCPage command", tpl);
 		Chunk action_chunk			= theme.makeChunk(tpl);			

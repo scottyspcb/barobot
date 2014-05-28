@@ -10,14 +10,12 @@ import com.x5.template.Theme;
 import fi.iki.elonen.NanoHTTPD.IHTTPSession;
 
 public class MainPage extends EmptyRoute{
-	public MainPage(String uri) {
-		super(uri);
+	public MainPage() {
 		use_raw_output = false;	
+		this.regex = "^\\/$";
 	}
-	public final static String regex = "^\\/$";
 
-	
-	public String run(SofaServer sofaServer, Theme theme, IHTTPSession session){
+	public String run(String url, SofaServer sofaServer, Theme theme, IHTTPSession session){
 		if(theme == null){
 			return null;
 		}
@@ -113,5 +111,4 @@ public class MainPage extends EmptyRoute{
         sb.append("</ul>");
         return sb.toString();
     }
-
 }

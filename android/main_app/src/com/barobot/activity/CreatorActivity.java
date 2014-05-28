@@ -126,7 +126,6 @@ public class CreatorActivity extends BarobotActivity implements ArduinoListener{
 		for (int i = 1; i<=12 ; i++){											// 1 - 12
 			virtualComponents.barobot.bottleBacklight( i-1, slot_nums[i] );		// 0 -11
 		}
-
 	}
 	public void onBottleClicked(View view)
 	{
@@ -195,7 +194,6 @@ public class CreatorActivity extends BarobotActivity implements ArduinoListener{
 			
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				
 				TextView nameView = (TextView) dialogView.findViewById(R.id.recipe_name);
 				String name = nameView.getText().toString();
 				CreateDrink(name);	
@@ -205,8 +203,7 @@ public class CreatorActivity extends BarobotActivity implements ArduinoListener{
 	    ad.show();
 	}
 	
-	public void onPourRecipeButtonClicked (View view)
-	{
+	public void onPourRecipeButtonClicked (View view){
 		Recipe_t tempRecipe = CreateDrink("Unnamed Drink", true);
 		Engine.GetInstance(this).Pour(tempRecipe, this);
 		clear();
@@ -272,7 +269,9 @@ public class CreatorActivity extends BarobotActivity implements ArduinoListener{
 		recipe.name = name;
 		recipe.unlisted = unlisted;
 		recipe.insert();
-		Engine.GetInstance(this).addRecipe(recipe, ingredients);
+		Engine ee = Engine.GetInstance(this);
+		ee.addRecipe(recipe, ingredients);
+		ee.invalidateData();
 		return recipe;
 	}
 
