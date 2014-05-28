@@ -21,20 +21,14 @@ public class AppInvoker {
 	private static Arduino arduino;
 
 	public void onCreate() {
-		/*
-		SofaServer ss = SofaServer.getInstance();
-		ss.setBaseContext(main.getBaseContext());
-        try {
-			ss.start();
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}*/
 	//	I2C.init();
 	    AndroidLogger dl = new AndroidLogger();
 		com.barobot.common.Initiator.setLogger( dl );
 		cm = new CameraManager( main );
 		try {
-			SofaServer.getInstance().start();
+			SofaServer ss = SofaServer.getInstance();
+			ss.setBaseContext(main.getBaseContext());
+			ss.start();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

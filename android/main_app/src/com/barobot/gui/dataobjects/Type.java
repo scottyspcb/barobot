@@ -29,6 +29,11 @@ public class Type extends Model<Type>{
 		return liquids;
 	}
 	
+	public void invalidateData(){
+		liquids.clear();
+	}
+	
+	
 	@Override
 	public String toString() {
 		return name;

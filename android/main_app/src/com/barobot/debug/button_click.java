@@ -161,7 +161,7 @@ public class button_click implements OnClickListener{
 		case R.id.machajz:
 			for( int i =0; i<10;i++){
 				virtualComponents.barobot.moveZDown(q, true );
-				BarobotConnector.moveZUp(q,true);
+				virtualComponents.barobot.moveZUp(q,true);
 			}
 			virtualComponents.barobot.moveZDown(q, true );
 			q.add("DZ", true);
@@ -216,7 +216,7 @@ public class button_click implements OnClickListener{
 		case R.id.max_z:
 			q.add("EX", true);
 		//	q.add("EY", true);		
-			BarobotConnector.moveZUp(q,true);
+			virtualComponents.barobot.moveZUp(q,true);
 			q.add("DX", true);
 			q.add("DY", true);
 			q.add(Constant.GETXPOS, true);

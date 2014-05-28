@@ -131,8 +131,9 @@ public class ProductActivity extends BarobotActivity {
 	}
 	public void FillProductCapacities()
 	{
-		List<CapacityProductWrapper> prods = CapacityProductWrapper.WrapList(mCurrentLiquid.getProducts());
-		
+		List<Product> products = mCurrentLiquid.getProducts();
+		List<CapacityProductWrapper> prods = CapacityProductWrapper.WrapList(products);
+
 		ArrayAdapter<CapacityProductWrapper> mAdapter = new ArrayAdapter<CapacityProductWrapper>(this, R.layout.item_layout, prods);
 		ListView listView = (ListView) findViewById(R.id.product_capacities_list);
 		listView.setAdapter(mAdapter);
@@ -216,6 +217,7 @@ public class ProductActivity extends BarobotActivity {
 					type.name = tView.getText().toString();
 					
 					Engine.GetInstance(ProductActivity.this).addType(type);
+					type.invalidateData();
 					
 					FillTypesList();
 				}
@@ -247,13 +249,23 @@ public class ProductActivity extends BarobotActivity {
 				public void onClick(DialogInterface dialog, int which) {
 					
 					Liquid_t liquid = new Liquid_t();
-					
 					TextView tView = (TextView) dialogView.findViewById(R.id.dialog_liquid_name);
 					liquid.name = tView.getText().toString();
 					liquid.type = mCurrentType;
 					
-					Engine.GetInstance(ProductActivity.this).addLiquid(liquid);
-					
+					Engine engine = Engine.GetInstance(ProductActivity.this);
+					engine.addLiquid(liquid);
+
+					int[] defaultCapacity = {1500,1000,750,700,500,330,200,100};
+					for( int i=0;i<defaultCapacity.length;i++){
+						Product product = new Product();
+						product.capacity = defaultCapacity[i];
+						product.liquid = liquid;
+						engine.addProduct(product);
+					}
+					engine.CacheDatabase();
+					mCurrentLiquid = liquid;
+					FillProductCapacities();
 					FillLiquidList();
 				}
 			});
@@ -288,10 +300,11 @@ public class ProductActivity extends BarobotActivity {
 					
 					product.capacity = Integer.parseInt(tView.getText().toString());
 					product.liquid = mCurrentLiquid;
-					
-					
-					Engine.GetInstance(ProductActivity.this).addProduct(product);
-					
+
+					Engine engine = Engine.GetInstance(ProductActivity.this);
+					engine.addProduct(product);
+					engine.invalidateData();
+
 					FillProductCapacities();
 				}
 			});

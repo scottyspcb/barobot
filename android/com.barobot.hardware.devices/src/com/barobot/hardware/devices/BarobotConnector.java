@@ -229,7 +229,7 @@ public class BarobotConnector {
 		q.add(q1);
 	}
 
-	public static void moveZUp( Queue q, boolean disableOnReady ) {
+	public void moveZUp( Queue q, boolean disableOnReady ) {
 	//		q.add("EZ", true);
 			int poszup	=  Constant.SERVOZ_UP_POS;
 			q.add("Z" + poszup+","+Constant.DRIVER_Z_SPEED, true);
@@ -240,7 +240,7 @@ public class BarobotConnector {
 			}
 		}
 
-	public static void moveZLight(Queue q, boolean disableOnReady) {
+	public void moveZLight(Queue q, boolean disableOnReady) {
 //		q.add("EZ", true);
 		int poszup	=  Constant.SERVOZ_UP_LIGHT_POS;
 		q.add("Z" + poszup+","+Constant.DRIVER_Z_SPEED, true);
@@ -251,7 +251,7 @@ public class BarobotConnector {
 		}
 	}
 
-	public  void moveZ(Queue q, int pos) {
+	public void moveZ(Queue q, int pos) {
 		q.add("Z" + pos +","+Constant.DRIVER_Z_SPEED, true);
 		q.addWait(300);
 	}
@@ -420,6 +420,7 @@ public class BarobotConnector {
 		q.add(q2);
 		q.addWait(500);
 		i2c.carret.addLed( q, "22", 250 );	
+		moveZUp(q2, true);					// go up to help
 	}
 
 	public void moveToBottle(final int num, final boolean disableOnReady ){
@@ -494,7 +495,7 @@ public class BarobotConnector {
 
 //		q.add("EZ", true);
 		q.add("DY", true);
-		BarobotConnector.moveZUp(q, false);
+		moveZUp(q, false);
 		if( up == null ){
 			q.addWait( time/4 );
 		//	virtualComponents.moveZLight(q, false);
@@ -502,7 +503,7 @@ public class BarobotConnector {
 		}else{
 			up.setLed( q, "04", 110 );
 			q.addWait( time/4 );
-			BarobotConnector.moveZLight(q, false);
+			moveZLight(q, false);
 			q.add("DY", true);
 			up.addLed( q, "04", 0 );
 			q.addWait( time/4 );
