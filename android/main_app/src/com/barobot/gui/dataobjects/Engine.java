@@ -224,8 +224,11 @@ public class Engine {
 		{
 			int position = getIngredientPosition(slots, ing);
 			if (position != -1){
-				int num = (int) Math.round( ing.quantity/BarobotConnector.getCapacity( position -1 ) );
-				for (int iter = 1; iter <= num ; iter++){
+				int count = (int) Math.round( ing.quantity/virtualComponents.barobot.getCapacity( position -1 ) );
+				if( count == 0 ){
+					count = 1;
+				}
+				for (int iter = 1; iter <= count ; iter++){
 					bottleSequence.add(position);
 				}
 			}else{

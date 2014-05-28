@@ -205,4 +205,11 @@ public class WindowsSerialPort implements Wire, CanSend{
             }
         }
     }
+
+
+	@Override
+	public void onPause() {
+		// TODO Auto-generated method stub
+		
+	}
 }

@@ -33,8 +33,7 @@ public class LedOrder {
 		final Queue nq3 = new Queue();
 		
 		System.out.println("scann_leds1");
-		
-		
+
 		nq3.add( new AsyncMessage( "RESET"+ row, true ){
 			@Override
 			public boolean onInput(String input, Mainboard dev, Queue mainQueue) {
@@ -135,6 +134,9 @@ public class LedOrder {
 			}
 		});
 		Queue nq2 = new Queue();
+		if( u.getNumInRow() >= 5 ){		// never more than 6
+			return nq2;
+		}
 		final String command3 = "n" + u.getAddress();
 		nq2.add( new AsyncMessage( command3, true ){
 			@Override

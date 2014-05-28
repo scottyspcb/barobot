@@ -23,7 +23,7 @@ import com.barobot.common.interfaces.serial.SerialInputListener;
 import com.barobot.common.interfaces.serial.Wire;
 import com.barobot.hardware.devices.BarobotConnector;
 import com.barobot.hardware.devices.i2c.Upanel;
-import com.barobot.hardware.serial.AndroidBarobotState;
+import com.barobot.hardware.serial.AndroidBarobotState2;
 import com.barobot.hardware.serial.Serial_wire;
 import com.barobot.parser.Queue;
 import com.barobot.parser.message.AsyncMessage;
@@ -70,7 +70,7 @@ public class MainActivity extends Activity implements OnSignalsDetectedListener{
 	}
 
 	private void startConnection() {
-		this.state			= new AndroidBarobotState(this);	
+		this.state			= new AndroidBarobotState2(this);	
 		this.barobot		= new BarobotConnector( state );
 		state.set("show_unknown", 0 );
 

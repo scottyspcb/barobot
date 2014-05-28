@@ -42,19 +42,19 @@ public class Constant {
 	public static final int SERVOZ_UP_LIGHT_POS = 2050;
 	public static final int SERVOZ_DOWN_POS = 1250;
 	public static final int SERVOZ_TEST_POS = 1300;
-	public static final int SERVOY_FRONT_POS = 800;
+	public static final int SERVOY_FRONT_POS = 790;
 	public static final int SERVOY_BACK_POS = 2200;
 	public static final int SERVOY_TEST_POS = 1000;
 	public static final int SERVOY_BACK_NEUTRAL = 1200;
 	public static final int BOTTLE_IS_BACK = 2;
 	public static final int BOTTLE_IS_FRONT = 4;
-	public static final int DRIVER_X_SPEED = 2500;
+	public static final int DRIVER_X_SPEED = 2900;
 	public static final int DRIVER_Y_SPEED = 30;
-	public static final int DRIVER_Z_SPEED = 250;
+	public static final int DRIVER_Z_SPEED = 255;
 	public static final int SERVOZ_PAC_TIME_UP = 600;
-	public static final int SERVOZ_PAC_POS = 1850;
+	public static final int SERVOZ_PAC_POS = 1870;
 	public static final int SERVOZ_PAC_TIME_WAIT = 800;
-	public static final int SERVOZ_POUR_TIME = 3200 / 20;		// predkosc nalewania 20ml
+	public static final int SERVOZ_POUR_TIME = 3000 / 20;		// predkosc nalewania 20ml
 	public static int[] magnet_order = {0,2,1,4,3,6,5,8,7,10,9,11 };	// numer butelki, odj¹c 1 aby numer ID
 	public static int[] bottle_row = {
 		BOTTLE_IS_BACK,					// 0, num 1

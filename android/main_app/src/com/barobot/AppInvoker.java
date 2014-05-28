@@ -1,5 +1,6 @@
 package com.barobot;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -10,6 +11,7 @@ import com.barobot.hardware.virtualComponents;
 import com.barobot.hardware.serial.AndroidLogger;
 import com.barobot.other.CameraManager;
 import com.barobot.parser.utils.Interval;
+import com.barobot.web.server.SofaServer;
 
 public class AppInvoker {
     private static AppInvoker ins;
@@ -31,7 +33,12 @@ public class AppInvoker {
 	    AndroidLogger dl = new AndroidLogger();
 		com.barobot.common.Initiator.setLogger( dl );
 		cm = new CameraManager( main );
-		cm.findCameras();
+		try {
+			SofaServer.getInstance().start();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	//	cm.findCameras();
 		virtualComponents.init( main );
 		arduino			= new Arduino( virtualComponents.barobot, virtualComponents.barobot.state );
 		arduino.onStart(main);
@@ -48,6 +55,7 @@ public class AppInvoker {
 	public void onPause() {
 		Initiator.logger.i("MAINWINDOW", "onPause");
 		cm.onPause();
+	//	arduino.onPause();
 	}
 	public void onResume() {
 		Initiator.logger.i("MAINWINDOW", "onResume");     
@@ -58,7 +66,7 @@ public class AppInvoker {
 	}
 	public void onDestroy() {
 		Initiator.logger.i("MAINWINDOW", "onDestroy");
-    //	SofaServer.getInstance().stop();
+    	SofaServer.getInstance().stop();
 		arduino.destroy();
     	Iterator<Interval> it = this.inters.iterator();
     	while(it.hasNext()){

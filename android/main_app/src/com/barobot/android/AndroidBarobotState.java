@@ -33,6 +33,36 @@ public class AndroidBarobotState implements HardwareState{
 		"ENDSTOP_X_MAX",
 		"ENDSTOP_Y_MIN",
 		"ENDSTOP_Y_MAX",
+
+		"BOTTLE_OFFSETX_0",
+		"BOTTLE_OFFSETX_1",
+		"BOTTLE_OFFSETX_2",
+		"BOTTLE_OFFSETX_3",
+		"BOTTLE_OFFSETX_4",
+		"BOTTLE_OFFSETX_5",
+		"BOTTLE_OFFSETX_6",
+		"BOTTLE_OFFSETX_7",
+		"BOTTLE_OFFSETX_8",
+		"BOTTLE_OFFSETX_9",
+		"BOTTLE_OFFSETX_10",
+		"BOTTLE_OFFSETX_11",
+		"BOTTLE_OFFSETX_12",
+
+		"BOTTLE_CAP_0",
+		"BOTTLE_CAP_1",
+		"BOTTLE_CAP_2",
+		"BOTTLE_CAP_3",
+		"BOTTLE_CAP_4",
+		"BOTTLE_CAP_5",
+		"BOTTLE_CAP_6",
+		"BOTTLE_CAP_7",
+		"BOTTLE_CAP_8",
+		"BOTTLE_CAP_9",
+		"BOTTLE_CAP_10",
+		"BOTTLE_CAP_11",
+		"BOTTLE_CAP_12",
+		
+		
 		"ENDSTOP_Z_MIN",
 		"ENDSTOP_Z_MAX",
 		"BOTTLE_X_0","BOTTLE_Y_0",
@@ -48,7 +78,7 @@ public class AndroidBarobotState implements HardwareState{
 		"BOTTLE_X_10","BOTTLE_Y_10",
 		"BOTTLE_X_11","BOTTLE_Y_11",
 	};
-	
+
 	public AndroidBarobotState( Activity application ){
 		myPrefs			= application.getSharedPreferences(Constant.SETTINGS_TAG, Context.MODE_PRIVATE);
 		config_editor	= myPrefs.edit();

@@ -3,7 +3,7 @@ package com.barobot.gui.utils;
 import com.barobot.R;
 
 public class PhotoGallery {
-	private final int galerySize = 21;
+	private final int galerySize = 49;
 	private int[] ids;
 	private int defaultImageID;
 	
@@ -36,7 +36,36 @@ public class PhotoGallery {
 		ids[17] = R.drawable.image_drink_17;
 		ids[18] = R.drawable.image_drink_18;
 		ids[19] = R.drawable.image_drink_19;
-		ids[20] = R.drawable.image_drink_20;	
+		ids[20] = R.drawable.image_drink_20;
+		ids[21] = R.drawable.image_drink_21;
+		ids[22] = R.drawable.image_drink_22;
+		ids[23] = R.drawable.image_drink_23;
+		ids[24] = R.drawable.image_drink_24;
+		ids[25] = R.drawable.image_drink_25;
+		ids[26] = R.drawable.image_drink_26;
+		ids[27] = R.drawable.image_drink_27;
+		ids[28] = R.drawable.image_drink_28;
+		ids[29] = R.drawable.image_drink_29;
+		ids[30] = R.drawable.image_drink_30;
+		ids[31] = R.drawable.image_drink_31;
+		ids[32] = R.drawable.image_drink_32;
+		ids[33] = R.drawable.image_drink_33;
+		ids[34] = R.drawable.image_drink_34;
+		ids[35] = R.drawable.image_drink_35;
+		ids[36] = R.drawable.image_drink_36;
+		ids[37] = R.drawable.image_drink_37;
+		ids[38] = R.drawable.image_drink_38;
+		ids[39] = R.drawable.image_drink_39;
+		ids[40] = R.drawable.image_drink_40;
+		ids[41] = R.drawable.image_drink_41;
+		ids[42] = R.drawable.image_drink_42;
+		ids[43] = R.drawable.image_drink_43;
+		ids[44] = R.drawable.image_drink_44;
+		ids[45] = R.drawable.image_drink_45;
+		ids[46] = R.drawable.image_drink_46;
+		ids[47] = R.drawable.image_drink_47;
+		ids[48] = R.drawable.image_drink_48;
+		ids[49] = R.drawable.image_drink_49;
 	}
 
 	public int getImageID(int photoId)

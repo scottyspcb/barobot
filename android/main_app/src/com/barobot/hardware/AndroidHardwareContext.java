@@ -12,5 +12,4 @@ public class AndroidHardwareContext implements HardwareContext {
 		this.barobot	= barobot;
 		this.state		= state;
 	}
-	
 }

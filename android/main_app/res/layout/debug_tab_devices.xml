@@ -31,114 +31,322 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="match_parent"
+        android:orientation="vertical" >
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1.57"
-            android:orientation="vertical" >
+        <ScrollView
+            android:id="@+id/scrollView1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" >
 
-            <ScrollView
-                android:id="@+id/scrollView1"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" >
+                android:layout_height="match_parent"
+                android:orientation="vertical" >
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical" >
-
+                    android:layout_height="wrap_content" >
+                    <Button
+                        android:id="@+id/bottle_id_0"
+                        android:layout_width="50dp"
+                        android:layout_height="wrap_content"
+                        android:text="1" />
                     <EditText
                         android:id="@+id/editb0"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:ems="10"
-                        android:inputType="number" >
+                        android:inputType="number|numberSigned" />
 
-                    </EditText>
+                    <EditText
+                        android:id="@+id/capacity0"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:ems="10"
+                        android:inputType="number" />
+                    
+                </LinearLayout>
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" >
+                    <Button
+                        android:id="@+id/bottle_id_1"
+                        android:layout_width="50dp"
+                        android:layout_height="wrap_content"
+                        android:text="2" />
                     <EditText
                         android:id="@+id/editb1"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:ems="10"
+                        android:inputType="number|numberSigned" />
+                    <EditText
+                        android:id="@+id/capacity1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:ems="10"
                         android:inputType="number" />
-
+                </LinearLayout>       
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" >
+                    <Button
+                        android:id="@+id/bottle_id_2"
+                        android:layout_width="50dp"
+                        android:layout_height="wrap_content"
+                        android:text="3" />
                     <EditText
                         android:id="@+id/editb2"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:ems="10"
+                        android:inputType="number|numberSigned" />
+
+                    <EditText
+                        android:id="@+id/capacity2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:ems="10"
                         android:inputType="number" />
-
+                    
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" >
+                    <Button
+                        android:id="@+id/bottle_id_3"
+                        android:layout_width="50dp"
+                        android:layout_height="wrap_content"
+                        android:text="4" />
                     <EditText
                         android:id="@+id/editb3"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:ems="10"
+                        android:inputType="number|numberSigned" />
+
+                    <EditText
+                        android:id="@+id/capacity3"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:ems="10"
                         android:inputType="number" />
-
+                    
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" >
+                    <Button
+                        android:id="@+id/bottle_id_4"
+                        android:layout_width="50dp"
+                        android:layout_height="wrap_content"
+                        android:text="5" />
                     <EditText
                         android:id="@+id/editb4"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:ems="10"
+                        android:inputType="number|numberSigned" />
+
+                    <EditText
+                        android:id="@+id/capacity4"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:ems="10"
                         android:inputType="number" />
-
-    				<EditText
+                    
+                </LinearLayout>         
+                
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" >
+                    <Button
+                        android:id="@+id/bottle_id_5"
+                        android:layout_width="50dp"
+                        android:layout_height="wrap_content"
+                        android:text="6" />
+                    <EditText
                         android:id="@+id/editb5"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:ems="10"
-                        android:inputType="number" >
+                        android:inputType="number|numberSigned" />
 
-                    </EditText>
+                    <EditText
+                        android:id="@+id/capacity5"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:ems="10"
+                        android:inputType="number" />
+                    
+                </LinearLayout> 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" >
+                    <Button
+                        android:id="@+id/bottle_id_6"
+                        android:layout_width="50dp"
+                        android:layout_height="wrap_content"
+                        android:text="7" />
                     <EditText
                         android:id="@+id/editb6"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:ems="10"
+                        android:inputType="number|numberSigned" />
+
+                    <EditText
+                        android:id="@+id/capacity6"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:ems="10"
                         android:inputType="number" />
-
+                    
+                </LinearLayout>   
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" >
+                    <Button
+                        android:id="@+id/bottle_id_7"
+                        android:layout_width="50dp"
+                        android:layout_height="wrap_content"
+                        android:text="8" />
                     <EditText
                         android:id="@+id/editb7"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:ems="10"
+                        android:inputType="number|numberSigned" />
+
+                    <EditText
+                        android:id="@+id/capacity7"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:ems="10"
                         android:inputType="number" />
-
+                    
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" >
+                    <Button
+                        android:id="@+id/bottle_id_8"
+                        android:layout_width="50dp"
+                        android:layout_height="wrap_content"
+                        android:text="9" />
                     <EditText
                         android:id="@+id/editb8"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:ems="10"
+                        android:inputType="number|numberSigned" />
+
+                    <EditText
+                        android:id="@+id/capacity8"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:ems="10"
                         android:inputType="number" />
+                    
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" >
+                    <Button
+                        android:id="@+id/bottle_id_9"
+                        android:layout_width="50dp"
+                        android:layout_height="wrap_content"
+                        android:text="10" />
                     <EditText
                         android:id="@+id/editb9"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:ems="10"
+                        android:inputType="number|numberSigned" />
+
+                    <EditText
+                        android:id="@+id/capacity9"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:ems="10"
                         android:inputType="number" />
-    				<EditText
+                    
+                </LinearLayout> 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" >
+                    <Button
+                        android:id="@+id/bottle_id_10"
+                        android:layout_width="50dp"
+                        android:layout_height="wrap_content"
+                        android:text="11" />
+                    <EditText
                         android:id="@+id/editb10"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:ems="10"
-                        android:inputType="number" >
+                        android:inputType="number|numberSigned" />
 
-                    </EditText>
+                    <EditText
+                        android:id="@+id/capacity10"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:ems="10"
+                        android:inputType="number" />
+                    
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" >
+                    <Button
+                        android:id="@+id/bottle_id_11"
+                        android:layout_width="50dp"
+                        android:layout_height="wrap_content"
+                        android:text="12" />
                     <EditText
                         android:id="@+id/editb11"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:ems="10"
+                        android:inputType="number|numberSigned" />
+
+                    <EditText
+                        android:id="@+id/capacity11"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:ems="10"
                         android:inputType="number" />
-                </LinearLayout>
-            </ScrollView>
+                    
+                </LinearLayout> 
 
-        </LinearLayout>
-
+            </LinearLayout>
+        </ScrollView>
     </LinearLayout>
 
 </LinearLayout>

@@ -27,4 +27,5 @@ public interface Wire extends CanSend{
 	public SerialEventListener getSerialEventListener();
 	public void reset();
 	boolean open();
+	void onPause();
 }

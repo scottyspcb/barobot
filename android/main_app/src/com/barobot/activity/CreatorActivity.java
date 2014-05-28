@@ -147,7 +147,7 @@ public class CreatorActivity extends BarobotActivity implements ArduinoListener{
 			{
 				Ingredient_t ingredient = new Ingredient_t();
 				ingredient.liquid = slot.product.liquid;
-				ingredient.quantity = BarobotConnector.getCapacity( slot.position - 1);
+				ingredient.quantity = virtualComponents.barobot.getCapacity( slot.position - 1);
 				addIngredient(position, ingredient);
 			}
 			ShowIngredients();

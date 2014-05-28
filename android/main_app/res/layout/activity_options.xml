@@ -96,6 +96,15 @@
             android:onClick="onOptionsButtonClicked"
             android:text="@string/options_stop" />
 
+        <Button
+            android:id="@+id/settings_unlock"
+            style="@style/OptionsMenuButton"
+            android:layout_alignBaseline="@+id/options_stop"
+            android:layout_alignBottom="@+id/options_stop"
+            android:layout_alignLeft="@+id/options_turn_off_button"
+            android:onClick="onOptionsButtonClicked"
+            android:text="Unlock" />
+
     </RelativeLayout>
 
     <fragment

@@ -56,7 +56,7 @@ public class BarobotConnector {
 	public Servo driver_z		= null;
 	public HardwareState state	= null;
 	public I2C i2c				= null;
-	
+
 	public BarobotConnector(HardwareState state ){
 		this.state		= state;
 		this.mb			= new Mainboard( state );
@@ -155,15 +155,37 @@ public class BarobotConnector {
 			mq.add(Constant.GETXPOS, false );
 		}
 
-	public static void moveY( Queue q, int pos, boolean disableOnReady ) {
-		q.add("Y" + pos+ ","+Constant.DRIVER_Y_SPEED, true);
-		if(disableOnReady){
-			q.add("DY", true );
-		}
+	public void moveY( Queue q, final int newpos, final boolean disableOnReady ) {
+		q.add( new AsyncMessage( true ){
+			@Override	
+			public String getName() {
+				return "moveY logic" ;
+			}
+			@Override
+			public Queue run(Mainboard dev, Queue queue) {
+				Queue q4 = new Queue();
+				int margin		= 20;
+				int posy		=  state.getInt("POSY", 0 );
+			//	if( posy != newpos && posy != newpos -margin && posy != newpos +margin){
+					q4.add("Y" + newpos+ ","+Constant.DRIVER_Y_SPEED, true);
+					q4.addWait(100);
+					if( newpos > posy ){	// forward
+						q4.add("Y" + (newpos - margin)+ ","+Constant.DRIVER_Y_SPEED, true);	
+					}else{	// backwad
+						q4.add("Y" + (newpos + margin)+ ","+Constant.DRIVER_Y_SPEED, true);	
+					}
+					if(disableOnReady){
+						q4.add("DY", true );
+					}
+			//	}
+				return q4;
+			}
+		});
 	}
 
-	public void moveY( Queue q, String pos ) {
-		q.add("Y" + pos+ ","+Constant.DRIVER_Y_SPEED, true);	
+	public void moveY( Queue q, String newpos ) {
+		int newpos9 = Integer.parseInt(newpos);
+		this.moveY(q, newpos9, false);
 	}
 
 	public void hereIsStart( int posx, int posy) {
@@ -172,8 +194,8 @@ public class BarobotConnector {
 		state.set("POS_START_Y", posy );
 	}
 
-	public int getBottlePosX( int i ) {
-		return state.getInt("BOTTLE_X_" + i, 0 );
+	public int getBottlePosX( int num ) {
+		return state.getInt("BOTTLE_X_" + num, 0 ) + this.getSlotMarginX( num );
 	}
 
 	public int getBottlePosY( int i ) {
@@ -181,17 +203,17 @@ public class BarobotConnector {
 	}
 
 	// zapisz ze tutaj jest butelka o danym numerze
+	public void hereIsBottle(int num, int posx, int posy){
+		//Initiator.logger.i(Constant.TAG,"zapisuje pozycje:"+ i + " " +posx+ " " + posy );
+		state.set("BOTTLE_X_" + num, posx );
+		state.set("BOTTLE_Y_" + num, posy );
+	}
+
+	// zapisz ze tutaj jest butelka o danym numerze
 	public void hereIsBottle(int i) {
 		int posx		=  driver_x.getSPos();
 		int posy		=  state.getInt("POSY", 0 );
 	//	Initiator.logger.i(Constant.TAG,"zapisuje pozycje:"+ i + " " +posx+ " " + posy );
-		state.set("BOTTLE_X_" + i, posx );
-		state.set("BOTTLE_Y_" + i, posy );
-	}
-
-	// zapisz ze tutaj jest butelka o danym numerze
-	public void hereIsBottle(int i, int posx, int posy) {
-		//Initiator.logger.i(Constant.TAG,"zapisuje pozycje:"+ i + " " +posx+ " " + posy );
 		state.set("BOTTLE_X_" + i, posx );
 		state.set("BOTTLE_Y_" + i, posy );
 	}
@@ -235,11 +257,13 @@ public class BarobotConnector {
 	}
 
 	public void moveZDown(Queue q, boolean disableOnReady) {
-		int poszdown	=  state.getInt("ENDSTOP_Z_MIN", Constant.SERVOZ_DOWN_POS );
-		moveZ(q, poszdown );
-		q.add("DZ", true);
+		int py =  state.getInt("POSY", 0 );
+		if( py != Constant.SERVOZ_DOWN_POS ){
+			int poszdown	=  state.getInt("ENDSTOP_Z_MIN", Constant.SERVOZ_DOWN_POS );
+			moveZ(q, poszdown );
+			q.add("DZ", true);
+		}
 	}
-	
 
 	public void kalibrcja() {
 		Queue q			= main_queue;
@@ -262,9 +286,9 @@ public class BarobotConnector {
 		q.addWait(100);
 		moveZDown( q ,true );
 		q.addWait(200);
-		BarobotConnector.moveY( q, Constant.SERVOY_TEST_POS, true);
+		moveY( q, Constant.SERVOY_TEST_POS, true);
 		q.addWait(200);
-		BarobotConnector.moveY( q, Constant.SERVOY_FRONT_POS, true);
+		moveY( q, Constant.SERVOY_FRONT_POS, true);
 		q.addWait(200);
 		int lengthx19	=  state.getInt("LENGTHX", 60000 );
 		
@@ -356,9 +380,9 @@ public class BarobotConnector {
 					Queue	q2	= new Queue();
 					moveZDown(q2, true );
 					//virtualComponents.moveY( q2, virtualComponents.get("NEUTRAL_POS_Y", "0" ));
-					BarobotConnector.moveY( q2, Constant.SERVOY_FRONT_POS, true );
+					moveY( q2, Constant.SERVOY_FRONT_POS, true );
 					driver_x.moveTo( q2, sposx);
-					BarobotConnector.moveY( q2, sposy, true );
+					moveY( q2, sposy, true );
 					return q2;
 				}
 				return null;
@@ -429,17 +453,17 @@ public class BarobotConnector {
 				}else if(cx != tx && cy == ty ){		// jade tylem lub przodem
 					moveZDown(q2, disableOnReady );
 					if( cy > Constant.SERVOY_BACK_NEUTRAL ){
-						BarobotConnector.moveY( q2, Constant.SERVOY_BACK_NEUTRAL, true);
+						moveY( q2, Constant.SERVOY_BACK_NEUTRAL, true);
 					}else{
-						BarobotConnector.moveY( q2, Constant.SERVOY_FRONT_POS, true);	
+						moveY( q2, Constant.SERVOY_FRONT_POS, true);	
 					}
 					driver_x.moveTo( q2, tx);
 					moveY( q2, ty, disableOnReady);		
 				}else{	// jade przodem
 					moveZDown(q2, disableOnReady );
-					BarobotConnector.moveY( q2, Constant.SERVOY_FRONT_POS, true);
+					moveY( q2, Constant.SERVOY_FRONT_POS, true);
 					driver_x.moveTo( q2, tx);
-					BarobotConnector.moveY( q2, ty, disableOnReady);
+					moveY( q2, ty, disableOnReady);
 				}
 				if( up != null ){
 					up.setLed( q2, "44", 200 );
@@ -461,7 +485,13 @@ public class BarobotConnector {
 
 		final Upanel up	= i2c.getUpanelByBottle(num);
 		q.add("EX", true);
-//		q.add("EY", true);
+		q.addWait(10);
+
+		if( num != -1 ){
+			int ty  	= getBottlePosY( num );
+			moveY( q, ty, false );
+		}
+
 //		q.add("EZ", true);
 		q.add("DY", true);
 		BarobotConnector.moveZUp(q, false);
@@ -527,11 +557,11 @@ public class BarobotConnector {
 	}
 
 	// todo move to slot
-	public static int getCapacity( int num ){			// 0 - 11
+	public int getCapacity( int num ){			// 0 - 11
 		if( num >= 0 && num < capacity.length){
-			return BarobotConnector.capacity[ num ];
+			return state.getInt("BOTTLE_CAP_" + num, BarobotConnector.capacity[ num ] );
 		}else{
-			return 20;		
+			return state.getInt("BOTTLE_CAP_" + num, 20 );
 		}
 	}
 
@@ -563,11 +593,15 @@ public class BarobotConnector {
 			}
 		}
 	}
-	public void setMarginX( int num, int newx ) {
+	public void setSlotMarginX( int num, int newx ) {
 		this.state.set("BOTTLE_OFFSETX_" + num, newx );	
 	}
-	public int getMarginX(int num) {
+	public int getSlotMarginX(int num) {
 		int margin = state.getInt("BOTTLE_OFFSETX_" + num, BarobotConnector.margin_x[ num ] );
 		return margin;			
+	}
+
+	public void setCapacity(int num, int cap) {
+		this.state.set("BOTTLE_CAP_" + num, cap );	
 	}
 }

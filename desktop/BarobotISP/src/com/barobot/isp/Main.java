@@ -53,7 +53,7 @@ public class Main{
 
 		IspSettings.safeMode	= false;
 		IspSettings.verbose		= 2;
-		IspSettings.setFuseBits = true;
+		IspSettings.setFuseBits = false;
 		IspSettings.setHex		= true;
 		IspSettings.force		= false;
 
@@ -62,27 +62,25 @@ public class Main{
 		MetaRendering mr		= new MetaRendering();
 		Queue q					= hw.getQueue();
 		LightManager lm			= new LightManager();
-
 /*
 		for( int i =0; i<255;i++){
 			int p = com.barobot.common.constant.Pwm.linear2log(i );
 			System.out.println(""+i + "," + p);
 		}
 		*/
-
 		hw.connectIfDisconnected();
 	//	w.fast_close_test( hw );
 	//	uc.prepareSlaveMB( hw );
 	//	uc.prepareMB( hw );
 	//	uc.prepareMB2( hw );
 	//	uc.prepareMBManualReset( hw );
-	//	uc.prepareCarret( hw );
+		uc.prepareCarret( hw );
 	//	mr.createContstans();
 	//	uc.prepareUpanels( hw );
-	//	uc.prepareUpanelNextTo( hw, 22 );
+	//	uc.prepareUpanelNextTo( hw, 18 );
 	//	w.fast_close_test( hw );
 	//	uc.prepare1Upanel( hw, hw.barobot, Upanel.FRONT );
-
+/*
 		q.addWaitThread( Main.main );
 		hw.barobot.scann_leds();
 		q.addWaitThread( Main.main );
@@ -91,9 +89,7 @@ public class Main{
 		if(list.length == 0 ){
 			System.out.println("Pusto" );
 			return;
-		}
-		
-
+		}*/
 	//	mm.promo_carret( hw );
 	//	mm.promo1( hw );
 
@@ -106,8 +102,7 @@ public class Main{
 		w.illumination1( hw );
 */
 	//	q.addWaitThread( Main.main );
-		
-		
+		/*
 		q.addWaitThread( Main.main );
 		q.addWait(100);
 
@@ -123,7 +118,7 @@ public class Main{
 		lm.strobo( hw.barobot, q, 109 );
 		lm.zapal(hw.barobot, q);
 		w.koniec( hw );
-	
+	*/
 	//	w.findStops(hw);
 	//	hw.connectIfDisconnected();	
 	//	hw.barobot.kalibrcja();

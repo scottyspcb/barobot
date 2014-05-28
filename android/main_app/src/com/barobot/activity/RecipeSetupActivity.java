@@ -25,6 +25,7 @@ import com.barobot.gui.dataobjects.Ingredient_t;
 import com.barobot.gui.dataobjects.Liquid_t;
 import com.barobot.gui.dataobjects.Recipe_t;
 import com.barobot.gui.dataobjects.Type;
+import com.barobot.hardware.virtualComponents;
 import com.barobot.hardware.devices.BarobotConnector;
 
 public class RecipeSetupActivity extends BarobotActivity 
@@ -204,7 +205,8 @@ public class RecipeSetupActivity extends BarobotActivity
 				Ingredient_t ing = new Ingredient_t();
 				ing.liquid = liquid;
 				ing.quantity = 20;
-				int a = BarobotConnector.getCapacity(8);
+
+				int a = virtualComponents.barobot.getCapacity(8);
 				currentRecipe.addIngredient(ing);
 				UpdateRecipeDetails();
 			}

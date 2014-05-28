@@ -235,4 +235,9 @@ public class BT_wire implements Wire {
          }
 		return true;
 	}
+	@Override
+	public void onPause() {
+		// TODO Auto-generated method stub
+		
+	}
 }

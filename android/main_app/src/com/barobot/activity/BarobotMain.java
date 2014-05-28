@@ -109,8 +109,7 @@ public class BarobotMain extends BarobotActivity implements ArduinoListener {
 	public void SetBreadcrumb()
 	{
 		MenuFragment menuFrag = (MenuFragment) getFragmentManager().findFragmentById(R.id.fragment_menu);
-		switch(mode)
-		{
+		switch(mode){
 		case Favorite:
 			menuFrag.SetBreadcrumb(MenuFragment.MenuItem.Favorite);
 			break;
@@ -192,8 +191,7 @@ public class BarobotMain extends BarobotActivity implements ArduinoListener {
 			
 			 Thread rr = new Thread( 
 					 new Runnable() { public void run() {
-			 virtualComponents.setLedsOff("ff"); 
-			 
+				virtualComponents.setLedsOff("ff"); 
 				 List<Ingredient_t> a = mCurrentRecipe.getIngredients();
 				 List<Integer> bottleSequence= Engine.GetInstance(BarobotMain.this).GenerateSequence(a); 
 				 if(bottleSequence != null){ 
@@ -203,11 +201,10 @@ public class BarobotMain extends BarobotActivity implements ArduinoListener {
 						 if(u!=null){
 							 u.setLed(q, "22", 100);
 						 }
-						 } }
+					 } }
 				 }
 			}); 
 			rr.start();
-			
 		}
 	}
 
@@ -236,7 +233,7 @@ public class BarobotMain extends BarobotActivity implements ArduinoListener {
 		return instance;
 	}
 
-	@Override
+ 	@Override
 	public void onBackPressed() {
 		new AlertDialog.Builder(this)
 				.setIcon(android.R.drawable.ic_dialog_alert)

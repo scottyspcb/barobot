@@ -71,15 +71,18 @@ public class Serial_wire implements CanSend, Wire {
 		    }
 		};
 	}
+
 	@Override
 	public boolean open() {
 		Log.e("Serial_wire.resume", "Resumed, sDriver=" + sPort);
-        if (sPort == null) {
+        if ( sPort == null ) {
         	Log.e("Serial_wire.resume","No serial device.");
         	mHandler.sendEmptyMessage(MESSAGE_REFRESH);
-        } else if(!sPort.isOpen()){
+        } else if( !sPort.isOpen() ){
         	Log.e("Serial", "Resumed openPort");
         	openPort();
+        }else{
+        	Log.e("Serial", "Resume nothing");
         }
 		return true;
 	}
@@ -111,8 +114,41 @@ public class Serial_wire implements CanSend, Wire {
 
 	@Override
 	public void resume() {
-		this.open();
+		//this.open();
+        if (sPort == null) {
+        } else {
+            try {
+                sPort.open(mUsbManager);
+                sPort.setParameters(115200, 8, UsbSerialPort.STOPBITS_1, UsbSerialPort.PARITY_NONE);
+            } catch (RuntimeException e) {
+            	 e.printStackTrace();
+            	 
+            } catch (IOException e) {
+                try {
+                    sPort.close();
+                } catch (IOException e2) {
+                    // Ignore.
+                }
+                sPort = null;
+                return;
+            }
+        }
+        onDeviceStateChange();
 	}
+	
+    @Override
+	public void onPause() {
+        stopIoManager();
+        if (sPort != null) {
+            try {
+                sPort.close();
+            } catch (IOException e) {
+                // Ignore.
+            }
+            sPort = null;
+        }
+    }
+
 	@Override
 	public boolean isConnected() {
 		if (sPort == null) {
@@ -369,9 +405,18 @@ public class Serial_wire implements CanSend, Wire {
 	}
 	@Override
 	public void reset() {
+		mHandler.removeMessages(MESSAGE_REFRESH);
 		this.close();
-		mListener = null;
+        if(mPermissionReceiver_activated){
+            mPermissionReceiver_activated = false;
+            try {
+            	 this.view.unregisterReceiver(mPermissionReceiver);
+			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
+			}
+        }
+        mUsbManager = null;
+	    mSerialIoManager = null;
 		init();
 	}
-
 }

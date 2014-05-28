@@ -13,10 +13,10 @@ public abstract class I2C_Device_Imp implements I2C_Device{
 	public static int level = 10000;
 	public static int MAX_LEVEL = 10000;
 
-	protected int myaddress = 0;
-	protected int row = -1;
-	protected int numInRow = -1;
-	protected int resetIndex	= -1;
+	protected int myaddress = 0;			// 1-120
+	protected int row = -1;					// FRONT, BACK
+	protected int numInRow = -1;			// 0-5
+	protected int resetIndex	= -1;		// 0,1,2,3
 	protected String cpuname = "";
 	protected String protocol = "stk500v1";
 	protected int bspeed = IspSettings.programmspeed;

@@ -19,7 +19,6 @@ public class Recipe_t extends Model<Recipe_t>{
 	public boolean favorite;
 	public boolean unlisted;
 	public int photoID;
-	
 	@Override
 	public String toString() {
 		return name;
