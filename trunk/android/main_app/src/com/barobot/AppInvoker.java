@@ -11,6 +11,7 @@ import com.barobot.hardware.virtualComponents;
 import com.barobot.hardware.serial.AndroidLogger;
 import com.barobot.other.CameraManager;
 import com.barobot.parser.utils.Interval;
+import com.barobot.sofa.route.SofaRouter;
 import com.barobot.web.server.SofaServer;
 
 public class AppInvoker {
@@ -20,14 +21,18 @@ public class AppInvoker {
     public ArrayList<Interval> inters = new ArrayList<Interval>();
 	private static Arduino arduino;
 
+	SofaServer ss =null; 
+			
 	public void onCreate() {
 	//	I2C.init();
 	    AndroidLogger dl = new AndroidLogger();
 		com.barobot.common.Initiator.setLogger( dl );
 		cm = new CameraManager( main );
 		try {
-			SofaServer ss = SofaServer.getInstance();
+			SofaRouter sr = new SofaRouter();
+			ss = SofaServer.getInstance();
 			ss.setBaseContext(main.getBaseContext());
+			ss.addRouter( sr );
 			ss.start();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -60,7 +65,7 @@ public class AppInvoker {
 	}
 	public void onDestroy() {
 		Initiator.logger.i("MAINWINDOW", "onDestroy");
-    	SofaServer.getInstance().stop();
+    	ss.stop();
 		arduino.destroy();
     	Iterator<Interval> it = this.inters.iterator();
     	while(it.hasNext()){

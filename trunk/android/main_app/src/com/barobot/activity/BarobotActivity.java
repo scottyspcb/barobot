@@ -29,13 +29,14 @@ public class BarobotActivity extends Activity {
 		Intent serverIntent = null;
 		switch(view.getId())
 		{
+		/*
 		case R.id.menu_favorite:
 			serverIntent = new Intent(this, BarobotMain.class);
 			serverIntent.putExtra(BarobotMain.MODE_NAME, BarobotMain.Mode.Favorite.ordinal());
 			
 			serverIntent.putExtra("Test", "Test2");
 			break;
-			
+			*/
 		case R.id.menu_choose:
 			serverIntent = new Intent(this, BarobotMain.class);
 			serverIntent.putExtra(BarobotMain.MODE_NAME, BarobotMain.Mode.Normal.ordinal());
@@ -89,9 +90,6 @@ public class BarobotActivity extends Activity {
        		virtualComponents.barobot.kalibrcja();
     		break;	
 
-    	case R.id.update_drinks:
-    		serverIntent = new Intent(this, UpdateActivity.class);
-    		break;
     	case R.id.about_item:
     		serverIntent = new Intent(this, AboutActivity.class);
     		break;   

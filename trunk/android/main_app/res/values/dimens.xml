@@ -83,7 +83,7 @@
     <dimen name="RecipeListWidth">300dp</dimen>
     
     <!-- Bottle Buttons -->
-    <color name="BottleStartColor">#DBFFFFFB</color>
+    <color name="BottleStartColor">#DBFFFFFC</color>
     <color name="BottleEndColor">#DBA1FFF8</color>
     <color name="BottleBorderColor">#FFFFFF</color>
     
@@ -100,7 +100,7 @@
     <color name="TransparentComplementaryLight2">#AAFFD140</color>
     <color name="TransparentComplementary">#AAFFC200</color>
     <color name="TransparentComplementaryDark1">#AAFFC200</color>
-    <color name="TransparentComplementaryDark2">#AAA67E00</color>
+    <color name="TransparentComplementaryDark2">#AAAAAA00</color>
     
     <color name="SecondaryBLight1">#A3F06C</color>
     <color name="SecondaryBLight2">#87F03C</color>

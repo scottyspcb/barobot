@@ -73,12 +73,12 @@ public class BarobotData {
 	{
 		return Model.fetchAll(Slot.class);
 	}
-	
+
 	public static Slot GetSlot(int position)
 	{
 		return Model.fetchSingle(ModelQuery.select().from(Slot.class).where(C.eq("position", position)).getQuery(), Slot.class);
 	}
-	
+
 	public static List<Type> GetTypes ()
 	{
 		return Model.fetchAll(Type.class);

@@ -3,19 +3,19 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent" >
 
-    <Button
+    <!-- Button
         android:id="@+id/menu_favorite"
         style="@style/MenuButton"
         android:layout_alignParentTop="true"
         android:layout_margin="2dp"
         android:onClick="onMenuButtonClicked"
         android:drawableLeft="@drawable/menu_icon_favorite_45"
-        android:text="@string/menu_favorite" />
+        android:text="@string/menu_favorite" /-->
 
     <Button
         android:id="@+id/menu_choose"
         style="@style/MenuButton"
-        android:layout_below="@id/menu_favorite"
+        android:layout_alignParentTop="true"
         android:layout_margin="2dp"
         android:onClick="onMenuButtonClicked"
         android:drawableLeft="@drawable/menu_icon_choose_45"
@@ -38,32 +38,25 @@
         android:onClick="onMenuButtonClicked"
         android:drawableLeft="@drawable/menu_icon_create_45"
         android:text="@string/menu_create" />
-    
-    <Button
-        android:id="@+id/menu_history"
-        style="@style/MenuButton"
-        android:layout_below="@id/menu_create"
-        android:layout_margin="2dp"
-        android:onClick="onMenuButtonClicked"
-        android:drawableLeft="@drawable/menu_icon_history_45"
-        android:text="@string/menu_history" />
-    
-    <Button
-        android:id="@+id/menu_mobile"
-        style="@style/MenuButton"
-        android:layout_below="@id/menu_history"
-        android:layout_margin="2dp"
-        android:onClick="onMenuButtonClicked"
-        android:drawableLeft="@drawable/menu_icon_mobile_45"
-        android:text="@string/menu_mobile" />
 
     <Button
         android:id="@+id/menu_options"
         style="@style/MenuButton"
-        android:layout_below="@id/menu_mobile"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
         android:layout_margin="2dp"
-        android:onClick="onMenuButtonClicked"
         android:drawableLeft="@drawable/menu_icon_options_45"
+        android:onClick="onMenuButtonClicked"
         android:text="@string/menu_options" />
+
+    <Button
+        android:id="@+id/menu_mobile"
+        style="@style/MenuButton"
+        android:layout_above="@+id/menu_options"
+        android:layout_alignParentRight="true"
+        android:layout_margin="2dp"
+        android:drawableLeft="@drawable/menu_icon_mobile_45"
+        android:onClick="onMenuButtonClicked"
+        android:text="@string/menu_mobile" />
 
 </RelativeLayout>

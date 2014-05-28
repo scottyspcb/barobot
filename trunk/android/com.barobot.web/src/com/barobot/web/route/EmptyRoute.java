@@ -6,11 +6,12 @@ import com.x5.template.Theme;
 import fi.iki.elonen.NanoHTTPD.IHTTPSession;
 
 public abstract class EmptyRoute {
-	public static String regex = "-";
+	public String regex = "####";
 	public boolean use_raw_output = false;
-	protected String url;
-	public EmptyRoute(String uri) {
-		this.url = uri;
+
+	public boolean match(String uri) {
+		return uri.matches(regex);
 	}
-	abstract public String run(SofaServer sofaServer, Theme theme, IHTTPSession session);
+
+	abstract public String run(String url,SofaServer sofaServer, Theme theme, IHTTPSession session);
 }

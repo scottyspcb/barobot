@@ -16,6 +16,9 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
+import com.barobot.web.route.MainPage;
+import com.barobot.web.route.RPCPage;
+import com.barobot.web.route.TemplateRendering;
 import com.barobot.web.server.SofaServer;
 import com.barobotweb.R;
 
@@ -26,6 +29,7 @@ import android.webkit.WebViewClient;
 
 public class BarobotWebMain extends Activity {
 	public WebView webview	=null;
+	SofaServer ss = null;
 
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -38,8 +42,11 @@ public class BarobotWebMain extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
-    	SofaServer ss = SofaServer.getInstance();
+    	ss =  SofaServer.getInstance();
 		ss.setBaseContext(getBaseContext());
+		ss.addRoute( new RPCPage() );
+		ss.addRoute( new TemplateRendering() );
+		ss.addRoute( new MainPage() );
         try {
 			ss.start();
 		} catch (IOException e1) {
@@ -150,7 +157,8 @@ public class BarobotWebMain extends Activity {
 		//webview.setBackgroundColor(0x00000000);
 		webview.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
 
-    	webview.loadUrl("http://localhost:8000");
+		int port = ss.getListeningPort();
+    	webview.loadUrl("http://localhost:" + port);
     	WebSettings webSettings = this.webview.getSettings();
     	webSettings.setRenderPriority(WebSettings.RenderPriority.HIGH); 
     //	webSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);

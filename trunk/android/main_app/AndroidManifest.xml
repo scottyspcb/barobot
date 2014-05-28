@@ -52,13 +52,6 @@
             android:screenOrientation="sensorLandscape" >
         </activity>
         <activity
-            android:name="com.barobot.activity.UpdateActivityeActivity"
-            android:label="@string/title_activity_update"
-            android:screenOrientation="sensorLandscape"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
-             >
-        </activity>
-        <activity
             android:name="com.barobot.activity.AboutActivity"
             android:label="@string/title_activity_about"
             android:screenOrientation="sensorLandscape"

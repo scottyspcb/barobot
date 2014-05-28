@@ -7,6 +7,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -14,24 +15,32 @@ import java.util.StringTokenizer;
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.util.Log;
+
+import com.barobot.common.constant.Constant;
 import com.barobot.web.route.EmptyRoute;
-import com.barobot.web.route.MainPage;
-import com.barobot.web.route.RPCPage;
 import com.x5.template.Chunk;
 import com.x5.template.Theme;
 import com.x5.template.providers.AndroidTemplates;
 
 import fi.iki.elonen.NanoHTTPD;
 import fi.iki.elonen.NanoHTTPD.Response.Status;
-import fi.iki.elonen.ServerRunner;
 
 public class SofaServer extends NanoHTTPD {
     private static SofaServer ins;
 	private Theme theme;
 	private AssetManager am;
-	public SofaServer() {
-    	super(8000);
-    }
+	private static boolean inited = false;
+
+	public SofaServer(int liport) {
+    	super(liport);
+   	}
+	public static SofaServer getInstance() {
+		if( ins == null){
+			ins = new SofaServer( Constant.SOFA_SERVER_PORT );
+			inited = true;
+		}
+		return ins;
+	}
 	public static InputStream assetExists(AssetManager am, String path) {
 	    try {
 	        InputStream stream = am.open(path);
@@ -45,7 +54,7 @@ public class SofaServer extends NanoHTTPD {
     @Override public Response serve(IHTTPSession session) {
 		String uri					= session.getUri();
 		//Log.i("---otwieram--- ", uri );
-		EmptyRoute route = doRoutes( uri );
+		EmptyRoute route = doRoute( uri );
 		if( route == null ){
 			String path				= uri.substring(1);
 			InputStream mbuffer		= assetExists(am, path);
@@ -79,7 +88,7 @@ public class SofaServer extends NanoHTTPD {
 			}
 			return new NanoHTTPD.Response(Status.NOT_FOUND, "", "");
 		}else{
-			String system_action_res = route.run( this, theme, session);
+			String system_action_res = route.run( uri, this, theme, session);
 			Response r = null;
 			if(system_action_res == null){
 				 return null;
@@ -116,16 +125,40 @@ public class SofaServer extends NanoHTTPD {
         }
         return parms;
     }
-    private EmptyRoute doRoutes(String uri) {
-    	if( uri.matches(MainPage.regex) ){
-    		return new MainPage( uri );
-    	}
-    	if( uri.matches(RPCPage.regex) ){
-    		return new RPCPage( uri );
-    	}
-		return null;
+
+	public void setBaseContext(Context baseContext) {
+        AndroidTemplates loader = new AndroidTemplates(baseContext);
+        am = baseContext.getAssets();
+		theme = new Theme(loader);
+		theme.registerFilter( new LeftTrimFilter() );
+		theme.setLocale("pl_PL");
+		Chunk c = theme.makeChunk();
+		c.append("_[That's it!]  _[Localization].");
 	}
-	private String getEtag(String key) {
+	public void addRouter(SimpleRouter sr) {
+		sr.init( this );
+	}
+    
+    public ArrayList<EmptyRoute> routes = new ArrayList<EmptyRoute>();
+	public void addRoute(EmptyRoute sr) {
+		this.routes.add(sr);
+	}  
+	public void clearRoutes() {
+		this.routes.clear();
+	}  
+
+	public EmptyRoute doRoute(String uri) {
+    	Iterator<EmptyRoute> it = this.routes.iterator();
+    	while(it.hasNext()){
+    		EmptyRoute r = it.next();
+    		if(r.match( uri )){
+    			return r;
+    		}
+    	}
+    	return null;
+	}
+
+	private static String getEtag(String key) {
 		/*
 		String hashtext = DigestUtils.md5Hex(md5);
 		byte[] md5 = Files.getDigest(data, md);
@@ -141,10 +174,11 @@ public class SofaServer extends NanoHTTPD {
 		return new String(bytArrayToHex(dig));
 	}
 
-    String bytArrayToHex(byte[] a) {
+    static String bytArrayToHex(byte[] a) {
     	   StringBuilder sb = new StringBuilder();
-    	   for(byte b: a)
+    	   for(byte b: a){
     	      sb.append(String.format("%02x", b&0xff));
+    	   }
     	   return sb.toString();
     	}
 
@@ -187,23 +221,6 @@ public class SofaServer extends NanoHTTPD {
         put("txt", "text/plain");
         put("asc", "text/plain");
     }};
-
-	public static SofaServer getInstance() {
-		if( ins == null){
-			ins = new SofaServer();
-		}
-		return ins;
-	}
-	public void setBaseContext(Context baseContext) {
-        AndroidTemplates loader = new AndroidTemplates(baseContext);
-        am = baseContext.getAssets();
-		theme = new Theme(loader);
-		theme.registerFilter( new LeftTrimFilter() );
-
-		theme.setLocale("pl_PL");
-		Chunk c = theme.makeChunk();
-		c.append("_[That's it!]  _[Localization].");
-	}
 }
 /*
 FileInputStream fis = null;

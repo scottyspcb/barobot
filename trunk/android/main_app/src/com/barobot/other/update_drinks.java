@@ -10,7 +10,6 @@ import java.net.URL;
 import java.net.URLConnection;
 
 import com.barobot.R;
-import com.barobot.activity.UpdateActivity;
 import com.barobot.common.Initiator;
 import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
@@ -23,7 +22,7 @@ public class update_drinks {
 	private String metadata	= "http://strych.arczi.info/barobot/database.json";
 	private String drinks	= "http://strych.arczi.info/barobot/drinks.json";	
 	private String errorlog	= "http://strych.arczi.info/barobot/error.php";
-	private UpdateActivity updateActivity;
+
 
 	private interface Runnable2 extends Runnable{
 		@Override
@@ -44,8 +43,7 @@ public class update_drinks {
 			}
 		});
 	}
-	protected void parseJson(String source) {
-		updateActivity.setText(	R.id.update_message, source);		
+	protected void parseJson(String source) {	
 		JsonObject jsonObject = JsonObject.readFrom( source );
 		this.parseJsonObject(jsonObject, 0 );
 	}
@@ -193,10 +191,16 @@ public class update_drinks {
 	protected void publishProgress(int i) {
 	}
 
-	public void setActivity(UpdateActivity updateActivity) {
-		this.updateActivity = updateActivity;
-	}
 	public void stop() {
 	}
 }
 
+
+/*
+
+		ddb = new update_drinks();
+		ddb.setActivity(this);
+		ddb.load();
+		 ddb.stop();
+
+ */

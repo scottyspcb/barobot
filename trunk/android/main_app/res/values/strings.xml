@@ -25,7 +25,6 @@
     <string name="menu_settings">Ustawienia</string>
     <string name="back_to_main_feature">Pij drinki z Barobotem</string>
     <string name="secure_connect">Połącz z Barobotem</string>
-    <string name="title_activity_update">Update</string>
     <string name="hello_world">Hello world!</string>
     <string name="about_info">Autorzy</string>
     <string name="title_activity_about">O programie</string>
