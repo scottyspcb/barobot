@@ -111,7 +111,7 @@ public class CreatorActivity extends BarobotActivity implements ArduinoListener{
 				}	
 			}
 		}
-		virtualComponents.setLedsOff("ff");
+		virtualComponents.barobot.setLedsOff("ff");
 	}
 	
 	public void ShowIngredients()
@@ -167,7 +167,7 @@ public class CreatorActivity extends BarobotActivity implements ArduinoListener{
 		for (int i = 1; i<=12 ; i++){
 			slot_nums[i] = 0;
 		}
-		virtualComponents.setLedsOff("ff");
+		virtualComponents.barobot.setLedsOff("ff");
 		ShowIngredients();
 		runOnUiThread(new Runnable() {  
              @Override

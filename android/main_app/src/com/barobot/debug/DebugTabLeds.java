@@ -176,7 +176,10 @@ public class DebugTabLeds extends Fragment {
 				new OnAmbilWarnaListener() {
 		        @Override
 		        public void onOk(AmbilWarnaDialog dialog, int color) {
-		        	virtualComponents.setColor( string, color );
+		        	int red		= Color.red(color);
+		        	int green	= Color.green(color);
+		    		int blue	= Color.blue(color);
+		        	virtualComponents.barobot.setColor( string, red, green, blue, 0 );
 					lastcolor = color;
 		        }
 		        @Override
@@ -185,7 +188,8 @@ public class DebugTabLeds extends Fragment {
 		        }
 		});
 		dialog.show();
-	};	
+	};
+	
 
     public int getDipsFromPixel(float pixels) {
         // Get the screen's density scale

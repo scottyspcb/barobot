@@ -4,6 +4,8 @@ import java.io.IOException;
 
 import android.app.Activity;
 
+import com.barobot.activity.BarobotMain;
+import com.barobot.android.AndroidBarobotState;
 import com.barobot.common.Initiator;
 import com.barobot.common.constant.Constant;
 import com.barobot.common.interfaces.HardwareState;
@@ -28,15 +30,24 @@ public class Arduino{
 	private Activity mainView;
 	private BarobotConnector barobot;
 	private HardwareState state;
+	
 
 	public static Arduino getInstance(){
 		return instance;
 	}
 
-	public Arduino(BarobotConnector barobotInstance, HardwareState state) {
+	
+	public Arduino(BarobotMain main) {
+		HardwareState state			= new AndroidBarobotState(main);	
+		this.state					= state;	
+		this.barobot				= new BarobotConnector( barobot.state );
+		state.set("show_unknown", 1 );
+		state.set("show_sending", 1 );
+		state.set("show_reading", 1 );
+		
 		instance				= this;
-		this.barobot			= barobotInstance;
-		this.state				= state;	
+
+		virtualComponents.barobot = barobot;
 	}
 
 	public void onStart(Activity mainView) {

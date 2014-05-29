@@ -2,11 +2,12 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android" xmlns:components="http://schemas.android.com/apk/res/com.barobot">
 
     <style name="ProgressBarLayout" parent="@android:style/Widget.ProgressBar.Horizontal">
-        <item name="android:layout_margin">5dp</item>
+        <item name="android:layout_margin">2dp</item>
         <item name="textColor">@android:color/white</item>
         <item name="shadowRadius">1dp</item>
         <item name="shadowDx">1dp</item>
         <item name="shadowDy">1dp</item>
+         <item name="android:textSize">26sp</item>
         <item name="shadowColor">@android:color/black</item>
     </style>
 
