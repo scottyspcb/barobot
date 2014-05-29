@@ -20,9 +20,9 @@ public class button_toggle implements OnClickListener{
 			case R.id.need_glass:
 				tb.setChecked(isChecked);		//tutaj jednak zmieniaj
 				if(isChecked){
-					virtualComponents.need_glass_up = true;
+					virtualComponents.barobot.state.set("NEED_GLASS", 1 );
 				}else{
-					virtualComponents.need_glass_up = false;
+					virtualComponents.barobot.state.set("NEED_GLASS", 0 );
 				}
 
 			case R.id.auto_fill_on_ready:

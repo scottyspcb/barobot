@@ -129,8 +129,7 @@
     <string name="options_turn_off_button">Turn Off</string>
 
     <!-- Create Activity -->
-    <string name="create_pour_button">Pour!</string>
-    <string name="create_undo_button">Undo last step</string>
+    <string name="create_pour_button">Start!</string>
     <string name="create_clear_button">Clear</string>
     <string name="create_add_button">Give it a name and save</string>
 

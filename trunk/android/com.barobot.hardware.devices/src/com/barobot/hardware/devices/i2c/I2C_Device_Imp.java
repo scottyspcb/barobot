@@ -54,15 +54,17 @@ public abstract class I2C_Device_Imp implements I2C_Device{
 		green	= Pwm.linear2log(green, ratio);	
 		blue	= Pwm.linear2log(blue, ratio);
 		white	= Pwm.linear2log(white, ratio);
-		this.addLed(q1, "11", red);
 		if(ledOrderType == 1){
+			this.addLed(q1, "11", red);
 			this.addLed(q1, "22", green);
 			this.addLed(q1, "44", blue);
+//			this.setLed(q1, "88", white);
 		}else{
+			this.addLed(q1, "11", red);
 			this.addLed(q1, "24", green);
 			this.addLed(q1, "42", blue);
+//			this.setLed(q1, "88", white);
 		}
-		//	this.setLed(q1, "88", white);
 	}
 	
 	@Override

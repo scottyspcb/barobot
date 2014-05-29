@@ -22,14 +22,12 @@ import com.barobot.hardware.serial.Serial_wire;
 import com.barobot.isp.Uploader;
 import com.barobot.isp.enums.Board;
 import com.barobot.isp.enums.UploadErrors;
-import com.barobot.isp.interfaces.UploadCallBack;
+import com.barobot.isp.UploadCallBack;
 import com.barobot.parser.Queue;
 
 public class IspActivity extends Activity {
 	private static final String TAG = IspActivity.class.getSimpleName();
-	private static final String ASSET_FILE_NAME_UNO         = "Blink.uno.hex";
-	private static final String ASSET_FILE_NAME_MEGA        = "Blink.mega.hex";
-	private static final String ASSET_FILE_NAME_PRO        	= "Blink.cpp.hex";
+	private static final String ASSET_FILE_NAME        	= "Blink.cpp.hex";
     private Wire connection		= null;
 	private Queue q				= new Queue();
 	private BarobotConnector barobot	= null;
@@ -75,13 +73,11 @@ public class IspActivity extends Activity {
 		tstart.setOnClickListener( new OnClickListener(){
 			@Override
 			public void onClick(View v) {
-				String assetFileName = ASSET_FILE_NAME_PRO;
-			//	 assetFileName = ASSET_FILE_NAME_UNO;
+				String assetFileName = ASSET_FILE_NAME;
 		        try {
 					mPhysicaloid.setHex( getResources().getAssets().open(assetFileName) );
 				} catch (IOException e1) {
 					e1.printStackTrace();
-					
 				}
 		        try {
 		            mPhysicaloid.upload();

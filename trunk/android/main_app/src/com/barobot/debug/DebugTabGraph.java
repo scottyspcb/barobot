@@ -372,7 +372,7 @@ public class DebugTabGraph extends Fragment {
 					@Override
 					public void run() {
 						DebugTabGraph.graph_source		= toInt(this.data,0);	
-						virtualComponents.enable_analog(mq, DebugTabGraph.graph_source, DebugTabGraph.graph_speed, DebugTabGraph.graph_repeat);	
+						enable_analog(mq, DebugTabGraph.graph_source, DebugTabGraph.graph_speed, DebugTabGraph.graph_repeat);	
 					}
 	        	}, ""+graph_source);
 
@@ -392,7 +392,7 @@ public class DebugTabGraph extends Fragment {
 					@Override
 					public void run() {
 						DebugTabGraph.graph_speed		= toInt(this.data, 50 );
-						virtualComponents.enable_analog(mq, DebugTabGraph.graph_source, DebugTabGraph.graph_speed, DebugTabGraph.graph_repeat);
+						enable_analog(mq, DebugTabGraph.graph_source, DebugTabGraph.graph_speed, DebugTabGraph.graph_repeat);
 					}
 	        	}, ""+DebugTabGraph.graph_speed);
 
@@ -404,7 +404,7 @@ public class DebugTabGraph extends Fragment {
 						@Override
 						public void run() {
 							DebugTabGraph.graph_repeat	= toInt(this.data, 1 );
-				        	virtualComponents.enable_analog(mq, DebugTabGraph.graph_source, DebugTabGraph.graph_speed, DebugTabGraph.graph_repeat);	
+				        	enable_analog(mq, DebugTabGraph.graph_source, DebugTabGraph.graph_speed, DebugTabGraph.graph_repeat);	
 						}
 		        	}, ""+DebugTabGraph.graph_repeat);
 				}
@@ -447,7 +447,8 @@ public class DebugTabGraph extends Fragment {
 				}else{
 					enableUI(false);
 					int graph_source9	= DebugTabGraph.graph_source;
-					virtualComponents.disable_analog(mq, graph_source9 );
+					mq.add("LIVE A OFF", false);
+
 					if(jsInterface!=null){
 						jsInterface.runJs("show_random", "0");
 					}
@@ -459,7 +460,7 @@ public class DebugTabGraph extends Fragment {
 		  	  	if(isChecked){
 		  	  		xb1.setChecked(true);
 					int graph_source5	= DebugTabGraph.graph_source;
-					virtualComponents.disable_analog(mq, graph_source5 );
+					disable_analog(mq, graph_source5 );
 					int graph_speed2 = DebugTabGraph.graph_speed;
 					if(jsInterface!=null){
 						jsInterface.runJs("show_random", ""+graph_speed2);	
@@ -527,4 +528,11 @@ public class DebugTabGraph extends Fragment {
 			dialog.show();
 		 }
 	}
+	public static void disable_analog(Queue q, int analogWaga) {
+		q.add("LIVE A OFF", false);
+	}
+	public static void enable_analog( Queue q, int pin, int time, int repeat) {
+		q.add("LIVE A "+pin+","+time+","+repeat, false);		// repeat pomiary co time na porcie pin
+	}
+
 }

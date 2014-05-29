@@ -5,6 +5,7 @@ import java.util.List;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -26,6 +27,7 @@ import com.barobot.gui.fragment.IngredientListFragment;
 import com.barobot.gui.fragment.MenuFragment;
 import com.barobot.gui.fragment.RecipeAttributesFragment;
 import com.barobot.hardware.virtualComponents;
+import com.barobot.hardware.devices.BarobotConnector;
 import com.barobot.hardware.devices.i2c.Upanel;
 import com.barobot.parser.Queue;
 
@@ -110,9 +112,9 @@ public class BarobotMain extends BarobotActivity implements ArduinoListener {
 	{
 		MenuFragment menuFrag = (MenuFragment) getFragmentManager().findFragmentById(R.id.fragment_menu);
 		switch(mode){
-		case Favorite:
+	/*	case Favorite:
 			menuFrag.SetBreadcrumb(MenuFragment.MenuItem.Favorite);
-			break;
+			break;*/
 		case Normal:
 			menuFrag.SetBreadcrumb(MenuFragment.MenuItem.Choose);
 			break;
@@ -122,7 +124,6 @@ public class BarobotMain extends BarobotActivity implements ArduinoListener {
 		default:
 			menuFrag.SetBreadcrumb(MenuFragment.MenuItem.Choose);
 			break;
-		
 		}
 	}
 
@@ -190,14 +191,16 @@ public class BarobotMain extends BarobotActivity implements ArduinoListener {
 
 			
 			 Thread rr = new Thread( 
-					 new Runnable() { public void run() {
-				virtualComponents.setLedsOff("ff"); 
+					 new Runnable() { 
+						 public void run() {
+							 BarobotConnector barobot = virtualComponents.barobot;
+				barobot.setLedsOff("ff"); 
 				 List<Ingredient_t> a = mCurrentRecipe.getIngredients();
 				 List<Integer> bottleSequence= Engine.GetInstance(BarobotMain.this).GenerateSequence(a); 
 				 if(bottleSequence != null){ 
 					 Queue q = virtualComponents.getMainQ();
 					 for (Integer i : bottleSequence){ 
-						 Upanel u =virtualComponents.barobot.i2c.getUpanelByBottle(i-1); 
+						 Upanel u =barobot.i2c.getUpanelByBottle(i-1); 
 						 if(u!=null){
 							 u.setLed(q, "22", 100);
 						 }
@@ -258,4 +261,5 @@ public class BarobotMain extends BarobotActivity implements ArduinoListener {
 	public void onQueueFinished() {
 		// TODO Auto-generated method stub
 	}
+
 }

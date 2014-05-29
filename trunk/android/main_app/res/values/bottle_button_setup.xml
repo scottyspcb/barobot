@@ -6,9 +6,9 @@
         <item name="android:layout_gravity">center</item>
         <item name="android:gravity">center</item>
         <item name="android:background">@drawable/bottle</item>
-        <item name="android:textSize">28sp</item>
+        <item name="android:textSize">24sp</item>
         <item name="android:textColor">@color/bottle_box_text_color</item>
-        <item name="android:layout_margin">10dp</item>
+        <item name="android:layout_margin">5dp</item>
         <item name="android:clickable">true</item>
         <item name="android:shadowRadius">1</item>
         <item name="android:shadowDx">1</item>

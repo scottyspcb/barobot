@@ -22,14 +22,13 @@ public class button_zajedz  implements OnClickListener {
 			}}).start();
 	}	
 	public void exec(View v) {
-		boolean setting_mode	= false;
+		
 		BarobotMain bb			= BarobotMain.getInstance();
 		BarobotConnector barobot = virtualComponents.barobot;
+		boolean autofill		= ( barobot.state.getInt("AUTOFILL", 1 ) == 1 );
+		boolean setting_mode	= button_click.set_bottle_on;
 		
-		boolean autofill		= ( barobot.state.get("AUTOFILL", "1" )== "1");
-		if(virtualComponents.set_bottle_on){
-			setting_mode = true;
-		}
+		
 		switch (v.getId()) {
 		  case R.id.start_pos:
 			  if(setting_mode){
@@ -167,7 +166,7 @@ public class button_zajedz  implements OnClickListener {
 		      break;
 		}
 	  if(setting_mode){
-		 virtualComponents.set_bottle_on= false;
+		button_click.set_bottle_on= false;
 		int posx		=  barobot.driver_x.getSPos();;	
 		int posy		=  barobot.state.getInt("POSY", 0 );
 		Toast.makeText(bb, "Zapisano ["+posx+"/"+posy+"] jako butelka", Toast.LENGTH_LONG).show();

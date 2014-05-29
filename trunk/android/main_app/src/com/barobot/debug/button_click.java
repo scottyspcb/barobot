@@ -18,6 +18,7 @@ import com.barobot.hardware.devices.i2c.Upanel;
 import com.barobot.parser.Queue;
 public class button_click implements OnClickListener{
 	private Context dbw;
+	public static boolean set_bottle_on = false;
 	public button_click(Context debugWindow){
 		dbw = debugWindow;
 	}
@@ -203,7 +204,7 @@ public class button_click implements OnClickListener{
 			virtualComponents.barobot.nalej( -1 );
 			break;
 		case R.id.set_bottle:
-			virtualComponents.set_bottle_on = true;
+			set_bottle_on  = true;
 			// przełącz okno na listę butelek, 
 			// zablokuj przyciski i po naciśnięciu ustaw w tym miejscu butelkę
 			Initiator.logger.i(Constant.TAG,"wybierz butelkę...");
@@ -261,7 +262,19 @@ public class button_click implements OnClickListener{
 			mq.unlock();
 			break;
 		case R.id.pacpac:	
-			virtualComponents.pacpac();
+			Initiator.logger.i(Constant.TAG,"pac");
+		//	q.add( moveX );
+			q.add("EX", true);
+//			q.add("EY", true);
+//			q.add("EZ", true);
+			q.add("Z" + Constant.SERVOZ_PAC_POS+","+Constant.DRIVER_Z_SPEED, true);
+			Initiator.logger.i("pacpac","Z" + Constant.SERVOZ_PAC_POS+","+Constant.DRIVER_Z_SPEED);
+			barobot.moveZDown(q, true );
+			q.add("DY", true);
+			q.add("DX", true);
+			q.addWait(200);
+			q.add("DZ", true);
+			
 			break;
 		case R.id.smile:
 			q.add("Y" + Constant.SERVOY_FRONT_POS+ ","+Constant.DRIVER_Y_SPEED, true);

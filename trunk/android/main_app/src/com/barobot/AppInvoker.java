@@ -38,8 +38,7 @@ public class AppInvoker {
 			e.printStackTrace();
 		}
 	//	cm.findCameras();
-		virtualComponents.init( main );
-		arduino			= new Arduino( virtualComponents.barobot, virtualComponents.barobot.state );
+		arduino			= new Arduino( main );
 		arduino.onStart(main);
 		
 	}

@@ -605,4 +605,21 @@ public class BarobotConnector {
 	public void setCapacity(int num, int cap) {
 		this.state.set("BOTTLE_CAP_" + num, cap );	
 	}
+	
+	public void setLedsOff(String string ) {
+		Queue q1		= new Queue();	
+		Upanel[] up		= i2c.getUpanels();
+		for(int i =0; i<up.length;i++){
+			up[i].addLed(q1, "ff", 0);
+		}
+		main_queue.add(q1);
+	}
+	public void setColor(String leds, int red, int green, int blue, int white) {
+		Queue q1	= new Queue();
+		Upanel[] up = i2c.getUpanels();
+		for(int i =0; i<up.length;i++){
+			up[i].setRgbw(q1, red,green,blue,white);
+		}
+		main_queue.add(q1);
+	}
 }

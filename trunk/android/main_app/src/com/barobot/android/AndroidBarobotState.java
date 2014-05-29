@@ -27,6 +27,7 @@ public class AndroidBarobotState implements HardwareState{
 		"LENGTHX","LAST_BT_DEVICE",
 		"POS_START_X",
 		"POS_START_Y",
+		"NEED_GLASS",
 		"NEUTRAL_POS_Y",
 		"NEUTRAL_POS_Z",
 		"ENDSTOP_X_MIN",
