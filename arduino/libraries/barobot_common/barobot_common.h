@@ -38,7 +38,8 @@
 	#define MAINBOARD_VERSION 0x01
 	#define MAINBOARD_F_CPU 16000000
 	#define MAINBOARD_CPU "atmega328"
-	#define MAINBOARD_SERIAL0_BOUND 115200
+	//#define MAINBOARD_SERIAL0_BOUND 115200
+	#define MAINBOARD_SERIAL0_BOUND 57600
 
 
 	/*------------------------------ CARRET (carret)    ------------------------------*/
