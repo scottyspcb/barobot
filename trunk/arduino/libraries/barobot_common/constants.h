@@ -58,7 +58,7 @@
 #define METHOD_RWIRE 	"RWIRE"
 #define METHOD_SEND2SLAVE 	'S'
 #define METHOD_TRIGGER 		'T'
-#define METHOD_M_ONECOLOR 	'B'
+
 #define METHOD_WAIT_READY 	"WR"
 #define METHOD_SET_X_POS 	'X'
 #define METHOD_GET_TEMP 	'T'
@@ -67,6 +67,7 @@
 #define METHOD_MSET_TOP_COLOR 	'C'
 // set bottom color
 #define METHOD_MSET_BOTTOM_COLOR 	'c'
+#define METHOD_M_ONECOLOR 	'B'
 #define METHOD_HAS_NEXT 	'N'
 #define METHOD_SLAVE_HAS_NEXT 	'n'
 #define METHOD_EEPROM_READ 	'M'

@@ -14,15 +14,14 @@ AsyncDriver::AsyncDriver(uint8_t type, uint8_t pin1, uint8_t pin2, uint8_t pin3,
 	enableOutputs();
 }
 AsyncDriver::AsyncDriver(uint8_t pin1, uint8_t pin2, uint8_t newDisablePin ){
+	init();
 	driver_type = DRIVER;
 	_pin[0]		= pin1;
 	_pin[1] 	= pin2;
 	disablePin	= newDisablePin;
-	init();
 	pinMode(_pin[0], OUTPUT);
 	pinMode(_pin[1], OUTPUT);
 	enableOutputs();
-
 	if (disablePin != 0xff){
 		pinMode(disablePin, OUTPUT);
 		fastWrite(disablePin, true );
@@ -46,11 +45,49 @@ void AsyncDriver::init(){
 	is_disabled = true;
 }
 
-void (*AsyncDriver::user_onReady)(long int);
+void AsyncDriver::disableOutputs(){
+	if(!is_disabled){
+		is_disabled = true;
+		if (driver_type == FULL4WIRE || driver_type == HALF4WIRE){
+			setOutput4(0);
+		}else{
+			setOutput2( false, false );
+		}
+		if (disablePin != 0xff){
+			digitalWrite(disablePin, HIGH );
+		}
+	}
+}
 
-void AsyncDriver::moveTo(long absolute){
+void AsyncDriver::enableOutputs(){
+	if(is_disabled){
+		is_disabled = false;
+		if (disablePin != 0xff){
+			fastWrite(disablePin, LOW );
+		}
+		if (driver_type == FULL4WIRE || driver_type == HALF4WIRE){
+			setOutput4(last_output);
+		}else{
+			setOutput2(last_output, false);
+		}	
+	}
+}
+long AsyncDriver::targetPosition(){
+	return _targetPos;
+}
+
+long AsyncDriver::currentPosition(){
 	//uint8_t oldSREG = SREG;
 	//noInterrupts();
+	long ppp =  _currentPos;
+	//SREG = oldSREG;
+	return ppp;
+}
+
+void (*AsyncDriver::user_onReady)(long int);
+void AsyncDriver::moveTo(long absolute){
+	uint8_t oldSREG = SREG;
+	noInterrupts();
 	if ( _targetPos == absolute ){
 		if( _targetPos ==_currentPos){
 			onReady();
@@ -62,9 +99,8 @@ void AsyncDriver::moveTo(long absolute){
 		_targetPos = absolute;
 		computeNewSpeed(true);
 	}
-	//SREG = oldSREG;
+	SREG = oldSREG;
 }
-
 // Sets speed to 0
 void AsyncDriver::setCurrentPosition(long position){
 	//uint8_t oldSREG = SREG;
@@ -193,7 +229,7 @@ boolean AsyncDriver::haveToRun(){
 void AsyncDriver::setMaxSpeed(float speed){
 	//uint8_t oldSREG = SREG;
 //	noInterrupts();
-	if (_maxSpeed != speed)	{
+	if (_maxSpeed != speed){
 		_maxSpeed = speed;
 		_cmin = 1000000.0 / speed;
 		if (_n > 0){					// Recompute _n from current speed and adjust speed if accelerating or cruising
@@ -260,50 +296,20 @@ void AsyncDriver::setOutput4(uint8_t mask){
 	fastWrite(_pin[3], bitRead(mask, 3) );	
 	last_output = mask;
 }
-
 void AsyncDriver::setOutput2( boolean step, boolean dir ){
-	fastWrite(_pin[0], step );
-	asm("nop");
-	asm("nop");
-	fastWrite(_pin[1], dir );
+	fastWrite(_pin[0], dir);
+	fastWrite(_pin[1], step);
 	last_output = step;
 }
-
 // 1 pin step function (ie for stepper drivers)
 // This is passed the current step number (0 to 7)
 // Subclasses can override
 void AsyncDriver::step1(uint8_t step){
 	// _pin[0] is step, _pin[1] is direction
-/*
-	uint8_t mask = 0;
-	if( _direction ){
-		mask	= mask + 0b10;
-	}
-	if( step % 2 == 1 ){
-		mask	= mask + 0b01;
-	}
-	setOutput2(mask);*/
-	
-/*
-	if( step % 2 == 1 ){
-		mask = _direction ? 0b11 : 0b01;
-	}else{
-		mask = _direction ? 0b10 : 0b00;
-	}*/
-
-	setOutput2(_direction ? true : false, true );
+	setOutput2( _direction ? true : false, true ); // step HIGH
 	asm("nop");
 	asm("nop");
-	asm("nop");
-	setOutput2(_direction ? true : false, false );
-
-	/*
-	setOutput2(_direction ? 0b11 : 0b01); // step HIGH
-	// Caution 200ns setup time 
-	// Delay the minimum allowed pulse width
-	// delayMicroseconds(_minPulseWidth);
-	// setOutput2(_direction ? 0b10 : 0b00); // step LOW
-	*/
+	setOutput2( _direction ? true : false, false ); // step LOW
 }
 
 // 4 pin step function for half stepper
@@ -366,34 +372,6 @@ void AsyncDriver::step8(uint8_t step){
 	setOutput4(mask);
 }
 
-void	AsyncDriver::disableOutputs(){
-	if(!is_disabled){
-		is_disabled = true;
-		if (driver_type == FULL4WIRE || driver_type == HALF4WIRE){
-			setOutput4(0);
-		}else{
-			setOutput2( false, false );
-		}
-		if (disablePin != 0xff){
-			digitalWrite(disablePin, HIGH );
-		}
-	}
-}
-
-void AsyncDriver::enableOutputs(){
-	if(is_disabled){
-		is_disabled = false;
-		if (disablePin != 0xff){
-			fastWrite(disablePin, LOW );
-		}
-		if (driver_type == FULL4WIRE || driver_type == HALF4WIRE){
-			setOutput4(last_output);
-		}else{
-			setOutput2(last_output, false);
-		}	
-	}
-}
-
 
 void AsyncDriver::stop(){
 	stop( 2.0 );
@@ -421,7 +399,6 @@ void AsyncDriver::stopNow(){
 float AsyncDriver::getMaxSpeed(){
 	return _maxSpeed;
 }
-
 float AsyncDriver::getSpeed(){
 	return _speed;
 }
@@ -432,18 +409,6 @@ long AsyncDriver::distanceToGo(){
 	long dist = _targetPos - _currentPos;
 	//SREG = oldSREG;
 	return dist;
-}
-
-long AsyncDriver::targetPosition(){
-	return _targetPos;
-}
-
-long AsyncDriver::currentPosition(){
-	//uint8_t oldSREG = SREG;
-	//noInterrupts();
-	long ppp =  _currentPos;
-	//SREG = oldSREG;
-	return ppp;
 }
 
 // sets event handler function
