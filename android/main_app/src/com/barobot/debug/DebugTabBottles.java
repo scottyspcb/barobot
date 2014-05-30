@@ -17,7 +17,7 @@ import com.barobot.R;
 import com.barobot.activity.DebugActivity;
 import com.barobot.common.Initiator;
 import com.barobot.common.constant.Constant;
-import com.barobot.hardware.virtualComponents;
+import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
 
 public class DebugTabBottles extends Fragment {
@@ -100,10 +100,11 @@ public class DebugTabBottles extends Fragment {
 		    }
 		};*/
 
+		BarobotConnector barobot = Arduino.getInstance().barobot;
 		for(int i =0; i<wagi.length;i++){
 			TextView waga1 = (TextView) rootView.findViewById(wagi[i]);
-			int x		=  virtualComponents.barobot.getBottlePosX( i );
-			int y		=  virtualComponents.barobot.getBottlePosY( i );
+			int x		=  barobot.getBottlePosX( i );
+			int y		=  barobot.getBottlePosY( i );
 			String pos = "" + x +"/"+ y;
 		//	waga1.setOnClickListener( list1 );
 			LinearLayout.LayoutParams params = (LayoutParams) waga1.getLayoutParams();
@@ -139,10 +140,11 @@ public class DebugTabBottles extends Fragment {
 				R.id.waga12
 		};
 
+		BarobotConnector barobot = Arduino.getInstance().barobot;
 		for(int i =0; i<wagi.length;i++){
 			TextView waga1 = (TextView) cc.findViewById(wagi[i]);
-			int x	=  virtualComponents.barobot.getBottlePosX( i );
-			int y	=  virtualComponents.barobot.getBottlePosY( i );
+			int x	=  barobot.getBottlePosX( i );
+			int y	=  barobot.getBottlePosY( i );
 			String pos = "" + x +"/"+ y;			
 			waga1.setText(pos);
 		}

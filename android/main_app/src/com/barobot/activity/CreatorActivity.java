@@ -24,7 +24,7 @@ import com.barobot.gui.fragment.IngredientListFragment;
 import com.barobot.gui.fragment.MenuFragment;
 import com.barobot.gui.fragment.RecipeAttributesFragment;
 import com.barobot.gui.utils.Distillery;
-import com.barobot.hardware.virtualComponents;
+import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
 import com.barobot.hardware.devices.i2c.Upanel;
 import com.barobot.parser.Queue;
@@ -111,11 +111,13 @@ public class CreatorActivity extends BarobotActivity implements ArduinoListener{
 				}	
 			}
 		}
-		virtualComponents.barobot.setLedsOff("ff");
+		BarobotConnector barobot = Arduino.getInstance().barobot;
+		barobot.setLedsOff("ff");
 	}
 	
 	public void ShowIngredients()
 	{
+		BarobotConnector barobot = Arduino.getInstance().barobot;
 		IngredientListFragment frag = (IngredientListFragment) getFragmentManager().findFragmentById(R.id.fragment_ingredient_list);
 		frag.ShowIngredients(ingredients);
 		
@@ -124,7 +126,7 @@ public class CreatorActivity extends BarobotActivity implements ArduinoListener{
 				, Distillery.getBitter(ingredients), Distillery.getStrength(ingredients));
 
 		for (int i = 1; i<=12 ; i++){											// 1 - 12
-			virtualComponents.barobot.bottleBacklight( i-1, slot_nums[i] );		// 0 -11
+			barobot.bottleBacklight( i-1, slot_nums[i] );		// 0 -11
 		}
 	}
 	public void onBottleClicked(View view)
@@ -146,7 +148,8 @@ public class CreatorActivity extends BarobotActivity implements ArduinoListener{
 			{
 				Ingredient_t ingredient = new Ingredient_t();
 				ingredient.liquid = slot.product.liquid;
-				ingredient.quantity = virtualComponents.barobot.getCapacity( slot.position - 1);
+				BarobotConnector barobot = Arduino.getInstance().barobot;
+				ingredient.quantity = barobot.getCapacity( slot.position - 1);
 				addIngredient(position, ingredient);
 			}
 			ShowIngredients();
@@ -167,7 +170,8 @@ public class CreatorActivity extends BarobotActivity implements ArduinoListener{
 		for (int i = 1; i<=12 ; i++){
 			slot_nums[i] = 0;
 		}
-		virtualComponents.barobot.setLedsOff("ff");
+		BarobotConnector barobot = Arduino.getInstance().barobot;
+		barobot.setLedsOff("ff");
 		ShowIngredients();
 		runOnUiThread(new Runnable() {  
              @Override

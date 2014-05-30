@@ -22,7 +22,7 @@ public class WindowsSerialPort implements Wire, CanSend{
 	protected static final int timeout = 5000;
 	protected SerialPort serialPort=null;
 	protected String comPort = "COM39"; 
-	protected int baud = 115200;
+	protected int baud = 57600;//115200;
 	protected boolean connected	= false;
 	protected Queue<SerialInputListener> listener=new LinkedList<SerialInputListener>();
 	private SerialEventListener iel = null;

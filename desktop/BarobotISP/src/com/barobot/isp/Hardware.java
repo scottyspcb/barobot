@@ -76,4 +76,7 @@ public class Hardware {
 		barobot.main_queue.add( "PING", "PONG" );
 		barobot.main_queue.add( "PING", "PONG" );
 	}
+	public Wire getConnection(){
+		return connection;
+	}
 }

@@ -18,9 +18,9 @@ public class BarobotDataStub {
 		{	
 			Slot slot = new Slot();
 			slot.position = i;
+			slot.dispenser_type = 20;
 			slot.status = "Empty";
 			//slot.product = null;
-			
 			slot.insert();	
 		}
 		

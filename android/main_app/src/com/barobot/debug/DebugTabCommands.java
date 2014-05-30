@@ -5,7 +5,7 @@ import com.barobot.activity.DebugActivity;
 import com.barobot.common.Initiator;
 import com.barobot.common.constant.Constant;
 import com.barobot.common.interfaces.HardwareState;
-import com.barobot.hardware.virtualComponents;
+import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
 
 import android.os.Bundle;
@@ -135,7 +135,7 @@ public class DebugTabCommands extends Fragment {
 
 		TextView ttt = (TextView)rootView.findViewById(R.id.position_z);
 		
-		BarobotConnector barobot = virtualComponents.barobot;
+		BarobotConnector barobot = Arduino.getInstance().barobot;
 		HardwareState state = barobot.state;
 		if(ttt!=null){
 			String posz = "" + state.getInt( "POSZ",0);

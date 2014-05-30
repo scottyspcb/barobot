@@ -2,7 +2,6 @@ package com.barobot.activity;
 
 import com.barobot.R;
 import com.barobot.hardware.Arduino;
-import com.barobot.hardware.virtualComponents;
 import com.barobot.hardware.devices.BarobotConnector;
 
 import android.app.Activity;
@@ -64,9 +63,11 @@ public class BarobotActivity extends Activity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
     	Intent serverIntent = null;
+    	BarobotConnector barobot = Arduino.getInstance().barobot;
+
     	switch (item.getItemId()) {
     	case R.id.action_panic:
-    		virtualComponents.barobot.cancel_all();
+    		barobot.cancel_all();
     		return false;
     	case R.id.action_bottles:
     		serverIntent = new Intent(this, BottleSetupActivity.class);
@@ -87,7 +88,7 @@ public class BarobotActivity extends Activity {
     		
        	case R.id.kalibracja:
 
-       		virtualComponents.barobot.kalibrcja();
+       		barobot.kalibrcja();
     		break;	
 
     	case R.id.about_item:
@@ -104,7 +105,7 @@ public class BarobotActivity extends Activity {
     				}
     			}
     		});
-    		virtualComponents.getMainQ().unlock();
+    		Arduino.getMainQ().unlock();
     		break;    		
     		
     	case R.id.menu_debug_window:

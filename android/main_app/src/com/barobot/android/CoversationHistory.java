@@ -74,8 +74,6 @@ public class CoversationHistory {
 	}
 }
 
-
-
 /*
 public boolean addRetToList( final String last, final String ret ) {
 	final DebugWindow dd = DebugWindow.getInstance();

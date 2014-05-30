@@ -17,6 +17,7 @@ import com.barobot.hardware.devices.BarobotEventListener;
 import com.barobot.hardware.devices.MyRetReader;
 import com.barobot.hardware.serial.BT_wire;
 import com.barobot.hardware.serial.Serial_wire;
+import com.barobot.parser.Queue;
 
 
 public class Arduino{
@@ -28,26 +29,19 @@ public class Arduino{
 
 	private AndroidHardwareContext ahc;
 	private Activity mainView;
-	private BarobotConnector barobot;
+	public BarobotConnector barobot;
+	//public static BarobotConnector barobot;
 	private HardwareState state;
-	
-
 	public static Arduino getInstance(){
 		return instance;
 	}
-
-	
 	public Arduino(BarobotMain main) {
-		HardwareState state			= new AndroidBarobotState(main);	
-		this.state					= state;	
-		this.barobot				= new BarobotConnector( barobot.state );
+		this.state					= new AndroidBarobotState(main);		
+		this.barobot				= new BarobotConnector( state );
 		state.set("show_unknown", 1 );
 		state.set("show_sending", 1 );
 		state.set("show_reading", 1 );
-		
 		instance				= this;
-
-		virtualComponents.barobot = barobot;
 	}
 
 	public void onStart(Activity mainView) {
@@ -242,41 +236,10 @@ public class Arduino{
 			connection.reset();
 		}
 	}
+	public static Queue getMainQ() {
+		return Arduino.getInstance().barobot.main_queue;
+	}
 }
-
-/*
-AlertDialog.Builder builder = new AlertDialog.Builder(barobotMain);
-String[] name = new String[1];
-//	lowHardware[1]	=
-//		lowHardware[2]	= new ADB_wire();
-
-name[0] = lowHardware[0].getName();
-//name[1] = lowHardware[1].getName();
-//name[2] = lowHardware[2].getName();
-builder.setTitle("Wybierz typ połączenia z robotem");
-builder.setCancelable(false);
-builder.setItems(name, new DialogInterface.OnClickListener() {
-	@Override
- 	public void onClick(DialogInterface dialog, int which) {
-          switch(which){
-             case 0:
-            	 prepareConnection(lowHardware[0],  new BT_wire());
-            	 break;
-            case 1:
-            	 prepareConnection(lowHardware[1], lowHardware[1]);
-            	 break;
-            	
-             case 2:
-            	 prepareConnection(lowHardware[2], lowHardware[1]);
-            	 break;
-           	default:
-            	 barobotMain.finish();
-            	 break;
-          }
-      }
-});
-builder.show();
-*/
 
 /*
     private void sendSomething(){

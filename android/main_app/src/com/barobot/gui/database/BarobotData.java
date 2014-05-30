@@ -13,8 +13,11 @@ import org.orman.sql.C;
 import android.content.Context;
 
 import com.barobot.gui.dataobjects.Category;
+import com.barobot.gui.dataobjects.Important_position;
 import com.barobot.gui.dataobjects.Ingredient_t;
 import com.barobot.gui.dataobjects.Liquid_t;
+import com.barobot.gui.dataobjects.Log;
+import com.barobot.gui.dataobjects.Photo;
 import com.barobot.gui.dataobjects.Product;
 import com.barobot.gui.dataobjects.Recipe_t;
 import com.barobot.gui.dataobjects.Slot;
@@ -31,7 +34,12 @@ public class BarobotData {
 		MappingSession.registerEntity(Type.class);
 		MappingSession.registerEntity(Liquid_t.class);
 		MappingSession.registerEntity(Product.class);
+		MappingSession.registerEntity(Important_position.class);
 		MappingSession.registerEntity(Slot.class);
+		
+		MappingSession.registerEntity(Log.class);
+		MappingSession.registerEntity(Photo.class);
+		
 		MappingSession.registerEntity(Ingredient_t.class);
 		MappingSession.registerEntity(Recipe_t.class);
 		MappingSession.registerDatabase(omdb);
@@ -50,6 +58,7 @@ public class BarobotData {
 		ClearTable(Liquid_t.class);
 		ClearTable(Type.class);
 		ClearTable(Category.class);
+		ClearTable(Important_position.class);
 	}
 
 	public static List<Recipe_t> GetRecipes(){
@@ -69,11 +78,6 @@ public class BarobotData {
 						)).orderBy("Recipe_t.name").getQuery(),Recipe_t.class);
 	}
 
-	public static List<Slot> GetSlots()
-	{
-		return Model.fetchAll(Slot.class);
-	}
-
 	public static Slot GetSlot(int position)
 	{
 		return Model.fetchSingle(ModelQuery.select().from(Slot.class).where(C.eq("position", position)).getQuery(), Slot.class);
@@ -83,11 +87,7 @@ public class BarobotData {
 	{
 		return Model.fetchAll(Type.class);
 	}
-	
-	public static List<Product> GetProduct()
-	{
-		return Model.fetchAll(Product.class);
-	}
+
 	
 	public static Type GetType(long id)
 	{

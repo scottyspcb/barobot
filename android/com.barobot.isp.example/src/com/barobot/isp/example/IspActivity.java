@@ -33,7 +33,7 @@ public class IspActivity extends Activity {
 	private BarobotConnector barobot	= null;
 	public static HardwareState state	= null;
 
-	private Uploader mPhysicaloid;
+	private Uploader IspUploader;
     private Board mSelectedBoard;
     private IspOverSerial mSerial;
 	TextView tstart;
@@ -51,7 +51,7 @@ public class IspActivity extends Activity {
 
 		state			= new EmptyBarobotState();
 		barobot			= new BarobotConnector(state);
-        mPhysicaloid	= new Uploader();
+        IspUploader		= new Uploader();
 
         // Shows last selected board
         mSelectedBoard = Board.ARDUINO_PRO_5V_328;
@@ -66,21 +66,21 @@ public class IspActivity extends Activity {
 		barobot.willWriteThrough( connection );
 
    	 	mSerial			= new IspOverSerial(connection);
- 		mPhysicaloid.setSerial(mSerial);
-        mPhysicaloid.setBoard( mSelectedBoard );
-        mPhysicaloid.setCallBack( mUploadCallback );
+ 		IspUploader.setSerial(mSerial);
+        IspUploader.setBoard( mSelectedBoard );
+        IspUploader.setCallBack( mUploadCallback );
 
 		tstart.setOnClickListener( new OnClickListener(){
 			@Override
 			public void onClick(View v) {
 				String assetFileName = ASSET_FILE_NAME;
 		        try {
-					mPhysicaloid.setHex( getResources().getAssets().open(assetFileName) );
+					IspUploader.setHex( getResources().getAssets().open(assetFileName) );
 				} catch (IOException e1) {
 					e1.printStackTrace();
 				}
 		        try {
-		            mPhysicaloid.upload();
+		            IspUploader.upload();
 		        } catch (RuntimeException e) {
 		            Log.e(TAG, e.toString());
 		        }
@@ -129,8 +129,8 @@ public class IspActivity extends Activity {
     		mSerial.destroy();
     		mSerial = null;
     	}
-    	if(mPhysicaloid !=null){
-    		mPhysicaloid = null;
+    	if(IspUploader !=null){
+    		IspUploader = null;
     	}
     	super.onDestroy();
     }

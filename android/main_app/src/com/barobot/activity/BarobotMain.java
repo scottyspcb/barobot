@@ -26,7 +26,7 @@ import com.barobot.gui.fragment.DrinkImageFragment;
 import com.barobot.gui.fragment.IngredientListFragment;
 import com.barobot.gui.fragment.MenuFragment;
 import com.barobot.gui.fragment.RecipeAttributesFragment;
-import com.barobot.hardware.virtualComponents;
+import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
 import com.barobot.hardware.devices.i2c.Upanel;
 import com.barobot.parser.Queue;
@@ -193,19 +193,19 @@ public class BarobotMain extends BarobotActivity implements ArduinoListener {
 			 Thread rr = new Thread( 
 					 new Runnable() { 
 						 public void run() {
-							 BarobotConnector barobot = virtualComponents.barobot;
-				barobot.setLedsOff("ff"); 
-				 List<Ingredient_t> a = mCurrentRecipe.getIngredients();
-				 List<Integer> bottleSequence= Engine.GetInstance(BarobotMain.this).GenerateSequence(a); 
-				 if(bottleSequence != null){ 
-					 Queue q = virtualComponents.getMainQ();
-					 for (Integer i : bottleSequence){ 
-						 Upanel u =barobot.i2c.getUpanelByBottle(i-1); 
-						 if(u!=null){
-							 u.setLed(q, "22", 100);
-						 }
-					 } }
-				 }
+								BarobotConnector barobot = Arduino.getInstance().barobot;
+								barobot.setLedsOff("ff"); 
+								 List<Ingredient_t> a = mCurrentRecipe.getIngredients();
+								 List<Integer> bottleSequence= Engine.GetInstance(BarobotMain.this).GenerateSequence(a); 
+								 if(bottleSequence != null){ 
+									 Queue q = Arduino.getMainQ();
+									 for (Integer i : bottleSequence){ 
+										 Upanel u =barobot.i2c.getUpanelByBottle(i-1); 
+										 if(u!=null){
+											 u.setLed(q, "22", 100);
+										 }
+									 } }
+								 }
 			}); 
 			rr.start();
 		}
@@ -225,7 +225,8 @@ public class BarobotMain extends BarobotActivity implements ArduinoListener {
 		}
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
 			Log.i("onKeyDown", "KEYCODE_BACK");
-			virtualComponents.barobot.main_queue.unlock();
+			BarobotConnector barobot = Arduino.getInstance().barobot;
+			barobot.main_queue.unlock();
 			// finish();
 			return true;
 		}

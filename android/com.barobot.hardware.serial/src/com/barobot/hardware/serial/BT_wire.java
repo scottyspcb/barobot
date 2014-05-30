@@ -17,7 +17,7 @@ public class BT_wire implements Wire {
     private static final String TAG = BT_wire.class.getSimpleName();
     private BluetoothAdapter mBluetoothAdapter = null;    // Local Bluetooth adapter
     private BluetoothChatService mChatService = null;    // Member object for the chat services
-	private int baud = 115200;
+	private int baud = 57600;//115200;
 	private SerialInputListener listener;
 	private Activity view;
 	private SerialEventListener iel = null;
