@@ -159,7 +159,7 @@ static void read_i2c(){
   //      }else if( command == METHOD_RESETCYCLES ){     // reset
   //      }else if( command == METHOD_SETTIME ){         // set time
   //      }else if( command == METHOD_SETFADING ){       // fadein out
-    }else if( command == METHOD_SET_TOP_COLOR )
+    }else if( command == METHOD_SET_TOP_COLOR ){
         _pwm_channels[0].pwmup = in_buffer1[1];
         _pwm_channels[1].pwmup = in_buffer1[2];
         _pwm_channels[2].pwmup = in_buffer1[3];
