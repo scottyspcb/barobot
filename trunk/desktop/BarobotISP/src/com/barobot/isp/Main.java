@@ -49,7 +49,7 @@ public class Main{
 		loadProps();
 		//String[] comlist = list();
 		Wizard w	= new Wizard();
-		Hardware hw = new Hardware("COM4");
+		Hardware hw = new Hardware("COM3");
 
 		IspSettings.safeMode	= false;
 		IspSettings.verbose		= 2;
@@ -73,8 +73,8 @@ public class Main{
 	//	uc.prepareSlaveMB( hw );
 	//	uc.prepareMB( hw );
 	//	uc.prepareMB2( hw );
-	//	uc.prepareMBManualReset( hw );
-		uc.prepareCarret( hw );
+		uc.prepareMBManualReset( hw );
+	//	uc.prepareCarret( hw );
 	//	mr.createContstans();
 	//	uc.prepareUpanels( hw );
 	//	uc.prepareUpanelNextTo( hw, 18 );

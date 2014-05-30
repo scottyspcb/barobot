@@ -9,7 +9,6 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
 
-import com.barobot.R;
 import com.barobot.common.Initiator;
 import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
@@ -22,7 +21,6 @@ public class update_drinks {
 	private String metadata	= "http://strych.arczi.info/barobot/database.json";
 	private String drinks	= "http://strych.arczi.info/barobot/drinks.json";	
 	private String errorlog	= "http://strych.arczi.info/barobot/error.php";
-
 
 	private interface Runnable2 extends Runnable{
 		@Override
@@ -194,7 +192,6 @@ public class update_drinks {
 	public void stop() {
 	}
 }
-
 
 /*
 

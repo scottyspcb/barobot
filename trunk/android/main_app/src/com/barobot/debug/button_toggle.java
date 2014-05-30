@@ -4,7 +4,8 @@ import android.view.View.OnClickListener;
 import android.widget.ToggleButton;
 
 import com.barobot.R;
-import com.barobot.hardware.virtualComponents;
+import com.barobot.hardware.Arduino;
+import com.barobot.hardware.devices.BarobotConnector;
 import com.barobot.parser.Queue;
 
 public class button_toggle implements OnClickListener{
@@ -14,23 +15,24 @@ public class button_toggle implements OnClickListener{
   	  	ToggleButton tb			= (ToggleButton) v;
   	  	boolean isChecked		= tb.isChecked();
   	  	tb.setChecked(!isChecked);		//anuluj zmian, zrb to dopiero po otrzymaniu potwierdzenia
-		Queue q					= virtualComponents.barobot.main_queue;
+  	  	BarobotConnector barobot = Arduino.getInstance().barobot;
+		Queue q					= barobot.main_queue;
 		switch (v.getId()) {
 
 			case R.id.need_glass:
 				tb.setChecked(isChecked);		//tutaj jednak zmieniaj
 				if(isChecked){
-					virtualComponents.barobot.state.set("NEED_GLASS", 1 );
+					barobot.state.set("NEED_GLASS", 1 );
 				}else{
-					virtualComponents.barobot.state.set("NEED_GLASS", 0 );
+					barobot.state.set("NEED_GLASS", 0 );
 				}
 
 			case R.id.auto_fill_on_ready:
 		  	  	tb.setChecked(isChecked);		//tutaj jednak zmieniaj 
 				if(isChecked){
-					virtualComponents.barobot.state.set("AUTOFILL", "1" );
+					barobot.state.set("AUTOFILL", "1" );
 				}else{
-					virtualComponents.barobot.state.set("AUTOFILL", "0" );
+					barobot.state.set("AUTOFILL", "0" );
 				}
 				break;
 			case R.id.wagi_live:

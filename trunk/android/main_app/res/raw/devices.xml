@@ -2486,7 +2486,7 @@
 		<feature name="IS_ROOT" />
 		<feature name="HAS_VERSION" />
 		<feature name="HAS_DEVICE_TYPE" value="0x10" />
-		<feature name="SERIAL_BOUND" value="115200" />
+		<feature name="SERIAL_BOUND" value="57600" />
 		<feature name="SPEED" value="16000000" />
 		<feature name="CPU" value="atmega328" />
 		<feature name="IS_UC" />

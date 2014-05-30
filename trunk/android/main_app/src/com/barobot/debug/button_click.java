@@ -7,12 +7,12 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Toast;
+
 import com.barobot.R;
 import com.barobot.common.Initiator;
 import com.barobot.common.constant.Constant;
 import com.barobot.gui.database.BarobotDataStub;
 import com.barobot.hardware.Arduino;
-import com.barobot.hardware.virtualComponents;
 import com.barobot.hardware.devices.BarobotConnector;
 import com.barobot.hardware.devices.i2c.Upanel;
 import com.barobot.parser.Queue;
@@ -36,7 +36,7 @@ public class button_click implements OnClickListener{
 	}
 	public void exec(View v) {
 		Queue q			= new Queue();
-		BarobotConnector barobot = virtualComponents.barobot;
+		BarobotConnector barobot = Arduino.getInstance().barobot;
 		Queue mq		= barobot.main_queue;
 		int posx		= barobot.driver_x.getSPos();;
 		int posy		= barobot.state.getInt("POSY", 0 );
@@ -45,27 +45,27 @@ public class button_click implements OnClickListener{
 		switch (v.getId()) {
 		case R.id.set_x_1000:
 	//		Log.i("nextpos-10000", "old: "+posx + " next: "+ ( posx -10000));
-			virtualComponents.barobot.moveZDown( q ,true );
+			barobot.moveZDown( q ,true );
 			barobot.driver_x.moveTo( q, ( posx -10000));
 			mq.add(q);
 			break;
 		case R.id.set_x_100:
 	//		Log.i("nextpos-1000", "old: "+posx + " next: "+ ( posx -1000));
-			virtualComponents.barobot.moveZDown( q ,true );
+			barobot.moveZDown( q ,true );
 			barobot.driver_x.moveTo( q, ( posx -1000));
 			
 			mq.add(q);
 			break;
 		case R.id.set_x_10:	
 	//		Log.i("nextpos-100", "old: "+posx + " next: "+ ( posx -100)); 
-			virtualComponents.barobot.moveZDown( q ,true );
+			barobot.moveZDown( q ,true );
 			barobot.driver_x.moveTo( q, ( posx -100));
 			mq.add(q);
 			break;
 		case R.id.set_x10:
 
 		//	Log.i("nextpos+100", "old: "+posx + " next: "+ ( posx +100)); 
-			virtualComponents.barobot.moveZDown( q ,true );
+			barobot.moveZDown( q ,true );
 			barobot.driver_x.moveTo( q, ( posx +100));
 			mq.add(q);
 			break;
@@ -73,44 +73,44 @@ public class button_click implements OnClickListener{
 			
 		//	Log.i("nextpos+1000", "old: "+posx + " next: "+ ( posx +1000));
 			
-			virtualComponents.barobot.moveZDown( q ,true );
+			barobot.moveZDown( q ,true );
 			barobot.driver_x.moveTo( q, ( posx +1000));
 			mq.add(q);
 			break;
 		case R.id.set_x1000:
 		//	Log.i("nextpos+10000", "old: "+posx + " next: "+ ( posx +10000));
-			virtualComponents.barobot.moveZDown( q ,true );
+			barobot.moveZDown( q ,true );
 			barobot.driver_x.moveTo( q, ( posx +10000));
 			mq.add(q);
 			break;  
 		case R.id.set_y_600:
-			virtualComponents.barobot.moveZDown( q ,true );
-			virtualComponents.barobot.moveY( q, ( posy -1000), true);
+			barobot.moveZDown( q ,true );
+			barobot.moveY( q, ( posy -1000), true);
 			mq.add(q);
 			break;
 		case R.id.set_y_100:
-			virtualComponents.barobot.moveZDown( q ,true );
-			virtualComponents.barobot.moveY( q, ( posy -100), true);
+			barobot.moveZDown( q ,true );
+			barobot.moveY( q, ( posy -100), true);
 			mq.add(q);
 			break;
 		case R.id.set_y_10:
-			virtualComponents.barobot.moveZDown( q ,true );
-			virtualComponents.barobot.moveY( q, ( posy -10), true);
+			barobot.moveZDown( q ,true );
+			barobot.moveY( q, ( posy -10), true);
 			mq.add(q);
 			break;
 		case R.id.set_y10:
-			virtualComponents.barobot.moveZDown( q ,true );
-			virtualComponents.barobot.moveY( q, ( posy +10), true);
+			barobot.moveZDown( q ,true );
+			barobot.moveY( q, ( posy +10), true);
 			mq.add(q);
 			break;
 		case R.id.set_y100:
-			virtualComponents.barobot.moveZDown( q ,true );
-			virtualComponents.barobot.moveY( q, ( posy +100), true);
+			barobot.moveZDown( q ,true );
+			barobot.moveY( q, ( posy +100), true);
 			mq.add(q);
 			break;
 		case R.id.set_y600:
-			virtualComponents.barobot.moveZDown( q ,true );
-			virtualComponents.barobot.moveY( q, ( posy +1000), true);
+			barobot.moveZDown( q ,true );
+			barobot.moveY( q, ( posy +1000), true);
 			mq.add(q);
 			break;
 
@@ -120,24 +120,24 @@ public class button_click implements OnClickListener{
 			Toast.makeText(dbw, "To jest pozycja bezpieczna ("+nn+")...", Toast.LENGTH_LONG).show();
 			break;
 		case R.id.goToNeutralY:
-			virtualComponents.barobot.moveY( q, barobot.state.get("NEUTRAL_POS_Y", "0" ));
+			barobot.moveY( q, barobot.state.get("NEUTRAL_POS_Y", "0" ));
 			q.add("DY", true);
 			mq.add(q);
 			break;
 		case R.id.kalibrujy:
-			virtualComponents.barobot.moveZDown( q ,true );
-			virtualComponents.barobot.moveY(q, 900, false );
-			virtualComponents.barobot.moveY(q, 2100, false );
-			virtualComponents.barobot.moveY(q, 900, false );
+			barobot.moveZDown( q ,true );
+			barobot.moveY(q, 900, false );
+			barobot.moveY(q, 2100, false );
+			barobot.moveY(q, 900, false );
 			mq.add(q);
 			break;
 		case R.id.kalibrujz:
-			virtualComponents.barobot.moveZDown( q ,true );
+			barobot.moveZDown( q ,true );
 			mq.add(q);
 			break;
 		case R.id.machajx:
-			virtualComponents.barobot.moveZDown( q ,true );
-			virtualComponents.barobot.moveY( q, Constant.SERVOY_FRONT_POS, true);
+			barobot.moveZDown( q ,true );
+			barobot.moveY( q, Constant.SERVOY_FRONT_POS, true);
 			int lengthx4	=  barobot.state.getInt("LENGTHX", 600 );
 			for( int i =0; i<10;i++){
 			//	virtualComponents.moveX( q, (lengthx4/4) );
@@ -150,28 +150,28 @@ public class button_click implements OnClickListener{
 			mq.add(q);
 			break;
 		case R.id.machajy:
-			virtualComponents.barobot.moveZDown( q ,true );
+			barobot.moveZDown( q ,true );
 			for( int i =0; i<10;i++){
-				virtualComponents.barobot.moveY( q, Constant.SERVOY_FRONT_POS, false );
-				virtualComponents.barobot.moveY( q, Constant.SERVOY_BACK_POS, false );
+				barobot.moveY( q, Constant.SERVOY_FRONT_POS, false );
+				barobot.moveY( q, Constant.SERVOY_BACK_POS, false );
 			}
-			virtualComponents.barobot.moveY( q, Constant.SERVOY_FRONT_POS, false );
+			barobot.moveY( q, Constant.SERVOY_FRONT_POS, false );
 			q.add("DY", true);
 			mq.add(q);
 			break;
 		case R.id.machajz:
 			for( int i =0; i<10;i++){
-				virtualComponents.barobot.moveZDown(q, true );
-				virtualComponents.barobot.moveZUp(q,true);
+				barobot.moveZDown(q, true );
+				barobot.moveZUp(q,true);
 			}
-			virtualComponents.barobot.moveZDown(q, true );
+			barobot.moveZDown(q, true );
 			q.add("DZ", true);
 			mq.add(q);
 			break;
 		case R.id.losujx:
 			Random generator2 = new Random( 19580427 );
-			virtualComponents.barobot.moveZDown( q, true  );
-			virtualComponents.barobot.moveY( q, Constant.SERVOY_FRONT_POS, true );
+			barobot.moveZDown( q, true  );
+			barobot.moveY( q, Constant.SERVOY_FRONT_POS, true );
 			int lengthx5	=  barobot.state.getInt("LENGTHX", 600 );
 		    for(int f = 0;f<20;){
 		    	int left = generator2.nextInt((int)(lengthx5/100 / 2));
@@ -185,7 +185,7 @@ public class button_click implements OnClickListener{
 			break;
 		case R.id.losujy:
 			Random generator3 = new Random( 19580427 );
-			virtualComponents.barobot.moveZDown( q ,true );
+			barobot.moveZDown( q ,true );
 
 /*
 			virtualComponents.SERVOY_BACK_POS
@@ -201,7 +201,7 @@ public class button_click implements OnClickListener{
 			mq.add(q);
 			break;
 		case R.id.fill5000:
-			virtualComponents.barobot.nalej( -1 );
+			barobot.nalej( -1 );
 			break;
 		case R.id.set_bottle:
 			set_bottle_on  = true;
@@ -217,7 +217,7 @@ public class button_click implements OnClickListener{
 		case R.id.max_z:
 			q.add("EX", true);
 		//	q.add("EY", true);		
-			virtualComponents.barobot.moveZUp(q,true);
+			barobot.moveZUp(q,true);
 			q.add("DX", true);
 			q.add("DY", true);
 			q.add(Constant.GETXPOS, true);
@@ -226,7 +226,7 @@ public class button_click implements OnClickListener{
 		case R.id.min_z:
 			q.add("EX", true);
 		//	q.add("EY", true);
-			virtualComponents.barobot.moveZDown( q ,true );
+			barobot.moveZDown( q ,true );
 			q.add("DX", true);
 			q.add("DY", true);
 			q.add(Constant.GETXPOS, true);
@@ -234,7 +234,7 @@ public class button_click implements OnClickListener{
 			break;
 
 		case R.id.max_x:
-			virtualComponents.barobot.moveZDown( q ,true );
+			barobot.moveZDown( q ,true );
 			int lengthx2	=  barobot.state.getInt("LENGTHX", 600 );
 			barobot.driver_x.moveTo( q, posx +lengthx2);
 		
@@ -242,20 +242,20 @@ public class button_click implements OnClickListener{
 			break;
 
 		case R.id.max_y:
-			virtualComponents.barobot.moveZDown( q ,true );
-			virtualComponents.barobot.moveY( q, Constant.SERVOY_BACK_POS, true );
+			barobot.moveZDown( q ,true );
+			barobot.moveY( q, Constant.SERVOY_BACK_POS, true );
 			mq.add(q);	
 			break;
 		case R.id.min_x:
-			virtualComponents.barobot.moveZDown( q ,true );
+			barobot.moveZDown( q ,true );
 			int lengthx3	=  barobot.state.getInt("LENGTHX", 600 );
 			barobot.driver_x.moveTo( q, -lengthx3);
 
 			mq.add(q);
 			break;
 		case R.id.min_y:
-			virtualComponents.barobot.moveZDown( q ,true );
-			virtualComponents.barobot.moveY( q, Constant.SERVOY_FRONT_POS, true );
+			barobot.moveZDown( q ,true );
+			barobot.moveY( q, Constant.SERVOY_FRONT_POS, true );
 			mq.add(q);
 			break;	
 		case R.id.unlock:
@@ -283,7 +283,7 @@ public class button_click implements OnClickListener{
 			mq.add(q);
 			break;
 		case R.id.kalibrujx:
-			virtualComponents.barobot.kalibrcja();
+			barobot.kalibrcja();
 			break;
 		case R.id.enabley:
 	//		q.add("EY", true);
@@ -314,7 +314,7 @@ public class button_click implements OnClickListener{
 		case R.id.goto_min_x:
 			break;
 		case R.id.find_bottles:
-			virtualComponents.barobot.kalibrcja();
+			barobot.kalibrcja();
 			break;			
 		case R.id.rb:
 			mq.add("RB", true );
@@ -324,16 +324,16 @@ public class button_click implements OnClickListener{
 			break;
 
 		case R.id.scann_leds:
-			virtualComponents.barobot.scann_leds();
+			barobot.scann_leds();
 			break;
 		case R.id.led_green_on:
-			virtualComponents.barobot.setLeds( "22", 200 );
+			barobot.setLeds( "22", 200 );
 			break;	
 		case R.id.led_blue_on:
-			virtualComponents.barobot.setLeds( "44", 200 );
+			barobot.setLeds( "44", 200 );
 			break;
 		case R.id.led_red_on:
-			virtualComponents.barobot.setLeds( "11", 200 );
+			barobot.setLeds( "11", 200 );
 			break;
 		case R.id.reset_margin:
 			barobot.driver_x.setM(0);
@@ -346,7 +346,7 @@ public class button_click implements OnClickListener{
 			for(int i =up.length-1; i>=0;i--){
 				q1.add("RESET_NEXT"+ up[i].getAddress(), true);
 			}
-			virtualComponents.getMainQ().add(q1);
+			Arduino.getMainQ().add(q1);
 			break;
 		case R.id.scann_i2c:
 			mq.add("I", true );

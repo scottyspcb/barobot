@@ -32,7 +32,7 @@ import com.barobot.R;
 import com.barobot.activity.DebugActivity;
 import com.barobot.common.Initiator;
 import com.barobot.common.interfaces.RunnableWithData;
-import com.barobot.hardware.virtualComponents;
+import com.barobot.hardware.Arduino;
 import com.barobot.other.AJS;
 import com.barobot.parser.Queue;
 
@@ -363,7 +363,7 @@ public class DebugTabGraph extends Fragment {
 
 		@Override
 		public void onClick(View v) {
-			final Queue mq			= virtualComponents.getMainQ();
+			final Queue mq			= Arduino.getMainQ();
 			switch (v.getId()) {
 			case R.id.graph_source:
 	  	  		((ToggleButton) rootView.findViewById(R.id.graph_active)).setChecked(true);
@@ -437,7 +437,7 @@ public class DebugTabGraph extends Fragment {
 
 		@Override
 		public void onCheckedChanged(CompoundButton buttonView,boolean isChecked) {
-			Queue mq			= virtualComponents.getMainQ();
+			Queue mq			= Arduino.getMainQ();
 			switch (buttonView.getId()) {
 			case R.id.graph_active:
 				Initiator.logger.i("graph_active","isChecked: " + isChecked );

@@ -21,7 +21,7 @@ import android.widget.ToggleButton;
 import com.barobot.R;
 import com.barobot.activity.DebugActivity;
 import com.barobot.common.Initiator;
-import com.barobot.hardware.virtualComponents;
+import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
 import com.barobot.hardware.devices.i2c.I2C_Device_Imp;
 import com.barobot.hardware.devices.i2c.Upanel;
@@ -78,12 +78,13 @@ public class DebugTabLeds extends Fragment {
 		});
 
 		Switch xb6 = (Switch) rootView.findViewById(R.id.all_lights_on);	
+		final BarobotConnector barobot = Arduino.getInstance().barobot;
 		xb6.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 		    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 		        if (isChecked) {
-		        	virtualComponents.barobot.setLeds( "ff", 255 );
+		        	barobot.setLeds( "ff", 255 );
 		        } else {
-		        	virtualComponents.barobot.setLeds( "ff", 0 );
+		        	barobot.setLeds( "ff", 0 );
 		        }
 		    }
 		});
@@ -114,9 +115,9 @@ public class DebugTabLeds extends Fragment {
 		whto.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 		    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 		        if (isChecked) {
-		        	virtualComponents.barobot.setLeds( "08", 255 );
+		        	barobot.setLeds( "08", 255 );
 		        } else {
-		        	virtualComponents.barobot.setLeds( "08", 0 );
+		        	barobot.setLeds( "08", 0 );
 		        }
 		    }
 		});
@@ -124,9 +125,9 @@ public class DebugTabLeds extends Fragment {
 		whbo.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 		    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 		        if (isChecked) {
-		        	virtualComponents.barobot.setLeds( "80", 255 );
+		        	barobot.setLeds( "80", 255 );
 		        } else {
-		        	virtualComponents.barobot.setLeds( "80", 0 );
+		        	barobot.setLeds( "80", 0 );
 		        }
 		    }
 		});
@@ -159,9 +160,10 @@ public class DebugTabLeds extends Fragment {
 		        	int green	= Color.green(color);
 		        	int white	= 0;
 		    		Queue q1	= new Queue();
-		    		Queue q		= virtualComponents.barobot.main_queue;
+		    		BarobotConnector barobot = Arduino.getInstance().barobot;
+		    		Queue q		= barobot.main_queue;
 		    		q.add(q1);
-		  		  	virtualComponents.barobot.i2c.carret.setRgbw(q1, red,green,blue,white);
+		  		  	barobot.i2c.carret.setRgbw(q1, red,green,blue,white);
 					lastcolor = color;
 		        }
 		        @Override
@@ -179,7 +181,8 @@ public class DebugTabLeds extends Fragment {
 		        	int red		= Color.red(color);
 		        	int green	= Color.green(color);
 		    		int blue	= Color.blue(color);
-		        	virtualComponents.barobot.setColor( string, red, green, blue, 0 );
+		    		BarobotConnector barobot = Arduino.getInstance().barobot;
+		        	barobot.setColor( string, red, green, blue, 0 );
 					lastcolor = color;
 		        }
 		        @Override

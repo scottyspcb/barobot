@@ -7,7 +7,6 @@ import java.util.Iterator;
 import com.barobot.activity.BarobotMain;
 import com.barobot.common.Initiator;
 import com.barobot.hardware.Arduino;
-import com.barobot.hardware.virtualComponents;
 import com.barobot.hardware.serial.AndroidLogger;
 import com.barobot.other.CameraManager;
 import com.barobot.parser.utils.Interval;

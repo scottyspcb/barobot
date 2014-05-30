@@ -16,7 +16,7 @@ import com.barobot.AppInvoker;
 import com.barobot.R;
 import com.barobot.activity.DebugActivity;
 import com.barobot.common.Initiator;
-import com.barobot.hardware.virtualComponents;
+import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
 import com.barobot.hardware.devices.i2c.I2C_Device_Imp;
 
@@ -37,6 +37,7 @@ public class DebugTabDevices extends Fragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
 		int lay = DebugActivity.layouts[tab_id];
+		final BarobotConnector barobot = Arduino.getInstance().barobot;
 		final View rootView = inflater.inflate( lay, container, false);
 		final int[] buttons = {
 				R.id.editb0,
@@ -76,11 +77,11 @@ public class DebugTabDevices extends Fragment {
 					EditText editb0 = (EditText) rootView.findViewById( buttons[i] );
 					Initiator.logger.i("DebugTabDevices.zapisuje", "BOTTLE_OFFSETX_" + i + "= " +editb0.getText().toString() );
 					int a = Integer.parseInt(editb0.getText().toString());
-					virtualComponents.barobot.setSlotMarginX(i, a );
+					barobot.setSlotMarginX(i, a );
 
 					EditText cap0 = (EditText) rootView.findViewById( capacityBox[i] );
 					int cap = Integer.parseInt(cap0.getText().toString());
-					virtualComponents.barobot.setCapacity(i, cap);
+					barobot.setCapacity(i, cap);
 				}
 			}
 		});
@@ -92,12 +93,12 @@ public class DebugTabDevices extends Fragment {
 				for(int i=0;i<12;i++){
 					int xpos = BarobotConnector.margin_x[i];
 					final EditText editb0 = (EditText) rootView.findViewById( buttons[i] );
-					virtualComponents.barobot.setSlotMarginX( i, xpos );
+					barobot.setSlotMarginX( i, xpos );
 					editb0.setText(""+xpos );
 
 					int cap = BarobotConnector.capacity[i];
 					final EditText cap0 = (EditText) rootView.findViewById( capacityBox[i] );
-					virtualComponents.barobot.setCapacity( i, cap );
+					barobot.setCapacity( i, cap );
 					cap0.setText(""+cap );	
 				}	
 			}
@@ -107,13 +108,13 @@ public class DebugTabDevices extends Fragment {
 			@Override
 			public void onClick(View v) {
 				for(int i=0;i<12;i++){
-					int xpos = virtualComponents.barobot.getSlotMarginX( i );
+					int xpos = barobot.getSlotMarginX( i );
 					final EditText editb0= (EditText) rootView.findViewById( buttons[i] );
 					final int num			= i;
 					Initiator.logger.i("DebugTabDevices", "set input BOTTLE_OFFSETX_" + num + "= " +xpos );
 					editb0.setText(""+xpos );
 					
-					int cap =  virtualComponents.barobot.getCapacity(num);
+					int cap =  barobot.getCapacity(num);
 					final EditText cap0 = (EditText) rootView.findViewById( capacityBox[i] );
 					cap0.setText(""+cap );
 
@@ -121,13 +122,13 @@ public class DebugTabDevices extends Fragment {
 			}
 		});
 		for(int i=0;i<12;i++){
-			int xpos = virtualComponents.barobot.getSlotMarginX( i );
+			int xpos = barobot.getSlotMarginX( i );
 			final EditText editb0 = (EditText) rootView.findViewById( buttons[i] );
 			final int num = i;
 			Initiator.logger.i("DebugTabDevices", "set input BOTTLE_OFFSETX_" + num + "= " +xpos );
 			editb0.setText(""+xpos );
 			
-			int cap =  virtualComponents.barobot.getCapacity(num);
+			int cap =  barobot.getCapacity(num);
 			final EditText cap0 = (EditText) rootView.findViewById( capacityBox[i] );
 			cap0.setText(""+cap );
 		}

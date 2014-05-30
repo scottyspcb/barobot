@@ -42,7 +42,7 @@ public class Serial_wire implements CanSend, Wire {
     private SerialInputOutputManager mSerialIoManager;
     private int errors = 0;
 	private Activity view;
-	private int baud = 115200;
+	private int baud = 57600;//115200;
 	protected Queue<SerialInputListener> listener=new LinkedList<SerialInputListener>();
     private SerialInputOutputManager.Listener mListener = null;
 	private SerialEventListener iel = null;
@@ -119,7 +119,7 @@ public class Serial_wire implements CanSend, Wire {
         } else {
             try {
                 sPort.open(mUsbManager);
-                sPort.setParameters(115200, 8, UsbSerialPort.STOPBITS_1, UsbSerialPort.PARITY_NONE);
+                sPort.setParameters(baud, 8, UsbSerialPort.STOPBITS_1, UsbSerialPort.PARITY_NONE);
             } catch (RuntimeException e) {
             	 e.printStackTrace();
             	 

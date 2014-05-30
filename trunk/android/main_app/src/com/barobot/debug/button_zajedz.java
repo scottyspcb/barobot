@@ -4,7 +4,7 @@ import com.barobot.R.id;
 import com.barobot.activity.BarobotMain;
 import com.barobot.activity.DebugActivity;
 import com.barobot.common.constant.Constant;
-import com.barobot.hardware.virtualComponents;
+import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
 
 import android.view.View;
@@ -22,9 +22,8 @@ public class button_zajedz  implements OnClickListener {
 			}}).start();
 	}	
 	public void exec(View v) {
-		
 		BarobotMain bb			= BarobotMain.getInstance();
-		BarobotConnector barobot = virtualComponents.barobot;
+		BarobotConnector barobot = Arduino.getInstance().barobot;
 		boolean autofill		= ( barobot.state.getInt("AUTOFILL", 1 ) == 1 );
 		boolean setting_mode	= button_click.set_bottle_on;
 		

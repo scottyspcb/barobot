@@ -20,7 +20,6 @@ public class Info {
 	protected String wifiIpAddress(Context context) {
 	    WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
 	    int ipAddress = wifiManager.getConnectionInfo().getIpAddress();
-
 	    // Convert little-endian to big-endianif needed
 	    if (ByteOrder.nativeOrder().equals(ByteOrder.LITTLE_ENDIAN)) {
 	        ipAddress = Integer.reverseBytes(ipAddress);

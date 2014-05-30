@@ -3,13 +3,15 @@ package com.barobot.gui.dataobjects;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.orman.mapper.Model;
+
 import android.content.Context;
 import android.util.Log;
 
 import com.barobot.activity.BarobotMain;
 import com.barobot.gui.ArduinoListener;
 import com.barobot.gui.database.BarobotData;
-import com.barobot.hardware.virtualComponents;
+import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
 import com.barobot.parser.Queue;
 import com.barobot.parser.message.AsyncMessage;
@@ -37,7 +39,7 @@ public class Engine {
 	{
 		if (slots == null)
 		{
-			slots = BarobotData.GetSlots(); 
+			slots = Model.fetchAll(Slot.class);
 		}
 		return slots;
 	}
@@ -93,7 +95,7 @@ public class Engine {
 	
 	public List<Product> getProducts()
 	{
-		return BarobotData.GetProduct();
+		return Model.fetchAll(Product.class);
 	}
 	
 	public List<Type> getTypes() {
@@ -181,19 +183,20 @@ public class Engine {
 	public Boolean Pour(Recipe_t recipe,  final ArduinoListener mListener)
 	{
 		List<Integer> bottleSequence = GenerateSequence(recipe.getIngredients());
+		BarobotConnector barobot = Arduino.getInstance().barobot;
 		if (bottleSequence == null){
 			return false; // We could not find some of the ingredients
 		}
 	//	virtualComponents.barobot.startDoingDrink();
 		for (Integer i : bottleSequence){
 			Log.i("Prepare", ""+i );
-			virtualComponents.barobot.moveToBottle( i-1, false );
-			virtualComponents.barobot.nalej(i-1);
+			barobot.moveToBottle( i-1, false );
+			barobot.nalej(i-1);
 		}
-		virtualComponents.barobot.moveToStart();		// na koniec
-		virtualComponents.barobot.onDrinkFinish();
+		barobot.moveToStart();		// na koniec
+		barobot.onDrinkFinish();
 
-		Queue q	= virtualComponents.getMainQ();
+		Queue q	= Arduino.getMainQ();
 		q.add( new AsyncMessage( true ) {
 			@Override	
 			public String getName() {
@@ -217,14 +220,14 @@ public class Engine {
 	
 	public List<Integer> GenerateSequence(List<Ingredient_t> ingredients)
 	{
-		
 		List<Integer> bottleSequence = new ArrayList<Integer>();
 		List<Slot> slots = getSlots();
+		BarobotConnector barobot = Arduino.getInstance().barobot;
 		for(Ingredient_t ing : ingredients)
 		{
 			int position = getIngredientPosition(slots, ing);
 			if (position != -1){
-				int count = (int) Math.round( ing.quantity/virtualComponents.barobot.getCapacity( position -1 ) );
+				int count = (int) Math.round( ing.quantity/barobot.getCapacity( position -1 ) );
 				if( count == 0 ){
 					count = 1;
 				}

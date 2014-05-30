@@ -18,14 +18,14 @@ public class LowHardware {
 	public static final int MAINBOARD_VERSION = 0x01;
 	public static final int MAINBOARD_F_CPU = 16000000;
 	public static final String MAINBOARD_CPU = "atmega328";
-	public static final int MAINBOARD_SERIAL0_BOUND = 115200;
+	public static final int MAINBOARD_SERIAL0_BOUND = 57600;//115200;
 
 	/*------------------------------ CARRET (carret)    ------------------------------*/
 	public static final int CARRET_DEVICE_TYPE = 0x11;
 	public static final int CARRET_VERSION = 0x01;
 	public static final int CARRET_F_CPU = 16000000;
 	public static final String CARRET_CPU = "atmega328";
-	public static final int CARRET_SERIAL0_BOUND = 115200;
+	public static final int CARRET_SERIAL0_BOUND = 57600;//115200;
 
 
 	/*------------------------------ PROGRAMMER ------------------------------*/
@@ -38,6 +38,6 @@ public class LowHardware {
 	public static final int UPANEL_VERSION= 0x01;
 	public static final int UPANEL_F_CPU =8000000;
 	public static final String UPANEL_CPU="atmega8";
-	public static final int UPANEL_SERIAL0_BOUND= 115200;
+	public static final int UPANEL_SERIAL0_BOUND= 57600;//115200;
 
 }
