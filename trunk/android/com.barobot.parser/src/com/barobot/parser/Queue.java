@@ -28,8 +28,9 @@ ArrayList<E>
 
 public class Queue {
 //	private static LinkedList<Mainboard> devs = new LinkedList<Mainboard>();
-	protected final Object lock = new Object();
-	protected final Object lock_exec = new Object();
+	protected final Object lock = new Object();				// protect wait_for_device var
+	protected final Object lock_exec = new Object();		// protect exec method
+	protected final Object lock_queue = new Object();		// protect output var
 	protected LinkedList<AsyncMessage> output = new LinkedList<AsyncMessage>();
 	protected boolean wait_for_device = false;
 	protected boolean isMainQueue = false;
@@ -47,8 +48,10 @@ public class Queue {
 	public void clear() {
 		Initiator.logger.i("Queue","clearAll");
 		if(isMainQueue){
-			synchronized (this.lock) {
+			synchronized (this.lock_queue) {
 				this.output.clear();
+			}
+			synchronized (this.lock) {
 				wait_for_device = false;
 				mb.unlockRet("<clear>", true );
 			}
@@ -69,10 +72,11 @@ public class Queue {
 	}
 
 	public void add( String command, boolean blocking) {
+		AsyncMessage msg = null;
 		synchronized (this.lock) {
 			if(blocking){
 				final String retcmd = "R" + command;
-				output.add(new AsyncMessage( command, true ){
+				msg = new AsyncMessage( command, true ){
 					@Override
 					public boolean isRet(String result, Queue q) {
 				//		Initiator.logger.i("Queue.add.isRet?:", result  + " of " + command );
@@ -81,40 +85,49 @@ public class Queue {
 						}
 						return false;
 					}
-				});
+				};
 			}else{
-				output.add(new AsyncMessage( command, false ));
+				msg =new AsyncMessage( command, false );
 			}
 		}
+		synchronized (this.lock_queue) {
+			output.add(msg);
+		}
+	//	Initiator.logger.i("Queue.add2 length", ""+output.size() );
 		exec();
 	}
 	public void add(String command, final String retcmd) {
-		synchronized (this.lock) {
-			output.add(new AsyncMessage( command, true ){
-				@Override
-				public boolean isRet(String result, Queue q) {
-			//		Initiator.logger.i("Queue.isRet?:", + result );
-					if( retcmd.equals( result )){
-						return true;
-					}
-					return false;
+		AsyncMessage msg = new AsyncMessage( command, true ){
+			@Override
+			public boolean isRet(String result, Queue q) {
+		//		Initiator.logger.i("Queue.isRet?:", + result );
+				if( retcmd.equals( result )){
+					return true;
 				}
-			});
+				return false;
+			}
+		};
+
+		synchronized (this.lock_queue) {
+			output.add(msg);
 		}
+	//	Initiator.logger.i("Queue.add4 length", ""+output.size() );
 		exec();
 	}
 
 	public void add(AsyncMessage asyncMessage) {
-		synchronized (this.lock) {
+		synchronized (this.lock_queue) {
 			output.add(asyncMessage);
 		}
+	//	Initiator.logger.i("Queue.add3 length", ""+output.size() );
 		exec();
 	}
 
 	public void add(Queue q2) {
-		synchronized (this.lock) {
+		synchronized (this.lock_queue) {
 			output.addAll(q2.output);
 		}
+//		Initiator.logger.i("Queue.addAll length", ""+output.size() );
 		exec();
 	}
 
@@ -126,52 +139,61 @@ public class Queue {
 			return;
 		}
 		synchronized (this.lock_exec) {
-			synchronized (this.lock) {
-		//		Initiator.logger.i("Queue.run.wait_for1", ""+ wait_for_device_id);
-				if(this.wait_for_device ){
-				//	endRun();
-			//		Initiator.logger.i("Queue.run.wait_for1 stop", ""+ wait_for_device_id);
-					return;		// jestem w trakcie oczekiwania
-				}else{
-			//		Initiator.logger.w("Queue.run.wait_for1", "no blocked" + wait_for_device_id);	
-				}
-		//		show("exec");
-		//		boolean wasEmpty = output.isEmpty();
-				while (!output.isEmpty()) {
-					if(this.wait_for_device ){		// 0 or more is blocked
+	//		Initiator.logger.i("Queue.run.wait_for1", ""+ wait_for_device_id);
+			if( this.wait_for_device ){
+			//	endRun();
+		//		Initiator.logger.i("Queue.run.wait_for1 stop", ""+ wait_for_device_id);
+				return;		// jestem w trakcie oczekiwania
+			}else{
+		//		Initiator.logger.w("Queue.run.wait_for1", "no blocked" + wait_for_device_id);	
+			}
+	//		show("exec");
+	//		boolean wasEmpty = output.isEmpty();
+			boolean isEmpty;
+			synchronized (this.lock_queue) {
+				isEmpty = !output.isEmpty();
+			}
+			while (isEmpty) {
+				synchronized (this.lock) {
+					if(this.wait_for_device ){		// is blocked
 		//				Initiator.logger.i("Queue.wait_for2", "" + wait_for_device_id);
 					//	endRun();
 						return;
 					}
-					AsyncMessage m	= output.pop();
-	//				Initiator.logger.i("Queue.run.start",  m.toString() );
-					Queue nextq = m.start( mb, this );
-				//	moveToHistory( m );
-					if( nextq != null ){
-						this.addFirst(nextq);	// add on front
-					}
-					if(m.wait4Finish()){
-	                	this.wait_for_device	= true;
-	                	mb.waitFor( m );
-	            //    	endRun();
-	               // 	Initiator.logger.i("Queue.isBlocing true & return", m.toString() );
-	               // 	Initiator.logger.i("Queue.isBlocing", "" + wait_for_device_id );
-	                	return;
-	                }else{
-	                //	Initiator.logger.i("Queue.no Blocing", m.toString() );
-	                //	Initiator.logger.i("Queue.no Blocing", "" + wait_for_device_id );
-	                }
-	
 				}
-			//	if(output.isEmpty()){
-			//		Initiator.logger.i("Queue.run", "empty");
-			//	}
+				
+				AsyncMessage m	= output.pop();
+//				Initiator.logger.i("Queue.run.start",  m.toString() );
+				Queue nextq = m.start( mb, this );
+			//	moveToHistory( m );
+				if( nextq != null ){
+					this.addFirst(nextq);	// add on front
+				}
+				if(m.wait4Finish()){
+					synchronized (this.lock) {
+						this.wait_for_device	= true;
+					}
+                	mb.waitFor( m );
+            //    	endRun();
+               // 	Initiator.logger.i("Queue.isBlocing true & return", m.toString() );
+               // 	Initiator.logger.i("Queue.isBlocing", "" + wait_for_device_id );
+                	return;
+                }else{
+                //	Initiator.logger.i("Queue.no Blocing", m.toString() );
+                //	Initiator.logger.i("Queue.no Blocing", "" + wait_for_device_id );
+                }
+				synchronized (this.lock_queue) {
+					isEmpty = !output.isEmpty();
+				}
 			}
+		//	if(output.isEmpty()){
+		//		Initiator.logger.i("Queue.run", "empty");
+		//	}
 		}
-	//	endRun();
 	}
+
 	public void addFirst(Queue q2) {
-		synchronized (this.lock) {
+		synchronized (this.lock_queue) {
 			this.output.addAll( 0, q2.output);		// add on start
 			/*
 			if(isMainQueue ){
@@ -202,9 +224,13 @@ public class Queue {
 	}
 	public void addWaitThread(final Object thread) {
 	//	Initiator.logger.i("Queue", "add thread wait");
+		int size = 0;
+		synchronized (this.lock_queue) {
+			size = this.output.size();
+		}
 		synchronized(this.output){
-			if( this.wait_for_device || this.output.size() > 0 ){
-				this.add( new AsyncMessage( true ){
+			if( this.wait_for_device || size > 0 ){
+				AsyncMessage msg = new AsyncMessage( true ){
 					@Override
 					public String getName() {
 						return "WAIT4THREAD";
@@ -217,7 +243,13 @@ public class Queue {
 						}
 						return null;
 					}
-				});
+				};
+				synchronized (this.lock_queue) {
+					output.add(msg);
+				}
+	//			Initiator.logger.i("Queue.addWaitThread length", ""+output.size() );
+
+				exec();
 			//	Initiator.logger.i("Queue", "START wait");
 				synchronized(thread){
 					try {
@@ -258,13 +290,16 @@ public class Queue {
 				this.unlocking_command = "end";
 			}
 		};
-		output.add( m2 );		
+		synchronized (this.lock_queue) {
+			output.add( m2 );
+		}
+	//	Initiator.logger.i("Queue.addWait2 length", ""+output.size() );
 	}
 	public void addWait(final int time) {
 		if(time <= 0 ){
 			return;
 		}
-		final AsyncMessage m2 = new AsyncMessage( true, true ) {
+		AsyncMessage m2 = new AsyncMessage( true, true ) {
 			@Override
 			public String getName() {
 				return "addWait" + time;
@@ -284,7 +319,7 @@ public class Queue {
 				*/
 				new Timer().schedule(new TimerTask() {          
 				    public void run() {
-				    	Initiator.logger.w("Queue.addWait.end", "time: " +time);
+	//			    	Initiator.logger.w("Queue.addWait.end", "time: " +time);
 				    	dev.unlockRet( msg, "wait " + time);
 				    }
 				}, time);// odczekaj tyle czasu, odblokuj kolejkê i jedz dalej
@@ -295,15 +330,20 @@ public class Queue {
 				return true;
 			}
 		};
-		output.add( m2 );		
+		synchronized (this.lock_queue) {
+			output.add( m2 );
+		}
+//		Initiator.logger.i("Queue.addWait length", ""+output.size() );
 	}
 	public boolean isBusy() {
-		synchronized (this.lock) {
-			if( this.wait_for_device){
-				return true;
-			}
-			if( this.output.size() > 0 ){
-				return true;
+		synchronized (this.lock_queue) {
+			synchronized (this.lock) {
+				if( this.wait_for_device){
+					return true;
+				}
+				if( this.output.size() > 0 ){
+					return true;
+				}
 			}
 		}
 		return false;
@@ -318,16 +358,15 @@ public class Queue {
 					res += "\tWaiting for:"+  s + "\n";				
 				}
 			}
+		}
+		synchronized (this.lock_queue) {
 			for (AsyncMessage msg : this.output){
 				res += "\t" + msg.toString() + "\n";
-			}	
-			Initiator.logger.w("Queue.show", res);
+			}
 		}
+		Initiator.logger.w("Queue.show", res);
 	}
 }
-
-
-
 
 /*
 final Handler handler	= new Handler();
