@@ -570,7 +570,8 @@ public class BarobotConnector {
 		if(!this.ledsReady){
 			this.scann_leds();
 		}
-		LightManager.startDemo( this );
+		LightManager lm = new LightManager();
+		lm.startDemo( this );
 	}
 
 	public void bottleBacklight( final int bottleNum, final int count ) {

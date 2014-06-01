@@ -9,15 +9,15 @@ import com.barobot.parser.message.Mainboard;
 public class LightManager {
 
 	String[] defaultDemo = {"","",""};
-	public static void startDemo(BarobotConnector barobot) {
+	public void startDemo(BarobotConnector barobot) {
 		Queue q = barobot.main_queue;
 		LightManager lm = new LightManager();
 
 	//	lm.loading(barobot, q, 10);
-		lm.linijka( barobot, q, 10 );
-		lm.flaga( barobot, q, 10 );
-		lm.mrygajRGB( barobot, q, 60 );
-		lm.nazmiane( barobot, q, 10 );
+		lm.linijka( barobot, q, 10, 700 );
+		lm.flaga( barobot, q, 10, 700 );
+		lm.mrygajRGB( barobot, q, 60 , 100);
+		lm.nazmiane( barobot, q, 10, 700 );
 		lm.tecza( barobot, q, 10 );
 		lm.strobo( barobot, q, 60 );
 		lm.zapal(barobot, q);
@@ -91,8 +91,7 @@ public class LightManager {
 		}
 	}
 
-	public void nazmiane(final BarobotConnector barobot, final Queue q, final int repeat) {
-		final int time =700;
+	public void nazmiane(final BarobotConnector barobot, final Queue q, final int repeat,final int time ) {
 		final int colile = 40;
 
 		q.add( new AsyncMessage( true ){
@@ -136,8 +135,7 @@ public class LightManager {
 		});
 	}
 
-	public void linijka(final BarobotConnector barobot, final Queue q, final int repeat) {
-		final int time =700;
+	public void linijka(final BarobotConnector barobot, final Queue q, final int repeat, final int time) {
 		q.add( new AsyncMessage( true ){
 			@Override
 			public String getName() {
@@ -175,9 +173,7 @@ public class LightManager {
 		});
 	}
 
-	public void flaga(final BarobotConnector barobot, final Queue q, final int repeat) {
-		final int time =700;
-
+	public void flaga(final BarobotConnector barobot, final Queue q, final int repeat, final int time) {
 		q.add( new AsyncMessage( true ){
 			@Override
 			public String getName() {
@@ -288,15 +284,13 @@ public class LightManager {
 		System.out.println("koniec zgas");
 	}
 	
-	
 
-	public void mrygajRGB(BarobotConnector barobot, Queue q, int repeat  ) {
+	public void mrygajRGB(BarobotConnector barobot, Queue q, int repeat, int time  ) {
 		I2C_Device[] list = barobot.i2c.getDevicesWithLeds();
 		if(list.length == 0 ){
 			System.out.println("Pusto" );
 			return;
 		}
-		int time =1000;
 		while (repeat-- > 0){
 			for (I2C_Device u : list){
 				u.addLed( q, "ff", 0 );	// off

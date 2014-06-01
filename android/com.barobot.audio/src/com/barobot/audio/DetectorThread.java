@@ -13,7 +13,6 @@ public class DetectorThread extends Thread{
 	//private WaveHeader waveHeader;
 	private volatile Thread _thread;
 	public BpmProcessor processor;
-	private Logger log = Logger.getLogger(DetectorThread.class.getName());
 	private Queue<Short> instantBuffer = new LinkedList<Short>();
 	private OnSignalsDetectedListener onSignalsDetectedListener;
 
