@@ -24,15 +24,15 @@ public class Pwm {
 		return levels[ (value & 0xff ) ];
 	}
 */
-	public static int linear2log(int percentage, float ratio ){
-		if( percentage <=0){
+	public static int linear2log(int byteVal, float ratio ){
+		if( byteVal <=0){
 			return 0;
 		}
 	//	double a = 9.7758463166360387E-01;
 	//	double b = 5.5498961535023345E-02;
 		double a = 0.9784;
 		double b = 0.02183;
-		double d = (a * java.lang.Math.exp(b*percentage)+0.5);
+		double d = (a * java.lang.Math.exp(b*byteVal)+0.5);
 		return Math.min( 255, (int) ((Math.floor(d)-1) * ratio ) );
 	//	return Math.min( 255, percentage);
 	}
