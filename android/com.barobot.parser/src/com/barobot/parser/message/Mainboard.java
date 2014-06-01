@@ -17,6 +17,9 @@ import com.barobot.parser.utils.GlobalMatch;
 
 public class Mainboard{
 	private static StringBuilder buffer = new StringBuilder();
+	
+	protected final Object lock = new Object();				// protect wait_for var
+	
 	private static Map<String, GlobalMatch> globalRegex = new HashMap<String, GlobalMatch>();
 	private static Map<String, String> modifiers = new HashMap<String, String>();
 
@@ -82,7 +85,7 @@ public class Mainboard{
 			Initiator.logger.w("Mainboard.useInput", command );
 		}
 		boolean used = false;
-		synchronized (this) {
+		synchronized (lock) {
 		//	Initiator.logger.i("wait_for?: ", ( (this.wait_for == null)? "null" : "nonull") );
 			if( this.wait_for != null ){
 				wait4Command = this.wait_for.command;
@@ -232,44 +235,50 @@ public class Mainboard{
 	}
 	public void waitFor(AsyncMessage m) {
 	//	Initiator.logger.i( "waitFor:", "["+m.toString()+"]" );
-		synchronized (this) {
+		synchronized (lock) {
 			this.wait_for		= m;
 		}
 	}
 	public void unlockRet(String withCommand, boolean unlockQueue ){
-		synchronized (this) {
+		synchronized (lock) {
 			if(this.wait_for!=null){
 	//			Initiator.logger.i(">>>Mainboard.unlockRet", "["+this.wait_for.toString() +"] with: ["+ withCommand.trim()+"]");
 				this.wait_for.unlockWith(withCommand);
 				this.wait_for = null;
-				mainQueue.unlock();
+			}else{
+				return;		// dont unlock
 			}
 		}
+		mainQueue.unlock();
 	}
 	public void unlockRet(AsyncMessage asyncMessage, String withCommand) {
-		synchronized (this) {
+		synchronized (lock) {
 			if(this.wait_for == asyncMessage ){
 	//			Initiator.logger.i(">>>Mainboard.unlockRet", "["+this.wait_for.toString() +"] with: ["+ withCommand.trim()+"]");
 				this.wait_for.unlockWith(withCommand);
 				this.wait_for = null;
-				mainQueue.unlock();
+			}else{
+				return;		// dont unlock
 			}
 		}
+		mainQueue.unlock();
 	}
-	public synchronized boolean parse(String in) {
-		if( state.getInt("show_unknown", 0) > 0 ){
-			if( in.startsWith( "-") ){			// comment
-				Initiator.logger.i("Mainboard.unknown.comment", in);
-				return true;
-			}else if( in.equals("NO_CMD []" ) ){
-			}else{
-				if(in.matches("^.*[^-a-zA-Z0-9_.,].*")){		// unusual characters
-					// log command to db
+	public boolean parse(String in) {
+		synchronized(this){
+			if( state.getInt("show_unknown", 0) > 0 ){
+				if( in.startsWith( "-") ){			// comment
+					Initiator.logger.i("Mainboard.unknown.comment", in);
+					return true;
+				}else if( in.equals("NO_CMD []" ) ){
+				}else{
+					if(in.matches("^.*[^-a-zA-Z0-9_.,].*")){		// unusual characters
+						// log command to db
+					}
+					Initiator.logger.i("Mainboard.unknown.length", "("+in+") "+in.length() );
+					Initiator.logger.i("Mainboard.unknown.length", "("+in+") "+ in.getBytes().length );
+					Initiator.logger.i("Mainboard.unknown", "("+in+") "+Decoder.toHexStr(in.getBytes(), in.length()));
+				//	mainQueue.show("Mainboard.parse");
 				}
-				Initiator.logger.i("Mainboard.unknown.length", "("+in+") "+in.length() );
-				Initiator.logger.i("Mainboard.unknown.length", "("+in+") "+ in.getBytes().length );
-				Initiator.logger.i("Mainboard.unknown", "("+in+") "+Decoder.toHexStr(in.getBytes(), in.length()));
-			//	mainQueue.show("Mainboard.parse");
 			}
 		}
 		return false;
@@ -288,7 +297,7 @@ public class Mainboard{
 		this.mainQueue = queue;
 	}
 	public String showWaiting() {
-		synchronized (this) {
+		synchronized (lock) {
 			if(this.wait_for!=null){
 				return this.wait_for.toString();
 			}
