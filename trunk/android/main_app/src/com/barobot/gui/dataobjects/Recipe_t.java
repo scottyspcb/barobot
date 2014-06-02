@@ -26,7 +26,7 @@ public class Recipe_t extends Model<Recipe_t>{
 	
 	@OneToMany (toType = Ingredient_t.class, onField = "recipe" )
 	public EntityList<Recipe_t, Ingredient_t> ingredients = new EntityList<Recipe_t, Ingredient_t>(Recipe_t.class, Ingredient_t.class, this);
-	
+
 	public List<Ingredient_t> getIngredients()
 	{
 		if(ingredients.size() == 0 ){

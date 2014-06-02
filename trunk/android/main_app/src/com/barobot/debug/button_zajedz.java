@@ -1,16 +1,12 @@
 package com.barobot.debug;
 import com.barobot.R;
-import com.barobot.R.id;
 import com.barobot.activity.BarobotMain;
-import com.barobot.activity.DebugActivity;
-import com.barobot.common.constant.Constant;
 import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
 
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Toast;
-import android.widget.ToggleButton;
 
 public class button_zajedz  implements OnClickListener {
 	@Override
@@ -20,14 +16,13 @@ public class button_zajedz  implements OnClickListener {
 			public void run() {
 				exec(v);
 			}}).start();
-	}	
+	}
 	public void exec(View v) {
 		BarobotMain bb			= BarobotMain.getInstance();
 		BarobotConnector barobot = Arduino.getInstance().barobot;
 		boolean autofill		= ( barobot.state.getInt("AUTOFILL", 1 ) == 1 );
 		boolean setting_mode	= button_click.set_bottle_on;
-		
-		
+
 		switch (v.getId()) {
 		  case R.id.start_pos:
 			  if(setting_mode){
@@ -39,14 +34,13 @@ public class button_zajedz  implements OnClickListener {
 				  barobot.onDrinkFinish();
 			  }
 			  break;
-		
 		  case R.id.nalej1:
 			  if(setting_mode){
 				  barobot.hereIsBottle(0);
 			  }else{
-				  barobot.moveToBottle(0, !autofill);
+				  barobot.moveToBottle(barobot.main_queue,0, !autofill);
 				  if( autofill){
-					  barobot.nalej(0);
+					  barobot.pour(barobot.main_queue, 0, true);
 				  }
 			  }
 		    break;
@@ -54,20 +48,19 @@ public class button_zajedz  implements OnClickListener {
 			  if(setting_mode){
 				  barobot.hereIsBottle(1);
 			  }else{
-				  barobot.moveToBottle(1, !autofill);
+				  barobot.moveToBottle(barobot.main_queue,1, !autofill);
 				  if( autofill){
-					  barobot.nalej(1);
+					  barobot.pour(barobot.main_queue,1, true);
 				  }
-			  }	
+			  }
 			  break;
 		  case R.id.nalej3:
 			  if(setting_mode){
 				  barobot.hereIsBottle(2);
-
 			  }else{
-				  barobot.moveToBottle(2, !autofill);
+				  barobot.moveToBottle(barobot.main_queue,2, !autofill);
 				  if( autofill){
-					  barobot.nalej(2);
+					  barobot.pour(barobot.main_queue,2, true);
 				  }
 			  }	    	  
 		      break;
@@ -75,9 +68,9 @@ public class button_zajedz  implements OnClickListener {
 			  if(setting_mode){
 				  barobot.hereIsBottle(3);
 			  }else{
-				  barobot.moveToBottle(3, !autofill);
+				  barobot.moveToBottle(barobot.main_queue,3, !autofill);
 				  if( autofill){
-					  barobot.nalej(3);
+					  barobot.pour(barobot.main_queue,3, true);
 				  }
 			  }
 		      break;
@@ -85,20 +78,19 @@ public class button_zajedz  implements OnClickListener {
 			  if(setting_mode){
 				  barobot.hereIsBottle(4);
 			  }else{
-				  barobot.moveToBottle(4, !autofill);
+				  barobot.moveToBottle(barobot.main_queue,4, !autofill);
 				  if( autofill){
-					  barobot.nalej(4);
+					  barobot.pour(barobot.main_queue,4, true);
 				  }
 			  }
 		      break;
 		  case R.id.nalej6:
 			  if(setting_mode){
 				  barobot.hereIsBottle(5);
-
 			  }else{
-				  barobot.moveToBottle(5, !autofill);
+				  barobot.moveToBottle(barobot.main_queue,5, !autofill);
 				  if( autofill){
-					  barobot.nalej(5);
+					  barobot.pour(barobot.main_queue,5, true);
 				  }
 			  }
 		      break;
@@ -107,9 +99,9 @@ public class button_zajedz  implements OnClickListener {
 				  barobot.hereIsBottle(6);
 
 			  }else{
-				  barobot.moveToBottle(6, !autofill);
+				  barobot.moveToBottle(barobot.main_queue,6, !autofill);
 				  if( autofill){
-					  barobot.nalej(6);
+					  barobot.pour(barobot.main_queue,6, true);
 				  }
 			  }
 		      break;
@@ -117,9 +109,9 @@ public class button_zajedz  implements OnClickListener {
 			  if(setting_mode){
 				  barobot.hereIsBottle(7);
 			  }else{
-				  barobot.moveToBottle(7, !autofill);
+				  barobot.moveToBottle(barobot.main_queue,7, !autofill);
 				  if( autofill){
-					  barobot.nalej(7);
+					  barobot.pour(barobot.main_queue,7, true);
 				  }
 			  }	  
 		      break;
@@ -127,9 +119,9 @@ public class button_zajedz  implements OnClickListener {
 			  if(setting_mode){
 				  barobot.hereIsBottle(8);
 			  }else{
-				  barobot.moveToBottle(8, !autofill);
+				  barobot.moveToBottle(barobot.main_queue,8, !autofill);
 				  if( autofill){
-					  barobot.nalej(8);
+					  barobot.pour(barobot.main_queue,8, true);
 				  }
 			  }
 			  break;
@@ -137,9 +129,9 @@ public class button_zajedz  implements OnClickListener {
 			  if(setting_mode){
 				  barobot.hereIsBottle(9);
 			  }else{
-				  barobot.moveToBottle(9, !autofill);
+				  barobot.moveToBottle(barobot.main_queue,9, !autofill);
 				  if( autofill){
-					  barobot.nalej(9);
+					  barobot.pour(barobot.main_queue,9, true);
 				  }
 			  }
 		      break;
@@ -147,9 +139,9 @@ public class button_zajedz  implements OnClickListener {
 			  if(setting_mode){
 				  barobot.hereIsBottle(10);
 			  }else{
-				  barobot.moveToBottle(10, !autofill);
+				  barobot.moveToBottle(barobot.main_queue,10, !autofill);
 				  if( autofill){
-					  barobot.nalej(10);
+					  barobot.pour(barobot.main_queue,10, true);
 				  }
 			  }
 		      break;
@@ -157,9 +149,9 @@ public class button_zajedz  implements OnClickListener {
 			  if(setting_mode){
 				  barobot.hereIsBottle(11);
 			  }else{
-				  barobot.moveToBottle(11, !autofill);
+				  barobot.moveToBottle(barobot.main_queue,11, !autofill);
 				  if( autofill){
-					  barobot.nalej(11);
+					  barobot.pour(barobot.main_queue,11, true);
 				  }
 			  }	    	  
 		      break;

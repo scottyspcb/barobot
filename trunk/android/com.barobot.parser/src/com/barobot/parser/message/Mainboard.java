@@ -274,8 +274,8 @@ public class Mainboard{
 					if(in.matches("^.*[^-a-zA-Z0-9_.,].*")){		// unusual characters
 						// log command to db
 					}
-					Initiator.logger.i("Mainboard.unknown.length", "("+in+") "+in.length() );
-					Initiator.logger.i("Mainboard.unknown.length", "("+in+") "+ in.getBytes().length );
+			//		Initiator.logger.i("Mainboard.unknown.length", "("+in+") "+in.length() );
+			//		Initiator.logger.i("Mainboard.unknown.length", "("+in+") "+ in.getBytes().length );
 					Initiator.logger.i("Mainboard.unknown", "("+in+") "+Decoder.toHexStr(in.getBytes(), in.length()));
 				//	mainQueue.show("Mainboard.parse");
 				}

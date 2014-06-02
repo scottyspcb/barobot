@@ -201,7 +201,7 @@ public class button_click implements OnClickListener{
 			mq.add(q);
 			break;
 		case R.id.fill5000:
-			barobot.nalej( -1 );
+			barobot.pour( q, -1, true );
 			break;
 		case R.id.set_bottle:
 			set_bottle_on  = true;

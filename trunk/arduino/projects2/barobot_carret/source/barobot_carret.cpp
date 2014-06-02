@@ -68,7 +68,6 @@ boolean diddd = false;
 unsigned long milisAnalog = 0;
 unsigned long mil = 0;
 
-
 uint16_t cc = 0;
 byte state_id = 0xff;
 int16_t up_level = 0;

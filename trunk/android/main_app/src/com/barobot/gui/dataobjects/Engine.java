@@ -9,6 +9,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.barobot.activity.BarobotMain;
+import com.barobot.common.constant.Constant;
 import com.barobot.gui.ArduinoListener;
 import com.barobot.gui.database.BarobotData;
 import com.barobot.hardware.Arduino;
@@ -179,23 +180,42 @@ public class Engine {
 		}
 		return true;
 	}
-	
-	public Boolean Pour(Recipe_t recipe,  final ArduinoListener mListener)
+
+	public Boolean Pour(Recipe_t recipe, final ArduinoListener mListener)
 	{
-		List<Integer> bottleSequence = GenerateSequence(recipe.getIngredients());
+		//	List<Integer> bottleSequence = GenerateSequence(ings);
+		List<Ingredient_t> ings = recipe.getIngredients();
 		BarobotConnector barobot = Arduino.getInstance().barobot;
-		if (bottleSequence == null){
-			return false; // We could not find some of the ingredients
-		}
-	//	virtualComponents.barobot.startDoingDrink();
-		for (Integer i : bottleSequence){
-			Log.i("Prepare", ""+i );
-			barobot.moveToBottle( i-1, false );
-			barobot.nalej(i-1);
+
+		List<Slot> slots = getSlots();
+		Queue q = barobot.main_queue;
+		barobot.startDoingDrink(q);
+
+		for(Ingredient_t ing : ings){
+			int position = getIngredientPosition(slots, ing);
+			if (position != -1){
+				int count = (int) Math.round( ing.quantity/barobot.getCapacity( position -1 ) );
+				if( count == 0 ){
+					count = 1;
+				}
+		//		Log.i("Prepare", ""+position+"/"+count );
+				barobot.moveToBottle(q, position-1, false );
+				for (int iter = 1; iter <= count ; iter++){
+					if( iter > 1){
+		//				Log.i("Prepare", "addWait" );
+						int repeat_time = barobot.getRepeatTime( position-1 );
+						q.addWait( repeat_time  );			// wait for refill
+					}
+		//			Log.i("Prepare", "pour" );
+					barobot.pour(q, position-1, false);
+				}
+			}else{// We could not find some of the ingredients
+			}
 		}
 		barobot.moveToStart();		// na koniec
 		barobot.onDrinkFinish();
 
+		/*
 		Queue q	= Arduino.getMainQ();
 		q.add( new AsyncMessage( true ) {
 			@Override	
@@ -205,16 +225,14 @@ public class Engine {
 			@Override
 			public Queue run(Mainboard dev, Queue queue) {
 				this.name		= "onQueueFinished";
-				/*
-				 BarobotMain.getInstance().runOnUiThread(new Runnable() {  
+				BarobotMain.getInstance().runOnUiThread(new Runnable() {  
 	                    @Override
 	                    public void run() {
 	                    	mListener.onQueueFinished();
                    }});
-				 */
 				return null;
 			}
-		} );
+		} );*/
 		return true;
 	}
 	

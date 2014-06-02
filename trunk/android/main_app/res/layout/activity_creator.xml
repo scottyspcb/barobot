@@ -22,11 +22,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal" >
-
+			<!-- android:drawableBottom="@drawable/drop_3"-->
             <TextView
                 android:id="@+id/bottle_button1"
                 style="@style/BottleButtonCreator"
-                android:drawableBottom="@drawable/drop_3"
+                
                 android:onClick="onBottleClicked" />
 
             <TextView
@@ -106,6 +106,7 @@
                 android:orientation="vertical" >
 
                 <Button
+                    android:id="@+id/creator_pour_button"
                     style="@style/ButtonGreen"
                     android:layout_width="fill_parent"
                     android:layout_height="0sp"

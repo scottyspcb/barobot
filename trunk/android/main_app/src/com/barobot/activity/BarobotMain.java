@@ -12,6 +12,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.AdapterView.OnItemClickListener;
 
@@ -189,23 +190,21 @@ public class BarobotMain extends BarobotActivity implements ArduinoListener {
 			attributesFragment.SetAttributes(mCurrentRecipe.GetSweet(), mCurrentRecipe.GetSour(), 
 					mCurrentRecipe.GetBitter(), mCurrentRecipe.GetStrength());
 
-			
-			 Thread rr = new Thread( 
-					 new Runnable() { 
-						 public void run() {
-								BarobotConnector barobot = Arduino.getInstance().barobot;
-								barobot.setLedsOff("ff"); 
-								 List<Ingredient_t> a = mCurrentRecipe.getIngredients();
-								 List<Integer> bottleSequence= Engine.GetInstance(BarobotMain.this).GenerateSequence(a); 
-								 if(bottleSequence != null){ 
-									 Queue q = Arduino.getMainQ();
-									 for (Integer i : bottleSequence){ 
-										 Upanel u =barobot.i2c.getUpanelByBottle(i-1); 
-										 if(u!=null){
-											 u.setLed(q, "22", 100);
-										 }
-									 } }
+			 Thread rr = new Thread(  new Runnable() { 
+				 public void run() {
+						BarobotConnector barobot = Arduino.getInstance().barobot;
+						barobot.setLedsOff("ff"); 
+						 List<Ingredient_t> a = mCurrentRecipe.getIngredients();
+						 List<Integer> bottleSequence= Engine.GetInstance(BarobotMain.this).GenerateSequence(a); 
+						 if(bottleSequence != null){ 
+							 Queue q = Arduino.getMainQ();
+							 for (Integer i : bottleSequence){ 
+								 Upanel u =barobot.i2c.getUpanelByBottle(i-1); 
+								 if(u!=null){
+									 u.setLed(q, "22", 255);
 								 }
+							 } }
+						 }
 			}); 
 			rr.start();
 		}
@@ -213,7 +212,21 @@ public class BarobotMain extends BarobotActivity implements ArduinoListener {
 
 	public void onPourButtonClicked(View view) {
 		if (mCurrentRecipe != null) {
-			Engine.GetInstance(this).Pour(mCurrentRecipe, this);
+			final Button xb2 = (Button) this.findViewById(R.id.choose_pour_button);
+			xb2.setEnabled(false);
+			Thread t = new Thread(new Runnable() {  
+	             @Override
+	             public void run() {
+	            	Engine.GetInstance(BarobotMain.this).Pour(mCurrentRecipe, BarobotMain.this);
+	         		runOnUiThread(new Runnable() {
+	        			@Override
+	        			public void run() {
+	        				xb2.setEnabled(true);
+	        			}
+	        		});
+
+	             }});
+			t.start();
 		}
 	}
 

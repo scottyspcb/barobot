@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.barobot.R;
@@ -189,13 +190,11 @@ public class CreatorActivity extends BarobotActivity implements ArduinoListener{
 	    
 	    builder.setView(dialogView)
 		.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-			
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 			}
 		})
 		.setPositiveButton("Add", new DialogInterface.OnClickListener() {
-			
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				TextView nameView = (TextView) dialogView.findViewById(R.id.recipe_name);
@@ -206,11 +205,25 @@ public class CreatorActivity extends BarobotActivity implements ArduinoListener{
 	    AlertDialog ad = builder.create();
 	    ad.show();
 	}
-	
+
 	public void onPourRecipeButtonClicked (View view){
-		Recipe_t tempRecipe = CreateDrink("Unnamed Drink", true);
-		Engine.GetInstance(this).Pour(tempRecipe, this);
-		clear();
+		final Recipe_t tempRecipe = CreateDrink("Unnamed Drink", true);
+		final Button xb2 = (Button) this.findViewById(R.id.creator_pour_button);
+		xb2.setEnabled(false);
+
+		Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+            	Engine.GetInstance(CreatorActivity.this).Pour(tempRecipe, CreatorActivity.this);
+            	clear();
+    			runOnUiThread(new Runnable() {
+        			@Override
+        			public void run() {
+        				xb2.setEnabled(true);
+        			}
+        		});
+            }});
+		t.start();
 	}
 	
 	private void addIngredient(int position, Ingredient_t ing)
@@ -235,17 +248,16 @@ public class CreatorActivity extends BarobotActivity implements ArduinoListener{
 		}
 		return null;
 	}
-	
+
 	public void CalculateDrops()
 	{
 		SetupDrops();
-		
 		List<Integer> sequence = Engine.GetInstance(this).GenerateSequence(ingredients);
-		
+
 		for(Integer num : sequence) {
 			drops[num]++;
 		}
-		
+
 		for (int idx=1; idx <= 12 ; idx ++)
 		{
 			TextView tview = (TextView) findViewById(ids[idx]);

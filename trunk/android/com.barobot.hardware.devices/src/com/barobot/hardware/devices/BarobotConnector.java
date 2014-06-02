@@ -2,6 +2,7 @@ package com.barobot.hardware.devices;
 
 import com.barobot.common.Initiator;
 import com.barobot.common.constant.Constant;
+import com.barobot.common.constant.Methods;
 import com.barobot.common.interfaces.HardwareState;
 import com.barobot.common.interfaces.serial.CanSend;
 import com.barobot.common.interfaces.serial.SerialInputListener;
@@ -11,6 +12,7 @@ import com.barobot.hardware.devices.i2c.Upanel;
 import com.barobot.parser.Queue;
 import com.barobot.parser.message.AsyncMessage;
 import com.barobot.parser.message.Mainboard;
+import com.barobot.parser.utils.Decoder;
 
 public class BarobotConnector {
 	public boolean ledsReady = false;
@@ -65,7 +67,7 @@ public class BarobotConnector {
 		this.driver_z	= new Servo( state, "Z" );
 		this.main_queue = new Queue( mb );
 		this.i2c  		= new I2C();
-		this.driver_x.defaultSpeed = Constant.DRIVER_X_SPEED;
+		this.driver_x.defaultSpeed = state.getInt("DRIVER_X_SPEED", Constant.DRIVER_X_SPEED );
 	}
 
 	public SerialInputListener willReadFrom(Wire connection) {
@@ -168,7 +170,7 @@ public class BarobotConnector {
 				int posy		=  state.getInt("POSY", 0 );
 			//	if( posy != newpos && posy != newpos -margin && posy != newpos +margin){
 					q4.add("Y" + newpos+ ","+Constant.DRIVER_Y_SPEED, true);
-					q4.addWait(100);
+					q4.addWait(10);
 					if( newpos > posy ){	// forward
 						q4.add("Y" + (newpos - margin)+ ","+Constant.DRIVER_Y_SPEED, true);	
 					}else{	// backwad
@@ -218,27 +220,21 @@ public class BarobotConnector {
 		state.set("BOTTLE_Y_" + i, posy );
 	}
 
-	public void startDoingDrink() {
-		Queue q = main_queue;
-		i2c.carret.setLed( q, "11", 250 );
-		Queue q1		= new Queue();	
-		Upanel[] up		= i2c.getUpanels();
-		for(int i =0; i<up.length;i++){
-			up[i].setLed(q1, "ff", 200);
-		}
-		q.add(q1);
+	public void startDoingDrink( Queue q) {// homing
+		i2c.carret.setLed( q, "11", 255 );
+		doHoming(q);
 	}
 
 	public void moveZUp( Queue q, boolean disableOnReady ) {
-	//		q.add("EZ", true);
-			int poszup	=  Constant.SERVOZ_UP_POS;
-			q.add("Z" + poszup+","+Constant.DRIVER_Z_SPEED, true);
-		//	q.addWait( virtualComponents.SERVOZ_UP_TIME );	// wiec trzeba poczekaæ
-			if(disableOnReady){
-				q.addWait(300);
-				q.add("DZ", true);
-			}
+//		q.add("EZ", true);
+		int poszup	=  Constant.SERVOZ_UP_POS;
+		q.add("Z" + poszup+","+Constant.DRIVER_Z_SPEED, true);
+	//	q.addWait( virtualComponents.SERVOZ_UP_TIME );	// wiec trzeba poczekaæ
+		if(disableOnReady){
+			q.addWait(300);
+			q.add("DZ", true);
 		}
+	}
 
 	public void moveZLight(Queue q, boolean disableOnReady) {
 //		q.add("EZ", true);
@@ -250,19 +246,30 @@ public class BarobotConnector {
 			q.add("DZ", true);
 		}
 	}
-
 	public void moveZ(Queue q, int pos) {
 		q.add("Z" + pos +","+Constant.DRIVER_Z_SPEED, true);
-		q.addWait(300);
 	}
-
-	public void moveZDown(Queue q, boolean disableOnReady) {
-		int py =  state.getInt("POSY", 0 );
-		if( py != Constant.SERVOZ_DOWN_POS ){
-			int poszdown	=  state.getInt("ENDSTOP_Z_MIN", Constant.SERVOZ_DOWN_POS );
-			moveZ(q, poszdown );
-			q.add("DZ", true);
-		}
+	public void moveZDown(Queue q, final boolean disableOnReady ) {
+		q.add( new AsyncMessage( true ){
+			@Override	
+			public String getName() {
+				return "moveZDown logic" ;
+			}
+			@Override
+			public Queue run(Mainboard dev, Queue queue) {
+				Queue q4 = new Queue();
+				int py =  state.getInt("POSZ", 0 );
+				if( py != Constant.SERVOZ_DOWN_POS ){
+					int poszdown	=  state.getInt("ENDSTOP_Z_MIN", Constant.SERVOZ_DOWN_POS );
+					moveZ( q4, poszdown );
+					if(disableOnReady){
+						q4.addWait( 300 );
+						q4.add("DZ", true);
+					}
+				}
+				return q4;
+			}
+		});
 	}
 
 	public void kalibrcja() {
@@ -278,21 +285,22 @@ public class BarobotConnector {
 		state.set("POS_START_X", "0" );
 		state.set("POS_START_Y", "0" );
 
-		Initiator.logger.i("+find_bottles", "start");
+	//	Initiator.logger.i("+find_bottles", "start");
 		q.add("EX", true );
-		moveZDown( q ,true );
-		q.addWait(100);
+		moveZDown( q ,false );
+		q.addWait(10);
 		moveZ( q, Constant.SERVOZ_TEST_POS );
-		q.addWait(100);
-		moveZDown( q ,true );
-		q.addWait(200);
+		q.addWait(10);
+		moveZDown( q ,false );
+		q.addWait(10);
+
 		moveY( q, Constant.SERVOY_TEST_POS, true);
 		q.addWait(200);
 		moveY( q, Constant.SERVOY_FRONT_POS, true);
 		q.addWait(200);
 		int lengthx19	=  state.getInt("LENGTHX", 60000 );
 		
-		Initiator.logger.i("+find_bottles", "up");
+	//	Initiator.logger.i("+find_bottles", "up");
 		driver_x.moveTo( q, posx + 1000);
 		q.addWait(100);
 		driver_x.moveTo( q, -70000 );
@@ -307,7 +315,7 @@ public class BarobotConnector {
 			@Override
 			public Queue run(Mainboard dev, Queue queue) {
 				this.name		= "scanning up";
-				driver_x.defaultSpeed = 1000;
+				driver_x.defaultSpeed = state.getInt("DRIVER_CALIB_X_SPEED", Constant.DRIVER_CALIB_X_SPEED );
 				Initiator.logger.i("+find_bottles", "up");
 				state.set("scann_bottles", 1 );
 				return null;
@@ -318,7 +326,7 @@ public class BarobotConnector {
 			@Override
 			public Queue run(Mainboard dev, Queue queue) {
 				this.name		= "scanning back";
-				driver_x.defaultSpeed = Constant.DRIVER_X_SPEED;
+				driver_x.defaultSpeed = state.getInt("DRIVER_X_SPEED", Constant.DRIVER_X_SPEED );
 				Initiator.logger.i("+find_bottles", "down kalibrcja");
 				return null;
 			}
@@ -345,6 +353,10 @@ public class BarobotConnector {
 				return null;
 			}
 		} );
+		q.add("DX", true);
+	    q.add("DY", true);
+	    q.addWait(100);
+	    q.add("DZ", true);
 		//virtualComponents.scann_leds();
 	}
 
@@ -373,42 +385,100 @@ public class BarobotConnector {
 				this.name		= "check position";
 				int posx		= driver_x.getSPos();;		// czy ja juz jestem na tej pozycji?	
 				int posy		= state.getInt("POSY", 0 );
+				int posz		= state.getInt("POSZ", 0 );
 				int sposx		= state.getInt("POS_START_X", 0 );		// tu mam byc
-				int sposy		= state.getInt("POS_START_X", 0 );
+				int sposy		= state.getInt("POS_START_Y", 0 );
 
-				if(posx != sposx || posy != sposy ){		// musze jechac?
-					Queue	q2	= new Queue();
-					moveZDown(q2, true );
-					//virtualComponents.moveY( q2, virtualComponents.get("NEUTRAL_POS_Y", "0" ));
-					moveY( q2, Constant.SERVOY_FRONT_POS, true );
-					driver_x.moveTo( q2, sposx);
-					moveY( q2, sposy, true );
-					return q2;
+				Queue	q2	= new Queue();
+				if( posz != Constant.SERVOZ_DOWN_POS ){
+					moveZDown(q2, false );
 				}
-				return null;
+				if( posy != sposy ){
+					moveY( q2, sposy, true );
+				}
+				if(posx != sposx ){
+					driver_x.moveTo( q2, sposx);
+					doHoming( q2 );
+				}
+				q2.add("DZ", true);
+				return q2;
 			}
 		} );
 	    q.add(Constant.GETXPOS, true);
 	    q.add(Constant.GETYPOS, true);
 	    q.add(Constant.GETZPOS, true);
-
 	}
-	public void onDrinkFinish() {
-		Queue q = main_queue;
+	protected void doHoming(Queue q) {
+		q.add( new AsyncMessage( "A0", true ) {// check i'm over endstop (neodymium magnet)
+			@Override
+			public String getName() {
+				return "homing";
+			}
+			@Override
+			public boolean isRet(String result, Queue mainQueue) {
+			//	Initiator.logger.w("startDoingDrink.onInput", result );
+				if(result.matches("^" +  Methods.METHOD_IMPORTANT_ANALOG + ",0,.*" )){	// 125,0,100,0,0,0,255,202,126,1
+					int[] parts = Decoder.decodeBytes( result );
+					boolean need_homing = false;
+		//			Initiator.logger.w("startDoingDrink.input:", ""+parts[2]  );
+					if( parts[2] == Methods.HX_STATE_9 ){			// this is max
+						// ok it is home
+					}else{
+						need_homing = true;
+					}
+					if( need_homing ){
+			//			Initiator.logger.w("startDoingDrink.homing", "MOVE" );
+						Queue	q2	= new Queue(); 
+						moveZDown( q2 ,true );
+						q2.add("X-20000,"+ BarobotConnector.this.driver_x.defaultSpeed, true);
+						mainQueue.addFirst(q2);
+					//	return true;
+					}
+				}
+				return false;
+			}
+			/*
+			@Override
+			public Queue run(Mainboard dev, Queue queue){
+				this.name		= "Check Hall X";
+				queue.sendNow("A0");
+				return null;
+			}*/
+			@Override
+			public boolean onInput(String input, Mainboard dev, Queue mainQueue) {
+			//	Initiator.logger.w("startDoingDrink.onInput", input );
+				if(input.equals("RA0")){		// its me
+					return true;
+				}else{
+					return false;
+				}
+			}
+		});
+	}
+
+	public void onDrinkFinish(){
+		Queue q 		= main_queue;
+		Queue q1		= new Queue();
+		Upanel[] up 	= i2c.getUpanels();
+		int posz		= state.getInt("POSZ", 0 );
+		if( posz == Constant.SERVOZ_DOWN_POS ){
+			moveZLight(q, true );					// move up to help
+		}
+		q.add("DX", true);
+	    q.add("DY", true);
+
 	    i2c.carret.setLed( q, "22", 250 );
 	    setLeds( "ff", 0 );
-		Queue q1			= new Queue();
-		Upanel[] up 		= i2c.getUpanels();
 		for(int i =up.length-1; i>=0;i--){
 			up[i].addLed(q1, "22", 200);
-			q1.addWait(100);
+			q1.addWait(70);
 			up[i].addLed(q1, "22", 0);
 		}
 		q.add(q1);
 		q.addWait(100);
 		setLeds( "88", 100 );
 		setLeds( "22", 200 );
-		q.addWait(200);
+		q.addWait(100);
 		i2c.carret.addLed( q, "22", 20 );
 		Queue q2			= new Queue();
 		for(int i =up.length-1; i>=0;i--){
@@ -418,18 +488,19 @@ public class BarobotConnector {
 			up[i].addLed(q1, "08", 50);
 		}
 		q.add(q2);
-		q.addWait(500);
+		q.addWait(100);
 		i2c.carret.addLed( q, "22", 250 );	
-		moveZUp(q2, true);					// go up to help
 	}
 
-	public void moveToBottle(final int num, final boolean disableOnReady ){
-		Queue q			= new Queue();
+	public void moveToBottle(Queue q, final int num, final boolean disableOnReady ){
 		final Upanel up	= i2c.getUpanelByBottle(num);
 		moveZDown( q ,true );
+		q.add(Constant.GETXPOS, true);
+	    q.add(Constant.GETYPOS, true);
+	    q.add(Constant.GETZPOS, true);
 		q.add( new AsyncMessage( true ){
 			@Override	
-			public String getName() {
+			public String getName(){
 				return "moveToBottle" ;
 			}
 			@Override
@@ -439,32 +510,40 @@ public class BarobotConnector {
 				int cy		= state.getInt("POSY", 0 );
 				int tx 		= getBottlePosX( num );
 				int ty  	= getBottlePosY( num );
-
 				if( tx == 0 && ty == 0 ){
 					return null;
 				}
-
 				Queue	q2	= new Queue();
 				if( up != null ){
 					up.setLed( q2, "11", 200 );
 				}
-				Initiator.logger.i("moveToBottle","(cx == tx && cy == ty)("+cx+" == "+tx+" && "+cy+" == "+ty+")");
-				if(cx == tx && cy == ty ){		// nie musze jechac
-					q2.addWait( Constant.SERVOY_REPEAT_TIME );
-				}else if(cx != tx && cy == ty ){		// jade tylem lub przodem
-					moveZDown(q2, disableOnReady );
-					if( cy > Constant.SERVOY_BACK_NEUTRAL ){
-						moveY( q2, Constant.SERVOY_BACK_NEUTRAL, true);
-					}else{
-						moveY( q2, Constant.SERVOY_FRONT_POS, true);	
-					}
+		//		Initiator.logger.i("moveToBottle","(cx == tx && cy == ty)("+cx+" == "+tx+" && "+cy+" == "+ty+")");
+
+				if(cx == tx && cy == ty ){				// not needed
+			//		q2.addWait( Constant.SERVOY_REPEAT_TIME );
+				}else if(cx != tx && cy == ty && ty <= Constant.SERVOY_HFRONT_POS ){	// change X, Y = front
+					moveZDown(q2, true );
 					driver_x.moveTo( q2, tx);
-					moveY( q2, ty, disableOnReady);		
-				}else{	// jade przodem
-					moveZDown(q2, disableOnReady );
-					moveY( q2, Constant.SERVOY_FRONT_POS, true);
-					driver_x.moveTo( q2, tx);
-					moveY( q2, ty, disableOnReady);
+
+				}else if(cx != tx && cy != ty && ty <= Constant.SERVOY_HFRONT_POS  ){	// change X and Y and target = front
+					moveZDown(q2, true );
+					moveY( q2, ty, disableOnReady );
+					driver_x.moveTo( q2, tx );
+
+				}else if(cx != tx && cy < ty && cy <= Constant.SERVOY_HFRONT_POS  ){	// change X and Y and current = front, target = back
+					moveZDown(q2, true );
+					driver_x.moveTo( q2, tx );
+					moveY( q2, ty, disableOnReady );
+		
+				}else if(cx == tx && cy != ty ){		// change Y
+					moveZDown(q2, true );
+					moveY( q2, ty, disableOnReady );	
+
+				}else{									// (change X and Y ) or (change X and Y is back)
+					moveZDown(q2, true );
+					moveY( q2, Constant.SERVOY_BACK_NEUTRAL, true);
+					driver_x.moveTo( q2, tx );
+					moveY( q2, ty, disableOnReady );
 				}
 				if( up != null ){
 					up.setLed( q2, "44", 200 );
@@ -476,13 +555,10 @@ public class BarobotConnector {
 	    q.add(Constant.GETXPOS, true);
 	    q.add(Constant.GETYPOS, true);
 	    q.add(Constant.GETZPOS, true);
-	    main_queue.add(q);
 	}
 
-	public void nalej(int num) {			// num 0-11
-		Queue q = main_queue;
+	public void pour( Queue q, final int num, boolean disableOnReady ) {			// num 0-11
 		int time = getPourTime(num);
-		Initiator.logger.i("nalej bottle: "+ num, "czas: "+ time);
 
 		final Upanel up	= i2c.getUpanelByBottle(num);
 		q.add("EX", true);
@@ -516,6 +592,7 @@ public class BarobotConnector {
 		}
 		q.add("DY", true);
 		moveZDown(q,false);
+		
 		q.add( new AsyncMessage( true ) {
 			@Override	
 			public String getName() {
@@ -528,9 +605,13 @@ public class BarobotConnector {
 					if( up != null ){
 						up.addLed( q2, "11", 100 );
 					}
-					q2.addWait( Constant.SERVOZ_PAC_TIME_WAIT );
-					q2.add("Z" + Constant.SERVOZ_PAC_POS+",255", true);	
-					moveZDown(q2, true );
+					
+					int time = getPacWaitTime( num );
+
+					q2.addWait( time );
+					q2.add("Z" + Constant.SERVOZ_PAC_POS+",255", true);
+					moveZDown( q2, false );
+					q2.addWait( 200 );
 					if( up != null ){
 						up.addLed( q2, "11", 0 );
 					}
@@ -539,10 +620,12 @@ public class BarobotConnector {
 			//	return null;
 			}
 		} );
-		q.add("DX", true);
-	    q.add("DY", true);
-	    q.addWait(100);
-	    q.add("DZ", true);
+		if(disableOnReady){
+			q.add("DX", true);
+		    q.add("DY", true);
+		    q.addWait(100);
+		    q.add("DZ", true);
+		}
 	    q.add(Constant.GETXPOS, true);
 	    q.add(Constant.GETYPOS, true);
 	    q.add(Constant.GETZPOS, true);
@@ -557,6 +640,19 @@ public class BarobotConnector {
 		return capacity * Constant.SERVOZ_POUR_TIME;
 	}
 
+	public int getRepeatTime(int num) {
+		int capacity	= getCapacity( num );
+		int time 		= state.getInt("SERVOY_REPEAT_TIME", Constant.SERVOY_REPEAT_TIME );
+		int base_time	= time/ 20;
+		return base_time * capacity;
+	}
+	public int getPacWaitTime(int num) {
+		int capacity	= getCapacity( num );
+		int time 		= state.getInt("SERVOZ_PAC_TIME_WAIT", Constant.SERVOZ_PAC_TIME_WAIT );
+		int base_time	= time/ 20;
+		return base_time * capacity;
+	}
+	
 	// todo move to slot
 	public int getCapacity( int num ){			// 0 - 11
 		if( num >= 0 && num < capacity.length){
@@ -578,7 +674,9 @@ public class BarobotConnector {
 		Queue q	= main_queue;
 		Upanel u = i2c.getUpanelByBottle(bottleNum);
 		if(u!=null){
-			if(count == 1 ){
+			if(count == 0 ){
+				u.setLed(q, "ff", 0);
+			}else if(count == 1 ){
 				u.setLed(q, "22", 255);			// green
 			}else if( count == 2 ){
 				u.setLed(q, "44", 255);			// blue
@@ -588,10 +686,8 @@ public class BarobotConnector {
 				u.setLed(q, "77", 255);			// green + blue + red
 			}else if( count == 5 ){
 				u.setLed(q, "88", 255);			// white
-			}else if( count == 6 ){
-				u.setLed(q, "ff", 255);			// white
 			}else{
-				u.setLed(q, "ff", 0);
+				u.setLed(q, "ff", 255);			// all
 			}
 		}
 	}
@@ -602,11 +698,9 @@ public class BarobotConnector {
 		int margin = state.getInt("BOTTLE_OFFSETX_" + num, BarobotConnector.margin_x[ num ] );
 		return margin;			
 	}
-
 	public void setCapacity(int num, int cap) {
 		this.state.set("BOTTLE_CAP_" + num, cap );	
 	}
-	
 	public void setLedsOff(String string ) {
 		Queue q1		= new Queue();	
 		Upanel[] up		= i2c.getUpanels();
@@ -623,4 +717,6 @@ public class BarobotConnector {
 		}
 		main_queue.add(q1);
 	}
+
+
 }

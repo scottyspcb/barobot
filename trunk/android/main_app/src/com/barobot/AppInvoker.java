@@ -2,7 +2,9 @@ package com.barobot;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import com.barobot.activity.BarobotMain;
 import com.barobot.common.Initiator;
@@ -19,6 +21,7 @@ public class AppInvoker {
 	public CameraManager cm;
     public ArrayList<Interval> inters = new ArrayList<Interval>();
 	private static Arduino arduino;
+	public static Map<String, Object> container =  new HashMap<String, Object>();
 
 	SofaServer ss =null; 
 			

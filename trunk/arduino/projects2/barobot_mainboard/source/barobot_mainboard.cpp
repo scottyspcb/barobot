@@ -225,7 +225,7 @@ void proceed( byte length,volatile uint8_t buffer[MAXCOMMAND] ){ // read I2C
 }
 
 void parseInput( String input ){   // zrozum co przyszlo po serialu
-	Serial.println("-input1: " + input );
+//	Serial.println("-input1: " + input );
 	input.trim();
 	boolean defaultResult = true;
 	byte command = serialBuff[0];
@@ -317,7 +317,7 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 		stepperX.setAcceleration(val);
 		DEBUGLN("-setAcceleration: " + String(val) );
 	}else if(command == 'X' ) {    // X10,10              // TARGET,MAXSPEED
-		Serial.println("-input0: " + input );
+	//	Serial.println("-input0: " + input );
 		String ss 		= input.substring( 1 );
 		paserDeriver(DRIVER_X,ss);
 		defaultResult = false;
@@ -601,18 +601,14 @@ void paserDeriver( byte driver, String input ){   // odczytaj komende silnika
 		String current  = input.substring(0, comma);
 		input           = input.substring(comma + 1 );    // wytnij od tego znaku
 		target          = decodeInt( current, 0 );
-
 	//	Serial.println("-current: " + current );
 	//	Serial.println("-input2: " + input );
-
 		if( input.length() > 0 ){
 			maxspeed       = input.toInt();
-			DEBUGLN("-setMaxSpeed: " + String(maxspeed) );
+	//		DEBUGLN("-setMaxSpeed: " + String(maxspeed) );
 		}
 	}
-
 //	Serial.println("-target: " + String(target) );
-	
 	if( driver == DRIVER_X){
 		if(maxspeed > 0){
 			stepperX.setMaxSpeed(maxspeed);
@@ -1035,11 +1031,11 @@ void serialEvent(){				             // Runs after every LOOP (means don't run if
 			serial0Buffer += String(inChar);
 			serialBuff[ serialBuff_pos++ ] = inChar;
 
-			String s = "["+ String(inChar)+"] ";
-			Serial.print(s);
+	//		String s = "["+ String(inChar)+"] ";
+	//		Serial.print(s);
 
 			if (inChar == '\n') {
-				Serial.println();
+	//			Serial.println();
 			//	Console0Complete = true;
 				parseInput( serial0Buffer );				      // parsuj wejscie
 			//	Console0Complete = false;
