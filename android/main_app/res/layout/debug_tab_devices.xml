@@ -29,21 +29,114 @@
 
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical" >
-
+  
         <ScrollView
             android:id="@+id/scrollView1"
             android:layout_width="match_parent"
             android:layout_height="match_parent" >
 
+			 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical" >
 
+                
+                
+            
+				<LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" >
+
+                    <Button
+                        android:id="@+id/button_speed_x"
+                        android:layout_width="122dp"
+                        android:layout_height="wrap_content"
+                        android:text="SPEEDX" />
+
+                    <EditText
+                        android:id="@+id/edit_speed_x"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:ems="10"
+                        android:inputType="number|numberSigned" />
+                    
+                </LinearLayout>
+                
+				
+				
+				
+				
+				<LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" >
+
+                    <Button
+                        android:id="@+id/button_repeat_time"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="SERVOY_REPEAT_TIME" />
+
+                    <EditText
+                        android:id="@+id/edit_repeat_time"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:ems="10"
+                        android:inputType="number|numberSigned" />
+                    
+                </LinearLayout>
+				
+				<LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" >
+
+                    <Button
+                        android:id="@+id/button_pac_time_wait"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="SERVOZ_PAC_TIME_WAIT" />
+
+                    <EditText
+                        android:id="@+id/edit_pac_time_wait"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:ems="10"
+                        android:inputType="number|numberSigned" />
+                    
+                </LinearLayout>
+				
+				
+				
+				
+				
+				
+				
+				
+				<LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" >
+
+                    <Button
+                        android:id="@+id/button_speed_cal_x"
+                        android:layout_width="122dp"
+                        android:layout_height="wrap_content"
+                        android:text="CAL SPEED" />
+
+                    <EditText
+                        android:id="@+id/edit_cal_speed_x"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:ems="10"
+                        android:inputType="number|numberSigned" />
+                    
+                </LinearLayout>    
+                
+                
+                
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" >
@@ -343,10 +436,9 @@
                         android:ems="10"
                         android:inputType="number" />
                     
-                </LinearLayout> 
-
+             
             </LinearLayout>
+   </LinearLayout>
         </ScrollView>
+       
     </LinearLayout>
-
-</LinearLayout>

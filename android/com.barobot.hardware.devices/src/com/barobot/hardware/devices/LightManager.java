@@ -11,6 +11,11 @@ public class LightManager {
 	String[] defaultDemo = {"","",""};
 	public void startDemo(BarobotConnector barobot) {
 		Queue q = barobot.main_queue;
+		
+		if(!barobot.ledsReady){
+			barobot.scann_leds();
+		}
+
 		LightManager lm = new LightManager();
 
 	//	lm.loading(barobot, q, 10);

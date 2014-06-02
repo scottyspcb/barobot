@@ -68,7 +68,7 @@ public class DetectorThread extends Thread{
             totalAbsValue += Math.abs(sample);
         }
        
-        averageAbsValue = totalAbsValue /  frameByteSize / 2;
+        averageAbsValue = totalAbsValue / frameByteSize / 2;
  //       System.out.println("size99: " +buffer.length );
         onSignalsDetectedListener.peek(averageAbsValue);
         /*

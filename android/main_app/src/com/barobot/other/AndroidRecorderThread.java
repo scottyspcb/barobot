@@ -17,16 +17,13 @@ public class AndroidRecorderThread extends Thread implements SampleAudioRecorder
 				config.get("sampleRate"), 
 				config.get("channelDef"), 
 				config.get("audioEncoding") ); // need to be larger than size of a frame
-
-		System.out.println("recBufSize: " + recBufSize );
 		audioRecord = new AudioRecord( 
 				config.get("source"),
 				config.get("sampleRate"),
 				config.get("channelDef"), 
 				config.get("audioEncoding"),
 				recBufSize );
-		System.out.println("frameByteSize: " + frameByteSize );
-	
+
 		buffer = new short[frameByteSize];
 	}
 	public void startRecording(){

@@ -13,30 +13,28 @@ import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.CompoundButton;
-import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.ToggleButton;
 
+import com.barobot.AppInvoker;
 import com.barobot.R;
 import com.barobot.activity.DebugActivity;
 import com.barobot.common.Initiator;
 import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
 import com.barobot.hardware.devices.i2c.I2C_Device_Imp;
-import com.barobot.hardware.devices.i2c.Upanel;
+import com.barobot.other.Audio;
 import com.barobot.parser.Queue;
 
 public class DebugTabLeds extends Fragment {
 	public int tab_id	= -1 ;
-	private Activity cc;
 	private int lastcolor = 0xff000000;
 	private View rootView;
 
-    public DebugTabLeds(Activity debugActivity, int tabCommandsId) {
+	public DebugTabLeds(Activity debugActivity, int tabCommandsId) {
     	Initiator.logger.i("DebugTabLeds", "init");
     	this.tab_id = tabCommandsId;
-    	this.cc=debugActivity;
 	}
 	@Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -69,10 +67,16 @@ public class DebugTabLeds extends Fragment {
 		Switch xb5 = (Switch) rootView.findViewById(R.id.light_show);	
 		xb5.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 		    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+		    	Audio a = (Audio) AppInvoker.container.get("Audio");
+		    	if(a == null ){
+		    		a = new Audio();
+		    		AppInvoker.container.put("Audio", a );
+		    	}
 		        if (isChecked) {
-		        	
+		    		final BarobotConnector barobot = Arduino.getInstance().barobot;
+		        	a.start(barobot);
 		        } else {
-		        	
+		        	a.stop();
 		        }
 		    }
 		});

@@ -49,12 +49,13 @@ public class Queue {
 		Initiator.logger.i("Queue","clearAll");
 		if(isMainQueue){
 			synchronized (this.lock_queue) {
-				this.output.clear();
+				synchronized (this.lock) {
+					this.output.clear();
+					wait_for_device = false;
+					mb.unlockRet("<clear>", true );
+				}
 			}
-			synchronized (this.lock) {
-				wait_for_device = false;
-				mb.unlockRet("<clear>", true );
-			}
+			
 		}
 	}
 
@@ -161,8 +162,15 @@ public class Queue {
 						return;
 					}
 				}
-				
-				AsyncMessage m	= output.pop();
+				AsyncMessage m = null;
+				synchronized (this.lock_queue) {
+					isEmpty = !output.isEmpty();
+					if(isEmpty){
+						break;
+					}else{
+						m	= output.pop();
+					}
+				}
 //				Initiator.logger.i("Queue.run.start",  m.toString() );
 				Queue nextq = m.start( mb, this );
 			//	moveToHistory( m );
@@ -212,10 +220,12 @@ public class Queue {
 	public void unlock() {
 		if(isMainQueue){
 			synchronized (this.lock) {
-				if(this.wait_for_device ){
-		//			Initiator.logger.i("Queue", "unlock id:" + this.wait_for_device );
-					mb.unlockRet("force unlock", false);
-					this.wait_for_device =  false;
+				synchronized (this.lock_queue) {
+					if(this.wait_for_device ){
+			//			Initiator.logger.i("Queue", "unlock id:" + this.wait_for_device );
+						mb.unlockRet("force unlock", false);
+						this.wait_for_device =  false;
+					}
 				}
 			}
 			exec();

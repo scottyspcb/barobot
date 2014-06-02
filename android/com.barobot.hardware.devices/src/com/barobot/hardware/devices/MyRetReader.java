@@ -200,6 +200,7 @@ public class MyRetReader implements RetReader {
 			}else if( parts[2] == Methods.METHOD_GET_Y_POS ){
 				decoded += "/METHOD_GET_Y_POS";
 				int pos = parts[3] + (parts[4] << 8); 
+				Initiator.logger.i("new pos y:", ""+pos );
 				state.set( "POSY",""+pos);
 				if(command.equals("y")){
 					return true;

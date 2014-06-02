@@ -43,7 +43,7 @@ public class MotorDriver {
 		if( software_pos > lx){		// Pozycja wieksza niz d³ugosc? Zwieksz d³ugosc
 			state.set( "LENGTHX", software_pos);
 		}
-		Initiator.logger.w("MotorDriver setSPos1", "" + software_pos + ", setHPos1: "+hardware_pos );
+	//	Initiator.logger.w("MotorDriver setSPos1", "" + software_pos + ", setHPos1: "+hardware_pos );
 	}
 	public void setHPos( int hpos ){
 		hardware_pos = hpos;
@@ -53,7 +53,7 @@ public class MotorDriver {
 		if( software_pos > lx){		// Pozycja wieksza niz d³ugosc? Zwieksz d³ugosc
 			state.set( "LENGTHX", software_pos);
 		}
-		Initiator.logger.w("MotorDriver setSPos2", "" + software_pos+ ", setHPos2: "+hardware_pos );
+	//	Initiator.logger.w("MotorDriver setSPos2", "" + software_pos+ ", setHPos2: "+hardware_pos );
 	}
 	public int getDirection() {
 		return direction;
@@ -89,29 +89,29 @@ public class MotorDriver {
 			@Override
 			public Queue run(Mainboard dev, Queue queue){
 				this.name		= "Check Hall X";
-				Initiator.logger.w("MotorDriver.movoTo.AsyncMessage.run", "want to s:" + pos + " / hpos" + newx );
+		//		Initiator.logger.w("MotorDriver.movoTo.AsyncMessage.run", "want to s:" + pos + " / hpos" + newx );
 				queue.sendNow("A0");
 				return null;
 			}
 			@Override
 			public boolean onInput(String input, Mainboard dev, Queue mainQueue) {
-				Initiator.logger.w("MotorDriver.movoTo.AsyncMessage.onInput", input );
+	//			Initiator.logger.w("MotorDriver.movoTo.AsyncMessage.onInput", input );
 				if(input.matches("^" +  Methods.METHOD_IMPORTANT_ANALOG + ",0,.*" )){		//	224,0,66,0,208,7,15,2
 					int[] parts = Decoder.decodeBytes( input );
 					boolean can = true;
 					if( parts[2] == Methods.HX_STATE_9 ){		// this is max	//	224,0,100,0,204,3,185,1
 						if(pos < currentx ){		// move backward
 							can = false;
-							Initiator.logger.w("MotorDriver.movoTo.AsyncMessage.onInput2", "BELOW MIN1 newx: "+ pos+ "currentx:"+currentx   );
+	//						Initiator.logger.w("MotorDriver.movoTo.AsyncMessage.onInput2", "BELOW MIN1 newx: "+ pos+ "currentx:"+currentx   );
 						}
 					}else if( parts[2] == Methods.HX_STATE_1 ){		// this is min
 						if( pos > currentx ){		// move forward
 							can = false;
-							Initiator.logger.w("MotorDriver.movoTo.AsyncMessage.onInput2", "OVER max newx: "+ pos+ "currentx:"+currentx  );
+	//						Initiator.logger.w("MotorDriver.movoTo.AsyncMessage.onInput2", "OVER max newx: "+ pos+ "currentx:"+currentx  );
 						}
 					}
 					if( can ){
-				//		Initiator.logger.w("MotorDriver.movoTo.AsyncMessage.onInput", "MOVE" );
+	//					Initiator.logger.w("MotorDriver.movoTo.AsyncMessage.onInput", "MOVE" );
 						Queue	q2	= new Queue(); 
 						q2.add("X" + newx+ ","+defaultSpeed, true);
 						mainQueue.addFirst(q2);

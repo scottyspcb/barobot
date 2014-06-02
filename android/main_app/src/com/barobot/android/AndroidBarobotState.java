@@ -35,6 +35,11 @@ public class AndroidBarobotState implements HardwareState{
 		"ENDSTOP_Y_MIN",
 		"ENDSTOP_Y_MAX",
 
+		"DRIVER_X_SPEED",
+		"DRIVER_CALIB_X_SPEED",
+		"SERVOY_REPEAT_TIME",
+		"SERVOZ_PAC_TIME_WAIT",
+
 		"BOTTLE_OFFSETX_0",
 		"BOTTLE_OFFSETX_1",
 		"BOTTLE_OFFSETX_2",

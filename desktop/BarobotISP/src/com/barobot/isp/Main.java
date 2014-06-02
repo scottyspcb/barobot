@@ -25,7 +25,6 @@ public class Main{
 	public String config_filename	= "isp_settings.txt";
 	public Hardware hw;
 	public static Main main = null;
-
 	public static void main(String[] args) {
 		String[] portNames = SerialPortList.getPortNames();
         for(int i = 0; i < portNames.length; i++){
@@ -62,18 +61,22 @@ public class Main{
 		MetaRendering mr		= new MetaRendering();
 		Queue q					= hw.getQueue();
 		LightManager lm			= new LightManager();
+		hw.connectIfDisconnected();
+		
+	//	hw.barobot.scann_leds();
+		
 /*
 		for( int i =0; i<255;i++){
 			int p = com.barobot.common.constant.Pwm.linear2log(i );
 			System.out.println(""+i + "," + p);
 		}
 		*/
-		hw.connectIfDisconnected();
+		
 	//	w.fast_close_test( hw );
 	//	uc.prepareSlaveMB( hw );
 	//	uc.prepareMB( hw );
-	//	uc.prepareMB2( hw );
-		uc.prepareMBManualReset( hw );
+		//	uc.prepareMB2( hw );
+	//	uc.prepareMBManualReset( hw );
 	//	uc.prepareCarret( hw );
 	//	mr.createContstans();
 	//	uc.prepareUpanels( hw );
@@ -82,7 +85,6 @@ public class Main{
 	//	uc.prepare1Upanel( hw, hw.barobot, Upanel.FRONT );
 /*
 		q.addWaitThread( Main.main );
-		hw.barobot.scann_leds();
 		q.addWaitThread( Main.main );
 
 		I2C_Device[] list = hw.barobot.i2c.getDevicesWithLeds();
@@ -102,23 +104,30 @@ public class Main{
 		w.illumination1( hw );
 */
 	//	q.addWaitThread( Main.main );
-		/*
-		q.addWaitThread( Main.main );
-		q.addWait(100);
 
-		lm.flaga( hw.barobot, q, 6 );
-		q.addWaitThread( Main.main );
-		lm.mrygajRGB( hw.barobot, q, 60 );
-		q.addWaitThread( Main.main );
-		lm.nazmiane( hw.barobot, q, 6 );
-		q.addWaitThread( Main.main );
+	//	q.addWaitThread( Main.main );
+
+
+	//	lm.flaga( hw.barobot, q, 6 );
+/*
+	//	q.addWaitThread( Main.main );
+		lm.mrygajRGB( hw.barobot, q, 60, 50 );
+
+		lm.nazmiane( hw.barobot, q, 6, 100 );
 		lm.loading(hw.barobot, q, 6);
-		lm.linijka( hw.barobot, q, 6 );
+		
+		lm.linijka( hw.barobot, q, 6, 100 );
 		lm.tecza( hw.barobot, q, 6 );
 		lm.strobo( hw.barobot, q, 109 );
 		lm.zapal(hw.barobot, q);
+		
+		
+		
 		w.koniec( hw );
 	*/
+		
+		lm.startDemo(hw.barobot);
+		
 	//	w.findStops(hw);
 	//	hw.connectIfDisconnected();	
 	//	hw.barobot.kalibrcja();

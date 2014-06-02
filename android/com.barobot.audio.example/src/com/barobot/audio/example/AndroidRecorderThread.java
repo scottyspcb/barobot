@@ -25,7 +25,7 @@ public class AndroidRecorderThread extends Thread implements SampleAudioRecorder
 				config.get("channelDef"), 
 				config.get("audioEncoding"),
 				recBufSize );
-		System.out.println("frameByteSize: " + frameByteSize );
+		//System.out.println("frameByteSize: " + frameByteSize );
 	
 		buffer = new short[frameByteSize];
 	}

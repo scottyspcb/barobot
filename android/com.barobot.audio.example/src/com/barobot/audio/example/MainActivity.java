@@ -15,7 +15,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.barobot.audio.DetectorThread;
-import com.barobot.common.Initiator;
+import com.barobot.common.constant.Pwm;
 import com.barobot.common.interfaces.HardwareState;
 import com.barobot.common.interfaces.OnSignalsDetectedListener;
 import com.barobot.common.interfaces.serial.SerialEventListener;
@@ -54,7 +54,9 @@ public class MainActivity extends Activity implements OnSignalsDetectedListener{
 
 		ProgressBar textView = (ProgressBar) mainView.findViewById(R.id.progressBar1);
 		textView.setMax(1024);
-    	
+		ProgressBar textView4 = (ProgressBar) mainView.findViewById(R.id.ProgressBar01);
+		textView4.setMax(1024);
+		
 		startConnection();
 
 		Button xb1 = (Button) findViewById(R.id.unlock);
@@ -66,7 +68,6 @@ public class MainActivity extends Activity implements OnSignalsDetectedListener{
 		});
 		System.out.println("before scann_leds");
     //	init();
-
 	}
 
 	private void startConnection() {
@@ -95,7 +96,7 @@ public class MainActivity extends Activity implements OnSignalsDetectedListener{
 			}
 		});
 		connection.init();
-		SerialInputListener listener = barobot.willReadFrom( connection );
+		barobot.willReadFrom( connection );
 		barobot.willWriteThrough( connection );
 	}
 
@@ -104,11 +105,7 @@ public class MainActivity extends Activity implements OnSignalsDetectedListener{
 		barobot.main_queue.add( new AsyncMessage( true ) {
 			@Override
 			public Queue run(Mainboard dev, Queue queue) {
-
 				this.name		= "turnoff";
-				
-				System.out.println("turnoff");
-				
 				Upanel[] up		= barobot.i2c.getUpanels();
 				for( int i=0;i<up.length ;i++){
 					barobot.main_queue.add( "L"+ up[i].getAddress() + ",ff,0", true );
@@ -120,24 +117,25 @@ public class MainActivity extends Activity implements OnSignalsDetectedListener{
 			@Override
 			public Queue run(Mainboard dev, Queue queue) {
 				this.name		= "scanning";
-
-				Map<String, Integer> config = new HashMap<String, Integer>();
-				config.put("source",  MediaRecorder.AudioSource.MIC);
-				config.put("frameByteSize", 2048);
-				config.put("channelDef", AudioFormat.CHANNEL_IN_MONO);
-				config.put("channels", 1 );
-				config.put("sampleSize", 2048 );
-				config.put("averageLength", 2048 );
-				config.put("audioEncoding",  AudioFormat.ENCODING_PCM_16BIT);
-				config.put("bitDepth",   16 );
-				config.put("sampleRate", 44100);
-
-				recorderThread = new AndroidRecorderThread( config );
-				recorderThread.start();
-				detectorThread = new DetectorThread( config, recorderThread);
-				detectorThread.setOnSignalsDetectedListener(MainActivity.this);
-				detectorThread.start();
-
+				Upanel[] up		= barobot.i2c.getUpanels();
+				if(up.length >= 12){
+					Map<String, Integer> config = new HashMap<String, Integer>();
+					config.put("source",  MediaRecorder.AudioSource.MIC);
+					config.put("frameByteSize", 2048);
+					config.put("channelDef", AudioFormat.CHANNEL_IN_MONO);
+					config.put("channels", 1 );
+					config.put("sampleSize", 2048 );
+					config.put("averageLength", 2048 );
+					config.put("audioEncoding",  AudioFormat.ENCODING_PCM_16BIT);
+					config.put("bitDepth",   16 );
+					config.put("sampleRate", 44100);
+	
+					recorderThread = new AndroidRecorderThread( config );
+					recorderThread.start();
+					detectorThread = new DetectorThread( config, recorderThread);
+					detectorThread.setOnSignalsDetectedListener(MainActivity.this);
+					detectorThread.start();
+				}
 				return null;
 			}
 		} );
@@ -222,58 +220,68 @@ public class MainActivity extends Activity implements OnSignalsDetectedListener{
 		final long current = (long) (averageAbsValue * (averageAbsValue));
 		if( current > max ){
 			max = current;
-			runOnUiThread(new Runnable() {
-				public void run() {
-					ProgressBar textView = (ProgressBar) mainView.findViewById(R.id.progressBar1);
-					int norm = (int) (current/max * 1024);
-					textView.setMax( norm );
-					TextView maxxxmaxxx = (TextView) mainView.findViewById(R.id.maxxx);
-					maxxxmaxxx.setText(""+ max);
-				}
-			});
 		}
 		if( current < min ){
 			min = current;
 		}
 		Upanel[] up				= barobot.i2c.getUpanels();
-		final float div 		= (( (float) current - (float) min)/ (float) max);
-		final int norm = (int) (div * 1024);
+		float overmin			=  current - min;
+		float scope				=  max - min;
+		final float div 		= ( overmin / scope);
+		final int norm			= (int) (div * 1024);
 	//	System.out.println("\t>>>add: " + current);
-		if( Math.abs(norm - last) > 6 ){
+		if( Math.abs(norm - last) > 5 || norm <= 1 ){
+	//		System.out.println("\t>>>add: " + Math.abs(norm - last)+ "/ "+ norm );
 			float b = div * 255;
 			b = Math.min(b, 255);
+			int val1 = (int) b;
+			int val2 = Pwm.linear2log((int) b, 1 );
+	//		
+			final String command1f = ",11," + val2;
+			final String command2f = ",22," + val2;
+			final String command3f = ",44," + val2;
+			final String command4f = ",88," + val2;
 
-			final String command1 = ",11," + ((int) b);
-			final String command2 = ",22," + ((int) b);
-			final String command3 = ",44," + ((int) b);
-	//		System.out.println("\t>>>add: " + command);
+			final String command1b = ",11," + val1;
+			final String command2b = ",22," + val1;
+			final String command3b = ",44," + val1;
 
-			barobot.main_queue.add( "L"+ up[1].getAddress() +command3, sync);
-			barobot.main_queue.add( "L"+ up[3].getAddress() +command2, sync);
-			barobot.main_queue.add( "L"+ up[5].getAddress() +command1, sync);
-			barobot.main_queue.add( "L"+ up[7].getAddress() +command1, sync);
-			barobot.main_queue.add( "L"+ up[9].getAddress() +command2, sync);
-			barobot.main_queue.add( "L"+ up[11].getAddress() +command3, sync);
-			/*
-			barobot.main_queue.add( "L"+ up[6].getAddress() +command1, sync);
-			barobot.main_queue.add( "L"+ up[7].getAddress() +command1, sync);
-			barobot.main_queue.add( "L"+ up[9].getAddress() +command1, sync);
-			barobot.main_queue.add( "L"+ up[10].getAddress() +command1, sync);
-			barobot.main_queue.add( "L"+ up[10].getAddress() +command1, sync);
-			barobot.main_queue.add( "L"+ up[11].getAddress() +command1, sync);
-			*/
-			last = norm;
+			barobot.main_queue.add( "B"+ "10" +command4f, sync);
+			barobot.main_queue.add( "B"+ up[1].getAddress() +command3f, sync);
+			barobot.main_queue.add( "B"+ up[3].getAddress() +command2f, sync);
+			barobot.main_queue.add( "B"+ up[5].getAddress() +command1f, sync);
+			barobot.main_queue.add( "B"+ up[7].getAddress() +command1f, sync);
+			barobot.main_queue.add( "B"+ up[9].getAddress() +command2f, sync);
+			barobot.main_queue.add( "B"+ up[11].getAddress() +command3f, sync);
+
+			barobot.main_queue.add( "B"+ up[0].getAddress() +command1b, sync);
+			barobot.main_queue.add( "B"+ up[2].getAddress() +command1b, sync);
+			barobot.main_queue.add( "B"+ up[4].getAddress() +command1b, sync);
+			barobot.main_queue.add( "B"+ up[6].getAddress() +command1b, sync);
+			barobot.main_queue.add( "B"+ up[8].getAddress() +command1b, sync);
+			barobot.main_queue.add( "B"+ up[10].getAddress() +command1b, sync);
+			min+=1;		// auto ajdist
+			max = (long) (max * 0.95);		// auto ajdist
+			last= norm;
+			runOnUiThread(new Runnable() {
+				public void run() {
+					ProgressBar textView = (ProgressBar) mainView.findViewById(R.id.progressBar1);
+					textView.setProgress((int) current);
+					textView.setMax(norm);
+					ProgressBar p2 = (ProgressBar) mainView.findViewById(R.id.ProgressBar01);
+					p2.setProgress((int)min);
+					p2.setMax(norm);
+					TextView normnorm = (TextView) mainView.findViewById(R.id.normnorm);
+					normnorm.setText(""+ norm);	
+					TextView textView2 = (TextView) mainView.findViewById(R.id.curcur);
+					textView2.setText(""+ current);
+	
+					TextView maxxxmaxxx = (TextView) mainView.findViewById(R.id.maxxx);
+					maxxxmaxxx.setText(""+ max);
+	
+				}
+			});
 		}
-		runOnUiThread(new Runnable() {
-			public void run() {
-				ProgressBar textView = (ProgressBar) mainView.findViewById(R.id.progressBar1);
-				textView.setProgress(norm);
-				TextView normnorm = (TextView) mainView.findViewById(R.id.normnorm);
-				normnorm.setText(""+ norm);	
-				TextView textView2 = (TextView) mainView.findViewById(R.id.curcur);
-				textView2.setText(""+ current);
-			}
-		});
 	}
 
 	public void notify(String string, final double value) {
@@ -326,8 +334,7 @@ public class MainActivity extends Activity implements OnSignalsDetectedListener{
 	boolean toggled1 = false;
 	boolean toggled2 = false;
 	boolean toggled3 = false;
-	
-	
+
 	Interval ii1 = null;
 	Interval ii2 = null;
 	Interval ii3 = null;
