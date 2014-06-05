@@ -95,6 +95,7 @@ public class Queue {
 			output.add(msg);
 		}
 	//	Initiator.logger.i("Queue.add2 length", ""+output.size() );
+	//	Initiator.logger.i("Queue.add2", "exec" );
 		exec();
 	}
 	public void add(String command, final String retcmd) {
@@ -140,38 +141,42 @@ public class Queue {
 			return;
 		}
 		synchronized (this.lock_exec) {
-	//		Initiator.logger.i("Queue.run.wait_for1", ""+ wait_for_device_id);
+	//		Initiator.logger.i("Queue.run.wait_for1", "");
 			if( this.wait_for_device ){
 			//	endRun();
-		//		Initiator.logger.i("Queue.run.wait_for1 stop", ""+ wait_for_device_id);
+		//		Initiator.logger.i("Queue.run.wait_for1 stop", ""+ wait_for_device);
 				return;		// jestem w trakcie oczekiwania
 			}else{
-		//		Initiator.logger.w("Queue.run.wait_for1", "no blocked" + wait_for_device_id);	
+		//		Initiator.logger.w("Queue.run.wait_for1", "no blocked " + wait_for_device);	
 			}
 	//		show("exec");
 	//		boolean wasEmpty = output.isEmpty();
-			boolean isEmpty;
+			boolean isNotEmpty;
 			synchronized (this.lock_queue) {
-				isEmpty = !output.isEmpty();
+				isNotEmpty = !output.isEmpty();
 			}
-			while (isEmpty) {
+		//	Initiator.logger.i("Queue.run.wait_for isNotEmpty", ""+isNotEmpty);
+			while (isNotEmpty) {
 				synchronized (this.lock) {
 					if(this.wait_for_device ){		// is blocked
-		//				Initiator.logger.i("Queue.wait_for2", "" + wait_for_device_id);
+			//			Initiator.logger.i("Queue.wait_for2", "" + wait_for_device);
 					//	endRun();
 						return;
 					}
 				}
 				AsyncMessage m = null;
+		//		Initiator.logger.i("Queue.run.wait_for isNotEmpty8", ""+isNotEmpty);
 				synchronized (this.lock_queue) {
-					isEmpty = !output.isEmpty();
-					if(isEmpty){
-						break;
-					}else{
+					isNotEmpty = !output.isEmpty();
+					if(isNotEmpty){
 						m	= output.pop();
+					}else{
+			//			Initiator.logger.i("Queue.run.wait_for ", "jednak pusto");
+						break;
 					}
 				}
-//				Initiator.logger.i("Queue.run.start",  m.toString() );
+
+		//		Initiator.logger.i("Queue.run.start",  m.toString() );
 				Queue nextq = m.start( mb, this );
 			//	moveToHistory( m );
 				if( nextq != null ){
@@ -191,7 +196,7 @@ public class Queue {
                 //	Initiator.logger.i("Queue.no Blocing", "" + wait_for_device_id );
                 }
 				synchronized (this.lock_queue) {
-					isEmpty = !output.isEmpty();
+					isNotEmpty = !output.isEmpty();
 				}
 			}
 		//	if(output.isEmpty()){

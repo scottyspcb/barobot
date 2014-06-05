@@ -1,6 +1,7 @@
 package com.barobot.isp;
 
 import com.barobot.common.EmptyBarobotState;
+import com.barobot.common.Initiator;
 import com.barobot.common.IspSettings;
 import com.barobot.common.interfaces.HardwareState;
 import com.barobot.common.interfaces.serial.SerialInputListener;
@@ -71,6 +72,7 @@ public class Hardware {
 		return barobot.main_queue;
 	}
 	public void synchro() {
+	//	Initiator.logger.i("synchro",  "synchro" );
 		barobot.main_queue.add( "\n", false );
 		barobot.main_queue.add( "\n", false );
 		barobot.main_queue.add( "PING", "PONG" );
