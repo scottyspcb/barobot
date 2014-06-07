@@ -16,41 +16,7 @@ import com.barobot.parser.utils.Decoder;
 
 public class BarobotConnector {
 	public boolean ledsReady = false;
-
-	// pozycje butelek, sa aktualizowane w trakcie
-	public static int[] margin_x = {
-		-70,		// 0, num 1,back
-		-150,		// 1, num 2,front		
-		-60,		// 2, num 3,back
-		-150,		// 3, num 4,front		
-		-40,		// 4, num 5,back		
-		-140,		// 5, num 6,front
-		-100,		// 6, num 7,back
-		-150,		// 7, num 8,front
-		-20,		// 8, num 9,back
-		-140,		// 9, num 10,front
-		-20,		// 10, num 11,back		
-		-100,		// 11, num 12,front
-	};
-	
 	public static boolean pureCrystal = false;
-
-	// pozycje butelek, sa aktualizowane w trakcie
-	public static int[] capacity = {
-		20,			// 0, num 1,back
-		50, 		// 1, num 2,front
-		50,			// 2, num 3,back
-		20,			// 3, num 4,front		
-		20,			// 4, num 5,back		
-		20,			// 5, num 6,front
-		20,			// 6, num 7,back
-		20, 		// 7, num 8,front
-		10,			// 8, num 9,back
-		20,			// 9, num 10,front
-		20,			// 10, num 11,back
-		50			// 11, num 12,front
-	};
-
 	public MotorDriver driver_x	= null;
 	public Mainboard mb			= null;
 	public Queue main_queue		= null;
@@ -284,28 +250,23 @@ public class BarobotConnector {
 		}
 		state.set("POS_START_X", "0" );
 		state.set("POS_START_Y", "0" );
-
 	//	Initiator.logger.i("+find_bottles", "start");
-		q.add("EX", true );
 		moveZDown( q ,false );
-		q.addWait(10);
+		q.addWait(5);
 		moveZ( q, Constant.SERVOZ_TEST_POS );
 		q.addWait(10);
 		moveZDown( q ,false );
 		q.addWait(10);
 
 		moveY( q, Constant.SERVOY_TEST_POS, true);
-		q.addWait(200);
+		q.addWait(100);
 		moveY( q, Constant.SERVOY_FRONT_POS, true);
-		q.addWait(200);
+		q.addWait(100);
 		int lengthx19	=  state.getInt("LENGTHX", 60000 );
 		
 	//	Initiator.logger.i("+find_bottles", "up");
-		driver_x.moveTo( q, posx + 1000);
-		q.addWait(100);
-		driver_x.moveTo( q, -70000 );
+		doHoming(q);
 
-		q.addWait(100);
 		// scann Triggers
 		q.add( new AsyncMessage( true ) {			// go up
 			@Override	
@@ -357,7 +318,6 @@ public class BarobotConnector {
 	    q.add("DY", true);
 	    q.addWait(100);
 	    q.add("DZ", true);
-		//virtualComponents.scann_leds();
 	}
 
 	public void setLeds(String string, int value ) {
@@ -383,7 +343,7 @@ public class BarobotConnector {
 			@Override
 			public Queue run(Mainboard dev, Queue queue) {
 				this.name		= "check position";
-				int posx		= driver_x.getSPos();;		// czy ja juz jestem na tej pozycji?	
+				int posx		= driver_x.getSPos();		// czy ja juz jestem na tej pozycji?	
 				int posy		= state.getInt("POSY", 0 );
 				int posz		= state.getInt("POSZ", 0 );
 				int sposx		= state.getInt("POS_START_X", 0 );		// tu mam byc
@@ -408,7 +368,8 @@ public class BarobotConnector {
 	    q.add(Constant.GETYPOS, true);
 	    q.add(Constant.GETZPOS, true);
 	}
-	protected void doHoming(Queue q) {
+	public void doHoming(Queue q) {
+		q.add(Constant.GETXPOS, true);
 		q.add( new AsyncMessage( "A0", true ) {// check i'm over endstop (neodymium magnet)
 			@Override
 			public String getName() {
@@ -419,10 +380,13 @@ public class BarobotConnector {
 			//	Initiator.logger.w("startDoingDrink.onInput", result );
 				if(result.matches("^" +  Methods.METHOD_IMPORTANT_ANALOG + ",0,.*" )){	// 125,0,100,0,0,0,255,202,126,1
 					int[] parts = Decoder.decodeBytes( result );
-					boolean need_homing = false;
+					boolean need_homing		= false;
+					boolean thisIsMax		= false;
 		//			Initiator.logger.w("startDoingDrink.input:", ""+parts[2]  );
 					if( parts[2] == Methods.HX_STATE_9 ){			// this is max
 						// ok it is home
+					}else if( parts[2] ==Methods.HX_STATE_0 ||  parts[2] ==Methods.HX_STATE_1){
+						thisIsMax  	= true;
 					}else{
 						need_homing = true;
 					}
@@ -430,6 +394,10 @@ public class BarobotConnector {
 			//			Initiator.logger.w("startDoingDrink.homing", "MOVE" );
 						Queue	q2	= new Queue(); 
 						moveZDown( q2 ,true );
+						if(!thisIsMax){
+							int poshx = driver_x.getHardwarePos();
+							q2.add("X"+ (poshx+100) +","+ BarobotConnector.this.driver_x.defaultSpeed, true);	// +100
+						}
 						q2.add("X-20000,"+ BarobotConnector.this.driver_x.defaultSpeed, true);
 						mainQueue.addFirst(q2);
 					//	return true;
@@ -633,13 +601,11 @@ public class BarobotConnector {
 			up.addLed( q, "ff", 0 );
 		}
 	}
-
 	// todo move to slot
 	public int getPourTime( int num ){			// 0 - 11
 		int capacity	= getCapacity( num );
 		return capacity * Constant.SERVOZ_POUR_TIME;
 	}
-
 	public int getRepeatTime(int num) {
 		int capacity	= getCapacity( num );
 		int time 		= state.getInt("SERVOY_REPEAT_TIME", Constant.SERVOY_REPEAT_TIME );
@@ -648,18 +614,13 @@ public class BarobotConnector {
 	}
 	public int getPacWaitTime(int num) {
 		int capacity	= getCapacity( num );
-		int time 		= state.getInt("SERVOZ_PAC_TIME_WAIT", Constant.SERVOZ_PAC_TIME_WAIT );
-		int base_time	= time/ 20;
-		return base_time * capacity;
+		int base_time 	= state.getInt("SERVOZ_PAC_TIME_WAIT", Constant.SERVOZ_PAC_TIME_WAIT );
+		int time 		= state.getInt("SERVOZ_PAC_TIME_WAIT_VOL", Constant.SERVOZ_PAC_TIME_WAIT_VOL );
+		return base_time + (time / 20 * capacity);
 	}
-	
 	// todo move to slot
 	public int getCapacity( int num ){			// 0 - 11
-		if( num >= 0 && num < capacity.length){
-			return state.getInt("BOTTLE_CAP_" + num, BarobotConnector.capacity[ num ] );
-		}else{
-			return state.getInt("BOTTLE_CAP_" + num, 20 );
-		}
+		return state.getInt("BOTTLE_CAP_" + num, 20 );
 	}
 
 	public void startDemo() {
@@ -695,7 +656,7 @@ public class BarobotConnector {
 		this.state.set("BOTTLE_OFFSETX_" + num, newx );	
 	}
 	public int getSlotMarginX(int num) {
-		int margin = state.getInt("BOTTLE_OFFSETX_" + num, BarobotConnector.margin_x[ num ] );
+		int margin = state.getInt("BOTTLE_OFFSETX_" + num, 0 );
 		return margin;			
 	}
 	public void setCapacity(int num, int cap) {
@@ -717,6 +678,5 @@ public class BarobotConnector {
 		}
 		main_queue.add(q1);
 	}
-
 
 }

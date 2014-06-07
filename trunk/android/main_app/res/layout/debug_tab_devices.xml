@@ -91,12 +91,11 @@
 				<LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" >
-
                     <Button
                         android:id="@+id/button_pac_time_wait"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="SERVOZ_PAC_TIME_WAIT" />
+                        android:text="PAC_TIME_WAIT" />
 
                     <EditText
                         android:id="@+id/edit_pac_time_wait"
@@ -105,20 +104,31 @@
                         android:layout_weight="1"
                         android:ems="10"
                         android:inputType="number|numberSigned" />
-                    
                 </LinearLayout>
-				
-				
-				
-				
-				
-				
 				
 				
 				<LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" >
+                    <Button
+                        android:id="@+id/button_pac_time_wait_vol"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="PAC_TIME_WAIT_VOL" />
 
+                    <EditText
+                        android:id="@+id/edit_pac_time_wait_vol"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:ems="10"
+                        android:inputType="number|numberSigned" />
+                </LinearLayout>
+				
+	
+				<LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" >
                     <Button
                         android:id="@+id/button_speed_cal_x"
                         android:layout_width="122dp"

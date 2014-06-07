@@ -55,7 +55,6 @@ public class Queue {
 					mb.unlockRet("<clear>", true );
 				}
 			}
-			
 		}
 	}
 
@@ -270,7 +269,7 @@ public class Queue {
 					try {
 						thread.wait();
 					} catch (InterruptedException e) {
-						e.printStackTrace();
+						Initiator.logger.appendError(e);
 					}
 				}
 			}

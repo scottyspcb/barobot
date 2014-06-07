@@ -21,6 +21,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
+import com.barobot.common.Initiator;
 import com.barobot.common.interfaces.serial.CanSend;
 import com.barobot.common.interfaces.serial.SerialEventListener;
 import com.barobot.common.interfaces.serial.SerialInputListener;
@@ -93,7 +94,7 @@ public class Serial_wire implements CanSend, Wire {
 			try {
 				sPort.setParameters(baud, 8, UsbSerialPort.STOPBITS_1, UsbSerialPort.PARITY_NONE);
 			} catch (IOException e) {
-				e.printStackTrace();
+				Initiator.logger.appendError(e);
 			}
 		}
 	}
@@ -121,7 +122,7 @@ public class Serial_wire implements CanSend, Wire {
                 sPort.open(mUsbManager);
                 sPort.setParameters(baud, 8, UsbSerialPort.STOPBITS_1, UsbSerialPort.PARITY_NONE);
             } catch (RuntimeException e) {
-            	 e.printStackTrace();
+            	 Initiator.logger.appendError(e);
             	 
             } catch (IOException e) {
                 try {
@@ -194,7 +195,7 @@ public class Serial_wire implements CanSend, Wire {
                 mSerialIoManager.writeSync(data);
                 return true;
             } catch (IOException e) {
-                e.printStackTrace();
+                Initiator.logger.appendError(e);
                 errors++;
             }
         }
@@ -208,7 +209,7 @@ public class Serial_wire implements CanSend, Wire {
                 mSerialIoManager.writeSync(subArray);
                 return true;
             } catch (IOException e) {
-                e.printStackTrace();
+                Initiator.logger.appendError(e);
                 errors++;
             }
         }
@@ -231,7 +232,7 @@ public class Serial_wire implements CanSend, Wire {
             try {
             	 this.view.unregisterReceiver(mPermissionReceiver);
 			} catch (IllegalArgumentException e) {
-				e.printStackTrace();
+				Initiator.logger.appendError(e);
 			}
         }
         mUsbManager = null;
@@ -412,7 +413,7 @@ public class Serial_wire implements CanSend, Wire {
             try {
             	 this.view.unregisterReceiver(mPermissionReceiver);
 			} catch (IllegalArgumentException e) {
-				e.printStackTrace();
+				Initiator.logger.appendError(e);
 			}
         }
         mUsbManager = null;

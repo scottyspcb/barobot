@@ -5,12 +5,15 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.os.PowerManager;
 import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
+
+import com.barobot.common.Initiator;
 public class Android {
 	public void powerOff( Context c ){
 		PowerManager powerManager = (PowerManager)c.getSystemService(Context.POWER_SERVICE);
@@ -19,8 +22,8 @@ public class Android {
 		try {
 		    Process proc = Runtime.getRuntime().exec(new String[]{ "su", "-c", "reboot -p" });
 		    proc.waitFor();
-		} catch (Exception ex) {
-		    ex.printStackTrace();
+		} catch (Exception e) {
+			Initiator.logger.appendError(e);
 		}
 	}
     public static String loadTextFile(InputStream inputStream) throws IOException {
@@ -60,7 +63,7 @@ public class Android {
 			/*
 		   */
 		} catch (IOException e) {
-			 e.printStackTrace();
+			 Initiator.logger.appendError(e);
 		}
 		return "";
 	}

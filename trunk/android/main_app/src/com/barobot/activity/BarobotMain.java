@@ -30,12 +30,13 @@ import com.barobot.gui.fragment.RecipeAttributesFragment;
 import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
 import com.barobot.hardware.devices.i2c.Upanel;
+import com.barobot.other.WaitingTask;
 import com.barobot.parser.Queue;
 
 public class BarobotMain extends BarobotActivity implements ArduinoListener {
 	
 	public static String MODE_NAME = "ActivityMode";
-	
+
 	private Mode mode;
 	public enum Mode
 	{
@@ -101,8 +102,7 @@ public class BarobotMain extends BarobotActivity implements ArduinoListener {
 		try {
 			mCurrentRecipe = (Recipe_t) listView.getItemAtPosition(position);
 		} catch (IndexOutOfBoundsException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Initiator.logger.appendError(e);
 		}
 		FillRecipeDetails();
 
@@ -212,21 +212,7 @@ public class BarobotMain extends BarobotActivity implements ArduinoListener {
 
 	public void onPourButtonClicked(View view) {
 		if (mCurrentRecipe != null) {
-			final Button xb2 = (Button) this.findViewById(R.id.choose_pour_button);
-			xb2.setEnabled(false);
-			Thread t = new Thread(new Runnable() {  
-	             @Override
-	             public void run() {
-	            	Engine.GetInstance(BarobotMain.this).Pour(mCurrentRecipe, BarobotMain.this);
-	         		runOnUiThread(new Runnable() {
-	        			@Override
-	        			public void run() {
-	        				xb2.setEnabled(true);
-	        			}
-	        		});
-
-	             }});
-			t.start();
+			beforeStart();
 		}
 	}
 
@@ -265,6 +251,34 @@ public class BarobotMain extends BarobotActivity implements ArduinoListener {
 								finish();
 							}
 						}).setNegativeButton("No", null).show();
+	}
+
+	public void beforeStart() {
+		new AlertDialog.Builder(this)
+				.setIcon(android.R.drawable.ic_dialog_alert)
+				.setTitle("")
+				.setMessage("Prosze wstawić szklankę z lodem i wcisnąć START")
+				.setPositiveButton("START",
+						new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog,int which) {
+								pourStart();
+							}
+						}).setNegativeButton("Anuluj", null).show();
+	}
+
+	public void pourStart() {
+		//final Button xb2 = (Button) this.findViewById(R.id.choose_pour_button);
+		//xb2.setEnabled(false);
+		final WaitingTask wt = new WaitingTask();
+		wt.execute();
+		Thread t = new Thread(new Runnable() {  
+	         @Override
+	         public void run() {
+	        	  	Engine.GetInstance(BarobotMain.this).Pour(mCurrentRecipe, BarobotMain.this);
+		        	wt.setReady();
+	         }});
+		t.start();
 	}
 
 	public void showError() {

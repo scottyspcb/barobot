@@ -48,7 +48,7 @@ public class IspOverSerial implements SerialInputListener, IspCommunicator {
 			this.connection.send(buf, size);
 	//		Log.d("Pl2303.write", "qsize(" +qe.size() + "), write("+size+") : "+Utils.toHexStr(buf, size));
 		} catch (IOException e) {
-			e.printStackTrace();
+			Initiator.logger.appendError(e);
 		}
 		return size;
 	}

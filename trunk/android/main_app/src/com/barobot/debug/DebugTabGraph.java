@@ -46,8 +46,7 @@ public class DebugTabGraph extends Fragment {
 	public static int graph_source	= 2;
 	public static int graph_xsize	= 4;
 	public static int graph_fps		= 10;
-	
-	
+
 	public int tab_id	= -1 ;
 	private Activity cc;
 	private WebView webview	=null;

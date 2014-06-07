@@ -1,6 +1,5 @@
 package com.barobot.gui.fragment;
 
-
 import com.barobot.R;
 import com.barobot.gui.utils.PhotoGallery;
 
@@ -18,7 +17,7 @@ public class DrinkImageFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 
-		Log.w("DrinkImageFragment","onCreateView");
+	//	Log.w("DrinkImageFragment","onCreateView");
 		pGallery = new PhotoGallery();
 		return inflater.inflate(R.layout.fragment_drink_image, container, false);
 		// TODO: Add onClickListener to all buttons on this fragment

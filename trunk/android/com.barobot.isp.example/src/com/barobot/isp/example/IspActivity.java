@@ -12,6 +12,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.barobot.common.EmptyBarobotState;
+import com.barobot.common.Initiator;
 import com.barobot.common.IspOverSerial;
 import com.barobot.common.interfaces.HardwareState;
 import com.barobot.common.interfaces.serial.SerialInputListener;
@@ -76,8 +77,8 @@ public class IspActivity extends Activity {
 				String assetFileName = ASSET_FILE_NAME;
 		        try {
 					IspUploader.setHex( getResources().getAssets().open(assetFileName) );
-				} catch (IOException e1) {
-					e1.printStackTrace();
+				} catch (IOException e) {
+					Initiator.logger.appendError(e);
 				}
 		        try {
 		            IspUploader.upload();

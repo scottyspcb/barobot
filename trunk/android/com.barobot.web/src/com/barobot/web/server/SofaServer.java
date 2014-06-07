@@ -16,6 +16,7 @@ import android.content.Context;
 import android.content.res.AssetManager;
 import android.util.Log;
 
+import com.barobot.common.Initiator;
 import com.barobot.common.constant.Constant;
 import com.barobot.web.route.EmptyRoute;
 import com.x5.template.Chunk;
@@ -167,7 +168,7 @@ public class SofaServer extends NanoHTTPD {
 		try {
 			messageDigest = MessageDigest.getInstance("MD5");
 		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
+			Initiator.logger.appendError(e);
 			return null;
 		}
 		byte[] dig = messageDigest.digest(key.getBytes());
@@ -228,7 +229,7 @@ try {
     fis = new FileInputStream(Environment.getExternalStorageDirectory()+ "/music/musicfile.mp3");
     return new NanoHTTPD.Response(Status.OK, "audio/mpeg", fis);
 } catch (FileNotFoundException e) {
-    e.printStackTrace();
+    Initiator.logger.appendError(e);
 }*/
 
 /*
@@ -266,7 +267,7 @@ try {
     }else{
  //   	Log.i("nie otwieram ext :", ext );
     }
-} catch (IOException e1) {
-	e1.printStackTrace();
+} catch (IOException e) {
+	Initiator.logger.appendError(e);
 }
 */

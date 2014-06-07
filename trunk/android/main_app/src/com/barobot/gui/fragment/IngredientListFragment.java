@@ -24,7 +24,7 @@ public class IngredientListFragment extends Fragment {
 	
 		// TODO: Add onClickListener to all buttons on this fragment
 	}
-	
+
 	public void ShowIngredients(List<Ingredient_t> ingredients)
 	{
 		final ArrayAdapter<Ingredient_t> mAdapter = new ArrayAdapter<Ingredient_t>(getActivity(), R.layout.ingredient_list_item, ingredients);
@@ -43,7 +43,7 @@ public class IngredientListFragment extends Fragment {
 			 });
 		}
 	}
-	
+
 	public void ClearIngredients() {
 		// ListView view = (ListView) getView();
 		ListView listView = (ListView) getView().findViewById(

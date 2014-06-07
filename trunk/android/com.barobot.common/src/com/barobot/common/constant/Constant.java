@@ -63,11 +63,11 @@ public class Constant {
 
 	public static final int SERVOZ_POUR_TIME = 3000 / 20;		// predkosc nalewania 20ml
 	
-	
+
 	public static final int SERVOY_REPEAT_TIME = 1000;
 	public static final int SERVOZ_PAC_TIME_WAIT = 1300;
-	
-	
+	public static final int SERVOZ_PAC_TIME_WAIT_VOL = 300;
+
 	public static int[] magnet_order = {0,2,1,4,3,6,5,8,7,10,9,11 };	// numer butelki, odj¹c 1 aby numer ID
 	public static int[] bottle_row = {
 		BOTTLE_IS_BACK,					// 0, num 1

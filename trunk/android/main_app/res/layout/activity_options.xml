@@ -38,13 +38,15 @@
             android:onClick="onOptionsButtonClicked"
             android:text="@string/options_extra_setup_button" />
 
-        <Button
+        <ToggleButton
             android:id="@+id/options_lights_button"
             style="@style/OptionsMenuButton"
             android:layout_alignParentTop="true"
             android:layout_toRightOf="@id/options_bottle_setup_button"
             android:onClick="onOptionsButtonClicked"
-            android:text="@string/options_lights_button" />
+            android:text="@string/options_lights_button"
+            android:textOff="@string/options_lights_button"
+            android:textOn="@string/options_lights_button" />
 
         <Button
             android:id="@+id/options_demo_button"
@@ -99,11 +101,20 @@
         <Button
             android:id="@+id/settings_unlock"
             style="@style/OptionsMenuButton"
-            android:layout_alignBaseline="@+id/options_stop"
-            android:layout_alignBottom="@+id/options_stop"
-            android:layout_alignLeft="@+id/options_turn_off_button"
+            android:layout_below="@+id/options_turn_off_button"
+            android:layout_toRightOf="@+id/options_stop"
             android:onClick="onOptionsButtonClicked"
             android:text="Unlock" />
+
+        <ToggleButton
+            android:id="@+id/toggleButton1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/options_stop"
+            android:layout_below="@+id/options_stop"
+            android:layout_marginLeft="28dp"
+            android:layout_marginTop="14dp"
+            android:text="ToggleButton" />
 
     </RelativeLayout>
 

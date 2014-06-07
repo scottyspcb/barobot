@@ -49,8 +49,8 @@ public class BarobotWebMain extends Activity {
 		ss.addRoute( new MainPage() );
         try {
 			ss.start();
-		} catch (IOException e1) {
-			e1.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 
     	//	getWindow().requestFeature(Window.FEATURE_PROGRESS);

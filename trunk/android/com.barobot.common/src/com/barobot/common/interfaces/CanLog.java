@@ -13,4 +13,5 @@ public interface CanLog{
 	void 	w(String tag, Throwable tr);
 	void 	w(String tag, String msg, Throwable tr);
 	void 	w(String tag, String msg);
+	void	appendError(Throwable tr);
 }

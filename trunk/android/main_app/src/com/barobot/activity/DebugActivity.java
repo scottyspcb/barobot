@@ -136,7 +136,7 @@ public class DebugActivity extends FragmentActivity implements	ActionBar.TabList
 			fff = objVector.get(position);
 			fff.onCreateOptionsMenu(menu, getMenuInflater());
 		} catch (ArrayIndexOutOfBoundsException e) {
-			e.printStackTrace();
+			Initiator.logger.appendError(e);
 		}
 		return true;
 	}

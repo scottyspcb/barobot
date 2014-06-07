@@ -13,6 +13,7 @@ import java.util.Properties;
 import jssc.SerialPortList;
 
 import com.barobot.common.DesktopLogger;
+import com.barobot.common.Initiator;
 import com.barobot.common.IspSettings;
 import com.barobot.hardware.devices.LightManager;
 import com.barobot.hardware.devices.i2c.I2C_Device;
@@ -48,7 +49,7 @@ public class Main{
 		loadProps();
 		//String[] comlist = list();
 		Wizard w	= new Wizard();
-		Hardware hw = new Hardware("COM3");
+		Hardware hw = new Hardware("COM4");
 
 		IspSettings.safeMode	= false;
 		IspSettings.verbose		= 2;
@@ -62,6 +63,11 @@ public class Main{
 		Queue q					= hw.getQueue();
 		LightManager lm			= new LightManager();
 		hw.connectIfDisconnected();
+		
+		hw.barobot.main_queue.add("X2000", false);
+		
+		//hw.barobot.kalibrcja();
+		
 		
 	//	hw.barobot.scann_leds();
 		
@@ -97,7 +103,7 @@ public class Main{
 
 		/*
 		mm.testBpm( hw );
-	//	w.test_proc( hw );	
+		w.test_proc( hw );	
 	//	w.swing( hw, 3, 1000, 5000 );
 		w.mrygaj_po_butelkach( hw, 100 );
 		w.mrygaj_grb( hw, 30 );
@@ -126,11 +132,11 @@ public class Main{
 		w.koniec( hw );
 	*/
 		
-		lm.startDemo(hw.barobot);
+	//	lm.startDemo(hw.barobot);
 		
 	//	w.findStops(hw);
 	//	hw.connectIfDisconnected();	
-	//	hw.barobot.kalibrcja();
+	//	
 	//	w.mrygaj(hw, 10);
 	//	w.mrygaj_po_butelkach( hw, 100 );
 
@@ -147,6 +153,7 @@ public class Main{
 	//	hw.close();
 
 		hw.closeOnReady();
+		q.addWaitThread( Main.main );
 		System.out.println("koniec");
 	}
 	public Properties p;
@@ -157,9 +164,9 @@ public class Main{
 			propFile = new FileInputStream( config_filename );
 			p.load(propFile);
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			Initiator.logger.appendError(e);
 		} catch (IOException e) {
-			e.printStackTrace();
+			Initiator.logger.appendError(e);
 		}	
 	   // p.setProperty("Height", "200");
 	   // p.put("Width", "1500");
@@ -172,9 +179,9 @@ public class Main{
 			out = new FileOutputStream(new File(config_filename));
 			p.store(out, comments);	
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			Initiator.logger.appendError(e);
 		} catch (IOException e) {
-			e.printStackTrace();
+			Initiator.logger.appendError(e);
 		}
 	}
 	public void runCommand(String command, Hardware hw ) {
@@ -205,11 +212,11 @@ public class Main{
 			//	p.getErrorStream().close();
 				System.out.println("\t>>>RETURN FROM TASK");
 			} catch (InterruptedException e) {
-				e.printStackTrace();
+				Initiator.logger.appendError(e);
 			}
 	        input.close();
 		} catch (IOException e1) {
-			e1.printStackTrace();
+			Initiator.logger.appendError(e1);
 		}
 		if(hw != null ){
 			hw.connectIfDisconnected();
@@ -218,8 +225,8 @@ public class Main{
 	public static void wait(int ms) {
 		try {
 			 Thread.sleep(ms);
-		} catch (InterruptedException e1) {
-			e1.printStackTrace();
+		} catch (InterruptedException e) {
+			Initiator.logger.appendError(e);
 		}
 	}
 }

@@ -28,6 +28,7 @@ import com.barobot.gui.utils.Distillery;
 import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
 import com.barobot.hardware.devices.i2c.Upanel;
+import com.barobot.other.WaitingTask;
 import com.barobot.parser.Queue;
 
 public class CreatorActivity extends BarobotActivity implements ArduinoListener{
@@ -43,14 +44,11 @@ public class CreatorActivity extends BarobotActivity implements ArduinoListener{
 		setContentView(R.layout.activity_creator);
 		ingredients = new ArrayList<Ingredient_t>();
 	}
-	
 	@Override
 	protected void onResume() {
 		super.onResume();
-		
 		MenuFragment menuFrag = (MenuFragment) getFragmentManager().findFragmentById(R.id.fragment_menu);
 		menuFrag.SetBreadcrumb(MenuFragment.MenuItem.Create);
-		
 		UpdateData();
 	}
 
@@ -199,33 +197,61 @@ public class CreatorActivity extends BarobotActivity implements ArduinoListener{
 			public void onClick(DialogInterface dialog, int which) {
 				TextView nameView = (TextView) dialogView.findViewById(R.id.recipe_name);
 				String name = nameView.getText().toString();
-				CreateDrink(name);	
+				CreateDrink(name, true);	
 			}
 		});
 	    AlertDialog ad = builder.create();
 	    ad.show();
 	}
 
-	public void onPourRecipeButtonClicked (View view){
-		final Recipe_t tempRecipe = CreateDrink("Unnamed Drink", true);
-		final Button xb2 = (Button) this.findViewById(R.id.creator_pour_button);
-		xb2.setEnabled(false);
-
-		Thread t = new Thread(new Runnable() {
-            @Override
-            public void run() {
-            	Engine.GetInstance(CreatorActivity.this).Pour(tempRecipe, CreatorActivity.this);
-            	clear();
-    			runOnUiThread(new Runnable() {
-        			@Override
-        			public void run() {
-        				xb2.setEnabled(true);
-        			}
-        		});
-            }});
+	public void pourStart() {
+		//final Button xb2 = (Button) this.findViewById(R.id.choose_pour_button);
+		//final Button xb2 = (Button) this.findViewById(R.id.creator_pour_button);
+		//xb2.setEnabled(false);
+		final WaitingTask wt = new WaitingTask();
+		wt.execute();
+		Thread t = new Thread(new Runnable() {  
+	         @Override
+	         public void run() {
+		        	final Recipe_t tempRecipe = CreateDrink("Unnamed Drink", false);
+		     		//xb2.setEnabled(false);
+		     		Thread t = new Thread(new Runnable() {
+		                 @Override
+		                 public void run() {
+		                 	clear();
+		                 	Engine.GetInstance(CreatorActivity.this).Pour(tempRecipe, CreatorActivity.this);
+		                 }});
+		     		t.start();
+		        	wt.setReady();
+	         }});
 		t.start();
 	}
-	
+
+	/*
+		runOnUiThread(new Runnable() {
+ 			@Override
+ 			public void run() {
+//  				xb2.setEnabled(true);
+ 			}
+ 		});
+	*/
+
+	public void onPourRecipeButtonClicked (View view){
+		pourStart();
+		/*
+		new AlertDialog.Builder(this)
+		.setIcon(android.R.drawable.ic_dialog_alert)
+		.setTitle("")
+		.setMessage("Prosze wstawić szklankę z lodem i wcisnąć START")
+		.setPositiveButton("START",
+				new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog,int which) {
+						pourStart();
+					}
+				}).setNegativeButton("Anuluj", null).show();*/
+	}
+
 	private void addIngredient(int position, Ingredient_t ing)
 	{
 		slot_nums[position]++;
@@ -273,21 +299,18 @@ public class CreatorActivity extends BarobotActivity implements ArduinoListener{
 			tview.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, dropIds[counter]);
 		}
 	}
-	
-	public Recipe_t CreateDrink(String name)
-	{
-		return CreateDrink(name, false);
-	}
-	
-	public Recipe_t CreateDrink(String name, Boolean unlisted)
+
+	private Recipe_t CreateDrink(String name, Boolean showOnList)
 	{
 		Recipe_t recipe = new Recipe_t();
 		recipe.name = name;
-		recipe.unlisted = unlisted;
+		recipe.unlisted = !showOnList;
 		recipe.insert();
 		Engine ee = Engine.GetInstance(this);
 		ee.addRecipe(recipe, ingredients);
-		ee.invalidateData();
+		if(showOnList){
+			ee.invalidateData();
+		}
 		return recipe;
 	}
 

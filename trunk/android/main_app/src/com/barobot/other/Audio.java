@@ -155,4 +155,8 @@ public class Audio implements OnSignalsDetectedListener{
 	@Override
 	public void changeBPM(float newbpm) {
 	}
+
+	public boolean isRunning() {
+		return detectorThread == null ? false : (detectorThread.isRunning && detectorThread.isAlive());
+	}
 }

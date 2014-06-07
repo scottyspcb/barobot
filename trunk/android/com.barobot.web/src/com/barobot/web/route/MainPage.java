@@ -44,7 +44,7 @@ public class MainPage extends EmptyRoute{
               sb.append("<h3>Files</h3><p><blockquote>").
                   append(toString(files)).append("</blockquote></p>");
           } catch (Exception e) {
-              e.printStackTrace();
+              Initiator.logger.appendError(e);
           }*/
           
           action_chunk.set("nums", new String[]{

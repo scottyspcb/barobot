@@ -36,7 +36,7 @@ public class Mainboard{
 		this.addGlobalModifier( "^RR", "R" );			// RR => R
 	}
 	public void read(String in) {
-		synchronized (buffer) {
+	//	synchronized (buffer) {
 			buffer.append(in);
 		//	System.out.println(new String(buffer));
 			int end = buffer.indexOf(separator);
@@ -45,34 +45,38 @@ public class Mainboard{
 					String command	= buffer.substring(0, end);
 					buffer			= buffer.delete(0, end+1);
 					command			= command.trim();
-		//			Initiator.logger.i("command: " , command);
-					if("".equals(command)){
-			//			Log.i(Constant.TAG, "pusta komenda!!!]");
-					}else{
-					//	History_item hi = new History_item( command, History_item.INPUT );	
-						final String theCommand = command;
-						new Thread( new Runnable(){		// geto out of the serial port thread
-							@Override
-							public void run() {
-								try {
-									useInput( theCommand );
-								} catch (java.lang.NullPointerException e) {
-									e.printStackTrace();
-								} catch (java.lang.NumberFormatException e) {
-									e.printStackTrace();
-								} catch (java.lang.ArrayIndexOutOfBoundsException e) {
-									e.printStackTrace();
-								} catch (Exception e) {
-									e.printStackTrace();
-								}
-							}
-						}).start();
-					}
+					analyseInput(command);
 					end		= buffer.indexOf(separator);
 				}
 			}
-        }
+    //    }
 	}
+	
+	private void analyseInput(final String command) {
+	//			Initiator.logger.i("command: " , command);
+	//	History_item hi = new History_item( command, History_item.INPUT );	
+		new Thread( new Runnable(){		// geto out of the serial port thread
+			@Override
+			public void run() {
+				try {
+					if("".equals(command)){
+						//			Log.i(Constant.TAG, "pusta komenda!!!]");
+					}else{
+						useInput( command );
+					}
+				} catch (java.lang.NullPointerException e) {
+					Initiator.logger.appendError(e);
+				} catch (java.lang.NumberFormatException e) {
+					Initiator.logger.appendError(e);
+				} catch (java.lang.ArrayIndexOutOfBoundsException e) {
+					Initiator.logger.appendError(e);
+				} catch (Exception e) {
+					Initiator.logger.appendError(e);
+				}
+			}
+		}).start();
+	}
+
 	private boolean useInput(String command) {
 		boolean handled =false;
 		String wait4Command = "";
@@ -81,7 +85,7 @@ public class Mainboard{
 		//	Initiator.logger.e("Mainboard.useInput changed to:", command2 );
 			command = command2;
 		}
-		if( state.getInt("show_reading", 0) > 0 ){
+		if( !state.get("show_reading", "0").equals("0") ){
 			Initiator.logger.w("Mainboard.useInput", command );
 		}
 		boolean used = false;
@@ -171,15 +175,15 @@ public class Mainboard{
 		globalRegex.put(globalMatch.getMatchRet(), globalMatch);
 	}
 	private String modyfyInput(String command) {
-	    for(Entry<String, String> e : modifiers.entrySet()) {
+	    for(Entry<String, String> m : modifiers.entrySet()) {
 	    	try {
-	    		command		= command.replaceAll(e.getKey(), e.getValue()); 
-	    	} catch (PatternSyntaxException ex) {
-	    		ex.printStackTrace();
-	    	} catch (IllegalArgumentException ex) {
-	    		ex.printStackTrace();
-	    	} catch (IndexOutOfBoundsException ex) {
-	    		ex.printStackTrace();
+	    		command		= command.replaceAll(m.getKey(), m.getValue()); 
+	    	} catch (PatternSyntaxException e) {
+	    		Initiator.logger.appendError(e);
+	    	} catch (IllegalArgumentException e) {
+	    		Initiator.logger.appendError(e);
+	    	} catch (IndexOutOfBoundsException e) {
+	    		Initiator.logger.appendError(e);
 	    	}
 	    }
 		return command;
@@ -195,7 +199,7 @@ public class Mainboard{
 		//			Initiator.logger.i("Mainboard.Send" , command.trim() );
 					return this.sender.send(command);
 				} catch (IOException e) {
-				  e.printStackTrace();
+				  Initiator.logger.appendError(e);
 				}
 			//	}
 			}else{
@@ -204,9 +208,9 @@ public class Mainboard{
 			}
 		} catch (NullPointerException e) {	
 			Initiator.logger.i("Mainboard.Send", "no connect");
-			e.printStackTrace();
+			Initiator.logger.appendError(e);
 		} catch (Exception e) {
-			e.printStackTrace();
+			Initiator.logger.appendError(e);
 		}
 		return false;
 	}
@@ -222,7 +226,7 @@ public class Mainboard{
 						outputStream.write(bytes);
 						return true;
 					} catch (IOException e) {
-					  e.printStackTrace();
+					  Initiator.logger.appendError(e);
 					}
 			//	}
 				return false;

@@ -3,6 +3,8 @@ package com.barobot.other;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.barobot.common.Initiator;
+
 import android.content.Context;
 import android.util.Log;
 import android.webkit.WebView;
@@ -53,7 +55,7 @@ public class AJS {
 					saveReady(key, this.data);
 					appi.runJs( onready, key );
 				} catch (ParseException e) {
-					e.printStackTrace();
+					Initiator.logger.appendError(e);
 					appi.runJs( onerror, key );
 				}
 			}
@@ -76,7 +78,7 @@ public class AJS {
 					saveReady(key, this.data);
 					appi.runJs( onready, key );
 				} catch (ParseException e) {
-					e.printStackTrace();
+					Initiator.logger.appendError(e);
 			    	String msg = e.getMessage();
 			    	appi.runJs( onerror, msg, key );
 				}
