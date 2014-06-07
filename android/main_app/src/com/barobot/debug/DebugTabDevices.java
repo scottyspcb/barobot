@@ -75,20 +75,22 @@ public class DebugTabDevices extends Fragment {
 
 		int srt = barobot.state.getInt("SERVOY_REPEAT_TIME", Constant.SERVOY_REPEAT_TIME );	
 		int sptw = barobot.state.getInt("SERVOZ_PAC_TIME_WAIT", Constant.SERVOZ_PAC_TIME_WAIT );
+		int sptwv = barobot.state.getInt("SERVOZ_PAC_TIME_WAIT_VOL", Constant.SERVOZ_PAC_TIME_WAIT_VOL );
 		
-		
+
 		Initiator.logger.i("DebugTabDevices.", "DRIVER_X_SPEED= " +ds );
 	
 		final EditText editSX = (EditText) rootView.findViewById( R.id.edit_speed_x );
 		final EditText editbCSX = (EditText) rootView.findViewById( R.id.edit_cal_speed_x );
 		final EditText editbSRT = (EditText) rootView.findViewById( R.id.edit_repeat_time );
 		final EditText editbSPTW = (EditText) rootView.findViewById( R.id.edit_pac_time_wait );
+		final EditText editbSPTWV = (EditText) rootView.findViewById( R.id.edit_pac_time_wait_vol );
 
 		editSX.setText(""+ds );
 		editbCSX.setText(""+dcs );
 		editbSRT.setText(""+srt );
 		editbSPTW.setText(""+sptw );
-		
+		editbSPTWV.setText(""+sptwv );
 		
 		Button xb1 = (Button) rootView.findViewById(R.id.save_poss);
 		xb1.setOnClickListener( new OnClickListener() {
@@ -109,12 +111,13 @@ public class DebugTabDevices extends Fragment {
 				int dcs = Integer.parseInt(editbCSX.getText().toString());
 				int srt = Integer.parseInt(editbSRT.getText().toString());
 				int sptw = Integer.parseInt(editbSPTW.getText().toString());
+				int sptwv = Integer.parseInt(editbSPTWV.getText().toString());
 
 				barobot.state.set("DRIVER_X_SPEED", ds);
 				barobot.state.set("DRIVER_CALIB_X_SPEED", dcs);
-	
 				barobot.state.set("SERVOY_REPEAT_TIME", srt);
 				barobot.state.set("SERVOZ_PAC_TIME_WAIT", sptw);
+				barobot.state.set("SERVOZ_PAC_TIME_WAIT_VOL", sptwv);
 			}
 		});
 

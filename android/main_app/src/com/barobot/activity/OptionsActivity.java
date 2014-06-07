@@ -18,21 +18,20 @@ public class OptionsActivity extends BarobotActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_options);
 	}
-	
+
 	@Override
 	protected void onResume() {
 		super.onResume();
 		MenuFragment menuFrag = (MenuFragment) getFragmentManager().findFragmentById(R.id.fragment_menu);
 		menuFrag.SetBreadcrumb(MenuFragment.MenuItem.Options);
 	}
-	
+
 	public void onOptionsButtonClicked(View view)
 	{
 		Intent serverIntent = null;
 		BarobotConnector barobot = Arduino.getInstance().barobot;
 		Queue mq;
-		switch(view.getId())
-		{
+		switch(view.getId()){
 		case R.id.options_bottle_setup_button:
 			serverIntent = new Intent(this, BottleSetupActivity.class);
 			break;
@@ -46,6 +45,17 @@ public class OptionsActivity extends BarobotActivity {
 			break;
 		case R.id.options_advanced_button:
 			serverIntent  = new Intent(this, DebugActivity.class);
+			break;
+			
+		case R.id.options_turn_off_button:
+			mq = barobot.main_queue;
+			barobot.doHoming(mq);
+			break;
+		case R.id.options_about_button:
+			
+			break;
+		case R.id.options_lights_button:
+			
 			break;
 		case R.id.options_calibrate_button:
 			barobot.kalibrcja();

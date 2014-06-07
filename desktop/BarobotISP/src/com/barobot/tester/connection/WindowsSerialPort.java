@@ -81,8 +81,8 @@ public class WindowsSerialPort implements Wire, CanSend{
 			System.out.println("removeEventListener");
 			try {
 				serialPort.removeEventListener();
-			} catch (SerialPortException e1) {
-				e1.printStackTrace();
+			} catch (SerialPortException e) {
+				Initiator.logger.appendError(e);
 			}
 			synchronized(serialPort){
 				serialPort.notify();
@@ -90,7 +90,7 @@ public class WindowsSerialPort implements Wire, CanSend{
 			try {
 				serialPort.closePort();
 			} catch (SerialPortException e) {
-				e.printStackTrace();
+				Initiator.logger.appendError(e);
 			}
 			serialPort = null;
 			connected = false;
@@ -104,7 +104,7 @@ public class WindowsSerialPort implements Wire, CanSend{
 			serialPort.writeBytes(command.getBytes());
 			return true;
 		} catch (SerialPortException e) {
-			e.printStackTrace();
+			Initiator.logger.appendError(e);
 		}
 		return false;
 	}
@@ -114,7 +114,7 @@ public class WindowsSerialPort implements Wire, CanSend{
 			serialPort.writeBytes(subArray);
 			return true;
 		} catch (SerialPortException e) {
-			e.printStackTrace();
+			Initiator.logger.appendError(e);
 		}
 		return false;
 	}
@@ -170,7 +170,7 @@ public class WindowsSerialPort implements Wire, CanSend{
 			System.out.println("Set speed " + speed );
 		} catch (SerialPortException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Initiator.logger.appendError(e);
 		}
 	}
 	public SerialEventListener getSerialEventListener() {

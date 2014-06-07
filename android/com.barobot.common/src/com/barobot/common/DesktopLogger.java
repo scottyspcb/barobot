@@ -69,4 +69,9 @@ public class DesktopLogger implements CanLog {
 	public void w(String tag, String msg) {
 		System.out.println( tag +" / "+ msg );
 	}
+
+	@Override
+	public void appendError(Throwable tr) {
+		tr.printStackTrace();
+	}
 }

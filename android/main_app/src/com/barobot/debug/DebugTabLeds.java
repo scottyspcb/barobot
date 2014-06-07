@@ -67,11 +67,7 @@ public class DebugTabLeds extends Fragment {
 		Switch xb5 = (Switch) rootView.findViewById(R.id.light_show);	
 		xb5.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 		    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-		    	Audio a = (Audio) AppInvoker.container.get("Audio");
-		    	if(a == null ){
-		    		a = new Audio();
-		    		AppInvoker.container.put("Audio", a );
-		    	}
+		    	Audio a = getAudio();
 		        if (isChecked) {
 		    		final BarobotConnector barobot = Arduino.getInstance().barobot;
 		        	a.start(barobot);
@@ -80,6 +76,12 @@ public class DebugTabLeds extends Fragment {
 		        }
 		    }
 		});
+		Audio a= getAudio();
+		if(a.isRunning()){
+			xb5.setChecked(true);
+		}else{
+			xb5.setChecked(false);
+		}
 
 		Switch xb6 = (Switch) rootView.findViewById(R.id.all_lights_on);	
 		final BarobotConnector barobot = Arduino.getInstance().barobot;
@@ -151,7 +153,21 @@ public class DebugTabLeds extends Fragment {
 		if(white_scale!=null){
 			
 		}
+		
+		
+		
+		
+		
 		return rootView;
+	}
+
+	private Audio getAudio() {
+		Audio a = (Audio) AppInvoker.container.get("Audio");
+    	if(a == null ){
+    		a = new Audio();
+    		AppInvoker.container.put("Audio", a );
+    	}
+    	return a;
 	}
 
 	private void changeCarretColor() {

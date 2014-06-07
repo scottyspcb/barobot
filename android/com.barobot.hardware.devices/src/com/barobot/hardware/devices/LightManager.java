@@ -11,15 +11,13 @@ public class LightManager {
 	String[] defaultDemo = {"","",""};
 	public void startDemo(BarobotConnector barobot) {
 		Queue q = barobot.main_queue;
-		
 		if(!barobot.ledsReady){
 			barobot.scann_leds();
 		}
-
 		LightManager lm = new LightManager();
 
-	//	lm.loading(barobot, q, 10);
-		lm.linijka( barobot, q, 10, 700 );
+		lm.loading(barobot, q, 10);
+	//	lm.linijka( barobot, q, 10, 700 );
 		lm.flaga( barobot, q, 10, 700 );
 		lm.mrygajRGB( barobot, q, 60 , 100);
 		lm.nazmiane( barobot, q, 10, 700 );

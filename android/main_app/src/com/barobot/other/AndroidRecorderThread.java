@@ -2,6 +2,7 @@ package com.barobot.other;
 
 import java.util.Map;
 
+import com.barobot.common.Initiator;
 import com.barobot.common.interfaces.SampleAudioRecorder;
 
 import android.media.AudioRecord;
@@ -31,7 +32,7 @@ public class AndroidRecorderThread extends Thread implements SampleAudioRecorder
 			audioRecord.startRecording();
 	//		isRecording = true;
 		} catch (Exception e) {
-			e.printStackTrace();
+			Initiator.logger.appendError(e);
 		}
 	}
 	public void stopRecording(){
@@ -39,7 +40,7 @@ public class AndroidRecorderThread extends Thread implements SampleAudioRecorder
 			audioRecord.stop();
 		//	isRecording = false;
 		} catch (Exception e) {
-			e.printStackTrace();
+			Initiator.logger.appendError(e);
 		}
 	}
 	public short[] getFrameBytes(){

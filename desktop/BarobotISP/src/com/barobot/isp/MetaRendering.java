@@ -7,6 +7,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
 
+import com.barobot.common.Initiator;
+
 public class MetaRendering {
 	public void createContstans() {
 		String source = "C:\\PROG\\arduino\\libraries\\barobot_common\\constants.h";
@@ -24,16 +26,16 @@ public class MetaRendering {
 	            line = translateLine(br.readLine());
 	        }
 	        data = sb.toString();
-		} catch (FileNotFoundException e1) {
-			e1.printStackTrace();
+		} catch (FileNotFoundException e) {
+			Initiator.logger.appendError(e);
 	    } catch (IOException e) {
-			e.printStackTrace();
+			Initiator.logger.appendError(e);
 		} finally {
 			if(br!=null){
 		        try {
 					br.close();
 				} catch (IOException e) {
-					e.printStackTrace();
+					Initiator.logger.appendError(e);
 				}
 			}
 	    }

@@ -1,5 +1,7 @@
 package com.barobot.common.interfaces;
 
+import com.barobot.common.Initiator;
+
 public abstract class RunnableWithData implements Runnable{
 	protected String data="";
 	protected Exception error;
@@ -9,7 +11,7 @@ public abstract class RunnableWithData implements Runnable{
 	}
 	public abstract void run();
 	public void sendError(Exception e) {
-		e.printStackTrace();
+		Initiator.logger.appendError(e);
 		error = e;
 	}
 }

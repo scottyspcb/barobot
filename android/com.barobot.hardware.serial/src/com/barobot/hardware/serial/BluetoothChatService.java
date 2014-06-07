@@ -7,6 +7,8 @@ import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import com.barobot.common.Initiator;
+
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -249,7 +251,7 @@ public class BluetoothChatService {
 			Log.d(TAG, "Wysylam write: " + str);
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Initiator.logger.appendError(e);
 		}*/
         // Perform the write unsynchronized
         r.write(out, length);
@@ -313,13 +315,13 @@ public class BluetoothChatService {
          //   } catch (IOException e) {
           //      Log.d(TAG, "Socket Type: " +  "Secure" + "create() failed", e);
             } catch (NoSuchMethodException e) {
-				e.printStackTrace();
+				Initiator.logger.appendError(e);
 			} catch (IllegalArgumentException e) {
-				e.printStackTrace();
+				Initiator.logger.appendError(e);
 			} catch (IllegalAccessException e) {
-				e.printStackTrace();
+				Initiator.logger.appendError(e);
 			} catch (InvocationTargetException e) {
-				e.printStackTrace();
+				Initiator.logger.appendError(e);
 			}
             mmSocket = tmp;
         }
@@ -343,7 +345,7 @@ public class BluetoothChatService {
                             " socket during connection failure", e2);
                 }
                 connectionFailed();
-                e.printStackTrace();
+                Initiator.logger.appendError(e);
                 return;
             }
 

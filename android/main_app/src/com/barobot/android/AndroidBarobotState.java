@@ -39,6 +39,8 @@ public class AndroidBarobotState implements HardwareState{
 		"DRIVER_CALIB_X_SPEED",
 		"SERVOY_REPEAT_TIME",
 		"SERVOZ_PAC_TIME_WAIT",
+		"SERVOZ_PAC_TIME_WAIT_VOL",
+		
 
 		"BOTTLE_OFFSETX_0",
 		"BOTTLE_OFFSETX_1",

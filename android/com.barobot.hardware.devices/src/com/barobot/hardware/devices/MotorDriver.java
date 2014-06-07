@@ -32,7 +32,7 @@ public class MotorDriver {
 	public int getSPos(){
 		return software_pos;
 	}
-	public int getHPos(){
+	public int getHardwarePos(){
 		return hardware_pos;
 	}
 	public void setSPos( int spos ){

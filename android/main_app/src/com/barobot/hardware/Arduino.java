@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import android.app.Activity;
 
+import com.barobot.AppInvoker;
 import com.barobot.activity.BarobotMain;
 import com.barobot.android.AndroidBarobotState;
 import com.barobot.common.Initiator;
@@ -60,9 +61,11 @@ public class Arduino{
 				barobot.main_queue.add(Constant.GETXPOS, true);
 				barobot.main_queue.add(Constant.GETYPOS, true);
 				barobot.main_queue.add(Constant.GETZPOS, true);
+				AppInvoker.getInstance().onConnected();
 			}
 			@Override
 			public void onClose() {
+				AppInvoker.getInstance().onDisconnect();
 			}
 			@Override
 			public void connectedWith(String bt_connected_device, String address) {
@@ -90,7 +93,7 @@ public class Arduino{
 				try {
 					Arduino.getInstance().low_send(message);
 				} catch (IOException e) {
-					e.printStackTrace();
+					Initiator.logger.appendError(e);
 				}
 		    }
 			@Override
@@ -219,7 +222,7 @@ public class Arduino{
 			try {
 				debugConnection.send(command);
 			} catch (IOException e) {
-				e.printStackTrace();
+				Initiator.logger.appendError(e);
 			}
 		}
     }
@@ -259,7 +262,7 @@ public class Arduino{
 		                try {
 		                    Thread.sleep(500);
 		                } catch (InterruptedException e) {
-		                    e.printStackTrace();
+		                   Initiator.logger.appendError(e);
 		                }
 	            	}
 	            }

@@ -6,9 +6,12 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import android.widget.Button;
+
 import com.barobot.activity.BarobotMain;
 import com.barobot.common.Initiator;
 import com.barobot.hardware.Arduino;
+import com.barobot.hardware.devices.BarobotConnector;
 import com.barobot.hardware.serial.AndroidLogger;
 import com.barobot.other.CameraManager;
 import com.barobot.parser.utils.Interval;
@@ -24,7 +27,7 @@ public class AppInvoker {
 	public static Map<String, Object> container =  new HashMap<String, Object>();
 
 	SofaServer ss =null; 
-			
+
 	public void onCreate() {
 	//	I2C.init();
 	    AndroidLogger dl = new AndroidLogger();
@@ -37,7 +40,7 @@ public class AppInvoker {
 			ss.addRouter( sr );
 			ss.start();
 		} catch (IOException e) {
-			e.printStackTrace();
+			Initiator.logger.appendError(e);
 		}
 	//	cm.findCameras();
 		arduino			= new Arduino( main );
@@ -74,5 +77,31 @@ public class AppInvoker {
     	}
 	//	I2C.destroy();
         cm.onDestroy();	
+	}
+
+	public void onConnected() {
+		BarobotConnector barobot = Arduino.getInstance().barobot;
+		if(!Arduino.getInstance().barobot.ledsReady){
+			Arduino.getInstance().barobot.scann_leds();
+		}
+		barobot.doHoming( barobot.main_queue );
+
+		main.runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				Button xb1 = (Button) main.findViewById(R.id.choose_pour_button);
+				if(xb1!=null){
+					xb1.setEnabled(true);
+				}
+				Button xb2 = (Button) main.findViewById(R.id.creator_pour_button);
+				if(xb2!=null){
+					xb2.setEnabled(true);
+				}
+			}
+		});
+		
+		
+	}
+	public void onDisconnect() {
 	}
 }

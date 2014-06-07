@@ -126,7 +126,7 @@
     <string name="options_demo_button">Demo mode</string>
     <string name="options_advanced_button">Advanced Setup</string>
     <string name="options_about_button">About Barobot</string>
-    <string name="options_turn_off_button">Turn Off</string>
+    <string name="options_turn_off_button">Homeing</string>
 
     <!-- Create Activity -->
     <string name="create_pour_button">Start!</string>

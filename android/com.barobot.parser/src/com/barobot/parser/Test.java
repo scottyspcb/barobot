@@ -6,6 +6,8 @@ import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.barobot.common.Initiator;
+
 public class Test {
 	public static Logger logger = null;
 	void run(){
@@ -15,9 +17,9 @@ public class Test {
 			FileHandler fh = new FileHandler("log_test.txt");
 			logger.addHandler(fh);
 		} catch (SecurityException e) {
-			e.printStackTrace();
+			Initiator.logger.appendError(e);
 		} catch (IOException e) {
-			e.printStackTrace();
+			Initiator.logger.appendError(e);
 		}
 		logger.addHandler(new ConsoleHandler());
 		logger.log(Level.INFO, "Msg");

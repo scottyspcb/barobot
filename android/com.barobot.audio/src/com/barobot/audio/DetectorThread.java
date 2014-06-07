@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.logging.Logger;
 
+import com.barobot.common.Initiator;
 import com.barobot.common.interfaces.OnSignalsDetectedListener;
 import com.barobot.common.interfaces.SampleAudioRecorder;
 
@@ -15,10 +16,10 @@ public class DetectorThread extends Thread{
 	public BpmProcessor processor;
 	private Queue<Short> instantBuffer = new LinkedList<Short>();
 	private OnSignalsDetectedListener onSignalsDetectedListener;
-
 	private int frameByteSize = -1;
 	private int averageLength = -1;
 	int channels = 0;
+	public boolean isRunning;
 
 	public DetectorThread(Map<String, Integer> config, SampleAudioRecorder recorder){
 		processor = new BpmProcessor( config );
@@ -34,15 +35,15 @@ public class DetectorThread extends Thread{
 	}
 
 	public void start() {
-		System.out.println("startstart" );
+		this.isRunning = true;
 		_thread = new Thread(this);
         _thread.start();
     }
 	public void stopDetection(){
+		this.isRunning = false;
 		_thread = null;
 	}
 	public void run() {
-		System.out.println("runrun" );
 		try {
 			short[] buffer;			
 			Thread thisThread = Thread.currentThread();
@@ -51,12 +52,13 @@ public class DetectorThread extends Thread{
 				this.detect( buffer );
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			Initiator.logger.appendError(e);
 		}
+		this.isRunning = false;
 	}
 
 	float lastbpm = 0;
-	
+
 	private void detect(short[] buffer) {
 //		log.log(Level.INFO, "outputImpl: " +offs);
 //	    System.out.println("size99: " +buffer.length );
