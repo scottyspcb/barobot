@@ -78,6 +78,7 @@
             android:layout_below="@id/options_demo_button"
             android:layout_toRightOf="@id/options_bottle_setup_button"
             android:layout_margin="@dimen/OptionsMenuButtonMargin"
+             android:onClick="onOptionsButtonClicked"
             android:text="@string/options_turn_off_button" />
 
         <Button
@@ -105,16 +106,6 @@
             android:layout_toRightOf="@+id/options_stop"
             android:onClick="onOptionsButtonClicked"
             android:text="Unlock" />
-
-        <ToggleButton
-            android:id="@+id/toggleButton1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/options_stop"
-            android:layout_below="@+id/options_stop"
-            android:layout_marginLeft="28dp"
-            android:layout_marginTop="14dp"
-            android:text="ToggleButton" />
 
     </RelativeLayout>
 

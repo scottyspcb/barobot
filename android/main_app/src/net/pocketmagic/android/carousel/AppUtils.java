@@ -7,6 +7,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.zip.GZIPInputStream;
+
+import com.barobot.common.Initiator;
+
 import android.content.Context;
 import android.view.View;
 import android.widget.RelativeLayout;
@@ -62,7 +65,9 @@ public class AppUtils {
 	        	out.write(buffer,0,length);
         	}
         	out.flush();out.close();in.close();
-        } catch (IOException ex) { ex.printStackTrace(); }
+        } catch (IOException e) { 
+        	Initiator.logger.appendError(e);
+        }
 	}
 	
 	
@@ -79,7 +84,7 @@ public class AppUtils {
 		try {
 			Thread.sleep(ms);
 		} catch (InterruptedException e) {
-			e.printStackTrace();
+			Initiator.logger.appendError(e);
 		}
 	}
 	

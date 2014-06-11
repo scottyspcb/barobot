@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -15,6 +16,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.barobot.R;
+import com.barobot.common.Initiator;
 import com.barobot.gui.ArduinoListener;
 import com.barobot.gui.dataobjects.Engine;
 import com.barobot.gui.dataobjects.Ingredient_t;
@@ -208,8 +210,14 @@ public class CreatorActivity extends BarobotActivity implements ArduinoListener{
 		//final Button xb2 = (Button) this.findViewById(R.id.choose_pour_button);
 		//final Button xb2 = (Button) this.findViewById(R.id.creator_pour_button);
 		//xb2.setEnabled(false);
-		final WaitingTask wt = new WaitingTask();
-		wt.execute();
+		final ProgressDialog progress = new ProgressDialog(this);
+		progress.setTitle("Preparing drink...");
+		progress.setMessage("Please wait");
+		progress.show();
+
+	//	final WaitingTask wt = new WaitingTask();
+	//	wt.execute();
+
 		Thread t = new Thread(new Runnable() {  
 	         @Override
 	         public void run() {
@@ -222,7 +230,8 @@ public class CreatorActivity extends BarobotActivity implements ArduinoListener{
 		                 	Engine.GetInstance(CreatorActivity.this).Pour(tempRecipe, CreatorActivity.this);
 		                 }});
 		     		t.start();
-		        	wt.setReady();
+		    //    	wt.setReady();
+		        	progress.dismiss();
 	         }});
 		t.start();
 	}
