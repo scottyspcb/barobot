@@ -1,6 +1,7 @@
 package com.barobot.other;
 
 import com.barobot.activity.BarobotMain;
+import com.barobot.common.Initiator;
 
 import android.content.pm.PackageManager;
 import android.hardware.Camera;
@@ -41,7 +42,7 @@ public class CameraManager {
 				try {
 					front_camera = Camera.open(front_cameraId);
 				} catch (Exception e) {
-					e.printStackTrace();
+					Initiator.logger.appendError(e);
 				}
 			}
 			Log.d("+findCameras", "+bb " + back_cameraId);

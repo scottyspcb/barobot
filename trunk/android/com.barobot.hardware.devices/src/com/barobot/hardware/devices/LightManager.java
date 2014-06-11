@@ -18,7 +18,7 @@ public class LightManager {
 
 		lm.loading(barobot, q, 10);
 	//	lm.linijka( barobot, q, 10, 700 );
-		lm.flaga( barobot, q, 10, 700 );
+	//	lm.flaga( barobot, q, 10, 700 );
 		lm.mrygajRGB( barobot, q, 60 , 100);
 		lm.nazmiane( barobot, q, 10, 700 );
 		lm.tecza( barobot, q, 10 );
@@ -47,7 +47,7 @@ public class LightManager {
 				boolean top = true;
 				for (;i<10;i+=2){
 					//barobot.driver_x.d.moveTo( q, 1000);
-					q2.add("X1000,"+barobot.driver_x.defaultSpeed * 1.4, false);
+			//		q2.add("X1000,"+barobot.driver_x.defaultSpeed * 1.4, false);
 
 					list[ 1].setColor(q2, top, 200, 0, 0, 0);	q2.addWait( time );list[ 1].setColor(q2, top, 0, 0, 0, 0);	
 					list[ 3].setColor(q2, top, 200, 0, 0, 0);	q2.addWait( time );list[ 3].setColor(q2, top, 0, 0, 0, 0);	
@@ -59,7 +59,7 @@ public class LightManager {
 					list[ 7].setColor(q2, top, 200, 0, 0, 0);	q2.addWait( time );list[ 7].setColor(q2, top, 0, 0, 0, 0);	
 					list[ 5].setColor(q2, top, 200, 0, 0, 0);	q2.addWait( time );list[ 5].setColor(q2, top, 0, 0, 0, 0);	
 					list[ 3].setColor(q2, top, 200, 0, 0, 0);	q2.addWait( time );list[ 3].setColor(q2, top, 0, 0, 0, 0);	
-					q2.add("X10000,"+barobot.driver_x.defaultSpeed * 1.4, false);
+				//	q2.add("X10000,"+barobot.driver_x.defaultSpeed * 1.4, false);
 				}
 				System.out.println("koniec fadeButelka");
 				return q2;

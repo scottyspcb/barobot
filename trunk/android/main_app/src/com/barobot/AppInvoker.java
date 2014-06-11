@@ -84,7 +84,7 @@ public class AppInvoker {
 		if(!Arduino.getInstance().barobot.ledsReady){
 			Arduino.getInstance().barobot.scann_leds();
 		}
-		barobot.doHoming( barobot.main_queue );
+		barobot.doHoming( barobot.main_queue, false );
 
 		main.runOnUiThread(new Runnable() {
 			@Override

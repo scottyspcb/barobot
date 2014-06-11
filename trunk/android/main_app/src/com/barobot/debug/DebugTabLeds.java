@@ -68,10 +68,16 @@ public class DebugTabLeds extends Fragment {
 		xb5.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 		    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 		    	Audio a = getAudio();
-		        if (isChecked) {
+		    	
+		    	if(a.isRunning()){
+		    		System.out.println("getAudio stop1");
+		        	a.stop();
+		    	}else if (isChecked ) {
+		    		System.out.println("getAudio start");
 		    		final BarobotConnector barobot = Arduino.getInstance().barobot;
 		        	a.start(barobot);
 		        } else {
+		        	System.out.println("getAudio stop2");
 		        	a.stop();
 		        }
 		    }

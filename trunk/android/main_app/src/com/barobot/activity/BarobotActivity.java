@@ -125,7 +125,7 @@ public class BarobotActivity extends Activity {
 		TextView tView = (TextView) findViewById(id);
 		tView.setText(text);
 	}
-    
+   
     protected String getTextViewText(int id)
     {
     	TextView tView = (TextView) findViewById(id);

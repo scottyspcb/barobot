@@ -16,21 +16,18 @@ public class MenuFragment extends Fragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		
+
 		buttons = new Hashtable<MenuFragment.MenuItem, Integer>();
 	//	buttons.put(MenuItem.Favorite, R.id.menu_favorite);
 		buttons.put(MenuItem.Choose, R.id.menu_choose);
 		buttons.put(MenuItem.Lucky, R.id.menu_lucky);
 		buttons.put(MenuItem.Create, R.id.menu_create);
 		buttons.put(MenuItem.Options, R.id.menu_options);
-
 		return inflater.inflate(R.layout.fragment_menu, container, false);
-	
 		// TODO: Add onClickListener to all buttons on this fragment
 	}
-	
+
 	private Dictionary<MenuItem, Integer> buttons;
-	
 	public enum MenuItem
 	{
 	//	Favorite,

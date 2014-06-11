@@ -72,7 +72,7 @@ public class Audio implements OnSignalsDetectedListener{
 	}
 
 	public void stop() {
-		barobot.main_queue.add( new AsyncMessage( true ) {
+		barobot.main_queue.add( new AsyncMessage( false, true ) {
 			@Override
 			public Queue run(Mainboard dev, Queue queue) {
 				this.name		= "Audio.stop";
@@ -88,7 +88,7 @@ public class Audio implements OnSignalsDetectedListener{
 
 				Queue q = new Queue();
 				for( int i=0;i<up.length ;i++){
-					queue.add( "B"+ up[i].getAddress() + ",ff,0", true );
+					q.add( "B"+ up[i].getAddress() + ",ff,0", true );
 				}
 				return q;
 			}
@@ -110,7 +110,7 @@ public class Audio implements OnSignalsDetectedListener{
 		final float div 		= ( overmin / scope);
 		final int norm			= (int) (div * 1024);
 	//	System.out.println("\t>>>add: " + current);
-		if( Math.abs(norm - last) > 6 || norm <= 1 ){
+		if( Math.abs(norm - last) > 6 ){
 	//		System.out.println("\t>>>add: " + Math.abs(norm - last)+ "/ "+ norm );
 			float b = div * 255;
 			b = Math.min(b, 255);

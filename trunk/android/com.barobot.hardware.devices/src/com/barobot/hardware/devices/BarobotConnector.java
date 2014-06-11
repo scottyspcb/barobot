@@ -97,7 +97,7 @@ public class BarobotConnector {
 				Queue q1	= new Queue();
 				Queue q2	= new Queue();
 				for(int i =0; i<up.length;i++){
-					up[i].addLed(q1, "ff", 200);
+					up[i].addLed(q1, "ff", 255);
 					up[i].addLed(q2, "ff", 0);
 				}
 				q3.add(q1);
@@ -188,7 +188,8 @@ public class BarobotConnector {
 
 	public void startDoingDrink( Queue q) {// homing
 		i2c.carret.setLed( q, "11", 255 );
-		doHoming(q);
+		setLeds( "40", 255 );
+		doHoming(q, false);
 	}
 
 	public void moveZUp( Queue q, boolean disableOnReady ) {
@@ -265,7 +266,7 @@ public class BarobotConnector {
 		int lengthx19	=  state.getInt("LENGTHX", 60000 );
 		
 	//	Initiator.logger.i("+find_bottles", "up");
-		doHoming(q);
+		doHoming(q, true );
 
 		// scann Triggers
 		q.add( new AsyncMessage( true ) {			// go up
@@ -358,7 +359,7 @@ public class BarobotConnector {
 				}
 				if(posx != sposx ){
 					driver_x.moveTo( q2, sposx);
-					doHoming( q2 );
+					doHoming( q2, false );
 				}
 				q2.add("DZ", true);
 				return q2;
@@ -368,7 +369,7 @@ public class BarobotConnector {
 	    q.add(Constant.GETYPOS, true);
 	    q.add(Constant.GETZPOS, true);
 	}
-	public void doHoming(Queue q) {
+	public void doHoming(Queue q, final boolean always) {
 		q.add(Constant.GETXPOS, true);
 		q.add( new AsyncMessage( "A0", true ) {// check i'm over endstop (neodymium magnet)
 			@Override
@@ -390,14 +391,20 @@ public class BarobotConnector {
 					}else{
 						need_homing = true;
 					}
-					if( need_homing ){
-			//			Initiator.logger.w("startDoingDrink.homing", "MOVE" );
-						Queue	q2	= new Queue(); 
+
+					Queue	q2	= new Queue(); 
+					if( always || need_homing ){
 						moveZDown( q2 ,true );
 						if(!thisIsMax){
 							int poshx = driver_x.getHardwarePos();
 							q2.add("X"+ (poshx+100) +","+ BarobotConnector.this.driver_x.defaultSpeed, true);	// +100
 						}
+					}
+					if( always ){
+						q2.add("X-20000,"+ BarobotConnector.this.driver_x.defaultSpeed, true);
+						mainQueue.addFirst(q2);
+
+					}else if( need_homing ){
 						q2.add("X-20000,"+ BarobotConnector.this.driver_x.defaultSpeed, true);
 						mainQueue.addFirst(q2);
 					//	return true;
@@ -435,27 +442,19 @@ public class BarobotConnector {
 		q.add("DX", true);
 	    q.add("DY", true);
 
-	    i2c.carret.setLed( q, "22", 250 );
+	    i2c.carret.setLed( q, "22", 255 );
 	    setLeds( "ff", 0 );
 		for(int i =up.length-1; i>=0;i--){
-			up[i].addLed(q1, "22", 200);
+			up[i].addLed(q1, "22", 255);
 			q1.addWait(70);
 			up[i].addLed(q1, "22", 0);
 		}
 		q.add(q1);
 		q.addWait(100);
-		setLeds( "88", 100 );
-		setLeds( "22", 200 );
+		setLeds( "88", 255 );
+		setLeds( "22", 255 );
 		q.addWait(100);
 		i2c.carret.addLed( q, "22", 20 );
-		Queue q2			= new Queue();
-		for(int i =up.length-1; i>=0;i--){
-			up[i].addLed(q1, "88", 200);
-			up[i].addLed(q1, "04", 50);
-			up[i].addLed(q1, "10", 50);
-			up[i].addLed(q1, "08", 50);
-		}
-		q.add(q2);
 		q.addWait(100);
 		i2c.carret.addLed( q, "22", 250 );	
 	}
@@ -483,7 +482,7 @@ public class BarobotConnector {
 				}
 				Queue	q2	= new Queue();
 				if( up != null ){
-					up.setLed( q2, "11", 200 );
+					up.setLed( q2, "11", 255 );
 				}
 		//		Initiator.logger.i("moveToBottle","(cx == tx && cy == ty)("+cx+" == "+tx+" && "+cy+" == "+ty+")");
 
@@ -545,18 +544,18 @@ public class BarobotConnector {
 		//	virtualComponents.moveZLight(q, false);
 			q.addWait( 3* time/4 );
 		}else{
-			up.setLed( q, "04", 110 );
+			up.setLed( q, "04", 255 );
 			q.addWait( time/4 );
 			moveZLight(q, false);
 			q.add("DY", true);
 			up.addLed( q, "04", 0 );
 			q.addWait( time/4 );
-			up.addLed( q, "04", 110 );
+			up.addLed( q, "04", 255 );
 			q.addWait( time/4 );
 			up.addLed( q, "04", 0 );
 			q.addWait( time/4 );
 			up.addLed( q, "20", 255 );
-			up.addLed( q, "80", 100 );
+			up.addLed( q, "80", 255 );
 		}
 		q.add("DY", true);
 		moveZDown(q,false);
@@ -571,7 +570,7 @@ public class BarobotConnector {
 			//	if(virtualComponents.pac_enabled){
 					Queue	q2	= new Queue();		
 					if( up != null ){
-						up.addLed( q2, "11", 100 );
+						up.addLed( q2, "11", 255 );
 					}
 					
 					int time = getPacWaitTime( num );

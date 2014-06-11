@@ -38,7 +38,7 @@ public class button_click implements OnClickListener{
 		Queue q			= new Queue();
 		BarobotConnector barobot = Arduino.getInstance().barobot;
 		Queue mq		= barobot.main_queue;
-		int posx		= barobot.driver_x.getSPos();;
+		int posx		= barobot.driver_x.getSPos();
 		int posy		= barobot.state.getInt("POSY", 0 );
 
 		Log.i("currentpos", ""+  posx);
@@ -202,6 +202,7 @@ public class button_click implements OnClickListener{
 			break;
 		case R.id.fill5000:
 			barobot.pour( q, -1, true );
+			mq.add(q);
 			break;
 		case R.id.set_bottle:
 			set_bottle_on  = true;
@@ -274,7 +275,7 @@ public class button_click implements OnClickListener{
 			q.add("DX", true);
 			q.addWait(200);
 			q.add("DZ", true);
-			
+			mq.add(q);
 			break;
 		case R.id.smile:
 			q.add("Y" + Constant.SERVOY_FRONT_POS+ ","+Constant.DRIVER_Y_SPEED, true);
@@ -327,13 +328,13 @@ public class button_click implements OnClickListener{
 			barobot.scann_leds();
 			break;
 		case R.id.led_green_on:
-			barobot.setLeds( "22", 200 );
+			barobot.setLeds( "22", 255 );
 			break;	
 		case R.id.led_blue_on:
-			barobot.setLeds( "44", 200 );
+			barobot.setLeds( "44", 255 );
 			break;
 		case R.id.led_red_on:
-			barobot.setLeds( "11", 200 );
+			barobot.setLeds( "11", 255 );
 			break;
 		case R.id.reset_margin:
 			barobot.driver_x.setM(0);

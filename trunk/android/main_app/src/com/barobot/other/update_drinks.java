@@ -119,9 +119,9 @@ public class update_drinks {
                     runnable.sendSource(strFileContents);
             		runnable.run();
              	} catch (FileNotFoundException e) {
-             		 e.printStackTrace();
+             		 Initiator.logger.appendError(e);
                 } catch (Exception e) {
-                	 e.printStackTrace();
+                	 Initiator.logger.appendError(e);
                 	 Log.i("ERROR ON DOWNLOADING FILES", "ERROR IS" +e);
                 }
             }
@@ -179,7 +179,7 @@ public class update_drinks {
                     output.close();
                     input.close();
                 } catch (Exception e) {
-                	 e.printStackTrace();
+                	 Initiator.logger.appendError(e);
                 	 Log.i("ERROR ON DOWNLOADING FILES", "ERROR IS" +e);
                 }
             }

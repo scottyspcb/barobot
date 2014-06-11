@@ -3,6 +3,7 @@ package com.barobot.activity;
 import java.util.List;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
@@ -254,6 +255,8 @@ public class BarobotMain extends BarobotActivity implements ArduinoListener {
 	}
 
 	public void beforeStart() {
+		pourStart();
+		/*
 		new AlertDialog.Builder(this)
 				.setIcon(android.R.drawable.ic_dialog_alert)
 				.setTitle("")
@@ -262,21 +265,22 @@ public class BarobotMain extends BarobotActivity implements ArduinoListener {
 						new DialogInterface.OnClickListener() {
 							@Override
 							public void onClick(DialogInterface dialog,int which) {
-								pourStart();
+								
 							}
-						}).setNegativeButton("Anuluj", null).show();
+						}).setNegativeButton("Anuluj", null).show();*/
 	}
 
 	public void pourStart() {
-		//final Button xb2 = (Button) this.findViewById(R.id.choose_pour_button);
-		//xb2.setEnabled(false);
-		final WaitingTask wt = new WaitingTask();
-		wt.execute();
+		final ProgressDialog progress = new ProgressDialog(this);
+		progress.setTitle("Preparing drink...");
+		progress.setMessage("Please wait");
+		progress.show();
+
 		Thread t = new Thread(new Runnable() {  
 	         @Override
 	         public void run() {
 	        	  	Engine.GetInstance(BarobotMain.this).Pour(mCurrentRecipe, BarobotMain.this);
-		        	wt.setReady();
+	        	  	progress.dismiss();
 	         }});
 		t.start();
 	}
