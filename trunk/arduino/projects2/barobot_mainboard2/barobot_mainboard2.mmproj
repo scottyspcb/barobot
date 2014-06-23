@@ -1,0 +1,23 @@
+<mm_project serial_port="COM3" board="!Barobot MB 16 MHz ATmega328+xtal [Optiboot]" programmer="" includePaths="" libPaths="" libs="" default="yes" useCodeAutomation="yes" linkPrintfVersion="1" serialPortSpeed="" >
+  <files>
+    <file name="barobot_mainboard2_main.h" open="no" />
+    <file name="barobot_mainboard2.cpp" open="yes" />
+  </files>
+  <extras>
+  </extras>
+  <externals>
+    <external name="C:\PROG\arduino\libraries\WSWire\WSWire.cpp" />
+    <external name="C:\PROG\arduino\libraries\WSWire\utility\twi.c" />
+    <external name="C:\PROG\arduino\libraries\i2c_helpers\i2c_helpers.h" />
+    <external name="C:\PROG\arduino\libraries\i2c_helpers\i2c_helpers.cpp" />
+    <external name="C:\PROG\arduino\libraries\barobot_common\barobot_common.h" />
+    <external name="C:\PROG\arduino\libraries\Servo\Servo.cpp" />
+    <external name="C:\PROG\arduino\libraries\Servo\Servo.h" />
+    <external name="C:\PROG\arduino\libraries\FlexiTimer2\FlexiTimer2.h" />
+    <external name="C:\PROG\arduino\libraries\FlexiTimer2\FlexiTimer2.cpp" />
+    <external name="C:\PROG\arduino\libraries\AsyncDriver\AsyncDriver.h" />
+    <external name="C:\PROG\arduino\libraries\AsyncDriver\AsyncDriver.cpp" />
+    <external name="C:\PROG\arduino\libraries\AccelStepper\AccelStepper.h" />
+    <external name="C:\PROG\arduino\libraries\AccelStepper\AccelStepper.cpp" />
+  </externals>
+</mm_project>
