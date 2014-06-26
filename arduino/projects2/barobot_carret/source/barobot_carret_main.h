@@ -46,6 +46,7 @@ void update_servo( byte index );
 void readHall();
 void change_state( byte oldStateId, byte newStateId, int16_t value );
 void init_hallx();
+byte get_hy_state_id( int16_t value);
 byte get_hx_state_id( int16_t value);
 void sendanalog();
 void loop();

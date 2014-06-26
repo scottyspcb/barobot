@@ -33,7 +33,7 @@ import com.barobot.hardware.devices.i2c.Upanel;
 import com.barobot.other.WaitingTask;
 import com.barobot.parser.Queue;
 
-public class CreatorActivity extends BarobotActivity implements ArduinoListener{
+public class CreatorActivity extends BarobotActivity{
 	private int[] slot_nums = {0,0,0,0,0,0,0,0,0,0,0,0,0};
 	private int[] ids;
 	private int[] drops;

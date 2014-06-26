@@ -34,7 +34,7 @@ import com.barobot.hardware.devices.i2c.Upanel;
 import com.barobot.other.WaitingTask;
 import com.barobot.parser.Queue;
 
-public class BarobotMain extends BarobotActivity implements ArduinoListener {
+public class BarobotMain extends BarobotActivity {
 	
 	public static String MODE_NAME = "ActivityMode";
 
@@ -69,7 +69,7 @@ public class BarobotMain extends BarobotActivity implements ArduinoListener {
 		}
 		AppInvoker.createInstance(this);
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.barobot_main);
+		setContentView(R.layout.activity_recipe);
 		AppInvoker.getInstance().onCreate();
 	}
 	

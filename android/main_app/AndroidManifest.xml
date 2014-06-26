@@ -33,12 +33,14 @@
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
             </intent-filter>
+
             <meta-data
                 android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
                 android:resource="@xml/device_filter" />
@@ -57,21 +59,19 @@
             android:name="com.barobot.activity.AboutActivity"
             android:label="@string/title_activity_about"
             android:screenOrientation="sensorLandscape"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
-             >
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
         </activity>
         <activity
             android:name="com.barobot.activity.WebActivitybActivity"
             android:configChanges="keyboard|keyboardHidden|screenSize|orientation"
             android:label="@string/title_activity_web"
             android:screenOrientation="sensorLandscape"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
-             >
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
         </activity>
         <activity
             android:name="com.barobot.activity.DebugActivity"
-            android:screenOrientation="sensorLandscape"
-            android:label="@string/title_activity_device_list" >
+            android:label="@string/title_activity_device_list"
+            android:screenOrientation="sensorLandscape" >
         </activity>
         <activity
             android:name="com.barobot.gui.MainActivity"
@@ -87,15 +87,13 @@
             android:name="com.barobot.activity.RecipeSetupActivity"
             android:label="@string/title_activity_recipe_setup"
             android:screenOrientation="sensorLandscape"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
-             >
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
         </activity>
         <activity
             android:name="com.barobot.gui.OutsideComponentActivity"
             android:label="@string/title_activity_outside_component"
             android:screenOrientation="sensorLandscape"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" 
-             >
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.barobot.gui.BarobotActivity" />
@@ -112,26 +110,35 @@
         <activity
             android:name="com.barobot.activity.CreatorActivity"
             android:label="@string/title_activity_creator"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
-            android:screenOrientation="sensorLandscape" >
+            android:screenOrientation="sensorLandscape"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
         </activity>
         <activity
             android:name="com.barobot.activity.RandomActivity"
             android:label="@string/title_activity_random"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
-            android:screenOrientation="sensorLandscape" >
+            android:screenOrientation="sensorLandscape"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
         </activity>
         <activity
             android:name="net.pocketmagic.android.carousel.MainActivity"
             android:label=""
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
-            android:screenOrientation="sensorLandscape" >
+            android:screenOrientation="sensorLandscape"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
         </activity>
         <activity
             android:name="com.barobot.activity.OptionsActivity"
             android:label="@string/title_activity_options"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
-            android:screenOrientation="sensorLandscape" >
+            android:screenOrientation="sensorLandscape"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
+        </activity>
+        <activity
+            android:name="com.barobot.activity.WizardStartActivity"
+            android:label="@string/title_activity_wizard_start" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
     </application>
 

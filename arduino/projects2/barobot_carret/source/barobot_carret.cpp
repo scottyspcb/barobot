@@ -74,7 +74,6 @@ int16_t up_level = 0;
 int16_t down_level = 0;
 
 #define HISTORY_LENGTH  7
-#define HXSTATES  11
 
 volatile int16_t hallx_state[HXSTATES][4] = {
 	//{CODE, MIN, MAX }
@@ -96,17 +95,14 @@ volatile int16_t hallx_state[HXSTATES][4] = {
 #define HYSTERESIS  2
 #define SEPARATOR_CHAR '\n'
 #define TRIES  10
-#define HYSTATES  7
 
 volatile int16_t hally_state[HYSTATES][4] = {
 	//{CODE, MIN, MAX  }
-	{'E',	HX_NEODYM_UP_BELOW,		1024,						0x0f},		// ERROR
-	{'O',	HX_NEODYM_UP_START,		HX_NEODYM_UP_BELOW-1,		0x08},		// to jest neodym max
-	{'R',	HX_FERRITE_UP_IS_BELOW,	HX_NEODYM_UP_START-1,		0x04},		// wznosi siê neodym
-	{'A',	HX_LOCAL_UP_MAX_OVER,	HX_FERRITE_UP_IS_BELOW-1,	0x02},		// czubek lokalnego max
-	{'B',	HX_NOISE_BELOW,			HX_LOCAL_UP_MAX_OVER-1,		0x01},		// wznosi siê
-	{'W',	HX_NOISE_OVER,			HX_NOISE_BELOW-1,			0x00},		// neutralne
-	{'N',	0,						HX_NEODYM_DOWN_OVER-1,		0xf0}		// NOT CONNECTED	
+	{'E',	1024,	1024,		0x0f},		// ERROR
+	{'R',	550,	1024-1,		0x04},			// neodym +
+	{'A',	450,	550-1,		0x02},		// normal
+	{'B',	1,		450-1,		0x01},		// neodym -
+	{'N',	0,		0,		0xf0}		// NOT CONNECTED	
 };
 
 String serial0Buffer = "";
@@ -277,7 +273,14 @@ byte get_hx_state_id( int16_t value){
 	}
 	return 0xff;
 }
-
+byte get_hy_state_id( int16_t value){
+	for(byte i=0;i<HYSTATES;i++){
+		if(hally_state[i][1] <= value && hally_state[i][2] >= value ){
+			return i;
+		}
+	}
+	return 0xff;
+}
 void init_hallx() {           // synchroniczne
 	int16_t val1 = readValue();
 	val1 += readValue();
@@ -615,27 +618,54 @@ void proceed( volatile byte buffer[MAXCOMMAND_CARRET] ){
 		if( source == INNER_HALL_X ){	
 			int16_t val1 = readValue();
 			byte newStateId = get_hx_state_id( val1 );
-			if( newStateId != 0xff ){
-				byte state_name	= hallx_state[newStateId][0];
-				byte ttt[10] = {
-					METHOD_IMPORTANT_ANALOG, 
-					INNER_HALL_X, 
-					state_name, 
-					0,					// dir is unknown on carret
-					0, 					// position is unknown on carret
-					0,  				// position is unknown on carret
-					0, 					// position is unknown on carret
-					0,  				// position is unknown on carret
-					(val1 & 0xFF),
-					(val1 >>8),
-				};
-				send(ttt,10);
-			}
-		
+			byte state_name	= hallx_state[newStateId][0];
+			byte ttt[10] = {
+				METHOD_IMPORTANT_ANALOG, 
+				INNER_HALL_X, 
+				state_name,  		// STATE
+				0,					// dir is unknown on carret
+				0, 					// position is unknown on carret
+				0,  				// position is unknown on carret
+				0, 					// position is unknown on carret
+				0,  				// position is unknown on carret
+				(val1 & 0xFF),
+				(val1 >>8),
+			};
+			send(ttt,10);
+
 		}else if( source ==  INNER_HALL_Y ){ 
-		
+			int16_t val1 = analogRead(PIN_CARRET_HALL_X );
+			byte newStateId = get_hy_state_id( val1 );
+			byte state_name	= hally_state[newStateId][0];
+			byte ttt[10] = {
+				METHOD_IMPORTANT_ANALOG, 
+				INNER_HALL_Y, 
+				state_name, 		// STATE 
+				0,					// dir is unknown on carret
+				0, 					// position
+				0,  				// position
+				0, 					// position
+				0,  				// position
+				(val1 & 0xFF),
+				(val1 >>8),
+			};
+			send(ttt,10); 
 		}else if( source ==  INNER_WEIGHT ){ 
-		
+			int16_t val1 = analogRead(PIN_CARRET_WEIGHT );
+			byte ttt[10] = {
+				METHOD_IMPORTANT_ANALOG, 
+				INNER_WEIGHT,
+				0, 					// STATE
+				0,					// dir is unknown on carret
+				0, 					// position is unknown on carret
+				0,  				// position is unknown on carret
+				0, 					// position is unknown on carret
+				0,  				// position is unknown on carret
+				(val1 & 0xFF),
+				(val1 >>8),
+			};
+			send(ttt,10); 
+
 		}else if( source ==  INNER_CURRENTY ){
 		
 		}else if( source ==  INNER_CURRENTZ ){
