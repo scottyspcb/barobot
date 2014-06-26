@@ -1,0 +1,32 @@
+
+
+Body
+- step
+- dir
+- stepper_enable
+- pl2303 TX
+- pl2303 RX
+- LED DATA
+- tablet_sense
+
+- 12V
+- GND
+
+
+Carriage
+- hallx
+- hally
+- servo Y
+- servo Z
+- current Y
+- current Z
+- load cell
+- tray-led
+
+
+
+
+
+
+
+

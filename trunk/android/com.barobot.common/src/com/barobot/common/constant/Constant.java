@@ -18,7 +18,7 @@ public class Constant {
 	public static final byte ERROR = 'R';
 	public static final byte ANALOG = 'A';
 	public static final byte COMMENT = '-';
-   
+
 	public static final String GETXPOS = "x";
 	public static final String GETYPOS = "y";
 	public static final String GETZPOS = "z";
@@ -40,11 +40,18 @@ public class Constant {
 	public static int cdefault_index	= 2;
 	public static int mdefault_address	= 0x01;
 	public static int mdefault_index	= 1;
+
 	public static final int SERVOZ_UP_POS = 2100;
 	public static final int SERVOZ_UP_LIGHT_POS = 2050;
 	public static final int SERVOZ_DOWN_POS = 1250;
 	public static final int SERVOZ_TEST_POS = 1300;
-	
+/*
+	public static final int SERVOZ_UP_POS = 1250;
+	public static final int SERVOZ_UP_LIGHT_POS = 1250;
+	public static final int SERVOZ_DOWN_POS = 2100;
+	public static final int SERVOZ_TEST_POS = 1300;
+
+	*/
 	public static final int SERVOY_FRONT_POS = 790;
 	public static final int SERVOY_HFRONT_POS = 790 +20;	// add histeresis
 

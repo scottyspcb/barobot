@@ -876,8 +876,8 @@ void test_slave(byte slave_address, byte tests){
 	Serial.println();
 	Serial.flush();
 }
- 
- 
+ /*
+
 uint16_t i2c_getAnalogValue( byte slave_address, byte pin ){ // Pobierz analogowo wartość PIN o numerze ( 2 bajty )
 	out_buffer[0]  = METHOD_GETANALOGVALUE;
 	out_buffer[1]  = pin;
@@ -894,7 +894,7 @@ uint16_t i2c_getAnalogValue( byte slave_address, byte pin ){ // Pobierz analogow
 	}
 	return 0xFF;
 }
- 
+ */
 // this is event handler, all vars should be volatile
 #define DEBUG_SEND2	false
 
@@ -1024,6 +1024,7 @@ void send2android( volatile uint8_t buffer[], int length ){
 		Serial.print(buffer[i]);
 	}
 }
+
 void serialEvent(){				             // Runs after every LOOP (means don't run if loop hangs)
 	if(!prog_mode){
 		while (Serial.available()) {    // odczytuj gdy istnieja dane i poprzednie zostaly odczytane
