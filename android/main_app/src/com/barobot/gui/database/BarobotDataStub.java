@@ -13,7 +13,6 @@ public class BarobotDataStub {
 	
 	private static void SetupSlots()
 	{
-	
 		for (int i= 1 ; i <= 12; i++)
 		{	
 			Slot slot = new Slot();
@@ -23,11 +22,11 @@ public class BarobotDataStub {
 			//slot.product = null;
 			slot.insert();	
 		}
-		
+
 		Type type = new Type();
 		type.name = "Strong";
 		type.insert();
-		
+
 		Liquid_t liq = new Liquid_t();
 		liq.name = "Wyborowa";
 		liq.type = type;

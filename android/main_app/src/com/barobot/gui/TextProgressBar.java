@@ -77,7 +77,11 @@ public class TextProgressBar extends ProgressBar {
     }
  
     public synchronized void setText(String text) {
-        this.text = text;
+    	if(text == null ){
+    		this.text = "";
+    	}else{
+    		this.text = text;
+    	}
     }
  
     public int getTextColor() {

@@ -10,20 +10,25 @@ import org.orman.mapper.annotation.PrimaryKey;
 
 import com.barobot.gui.database.BarobotData;
 import com.barobot.gui.utils.Distillery;
+import com.barobot.gui.utils.LangTool;
 
 @Entity
 public class Recipe_t extends Model<Recipe_t>{
 	@PrimaryKey (autoIncrement = true)
-	public long id;
+	public int id;
 	public String name;
 	public boolean favorite;
 	public boolean unlisted;
 	public int photoID;
+
+	public String getName() {
+		return LangTool.translateName(id, "recipe", name );
+	}
 	@Override
 	public String toString() {
-		return name;
+		return getName();
 	}
-	
+
 	@OneToMany (toType = Ingredient_t.class, onField = "recipe" )
 	public EntityList<Recipe_t, Ingredient_t> ingredients = new EntityList<Recipe_t, Ingredient_t>(Recipe_t.class, Ingredient_t.class, this);
 

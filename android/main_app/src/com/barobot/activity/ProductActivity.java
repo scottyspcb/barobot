@@ -9,6 +9,7 @@ import com.barobot.gui.dataobjects.Liquid_t;
 import com.barobot.gui.dataobjects.Product;
 import com.barobot.gui.dataobjects.Type;
 import com.barobot.gui.utils.CapacityProductWrapper;
+import com.barobot.gui.utils.LangTool;
 
 import android.os.Bundle;
 import android.app.AlertDialog;
@@ -60,8 +61,8 @@ public class ProductActivity extends BarobotMain {
 				
 				setTextViewText(new CapacityProductWrapper(mCurrentProduct).toString(), 
 						R.id.product_capacity_text );
-				setTextViewText(mCurrentProduct.liquid.toString(), R.id.product_liquid_text);
-				setTextViewText(mCurrentProduct.liquid.type.toString(), R.id.product_type_text);
+				setTextViewText(mCurrentProduct.liquid.getName(), R.id.product_liquid_text);
+				setTextViewText(mCurrentProduct.liquid.type.getName(), R.id.product_type_text);
 			}
 			else
 			{
@@ -96,7 +97,7 @@ public class ProductActivity extends BarobotMain {
 				
 				ClearProductCapacities();
 				
-				setTextViewText(type.toString(), R.id.product_type_text);
+				setTextViewText(type.getName(), R.id.product_type_text);
 				FillLiquidList();
 			}
 			
@@ -122,7 +123,7 @@ public class ProductActivity extends BarobotMain {
 				SetCurrentLiquid(liquid);
 				ClearCurrentProduct();
 				
-				setTextViewText(liquid.toString(), R.id.product_liquid_text);
+				setTextViewText(liquid.getName(), R.id.product_liquid_text);
 				
 				FillProductCapacities(mCurrentLiquid);
 			}
@@ -212,14 +213,12 @@ public class ProductActivity extends BarobotMain {
 				
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
-					
 					Type type = new Type();
 					TextView tView = (TextView) dialogView.findViewById(R.id.dialog_type_name);
 					type.name = tView.getText().toString();
-					
-					Engine.GetInstance(ProductActivity.this).addType(type);
+					type.insert();
+					LangTool.InsertTranslation(type.id, "type", tView.getText().toString());
 					type.invalidateData();
-					
 					FillTypesList();
 				}
 			});
@@ -234,7 +233,7 @@ public class ProductActivity extends BarobotMain {
 	    LayoutInflater inflater = getLayoutInflater();
 	    final View dialogView = inflater.inflate(R.layout.dialog_add_liquid, null);
 	    TextView tView = (TextView) dialogView.findViewById(R.id.dialog_liquid_type);
-	    tView.setText(mCurrentType.name);
+	    tView.setText(mCurrentType.getName());
 	    tView.setEnabled(false);
 
 	    builder.setView(dialogView)
@@ -253,16 +252,18 @@ public class ProductActivity extends BarobotMain {
 					TextView tView = (TextView) dialogView.findViewById(R.id.dialog_liquid_name);
 					liquid.name = tView.getText().toString();
 					liquid.type = mCurrentType;
-					
+					liquid.insert();
+
+					LangTool.InsertTranslation(liquid.id, "liquid", tView.getText().toString());
+
 					Engine engine = Engine.GetInstance(ProductActivity.this);
-					engine.addLiquid(liquid);
 
 					int[] defaultCapacity = {1500,1000,750,700,500,330,200,100};
 					for( int i=0;i<defaultCapacity.length;i++){
 						Product product = new Product();
 						product.capacity = defaultCapacity[i];
 						product.liquid = liquid;
-						engine.addProduct(product);
+						product.insert();
 					}
 					engine.invalidateData();
 					mCurrentLiquid = liquid;
@@ -281,7 +282,7 @@ public class ProductActivity extends BarobotMain {
 	    LayoutInflater inflater = getLayoutInflater();
 	    final View dialogView = inflater.inflate(R.layout.dialog_add_product, null);
 	    TextView tView = (TextView) dialogView.findViewById(R.id.dialog_product_name);
-	    tView.setText(mCurrentLiquid.name);
+	    tView.setText(mCurrentLiquid.getName());
 	    tView.setEnabled(false);
 
 	    builder.setView(dialogView)
@@ -302,7 +303,7 @@ public class ProductActivity extends BarobotMain {
 					product.liquid = mCurrentLiquid;
 
 					Engine engine = Engine.GetInstance(ProductActivity.this);
-					engine.addProduct(product);
+					product.insert();
 					engine.invalidateData();
 
 					FillProductCapacities(mCurrentLiquid);
@@ -325,9 +326,7 @@ public class ProductActivity extends BarobotMain {
 			Engine.GetInstance(this).updateSlot(mSlotNumber, mCurrentProduct);
 			this.finish();	
 		}
-		
 	}
-	
 	public void onCancelButtonClicked (View view)
 	{
 		this.finish();

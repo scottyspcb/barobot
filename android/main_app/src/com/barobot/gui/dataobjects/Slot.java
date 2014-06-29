@@ -25,15 +25,15 @@ public class Slot extends Model<Slot>{
 	@ManyToOne
 	public Product product;
 
-	public String GetName()
-	{
-		if (product != null)
-		{
-			return product.liquid.name;
-		}
-		else
-		{
+	public String getName(){
+		if (product != null){
+			return product.liquid.getName();
+		}else{
 			return status;
 		}
+	}
+	@Override
+	public String toString() {
+		return getName();
 	}
 }

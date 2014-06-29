@@ -49,7 +49,7 @@ public class BottleSetupActivity extends BarobotMain{
 				if (bottle.status == Slot.STATUS_EMPTY) {
 					tview.setText(R.string.empty_bottle_string);
 				} else {
-					tview.setText(bottle.GetName());	
+					tview.setText(bottle.getName());	
 				}	
 			}
 		}

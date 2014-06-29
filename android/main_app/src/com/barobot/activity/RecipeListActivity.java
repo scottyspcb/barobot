@@ -114,7 +114,7 @@ public class RecipeListActivity extends BarobotMain{
 		else
 		{
 			// Set the name
-			setTextViewText(mCurrentRecipe.name, R.id.recipe_name_textview);
+			setTextViewText(mCurrentRecipe.getName(), R.id.recipe_name_textview);
 
 			// Set ingredients
 			

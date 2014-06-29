@@ -96,9 +96,9 @@
     <string name="product_button_cancel">Cancel</string>
     <string name="product_button_empty">Empty</string>
     <string name="product_button_ok">OK</string>
-    <string name="product_field_type">[Type]</string>
-    <string name="product_field_liquid">[Name]</string>
-    <string name="product_field_capacity">[Capacity]</string>
+    <string name="product_field_type"></string>
+    <string name="product_field_liquid"></string>
+    <string name="product_field_capacity"></string>
     <string name="product_liquid_label">Liquids</string>
     <string name="product_type_label">Types</string>
     <string name="product_capacity_label">Capacities</string>
@@ -117,5 +117,6 @@
     <string name="unlock">Unlock</string>
     <string name="add_recipe_btn">+ recipe</string>
     <string name="remove_recipe_btn">- recipe</string>
+    <string name="goto_main_menu">Main menu</string>
 
 </resources>

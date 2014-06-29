@@ -1,16 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
 	<dimen name="ambilwarna_hsvHeight">440dp</dimen>
 	<dimen name="ambilwarna_hsvWidth">440dp</dimen>
 	<dimen name="ambilwarna_hueWidth">100dp</dimen>
 	<dimen name="ambilwarna_spacer">8dp</dimen>
 
-
     <dimen name="WielkoscInputa">12px</dimen>
-    <dimen name="activity_horizontal_margin">16dp</dimen>
-    <dimen name="activity_vertical_margin">16dp</dimen>
-	<dimen name="bottle_box_width">120dp</dimen>
+    <dimen name="activity_horizontal_margin">6dp</dimen>
+    <dimen name="activity_vertical_margin">6dp</dimen>
+	<dimen name="bottle_box_width">140dp</dimen>
     <dimen name="bottle_box_height">190dp</dimen>
     <dimen name="bottle_box_text_size">30sp</dimen>
     <dimen name="spinner_text_size">25sp</dimen>
@@ -27,9 +25,7 @@
     
     <color name="pressed_color">#4d90fe</color>
     <color name="default_color">#0000ff</color>
-    
-    
-    
+
     <!-- Progress Bars -->
     <dimen name="progress_bar_name_width">60dp</dimen>
     
@@ -53,17 +49,14 @@
     <color name="RedButtonDisabledStartColor">#565051</color>
     <color name="RedButtonDisabledEndColor">#736F6E</color>
     <color name="RedButtonBorderColor">#254117</color>
-    
+
     <!-- Yellow Button -->
     <color name="YellowButtonStartColor">#E9EC09</color>
     <color name="YellowButtonEndColor">#959109</color>
     <color name="YellowButtonDisabledStartColor">#565051</color>
     <color name="YellowButtonDisabledEndColor">#736F6E</color>
     <color name="YellowButtonBorderColor">#254117</color>
-    
-    <!-- Main Menu -->
-    <dimen name="main_menu_width">220dp</dimen>
-    
+
     <!-- Menu Button -->
     <color name="MenuButtonStartColor">@color/SecondaryBLight2</color>
     <color name="MenuButtonEndColor">@color/SecondaryB</color>
@@ -73,14 +66,14 @@
     <color name="MenuButtonDisabledEndColor">#736F6E</color>
     <color name="MenuButtonBorderColor">@color/SecondaryB</color>
     <dimen name="MenuButtonHeight">75dp</dimen>
-    
+
     <!-- Options -->
     <dimen name="OptionsMenuButtonWidth">300dp</dimen>
     <dimen name="OptionsMenuButtonHeight">100dp</dimen>
     <dimen name="OptionsMenuButtonMargin">10dp</dimen>
     
     <!-- Recipes -->
-    <dimen name="RecipeListWidth">300dp</dimen>
+    <dimen name="RecipeListWidth">400dp</dimen>
     
     <!-- Bottle Buttons -->
     <color name="BottleStartColor">#DBFFFFFC</color>

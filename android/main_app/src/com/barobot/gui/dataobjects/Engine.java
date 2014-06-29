@@ -96,22 +96,8 @@ public class Engine {
 	public List<Type> getTypes() {
 		return BarobotData.GetTypes();
 	}
-	
-	public void addType(Type type)
-	{
-		type.insert();
-	}
-	
-	public void addLiquid(Liquid_t liquid)
-	{
-		liquid.insert();
-	}
-	
-	public void addProduct(Product product) 
-	{
-		product.insert();	
-	}
-	
+
+
 	private List<Recipe_t> recipes;
 	
 	public List<Recipe_t> getRecipes()

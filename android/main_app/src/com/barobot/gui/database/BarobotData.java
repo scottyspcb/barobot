@@ -15,12 +15,14 @@ import android.content.Context;
 import com.barobot.gui.dataobjects.Category;
 import com.barobot.gui.dataobjects.Important_position;
 import com.barobot.gui.dataobjects.Ingredient_t;
+import com.barobot.gui.dataobjects.Language;
 import com.barobot.gui.dataobjects.Liquid_t;
 import com.barobot.gui.dataobjects.Log;
 import com.barobot.gui.dataobjects.Photo;
 import com.barobot.gui.dataobjects.Product;
 import com.barobot.gui.dataobjects.Recipe_t;
 import com.barobot.gui.dataobjects.Slot;
+import com.barobot.gui.dataobjects.Translated_name;
 import com.barobot.gui.dataobjects.Type;
 
 public class BarobotData {
@@ -36,6 +38,10 @@ public class BarobotData {
 		MappingSession.registerEntity(Product.class);
 		MappingSession.registerEntity(Important_position.class);
 		MappingSession.registerEntity(Slot.class);
+		
+		MappingSession.registerEntity(Language.class);
+		MappingSession.registerEntity(Translated_name.class);
+		
 		
 		MappingSession.registerEntity(Log.class);
 		MappingSession.registerEntity(Photo.class);
@@ -59,6 +65,7 @@ public class BarobotData {
 		ClearTable(Type.class);
 		ClearTable(Category.class);
 		ClearTable(Important_position.class);
+		ClearTable(Translated_name.class);
 	}
 
 	public static List<Recipe_t> GetRecipes(){

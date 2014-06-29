@@ -15,6 +15,7 @@ import android.view.View;
 import com.barobot.BarobotMain;
 import com.barobot.R;
 import com.barobot.gui.dataobjects.Engine;
+import com.barobot.gui.utils.LangTool;
 import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
 
@@ -25,6 +26,9 @@ public class WizardStartActivity extends BarobotMain{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_wizard_start);
 		Engine.GetInstance(this).getRecipes();
+		String langCode = Locale.getDefault().getLanguage();	// i.e. "pl"
+		//Log.i("readLangId1", Locale.getDefault().getDisplayLanguage());
+		LangTool.setLanguage(langCode);
 	}
 
 	public void onMenuButtonClicked(View view)
@@ -51,34 +55,35 @@ public class WizardStartActivity extends BarobotMain{
 	}
 	public void onLangButtonClicked(View view)
 	{
-		String lang = "";
+		String langCode = "";
 		switch(view.getId())
 		{
 			case R.id.lang_ru:
-				lang = "ru";
+				langCode = "ru";
 				break;
 			case R.id.lang_pl:
-				lang = "pl";
+				langCode = "pl";
 				break;	
 			case R.id.lang_en:
-				lang = "en";
+				langCode = "en";
 				break;
 		}
-
 		Resources res = getBaseContext().getResources();
 		DisplayMetrics dm = res.getDisplayMetrics();
 
 		android.content.res.Configuration conf = res.getConfiguration();
 
-		conf.locale = new Locale(lang);
+		conf.locale = new Locale(langCode);
 		res.updateConfiguration(conf, dm);
+		LangTool.setLanguage(langCode);
 		
-		Log.i("lang changed to", lang);
-		
+		Log.i("lang changed to", langCode);
 		setContentView(R.layout.activity_wizard_start);	//reload
+
+		Log.i("translateName2 ", LangTool.translateName(2, "type", "aa" ));
 	}
 
-	
+
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_HOME) {

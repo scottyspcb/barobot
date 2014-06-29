@@ -9,10 +9,12 @@ import org.orman.mapper.annotation.ManyToOne;
 import org.orman.mapper.annotation.OneToMany;
 import org.orman.mapper.annotation.PrimaryKey;
 
+import com.barobot.gui.utils.LangTool;
+
 @Entity
 public class Type extends Model<Type>{
 	@PrimaryKey(autoIncrement=true)
-	public long id;
+	public int id;
 	public String name;
 	
 	@ManyToOne
@@ -32,10 +34,12 @@ public class Type extends Model<Type>{
 	public void invalidateData(){
 		liquids.clear();
 	}
-	
-	
+
+	public String getName() {
+		return LangTool.translateName(id, "type", name );
+	}
 	@Override
 	public String toString() {
-		return name;
+		return getName();
 	}
 }
