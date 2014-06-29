@@ -2,6 +2,142 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="horizontal"
     tools:context="${packageName}.${activityClass}" >
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:baselineAligned="false" >
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.50" >
+
+            <ImageButton
+                android:id="@+id/wizard_list"
+                style="?android:borderlessButtonStyle"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:adjustViewBounds="true"
+                android:background="@android:color/transparent"
+                android:onClick="onMenuButtonClicked"
+                android:scaleType="centerCrop"
+                android:src="@drawable/blackboard_menu" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:clickable="false"
+                android:gravity="center"
+                android:shadowColor="#000000"
+                android:shadowDx="5"
+                android:shadowDy="5"
+                android:shadowRadius="5"
+                android:text="@string/menu_choose"
+                android:textColor="#eD7720"
+                android:textSize="60sp"
+                android:textStyle="bold"
+                android:typeface="serif" >
+            </TextView>
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.50" >
+
+            <ImageButton
+                android:id="@+id/wizard_own"
+                style="?android:borderlessButtonStyle"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@android:color/transparent"
+                android:onClick="onMenuButtonClicked"
+                android:scaleType="centerCrop"
+                android:src="@drawable/cabinet" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:clickable="false"
+                android:gravity="center"
+                android:shadowColor="#000000"
+                android:shadowDx="5"
+                android:shadowDy="5"
+                android:shadowRadius="5"
+                android:text="@string/menu_create"
+                android:textColor="#eD7720"
+                android:textSize="60sp"
+                android:textStyle="bold"
+                android:typeface="serif" >
+            </TextView>
+        </FrameLayout>
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_weight="0.50" >
+
+        <GridLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:columnCount="1" >
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="77dp"
+                android:layout_column="0"
+                android:layout_gravity="center_horizontal|top"
+                android:layout_row="0" >
+
+                <Button
+                    android:id="@+id/lang_ru"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="onLangButtonClicked"
+                    android:padding="20dp"
+                    android:text="@string/wizard_lang_ru" />
+
+                <Button
+                    android:id="@+id/lang_pl"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="onLangButtonClicked"
+                     android:padding="20dp"
+                    android:text="@string/wizard_lang_pl" />
+
+                <Button
+                    android:id="@+id/lang_en"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="onLangButtonClicked"
+                     android:padding="20dp"
+                    android:text="@string/wizard_lang_en" />
+            </LinearLayout>
+
+            <ImageButton
+                android:id="@+id/button_settings"
+                android:layout_width="68dp"
+                android:layout_height="68dp"
+                android:layout_column="0"
+                android:layout_gravity="right|top"
+                android:layout_row="0"
+                android:background="@android:color/transparent"
+                android:drawableLeft="@drawable/config_icon"
+                android:onClick="onMenuButtonClicked"
+                android:scaleType="fitXY"
+                android:src="@drawable/config_icon" />
+        </GridLayout>
+    </FrameLayout>
 
 </RelativeLayout>

@@ -11,11 +11,10 @@
     tools:context=".BottleSetupActivity" >
 
     <LinearLayout
-        android:id="@+id/page_layout"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_alignParentLeft="true"
-        android:layout_toLeftOf="@+id/fragment_menu"
+        android:layout_alignParentRight="true"
         android:orientation="vertical" >
 
         <LinearLayout
@@ -119,13 +118,5 @@
                 android:text="@string/empty_slot" />
         </LinearLayout>
     </LinearLayout>
-
-    <fragment
-        android:id="@+id/fragment_menu"
-        android:name="com.barobot.gui.fragment.MenuFragment"
-        android:layout_width="@dimen/main_menu_width"
-        android:layout_height="fill_parent"
-        android:layout_alignParentRight="true"
-        tools:layout="@layout/fragment_menu" />
 
 </RelativeLayout>

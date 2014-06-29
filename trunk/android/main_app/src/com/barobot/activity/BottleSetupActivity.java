@@ -2,10 +2,10 @@ package com.barobot.activity;
 
 import java.util.List;
 
+import com.barobot.BarobotMain;
 import com.barobot.R;
 import com.barobot.gui.dataobjects.Engine;
 import com.barobot.gui.dataobjects.Slot;
-import com.barobot.gui.fragment.MenuFragment;
 
 import android.os.Bundle;
 import android.content.Intent;
@@ -13,12 +13,11 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
-public class BottleSetupActivity extends BarobotActivity 
-{
+public class BottleSetupActivity extends BarobotMain{
 	private int[] ids;
 	
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_bottle_setup);
 
@@ -88,10 +87,7 @@ public class BottleSetupActivity extends BarobotActivity
 	@Override
 	protected void onResume() {
 		super.onResume();
-		
-		MenuFragment menuFrag = (MenuFragment) getFragmentManager().findFragmentById(R.id.fragment_menu);
-		menuFrag.SetBreadcrumb(MenuFragment.MenuItem.Options);
-		
+
 		UpdateSlots();
 	}
 }

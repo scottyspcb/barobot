@@ -6,17 +6,11 @@ import java.util.List;
 import org.orman.mapper.Model;
 
 import android.content.Context;
-import android.util.Log;
 
-import com.barobot.activity.BarobotMain;
-import com.barobot.common.constant.Constant;
-import com.barobot.gui.ArduinoListener;
 import com.barobot.gui.database.BarobotData;
 import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
 import com.barobot.parser.Queue;
-import com.barobot.parser.message.AsyncMessage;
-import com.barobot.parser.message.Mainboard;
 
 public class Engine {
 

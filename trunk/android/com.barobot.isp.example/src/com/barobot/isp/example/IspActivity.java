@@ -20,6 +20,7 @@ import com.barobot.common.interfaces.serial.Wire;
 import com.barobot.hardware.devices.BarobotConnector;
 import com.barobot.hardware.serial.AndroidLogger;
 import com.barobot.hardware.serial.Serial_wire;
+import com.barobot.hardware.serial.Serial_wire2;
 import com.barobot.isp.Uploader;
 import com.barobot.isp.enums.Board;
 import com.barobot.isp.enums.UploadErrors;
@@ -59,7 +60,7 @@ public class IspActivity extends Activity {
      	if(connection !=null){
      		connection.destroy();
      	}
-    	connection = new Serial_wire( this );
+    	connection = new Serial_wire2( this );
     	connection.setBaud( mSelectedBoard.uploadBaudrate );
    	 	connection.init();
 

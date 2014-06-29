@@ -108,8 +108,6 @@ public class BarobotConnector {
 		});
 	}
 
-	
-	
 	public void cancel_all() {
 			Queue mq = main_queue;
 			mq.clear();

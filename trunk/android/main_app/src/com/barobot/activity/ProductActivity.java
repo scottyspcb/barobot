@@ -2,6 +2,7 @@ package com.barobot.activity;
 
 import java.util.List;
 
+import com.barobot.BarobotMain;
 import com.barobot.R;
 import com.barobot.gui.dataobjects.Engine;
 import com.barobot.gui.dataobjects.Liquid_t;
@@ -21,7 +22,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public class ProductActivity extends BarobotActivity {
+public class ProductActivity extends BarobotMain {
 		
 	public static String SLOT_NUMBER = "slotNumber";
 	
@@ -171,7 +172,7 @@ public class ProductActivity extends BarobotActivity {
 		mCurrentProduct = null;
 		ButtonEnabled(false, R.id.product_button_ok);
 	}
-	
+
 	private void SetCurrentLiquid(Liquid_t liquid)
 	{
 		mCurrentLiquid = liquid;

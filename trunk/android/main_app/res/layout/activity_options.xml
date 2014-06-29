@@ -12,7 +12,7 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_alignParentLeft="true"
-        android:layout_toLeftOf="@id/fragment_menu" >
+        >
 
         <Button
             android:id="@+id/options_bottle_setup_button"
@@ -92,7 +92,6 @@
         <Button
             android:id="@+id/options_stop"
             style="@style/OptionsMenuButton"
-            android:layout_alignLeft="@array/pref_example_list_titles"
             android:layout_alignParentLeft="true"
             android:layout_below="@+id/options_extra_setup_button"
             android:layout_marginTop="24dp"
@@ -105,16 +104,9 @@
             android:layout_below="@+id/options_turn_off_button"
             android:layout_toRightOf="@+id/options_stop"
             android:onClick="onOptionsButtonClicked"
-            android:text="Unlock" />
+            android:text="@string/unlock" />
 
     </RelativeLayout>
 
-    <fragment
-        android:id="@+id/fragment_menu"
-        android:name="com.barobot.gui.fragment.MenuFragment"
-     	android:layout_width="@dimen/main_menu_width"
-        android:layout_height="fill_parent"
-        android:layout_alignParentRight="true"
-        tools:layout="@layout/fragment_menu" />
 
 </RelativeLayout>

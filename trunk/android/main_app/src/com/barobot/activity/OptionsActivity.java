@@ -1,8 +1,8 @@
 package com.barobot.activity;
 
 import com.barobot.AppInvoker;
+import com.barobot.BarobotMain;
 import com.barobot.R;
-import com.barobot.gui.fragment.MenuFragment;
 import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
 import com.barobot.other.Audio;
@@ -15,7 +15,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.view.View;
 
-public class OptionsActivity extends BarobotActivity {
+public class OptionsActivity extends BarobotMain {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -26,8 +26,6 @@ public class OptionsActivity extends BarobotActivity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		MenuFragment menuFrag = (MenuFragment) getFragmentManager().findFragmentById(R.id.fragment_menu);
-		menuFrag.SetBreadcrumb(MenuFragment.MenuItem.Options);
 	}
 
 	public void onOptionsButtonClicked(View view)

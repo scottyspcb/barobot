@@ -190,10 +190,10 @@ public class Mainboard{
 	}
 	public boolean send(String command) {
 		try {
-			if( state.getInt("show_sending", 0) > 0 ){
-				Initiator.logger.e(">>>Mainboard.Send", command.trim());
-			}
 			if( this.sender.isConnected() ){
+				if( state.getInt("show_sending", 0) > 0 ){
+					Initiator.logger.e(">>>Mainboard.Send", command.trim());
+				}
 		//		synchronized(outputStream){
 				try {
 		//			Initiator.logger.i("Mainboard.Send" , command.trim() );

@@ -5,7 +5,6 @@ import java.io.IOException;
 import android.app.Activity;
 
 import com.barobot.AppInvoker;
-import com.barobot.activity.BarobotMain;
 import com.barobot.android.AndroidBarobotState;
 import com.barobot.common.Initiator;
 import com.barobot.common.constant.Constant;
@@ -17,7 +16,7 @@ import com.barobot.hardware.devices.BarobotConnector;
 import com.barobot.hardware.devices.BarobotEventListener;
 import com.barobot.hardware.devices.MyRetReader;
 import com.barobot.hardware.serial.BT_wire;
-import com.barobot.hardware.serial.Serial_wire;
+import com.barobot.hardware.serial.Serial_wire2;
 import com.barobot.parser.Queue;
 
 
@@ -36,7 +35,7 @@ public class Arduino{
 	public static Arduino getInstance(){
 		return instance;
 	}
-	public Arduino(BarobotMain main) {
+	public Arduino(Activity main) {
 		this.state					= new AndroidBarobotState(main);		
 		this.barobot				= new BarobotConnector( state );
 		state.set("show_unknown", 1 );
@@ -51,17 +50,28 @@ public class Arduino{
 			connection.close();
 			connection = null;
 		}
-		connection		= new Serial_wire( mainView );
+		connection		= new Serial_wire2( mainView );
 		connection.init();
 		connection.setSerialEventListener( new SerialEventListener() {
+			boolean firstTime = true;
 			@Override
 			public void onConnect() {
-				barobot.main_queue.add( "\n", false );	// clean up input
-				barobot.main_queue.add( "\n", false );
-				barobot.main_queue.add(Constant.GETXPOS, true);
-				barobot.main_queue.add(Constant.GETYPOS, true);
-				barobot.main_queue.add(Constant.GETZPOS, true);
-				AppInvoker.getInstance().onConnected();
+				if(firstTime){
+					Queue mq = barobot.main_queue;
+					mq.add( "\n", false );	// clean up input
+					mq.add( "\n", false );
+					mq.unlock();
+					mq.add(Constant.GETXPOS, true);
+					mq.add(Constant.GETYPOS, true);
+					mq.add(Constant.GETZPOS, true);
+					AppInvoker.getInstance().onConnected();
+					firstTime = false;
+				}else{
+					Queue mq = barobot.main_queue;
+					mq.add( "\n", false );	// clean up input
+					mq.add( "\n", false );
+					mq.unlock();
+				}
 			}
 			@Override
 			public void onClose() {
@@ -156,7 +166,7 @@ public class Arduino{
 			debugConnection.resume();
 		}
 	}
-
+/*
 	public void onPause() {
 		if(connection!=null){
 			connection.onPause();
@@ -165,7 +175,7 @@ public class Arduino{
 			debugConnection.onPause();
 		}
 	}
-
+*/
 	public boolean allowAutoconnect() {
 		if( debugConnection == null ){
 			//	Initiator.logger.i(Constant.TAG, "nie autoconnect bo juz połączony");

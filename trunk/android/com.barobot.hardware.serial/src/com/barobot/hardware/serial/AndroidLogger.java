@@ -3,15 +3,13 @@ package com.barobot.hardware.serial;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 
-import com.barobot.common.interfaces.CanLog;
-
 import android.os.Environment;
 import android.util.Log;
+
+import com.barobot.common.interfaces.CanLog;
 
 public class AndroidLogger implements CanLog {
 	File myFile;

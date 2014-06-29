@@ -14,7 +14,6 @@ import android.widget.ToggleButton;
 
 import com.barobot.R;
 import com.barobot.activity.DebugActivity;
-import com.barobot.common.constant.Constant;
 import com.barobot.hardware.Arduino;
 import com.barobot.parser.message.History_item;
 

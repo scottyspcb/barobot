@@ -75,7 +75,7 @@
     <dimen name="MenuButtonHeight">75dp</dimen>
     
     <!-- Options -->
-    <dimen name="OptionsMenuButtonWidth">250dp</dimen>
+    <dimen name="OptionsMenuButtonWidth">300dp</dimen>
     <dimen name="OptionsMenuButtonHeight">100dp</dimen>
     <dimen name="OptionsMenuButtonMargin">10dp</dimen>
     

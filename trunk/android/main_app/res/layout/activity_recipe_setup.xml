@@ -27,7 +27,7 @@
                 android:layout_height="fill_parent"
                 android:layout_weight="2"
                 android:onClick="onAddRecipeButtonClicked"
-                android:text="+ recipe" />
+                android:text="@string/add_recipe_btn" />
         
         	<Spinner
         	    android:id="@+id/recipe_spinner"
@@ -40,7 +40,7 @@
         	    android:layout_width="wrap_content"
         	    android:layout_height="match_parent"
         	    android:onClick="removeRecipe"
-        	    android:text="- recipe" />
+        	    android:text="@string/remove_recipe_btn" />
 
         </LinearLayout>
         

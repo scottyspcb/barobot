@@ -12,28 +12,22 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 
+import com.barobot.BarobotMain;
 import com.barobot.R;
-import com.barobot.common.Initiator;
-import com.barobot.gui.ArduinoListener;
 import com.barobot.gui.dataobjects.Engine;
 import com.barobot.gui.dataobjects.Ingredient_t;
 import com.barobot.gui.dataobjects.Liquid_t;
 import com.barobot.gui.dataobjects.Recipe_t;
 import com.barobot.gui.dataobjects.Slot;
 import com.barobot.gui.fragment.IngredientListFragment;
-import com.barobot.gui.fragment.MenuFragment;
 import com.barobot.gui.fragment.RecipeAttributesFragment;
 import com.barobot.gui.utils.Distillery;
 import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
-import com.barobot.hardware.devices.i2c.Upanel;
-import com.barobot.other.WaitingTask;
-import com.barobot.parser.Queue;
 
-public class CreatorActivity extends BarobotActivity{
+public class CreatorActivity extends BarobotMain{
 	private int[] slot_nums = {0,0,0,0,0,0,0,0,0,0,0,0,0};
 	private int[] ids;
 	private int[] drops;
@@ -49,8 +43,6 @@ public class CreatorActivity extends BarobotActivity{
 	@Override
 	protected void onResume() {
 		super.onResume();
-		MenuFragment menuFrag = (MenuFragment) getFragmentManager().findFragmentById(R.id.fragment_menu);
-		menuFrag.SetBreadcrumb(MenuFragment.MenuItem.Create);
 		UpdateData();
 	}
 
@@ -227,7 +219,7 @@ public class CreatorActivity extends BarobotActivity{
 		                 @Override
 		                 public void run() {
 		                 	clear();
-		                 	Engine.GetInstance(CreatorActivity.this).Pour(tempRecipe, CreatorActivity.this);
+		                 	Engine.GetInstance(CreatorActivity.this).Pour(tempRecipe);
 		                 }});
 		     		t.start();
 		    //    	wt.setReady();
@@ -328,7 +320,7 @@ public class CreatorActivity extends BarobotActivity{
 		return true;
 	}
 
-	@Override
+/*
 	public void onQueueFinished() {
 		clear();
 		new AlertDialog.Builder(this)
@@ -346,5 +338,5 @@ public class CreatorActivity extends BarobotActivity{
 	     })
 	     .show();
 	}
-
+*/
 }
