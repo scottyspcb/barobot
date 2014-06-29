@@ -19,6 +19,7 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.barobot.BarobotMain;
 import com.barobot.R;
 import com.barobot.gui.dataobjects.Engine;
 import com.barobot.gui.dataobjects.Ingredient_t;
@@ -28,8 +29,7 @@ import com.barobot.gui.dataobjects.Type;
 import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
 
-public class RecipeSetupActivity extends BarobotActivity 
-									implements OnItemSelectedListener {
+public class RecipeSetupActivity extends BarobotMain implements OnItemSelectedListener {
 
 	private Type mCurrentType;
 	@Override

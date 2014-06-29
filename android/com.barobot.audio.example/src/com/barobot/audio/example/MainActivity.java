@@ -19,12 +19,11 @@ import com.barobot.common.constant.Pwm;
 import com.barobot.common.interfaces.HardwareState;
 import com.barobot.common.interfaces.OnSignalsDetectedListener;
 import com.barobot.common.interfaces.serial.SerialEventListener;
-import com.barobot.common.interfaces.serial.SerialInputListener;
 import com.barobot.common.interfaces.serial.Wire;
 import com.barobot.hardware.devices.BarobotConnector;
 import com.barobot.hardware.devices.i2c.Upanel;
 import com.barobot.hardware.serial.AndroidBarobotState2;
-import com.barobot.hardware.serial.Serial_wire;
+import com.barobot.hardware.serial.Serial_wire2;
 import com.barobot.parser.Queue;
 import com.barobot.parser.message.AsyncMessage;
 import com.barobot.parser.message.Mainboard;
@@ -79,14 +78,25 @@ public class MainActivity extends Activity implements OnSignalsDetectedListener{
 			connection.close();
 			connection = null;
 		}
-		connection		= new Serial_wire( this );
+		connection		= new Serial_wire2( this );
 		connection.setSerialEventListener( new SerialEventListener() {
+			boolean firstTime = true;
 			@Override
 			public void onConnect() {
-				barobot.main_queue.add( "\n", false );	// clean up input
-				barobot.main_queue.add( "\n", false );
-				barobot.main_queue.addWait(600);
-				startQueue();
+				if(firstTime){
+					Queue mq = barobot.main_queue;
+					mq.add( "\n", false );	// clean up input
+					mq.add( "\n", false );
+					mq.unlock();
+					mq.addWait(100);
+					startQueue();
+					firstTime = false;
+				}else{
+					Queue mq = barobot.main_queue;
+					mq.add( "\n", false );	// clean up input
+					mq.add( "\n", false );
+					mq.unlock();
+				}
 			}
 			@Override
 			public void onClose() {

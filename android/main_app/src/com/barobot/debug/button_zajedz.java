@@ -1,6 +1,6 @@
 package com.barobot.debug;
+import com.barobot.BarobotMain;
 import com.barobot.R;
-import com.barobot.activity.BarobotMain;
 import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
 

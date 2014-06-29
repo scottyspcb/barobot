@@ -26,14 +26,15 @@ import com.barobot.common.interfaces.serial.CanSend;
 import com.barobot.common.interfaces.serial.SerialEventListener;
 import com.barobot.common.interfaces.serial.SerialInputListener;
 import com.barobot.common.interfaces.serial.Wire;
+import com.hoho.android.usbserial.driver.UsbSerialDriver;
+import com.hoho.android.usbserial.driver.UsbSerialProber;
+import com.hoho.android.usbserial.driver.UsbSerialPort;
 import com.hoho.android.usbserial.util.SerialInputOutputManager;
 
-public class Serial_wire {
-	/*
-	 implements CanSend, Wire
+public class Serial_wire2 implements CanSend, Wire{
 	private static final Object lock			= new Object();
 	private static final int MESSAGE_REFRESH = 101;
-    private static final long REFRESH_TIMEOUT_MILLIS = 10000;
+    private static final long REFRESH_TIMEOUT_MILLIS = 5000;
 	protected static final String ACTION_USB_PERMISSION = "com.hoho.android.usbserial.USB";
     private static UsbSerialPort sPort = null;
 
@@ -41,14 +42,14 @@ public class Serial_wire {
     private boolean mPermissionReceiver_activated = true;
     private final ExecutorService mExecutor = Executors.newSingleThreadExecutor();
     private SerialInputOutputManager mSerialIoManager;
-    private int errors = 0;
 	private Activity view;
 	private int baud = 57600;//115200;
 	protected Queue<SerialInputListener> listener=new LinkedList<SerialInputListener>();
     private SerialInputOutputManager.Listener mListener = null;
 	private SerialEventListener iel = null;
+    private UsbDevice sDevice;
 
-	public Serial_wire(Activity mainActivity) {
+	public Serial_wire2(Activity mainActivity) {
 		super();
 		this.view = mainActivity;
 		mListener = new SerialInputOutputManager.Listener() {
@@ -77,9 +78,27 @@ public class Serial_wire {
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case MESSAGE_REFRESH:
-                	Log.i("Serial.handleMessage", "trying to connect");
-                    refreshDeviceList();
-                    mHandler.removeMessages(MESSAGE_REFRESH);		// usun duplikaty
+                	if(sPort == null){
+                		Log.i("Serial.handleMessage", "trying to connect");
+                        refreshDeviceList();
+                	}else if(sPort.isOpen()){
+                		Log.i("Serial.handleMessage", "sPort Opened");
+                	}else{
+                		Log.i("Serial.handleMessage", "sPort not Opened");
+                		if(sDevice == null){
+                			Log.i("Serial.handleMessage", "sDevice null");
+                		}else{
+	                        UsbSerialDriver driver =  UsbSerialProber.probeSingleDevice(sDevice);
+	                        if (driver == null) {
+	                        	Log.i("Serial.handleMessage", "no sDevice");
+	                        } else {
+	                        	Log.i("Serial.handleMessage", "getPortCount"+ driver.getPortCount());
+	                        	Log.i("Serial.handleMessage", "getPortCount"+ driver.getShortDeviceName());
+	                        	Log.i("Serial.handleMessage", "getPortCount"+ driver.getDevice().getInterfaceCount());
+	                        }
+						}
+                	}
+                	mHandler.removeMessages(MESSAGE_REFRESH);		// usun duplikaty
                     mHandler.sendEmptyMessageDelayed(MESSAGE_REFRESH, REFRESH_TIMEOUT_MILLIS);
                     break;
                 default:
@@ -107,8 +126,10 @@ public class Serial_wire {
 	
 	public boolean init() {
 		mUsbManager = (UsbManager) this.view.getSystemService(Context.USB_SERVICE);
+		if( mUsbManager == null ){
+			Log.e("Serial.init", "no mUsbManager!!!");
+    	}
 		setSearching(true);
-		
 		return true;
 	}
 	public void setSearching(boolean active) {
@@ -116,7 +137,7 @@ public class Serial_wire {
 			Log.w("Serial_wire.setSearching", "true");
 			mHandler.sendEmptyMessage(MESSAGE_REFRESH);
 		}else{
-			mHandler.removeMessages(MESSAGE_REFRESH);
+	//		mHandler.removeMessages(MESSAGE_REFRESH);
 		}
 	}
 
@@ -126,59 +147,38 @@ public class Serial_wire {
 		synchronized(lock){
 	        if (sPort == null) {
 	        	setSearching(true);
+	        }else if(sPort.isOpen()){
 	        }else{
-	        	if(sPort.isOpen()){
-	        	}else{
-	        		boolean opened = false;
-		            try {
-		               sPort.open(mUsbManager);
-		               sPort.setParameters(baud, 8, UsbSerialPort.STOPBITS_1, UsbSerialPort.PARITY_NONE); 
-		            } catch (IllegalStateException e) {
-		             Initiator.logger.e("Serial_wire.resume","IllegalStateException");
-		           	 Initiator.logger.appendError(e);  
-		     //      	 opened = oneMoreTime();
-		            } catch (RuntimeException e) {
-		            	Initiator.logger.e("Serial_wire.resume","RuntimeException");
-		            	Initiator.logger.appendError(e);
-		            } catch (IOException e) {
-		            	closePort();
-		                sPort = null;
-		                return;
-		            }
-		            if(opened){
-			        	onDeviceStateChange();
-			        }
-	        	}
-	        }
+	            try {
+				sPort.open(mUsbManager);
+				sPort.setParameters(baud, 8, UsbSerialPort.STOPBITS_1, UsbSerialPort.PARITY_NONE); 
+				onDeviceStateChange();
+				if(iel!=null){
+					iel.onConnect();
+				}
+	            } catch (IllegalStateException e) {
+	             Initiator.logger.e("Serial_wire.resume","IllegalStateException");
+	           	 Initiator.logger.appendError(e);  
+	     //      	 opened = oneMoreTime();
+	            } catch (RuntimeException e) {
+	            	Initiator.logger.e("Serial_wire.resume","RuntimeException");
+	            	Initiator.logger.appendError(e);
+	            } catch (IOException e) {
+	            	closePort();
+	                sPort = null;
+	                return;
+	            }
+        	}
 		}
-	}
-	
-    private boolean oneMoreTime() {
-    	closePort();
-        try{
-            sPort.open(mUsbManager);
-            sPort.setParameters(baud, 8, UsbSerialPort.STOPBITS_1, UsbSerialPort.PARITY_NONE); 
-            return true;
-        } catch (IllegalStateException e) {
-         Initiator.logger.e("Serial_wire.oneMoreTime","IllegalStateException");
-       	 Initiator.logger.appendError(e);  
-        } catch (RuntimeException e) {
-        	Initiator.logger.e("Serial_wire.oneMoreTime","RuntimeException");
-        	Initiator.logger.appendError(e);
-        } catch (IOException e) {
-        	closePort();
-            sPort = null;
-        }
-        return false;
 	}
 
 	@Override
 	public void onPause() {
-        stopIoManager();
         synchronized(lock){
 	        if (sPort != null) {
-	        	closePort();
-	            sPort = null;
+	        //	closePort();
+	         //   sPort = null;
+	         //   stopIoManager();
 	        }
         }
     }
@@ -197,7 +197,7 @@ public class Serial_wire {
 
 	@Override
 	public void close() {
-		mHandler.removeMessages(MESSAGE_REFRESH);
+		setSearching(false);
 		stopIoManager();
 		this.listener.clear();
 		synchronized(lock){
@@ -259,25 +259,21 @@ public class Serial_wire {
 
     private void refreshDeviceList() {
         new AsyncTask<Void, Void, List<String>>() {
-            @Override
+			@Override
             protected List<String> doInBackground(Void... params) {   
                 Log.d("Serial_wire.refreshDeviceList", "Refreshing device list ...");
-   
-                for (final UsbDevice device : mUsbManager.getDeviceList().values()) {
-                    final UsbSerialDriver driver =  UsbSerialProber.probeSingleDevice(device);
+                for (UsbDevice device : mUsbManager.getDeviceList().values()) {
+                    UsbSerialDriver driver =  UsbSerialProber.probeSingleDevice(device);
                     if (driver == null) {
 //                       Log.d("serial", "  - No UsbSerialDriver available.");
 //                       result.add(new DeviceEntry(device, null, 0));
                     } else {
         //                Log.d(TAG, "  + " + driver + ", " + driver.getPortCount() + " ports.");
 
-                    	view.registerReceiver(mPermissionReceiver, new IntentFilter(
-                                ACTION_USB_PERMISSION));
+                    	view.registerReceiver(mPermissionReceiver, new IntentFilter(  ACTION_USB_PERMISSION));
                         mPermissionReceiver_activated = true;
-                          
                         if (!mUsbManager.hasPermission(device)){
-                            final PendingIntent pi = PendingIntent.getBroadcast( view, 0, new Intent(
-                                    ACTION_USB_PERMISSION), 0);
+                            final PendingIntent pi = PendingIntent.getBroadcast( view, 0, new Intent( ACTION_USB_PERMISSION), 0);
                             mUsbManager.requestPermission(device, pi);
                             Log.w("Serial_wire.refreshDeviceList", "requestPermission");
                         }else{
@@ -285,6 +281,7 @@ public class Serial_wire {
                             	Log.w("Serial_wire.refreshDeviceList", "ready device: " + i +": "+ device.getVendorId()+" - "+ device.getProductId() );
                 //                result.add(new DeviceEntry(device, driver, i));
                                 if( i == 0 ){
+                                	sDevice = device;
                                 	connectWith(device);
                                 }
                             }
@@ -294,8 +291,8 @@ public class Serial_wire {
 				return null;
             }
         }.execute((Void) null);
-
     }
+
     protected boolean connectWith(UsbDevice device) {    	// polacz...
 		final UsbSerialDriver driver =  UsbSerialProber.probeSingleDevice(device);
         UsbSerialPort port = driver.getPort( 0 );
@@ -310,36 +307,46 @@ public class Serial_wire {
 	}
     private void openPort() {
     	synchronized(lock){
-	    	if( sPort == null ){
-	    		Log.e("Serial.openPort", "sPort was null");
-	    	}else if( mUsbManager == null ){
-	        	Log.e("Serial.openPort", "mUsbManager is null");
-	    	}else if(sPort.isOpen()){
+	    	if( sPort != null && sPort.isOpen()){
 	    		Log.e("Serial.openPort", "isOpen is opened");
-	    		mHandler.removeMessages(MESSAGE_REFRESH);
-	    		onDeviceStateChange();
 	    	}else{
 	    		Log.e("Serial.openPort", "openPort");
-	    		mHandler.removeMessages(MESSAGE_REFRESH);
 				try {
 		            sPort.open(mUsbManager);
 		            sPort.setParameters(baud, 8, UsbSerialPort.STOPBITS_1, UsbSerialPort.PARITY_NONE);
 		            onDeviceStateChange();
+		            setSearching(false);
 		            Log.i("Serial.openPort", "opened " +baud);
+		        	if(iel!=null){
+		        		iel.onConnect();
+		        	}
 		        } catch (IOException e) {
 		            Log.e("Serial.openPort", "Error setting up device: " + e.getMessage(), e);
-		            close();
+		            knowIsClosed();
 		            return;
 		        }
 	    	}
     	}
-    	if(iel!=null){
-    		iel.onConnect();
-    	}
         Log.i("Serial.openPort", "Type: "+ sPort.getClass().getSimpleName());
 	}
 
-    private void onDeviceStateChange() {
+    private void knowIsClosed() {
+    	setSearching(false);
+		stopIoManager();
+		synchronized(lock){
+			if (sPort != null) {
+				if(sPort.isOpen()){
+					closePort();
+	        	}
+			    sPort = null;
+			}
+		}
+    	if(iel!=null){
+    		iel.onClose();
+    	}
+	}
+
+	private void onDeviceStateChange() {
         stopIoManager();
         startIoManager();
     }
@@ -358,11 +365,21 @@ public class Serial_wire {
         }
     }
 
-
 	@Override
 	public void reset() {
-		mHandler.removeMessages(MESSAGE_REFRESH);
-		this.close();
+		setSearching(false);
+		stopIoManager();
+		synchronized(lock){
+			if (sPort != null) {
+				if(sPort.isOpen()){
+					closePort();
+	        	}
+			    sPort = null;
+			}
+		}
+    	if(iel!=null){
+    		iel.onClose();
+    	}
 		/*
         if(mPermissionReceiver_activated){
             mPermissionReceiver_activated = false;
@@ -371,7 +388,7 @@ public class Serial_wire {
 			} catch (IllegalArgumentException e) {
 				Initiator.logger.appendError(e);
 			}
-        }* /
+        }*/
         mUsbManager = null;
 	    mSerialIoManager = null;
 		init();
@@ -410,18 +427,13 @@ public class Serial_wire {
 	public synchronized boolean send(String message) {
         if(mSerialIoManager!=null){
         	byte data[] = message.getBytes(); 
-     //       mSerialIoManager.writeAsync(data);
             try {
                 mSerialIoManager.writeSync(data);
-                errors =0;
                 return true;
             } catch (IOException e) {
             	Initiator.logger.e("Serial_wire.send", "IOException");
                 Initiator.logger.appendError(e);
-                errors++;
-                if(errors > 2 ){
-                	 stopIoManager();
-                }
+                knowIsClosed();
             }
         }
 		return false;
@@ -432,14 +444,10 @@ public class Serial_wire {
 			byte [] subArray = Arrays.copyOfRange(data, 0, size);
             try {
                 mSerialIoManager.writeSync(subArray);
-                errors =0;
                 return true;
             } catch (IOException e) {
                 Initiator.logger.appendError(e);
-                errors++;
-                if(errors > 2 ){
-                	 stopIoManager();
-                }
+                knowIsClosed();
             }
         }
 		return false;
@@ -498,6 +506,5 @@ public class Serial_wire {
 	@Override
 	public void setSerialEventListener(SerialEventListener iel) {
 		this.iel  = iel;
-	}	*/
-	
+	}
 }

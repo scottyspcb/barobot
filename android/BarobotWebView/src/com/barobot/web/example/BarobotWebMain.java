@@ -22,9 +22,6 @@ import com.barobot.web.route.TemplateRendering;
 import com.barobot.web.server.SofaServer;
 import com.barobotweb.R;
 
-import android.webkit.WebChromeClient;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 public class BarobotWebMain extends Activity {

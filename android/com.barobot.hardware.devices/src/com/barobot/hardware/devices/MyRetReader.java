@@ -111,7 +111,7 @@ public class MyRetReader implements RetReader {
 				}
 				if(parts[2] == Constant.MAINBOARD_DEVICE_TYPE ){
 					decoded += "/MAINBOARD_DEVICE_TYPE";
-					int cx		= barobot.driver_x.getSPos();;
+					int cx		= barobot.driver_x.getSPos();
 					barobot.driver_x.setM(cx);	// ostatnia znana pozycja jest marginesem
 					state.set("MARGINX", cx);
 					Queue mq = barobot.main_queue;

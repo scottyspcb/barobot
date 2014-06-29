@@ -2,9 +2,6 @@ package com.barobot.other;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import com.barobot.common.Initiator;
-
 import android.content.Context;
 import android.util.Log;
 import android.webkit.WebView;

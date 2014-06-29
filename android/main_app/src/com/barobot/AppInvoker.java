@@ -6,9 +6,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import android.app.Activity;
 import android.widget.Button;
 
-import com.barobot.activity.BarobotMain;
+import com.barobot.activity.RecipeListActivity;
 import com.barobot.common.Initiator;
 import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
@@ -20,63 +21,70 @@ import com.barobot.web.server.SofaServer;
 
 public class AppInvoker {
     private static AppInvoker ins;
-	private BarobotMain main;
+	private Activity main;
 	public CameraManager cm;
     public ArrayList<Interval> inters = new ArrayList<Interval>();
 	private static Arduino arduino;
 	public static Map<String, Object> container =  new HashMap<String, Object>();
 
 	SofaServer ss =null; 
+	static boolean isCreated = false;
 
-	public void onCreate() {
-	//	I2C.init();
-	    AndroidLogger dl = new AndroidLogger();
-		com.barobot.common.Initiator.setLogger( dl );
-		cm = new CameraManager( main );
-		try {
-			SofaRouter sr = new SofaRouter();
-			ss = SofaServer.getInstance();
-			ss.setBaseContext(main.getBaseContext());
-			ss.addRouter( sr );
-			ss.start();
-		} catch (IOException e) {
-			Initiator.logger.appendError(e);
-		}
-	//	cm.findCameras();
-		arduino			= new Arduino( main );
-		arduino.onStart(main);
-		
-	}
-	public static AppInvoker createInstance(BarobotMain barobotMain) {
-		ins = new AppInvoker();
-		ins.main = barobotMain;
-		return ins;
-	}
 	public static AppInvoker getInstance() {
 		return ins;
 	}
-	public void onPause() {
-		Initiator.logger.i("MAINWINDOW", "onPause");
-		cm.onPause();
-	//	arduino.onPause();
+
+	public void onCreate() {
+		if(!isCreated){
+			isCreated = true;
+		    AndroidLogger dl = new AndroidLogger();
+			com.barobot.common.Initiator.setLogger( dl );
+			cm = new CameraManager( main );
+			try {
+				SofaRouter sr = new SofaRouter();
+				ss = SofaServer.getInstance();
+				ss.setBaseContext(main.getBaseContext());
+				ss.addRouter( sr );
+				ss.start();
+			} catch (IOException e) {
+				Initiator.logger.appendError(e);
+			}
+		//	cm.findCameras();
+			arduino			= new Arduino( main );
+			arduino.onStart(main);
+		}
+	}
+	
+	private int activities = 0;
+	public void onStart() {
+		// TODO Auto-generated method stub
+		activities++;
+		Initiator.logger.i("MAINWINDOW", "onStart: " + activities);
+	}
+	public static AppInvoker createInstance(Activity barobotActivity) {
+		if(ins == null){
+			ins = new AppInvoker();
+		}
+		ins.main = barobotActivity;
+		return ins;
 	}
 	public void onResume() {
 		Initiator.logger.i("MAINWINDOW", "onResume");     
-		if(cm!=null){
-			cm.onResume();
-		}
 		arduino.resume();
 	}
 	public void onDestroy() {
-		Initiator.logger.i("MAINWINDOW", "onDestroy");
-    	ss.stop();
-		arduino.destroy();
-    	Iterator<Interval> it = this.inters.iterator();
-    	while(it.hasNext()){
-    		it.next().cancel();
-    	}
-	//	I2C.destroy();
-        cm.onDestroy();	
+		activities--;
+	//	Initiator.logger.i("MAINWINDOW", "onDestroy: " + activities);
+	//	if(activities == 0){
+			Initiator.logger.i("MAINWINDOW", "onDestroy");
+	    	ss.stop();
+			arduino.destroy();
+	    	Iterator<Interval> it = this.inters.iterator();
+	    	while(it.hasNext()){
+	    		it.next().cancel();
+	    	}
+	        cm.onDestroy();	
+	//	}
 	}
 
 	public void onConnected() {
@@ -99,9 +107,8 @@ public class AppInvoker {
 				}
 			}
 		});
-		
-		
 	}
 	public void onDisconnect() {
 	}
+
 }

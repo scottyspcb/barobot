@@ -3,8 +3,8 @@ package com.barobot.gui.fragment;
 
 import java.util.List;
 
+import com.barobot.BarobotMain;
 import com.barobot.R;
-import com.barobot.activity.BarobotMain;
 import com.barobot.gui.dataobjects.Ingredient_t;
 
 import android.app.Fragment;

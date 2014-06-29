@@ -11,11 +11,10 @@
     android:paddingTop="@dimen/activity_vertical_margin" >
 
     <RelativeLayout
-        android:id="@+id/page_layout"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_alignParentLeft="true"
-        android:layout_toLeftOf="@id/fragment_menu" >
+         >
 
         <ListView
             android:id="@+id/recipe_list"
@@ -93,16 +92,8 @@
                 android:layout_below="@id/fragment_attributes"
                 tools:layout="@layout/fragment_ingredient_list" />
 
-            
         </RelativeLayout>
     </RelativeLayout>
 
-    <fragment
-        android:id="@+id/fragment_menu"
-        android:name="com.barobot.gui.fragment.MenuFragment"
-        android:layout_width="@dimen/main_menu_width"
-        android:layout_height="fill_parent"
-        android:layout_alignParentRight="true"
-        tools:layout="@layout/fragment_menu" />
-
+   
 </RelativeLayout>

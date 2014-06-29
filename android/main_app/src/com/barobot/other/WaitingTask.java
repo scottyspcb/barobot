@@ -1,6 +1,6 @@
 package com.barobot.other;
 
-import com.barobot.activity.BarobotMain;
+import com.barobot.BarobotMain;
 import com.barobot.common.Initiator;
 
 import android.app.ProgressDialog;

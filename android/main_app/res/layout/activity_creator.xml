@@ -2,168 +2,170 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
+
     android:background="@drawable/background"
     android:orientation="horizontal"
     tools:context=".CreatorActivity" >
     
-    <RelativeLayout
-        android:id="@+id/page_layout"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_alignParentLeft="true"
-        android:layout_toLeftOf="@id/fragment_menu" >
-
         <LinearLayout
-            android:id="@+id/top_bottle_shelf"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal" >
-			<!-- android:drawableBottom="@drawable/drop_3"-->
-            <TextView
-                android:id="@+id/bottle_button1"
-                style="@style/BottleButtonCreator"
-                
-                android:onClick="onBottleClicked" />
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:orientation="vertical" >
 
-            <TextView
-                android:id="@+id/bottle_button3"
-                style="@style/BottleButtonCreator"
-                android:onClick="onBottleClicked" />
+            <GridLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
 
-            <TextView
-                android:id="@+id/bottle_button5"
-                style="@style/BottleButtonCreator"
-                android:onClick="onBottleClicked" />
+                <LinearLayout
+                    android:layout_gravity="center_horizontal"
+                    android:orientation="vertical" >
 
-            <TextView
-                android:id="@+id/bottle_button7"
-                style="@style/BottleButtonCreator"
-                android:onClick="onBottleClicked" />
+                    <LinearLayout
+                        android:id="@+id/top_bottle_shelf"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal" >
 
-            <TextView
-                android:id="@+id/bottle_button9"
-                style="@style/BottleButtonCreator"
-                android:onClick="onBottleClicked" />
+                        <TextView
+                            android:id="@+id/bottle_button1"
+                            style="@style/BottleButtonCreator"
+                            android:onClick="onBottleClicked" />
 
-            <TextView
-                android:id="@+id/bottle_button11"
-                style="@style/BottleButtonCreator"
-                android:onClick="onBottleClicked" />
-        </LinearLayout>
+                        <TextView
+                            android:id="@+id/bottle_button3"
+                            style="@style/BottleButtonCreator"
+                            android:onClick="onBottleClicked" />
 
-        <LinearLayout
-            android:id="@+id/bottom_bottle_shelf"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/top_bottle_shelf"
-            android:orientation="horizontal"
-            android:paddingLeft="25dp" >
+                        <TextView
+                            android:id="@+id/bottle_button5"
+                            style="@style/BottleButtonCreator"
+                            android:onClick="onBottleClicked" />
 
-            <TextView
-                android:id="@+id/bottle_button2"
-                style="@style/BottleButtonCreator"
-                android:onClick="onBottleClicked" />
+                        <TextView
+                            android:id="@+id/bottle_button7"
+                            style="@style/BottleButtonCreator"
+                            android:onClick="onBottleClicked" />
 
-            <TextView
-                android:id="@+id/bottle_button4"
-                style="@style/BottleButtonCreator"
-                android:onClick="onBottleClicked" />
+                        <TextView
+                            android:id="@+id/bottle_button9"
+                            style="@style/BottleButtonCreator"
+                            android:onClick="onBottleClicked" />
 
-            <TextView
-                android:id="@+id/bottle_button6"
-                style="@style/BottleButtonCreator"
-                android:onClick="onBottleClicked" />
+                        <TextView
+                            android:id="@+id/bottle_button11"
+                            style="@style/BottleButtonCreator"
+                            android:onClick="onBottleClicked" />
+                    </LinearLayout>
 
-            <TextView
-                android:id="@+id/bottle_button8"
-                style="@style/BottleButtonCreator"
-                android:onClick="onBottleClicked" />
+                    <LinearLayout
+                        android:id="@+id/bottom_bottle_shelf"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:paddingLeft="25dp" >
 
-            <TextView
-                android:id="@+id/bottle_button10"
-                style="@style/BottleButtonCreator"
-                android:onClick="onBottleClicked" />
+                        <TextView
+                            android:id="@+id/bottle_button2"
+                            style="@style/BottleButtonCreator"
+                            android:onClick="onBottleClicked" />
 
-            <TextView
-                android:id="@+id/bottle_button12"
-                style="@style/BottleButtonCreator"
-                android:onClick="onBottleClicked" />
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="fill_parent"
-            android:layout_below="@id/bottom_bottle_shelf"
-            android:orientation="horizontal" >
+                        <TextView
+                            android:id="@+id/bottle_button4"
+                            style="@style/BottleButtonCreator"
+                            android:onClick="onBottleClicked" />
+
+                        <TextView
+                            android:id="@+id/bottle_button6"
+                            style="@style/BottleButtonCreator"
+                            android:onClick="onBottleClicked" />
+
+                        <TextView
+                            android:id="@+id/bottle_button8"
+                            style="@style/BottleButtonCreator"
+                            android:onClick="onBottleClicked" />
+
+                        <TextView
+                            android:id="@+id/bottle_button10"
+                            style="@style/BottleButtonCreator"
+                            android:onClick="onBottleClicked" />
+
+                        <TextView
+                            android:id="@+id/bottle_button12"
+                            style="@style/BottleButtonCreator"
+                            android:onClick="onBottleClicked" />
+                    </LinearLayout>
+                </LinearLayout>
+            </GridLayout>
 
             <LinearLayout
-                android:layout_width="0sp"
-                android:layout_height="fill_parent"
-                android:layout_weight="2"
-                android:orientation="vertical" >
+                android:layout_width="match_parent"
+                android:layout_height="210dp"
+                android:orientation="horizontal" >
 
-                <Button
-                    android:id="@+id/creator_pour_button"
-                    style="@style/ButtonGreen"
-                    android:layout_width="fill_parent"
-                    android:layout_height="0sp"
+                <LinearLayout
+                    android:layout_width="0sp"
+                    android:layout_height="fill_parent"
                     android:layout_weight="2"
-                    android:onClick="onPourRecipeButtonClicked"
-                    android:text="@string/create_pour_button" />
+                    android:orientation="vertical" >
+
+                    <Button
+                        android:id="@+id/creator_pour_button"
+                        style="@style/ButtonGreen"
+                        android:layout_width="fill_parent"
+                        android:layout_height="0sp"
+                        android:layout_weight="2"
+                        android:onClick="onPourRecipeButtonClicked"
+                        android:text="@string/create_pour_button" />
+                </LinearLayout>
+
+                <fragment
+                    android:id="@+id/fragment_ingredient_list"
+                    android:name="com.barobot.gui.fragment.IngredientListFragment"
+                    android:layout_width="0sp"
+                    android:layout_height="fill_parent"
+                    android:layout_margin="3dp"
+                    android:layout_weight="3"
+                    tools:layout="@layout/fragment_ingredient_list" />
+
+                <fragment
+                    android:id="@+id/fragment_attributes"
+                    android:name="com.barobot.gui.fragment.RecipeAttributesFragment"
+                    android:layout_width="0sp"
+                    android:layout_height="fill_parent"
+                    android:layout_margin="3dp"
+                    android:layout_weight="2"
+                    tools:layout="@layout/fragment_recipe_attributes" />
+
+                <LinearLayout
+                    android:layout_width="0sp"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="2"
+                    android:orientation="vertical" >
+
+                    <Button
+                        style="@style/ButtonBlue"
+                        android:layout_width="fill_parent"
+                        android:layout_height="0sp"
+                        android:layout_weight="2"
+                        android:onClick="onAddRecipeButtonClicked"
+                        android:text="@string/create_add_button" />
+
+                    <Button
+                        style="@style/ButtonRed"
+                        android:layout_width="fill_parent"
+                        android:layout_height="0sp"
+                        android:layout_weight="1"
+                        android:onClick="onClearButtonClicked"
+                        android:text="@string/create_clear_button" />
+                </LinearLayout>
             </LinearLayout>
-            
-            <fragment
-                android:id="@+id/fragment_ingredient_list"
-                
-                android:name="com.barobot.gui.fragment.IngredientListFragment"
-        		android:layout_width="0sp"
-        		android:layout_height="fill_parent"
-        		android:layout_weight="3"
-        		android:layout_margin="3dp"
-        		tools:layout="@layout/fragment_ingredient_list" />
-            
-            
-            <fragment 
-                android:id="@+id/fragment_attributes"
-                android:name="com.barobot.gui.fragment.RecipeAttributesFragment"
-        		android:layout_width="0sp"
-        		android:layout_height="fill_parent"
-        		android:layout_weight="2"
-        		android:layout_margin="3dp"
-        		tools:layout="@layout/fragment_recipe_attributes" />
-            <LinearLayout
-                android:layout_width="0sp"
-                android:layout_height="fill_parent"
-                android:layout_weight="2"
-                android:orientation="vertical">
-                
-                <Button
-                    android:layout_width="fill_parent"
-                    android:layout_height="0sp"
-                    android:layout_weight="2"
-                    style="@style/ButtonBlue"
-                    android:onClick="onAddRecipeButtonClicked"
-                    android:text="@string/create_add_button" />
-                <Button
-                    android:layout_width="fill_parent"
-                    android:layout_height="0sp"
-                    android:layout_weight="1"
-                    style="@style/ButtonRed"
-                    android:onClick="onClearButtonClicked"
-                    android:text="@string/create_clear_button" />
-        	</LinearLayout>
-        </LinearLayout>
-    </RelativeLayout>
 
-    <fragment
-        android:id="@+id/fragment_menu"
-        android:name="com.barobot.gui.fragment.MenuFragment"
-        android:layout_width="@dimen/main_menu_width"
-        android:layout_height="fill_parent"
-        android:layout_alignParentRight="true"
-        tools:layout="@layout/fragment_menu" />
-  	
+        </LinearLayout>
+
 </RelativeLayout>

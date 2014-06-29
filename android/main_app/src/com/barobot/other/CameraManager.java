@@ -1,25 +1,26 @@
 package com.barobot.other;
 
-import com.barobot.activity.BarobotMain;
-import com.barobot.common.Initiator;
-
+import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.hardware.Camera;
 import android.hardware.Camera.CameraInfo;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.barobot.activity.BarobotActivity;
+import com.barobot.common.Initiator;
+
 public class CameraManager {
 	private Camera front_camera;
 	private Camera back_camera;
 	private int front_cameraId = -1;
 	private int back_cameraId = -1;
-	BarobotMain bm = null;
+	Activity bm = null;
 
-	public CameraManager(BarobotMain barobotMain) {
+	public CameraManager(Activity main) {
 		front_cameraId = findCamera( CameraInfo.CAMERA_FACING_FRONT );
 	//	back_cameraId = findCamera( CameraInfo.CAMERA_FACING_BACK );
-		bm = barobotMain;
+		bm = main;
 	}
 	public synchronized void doPhoto() {
 		if(front_camera!=null){
@@ -67,14 +68,7 @@ public class CameraManager {
 	    }
 	    return -1;
 	  }
-	public void onPause() {
-	}
 
-	public void onResume() {
-		//  if(back_cameraId>0 && front_cameraId>0){
-		//	  findCameras();
-		//  }
-	}
 	public void onDestroy() {
 		if (front_camera != null) {
 			front_camera.stopPreview();
