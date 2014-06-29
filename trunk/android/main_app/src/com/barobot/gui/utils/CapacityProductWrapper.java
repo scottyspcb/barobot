@@ -28,9 +28,12 @@ public class CapacityProductWrapper
 		
 		return result;
 	}
-	
+
+	public String getName() {
+		return String.valueOf(mProduct.capacity) + "ml";
+	}
 	@Override
 	public String toString() {
-		return String.valueOf(mProduct.capacity) + "ml";
+		return getName();
 	}
 }

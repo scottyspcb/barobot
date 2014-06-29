@@ -18,7 +18,6 @@ public class DbHelper extends SQLiteOpenHelper{
 		db.execSQL(DataContract.SQL_CREATE_SLOTS);
 		db.execSQL(DataContract.SQL_CREATE_RECIPES);
 		db.execSQL(DataContract.SQL_CREATE_INGREDIENTS);
-		
 	}
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {

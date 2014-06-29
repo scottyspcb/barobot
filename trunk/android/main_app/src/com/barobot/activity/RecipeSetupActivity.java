@@ -26,6 +26,7 @@ import com.barobot.gui.dataobjects.Ingredient_t;
 import com.barobot.gui.dataobjects.Liquid_t;
 import com.barobot.gui.dataobjects.Recipe_t;
 import com.barobot.gui.dataobjects.Type;
+import com.barobot.gui.utils.LangTool;
 import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
 
@@ -75,6 +76,9 @@ public class RecipeSetupActivity extends BarobotMain implements OnItemSelectedLi
 					recipe.unlisted = false;
 					System.out.println("onAddRecipeButtonClicked: insert" );
 					recipe.insert();
+					
+					LangTool.InsertTranslation(recipe.id, "recipe", name);
+					
 					UpdateRecipes(recipe.id);
 				}
 			});
@@ -88,7 +92,6 @@ public class RecipeSetupActivity extends BarobotMain implements OnItemSelectedLi
 		if(recipe!=null){
 			Spinner spinner = (Spinner) findViewById(R.id.recipe_spinner);
 			int pos = spinner.getSelectedItemPosition();
-			System.out.println("removeRecipe delete: " + currentRecipe.id+ " / " + recipe.name + " / " + recipe.id );
 			recipe.delete();
 			Engine.GetInstance(view.getContext()).invalidateData();
 			UpdateRecipes();

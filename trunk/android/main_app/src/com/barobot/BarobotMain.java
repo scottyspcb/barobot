@@ -1,14 +1,30 @@
 package com.barobot;
 
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
+import org.orman.mapper.Model;
+import org.orman.mapper.ModelQuery;
+import org.orman.sql.C;
+import org.orman.sql.Query;
+
+import com.barobot.gui.dataobjects.Language;
+import com.barobot.gui.dataobjects.Recipe_t;
+import com.barobot.gui.dataobjects.Slot;
+import com.barobot.gui.dataobjects.Translated_name;
+
 import android.app.Activity;
 import android.os.Bundle;
-
+import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
 
 public class BarobotMain extends Activity {
 	private static BarobotMain instance;
+
 	public static BarobotMain getInstance() {
 		return instance;
 	}
@@ -28,13 +44,11 @@ public class BarobotMain extends Activity {
 		tView.setText(text);
 	}
 
-    protected void ButtonEnabled(boolean enabled, int id)
-	{
+    protected void ButtonEnabled(boolean enabled, int id){
 		Button okButton = (Button) findViewById(id);
 		okButton.setEnabled(enabled);
 	}
     
-
 	@Override
 	protected void onResume() {			// resume this activity
 		super.onResume();
@@ -47,10 +61,6 @@ public class BarobotMain extends Activity {
 		AppInvoker.getInstance().onStart();
 	}
 }
-
-
-
-
 /*
 case R.id.menu_favorite:
 	serverIntent = new Intent(this, BarobotMain.class);
@@ -74,4 +84,35 @@ if(serverIntent!=null){
 	startActivity(serverIntent);
 }*/
 
+
+/*
+List<Translated_name> l = Model.fetchQuery(ModelQuery.select().from(Translated_name.class).where(
+		C.and(
+				C.eq("element_id", id),
+				C.eq("table_name", table_name)
+			)).getQuery(),Translated_name.class);
+
+for( Translated_name tn : l){
+	Log.e("translateName1", "translated " + tn.translated );
+	Log.e("translateName1", "translated " + tn.language_id );
+}
+Log.e("translateName1", "------------------------");
+
+
+Query query = new Query("SELECT * FROM Translated_name WHERE `element_id` ='"+id+"' and `table_name`='"+table_name+"' " + order);
+
+Query query = ModelQuery.select().from(Translated_name.class).where(
+		C.and(
+				C.eq("element_id", id),
+				C.eq("table_name", table_name)
+			)).orderBy(order).getQuery();
+
+List<Translated_name> l2 = Model.fetchQuery(query,Translated_name.class);
+
+for( Translated_name tn : l2){
+	Log.e("translateName2", "translated " + tn.translated );
+	Log.e("translateName2", "translated " + tn.language_id );
+}		
+Log.e("translateName2", "------------------------");
+*/
 

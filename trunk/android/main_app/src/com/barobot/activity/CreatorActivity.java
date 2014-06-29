@@ -24,6 +24,7 @@ import com.barobot.gui.dataobjects.Slot;
 import com.barobot.gui.fragment.IngredientListFragment;
 import com.barobot.gui.fragment.RecipeAttributesFragment;
 import com.barobot.gui.utils.Distillery;
+import com.barobot.gui.utils.LangTool;
 import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
 
@@ -100,7 +101,7 @@ public class CreatorActivity extends BarobotMain{
 				if (bottle.status == Slot.STATUS_EMPTY) {
 					tview.setText(R.string.empty_bottle_string);
 				} else {
-					tview.setText(bottle.GetName());	
+					tview.setText(bottle.getName());	
 				}	
 			}
 		}
@@ -306,11 +307,15 @@ public class CreatorActivity extends BarobotMain{
 		Recipe_t recipe = new Recipe_t();
 		recipe.name = name;
 		recipe.unlisted = !showOnList;
-		recipe.insert();
-		Engine ee = Engine.GetInstance(this);
-		ee.addRecipe(recipe, ingredients);
 		if(showOnList){
-			ee.invalidateData();
+			recipe.insert();
+			Engine ee = Engine.GetInstance(this);
+			ee.addRecipe(recipe, ingredients);
+			if(showOnList){
+				ee.invalidateData();
+			}
+			LangTool.InsertTranslation(recipe.id, "recipe", name);
+			
 		}
 		return recipe;
 	}
