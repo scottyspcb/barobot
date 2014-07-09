@@ -117,44 +117,6 @@ public class DebugTabDevices extends Fragment {
 			}
 		});
 
-		/*
-		Button xb2 = (Button) rootView.findViewById(R.id.reset_margins);
-		xb2.setOnClickListener( new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				for(int i=0;i<12;i++){
-					int xpos = BarobotConnector.margin_x[i];
-					final EditText editb0 = (EditText) rootView.findViewById( buttons[i] );
-					barobot.setSlotMarginX( i, xpos );
-					editb0.setText(""+xpos );
-
-					int cap = BarobotConnector.capacity[i];
-					final EditText cap0 = (EditText) rootView.findViewById( capacityBox[i] );
-					barobot.setCapacity( i, cap );
-					cap0.setText(""+cap );	
-				}	
-			}
-		});*/
-/*
-		Button xb20 = (Button) rootView.findViewById(R.id.load_poss);	
-		xb20.setOnClickListener( new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				for(int i=0;i<12;i++){
-					int xpos = barobot.getSlotMarginX( i );
-					final EditText editb0= (EditText) rootView.findViewById( buttons[i] );
-					final int num			= i;
-					Initiator.logger.i("DebugTabDevices", "set input BOTTLE_OFFSETX_" + num + "= " +xpos );
-					editb0.setText(""+xpos );
-					
-					int cap =  barobot.getCapacity(num);
-					final EditText cap0 = (EditText) rootView.findViewById( capacityBox[i] );
-					cap0.setText(""+cap );
-
-				}
-			}
-		});
-*/
 		for(int i=0;i<12;i++){
 			int xpos = barobot.getSlotMarginX( i );
 			EditText editb0 = (EditText) rootView.findViewById( buttons[i] );

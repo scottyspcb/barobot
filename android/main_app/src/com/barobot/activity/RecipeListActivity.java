@@ -166,8 +166,12 @@ public class RecipeListActivity extends BarobotMain{
 	         public void run() {
 	        	  	Engine.GetInstance(RecipeListActivity.this).Pour(mCurrentRecipe);
 	        	  	progress.dismiss();
+	        	  	gotoMainMenu(null);
 	         }});
 		t.start();
 	}
-
+	public void gotoMainMenu(View view){
+		this.finish();
+		overridePendingTransition(R.anim.push_right_in,R.anim.push_right_out);
+	}
 }

@@ -10,18 +10,6 @@
         android:layout_height="wrap_content" >
 
         <Button
-            android:id="@+id/load_poss"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Show" />
-
-        <Button
-            android:id="@+id/reset_margins"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Default" />
-
-        <Button
             android:id="@+id/save_poss"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

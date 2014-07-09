@@ -7,6 +7,7 @@ import com.barobot.R;
 import com.barobot.gui.dataobjects.Engine;
 import com.barobot.gui.dataobjects.Liquid_t;
 import com.barobot.gui.dataobjects.Product;
+import com.barobot.gui.dataobjects.Recipe_t;
 import com.barobot.gui.dataobjects.Type;
 import com.barobot.gui.utils.CapacityProductWrapper;
 import com.barobot.gui.utils.LangTool;
@@ -19,8 +20,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 public class ProductActivity extends BarobotMain {
@@ -45,7 +48,37 @@ public class ProductActivity extends BarobotMain {
 		ButtonEnabled(false, R.id.product_capacity_new_button);
 		
 		FillTypesList();
+		UpdateCapacity(15);
 	}
+
+	public void UpdateCapacity(long selectedRecipeID)
+	{
+		String[] spinnerArray = {"5","10","15","20","25","40","50"};
+
+		Spinner spinner = (Spinner) findViewById(R.id.capacity_spinner);
+		ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, spinnerArray); //selected item will look like a spinner set from XML
+		spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		spinner.setAdapter(spinnerArrayAdapter);
+		spinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view, int position,long id) {
+				String cap = (String) parent.getItemAtPosition(position);
+				System.out.println("onAddRecipeButtonClicked"+ cap);
+			}
+			@Override
+			public void onNothingSelected(AdapterView<?> parent) {
+			}
+		});
+
+		for(int i =0;i<spinnerArray.length;i++){
+			String cap= spinnerArray[i];
+			if( Integer.parseInt(cap) == selectedRecipeID ){
+				spinner.setSelection(i);
+				break;	
+			}
+		}
+	}
+
 	
 	private void SetSlotNumber(int position)
 	{

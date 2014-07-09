@@ -11,6 +11,8 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.widget.TextView;
 import android.widget.ToggleButton;
@@ -23,6 +25,8 @@ import com.barobot.debug.DebugTabDevices;
 import com.barobot.debug.DebugTabGraph;
 import com.barobot.debug.DebugTabLeds;
 import com.barobot.debug.DebugTabLog;
+import com.barobot.hardware.Arduino;
+import com.barobot.hardware.devices.BarobotConnector;
 
 public class DebugActivity extends FragmentActivity implements	ActionBar.TabListener {
 	private static DebugActivity instance;
@@ -265,6 +269,17 @@ public class DebugActivity extends FragmentActivity implements	ActionBar.TabList
 				}
 			}
 		});
+	}
+	
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		Log.i("onKeyDown", "KEYCODE_BACK");
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
+			this.finish();
+			overridePendingTransition(R.anim.push_down_in,R.anim.push_down_out);
+			return true;
+		}
+		return super.onKeyDown(keyCode, event);
 	}
 }
 

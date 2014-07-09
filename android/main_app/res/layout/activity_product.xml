@@ -17,6 +17,7 @@
         android:layout_weight="2" >
 
         <RelativeLayout
+            android:id="@+id/relativeLayout1"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
@@ -25,16 +26,13 @@
             <TextView
                 android:id="@+id/product_slot_number_text"
                 style="@style/ProductConfigurationText"
-              
-                android:layout_alignParentTop="true"
-               />
+                android:layout_alignParentTop="true" />
 
             <TextView
                 android:id="@+id/product_capacity_text"
                 style="@style/ProductConfigurationText"
                 android:layout_below="@id/product_slot_number_text"
-                android:text="@string/product_field_capacity"
-                 />
+                android:text="@string/product_field_capacity" />
 
             <TextView
                 android:id="@+id/product_liquid_text"
@@ -46,7 +44,7 @@
                 android:id="@+id/product_type_text"
                 style="@style/ProductConfigurationText"
                 android:layout_below="@id/product_liquid_text"
-                android:text="@string/product_field_type"/>
+                android:text="@string/product_field_type" />
         </RelativeLayout>
 
         <Button
@@ -82,6 +80,15 @@
                 android:onClick="onEmptyButtonClicked"
                 android:text="@string/product_button_empty" />
         </LinearLayout>
+
+        <Spinner
+            android:id="@+id/capacity_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true"
+            android:layout_below="@+id/relativeLayout1" />
+
     </RelativeLayout>
 
     <LinearLayout

@@ -53,6 +53,7 @@ public class OptionsActivity extends BarobotMain {
 			barobot.doHoming(mq, true);
 			break;
 		case R.id.options_about_button:
+			startActivity(new Intent(this, SettingsActivity.class));
 			break;
 		case R.id.options_lights_button:
 			final Audio a = getAudio();
@@ -87,6 +88,7 @@ public class OptionsActivity extends BarobotMain {
 		case R.id.settings_unlock:
 			barobot.main_queue.unlock();
 			break;
+
 		case R.id.options_demo_button:
 			barobot.startDemo();
 			break;
