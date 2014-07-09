@@ -9,7 +9,6 @@
         android:targetSdkVersion="20" />
 
     <uses-feature android:name="android.hardware.usb.host" />
-
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -26,7 +25,7 @@
         android:icon="@drawable/app_icon"
         android:label="@string/app_name" >
         <activity
-            android:name="com.barobot.activity.BarobotActivity"
+            android:name=".activity.BarobotActivity"
             android:configChanges="orientation|keyboardHidden"
             android:label="@string/app_name"
             android:screenOrientation="sensorLandscape"
@@ -44,49 +43,47 @@
                 android:resource="@xml/device_filter" />
         </activity>
         <activity
-            android:name="com.barobot.activity.WizardStartActivity"
+            android:name=".activity.WizardStartActivity"
             android:label="@string/title_activity_wizard_start"
             android:screenOrientation="sensorLandscape"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
         </activity>
- 		<activity
-            android:name="com.barobot.activity.RecipeListActivity"
+        <activity
+            android:name=".activity.RecipeListActivity"
             android:configChanges="orientation|keyboardHidden"
             android:label="@string/select_device"
-            android:screenOrientation="sensorLandscape" 
+            android:screenOrientation="sensorLandscape"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen" />
-
         <activity
-            android:name="com.barobot.activity.BTListActivity"
+            android:name=".activity.BTListActivity"
             android:configChanges="orientation|keyboardHidden"
             android:label="@string/select_device"
             android:screenOrientation="sensorLandscape" />
-       
         <activity
-            android:name="com.barobot.activity.AboutActivity"
+            android:name=".activity.AboutActivity"
             android:label="@string/title_activity_about"
             android:screenOrientation="sensorLandscape"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
         </activity>
-       
         <activity
-            android:name="com.barobot.activity.DebugActivity"
+            android:name=".activity.DebugActivity"
             android:label="@string/title_activity_device_list"
             android:screenOrientation="sensorLandscape" >
         </activity>
         <activity
-            android:name="com.barobot.activity.BottleSetupActivity"
+            android:name=".activity.BottleSetupActivity"
             android:label="@string/title_activity_bottle_setup"
             android:screenOrientation="sensorLandscape"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
         </activity>
         <activity
-            android:name="com.barobot.activity.RecipeSetupActivity"
+            android:name=".activity.RecipeSetupActivity"
             android:label="@string/title_activity_recipe_setup"
             android:screenOrientation="sensorLandscape"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
         </activity>
-        <!-- activity
+        <!--
+        activity
             android:name="com.barobot.gui.OutsideComponentActivity"
             android:label="@string/title_activity_outside_component"
             android:screenOrientation="sensorLandscape"
@@ -94,9 +91,10 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.barobot.gui.BarobotActivity" />
-        </activity-->
+        </activity
+        -->
         <activity
-            android:name="com.barobot.activity.ProductActivity"
+            android:name=".activity.ProductActivity"
             android:label="@string/title_activity_product"
             android:screenOrientation="sensorLandscape"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
@@ -105,12 +103,11 @@
                 android:value="com.barobot.activity.BarobotActivity" />
         </activity>
         <activity
-            android:name="com.barobot.activity.CreatorActivity"
+            android:name=".activity.CreatorActivity"
             android:label="@string/title_activity_creator"
             android:screenOrientation="sensorLandscape"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
         </activity>
-        
         <activity
             android:name="net.pocketmagic.android.carousel.MainActivity"
             android:label=""
@@ -118,12 +115,14 @@
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
         </activity>
         <activity
-            android:name="com.barobot.activity.OptionsActivity"
+            android:name=".activity.OptionsActivity"
             android:label="@string/title_activity_options"
             android:screenOrientation="sensorLandscape"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
         </activity>
-
+        <activity
+            android:name="com.barobot.activity.SettingsActivity"
+            android:label="@string/title_activity_settings" >
+        </activity>
     </application>
-
 </manifest>

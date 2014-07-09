@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+
+    <string name="app_name">Barobot</string>
+    <string name="do_update">Cкачай обновленый список напитков</string>
+
+    <!-- DeviceListActivity -->
+    <string name="scanning">Поиск устройств</string>
+    <string name="select_device">Выбрать устройство для подключения</string>
+    <string name="none_paired">No devices have been paired</string>
+    <string name="none_found">Устройства не найдены</string>
+
+    <string name="button_scan">Поиск устройств</string>
+    <string name="about_info">Авторы</string>
+    <string name="title_activity_about">О программе</string>
+
+    <string name="title_activity_device_list">Barobot</string>
+    <string name="title_section1">Опции</string>
+    <string name="title_section2">Настройки </string>
+    <string name="title_section3">Освещение</string>
+    <string name="title_section4">Бутылки</string>
+    <string name="title_section5">Звук</string>
+    <string name="title_section6">История</string>
+
+    <string name="empty_slot">Пусто</string>
+    <string name="liquid_select_title">Выберите жидкость</string>
+    <string name="liquid_name">Название жидкости (Марка)</string>
+    <string name="liquid_type">Вид жидкости</string>
+    <string name="title_activity_barobot_main">Barobot Main</string>
+    <string name="title_activity_bottle_setup">Конфигурация бутылки</string>
+    <string name="title_activity_recipe_setup">Конфигурация рецепта</string>
+
+    <!-- Main -->
+    <string name="glass_reminder_title">Напоминание </string>
+    <string name="glass_reminder_message1">Поместите стакан на поднос</string>
+    <string name="glass_reminder_button_ok">OK</string>
+    <string name="glass_reminder_button_cancel">Отменить </string>
+   
+    <!-- Bottle Setup -->
+    <string name="empty_bottle_string">Пусто</string>
+
+    <!-- Dialog new Type -->
+    <string name="dialog_type_name">Вид жидкости</string>
+
+    <!-- Dialog new Liquid -->
+    <string name="dialog_liquid_name">Название жидкости (Марка)</string>
+    <string name="dialog_liquid_type">Вид жидкости</string>
+
+    <!-- Dialog new Product -->
+    <string name="dialog_product_capacity">Ёмкость бутылки </string>
+    <string name="dialog_product_name">Название продукта</string>
+
+    <!-- Menu items -->
+    <string name="action_settings">Настройки</string>
+    <string name="action_main">Сделать напиток</string>
+    <string name="action_bottle_setup">Конфигурация бутылки</string>
+    <string name="action_recipe_setup">Customize Recipes</string>
+    <string name="action_creator">Создавать</string>
+    <string name="menu_favorite">Попробовать фаворитные </string>
+
+    <string name="menu_lucky">I feel lucky</string>
+
+    <string name="menu_bottles">Конфигурация бутылок</string>
+    <string name="menu_mobile">Мобильные заказы</string>
+    <string name="menu_options">Опции и настройки</string>
+
+    <!-- Options Activity -->
+    <string name="options_bottle_setup_button">Конфигурация бутылки</string>
+    <string name="options_recipe_setup_button">Конфигурация рецепта</string>
+    <string name="options_extra_setup_button">Конфигурация внешнего ингредиента</string>
+    <string name="options_lights_button">Настройки освещения</string>
+    <string name="options_demo_button">Деморежим</string>
+    <string name="options_advanced_button">Расширенные настройки</string>
+    <string name="options_about_button">О Barobot</string>
+    <string name="options_turn_off_button">Homeing</string>
+
+    <!-- Create Activity -->
+    <string name="create_pour_button">Старт!</string>
+    <string name="create_clear_button">Чистить</string>
+    <string name="create_add_button">Назвать и сохранить</string>
+
+    <!-- Recipe Setup -->
+    <string name="recipe_add_new_button">Добавить</string>
+    <string name="add_recipe">Добавить новый рецепт</string>
+    <string name="remove_recipe">Удалить рецепт</string>
+    <string name="add_ingredient">Добавить ингредиент</string>
+    <string name="remove_ingredients">Удалить все ингредиенты</string>
+    <string name="recipe_name">Название рецепта</string>
+    <string name="recipe_description">Характеристика рецепта</string>
+    <string name="title_activity_outside_component">Внешние компоненты</string>
+    <string name="title_activity_product">ProductActivity</string>
+    <string name="title_activity_creator">Креатор напитков</string>
+
+    <!-- Product Setup -->
+    <string name="product_add_new_button">Добавить</string>
+    <string name="product_button_cancel">Удалить</string>
+    <string name="product_button_empty">Пусто</string>
+    <string name="product_button_ok">OK</string>
+    <string name="product_field_type"></string>
+    <string name="product_field_liquid"></string>
+    <string name="product_field_capacity"></string>
+    <string name="product_liquid_label">Жидкости</string>
+    <string name="product_type_label">Types</string>
+    <string name="product_capacity_label">Ёмкости </string>
+    <string name="image_desc">[Drink Image]</string>
+    <string name="title_activity_random">Сделать случайное</string>
+    <string name="title_activity_options">Опции и настройки</string>
+
+    <!-- Progress Bars -->
+    <string name="progress_bar_sweet_name">Сладкий</string>
+    <string name="progress_bar_sour_name">Кислый </string>
+    <string name="progress_bar_bitter_name">Горький </string>
+    <string name="progress_bar_strength_name">Крепкий</string>
+    <string name="options_calibrate">Калибровка</string>
+    <string name="options_stop">Стоп</string>
+    <string name="title_activity_wizard_start">Start Wizard</string>
+    <string name="unlock">Отблокировать</string>
+    <string name="add_recipe_btn">+ рецепт</string>
+    <string name="remove_recipe_btn">- Рецепт</string>
+
+
+</resources>

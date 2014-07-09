@@ -11,6 +11,8 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 
 import com.barobot.BarobotMain;
 import com.barobot.R;
@@ -23,7 +25,11 @@ public class WizardStartActivity extends BarobotMain{
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+		 super.onCreate(savedInstanceState);
+        // remove title
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		
 		setContentView(R.layout.activity_wizard_start);
 		Engine.GetInstance(this).getRecipes();
 		String langCode = Locale.getDefault().getLanguage();	// i.e. "pl"
@@ -34,23 +40,32 @@ public class WizardStartActivity extends BarobotMain{
 	public void onMenuButtonClicked(View view)
 	{
 		Intent serverIntent = null;
+		int animIn = R.anim.push_left_in;
+		int animOut = R.anim.push_left_out;
+		
 		switch(view.getId())
 		{
 			case R.id.wizard_list:
 				serverIntent = new Intent(this, RecipeListActivity.class);
 				serverIntent.putExtra(RecipeListActivity.MODE_NAME, RecipeListActivity.Mode.Normal.ordinal());
+				animIn = R.anim.push_left_in;
+				animOut = R.anim.push_left_out;
 				break;
 			case R.id.wizard_own:
 				serverIntent = new Intent(this, CreatorActivity.class);
+				animIn = R.anim.push_right_in;
+				animOut = R.anim.push_right_out;
 				break;	
 			case R.id.button_settings:
 				serverIntent = new Intent(this, OptionsActivity.class);
+				animIn = R.anim.push_down_in;
+				animOut = R.anim.push_down_out;
 				break;
 		}
 		if(serverIntent!=null){
     		serverIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-    		overridePendingTransition(R.anim.push_left_in,R.anim.push_left_out);
-    		startActivityForResult(serverIntent,0);
+    		startActivity(serverIntent);
+    		overridePendingTransition(animIn,animOut);
     	}
 	}
 	public void onLangButtonClicked(View view)
@@ -115,8 +130,4 @@ public class WizardStartActivity extends BarobotMain{
 							}
 						}).setNegativeButton("No", null).show();
 	}
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-    }
 }

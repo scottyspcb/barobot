@@ -37,6 +37,7 @@ public class SofaServer extends NanoHTTPD {
    	}
 	public static SofaServer getInstance() {
 		if( ins == null){
+			//int SOFA_SERVER_PORT = state.getInt("SOFA_SERVER_PORT", Constant.SOFA_SERVER_PORT );
 			ins = new SofaServer( Constant.SOFA_SERVER_PORT );
 			inited = true;
 		}

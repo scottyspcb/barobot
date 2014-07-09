@@ -113,13 +113,15 @@ public class CreatorActivity extends BarobotMain{
 	{
 		BarobotConnector barobot = Arduino.getInstance().barobot;
 		IngredientListFragment frag = (IngredientListFragment) getFragmentManager().findFragmentById(R.id.fragment_ingredient_list);
-		frag.ShowIngredients(ingredients);
-		
+		if(frag!=null){
+			frag.ShowIngredients(ingredients);
+		}
 		RecipeAttributesFragment attrFrag = (RecipeAttributesFragment) getFragmentManager().findFragmentById(R.id.fragment_attributes);
-		attrFrag.SetAttributes(Distillery.getSweet(ingredients), Distillery.getSour(ingredients)
+		if(attrFrag!=null){
+			attrFrag.SetAttributes(Distillery.getSweet(ingredients), Distillery.getSour(ingredients)
 				, Distillery.getBitter(ingredients), Distillery.getStrength(ingredients));
-
-		for (int i = 1; i<=12 ; i++){											// 1 - 12
+		}
+		for (int i = 1; i<=12 ; i++){							// 1 - 12
 			barobot.bottleBacklight( i-1, slot_nums[i] );		// 0 -11
 		}
 	}
@@ -208,9 +210,6 @@ public class CreatorActivity extends BarobotMain{
 		progress.setMessage("Please wait");
 		progress.show();
 
-	//	final WaitingTask wt = new WaitingTask();
-	//	wt.execute();
-
 		Thread t = new Thread(new Runnable() {  
 	         @Override
 	         public void run() {
@@ -219,12 +218,13 @@ public class CreatorActivity extends BarobotMain{
 		     		Thread t = new Thread(new Runnable() {
 		                 @Override
 		                 public void run() {
-		                 	clear();
 		                 	Engine.GetInstance(CreatorActivity.this).Pour(tempRecipe);
+		                 	clear();
 		                 }});
 		     		t.start();
 		    //    	wt.setReady();
 		        	progress.dismiss();
+		        	gotoMainMenu(null);
 	         }});
 		t.start();
 	}
@@ -307,16 +307,15 @@ public class CreatorActivity extends BarobotMain{
 		Recipe_t recipe = new Recipe_t();
 		recipe.name = name;
 		recipe.unlisted = !showOnList;
-		if(showOnList){
+		//if(showOnList){
 			recipe.insert();
 			Engine ee = Engine.GetInstance(this);
 			ee.addRecipe(recipe, ingredients);
 			if(showOnList){
 				ee.invalidateData();
+				LangTool.InsertTranslation(recipe.id, "recipe", name);
 			}
-			LangTool.InsertTranslation(recipe.id, "recipe", name);
-			
-		}
+		//}
 		return recipe;
 	}
 
@@ -325,6 +324,11 @@ public class CreatorActivity extends BarobotMain{
 		return true;
 	}
 
+	public void gotoMainMenu(View view){
+		this.finish();
+		overridePendingTransition(R.anim.push_left_in,R.anim.push_left_out);
+	}
+	
 /*
 	public void onQueueFinished() {
 		clear();

@@ -317,45 +317,6 @@
         android:layout_toRightOf="@+id/smile"
         android:text="Pacnij" />
 
-   
-    <ToggleButton
-        android:id="@+id/need_glass"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/auto_fill_on_ready"
-        android:layout_toRightOf="@+id/auto_fill_on_ready"
-        android:text="ToggleButton"
-        android:textOff="Nie wymagaj szklanki"
-        android:textOn="Wymagaj szklanki" />
-
-    <ToggleButton
-        android:id="@+id/wagi_live"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/need_glass"
-        android:layout_alignBottom="@+id/need_glass"
-        android:layout_toRightOf="@+id/need_glass"
-        android:text="ToggleButton"
-        android:textOff="Waga OFF"
-        android:textOn="Waga ON" />
-
-    <Button
-        android:id="@+id/set_bottle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/wagi_live"
-        android:layout_toRightOf="@+id/wagi_live"
-        android:text="Tutaj jest butelka..."
-        />
- <ToggleButton
-        android:id="@+id/auto_fill_on_ready"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/goToNeutralY"
-        android:text="ToggleButton"
-        android:textOff="Nie nalewaj od razu"
-        android:textOn="Nalewaj od razu" />
-    
     <Button
         android:id="@+id/enabley"
         android:layout_width="wrap_content"
@@ -431,120 +392,10 @@
         android:text="TEST" />
 
     <Button
-        android:id="@+id/reset1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/dlugosc_z"
-        android:layout_alignBottom="@+id/dlugosc_z"
-        android:layout_alignRight="@+id/i2c_test"
-        android:text="RESET1" />
-
-    <Button
-        android:id="@+id/reset2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/reset1"
-        android:layout_alignBottom="@+id/reset1"
-        android:layout_toLeftOf="@+id/reset1"
-        android:text="RESET2" />
-
-    <Button
-        android:id="@+id/reset3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/reset1"
-        android:layout_toLeftOf="@+id/reset2"
-        android:text="RESET3" />
-
-    <Button
-        android:id="@+id/reset4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/reset1"
-        android:layout_toLeftOf="@+id/reset3"
-        android:text="RESET4" />
-
-    <Button
-        android:id="@+id/find_bottles"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/unlock"
-        android:text="Szukaj butelek" />
-
-    <Button
-        android:id="@+id/unlock"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/auto_fill_on_ready"
-        android:text="Odblokuj" />
-
-    <Button
-        android:id="@+id/fill5000"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/find_bottles"
-        android:layout_toRightOf="@+id/unlock"
-        android:text="Nalej tutaj" />
-
-    <Button
-        android:id="@+id/rb"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/find_bottles"
-        android:layout_toRightOf="@+id/fill5000"
-        android:text="RESETBUS" />
-
-    <Button
-        android:id="@+id/rb2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/rb"
-        android:layout_alignBottom="@+id/rb"
-        android:layout_toRightOf="@+id/rb"
-        android:text="RESETBUS2" />
-
-    <Button
-        android:id="@+id/led_red_on"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/rb2"
-        android:layout_alignBottom="@+id/rb2"
-        android:layout_toRightOf="@+id/rb2"
-        android:text="RED LED" />
-
-    <Button
-        android:id="@+id/scann_leds"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/goToNeutralY"
-        android:layout_toRightOf="@+id/pacpac"
-        android:text="SCAN LEDS" />
-
-    <Button
-        android:id="@+id/led_green_on"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/find_bottles"
-        android:layout_toRightOf="@+id/led_red_on"
-        android:text="GREEN LED" />
-
-    <Button
-        android:id="@+id/led_blue_on"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/led_green_on"
-        android:layout_alignBottom="@+id/led_green_on"
-        android:layout_toRightOf="@+id/led_green_on"
-        android:text="BLUE LED" />
-
-    <Button
         android:id="@+id/analog_temp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/scann_leds"
-        android:layout_alignBottom="@+id/scann_leds"
+        android:layout_alignBaseline="@+id/goToNeutralY"
         android:layout_alignParentRight="true"
         android:text="GET TEMP" />
 
@@ -557,37 +408,175 @@
         android:layout_toLeftOf="@+id/analog_temp"
         android:text="Scann I2C" />
 
-    <Button
-        android:id="@+id/reset_margin"
+    <LinearLayout
+        android:id="@+id/linearLayout1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/analog_temp"
-        android:layout_toLeftOf="@+id/scann_i2c"
-        android:text="Reset Margin" />
-
-    <Button
-        android:id="@+id/clear_queue"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/find_bottles"
-        android:layout_toRightOf="@+id/find_bottles"
-        android:text="RESET QUEUE" />
-
-    <Button
-        android:id="@+id/reset_upanels"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/set_bottle"
-        android:layout_alignBottom="@+id/set_bottle"
+        android:layout_alignLeft="@+id/position_z"
+        android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:text="Reset Upanels" />
+        android:orientation="vertical" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <Button
+                android:id="@+id/flip_z"
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Button" />
+
+            <ToggleButton
+                android:id="@+id/need_glass"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ToggleButton"
+                android:textOff="Nie wymagaj szklanki"
+                android:textOn="Wymagaj szklanki" />
+
+            <ToggleButton
+                android:id="@+id/wagi_live"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ToggleButton"
+                android:textOff="Waga OFF"
+                android:textOn="Waga ON" />
+
+            <Button
+                android:id="@+id/set_bottle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tutaj jest butelka..." />
+
+            <ToggleButton
+                android:id="@+id/auto_fill_on_ready"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ToggleButton"
+                android:textOff="Nie nalewaj od razu"
+                android:textOn="Nalewaj od razu" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <Button
+                android:id="@+id/scann_leds"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="SCAN LEDS" />
+
+            <Button
+                android:id="@+id/led_red_on"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="RED LED" />
+
+            <Button
+                android:id="@+id/led_green_on"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="GREEN LED" />
+
+            <Button
+                android:id="@+id/led_blue_on"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="BLUE LED" />
+
+            <Button
+                android:id="@+id/reset1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="RESET1" />
+
+            <Button
+                android:id="@+id/reset2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="RESET2" />
+
+            <Button
+                android:id="@+id/reset3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="RESET3" />
+
+            <Button
+                android:id="@+id/reset4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="RESET4" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <Button
+                android:id="@+id/reset_margin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Reset Margin" />
+
+            <Button
+                android:id="@+id/reset_upanels"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Reset Upanels" />
+
+            <Button
+                android:id="@+id/reset_serial"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="RESET SERIAL" />
+
+            <Button
+                android:id="@+id/rb"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="RESETBUS" />
+
+            <Button
+                android:id="@+id/rb2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="RESETBUS2" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <Button
+                android:id="@+id/clear_queue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="RESET QUEUE" />
+
+            <Button
+                android:id="@+id/unlock"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Odblokuj" />
+
+            <Button
+                android:id="@+id/find_bottles"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Szukaj butelek" />
+
+        </LinearLayout>
+    </LinearLayout>
 
     <Button
-        android:id="@+id/reset_serial"
+        android:id="@+id/fill5000"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/reset_upanels"
-        android:layout_toLeftOf="@+id/reset_upanels"
-        android:text="RESET SERIAL" />
+        android:layout_toRightOf="@+id/pacpac"
+        android:text="Nalej tutaj" />
 
 </RelativeLayout>

@@ -93,11 +93,15 @@
 
             <Button
                 android:id="@+id/goto_main_menu"
+                style="@style/ButtonRed"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_above="@+id/fragment_drink_image"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentTop="true"
+                android:onClick="gotoMainMenu"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
                 android:text="@string/goto_main_menu" />
 
         </RelativeLayout>

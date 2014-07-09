@@ -20,9 +20,11 @@
 
             <GridLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" >
+                android:layout_height="wrap_content"
+                android:layout_weight="0.65" >
 
                 <LinearLayout
+                    android:layout_height="match_parent"
                     android:layout_gravity="center_horizontal"
                     android:orientation="vertical" >
 
@@ -105,8 +107,31 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="210dp"
+                android:layout_height="186dp"
+                android:baselineAligned="false"
                 android:orientation="horizontal" >
+
+                <LinearLayout
+                    android:layout_width="0sp"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="2"
+                    android:orientation="vertical" >
+
+                    <Button
+                        style="@style/ButtonRed"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:onClick="gotoMainMenu"
+                        android:text="@string/goto_main_menu" />
+
+                    <fragment
+                        android:id="@+id/fragment_attributes"
+                        android:name="com.barobot.gui.fragment.RecipeAttributesFragment"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_margin="3dp"
+                        tools:layout="@layout/fragment_recipe_attributes" />
+                </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="0sp"
@@ -117,9 +142,8 @@
                     <Button
                         android:id="@+id/creator_pour_button"
                         style="@style/ButtonGreen"
-                        android:layout_width="fill_parent"
-                        android:layout_height="0sp"
-                        android:layout_weight="2"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
                         android:onClick="onPourRecipeButtonClicked"
                         android:text="@string/create_pour_button" />
                 </LinearLayout>
@@ -133,15 +157,6 @@
                     android:layout_weight="3"
                     tools:layout="@layout/fragment_ingredient_list" />
 
-                <fragment
-                    android:id="@+id/fragment_attributes"
-                    android:name="com.barobot.gui.fragment.RecipeAttributesFragment"
-                    android:layout_width="0sp"
-                    android:layout_height="fill_parent"
-                    android:layout_margin="3dp"
-                    android:layout_weight="2"
-                    tools:layout="@layout/fragment_recipe_attributes" />
-
                 <LinearLayout
                     android:layout_width="0sp"
                     android:layout_height="fill_parent"
@@ -149,23 +164,20 @@
                     android:orientation="vertical" >
 
                     <Button
-                        style="@style/ButtonBlue"
-                        android:layout_width="fill_parent"
-                        android:layout_height="0sp"
-                        android:layout_weight="2"
-                        android:onClick="onAddRecipeButtonClicked"
-                        android:text="@string/create_add_button" />
-
-                    <Button
                         style="@style/ButtonRed"
                         android:layout_width="fill_parent"
-                        android:layout_height="0sp"
-                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
                         android:onClick="onClearButtonClicked"
                         android:text="@string/create_clear_button" />
+
+                    <Button
+                        style="@style/ButtonBlue"
+                        android:layout_width="fill_parent"
+                        android:layout_height="match_parent"
+                        android:onClick="onAddRecipeButtonClicked"
+                        android:text="@string/create_add_button" />
                 </LinearLayout>
             </LinearLayout>
-
         </LinearLayout>
 
 </RelativeLayout>

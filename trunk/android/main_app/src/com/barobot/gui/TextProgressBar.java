@@ -43,7 +43,6 @@ public class TextProgressBar extends ProgressBar {
             setText(a.getString(R.styleable.TextProgressBar_text));
             setTextColor(a.getColor(R.styleable.TextProgressBar_textColor, Color.BLACK));
             setTextSize(a.getDimension(R.styleable.TextProgressBar_textSize, 15));
-            
             setShadowRadius(a.getDimension(R.styleable.TextProgressBar_shadowRadius, 0));
             setShadowDx(a.getDimension(R.styleable.TextProgressBar_shadowDx, 0));
             setShadowDy(a.getDimension(R.styleable.TextProgressBar_shadowDy, 0));

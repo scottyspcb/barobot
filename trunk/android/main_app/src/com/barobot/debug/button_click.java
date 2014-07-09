@@ -137,7 +137,10 @@ public class button_click implements OnClickListener{
 			break;
 		case R.id.machajx:
 			barobot.moveZDown( q ,true );
-			barobot.moveY( q, Constant.SERVOY_FRONT_POS, true);
+			
+			int SERVOY_FRONT_POS = barobot.state.getInt("SERVOY_FRONT_POS", Constant.SERVOY_FRONT_POS );
+
+			barobot.moveY( q, SERVOY_FRONT_POS, true);
 			int lengthx4	=  barobot.state.getInt("LENGTHX", 600 );
 			for( int i =0; i<10;i++){
 			//	virtualComponents.moveX( q, (lengthx4/4) );
@@ -151,11 +154,15 @@ public class button_click implements OnClickListener{
 			break;
 		case R.id.machajy:
 			barobot.moveZDown( q ,true );
+			
+			int SERVOY_FRONT_POS2 = barobot.state.getInt("SERVOY_FRONT_POS", Constant.SERVOY_FRONT_POS );
+			int SERVOY_BACK_POS = barobot.state.getInt("SERVOY_BACK_POS", Constant.SERVOY_BACK_POS );
+			
 			for( int i =0; i<10;i++){
-				barobot.moveY( q, Constant.SERVOY_FRONT_POS, false );
-				barobot.moveY( q, Constant.SERVOY_BACK_POS, false );
+				barobot.moveY( q, SERVOY_FRONT_POS2, false );
+				barobot.moveY( q, SERVOY_BACK_POS, false );
 			}
-			barobot.moveY( q, Constant.SERVOY_FRONT_POS, false );
+			barobot.moveY( q, SERVOY_FRONT_POS2, false );
 			q.add("DY", true);
 			mq.add(q);
 			break;
@@ -171,7 +178,10 @@ public class button_click implements OnClickListener{
 		case R.id.losujx:
 			Random generator2 = new Random( 19580427 );
 			barobot.moveZDown( q, true  );
-			barobot.moveY( q, Constant.SERVOY_FRONT_POS, true );
+			
+			int SERVOY_FRONT_POS3 = barobot.state.getInt("SERVOY_FRONT_POS", Constant.SERVOY_FRONT_POS );
+			
+			barobot.moveY( q, SERVOY_FRONT_POS3, true );
 			int lengthx5	=  barobot.state.getInt("LENGTHX", 600 );
 		    for(int f = 0;f<20;){
 		    	int left = generator2.nextInt((int)(lengthx5/100 / 2));
@@ -244,7 +254,10 @@ public class button_click implements OnClickListener{
 
 		case R.id.max_y:
 			barobot.moveZDown( q ,true );
-			barobot.moveY( q, Constant.SERVOY_BACK_POS, true );
+			
+			int SERVOY_BACK_POS2 = barobot.state.getInt("SERVOY_BACK_POS", Constant.SERVOY_BACK_POS );
+			
+			barobot.moveY( q, SERVOY_BACK_POS2, true );
 			mq.add(q);	
 			break;
 		case R.id.min_x:
@@ -256,7 +269,8 @@ public class button_click implements OnClickListener{
 			break;
 		case R.id.min_y:
 			barobot.moveZDown( q ,true );
-			barobot.moveY( q, Constant.SERVOY_FRONT_POS, true );
+			int SERVOY_FRONT_POS5 = barobot.state.getInt("SERVOY_FRONT_POS", Constant.SERVOY_FRONT_POS );
+			barobot.moveY( q, SERVOY_FRONT_POS5, true );
 			mq.add(q);
 			break;	
 		case R.id.unlock:
@@ -268,8 +282,11 @@ public class button_click implements OnClickListener{
 			q.add("EX", true);
 //			q.add("EY", true);
 //			q.add("EZ", true);
-			q.add("Z" + Constant.SERVOZ_PAC_POS+","+Constant.DRIVER_Z_SPEED, true);
-			Initiator.logger.i("pacpac","Z" + Constant.SERVOZ_PAC_POS+","+Constant.DRIVER_Z_SPEED);
+
+			int SERVOZ_PAC_POS = barobot.state.getInt("SERVOZ_PAC_POS", Constant.SERVOZ_PAC_POS );
+			int DRIVER_Z_SPEED = barobot.state.getInt("DRIVER_Z_SPEED", Constant.DRIVER_Z_SPEED );
+
+			q.add("Z" + SERVOZ_PAC_POS+","+DRIVER_Z_SPEED, true);
 			barobot.moveZDown(q, true );
 			q.add("DY", true);
 			q.add("DX", true);
