@@ -8,7 +8,6 @@ Body
 - pl2303 RX
 - LED DATA
 - tablet_sense
-
 - 12V
 - GND
 
