@@ -36,6 +36,7 @@ void serialEvent();
 void sendstats();
 void paserDeriver( byte driver, String input2 );
 void send_error( String input);
+void setColor(byte num, unsigned long int color);
 void parseInput( String input );
 void update_servo( byte index );
 void readHall();

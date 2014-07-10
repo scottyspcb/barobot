@@ -1,7 +1,3 @@
-
-#define IS_MAINBOARD true
-#define IS_CARRET true
-
 #include "barobot_carret2_main.h"
 #include "constants.h"
 #include <Adafruit_NeoPixel.h>
@@ -12,8 +8,27 @@
 #include <AsyncDriver.h>
 #include <FlexiTimer2.h>
 
+// PINS
+#define PIN_B2_STEPPER_ENABLE PPD3	// 3
+#define PIN_B2_STEPPER_STEP PPD4	// 4
+#define PIN_B2_STEPPER_DIR PPD5		// 5
+#define PIN_B2_SERVO_Y PPB2			// 10
+#define PIN_B2_SERVO_Z PPB1			// 9
+#define PIN_B2_LED_TOP PPD7			// 7
+#define PIN_B2_LED_BOTTOM PPB0		// 8
+
+#define PIN_B2_HALL_X A3			// PPC3, 17
+#define PIN_B2_HALL_Y A2			// PPC2, 16
+#define PIN_B2_WEIGHT A0			// PPC0, 14
+#define PIN_B2_TABLET_PWR A1		// 15
+
+
+// Config
 #define ANALOGS  6
 #define ANALOG_TRIES  4
+#define B2_ACCELERX 9000
+#define B2_SPEEDX 2500
+
 
 volatile boolean stepperIsReady = false;
 volatile uint16_t checks = 0;
@@ -41,8 +56,8 @@ struct ServoChannel {
 
 Servo servo_lib[2];
 volatile ServoChannel servos[2]= {
-	{PIN_CARRET_SERVO_Y,0,0,0,0,false,false,DRIVER_DIR_STOP },
-	{PIN_CARRET_SERVO_Z,0,0,0,0,false,false,DRIVER_DIR_STOP },
+	{PIN_B2_SERVO_Y,0,0,0,0,false,false,DRIVER_DIR_STOP },
+	{PIN_B2_SERVO_Z,0,0,0,0,false,false,DRIVER_DIR_STOP },
 };
 
 unsigned long mil = 0;
@@ -89,33 +104,33 @@ unsigned long int time = 5000;
 unsigned long int sum = 0;
 unsigned long int repeat = 0;
 
-#define PIN_LEDS 8
+AsyncDriver stepperX( PIN_B2_STEPPER_STEP, PIN_B2_STEPPER_DIR, PIN_B2_STEPPER_ENABLE );      // Step, DIR
 
-AsyncDriver stepperX( PIN_MAINBOARD_STEPPER_STEP, PIN_MAINBOARD_STEPPER_DIR, PIN_MAINBOARD_STEPPER_ENABLE );      // Step, DIR
-Adafruit_NeoPixel strip = Adafruit_NeoPixel(50, PIN_LEDS, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel top_panels = Adafruit_NeoPixel(50, PIN_B2_LED_BOTTOM, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel bottom_panels = Adafruit_NeoPixel(1, PIN_B2_LED_TOP,  NEO_GRB + NEO_KHZ800);
 
 inline void  setupStepper(){
 	stepperX.disable_on_ready = true;
 	stepperX.disableOutputs();
-	stepperX.setAcceleration(MAINBOARD_ACCELERX);
-	stepperX.setMaxSpeed(MAINBOARD_SPEEDX);
+	stepperX.setAcceleration(B2_ACCELERX);
+	stepperX.setMaxSpeed(B2_SPEEDX);
 	stepperX.setOnReady(stepperReady);
 	FlexiTimer2::set(1, 1.0/10000, timer);
 	FlexiTimer2::start();
 }
 
 void setup(){
-	pinMode(PIN_MAINBOARD_TABLET_PWR, INPUT );	
+	pinMode(PIN_B2_TABLET_PWR, INPUT );	
 
-	pinMode(PIN_CARRET_SERVO_Y, INPUT );      // nie pozwalaj na przypadkowe machanie na starcie
-	pinMode(PIN_CARRET_SERVO_Z, INPUT );      // nie pozwalaj na przypadkowe machanie na starcie
+	pinMode(PIN_B2_SERVO_Y, INPUT );      // nie pozwalaj na przypadkowe machanie na starcie
+	pinMode(PIN_B2_SERVO_Z, INPUT );      // nie pozwalaj na przypadkowe machanie na starcie
 
-	pinMode(PIN_CARRET_HALL_X, INPUT);
-	pinMode(PIN_CARRET_HALL_Y, INPUT);
-	pinMode(PIN_CARRET_WEIGHT, INPUT);
+	pinMode(PIN_B2_HALL_X, INPUT);
+	pinMode(PIN_B2_HALL_Y, INPUT);
+	pinMode(PIN_B2_WEIGHT, INPUT);
 
-	pinMode(PIN_CARRET_CURRENTY, INPUT);
-	pinMode(PIN_CARRET_CURRENTZ, INPUT);
+	//pinMode(PIN_CARRET_CURRENTY, INPUT);
+	//pinMode(PIN_CARRET_CURRENTZ, INPUT);
 
 	init_leds();
 	serial0Buffer = "";
@@ -129,8 +144,10 @@ void setup(){
 }
 
 void init_leds(){
-	strip.begin();
-	strip.show(); // Initialize all pixels to 'off'
+	top_panels.begin();
+	top_panels.show(); // Initialize all pixels to 'off'
+	bottom_panels.begin();
+	bottom_panels.show(); // Initialize all pixels to 'off'
 }
 
 void sendVal( byte n ) {
@@ -164,12 +181,9 @@ void loop() {
 		}
 		when_next = mil + time;
 	}
-
 	readHall();
-
 	update_servo( INNER_SERVOY );
 	update_servo( INNER_SERVOZ );
-
 	if(stepperIsReady){
 		long int pos = stepperX.currentPosition();
 		sendStepperReady(pos);
@@ -201,7 +215,7 @@ int16_t readValue() {           // synchroniczne
 	val1 = val1 >>2;    // div 4
 	return val1;
 	*/
-	return analogRead(PIN_CARRET_HALL_X );
+	return analogRead(PIN_B2_HALL_X );
 }
 
 byte get_hx_state_id( int16_t value){
@@ -283,13 +297,14 @@ void update_servo( byte index ) {           // synchroniczne
 	//	Serial.flush();
 	}
 }
+
 void parseInput( String input ){
 //	Serial.println("-input1: " + input );
 	input.trim();
 	boolean defaultResult = true;
 	byte command = input.charAt(0);
 
-	if( command == METHOD_MSET_TOP_COLOR ) {    // CAaColor		// set TOP /BOTTOM color for Aa to Rr Gg Bb
+	if( command == METHOD_MSET_TOP_COLOR && command == METHOD_MSET_BOTTOM_COLOR ) {    // CAaColor		// set TOP /BOTTOM color for Aa to Rr Gg Bb
 		// C|03|4294967295
 		String digits    	= input.substring( 1 );
 		char charBuf[15];
@@ -297,8 +312,8 @@ void parseInput( String input ){
 		uint16_t address	= 0;
 		unsigned long int color	= 0;
 		sscanf(charBuf,"%2x%lx", &address, &color );
-		strip.setPixelColor(address, color );
-		strip.show();
+		setColor(address, color);
+
 	}else if(command == METHOD_MSET_LED || command == METHOD_M_ONECOLOR ) {    // L12,ff,211 or  B12,ff,211
 		String digits     = input.substring( 1 );
 		char charBuf[10];
@@ -310,7 +325,9 @@ void parseInput( String input ){
 		byte r =  bitRead(leds, 0) ? power : 0;
 		byte g =  bitRead(leds, 1) ? power : 0;
 		byte b =  bitRead(leds, 2) ? power : 0;
-		strip.setPixelColor(num, strip.Color(r,  g,  b ) );
+		unsigned long int color = bottom_panels.Color(r,  g,  b );
+		setColor(num, color);
+
 /*
 		byte i = COUNT_CARRET_ONBOARD_LED;
 		while(i--){
@@ -320,8 +337,6 @@ void parseInput( String input ){
 				strip.setPixelColor(i, 0);
 			}
 		}*/
-
-		strip.show();
 
 	}else if( input.startsWith(METHOD_SET_X_ACCELERATION)) {    // AX10                  // ACCELERATION
 		unsigned int val = decodeInt(input, 2);
@@ -367,12 +382,12 @@ void parseInput( String input ){
 			send_hx_pos(newStateId, val1 );
 
 		}else if( source ==  INNER_HALL_Y ){ 
-			int16_t val1 = analogRead(PIN_CARRET_HALL_X );
+			int16_t val1 = analogRead(PIN_B2_HALL_Y );
 			byte newStateId = get_hy_state_id( val1 );
 			send_y_pos(newStateId, val1 );
 
 		}else if( source ==  INNER_WEIGHT ){ 
-			int16_t val1 = analogRead(PIN_CARRET_WEIGHT );
+			int16_t val1 = analogRead(PIN_B2_WEIGHT );
 			byte ttt[4] = {
 				METHOD_IMPORTANT_ANALOG, 
 				INNER_WEIGHT,
@@ -456,6 +471,18 @@ void parseInput( String input ){
     sendstats();
   }
 }
+
+
+void setColor(byte num, unsigned long int color){
+	if( num < 10 ){ // 0..9
+		bottom_panels.setPixelColor(num, color );
+		bottom_panels.show();
+	}else{	//	<= 10
+		top_panels.setPixelColor(num, color );
+		top_panels.show();
+	}
+}
+
 
 void send_error( String input){
 	Serial.print("E" );	
@@ -654,11 +681,11 @@ void send_hx_pos( byte stateId, int16_t value ) {
 	byte i = COUNT_CARRET_ONBOARD_LED;
 	while(i--){
 		if( bitRead( hallx_state[stateId][3], i) ){
-			strip.setPixelColor(i, 100);
+			top_panels.setPixelColor(i, 100);
 		}else{
-			strip.setPixelColor(i, 0 );
+			top_panels.setPixelColor(i, 0 );
 		}
-		strip.show();
+		top_panels.show();
 	}
 	byte state_name	= hallx_state[stateId][0];
 	byte dir = 0;
