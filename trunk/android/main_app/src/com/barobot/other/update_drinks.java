@@ -1,35 +1,46 @@
 package com.barobot.other;
 
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URL;
-import java.net.URLConnection;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
+import java.util.List;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.mime.HttpMultipartMode;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.entity.mime.content.StringBody;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
+import org.orman.mapper.Model;
+import org.orman.mapper.ModelQuery;
+import org.orman.sql.C;
 
 import com.barobot.common.Initiator;
+import com.barobot.common.interfaces.HardwareState;
+import com.barobot.hardware.devices.BarobotConnector;
 import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
-import com.eclipsesource.json.JsonObject.Member;
-import com.eclipsesource.json.JsonValue;
-
-import android.util.Log;
+ 
 
 public class update_drinks {
-	private String metadata	= "http://strych.arczi.info/barobot/database.json";
-	private String drinks	= "http://strych.arczi.info/barobot/drinks.json";	
-	private String errorlog	= "http://strych.arczi.info/barobot/error.php";
+	private static String metadata	= "http://barobot.com/android_data/database.json";
+	private static String drinks	= "http://barobot.com/android_data/drinks.json";	
+	private static String errorlog	= "http://barobot.com/android_data/error.php";
+	private static String upload	= "http://barobot.com/android_data/store.php";
+	private static String fulldb	= "http://barobot.com/android_data/barobot.db";
 
-	private interface Runnable2 extends Runnable{
-		@Override
-		public void run();
-		public void sendSource( String source );
-	}
+	public static String firmware	= "http://barobot.com/android_data/barobot.hex";
+	public static String localDbPath	= "/data/data/com.barobot/databases/BarobotOrman.db";
+	public static String sourcepath		= "/storage/emulated/0/download/BarobotOrman.db";
 
 	public void load(){
-		doDownload(drinks, "drinks.json", new Runnable2() {
+		InternetHelpers.doDownload(drinks, "drinks.json", new OnDownloadReadyRunnable() {
 			private String source;
 			public void sendSource( String source ) {
 				this.source = source;
@@ -37,167 +48,87 @@ public class update_drinks {
 			}
 		    @Override
 			public void run() {
-		    	parseJson( this.source );
+		    	InternetHelpers.parseJson( this.source );
 			}
 		});
 	}
-	protected void parseJson(String source) {	
-		JsonObject jsonObject = JsonObject.readFrom( source );
-		this.parseJsonObject(jsonObject, 0 );
-	}
-	protected void parseJsonObject(JsonObject in, int level ) {
-		Initiator.logger.i("Json " +level + " IN", "json Object: "+in);	
 
-		for( Member member : in ) {
-			String name		= member.getName();
-			JsonValue value = member.getValue();
-			if(value.isObject()){
-				Initiator.logger.i("Json " + (level+1), "isObject: "+name);
-				this.parseJsonObject(value.asObject(), level+1);
+	public void sendAllLogs( BarobotConnector barobot ){
+		boolean success = false;
+		List<com.barobot.gui.dataobjects.Log> logs = 
+				Model.fetchQuery(ModelQuery.select()
+						.from(com.barobot.gui.dataobjects.Log.class)
+						.where(C.eq("send_time", 0))
+						.orderBy("Log.time")
+						.limit(100)
+						.getQuery(),com.barobot.gui.dataobjects.Log.class);
 
-			}else if(value.isArray()){
-				JsonArray jsa =  value.asArray();
-				for( JsonValue amember : jsa ) {
-					if(amember.isObject()){
-						Initiator.logger.i("Json " + (level +1), "isObject: "+name);
-						this.parseJsonObject(amember.asObject(), level+1);
-					}else if(value.isNumber()){
-						Initiator.logger.i("Json "+level, "number: "+name +"/"+amember);
-					}else if(value.isString()){
-						Initiator.logger.i("Json "+level, "string: "+name +"/"+amember);
-					}else{
-						Initiator.logger.i("Json "+level, "none: "+name +"/"+amember);
-					}
-				}
-				Initiator.logger.i("Json "+level, "Array: "+name +"/"+jsa);
-			}else if(value.isString()){
-				Initiator.logger.i("Json "+level, "string: "+name +"/"+value);	
-			}else if(value.isNumber()){
-				Initiator.logger.i("Json "+level, "int: "+name +"/"+value);
-			}else{
-				Initiator.logger.i("Json "+level, "none: "+name +"/"+value);	
+		JsonArray jsonArray = new JsonArray().add( "John" ).add( 23 );
+		for(com.barobot.gui.dataobjects.Log log : logs)
+		{
+			JsonObject c = log.getJson();
+			jsonArray.add(c);
+		}
+		MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+		String data				= jsonArray.toString();
+		try {
+			builder.addPart("log", new StringBody( data ));
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+			return;
+		}
+		success = prepare_connection(barobot,upload, builder, true);
+
+		if(success == true){
+			for(com.barobot.gui.dataobjects.Log log : logs)
+			{
+				String c = log.content;
+				log.send_time  = 1;
+				log.update();
 			}
 		}
 	}
-	
-	private void doDownload(final String urlLink, final String fileName, final Runnable2 runnable) {
-		Thread dx = new Thread() {
-            public void run() {
-        	  File root = android.os.Environment.getExternalStorageDirectory();    
 
-        	  Log.i("FILE_NAME", "root getAbsolutePath is "+root.getAbsolutePath());
-        	  
-              File dir = new File (root.getAbsolutePath() + "/Content2/"); 
-              if(dir.exists()==false) {
-                      dir.mkdirs();
-              }
-              try {
-                    URL url = new URL(urlLink);
-                    Log.i("FILE_NAME", "File name is "+fileName);
-                    Log.i("FILE_URLLINK", "File URL is "+url);
-                    URLConnection connection = url.openConnection();
-                    connection.connect();
-                    // this will be useful so that you can show a typical 0-100% progress bar
-                    int fileLength = connection.getContentLength();
-
-                    // download the file
-                    InputStream input	= new BufferedInputStream(url.openStream());
-                    OutputStream output	= new FileOutputStream(dir+"/"+fileName);
-                    byte data[]			= new byte[1024];
-                    String strFileContents="";
-                    int total			= 0;
-                    int count;
-                    while ((count = input.read(data)) != -1) {
-                        total += count;
-                        output.write(data, 0, count);
-                        publishProgress((int) (total * 100 / fileLength));
-                        strFileContents = strFileContents + (new String(data, 0, count));
-                    }
-                    output.flush();
-                    output.close();
-                    input.close();
-                    runnable.sendSource(strFileContents);
-            		runnable.run();
-             	} catch (FileNotFoundException e) {
-             		 Initiator.logger.appendError(e);
-                } catch (Exception e) {
-                	 Initiator.logger.appendError(e);
-                	 Log.i("ERROR ON DOWNLOADING FILES", "ERROR IS" +e);
-                }
-            }
-        };
-        dx.start();    
+	public void upload_drinks( BarobotConnector barobot ){
+		MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+		File file				= new File(localDbPath);
+		builder.addPart("myFile", new FileBody(file));
+		prepare_connection(barobot,upload, builder, true);
 	}
-	
-	protected void doDownload(final String urlLink, final String fileName) {
-		// instantiate it within the onCreate method
-		/*
-		final ProgressDialog mProgressDialog;
-		mProgressDialog = new ProgressDialog(this.updateActivity);
 
-		this.updateActivity.runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				mProgressDialog.setMessage("A message");
-				mProgressDialog.setIndeterminate(false);
-				mProgressDialog.setMax(100);
-				mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+	public static boolean prepare_connection( BarobotConnector barobot, String address, MultipartEntityBuilder builder, boolean addLogin ){
+		HttpClient httpClient	= new DefaultHttpClient();
+		HttpPost httpPost		= new HttpPost(address);	
+		builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
+
+		if(addLogin){
+			Charset chars			= Charset.forName("UTF-8");
+			HardwareState state		= barobot.state;
+			try {
+				builder.addPart("who", new StringBody( state.get( "MAIN_LOGIN","anonymous"), chars));
+				builder.addPart("who2", new StringBody( state.get( "MAIN_PASSWORD","anonymous"), chars));
+			} catch (UnsupportedEncodingException e) {
+				Initiator.logger.w("upload_drinks UnsupportedEncodingException", e);
 			}
-		});
-*/
-        Thread dx = new Thread() {
-            public void run() {
-        	  File root = android.os.Environment.getExternalStorageDirectory();    
-
-        	  Log.i("FILE_NAME", "root getAbsolutePath is "+root.getAbsolutePath());
-              File dir = new File (root.getAbsolutePath() + "/Content2/"); 
-              if(dir.exists()==false) {
-                      dir.mkdirs();
-                 }
-              try {
-                    URL url = new URL(urlLink);
-                    Log.i("FILE_NAME", "File name is "+fileName);
-                    Log.i("FILE_URLLINK", "File URL is "+url);
-                    URLConnection connection = url.openConnection();
-                    connection.connect();
-                    // this will be useful so that you can show a typical 0-100% progress bar
-                    int fileLength = connection.getContentLength();
-
-                    // download the file
-                    InputStream input = new BufferedInputStream(url.openStream());
-                    OutputStream output = new FileOutputStream(dir+"/"+fileName);
-
-                    byte data[] = new byte[1024];
-                    long total = 0;
-                    int count;
-                    while ((count = input.read(data)) != -1) {
-                        total += count;
-                        output.write(data, 0, count);
-                        publishProgress((int) (total * 100 / fileLength));
-                    }
-                    output.flush();
-                    output.close();
-                    input.close();
-                } catch (Exception e) {
-                	 Initiator.logger.appendError(e);
-                	 Log.i("ERROR ON DOWNLOADING FILES", "ERROR IS" +e);
-                }
-            }
-        };
-        dx.start();      
-    }
-	protected void publishProgress(int i) {
-	}
-
-	public void stop() {
+		}
+		HttpEntity entity = builder.build();
+		httpPost.setEntity(entity);
+		try {
+			HttpResponse response = httpClient.execute(httpPost);
+			HttpEntity resEntity = response.getEntity();
+			if (resEntity == null) { 
+				return false;
+			}else{
+			    String responseStr = EntityUtils.toString(resEntity).trim();
+			    Initiator.logger.i("upload_drinks result: ", responseStr);
+			}
+		} catch (ClientProtocolException e) {
+			Initiator.logger.w("prepare_connection ClientProtocolException", e);
+			return false;
+		} catch (IOException e) {
+			Initiator.logger.w("prepare_connection IOException", e);
+			return false;
+		}
+		return true;
 	}
 }
-
-/*
-
-		ddb = new update_drinks();
-		ddb.setActivity(this);
-		ddb.load();
-		 ddb.stop();
-
- */

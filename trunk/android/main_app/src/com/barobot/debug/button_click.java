@@ -1,8 +1,13 @@
 package com.barobot.debug;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Random;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -11,10 +16,12 @@ import android.widget.Toast;
 import com.barobot.R;
 import com.barobot.common.Initiator;
 import com.barobot.common.constant.Constant;
-import com.barobot.gui.database.BarobotDataStub;
 import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
-import com.barobot.hardware.devices.i2c.Upanel;
+import com.barobot.other.Android;
+import com.barobot.other.InternetHelpers;
+import com.barobot.other.OnDownloadReadyRunnable;
+import com.barobot.other.update_drinks;
 import com.barobot.parser.Queue;
 public class button_click implements OnClickListener{
 	private Context dbw;
@@ -63,16 +70,13 @@ public class button_click implements OnClickListener{
 			mq.add(q);
 			break;
 		case R.id.set_x10:
-
 		//	Log.i("nextpos+100", "old: "+posx + " next: "+ ( posx +100)); 
 			barobot.moveZDown( q ,true );
 			barobot.driver_x.moveTo( q, ( posx +100));
 			mq.add(q);
 			break;
 		case R.id.set_x100:
-			
 		//	Log.i("nextpos+1000", "old: "+posx + " next: "+ ( posx +1000));
-			
 			barobot.moveZDown( q ,true );
 			barobot.driver_x.moveTo( q, ( posx +1000));
 			mq.add(q);
@@ -113,7 +117,20 @@ public class button_click implements OnClickListener{
 			barobot.moveY( q, ( posy +1000), true);
 			mq.add(q);
 			break;
-
+		case R.id.download_database:
+			new AlertDialog.Builder(dbw).setTitle("Are you sure?").setMessage("Are you sure?")
+		    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+		        public void onClick(DialogInterface dialog, int which) { 
+		        	try {
+						InternetHelpers.copy( update_drinks.sourcepath, update_drinks.localDbPath );
+					} catch (IOException e) {
+						e.printStackTrace();
+						Initiator.logger.i(Constant.TAG,"download_database", e);
+					}
+		        }
+		    })
+		    .setIcon(android.R.drawable.ic_dialog_alert).show();
+			break;
 		case R.id.set_neutral_y:
 			barobot.state.set("NEUTRAL_POS_Y", ""+posy );
 			String nn = barobot.state.get("NEUTRAL_POS_Y", "0" );
@@ -175,12 +192,49 @@ public class button_click implements OnClickListener{
 			q.add("DZ", true);
 			mq.add(q);
 			break;
+		case R.id.wznow:
+			if(mq.isBusy()){
+				mq.clear();
+				mq.add("RESET2", "RRESET2");
+				mq.add("RESET3", "RRESET3");
+				mq.add("RESET4", "RRESET4");
+				barobot.doHoming(mq, true);
+			}
+			break;
+			
+		case R.id.i2c_test:
+			mq.add("TEST", false);
+			break;
+
+		case R.id.firmware_download:
+			if(Android.createDirIfNotExists("Barobot")){
+				InternetHelpers.doDownload(update_drinks.firmware, "firmware.hex", new OnDownloadReadyRunnable() {
+				//	private String source;
+					public void sendSource( String source ) {
+				//		this.source = source;
+						Initiator.logger.i("firmware_download","hex ready");
+					}
+				    @Override
+					public void run() {
+				    	// this.source
+					}
+				});
+			}
+			break;
+
+		case R.id.firmware_burn:
+			new AlertDialog.Builder(dbw).setTitle("Are you sure?").setMessage("Are you sure?")
+		    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+		        public void onClick(DialogInterface dialog, int which) { 
+		        	fimwareBurn();
+		        }
+		    })
+		    .setIcon(android.R.drawable.ic_dialog_alert).show();
+			break;
 		case R.id.losujx:
 			Random generator2 = new Random( 19580427 );
 			barobot.moveZDown( q, true  );
-			
 			int SERVOY_FRONT_POS3 = barobot.state.getInt("SERVOY_FRONT_POS", Constant.SERVOY_FRONT_POS );
-			
 			barobot.moveY( q, SERVOY_FRONT_POS3, true );
 			int lengthx5	=  barobot.state.getInt("LENGTHX", 600 );
 		    for(int f = 0;f<20;){
@@ -243,20 +297,15 @@ public class button_click implements OnClickListener{
 			q.add(Constant.GETXPOS, true);
 			mq.add(q);
 			break;
-
 		case R.id.max_x:
 			barobot.moveZDown( q ,true );
 			int lengthx2	=  barobot.state.getInt("LENGTHX", 600 );
 			barobot.driver_x.moveTo( q, posx +lengthx2);
-		
 			mq.add(q);
 			break;
-
 		case R.id.max_y:
 			barobot.moveZDown( q ,true );
-			
 			int SERVOY_BACK_POS2 = barobot.state.getInt("SERVOY_BACK_POS", Constant.SERVOY_BACK_POS );
-			
 			barobot.moveY( q, SERVOY_BACK_POS2, true );
 			mq.add(q);	
 			break;
@@ -264,7 +313,6 @@ public class button_click implements OnClickListener{
 			barobot.moveZDown( q ,true );
 			int lengthx3	=  barobot.state.getInt("LENGTHX", 600 );
 			barobot.driver_x.moveTo( q, -lengthx3);
-
 			mq.add(q);
 			break;
 		case R.id.min_y:
@@ -282,10 +330,8 @@ public class button_click implements OnClickListener{
 			q.add("EX", true);
 //			q.add("EY", true);
 //			q.add("EZ", true);
-
 			int SERVOZ_PAC_POS = barobot.state.getInt("SERVOZ_PAC_POS", Constant.SERVOZ_PAC_POS );
 			int DRIVER_Z_SPEED = barobot.state.getInt("DRIVER_Z_SPEED", Constant.DRIVER_Z_SPEED );
-
 			q.add("Z" + SERVOZ_PAC_POS+","+DRIVER_Z_SPEED, true);
 			barobot.moveZDown(q, true );
 			q.add("DY", true);
@@ -295,11 +341,8 @@ public class button_click implements OnClickListener{
 			mq.add(q);
 			break;
 		case R.id.smile:
-			q.add("Y" + Constant.SERVOY_FRONT_POS+ ","+Constant.DRIVER_Y_SPEED, true);
-			q.addWait(5000);
-			q.add("DY", true );
-			mq.add(q);
-			break;
+
+
 		case R.id.kalibrujx:
 			barobot.kalibrcja();
 			break;
@@ -340,7 +383,6 @@ public class button_click implements OnClickListener{
 		case R.id.rb2:
 			mq.add("RB2", false );
 			break;
-
 		case R.id.scann_leds:
 			barobot.scann_leds();
 			break;
@@ -358,17 +400,10 @@ public class button_click implements OnClickListener{
 			barobot.state.set("MARGINX", 0);	
 			barobot.driver_x.setHPos( 0 );
 			break;	
-		case R.id.reset_upanels:
-			Queue q1		= new Queue();
-			Upanel[] up		= barobot.i2c.getUpanels();
-			for(int i =up.length-1; i>=0;i--){
-				q1.add("RESET_NEXT"+ up[i].getAddress(), true);
-			}
-			Arduino.getMainQ().add(q1);
-			break;
+
 		case R.id.scann_i2c:
 			mq.add("I", true );
-			break;	
+			break;
 		case R.id.analog_temp:
 			mq.add("T", true );
 			mq.addWait(2000);
@@ -383,5 +418,14 @@ public class button_click implements OnClickListener{
 			Arduino.getInstance().resetSerial();
 			break;	
 	   }
+	}
+	protected void fimwareBurn() {
+		File file = new File(Environment.getExternalStorageDirectory(), "Barobot/firmware.hex");
+		if (!file.exists()) {
+	       
+			
+			
+			
+	    }		
 	}
 }
