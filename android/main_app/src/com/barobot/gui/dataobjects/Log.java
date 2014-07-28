@@ -4,14 +4,26 @@ import org.orman.mapper.Model;
 import org.orman.mapper.annotation.Entity;
 import org.orman.mapper.annotation.PrimaryKey;
 
-@Entity
-public class Log extends Model<Log>{
-	public static String STATUS_EMPTY = "Empty"; 
+import com.eclipsesource.json.JsonObject;
 
+@Entity
+public class Log extends Model<Log> implements JsonSerializable{
 	@PrimaryKey(autoIncrement=true)
 	public long id;
 	public int level;
 	public String tag;
 	public String content;
 	public int time;
+	public int send_time;
+	@Override
+	public JsonObject getJson() {
+		JsonObject jsonObject = new JsonObject()
+			.add( "id", this.id )
+			.add( "level", this.level )
+			.add( "tag", this.tag )
+			.add( "content", this.content )
+			.add( "time", this.time )
+			.add( "send_time", this.send_time );
+		return jsonObject;
+	}
 }

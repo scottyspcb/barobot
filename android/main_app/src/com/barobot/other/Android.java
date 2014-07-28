@@ -1,6 +1,7 @@
 package com.barobot.other;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,6 +9,7 @@ import java.io.InputStreamReader;
 
 import android.content.Context;
 import android.content.res.AssetManager;
+import android.os.Environment;
 import android.os.PowerManager;
 import android.util.Log;
 
@@ -98,6 +100,18 @@ public class Android {
 	    return text.toString();
 	}
 	
+	public static boolean createDirIfNotExists(String path) {
+	    boolean ret = true;
+
+	    File file = new File(Environment.getExternalStorageDirectory(), path);
+	    if (!file.exists()) {
+	        if (!file.mkdirs()) {
+	            Log.e("TravellerLog :: ", "Problem creating Image folder");
+	            ret = false;
+	        }
+	    }
+	    return ret;
+	}
 	public static void prepareSleep(Context ctx){
 		PowerManager pm = (PowerManager) ctx.getSystemService(Context.POWER_SERVICE); 
 		PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Tag"); 
