@@ -67,8 +67,6 @@
                 android:layout_below="@id/recipe_name_textview"
                 android:layout_above="@id/choose_pour_button"
                 tools:layout="@layout/fragment_drink_image" />
-            
-            
 
             
             <fragment

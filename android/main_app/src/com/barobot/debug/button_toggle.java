@@ -29,12 +29,10 @@ public class button_toggle implements OnClickListener{
 				break;
 			case R.id.flip_z:
 		//		tb.setChecked(isChecked);		//tutaj jednak zmieniaj
-				
-				
 				if(isChecked){
-					barobot.state.set("NEED_GLASS", 1 );
+					
 				}else{
-					barobot.state.set("NEED_GLASS", 0 );
+					
 				}
 				break;
 			case R.id.auto_fill_on_ready:
