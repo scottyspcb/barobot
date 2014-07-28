@@ -17,8 +17,6 @@ Carriage
 - hally
 - servo Y
 - servo Z
-- current Y
-- current Z
 - load cell
 - tray-led
 
