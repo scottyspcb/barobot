@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="menu_choose">Wybierz drinka\nz polecanych</string>
-    <string name="menu_create">Zmieszaj składniki \nwedług własnego pomysłu</string>
+    <string name="menu_choose">Wybierz drinka\nz listy</string>
+    <string name="menu_create">Stwórz własny drink</string>
 
     <string name="wizard_lang_ru">русский</string>
     <string name="wizard_lang_pl">Polski</string>

@@ -15,76 +15,76 @@
     <string name="title_activity_about">O programie</string>
 
     <string name="title_activity_device_list">Barobot</string>
-    <string name="title_section1">Options</string>
-    <string name="title_section2">Settings</string>
-    <string name="title_section3">Lights</string>
-    <string name="title_section4">Bottles</string>
+    <string name="title_section1">Opcje</string>
+    <string name="title_section2">Ustawienia</string>
+    <string name="title_section3">Światła</string>
+    <string name="title_section4">Butelki</string>
     <string name="title_section5">Sounds</string>
     <string name="title_section6">History</string>
 
-    <string name="empty_slot">Empty</string>
-    <string name="liquid_select_title">Select liquid</string>
-    <string name="liquid_name">Liquid Name (Brand)</string>
-    <string name="liquid_type">Liquid Type</string>
+    <string name="empty_slot"></string>
+    <string name="liquid_select_title">Wybierz płyn</string>
+    <string name="liquid_name">Nazwa składnika (Brand)</string>
+    <string name="liquid_type">Typ składnika</string>
     <string name="title_activity_barobot_main">Barobot Main</string>
-    <string name="title_activity_bottle_setup">Bottle Setup</string>
-    <string name="title_activity_recipe_setup">Recipe Setup</string>
+    <string name="title_activity_bottle_setup">Ustawienia butelek</string>
+    <string name="title_activity_recipe_setup">Ustawienia przepisów</string>
 
     <!-- Main -->
     <string name="glass_reminder_title">Reminder</string>
     <string name="glass_reminder_message1">Place glass into the tray</string>
     <string name="glass_reminder_button_ok">OK</string>
-    <string name="glass_reminder_button_cancel">Cancel</string>
+    <string name="glass_reminder_button_cancel">Anuluj</string>
    
     <!-- Bottle Setup -->
-    <string name="empty_bottle_string">Empty</string>
+    <string name="empty_bottle_string">Pusto</string>
 
     <!-- Dialog new Type -->
     <string name="dialog_type_name">Liquid type</string>
 
     <!-- Dialog new Liquid -->
-    <string name="dialog_liquid_name">Liquid name (brand)</string>
-    <string name="dialog_liquid_type">Liquid type</string>
+    <string name="dialog_liquid_name">Nazwa składnika (brand)</string>
+    <string name="dialog_liquid_type">Typ składnika</string>
 
     <!-- Dialog new Product -->
-    <string name="dialog_product_capacity">Bottle capacity</string>
+    <string name="dialog_product_capacity">Pojemność</string>
     <string name="dialog_product_name">Product name</string>
 
     <!-- Menu items -->
-    <string name="action_settings">Settings</string>
+    <string name="action_settings">Ustawienia</string>
     <string name="action_main">Make a drink</string>
-    <string name="action_bottle_setup">Setup bottles</string>
+    <string name="action_bottle_setup">Ustawienia butelek</string>
     <string name="action_recipe_setup">Customize Recipes</string>
-    <string name="action_creator">Create</string>
+    <string name="action_creator">Stwórz</string>
     <string name="menu_favorite">Try Favorites</string>
 
     <string name="menu_lucky">I feel lucky</string>
 
-    <string name="menu_bottles">Setup bottles</string>
+    <string name="menu_bottles">Ustawienia butelek</string>
     <string name="menu_mobile">Mobile orders</string>
-    <string name="menu_options">Options and Setup</string>
+    <string name="menu_options">Ustawienia</string>
 
     <!-- Options Activity -->
-    <string name="options_bottle_setup_button">Bottle Setup</string>
-    <string name="options_recipe_setup_button">Recipe Setup</string>
+    <string name="options_bottle_setup_button">Ustawienia butelek</string>
+    <string name="options_recipe_setup_button">Ustawienia przepisów</string>
     <string name="options_extra_setup_button">External Ingredient Setup</string>
-    <string name="options_lights_button">Lights Presets</string>
-    <string name="options_demo_button">Demo mode</string>
-    <string name="options_advanced_button">Advanced Setup</string>
-    <string name="options_about_button">About Barobot</string>
+    <string name="options_lights_button">Światła</string>
+    <string name="options_demo_button">Demo świateł</string>
+    <string name="options_advanced_button">Zaawansowane</string>
+    <string name="options_about_button">Konfiguracja</string>
     <string name="options_turn_off_button">Homeing</string>
 
     <!-- Create Activity -->
     <string name="create_pour_button">Start!</string>
-    <string name="create_clear_button">Clear</string>
-    <string name="create_add_button">Give it a name and save</string>
+    <string name="create_clear_button">Wyczyść</string>
+    <string name="create_add_button">Zapisz jako drink</string>
 
     <!-- Recipe Setup -->
-    <string name="recipe_add_new_button">Add New</string>
-    <string name="add_recipe">Add new recipe</string>
-    <string name="remove_recipe">Remove recipe</string>
-    <string name="add_ingredient">Add ingredient</string>
-    <string name="remove_ingredients">Remove all ingredients</string>
+    <string name="recipe_add_new_button">Dodaj nowy</string>
+    <string name="add_recipe">Dodaj now przepis</string>
+    <string name="remove_recipe">Usuń</string>
+    <string name="add_ingredient">Dodaj składnik</string>
+    <string name="remove_ingredients">Usuń wszystkie składniki</string>
     <string name="recipe_name">Recipe Name</string>
     <string name="recipe_description">Recipe Description</string>
     <string name="title_activity_outside_component">Outside Components</string>
@@ -92,31 +92,31 @@
     <string name="title_activity_creator">Drink Creator</string>
 
     <!-- Product Setup -->
-    <string name="product_add_new_button">Add New</string>
-    <string name="product_button_cancel">Cancel</string>
-    <string name="product_button_empty">Empty</string>
+    <string name="product_add_new_button">Dodaj nowe</string>
+    <string name="product_button_cancel">Anuluj</string>
+    <string name="product_button_empty">Pusto</string>
     <string name="product_button_ok">OK</string>
     <string name="product_field_type"></string>
     <string name="product_field_liquid"></string>
     <string name="product_field_capacity"></string>
-    <string name="product_liquid_label">Liquids</string>
-    <string name="product_type_label">Types</string>
-    <string name="product_capacity_label">Capacities</string>
+    <string name="product_liquid_label">Płyny</string>
+    <string name="product_type_label">Typ</string>
+    <string name="product_capacity_label">Pojemność</string>
     <string name="image_desc">[Drink Image]</string>
-    <string name="title_activity_random">Get Random</string>
+    <string name="title_activity_random">Losowe</string>
     <string name="title_activity_options">Options and Setup</string>
 
     <!-- Progress Bars -->
-    <string name="progress_bar_sweet_name">Sweet</string>
-    <string name="progress_bar_sour_name">Sour</string>
-    <string name="progress_bar_bitter_name">Bitter</string>
-    <string name="progress_bar_strength_name">Strength</string>
-    <string name="options_calibrate">Calibration</string>
+    <string name="progress_bar_sweet_name">Słodki</string>
+    <string name="progress_bar_sour_name">Kwaśny</string>
+    <string name="progress_bar_bitter_name">Gorzki</string>
+    <string name="progress_bar_strength_name">Mocny</string>
+    <string name="options_calibrate">Kalibracja</string>
     <string name="options_stop">Stop</string>
-    <string name="title_activity_wizard_start">Start Wizard</string>
-    <string name="unlock">Unlock</string>
-    <string name="add_recipe_btn">+ recipe</string>
-    <string name="remove_recipe_btn">- recipe</string>
-    <string name="goto_main_menu">Main menu</string>
+    <string name="title_activity_wizard_start">Kreator</string>
+    <string name="unlock">Odblokuj</string>
+    <string name="add_recipe_btn">+ przepis</string>
+    <string name="remove_recipe_btn">- przepis</string>
+    <string name="goto_main_menu">Główne menu</string>
 
 </resources>

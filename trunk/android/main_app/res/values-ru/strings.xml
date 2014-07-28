@@ -22,7 +22,7 @@
     <string name="title_section5">Звук</string>
     <string name="title_section6">История</string>
 
-    <string name="empty_slot">Пусто</string>
+    <string name="empty_slot"></string>
     <string name="liquid_select_title">Выберите жидкость</string>
     <string name="liquid_name">Название жидкости (Марка)</string>
     <string name="liquid_type">Вид жидкости</string>
