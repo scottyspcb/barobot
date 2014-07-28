@@ -302,6 +302,21 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 		writeRegisters(num, 3, false );
 		delayMicroseconds(100);
 
+	}else if( command == 'f') {		// if enable pin is connected to vcc?
+		long int dis = stepperX.distanceToGo();
+		if(dis == 0 ){
+			pinMode(PIN_MAINBOARD_STEPPER_ENABLE, INPUT );
+			boolean connected = digitalRead(PIN_MAINBOARD_STEPPER_ENABLE);
+			if(connected){
+				Serial.println("f true");	
+			}else{
+				Serial.println("f false");	
+			}
+			pinMode(PIN_MAINBOARD_STEPPER_ENABLE, OUTPUT );
+		}else{
+			Serial.println("f error");	
+		}
+
 	}else if( command == 'x') {
 		long int pos = stepperX.currentPosition();
 		Serial.print("Rx"); 

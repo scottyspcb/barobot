@@ -437,7 +437,20 @@ void parseInput( String input ){
 		}else if( command == 'z' ) {    // pobierz pozycje
 			byte ttt[4] = {METHOD_I2C_SLAVEMSG, METHOD_GET_Z_POS, (servos[INNER_SERVOZ].last_pos & 0xFF),(servos[INNER_SERVOZ].last_pos >>8) };
 			send(ttt,4);
-
+		}else if( command == 'f') {		// if enable pin is connected to vcc?
+			long int dis = stepperX.distanceToGo();
+			if(dis == 0 ){
+				pinMode(PIN_B2_STEPPER_ENABLE, INPUT );
+				boolean connected = digitalRead(PIN_B2_STEPPER_ENABLE);
+				if(connected){
+					Serial.println("f true");	
+				}else{
+					Serial.println("f false");	
+				}
+				pinMode(PIN_B2_STEPPER_ENABLE, OUTPUT );
+			}else{
+				Serial.println("f error");	
+			}
 		}else{
 			Serial.println("NO_CMD [" + input +"]");
 		}
@@ -472,7 +485,6 @@ void parseInput( String input ){
   }
 }
 
-
 void setColor(byte num, unsigned long int color){
 	if( num < 10 ){ // 0..9
 		bottom_panels.setPixelColor(num, color );
@@ -482,7 +494,6 @@ void setColor(byte num, unsigned long int color){
 		top_panels.show();
 	}
 }
-
 
 void send_error( String input){
 	Serial.print("E" );	
