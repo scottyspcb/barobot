@@ -5,13 +5,6 @@
 
 	class AsyncDriver{
 	public:
-		typedef enum{
-			DRIVER	= 1,	// Stepper Driver, 2 pins
-			FULL4WIRE = 2,	// 4 wire full stepper, 4 pins
-			HALF4WIRE = 4	// 4 wire half stepper, 4 pins
-		} MotorInterfaceType;
-
-		AsyncDriver(uint8_t type, uint8_t pin1, uint8_t pin2, uint8_t pin3, uint8_t pin4);
 		AsyncDriver(uint8_t pin1, uint8_t pin2, uint8_t disablePin );
 
 		long	distanceToGo();
@@ -34,7 +27,7 @@
 		void	debug();
 		void	disableOutputs();
 		void	enableOutputs();
-
+		void	fastWrite(uint8_t pin, uint8_t val);
 		// Disable outputs on ready?
 		volatile boolean		disable_on_ready;
 		volatile boolean		is_disabled;
@@ -47,17 +40,12 @@
 
 		void	computeNewSpeed( boolean sync );
 		void	setOutput2(boolean step, boolean dir );
-		void	setOutput4(uint8_t mask);
 		void	step(uint8_t step);
-		void	step1(uint8_t step);
-		void	step4(uint8_t step);
-		void	step8(uint8_t step);
-		void	fastWrite(uint8_t pin, uint8_t val);
+		
 		void	init();
 		void	onReady();
 
 	private:
-		volatile uint8_t		driver_type;
 		volatile uint8_t		_pin[4];
 		volatile long			_n;
 		volatile long			_currentPos;	// Steps

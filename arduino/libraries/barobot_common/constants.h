@@ -105,6 +105,8 @@
 #define INNER_MB_TEMP 6
 #define INNER_CARRET_TEMP 7
 
+#define HYSTATES  5
+#define HXSTATES  11
 
 #define HX_STATE_0		11
 #define HX_STATE_1		22
@@ -120,12 +122,12 @@
 #define HX_STATE_9		100
 #define HX_STATE_10		111
 
-
-
 #define HX_SPEED  35
 
 // HALL X VALUES 
 #define HX_NEODYM_UP_BELOW  750
+//#define HX_NEODYM_UP_BELOW  880
+
 #define HX_NEODYM_UP_START  600
 #define HX_FERRITE_UP_IS_BELOW  560
 #define HX_LOCAL_UP_MAX_OVER  540
@@ -136,8 +138,8 @@
 #define HX_LOCAL_DOWN_IS_BELOW  513
 #define HX_FERRITE_DOWN_IS_BELOW  495
 #define HX_NEODYM_DOWN_START  450
+//#define HX_NEODYM_DOWN_OVER  20
 #define HX_NEODYM_DOWN_OVER  300
-
 // end HALL X VALUES 
 
 
