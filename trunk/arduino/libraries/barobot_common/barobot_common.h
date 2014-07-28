@@ -16,12 +16,12 @@
 	#define PPB3		11
 	#define PPB4		12
 	#define PPB5		13
-	#define PPC0		14
-	#define PPC1		15
-	#define PPC2		16
-	#define PPC3		17
-	#define PPC4		18
-	#define PPC5		19
+	#define PPC0		14		// A0
+	#define PPC1		15		// A1
+	#define PPC2		16		// A2
+	#define PPC3		17		// A3
+	#define PPC4		18		// A4
+	#define PPC5		19		// A5
 	
 	/*------------------------------    i2c     ------------------------------*/
 	//#define I2C_ADR_MASTER 0x01
@@ -171,10 +171,10 @@
 			
 		// domyslen ustawienie mocy silnika Z
 		// pozycja jechania do góry i czas jechania
-		#define CARRET_SERVOZ_UP_POS 2200
+		//#define CARRET_SERVOZ_UP_POS 2200
 
 		// pozycja jechania w dó³ i czas jechania
-		#define CARRET_SERVOZ_DOWN_POS 900
+		//#define CARRET_SERVOZ_DOWN_POS 900
 
 		#define PIN_CARRET_SDA SDA
 		#define PIN_CARRET_SCL SCL

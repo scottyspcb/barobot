@@ -1,21 +1,7 @@
 #include "AsyncDriver.h"
 
-AsyncDriver::AsyncDriver(uint8_t type, uint8_t pin1, uint8_t pin2, uint8_t pin3, uint8_t pin4){
-	driver_type = type;
-	init();
-	_pin[0] = pin1;
-	_pin[1] = pin2;
-	_pin[2] = pin3;
-	_pin[3] = pin4;
-	pinMode(_pin[0], OUTPUT);
-	pinMode(_pin[1], OUTPUT);
-	pinMode(_pin[2], OUTPUT);
-	pinMode(_pin[3], OUTPUT);
-	enableOutputs();
-}
 AsyncDriver::AsyncDriver(uint8_t pin1, uint8_t pin2, uint8_t newDisablePin ){
 	init();
-	driver_type = DRIVER;
 	_pin[0]		= pin1;
 	_pin[1] 	= pin2;
 	disablePin	= newDisablePin;
@@ -48,11 +34,7 @@ void AsyncDriver::init(){
 void AsyncDriver::disableOutputs(){
 	if(!is_disabled){
 		is_disabled = true;
-		if (driver_type == FULL4WIRE || driver_type == HALF4WIRE){
-			setOutput4(0);
-		}else{
-			setOutput2( false, false );
-		}
+		setOutput2( false, false );
 		if (disablePin != 0xff){
 			digitalWrite(disablePin, HIGH );
 		}
@@ -65,11 +47,7 @@ void AsyncDriver::enableOutputs(){
 		if (disablePin != 0xff){
 			fastWrite(disablePin, LOW );
 		}
-		if (driver_type == FULL4WIRE || driver_type == HALF4WIRE){
-			setOutput4(last_output);
-		}else{
-			setOutput2(last_output, false);
-		}	
+		setOutput2(last_output, false);
 	}
 }
 long AsyncDriver::targetPosition(){
@@ -130,6 +108,9 @@ void AsyncDriver::debug(){
 void AsyncDriver::fastWrite(uint8_t pin, uint8_t val){
 	uint8_t bit = digitalPinToBitMask(pin);
 	uint8_t port = digitalPinToPort(pin);
+	if (port == NOT_A_PIN){
+		return;
+	}
 	volatile uint8_t *out;
 	out = portOutputRegister(port);
 	if (val) {
@@ -149,7 +130,6 @@ void AsyncDriver::computeNewSpeed( boolean sync ){
 		onReady();
 		return;
 	}
-
 	if (distanceTo > 0){
 		// We are anticlockwise from the target
 		// Need to go clockwise from here, maybe decelerate now
@@ -196,8 +176,6 @@ void AsyncDriver::computeNewSpeed( boolean sync ){
 	//# endif
 	}
 }
-
-
 // Implements steps according to the current step interval
 // You must call this at least once per step
 // returns true if a step occurred
@@ -225,7 +203,6 @@ boolean AsyncDriver::haveToRun(){
 		return false;
 	}
 }
-
 void AsyncDriver::setMaxSpeed(float speed){
 	//uint8_t oldSREG = SREG;
 //	noInterrupts();
@@ -249,7 +226,6 @@ void AsyncDriver::run(){
 		computeNewSpeed(false);
 	}
 }
-
 void AsyncDriver::onReady(){
 	if( disable_on_ready ){
 		disableOutputs();
@@ -258,7 +234,6 @@ void AsyncDriver::onReady(){
 		user_onReady( _currentPos );
 	}
 }
-
 void AsyncDriver::setAcceleration(float acceleration){
 	if (acceleration == 0.0){
 		return;
@@ -274,109 +249,24 @@ void AsyncDriver::setAcceleration(float acceleration){
 	}
 	//SREG = oldSREG;
 }
-
-void AsyncDriver::step(uint8_t step){
-	switch (driver_type){
-	case DRIVER:
-		step1(step);
-		break;
-	case FULL4WIRE:
-		step4(step);
-		break;
-	case HALF4WIRE:
-		step8(step);
-		break;
-	}
-}
-
-void AsyncDriver::setOutput4(uint8_t mask){
-	fastWrite(_pin[0], bitRead(mask, 0) );
-	fastWrite(_pin[1], bitRead(mask, 1) );
-	fastWrite(_pin[2], bitRead(mask, 2) );	
-	fastWrite(_pin[3], bitRead(mask, 3) );	
-	last_output = mask;
-}
-void AsyncDriver::setOutput2( boolean step, boolean dir ){
-	fastWrite(_pin[0], dir);
-	fastWrite(_pin[1], step);
-	last_output = step;
-}
 // 1 pin step function (ie for stepper drivers)
 // This is passed the current step number (0 to 7)
 // Subclasses can override
-void AsyncDriver::step1(uint8_t step){
+void AsyncDriver::step(uint8_t step){
 	// _pin[0] is step, _pin[1] is direction
 	setOutput2( _direction ? true : false, true ); // step HIGH
 	asm("nop");
 	asm("nop");
 	setOutput2( _direction ? true : false, false ); // step LOW
 }
-
-// 4 pin step function for half stepper
-// This is passed the current step number (0 to 7)
-// Subclasses can override
-void AsyncDriver::step4(uint8_t step){
-	volatile uint8_t mask = 0;
-	switch (step & 0x3){
-	case 0:	// 1010
-		mask = 0b0101;
-		break;
-
-	case 1:	// 0110
-		mask = 0b0110;
-		break;
-
-	case 2:	//0101
-		mask = 0b1010;
-		break;
-
-	case 3:	//1001
-		mask = 0b1001;
-		break;
-	}
-	setOutput4(mask);
+void AsyncDriver::setOutput2( boolean step, boolean dir ){
+	fastWrite(_pin[0], dir);
+	fastWrite(_pin[1], step);
+	last_output = step;
 }
-
-
-// 4 pin step function
-// This is passed the current step number (0 to 7)
-// Subclasses can override
-void AsyncDriver::step8(uint8_t step){
-	volatile uint8_t mask = 0;
-	switch (step & 0x7){
-	case 0:	// 1000
-		mask = 0b0001;
-		break;
-	case 1:	// 1010
-		mask = 0b0101;
-		break;
-	case 2:	// 0010
-		mask = 0b0100;
-		break;
-	case 3:	// 0110
-		mask = 0b0110;
-		break;
-	case 4:	// 0100
-		mask = 0b0010;
-		break;
-	case 5:	//0101
-		mask = 0b1010;
-		break;
-	case 6:	// 0001
-		mask = 0b1000;
-		break;
-	case 7:	//1001
-		mask = 0b1001;
-		break;
-	}
-	setOutput4(mask);
-}
-
-
 void AsyncDriver::stop(){
 	stop( 2.0 );
 }
-
 void AsyncDriver::stop( float multispeed ){
 	if (_speed != 0.0){	
 		volatile long stepsToStop = (long)((_speed * _speed) / (multispeed * _acceleration)) + 1; // Equation 16 (+integer rounding)
@@ -387,7 +277,6 @@ void AsyncDriver::stop( float multispeed ){
 		}
 	}
 }
-
 void AsyncDriver::stopNow(){
 	_targetPos		= _currentPos;
 	stepInterval	= 0;
@@ -402,7 +291,6 @@ float AsyncDriver::getMaxSpeed(){
 float AsyncDriver::getSpeed(){
 	return _speed;
 }
-
 long AsyncDriver::distanceToGo(){
 	//uint8_t oldSREG = SREG;
 	//noInterrupts();
@@ -410,12 +298,10 @@ long AsyncDriver::distanceToGo(){
 	//SREG = oldSREG;
 	return dist;
 }
-
 // sets event handler function
 void AsyncDriver::setOnReady( void (*fun)(long int) ){
 	user_onReady = fun;
 }
-
 float AsyncDriver::getAcceleration(){
 	return _acceleration;
 }
