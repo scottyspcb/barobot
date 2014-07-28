@@ -1,5 +1,4 @@
 package com.barobot.gui;
-
 import com.barobot.R;
 
 import android.content.Context;
@@ -12,17 +11,13 @@ import android.util.AttributeSet;
 import android.widget.ProgressBar;
 
 public class TextProgressBar extends ProgressBar {
-	
 	private String text = "";
     private int textColor = Color.BLACK;
     private float shadowRadius = 0;
-    
-
 	private float shadowDx = 0;
     private float shadowDy = 0;
     private int shadowColor = Color.BLACK;
-    private float textSize = 15;
- 
+    private float textSize = 15; 
     public TextProgressBar(Context context) {
         super(context);
     }
@@ -31,12 +26,12 @@ public class TextProgressBar extends ProgressBar {
         super(context, attrs);
         setAttrs(attrs);
     }
- 
+
     public TextProgressBar(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         setAttrs(attrs);
     }
-    
+
     private void setAttrs(AttributeSet attrs) {
         if (attrs != null) {
             TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.TextProgressBar, 0, 0);
@@ -46,12 +41,11 @@ public class TextProgressBar extends ProgressBar {
             setShadowRadius(a.getDimension(R.styleable.TextProgressBar_shadowRadius, 0));
             setShadowDx(a.getDimension(R.styleable.TextProgressBar_shadowDx, 0));
             setShadowDy(a.getDimension(R.styleable.TextProgressBar_shadowDy, 0));
-            setShadowColor(a.getColor(R.styleable.TextProgressBar_shadowColor, R.color.Transparent));
-            
+            setShadowColor(a.getColor(R.styleable.TextProgressBar_shadowColor, R.color.Transparent));            
             a.recycle();
         }
     }
-    
+
     @Override
     protected synchronized void onDraw(Canvas canvas) {
         super.onDraw(canvas);
@@ -82,7 +76,6 @@ public class TextProgressBar extends ProgressBar {
     		this.text = text;
     	}
     }
- 
     public int getTextColor() {
         return textColor;
     }
@@ -129,5 +122,4 @@ public class TextProgressBar extends ProgressBar {
 	public void setShadowRadius(float shadowRadius) {
 		this.shadowRadius = shadowRadius;
 	}
- 
 }

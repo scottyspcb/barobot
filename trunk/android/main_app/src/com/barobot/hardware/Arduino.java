@@ -61,6 +61,7 @@ public class Arduino{
 					mq.add( "\n", false );	// clean up input
 					mq.add( "\n", false );
 					mq.unlock();
+			//		mq.add("RESET2", true);		// resetuj MB
 					mq.add(Constant.GETXPOS, true);
 					mq.add(Constant.GETYPOS, true);
 					mq.add(Constant.GETZPOS, true);

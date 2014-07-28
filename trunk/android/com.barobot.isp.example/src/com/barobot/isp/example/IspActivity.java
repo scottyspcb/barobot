@@ -49,13 +49,12 @@ public class IspActivity extends Activity {
 		pb.setMax(100);
 		tstart          = (TextView) findViewById(R.id.start);
 		AndroidLogger al = new AndroidLogger();
-		com.barobot.common.Initiator.setLogger( al );
+		Initiator.setLogger( al );
 
 		state			= new EmptyBarobotState();
 		barobot			= new BarobotConnector(state);
         IspUploader		= new Uploader();
 
-        // Shows last selected board
         mSelectedBoard = Board.ARDUINO_PRO_5V_328;
      	if(connection !=null){
      		connection.destroy();
@@ -136,7 +135,7 @@ public class IspActivity extends Activity {
     	}
     	super.onDestroy();
     }
-    
+ 
     Handler mHandler = new Handler();
     private void tvAppend(TextView tv, CharSequence text) {
     	final TextView ftv = tv;

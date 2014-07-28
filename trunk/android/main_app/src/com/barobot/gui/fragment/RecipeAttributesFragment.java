@@ -19,20 +19,20 @@ public class RecipeAttributesFragment extends Fragment {
 	
 		// TODO: Add onClickListener to all buttons on this fragment
 	}
-	
+
 	public void SetAttributes(int sweet, int sour, int bitter, int strength)
 	{
 		TextProgressBar sweetPB = (TextProgressBar) getView().findViewById(R.id.progress_bar_sweet);
 		TextProgressBar sourPB = (TextProgressBar) getView().findViewById(R.id.progress_bar_sour);
 		TextProgressBar bitterPB = (TextProgressBar) getView().findViewById(R.id.progress_bar_bitter);
 		TextProgressBar strengthPB = (TextProgressBar) getView().findViewById(R.id.progress_bar_strength);
-		
+
 		sweetPB.setProgress(Normalize(sweet, 100) );
 		sourPB.setProgress(Normalize(sour, 100 ));
 		bitterPB.setProgress(Normalize(bitter, 100 ));
 		strengthPB.setProgress(Normalize(strength, 40 ));
 	}
-	
+
 	public void ClearAttributes()
 	{
 		TextProgressBar sweetPB = (TextProgressBar) getView().findViewById(R.id.progress_bar_sweet);
