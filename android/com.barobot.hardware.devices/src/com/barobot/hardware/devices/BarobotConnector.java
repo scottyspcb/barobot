@@ -132,13 +132,15 @@ public class BarobotConnector {
 				Queue q4 = new Queue();
 				int margin		= 20;
 				int posy		=  state.getInt("POSY", 0 );
+				int DRIVER_Y_SPEED = state.getInt("DRIVER_Y_SPEED", Constant.DRIVER_Y_SPEED );
+
 			//	if( posy != newpos && posy != newpos -margin && posy != newpos +margin){
-					q4.add("Y" + newpos+ ","+Constant.DRIVER_Y_SPEED, true);
+					q4.add("Y" + newpos+ ","+DRIVER_Y_SPEED, true);
 					q4.addWait(10);
 					if( newpos > posy ){	// forward
-						q4.add("Y" + (newpos - margin)+ ","+Constant.DRIVER_Y_SPEED, true);	
+						q4.add("Y" + (newpos - margin)+ ","+DRIVER_Y_SPEED, true);	
 					}else{	// backwad
-						q4.add("Y" + (newpos + margin)+ ","+Constant.DRIVER_Y_SPEED, true);	
+						q4.add("Y" + (newpos + margin)+ ","+DRIVER_Y_SPEED, true);	
 					}
 					if(disableOnReady){
 						q4.add("DY", true );
@@ -192,8 +194,12 @@ public class BarobotConnector {
 
 	public void moveZUp( Queue q, boolean disableOnReady ) {
 //		q.add("EZ", true);
-		int poszup	=  Constant.SERVOZ_UP_POS;
-		q.add("Z" + poszup+","+Constant.DRIVER_Z_SPEED, true);
+		
+		int SERVOZ_UP_POS = state.getInt("SERVOZ_UP_POS", Constant.SERVOZ_UP_POS );
+		int DRIVER_Z_SPEED = state.getInt("DRIVER_Z_SPEED", Constant.DRIVER_Z_SPEED );
+		
+		int poszup	=  SERVOZ_UP_POS;
+		q.add("Z" + poszup+","+DRIVER_Z_SPEED, true);
 	//	q.addWait( virtualComponents.SERVOZ_UP_TIME );	// wiec trzeba poczekaæ
 		if(disableOnReady){
 			q.addWait(300);
@@ -203,8 +209,12 @@ public class BarobotConnector {
 
 	public void moveZLight(Queue q, boolean disableOnReady) {
 //		q.add("EZ", true);
-		int poszup	=  Constant.SERVOZ_UP_LIGHT_POS;
-		q.add("Z" + poszup+","+Constant.DRIVER_Z_SPEED, true);
+
+		int SERVOZ_UP_LIGHT_POS = state.getInt("SERVOZ_UP_LIGHT_POS", Constant.SERVOZ_UP_LIGHT_POS );
+		int DRIVER_Z_SPEED = state.getInt("DRIVER_Z_SPEED", Constant.DRIVER_Z_SPEED );
+		
+		int poszup	=  SERVOZ_UP_LIGHT_POS;
+		q.add("Z" + poszup+","+DRIVER_Z_SPEED, true);
 	//	q.addWait( virtualComponents.SERVOZ_UP_TIME );	// wiec trzeba poczekaæ
 		if(disableOnReady){
 			q.addWait(300);
@@ -212,7 +222,8 @@ public class BarobotConnector {
 		}
 	}
 	public void moveZ(Queue q, int pos) {
-		q.add("Z" + pos +","+Constant.DRIVER_Z_SPEED, true);
+		int DRIVER_Z_SPEED = state.getInt("DRIVER_Z_SPEED", Constant.DRIVER_Z_SPEED );
+		q.add("Z" + pos +","+DRIVER_Z_SPEED, true);
 	}
 	public void moveZDown(Queue q, final boolean disableOnReady ) {
 		q.add( new AsyncMessage( true ){
@@ -224,8 +235,10 @@ public class BarobotConnector {
 			public Queue run(Mainboard dev, Queue queue) {
 				Queue q4 = new Queue();
 				int py =  state.getInt("POSZ", 0 );
-				if( py != Constant.SERVOZ_DOWN_POS ){
-					int poszdown	=  state.getInt("ENDSTOP_Z_MIN", Constant.SERVOZ_DOWN_POS );
+				int SERVOZ_DOWN_POS = state.getInt("SERVOZ_DOWN_POS", Constant.SERVOZ_DOWN_POS );
+
+				if( py != SERVOZ_DOWN_POS ){
+					int poszdown	=  state.getInt("ENDSTOP_Z_MIN", SERVOZ_DOWN_POS );
 					moveZ( q4, poszdown );
 					if(disableOnReady){
 						q4.addWait( 300 );
@@ -252,14 +265,19 @@ public class BarobotConnector {
 	//	Initiator.logger.i("+find_bottles", "start");
 		moveZDown( q ,false );
 		q.addWait(5);
-		moveZ( q, Constant.SERVOZ_TEST_POS );
+		
+		int SERVOZ_TEST_POS = state.getInt("SERVOZ_TEST_POS", Constant.SERVOZ_TEST_POS );
+		int SERVOY_TEST_POS = state.getInt("SERVOY_TEST_POS", Constant.SERVOY_TEST_POS );
+		int SERVOY_FRONT_POS = state.getInt("SERVOY_FRONT_POS", Constant.SERVOY_FRONT_POS );
+		
+		moveZ( q, SERVOZ_TEST_POS );
 		q.addWait(10);
 		moveZDown( q ,false );
 		q.addWait(10);
 
-		moveY( q, Constant.SERVOY_TEST_POS, true);
+		moveY( q, SERVOY_TEST_POS, true);
 		q.addWait(100);
-		moveY( q, Constant.SERVOY_FRONT_POS, true);
+		moveY( q, SERVOY_FRONT_POS, true);
 		q.addWait(100);
 		int lengthx19	=  state.getInt("LENGTHX", 60000 );
 		
@@ -312,7 +330,7 @@ public class BarobotConnector {
 				}
 				return null;
 			}
-		} );
+		});
 		q.add("DX", true);
 	    q.add("DY", true);
 	    q.addWait(100);
@@ -349,7 +367,8 @@ public class BarobotConnector {
 				int sposy		= state.getInt("POS_START_Y", 0 );
 
 				Queue	q2	= new Queue();
-				if( posz != Constant.SERVOZ_DOWN_POS ){
+				int SERVOZ_DOWN_POS = state.getInt("SERVOZ_DOWN_POS", Constant.SERVOZ_DOWN_POS );
+				if( posz != SERVOZ_DOWN_POS ){
 					moveZDown(q2, false );
 				}
 				if( posy != sposy ){
@@ -434,27 +453,28 @@ public class BarobotConnector {
 		Queue q1		= new Queue();
 		Upanel[] up 	= i2c.getUpanels();
 		int posz		= state.getInt("POSZ", 0 );
-		if( posz == Constant.SERVOZ_DOWN_POS ){
+		int SERVOZ_DOWN_POS = state.getInt("SERVOZ_DOWN_POS", Constant.SERVOZ_DOWN_POS );
+		if( posz == SERVOZ_DOWN_POS ){
 			moveZLight(q, true );					// move up to help
 		}
 		q.add("DX", true);
 	    q.add("DY", true);
 
-	    i2c.carret.setLed( q, "22", 255 );
+	    i2c.carret.setLed( q, "44", 255 );
 	    setLeds( "ff", 0 );
 		for(int i =up.length-1; i>=0;i--){
-			up[i].addLed(q1, "22", 255);
+			up[i].addLed(q1, "44", 255);
 			q1.addWait(70);
-			up[i].addLed(q1, "22", 0);
+			up[i].addLed(q1, "44", 0);
 		}
 		q.add(q1);
 		q.addWait(100);
 		setLeds( "88", 255 );
-		setLeds( "22", 255 );
+		setLeds( "44", 255 );
 		q.addWait(100);
-		i2c.carret.addLed( q, "22", 20 );
+		i2c.carret.addLed( q, "44", 20 );
 		q.addWait(100);
-		i2c.carret.addLed( q, "22", 250 );	
+		i2c.carret.addLed( q, "44", 250 );	
 	}
 
 	public void moveToBottle(Queue q, final int num, final boolean disableOnReady ){
@@ -484,18 +504,20 @@ public class BarobotConnector {
 				}
 		//		Initiator.logger.i("moveToBottle","(cx == tx && cy == ty)("+cx+" == "+tx+" && "+cy+" == "+ty+")");
 
+				int SERVOY_HFRONT_POS = state.getInt("SERVOY_HFRONT_POS", Constant.SERVOY_HFRONT_POS );
+				
 				if(cx == tx && cy == ty ){				// not needed
 			//		q2.addWait( Constant.SERVOY_REPEAT_TIME );
-				}else if(cx != tx && cy == ty && ty <= Constant.SERVOY_HFRONT_POS ){	// change X, Y = front
+				}else if(cx != tx && cy == ty && ty <= SERVOY_HFRONT_POS ){	// change X, Y = front
 					moveZDown(q2, true );
 					driver_x.moveTo( q2, tx);
 
-				}else if(cx != tx && cy != ty && ty <= Constant.SERVOY_HFRONT_POS  ){	// change X and Y and target = front
+				}else if(cx != tx && cy != ty && ty <= SERVOY_HFRONT_POS  ){	// change X and Y and target = front
 					moveZDown(q2, true );
 					moveY( q2, ty, disableOnReady );
 					driver_x.moveTo( q2, tx );
 
-				}else if(cx != tx && cy < ty && cy <= Constant.SERVOY_HFRONT_POS  ){	// change X and Y and current = front, target = back
+				}else if(cx != tx && cy < ty && cy <= SERVOY_HFRONT_POS  ){	// change X and Y and current = front, target = back
 					moveZDown(q2, true );
 					driver_x.moveTo( q2, tx );
 					moveY( q2, ty, disableOnReady );
@@ -506,7 +528,8 @@ public class BarobotConnector {
 
 				}else{									// (change X and Y ) or (change X and Y is back)
 					moveZDown(q2, true );
-					moveY( q2, Constant.SERVOY_BACK_NEUTRAL, true);
+					int SERVOY_BACK_NEUTRAL = state.getInt("SERVOY_BACK_NEUTRAL", Constant.SERVOY_BACK_NEUTRAL );
+					moveY( q2, SERVOY_BACK_NEUTRAL, true);
 					driver_x.moveTo( q2, tx );
 					moveY( q2, ty, disableOnReady );
 				}
@@ -570,11 +593,10 @@ public class BarobotConnector {
 					if( up != null ){
 						up.addLed( q2, "11", 255 );
 					}
-					
 					int time = getPacWaitTime( num );
-
 					q2.addWait( time );
-					q2.add("Z" + Constant.SERVOZ_PAC_POS+",255", true);
+					int SERVOZ_PAC_POS = state.getInt("SERVOZ_PAC_POS", Constant.SERVOZ_PAC_POS );
+					q2.add("Z" + SERVOZ_PAC_POS+",255", true);
 					moveZDown( q2, false );
 					q2.addWait( 200 );
 					if( up != null ){
@@ -601,7 +623,8 @@ public class BarobotConnector {
 	// todo move to slot
 	public int getPourTime( int num ){			// 0 - 11
 		int capacity	= getCapacity( num );
-		return capacity * Constant.SERVOZ_POUR_TIME;
+		int SERVOZ_POUR_TIME = state.getInt("SERVOZ_POUR_TIME", Constant.SERVOZ_POUR_TIME );
+		return capacity * SERVOZ_POUR_TIME;
 	}
 	public int getRepeatTime(int num) {
 		int capacity	= getCapacity( num );
@@ -635,11 +658,11 @@ public class BarobotConnector {
 			if(count == 0 ){
 				u.setLed(q, "ff", 0);
 			}else if(count == 1 ){
-				u.setLed(q, "22", 255);			// green
+				u.setLed(q, "11", 255);			// red
 			}else if( count == 2 ){
 				u.setLed(q, "44", 255);			// blue
 			}else if( count == 3 ){
-				u.setLed(q, "66", 255);			// green + blue
+				u.setLed(q, "55", 255);			// red + blue
 			}else if( count == 4 ){
 				u.setLed(q, "77", 255);			// green + blue + red
 			}else if( count == 5 ){
@@ -675,5 +698,4 @@ public class BarobotConnector {
 		}
 		main_queue.add(q1);
 	}
-
 }

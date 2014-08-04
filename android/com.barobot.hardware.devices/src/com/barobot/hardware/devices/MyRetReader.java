@@ -448,7 +448,8 @@ public class MyRetReader implements RetReader {
 					decoded += "/HX_STATE_1";
 					state.set( "LENGTHX", spos);
 					state.set( "X_GLOBAL_MAX", spos );
-					barobot.hereIsBottle(11, spos, Constant.SERVOY_FRONT_POS );
+					int SERVOY_FRONT_POS = state.getInt("SERVOY_FRONT_POS", Constant.SERVOY_FRONT_POS );
+					barobot.hereIsBottle(11, spos, SERVOY_FRONT_POS );
 					state_num = 0;
 				}else if(state_name == Methods.HX_STATE_2 ){
 					decoded += "/HX_STATE_2";
@@ -518,7 +519,8 @@ public class MyRetReader implements RetReader {
 					state.set("MARGINX", hpos);
 					// new software pos (equal 0);
 					spos = barobot.driver_x.hard2soft(hpos);
-					barobot.hereIsStart(spos, Constant.SERVOY_FRONT_POS );
+					int SERVOY_FRONT_POS = state.getInt("SERVOY_FRONT_POS", Constant.SERVOY_FRONT_POS );
+					barobot.hereIsStart(spos, SERVOY_FRONT_POS );
 					Initiator.logger.i("input_parser", "jestem w: " + spos );
 					barobot.driver_x.setSPos( spos );
 
@@ -531,7 +533,8 @@ public class MyRetReader implements RetReader {
 					decoded += "/HX_STATE_1";
 					state.set( "LENGTHX", spos);
 					state.set( "X_GLOBAL_MAX", spos );
-					barobot.hereIsBottle(11, spos, Constant.SERVOY_FRONT_POS );
+					int SERVOY_FRONT_POS = state.getInt("SERVOY_FRONT_POS", Constant.SERVOY_FRONT_POS );
+					barobot.hereIsBottle(11, spos, SERVOY_FRONT_POS );
 					state_num = 0;
 				}else if(state_name == Methods.HX_STATE_2 ){
 				}else if(state_name == Methods.HX_STATE_3 ){
@@ -547,7 +550,8 @@ public class MyRetReader implements RetReader {
 					// new software pos (equal 0)
 					spos = barobot.driver_x.hard2soft(hpos);
 					barobot.driver_x.setSPos( spos );
-					barobot.hereIsStart(spos, Constant.SERVOY_FRONT_POS );
+					int SERVOY_FRONT_POS = state.getInt("SERVOY_FRONT_POS", Constant.SERVOY_FRONT_POS );
+					barobot.hereIsStart(spos, SERVOY_FRONT_POS );
 					Initiator.logger.i("input_parser", "jestem2 w: " + spos );
 
 				}else if(state_name == Methods.HX_STATE_10 ){		// ERROR not connected

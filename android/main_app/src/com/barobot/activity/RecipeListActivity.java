@@ -140,7 +140,7 @@ public class RecipeListActivity extends BarobotMain{
 							 for (Integer i : bottleSequence){ 
 								 Upanel u =barobot.i2c.getUpanelByBottle(i-1); 
 								 if(u!=null){
-									 u.setLed(q, "22", 255);
+									 u.setLed(q, "44", 255);
 								 }
 							 } }
 						 }
