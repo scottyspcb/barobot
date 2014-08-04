@@ -389,7 +389,7 @@
         android:layout_alignBaseline="@+id/dlugosc_y"
         android:layout_alignBottom="@+id/dlugosc_y"
         android:layout_alignRight="@+id/goto_min_x"
-        android:text="TEST" />
+        android:text="I2CTEST" />
 
     <Button
         android:id="@+id/analog_temp"
@@ -419,6 +419,49 @@
 
         <LinearLayout
             android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="right" >
+
+            <Button
+                android:id="@+id/reset1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="RESET1" />
+
+            <Button
+                android:id="@+id/reset2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="RESET2" />
+
+            <Button
+                android:id="@+id/reset3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="RESET3" />
+
+            <Button
+                android:id="@+id/reset4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="RESET4" />
+
+            <Button
+                android:id="@+id/rb"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="RESETBUS" />
+
+            <Button
+                android:id="@+id/rb2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="RESETBUS2" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content" >
 
             <Button
@@ -426,7 +469,7 @@
                 style="?android:attr/buttonStyleSmall"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Button" />
+                android:text="Flip Z" />
 
             <ToggleButton
                 android:id="@+id/need_glass"
@@ -486,47 +529,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="BLUE LED" />
-
-            <Button
-                android:id="@+id/reset1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="RESET1" />
-
-            <Button
-                android:id="@+id/reset2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="RESET2" />
-
-            <Button
-                android:id="@+id/reset3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="RESET3" />
-
-            <Button
-                android:id="@+id/reset4"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="RESET4" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content" >
-
-            <Button
-                android:id="@+id/reset_margin"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Reset Margin" />
-
-            <Button
-                android:id="@+id/reset_upanels"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Reset Upanels" />
 
             <Button
                 android:id="@+id/reset_serial"
@@ -535,27 +542,41 @@
                 android:text="RESET SERIAL" />
 
             <Button
-                android:id="@+id/rb"
+                android:id="@+id/download_database"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="RESETBUS" />
+                android:text="Download Database" />
 
             <Button
-                android:id="@+id/rb2"
+                android:id="@+id/download_data"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="RESETBUS2" />
+                android:text="Download Data" />
+
+            <Button
+                android:id="@+id/upload_data"
+                style="android:buttonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Upload Data" />
+
+            <Button
+                android:id="@+id/firmware_download"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Download Firmware" />
+
+            <Button
+                android:id="@+id/firmware_burn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Burn Firmware" />
+
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content" >
-
-            <Button
-                android:id="@+id/clear_queue"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="RESET QUEUE" />
 
             <Button
                 android:id="@+id/unlock"
@@ -564,10 +585,29 @@
                 android:text="Odblokuj" />
 
             <Button
+                android:id="@+id/clear_queue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="RESET QUEUE" />
+
+            <Button
                 android:id="@+id/find_bottles"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Szukaj butelek" />
+
+            <Button
+                android:id="@+id/wznow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Wznow" />
+
+            <Button
+                android:id="@+id/reset_margin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Reset Margin" />
+
 
         </LinearLayout>
     </LinearLayout>

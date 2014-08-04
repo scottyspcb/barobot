@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="menu_choose">Choose drink \nfrom from proposed</string>
+    <string name="menu_choose">Choose drink \n from proposed</string>
     <string name="menu_create">Create your\n own drink</string>
 
     <string name="wizard_lang_ru">русский</string>

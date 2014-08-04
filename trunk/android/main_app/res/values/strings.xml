@@ -22,7 +22,7 @@
     <string name="title_section5">Sounds</string>
     <string name="title_section6">History</string>
 
-    <string name="empty_slot">Empty</string>
+    <string name="empty_slot"></string>
     <string name="liquid_select_title">Select liquid</string>
     <string name="liquid_name">Liquid Name (Brand)</string>
     <string name="liquid_type">Liquid Type</string>
@@ -35,9 +35,9 @@
     <string name="glass_reminder_message1">Place glass into the tray</string>
     <string name="glass_reminder_button_ok">OK</string>
     <string name="glass_reminder_button_cancel">Cancel</string>
-   
+  
     <!-- Bottle Setup -->
-    <string name="empty_bottle_string">Empty</string>
+    <string name="empty_bottle_string"></string>
 
     <!-- Dialog new Type -->
     <string name="dialog_type_name">Liquid type</string>

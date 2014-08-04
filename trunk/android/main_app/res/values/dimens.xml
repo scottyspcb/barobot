@@ -30,11 +30,11 @@
     <dimen name="progress_bar_name_width">60dp</dimen>
     
     <!-- Green Button -->
-    <color name="GreenButtonStartColor">#4AA02C</color>
-    <color name="GreenButtonEndColor">#348017</color>
-    <color name="GreenButtonDisabledStartColor">#565051</color>
-    <color name="GreenButtonDisabledEndColor">#736F6E</color>
-    <color name="GreenButtonBorderColor">#254117</color>
+    <color name="GreenButtonStartColor">#4A2CA0</color>
+    <color name="GreenButtonEndColor">#341780</color>
+    <color name="GreenButtonDisabledStartColor">#565150</color>
+    <color name="GreenButtonDisabledEndColor">#736E6F</color>
+    <color name="GreenButtonBorderColor">#251741</color>
     
     <!-- Blue Button -->
     <color name="BlueButtonStartColor">#0928EC</color>
@@ -95,11 +95,11 @@
     <color name="TransparentComplementaryDark1">#AAFFC200</color>
     <color name="TransparentComplementaryDark2">#88333333</color>
     
-    <color name="SecondaryBLight1">#A3F06C</color>
-    <color name="SecondaryBLight2">#3d850a</color>
-    <color name="SecondaryB">#245800</color>
-    <color name="SecondaryBDark1">#5FA92A</color>
-    <color name="SecondaryBDark2">#3D9200</color>
+    <color name="SecondaryBLight1">#F0A36C</color>
+    <color name="SecondaryBLight2">#853d0a</color>
+    <color name="SecondaryB">#f37000</color>
+    <color name="SecondaryBDark1">#A95F2A</color>
+    <color name="SecondaryBDark2">#923D00</color>
     
     <color name="MainLight1">#5E5BBA</color>
     <color name="MainLight2">#3D38BA</color>
@@ -117,8 +117,8 @@
     <color name="SweetStart">#ff920a</color>
     <color name="SweetEnd">#ff670f</color>
     
-    <color name="SourStart">#00ff00</color>
-    <color name="SourEnd">#00bf00</color>
+    <color name="SourStart">#0000ff</color>
+    <color name="SourEnd">#0000bf</color>
     
     <color name="BitterStart">#cae00d</color>
     <color name="BitterEnd">#97a809</color>

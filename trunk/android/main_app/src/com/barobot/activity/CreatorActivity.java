@@ -88,18 +88,18 @@ public class CreatorActivity extends BarobotMain{
 	}
 
 	private void UpdateSlots() {
-
 		List<Slot> bottles = Engine.GetInstance(this).getSlots();
-
 		Log.w("BOTTLE_SETUP length",""+bottles.size());
-		
 		for(Slot bottle : bottles)
 		{
 			if (bottle.position > 0 && bottle.position <= ids.length )
 			{
 				TextView tview = (TextView) findViewById(ids[bottle.position]);
 				if (bottle.status == Slot.STATUS_EMPTY) {
-					tview.setText(R.string.empty_bottle_string);
+				//	tview.setText(R.string.empty_bottle_string);
+					tview.setText("");	
+				} else if(	bottle.getName().equals("Empty")){
+					tview.setText("");
 				} else {
 					tview.setText(bottle.getName());	
 				}	
