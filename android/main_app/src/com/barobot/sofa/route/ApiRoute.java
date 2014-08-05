@@ -6,10 +6,11 @@ import com.x5.template.Theme;
 
 import fi.iki.elonen.NanoHTTPD.IHTTPSession;
 
-public class DrinkCreatorPage extends EmptyRoute {
-	DrinkCreatorPage(){
-		this.regex = "^/synchro/";
+public class ApiRoute extends EmptyRoute {
+	ApiRoute(){
+		this.regex = "^/api/";
 	}
+
 	@Override
 	public String run(String url, SofaServer sofaServer, Theme theme,
 			IHTTPSession session) {

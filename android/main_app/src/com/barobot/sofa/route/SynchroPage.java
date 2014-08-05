@@ -8,7 +8,7 @@ import fi.iki.elonen.NanoHTTPD.IHTTPSession;
 
 public class SynchroPage extends EmptyRoute {
 	SynchroPage(){
-		this.regex = "/synchro/";
+		this.regex = "^/synchro/";
 	}
 
 	@Override

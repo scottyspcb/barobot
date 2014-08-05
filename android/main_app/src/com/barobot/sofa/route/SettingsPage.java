@@ -9,7 +9,7 @@ import fi.iki.elonen.NanoHTTPD.IHTTPSession;
 public class SettingsPage extends EmptyRoute{
 
 	SettingsPage(){
-		this.regex = "/settings/";
+		this.regex = "^/settings/";
 	}
 
 	@Override
