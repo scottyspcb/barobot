@@ -2,21 +2,35 @@ package com.barobot.debug;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 import java.util.Random;
+
+import org.orman.mapper.Model;
+import org.orman.mapper.ModelQuery;
+import org.orman.sql.C;
 
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Environment;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Toast;
 import com.barobot.sofa.route.CommandRoute;
 
+import com.barobot.BarobotMain;
 import com.barobot.R;
 import com.barobot.common.Initiator;
 import com.barobot.common.constant.Constant;
+import com.barobot.gui.dataobjects.Liquid_t;
+import com.barobot.gui.dataobjects.Recipe_t;
+import com.barobot.gui.dataobjects.Type;
+import com.barobot.gui.utils.LangTool;
 import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
 import com.barobot.other.Android;
@@ -51,39 +65,6 @@ public class button_click implements OnClickListener{
 
 		Log.i("currentpos", ""+  posx);
 		switch (v.getId()) {
-		
-		
-		// nie mozliwe		
-		case R.id.download_database:
-			new AlertDialog.Builder(dbw).setTitle("Are you sure?").setMessage("Are you sure?")
-		    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-		        public void onClick(DialogInterface dialog, int which) { 
-		        	try {
-						InternetHelpers.copy( update_drinks.sourcepath, update_drinks.localDbPath );
-					} catch (IOException e) {
-						e.printStackTrace();
-						Initiator.logger.i(Constant.TAG,"download_database", e);
-					}
-		        }
-		    })
-		    .setIcon(android.R.drawable.ic_dialog_alert).show();
-			break;
-		case R.id.firmware_burn:
-			new AlertDialog.Builder(dbw).setTitle("Are you sure?").setMessage("Are you sure?")
-		    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-		        public void onClick(DialogInterface dialog, int which) { 
-		        	fimwareBurn();
-		        }
-		    })
-		    .setIcon(android.R.drawable.ic_dialog_alert).show();
-			break;
-		
-		
-		
-		
-		z
-		
-		
 		
 		case R.id.set_x_1000:
 	//		Log.i("nextpos-10000", "old: "+posx + " next: "+ ( posx -10000));
@@ -152,9 +133,76 @@ public class button_click implements OnClickListener{
 			barobot.moveY( q, ( posy +1000), true);
 			mq.add(q);
 			break;
-			
-			
 
+		case R.id.download_database:
+
+			BarobotMain.getInstance().runOnUiThread(new Runnable() {
+				  public void run() {
+			    	new AlertDialog.Builder(dbw).setTitle("Are you sure?").setMessage("Are you sure?")
+				    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+				        public void onClick(DialogInterface dialog, int which) { 
+				        	boolean success = false;
+				        	File dir5 = new File(Environment.getExternalStorageDirectory(), "Barobot");
+				        	  if (!dir5.exists()) {
+				        		  Android.createDirIfNotExists("Barobot");
+				        	  }
+				        	  String path6 = 	Environment.getExternalStorageDirectory()+ update_drinks.copyPath;
+
+				  			InternetHelpers.doDownload(update_drinks.fulldb, path6, new OnDownloadReadyRunnable() {
+				  				public void sendSource( String source ) {	
+				  				}
+				  			    @Override
+				  				public void run() {
+				  			    	Initiator.logger.i("firmware_download","hex ready");
+				  				}
+				  			});
+				        }
+				    }).setIcon(android.R.drawable.ic_dialog_alert).show();
+			    }
+			});
+			break;
+
+		case R.id.reset_database:
+			BarobotMain.getInstance().runOnUiThread(new Runnable() {
+				  public void run() {
+			    	new AlertDialog.Builder(dbw).setTitle("Are you sure?").setMessage("Are you sure?")
+				    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+				        public void onClick(DialogInterface dialog, int which) { 
+				        	boolean success = false;
+				        	try {	
+				        		Date dNow = new Date( );
+				        		SimpleDateFormat dd =  new SimpleDateFormat ("yyyy.MM.dd.hh.mm.ss");
+				        		String resetPath	= 	Environment.getExternalStorageDirectory()+ update_drinks.copyPath;
+				        		String backupPath 	= 	Environment.getExternalStorageDirectory()+ update_drinks.backupPath;
+				        		backupPath 			= 	backupPath.replace("%DATE%", dd.format(dNow));
+
+				        		Initiator.logger.i(Constant.TAG,"backupPath path" + backupPath);
+
+				        		// do backup
+				        		success = InternetHelpers.copy( update_drinks.localDbPath, backupPath );
+				        		if(success){
+				        			success = InternetHelpers.copy( resetPath, update_drinks.localDbPath );
+				        		}
+							} catch (IOException e) {
+								e.printStackTrace();
+								Initiator.logger.i(Constant.TAG,"download_database", e);
+							}
+				        	final String message = success ? "OK": "Error";
+							BarobotMain.getInstance().runOnUiThread(new Runnable() {
+								  public void run() {
+							    	new AlertDialog.Builder(dbw).setTitle("Message").setMessage( message )
+								    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+								        public void onClick(DialogInterface dialog, int which) { 
+								        }
+								    }).setIcon(android.R.drawable.ic_dialog_alert).show();
+							    }
+							});
+				        }
+				    }).setIcon(android.R.drawable.ic_dialog_alert).show();
+			    }
+			});
+		
+			break;
 		case R.id.set_neutral_y:
 			barobot.state.set("NEUTRAL_POS_Y", ""+posy );
 			String nn = barobot.state.get("NEUTRAL_POS_Y", "0" );
@@ -231,22 +279,42 @@ public class button_click implements OnClickListener{
 			break;
 
 		case R.id.firmware_download:
-			if(Android.createDirIfNotExists("Barobot")){
-				InternetHelpers.doDownload(update_drinks.firmware, "firmware.hex", new OnDownloadReadyRunnable() {
-				//	private String source;
-					public void sendSource( String source ) {
-				//		this.source = source;
-						Initiator.logger.i("firmware_download","hex ready");
-					}
-				    @Override
-					public void run() {
-				    	// this.source
-					}
-				});
+			File dir = new File(Environment.getExternalStorageDirectory(), "Barobot");
+			if (!dir.exists()) {
+			  Android.createDirIfNotExists("Barobot");
 			}
+			String path9 = 	dir.getAbsolutePath()+"/"+"firmware.hex";
+			InternetHelpers.doDownload(update_drinks.fulldb, path9, new OnDownloadReadyRunnable() {
+				public void sendSource( String source ) {
+				}
+			    @Override
+				public void run() {
+					BarobotMain.getInstance().runOnUiThread(new Runnable() {
+						  public void run() {
+							  new AlertDialog.Builder(dbw).setTitle("Message").setMessage("Please restart application")
+							    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+							        public void onClick(DialogInterface dialog, int which) { 
+							        }
+							    })
+							    .setIcon(android.R.drawable.ic_dialog_alert).show();
+						  }
+						});
+				}
+			});
 			break;
-
-		
+		case R.id.firmware_burn:
+			BarobotMain.getInstance().runOnUiThread(new Runnable() {
+				  public void run() {
+					  new AlertDialog.Builder(dbw).setTitle("Are you sure?").setMessage("Are you sure?")
+					    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+					        public void onClick(DialogInterface dialog, int which) { 
+					        	fimwareBurn();
+					        }
+					    })
+					    .setIcon(android.R.drawable.ic_dialog_alert).show();
+				  }
+				});
+			break;
 		case R.id.losujx:
 			Random generator2 = new Random( 19580427 );
 			barobot.moveZDown( q, true  );
@@ -263,6 +331,40 @@ public class button_click implements OnClickListener{
 		      }
 		    mq.add(q);
 			break;
+
+		case R.id.index_names:
+			Initiator.logger.i(Constant.TAG,"index_names");
+			List<Liquid_t> hh =  Model.fetchQuery(ModelQuery.select().from(Liquid_t.class).getQuery(),Liquid_t.class);
+			for(Liquid_t liquid : hh)
+			{
+				boolean exists = LangTool.checkIsTranslated(liquid.id, "liquid", liquid.name);
+				if(!exists){
+					LangTool.InsertTranslation( liquid.id, "liquid", liquid.name );
+				}
+			}
+			Initiator.logger.i(Constant.TAG,"tłumaczenie liquid" + hh.size());
+
+			List<Type> hh2 =  Model.fetchQuery(ModelQuery.select().from(Type.class).getQuery(),Type.class);
+			for(Type tt2 : hh2)
+			{
+				boolean exists = LangTool.checkIsTranslated(tt2.id, "type", tt2.name);
+				if(!exists){
+					LangTool.InsertTranslation( tt2.id, "type", tt2.name );
+				}
+			}
+			Initiator.logger.i(Constant.TAG,"tłumaczenie type" + hh2.size());
+
+			List<Recipe_t> hh3 =  Model.fetchQuery(ModelQuery.select().from(Recipe_t.class).where(C.eq("unlisted", false)).getQuery(),Recipe_t.class);
+			for(Recipe_t tt3 : hh3)
+			{
+				boolean exists = LangTool.checkIsTranslated(tt3.id, "recipe", tt3.name);
+			if(!exists){
+					LangTool.InsertTranslation( tt3.id, "recipe", tt3.name );
+				}
+			}
+			Initiator.logger.i(Constant.TAG,"tłumaczenie recipe" + hh3.size());
+			break;
+	
 		case R.id.losujy:
 			Random generator3 = new Random( 19580427 );
 			barobot.moveZDown( q ,true );
@@ -431,7 +533,6 @@ public class button_click implements OnClickListener{
 		case R.id.led_red_on:
 			CommandRoute.runCommand("command_led_red_on");
 			break;
-	
 	   }
 	}
 	protected void fimwareBurn() {

@@ -500,6 +500,13 @@
                 android:text="ToggleButton"
                 android:textOff="Nie nalewaj od razu"
                 android:textOn="Nalewaj od razu" />
+
+            <Button
+                android:id="@+id/index_names"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Index_names" />
+
         </LinearLayout>
 
         <LinearLayout
@@ -542,16 +549,16 @@
                 android:text="RESET SERIAL" />
 
             <Button
+                android:id="@+id/reset_database"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Reset Database" />
+
+            <Button
                 android:id="@+id/download_database"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Download Database" />
-
-            <Button
-                android:id="@+id/download_data"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Download Data" />
 
             <Button
                 android:id="@+id/upload_data"

@@ -86,7 +86,7 @@ public class SofaServer extends NanoHTTPD {
 	    		//	return r;
 	        	}
 			}else{
-				Log.i("SofaServer nie istnieje:", path );
+				Log.i("SofaServer nie istnieje:", uri );
 			}
 			return new NanoHTTPD.Response(Status.NOT_FOUND, "", "");
 		}else{
@@ -155,7 +155,9 @@ public class SofaServer extends NanoHTTPD {
     		EmptyRoute r = it.next();
     		if(r.match( uri )){
     			return r;
-    		}
+    		}else{
+    	//		Initiator.logger.i("nie regexp : ", r.regex );
+     		}
     	}
     	return null;
 	}

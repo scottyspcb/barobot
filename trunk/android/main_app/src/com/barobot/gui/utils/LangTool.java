@@ -1,6 +1,7 @@
 package com.barobot.gui.utils;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.orman.mapper.Model;
@@ -10,6 +11,8 @@ import org.orman.sql.Query;
 
 import android.util.Log;
 
+import com.barobot.common.Initiator;
+import com.barobot.common.constant.Constant;
 import com.barobot.gui.dataobjects.Language;
 import com.barobot.gui.dataobjects.Translated_name;
 
@@ -50,6 +53,9 @@ public class LangTool {
 		}
 		o += " END ";
 		order = o;
+
+		Initiator.logger.i(Constant.TAG,"setLanguage order" + order );
+		
 		/*
 		ORDER BYCASE ID
 		    WHEN 4 THEN 0
@@ -65,7 +71,7 @@ public class LangTool {
 		return translateName( id, table_name, null );
 	}
 
-	public static String translateName( int id, String table_name, String defaultVal ) {
+	public static String translateName( int id, String table_name, String defaultVal ){
 		String key = id+"."+table_name+"."+langId;
 		if(translation_cache.containsKey(key)){
 			return translation_cache.get(key);
@@ -73,6 +79,7 @@ public class LangTool {
 		Query query3 = new Query("SELECT `translated` FROM Translated_name WHERE `element_id` ='"+id+"' and `table_name`='"+table_name+"'" + order + "LIMIT 1;");
 		String translated = (String) Model.fetchSingleValue(query3);
 		if(translated == null){
+			LangTool.InsertTranslation( id, table_name, defaultVal );
 			return defaultVal;
 		}
 		if( !translated.equals("")){		// remember
@@ -81,6 +88,15 @@ public class LangTool {
 		return translated;
 	}
 
+	public static boolean checkIsTranslated( int id, String table_name, String defaultVal ){
+		Query query3 = new Query("SELECT `translated` FROM Translated_name WHERE `element_id` ='"+id+"' and `table_name`='"+table_name+"' and `language_id`='"+langId+ "' LIMIT 1;");
+		String translated = (String) Model.fetchSingleValue(query3);
+		if(translated == null){
+			return false;
+		}
+		return true;
+	}
+	
 	public static void InsertTranslation( int id, String table_name, String translatedName ) {
 		Translated_name trn = new Translated_name();
 		trn.element_id = id;
@@ -88,6 +104,28 @@ public class LangTool {
 		trn.language_id = langId;
 		trn.translated = translatedName;
 		trn.insert();
-	}
 
+	//	Initiator.logger.i(Constant.TAG,"InsertTranslation table_name" + trn.table_name +", translatedName" +translatedName+", id" +id+", langId" +langId );
+	}
+	
+
+	private static Map<Integer, String> languages = null;
+	public static String getlangCode(int language_id2) {
+		if( languages == null){
+			List<Language> ls = Model.fetchQuery(ModelQuery.select().from(Language.class).getQuery(),Language.class);
+			languages = new HashMap<Integer, String>();
+			for (Language lang : ls) {
+				languages.put(lang.id, ""+lang.lang_code);
+			}
+		}else{
+		}
+		return languages.get(language_id2);
+	}
+	
+	public static void resetCache(int id, int langId, String table_name ) {
+		String key = id+"."+table_name+"."+langId;
+		if(translation_cache.containsKey(key)){
+			translation_cache.remove(key);
+		}
+	}
 }

@@ -18,7 +18,6 @@ public class EmptyBarobotState implements HardwareState {
 		}
 		return Integer.parseInt( hashmap.get(name));
 	}
-
 	@Override
 	public void set(String name, long value) {
 		set(name, "" + value );
@@ -26,5 +25,10 @@ public class EmptyBarobotState implements HardwareState {
 	@Override
 	public String get( String name, String def ){
 		return hashmap.get(name);
+	}
+	@Override
+	public Map<String, String> getAll() {
+		Map<String, String> nMap 	= new HashMap<String, String>();
+		return nMap;
 	}
 }

@@ -16,8 +16,7 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
-import com.barobot.web.route.MainPage;
-import com.barobot.web.route.RPCPage;
+
 import com.barobot.web.route.TemplateRendering;
 import com.barobot.web.server.SofaServer;
 import com.barobotweb.R;
@@ -41,9 +40,9 @@ public class BarobotWebMain extends Activity {
 
     	ss =  SofaServer.getInstance();
 		ss.setBaseContext(getBaseContext());
-		ss.addRoute( new RPCPage() );
+	//	ss.addRoute( new RPCPage() );
 		ss.addRoute( new TemplateRendering() );
-		ss.addRoute( new MainPage() );
+	//	ss.addRoute( new MainPage() );
         try {
 			ss.start();
 		} catch (IOException e) {

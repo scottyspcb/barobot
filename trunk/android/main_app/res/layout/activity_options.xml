@@ -106,6 +106,14 @@
             android:onClick="onOptionsButtonClicked"
             android:text="@string/unlock" />
 
+        <Button
+            android:id="@+id/option345"
+            style="@style/OptionsMenuButton"
+            android:layout_below="@+id/options_about_button"
+            android:layout_toRightOf="@+id/settings_unlock"
+            android:onClick="onOptionsButtonClicked"
+            android:text="@string/myip" />
+
     </RelativeLayout>
 
 

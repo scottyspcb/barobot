@@ -459,22 +459,21 @@ public class BarobotConnector {
 		}
 		q.add("DX", true);
 	    q.add("DY", true);
-
-	    i2c.carret.setLed( q, "44", 255 );
+	    i2c.carret.setLed( q, "22", 255 );
 	    setLeds( "ff", 0 );
 		for(int i =up.length-1; i>=0;i--){
-			up[i].addLed(q1, "44", 255);
+			up[i].addLed(q1, "22", 255);
 			q1.addWait(70);
-			up[i].addLed(q1, "44", 0);
+			up[i].addLed(q1, "22", 0);
 		}
 		q.add(q1);
 		q.addWait(100);
 		setLeds( "88", 255 );
 		setLeds( "44", 255 );
 		q.addWait(100);
-		i2c.carret.addLed( q, "44", 20 );
+		i2c.carret.addLed( q, "22", 20 );
 		q.addWait(100);
-		i2c.carret.addLed( q, "44", 250 );	
+		i2c.carret.addLed( q, "22", 250 );	
 	}
 
 	public void moveToBottle(Queue q, final int num, final boolean disableOnReady ){

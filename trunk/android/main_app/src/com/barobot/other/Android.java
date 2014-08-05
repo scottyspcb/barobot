@@ -11,9 +11,14 @@ import android.content.Context;
 import android.content.res.AssetManager;
 import android.os.Environment;
 import android.os.PowerManager;
+import android.text.format.Formatter;
 import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.util.Enumeration;
 
 import com.barobot.common.Initiator;
 public class Android {
@@ -119,4 +124,47 @@ public class Android {
 		//do what you need to do
 		wl.release();
 	}
+
+	public static String getLocalIpAddress() {
+		String res = "";
+	    try {
+	        for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
+	            NetworkInterface intf = en.nextElement();
+	            for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements();) {
+	                InetAddress inetAddress = enumIpAddr.nextElement();
+	                if (!inetAddress.isLoopbackAddress()) {
+	                	String ip = Formatter.formatIpAddress(inetAddress.hashCode());
+	                	res=  inetAddress.getHostAddress().toString();
+	                	Log.e("getLocalIpAddress","log:"+res + " / " + ip);
+	                }
+	            }
+	        }
+	        return res;
+	    } catch (SocketException ex) {
+	    	Log.e("getLocalIpAddress","TravellerLog : geting ip problem");
+	    }
+	    return null;
+	}
+	
+	public static String getLocalIpAddress2() {
+	    try {
+	        for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
+	            NetworkInterface intf = en.nextElement();
+	            for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements();) {
+	                InetAddress inetAddress = enumIpAddr.nextElement();
+	                if (!inetAddress.isLoopbackAddress()) {
+	                    String ip = Formatter.formatIpAddress(inetAddress.hashCode());
+	                    Log.i("getLocalIpAddress2", "***** IP="+ ip);
+	                    return ip;
+	                }
+	            }
+	        }
+	    } catch (SocketException ex) {
+	        Log.e("getLocalIpAddress2", ex.toString());
+	    }
+	    return null;
+	}
+	
+	
+
 }

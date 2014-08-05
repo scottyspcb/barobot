@@ -62,19 +62,16 @@ public class InternetHelpers {
 	
 	
 
-	public static void doDownload(final String urlLink, final String fileName, final OnDownloadReadyRunnable runnable) {
+	public static void doDownload(final String urlLink, final String path, final OnDownloadReadyRunnable runnable) {
 		Thread dx = new Thread() {
             public void run() {
         	  File root = android.os.Environment.getExternalStorageDirectory();    
 
         	  Initiator.logger.i("FILE_NAME", "root getAbsolutePath is "+root.getAbsolutePath());
-        	  File dir = new File(Environment.getExternalStorageDirectory(), "Barobot");
-        	  if (!dir.exists()) {
-        		  Android.createDirIfNotExists("Barobot");
-        	  }
+
               try {
                     URL url = new URL(urlLink);
-                    Initiator.logger.i("FILE_NAME", "File name is "+fileName);
+                    Initiator.logger.i("FILE_NAME", "Path is "+path);
                     Initiator.logger.i("FILE_URLLINK", "File URL is "+url);
                     URLConnection connection = url.openConnection();
                     connection.connect();
@@ -83,7 +80,7 @@ public class InternetHelpers {
 
                     // download the file
                     InputStream input	= new BufferedInputStream(url.openStream());
-                    OutputStream output	= new FileOutputStream( dir.getAbsolutePath()+"/"+fileName);
+                    OutputStream output	= new FileOutputStream( path);
                     byte data[]			= new byte[1024];
                     String strFileContents="";
                     int total			= 0;
@@ -109,7 +106,7 @@ public class InternetHelpers {
         };
         dx.start();    
 	}
-	public static void copy(String src1, String dst1) throws IOException {
+	public static boolean copy(String src1, String dst1) throws IOException {
 		File src = new File(src1);
 		File dst = new File(dst1);
 		
@@ -124,6 +121,8 @@ public class InternetHelpers {
 	    }
 	    in.close();
 	    out.close();
+	 
+	    return true;
 	}
 	public static void doDownload(final String urlLink, final String fileName) {
 		// instantiate it within the onCreate method

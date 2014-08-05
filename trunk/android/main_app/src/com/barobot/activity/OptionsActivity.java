@@ -5,6 +5,7 @@ import com.barobot.BarobotMain;
 import com.barobot.R;
 import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
+import com.barobot.other.Android;
 import com.barobot.other.Audio;
 import com.barobot.parser.Queue;
 import com.barobot.sofa.route.CommandRoute;
@@ -84,6 +85,17 @@ public class OptionsActivity extends BarobotMain {
 			break;
 		case R.id.options_calibrate_button:
 			CommandRoute.runCommand("command_find_bottles");
+			break;
+
+		case R.id.option345:
+			String ip = Android.getLocalIpAddress();
+			new AlertDialog.Builder(this)
+		    .setTitle("Barobot address")
+		    .setMessage("http://" + ip + ":8000")
+		    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+		        public void onClick(DialogInterface dialog, int which) { 
+		        }
+		     }) .setIcon(android.R.drawable.ic_dialog_alert).show();
 			break;
 		case R.id.settings_unlock:
 			CommandRoute.runCommand("command_unlock");

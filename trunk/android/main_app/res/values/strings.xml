@@ -119,4 +119,6 @@
     <string name="remove_recipe_btn">- recipe</string>
     <string name="goto_main_menu">Main menu</string>
 
+    <string name="myip">Show device address</string>
+    
 </resources>

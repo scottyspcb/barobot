@@ -18,9 +18,9 @@ public class AndroidLogger implements CanLog {
 	public AndroidLogger() {
 		File external = Environment.getExternalStorageDirectory();
 		String sdcardPath = external.getPath();
-		File dir = new File(sdcardPath + "/barobot");
+		File dir = new File(sdcardPath + "/Barobot");
 		dir.mkdirs();
-        myFile = new File(sdcardPath + "/barobot/barobot.error.txt");
+        myFile = new File(sdcardPath + "/Barobot/barobot.error.txt");
         //     myFile.createNewFile();
         try {
 			fos = new FileOutputStream(myFile);
