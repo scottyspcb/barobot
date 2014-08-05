@@ -1,0 +1,21 @@
+{#body}
+<h1>Commands</h1>
+<br>
+<ul>
+{.loop in $commands as $command}
+	<li>
+		<a class="btn btn-primary" href="javascript:void(0)" onclick="run_command( "{$command}", this )">{$command}</a>
+	</li>
+{/loop}
+</ul>
+<script>
+function run_command( command, btn ){
+	btn.addClass("btn-danger");
+	$.get("/command/" + command,{
+	  }, function(dane){
+	    btn.removeClass("btn-danger");
+	  }
+	);
+}
+</script>
+{#}

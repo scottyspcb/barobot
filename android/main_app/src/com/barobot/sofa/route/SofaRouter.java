@@ -34,5 +34,7 @@ public class SofaRouter implements SimpleRouter{
 		ss.addRoute( new SynchroPage() );
 		ss.addRoute( new InfoPage() );
 		ss.addRoute( new DrinkCreatorPage() );
+		ss.addRoute( new CommandRoute() );
+		ss.addRoute( new CommandsPageRoute() );	
 	}
 }
