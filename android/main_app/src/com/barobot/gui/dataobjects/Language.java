@@ -5,9 +5,10 @@ import org.orman.mapper.annotation.Entity;
 import org.orman.mapper.annotation.PrimaryKey;
 
 import com.barobot.gui.utils.LangTool;
+import com.eclipsesource.json.JsonObject;
 
 @Entity
-public class Language extends Model<Language>{
+public class Language extends Model<Language> implements JsonSerializable{
 	@PrimaryKey(autoIncrement=true)
 
 	public int id;
@@ -22,4 +23,15 @@ public class Language extends Model<Language>{
 	public String toString() {
 		return getName();
 	}
+	
+	@Override
+	public JsonObject getJson() {
+		JsonObject jsonObject = new JsonObject()
+			.add( "id", this.id )
+			.add( "level", this.name )
+			.add( "tag", this.lang_code )
+			.add( "content", this.flag_code );
+		return jsonObject;
+	}
+	
 }

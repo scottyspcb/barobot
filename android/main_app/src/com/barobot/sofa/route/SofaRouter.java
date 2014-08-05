@@ -1,8 +1,6 @@
 package com.barobot.sofa.route;
 
 import com.barobot.web.route.EmptyRoute;
-import com.barobot.web.route.MainPage;
-import com.barobot.web.route.RPCPage;
 import com.barobot.web.route.TemplateRendering;
 import com.barobot.web.server.SimpleRouter;
 import com.barobot.web.server.SofaServer;
@@ -27,9 +25,10 @@ public class SofaRouter implements SimpleRouter{
 			}
 		} );
 		ss.addRoute( new RPCPage() );
-		ss.addRoute( new TemplateRendering() );
+		ss.addRoute( new SavePage() );
+	//	ss.addRoute( new TemplateRendering() );
 		ss.addRoute( new MainPage() );
-		ss.addRoute( new SettingsPage() );
+	//	ss.addRoute( new SettingsPage() );
 		ss.addRoute( new OrderPage() );
 		ss.addRoute( new SynchroPage() );
 		ss.addRoute( new InfoPage() );

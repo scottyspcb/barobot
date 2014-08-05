@@ -110,4 +110,16 @@ public class AndroidBarobotState2 implements HardwareState{
 			dialog.update(name, value );
 		}*/
 	}
+
+	@Override
+	public Map<String, String> getAll() {
+		Map<String, ?> allEntries 	=  myPrefs.getAll();
+		Map<String, String> nMap 	= new HashMap<String, String>();
+		for (Map.Entry<String, ?> entry : allEntries.entrySet()) {
+		    nMap.put(entry.getKey(), entry.getValue().toString());
+		} 
+		return nMap;
+	}
+	
+	
 }

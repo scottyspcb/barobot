@@ -21,6 +21,8 @@ import org.orman.mapper.Model;
 import org.orman.mapper.ModelQuery;
 import org.orman.sql.C;
 
+import android.os.Environment;
+
 import com.barobot.common.Initiator;
 import com.barobot.common.interfaces.HardwareState;
 import com.barobot.hardware.devices.BarobotConnector;
@@ -33,14 +35,24 @@ public class update_drinks {
 	private static String drinks	= "http://barobot.com/android_data/drinks.json";	
 	private static String errorlog	= "http://barobot.com/android_data/error.php";
 	private static String upload	= "http://barobot.com/android_data/store.php";
-	private static String fulldb	= "http://barobot.com/android_data/barobot.db";
+	public static String fulldb	= "http://barobot.com/android_data/BarobotOrman.db";
+	
 
-	public static String firmware	= "http://barobot.com/android_data/barobot.hex";
+	public static String firmware		= "http://barobot.com/android_data/barobot.hex";
 	public static String localDbPath	= "/data/data/com.barobot/databases/BarobotOrman.db";
 	public static String sourcepath		= "/storage/emulated/0/download/BarobotOrman.db";
+	public static String copyPath		= "/Barobot/BarobotOrman.db";
+	public static String backupPath		= "/Barobot/BarobotOrman%DATE%.db";
 
 	public void load(){
-		InternetHelpers.doDownload(drinks, "drinks.json", new OnDownloadReadyRunnable() {
+	
+	  	  File dir = new File(Environment.getExternalStorageDirectory(), "Barobot");
+	  	  if (!dir.exists()) {
+	  		  Android.createDirIfNotExists("Barobot");
+	  	  }
+	  	  String path = 	dir.getAbsolutePath()+"/"+"drinks.json";
+	  	  
+		InternetHelpers.doDownload(drinks, path, new OnDownloadReadyRunnable() {
 			private String source;
 			public void sendSource( String source ) {
 				this.source = source;

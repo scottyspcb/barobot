@@ -1,5 +1,7 @@
 package com.barobot.common.interfaces;
 
+import java.util.Map;
+
 public interface HardwareState {
 
 	public abstract void set(String name, String value);
@@ -9,5 +11,6 @@ public interface HardwareState {
 	public abstract int getInt(String name, int def);
 
 	public abstract String get(String name, String def);
-
+	
+	public abstract Map<String, String> getAll();
 }

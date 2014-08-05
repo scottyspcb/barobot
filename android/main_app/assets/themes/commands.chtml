@@ -4,18 +4,50 @@
 <ul>
 {.loop in $commands as $command}
 	<li>
-		<a class="btn btn-primary" href="javascript:void(0)" onclick="run_command( "{$command}", this )">{$command}</a>
+		<a class="btn btn-primary" href="javascript:void(0)" onclick="run_command( '{$command}', this )">{$command}</a>
 	</li>
 {/loop}
 </ul>
+
+<table>
+
+
+{.loop in $options as $name:$value}
+	<tr>
+		<td style="width:150px">
+			<b>{$name}</b>
+		</td><td>
+			<input id="option_{$name}" data_type="options" value="{$value}" style="width:250px">
+			<input type="button"  class="save_it" id="save_{$name}" name="text_translated" value="Zapisz" onclick="save_it( this, '{$name}' )">
+		</td>
+	</tr>
+{/loop}
+</table>
+
 <script>
 function run_command( command, btn ){
-	btn.addClass("btn-danger");
+	$(btn).addClass("btn-danger");
 	$.get("/command/" + command,{
 	  }, function(dane){
-	    btn.removeClass("btn-danger");
+	    $(btn).removeClass("btn-danger");
 	  }
 	);
 }
+function save_it( btn, id ){
+		$(btn).hide();
+		var name = $("#option_"+id).val();
+		var type = $("#option_"+id).attr("data_type");
+		$.get("/save",{
+			  id: id,
+			  type: type,
+			  name: name
+		  }, function(dane){
+			$(btn).show();
+			if(dane != "OK"){
+				alert("Błąd zapisu");
+			}
+		  }
+		);
+	}
 </script>
 {#}

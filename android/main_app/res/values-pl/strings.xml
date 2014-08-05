@@ -118,5 +118,6 @@
     <string name="add_recipe_btn">+ przepis</string>
     <string name="remove_recipe_btn">- przepis</string>
     <string name="goto_main_menu">Główne menu</string>
+    <string name="myip">Pokaż adres urządzenia</string>
 
 </resources>
