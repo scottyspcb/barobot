@@ -7,6 +7,7 @@ import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
 import com.barobot.other.Audio;
 import com.barobot.parser.Queue;
+import com.barobot.sofa.route.CommandRoute;
 
 import android.os.Bundle;
 import android.app.Activity;
@@ -41,9 +42,8 @@ public class OptionsActivity extends BarobotMain {
 			serverIntent = new Intent(this, RecipeSetupActivity.class);
 			break;
 		case R.id.options_stop:
-			mq = barobot.main_queue;
-			mq.clear();
-			barobot.moveToStart();
+			CommandRoute.runCommand("command_clear");
+			CommandRoute.runCommand("command_move_to_start");
 			break;
 		case R.id.options_advanced_button:
 			serverIntent  = new Intent(this, DebugActivity.class);
@@ -83,14 +83,14 @@ public class OptionsActivity extends BarobotMain {
 	        }
 			break;
 		case R.id.options_calibrate_button:
-			barobot.kalibrcja();
+			CommandRoute.runCommand("command_find_bottles");
 			break;
 		case R.id.settings_unlock:
-			barobot.main_queue.unlock();
+			CommandRoute.runCommand("command_unlock");
 			break;
 
 		case R.id.options_demo_button:
-			barobot.startDemo();
+			CommandRoute.runCommand("command_demo");
 			break;
 		}
 		if(serverIntent!=null){
