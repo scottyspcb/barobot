@@ -118,5 +118,5 @@
     <string name="add_recipe_btn">+ рецепт</string>
     <string name="remove_recipe_btn">- Рецепт</string>
 
-
+    <string name="myip">Show device address</string>
 </resources>

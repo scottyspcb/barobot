@@ -35,7 +35,6 @@
     <string name="glass_reminder_message1">Place glass into the tray</string>
     <string name="glass_reminder_button_ok">OK</string>
     <string name="glass_reminder_button_cancel">Cancel</string>
-  
     <!-- Bottle Setup -->
     <string name="empty_bottle_string"></string>
 
