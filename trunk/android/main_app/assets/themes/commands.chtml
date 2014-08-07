@@ -24,6 +24,21 @@
 {/loop}
 </table>
 
+Dodaj nową wartość:
+<table>
+<tr class="newrow">
+	<td style="width:150px">
+		<input class="new_id" data_type="options" value="" style="width:250px">
+	</td><td>
+		<input class="new_value" data_type="options" value="" style="width:250px">
+		<input type="button"  class="save_it" name="text_translated" value="Zapisz" onclick="save_new( this )">
+	</td>
+</tr>
+</table>
+
+
+
+
 <script>
 function run_command( command, btn ){
 	$(btn).addClass("btn-danger");
@@ -49,5 +64,26 @@ function save_it( btn, id ){
 		  }
 		);
 	}
+function save_new( btn ){
+	$(btn).hide();
+
+	var id = $(btn).parents(".newrow").find(".new_id").val();
+	var value = $(btn).parents(".newrow").find(".new_value").val();
+	var type = $(btn).parents(".newrow").find(".new_value").attr("data_type");
+
+	$.get("/save",{
+		  id: id,
+		  type: type,
+		  name: value
+	  }, function(dane){
+		$(btn).show();
+		if(dane != "OK"){
+			alert("Błąd zapisu");
+		}
+	  }
+	);
+}
+
+	
 </script>
 {#}
