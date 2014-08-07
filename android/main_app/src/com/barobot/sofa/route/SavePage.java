@@ -46,13 +46,9 @@ public class SavePage extends EmptyRoute {
 					}
 				}	
 			}else if( type.equals( "options")){
-				if(!"".equals(id)){
-					BarobotConnector barobot = Arduino.getInstance().barobot;
-					barobot.state.set(id, value);
-					return "OK";
-				}else{
-					return "ERROR6";
-				}
+				BarobotConnector barobot = Arduino.getInstance().barobot;
+				barobot.state.set(id, value);
+				return "OK";
 			}
 			return "ERROR2";	
 		}
