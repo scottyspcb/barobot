@@ -7,8 +7,8 @@
     <!-- DeviceListActivity -->
     <string name="scanning">Поиск устройств</string>
     <string name="select_device">Выбрать устройство для подключения</string>
-    <string name="none_paired">No devices have been paired</string>
-    <string name="none_found">Устройства не найдены</string>
+    <string name="none_paired">Устройства не спарованные</string>
+	<string name="none_found">Устройства не найдены</string>
 
     <string name="button_scan">Поиск устройств</string>
     <string name="about_info">Авторы</string>
@@ -54,25 +54,26 @@
     <string name="action_settings">Настройки</string>
     <string name="action_main">Сделать напиток</string>
     <string name="action_bottle_setup">Конфигурация бутылки</string>
-    <string name="action_recipe_setup">Customize Recipes</string>
-    <string name="action_creator">Создавать</string>
+    <string name="none_paired">Устройства не спарованные</string>
+	<string name="action_recipe_setup">Конфигурация рецепта</string>
+	<string name="action_creator">Создавать</string>
     <string name="menu_favorite">Попробовать фаворитные </string>
 
     <string name="menu_lucky">I feel lucky</string>
 
     <string name="menu_bottles">Конфигурация бутылок</string>
     <string name="menu_mobile">Мобильные заказы</string>
-    <string name="menu_options">Опции и настройки</string>
+	<string name="menu_options">Настройки</string>
 
     <!-- Options Activity -->
     <string name="options_bottle_setup_button">Конфигурация бутылки</string>
     <string name="options_recipe_setup_button">Конфигурация рецепта</string>
-    <string name="options_extra_setup_button">Конфигурация внешнего ингредиента</string>
+	<string name="options_extra_setup_button">Конфигурация ингредиента</string>
     <string name="options_lights_button">Настройки освещения</string>
     <string name="options_demo_button">Деморежим</string>
     <string name="options_advanced_button">Расширенные настройки</string>
     <string name="options_about_button">О Barobot</string>
-    <string name="options_turn_off_button">Homeing</string>
+	<string name="options_turn_off_button">Калибровка</string>
 
     <!-- Create Activity -->
     <string name="create_pour_button">Старт!</string>
@@ -100,11 +101,11 @@
     <string name="product_field_liquid"></string>
     <string name="product_field_capacity"></string>
     <string name="product_liquid_label">Жидкости</string>
-    <string name="product_type_label">Types</string>
+	<string name="product_type_label">Типы</string>
     <string name="product_capacity_label">Ёмкости </string>
     <string name="image_desc">[Drink Image]</string>
-    <string name="title_activity_random">Сделать случайное</string>
-    <string name="title_activity_options">Опции и настройки</string>
+	<string name="title_activity_random">Сделать случайный коктейль</string>
+	<string name="title_activity_options">Настройки</string>
 
     <!-- Progress Bars -->
     <string name="progress_bar_sweet_name">Сладкий</string>
@@ -113,10 +114,12 @@
     <string name="progress_bar_strength_name">Крепкий</string>
     <string name="options_calibrate">Калибровка</string>
     <string name="options_stop">Стоп</string>
-    <string name="title_activity_wizard_start">Start Wizard</string>
+	<string name="title_activity_wizard_start"> Креатор</string>
     <string name="unlock">Отблокировать</string>
     <string name="add_recipe_btn">+ рецепт</string>
     <string name="remove_recipe_btn">- Рецепт</string>
 
-    <string name="myip">Show device address</string>
+	<string name="myip">Покажи адреc устройства </string>
+	<string name="goto_main_menu">Главное меню</string>
+	
 </resources>
