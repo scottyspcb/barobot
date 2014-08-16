@@ -21,7 +21,6 @@ public class BarobotActivity extends BarobotMain {
 
         int requestCode = 0;
         startActivityForResult(serverIntent,requestCode);
-
 	}
 	@Override
 	protected void onNewIntent(Intent intent) {

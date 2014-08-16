@@ -6,7 +6,6 @@
 	 	<meta name="viewport" content="width=device-width, height=device-height,  initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 		<meta name="apple-mobile-web-app-capable" content="yes" />
 		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-	 	
 	 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		<link rel="shortcut icon" href="favicon.png" type="image/png" />
 		<link rel="apple-touch-icon" href="favicon.png" type="image/png" />		
@@ -21,42 +20,6 @@
 	</body>
 </html>
 {#}
-{#body}
 
-<table>
-{.loop in $names as $item}
-	<tr>
-		<td style="width:150px">
-			Typ: {$item.table_name}
-		</td><td style="width:150px">
-			Numer {$item.element_id}
-		</td><td>
-			<b>{$item.language_code}</b>
-		</td><td>
-			<input id="text_translated_{$item.id}" data_type="Translated_name" name="text_translated" value="{$item.translated}" style="width:250px">
-			<input type="button"  class="save_it" id="save_{$item.id}" name="text_translated" value="Zapisz" onclick="save_it( this, '{$item.id}' )">
-		</td>
-	</tr>
-{/loop}
-</table>
 
-<script>
-	function save_it( btn, id ){
-		$(btn).hide();
-		var name = $("#text_translated_"+id).val();
-		var type = $("#text_translated_"+id).attr("data_type");
-		$.get("/save",{
-			  id: id,
-			  type: type,
-			  name: name
-		  }, function(dane){
-			$(btn).show();
-			console.log(dane);
-			if(dane != "OK"){
-				alert("Błąd zapisu");
-			}
-		  }
-		);
-	}
-</script>
-{#}
+

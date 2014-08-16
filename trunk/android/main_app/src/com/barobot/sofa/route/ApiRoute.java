@@ -8,7 +8,7 @@ import fi.iki.elonen.NanoHTTPD.IHTTPSession;
 
 public class ApiRoute extends EmptyRoute {
 	ApiRoute(){
-		this.regex = "^/api/";
+		this.regex = "^/api$";
 	}
 
 	@Override

@@ -1,24 +1,8 @@
 package com.barobot;
 
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
-import org.orman.mapper.Model;
-import org.orman.mapper.ModelQuery;
-import org.orman.sql.C;
-import org.orman.sql.Query;
-
-import com.barobot.gui.dataobjects.Language;
-import com.barobot.gui.dataobjects.Recipe_t;
-import com.barobot.gui.dataobjects.Slot;
-import com.barobot.gui.dataobjects.Translated_name;
-
 import android.app.Activity;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -72,11 +56,6 @@ case R.id.menu_choose:
 	serverIntent = new Intent(this, RecipeListActivity.class);
 	serverIntent.putExtra(RecipeListActivity.MODE_NAME, RecipeListActivity.Mode.Normal.ordinal());
 	break;
-
-case R.id.menu_lucky:
-	serverIntent = new Intent(this, RecipeListActivity.class);
-	serverIntent.putExtra(RecipeListActivity.MODE_NAME, RecipeListActivity.Mode.Random.ordinal());
-	break;	
 
 
 if(serverIntent!=null){

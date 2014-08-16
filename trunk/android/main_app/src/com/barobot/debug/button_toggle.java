@@ -16,7 +16,7 @@ public class button_toggle implements OnClickListener{
   	  	boolean isChecked		= tb.isChecked();
   //	  	tb.setChecked(!isChecked);		//anuluj zmian, zrb to dopiero po otrzymaniu potwierdzenia
   	  	BarobotConnector barobot = Arduino.getInstance().barobot;
-		Queue q					= barobot.main_queue;
+	//	Queue q					= barobot.main_queue;
 		switch (v.getId()) {
 
 			case R.id.need_glass:

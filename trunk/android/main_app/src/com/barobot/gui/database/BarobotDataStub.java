@@ -5,12 +5,6 @@ import com.barobot.hardware.devices.BarobotConnector;
 
 public class BarobotDataStub {
 	
-	public static void SetupDatabase()
-	{
-		BarobotData.ClearAllTables();
-		SetupSlots();
-	}
-	
 	private static void SetupSlots()
 	{
 		for (int i= 1 ; i <= 12; i++)
@@ -90,7 +84,7 @@ public class BarobotDataStub {
 		rec = new Recipe_t();
 		rec.name = "My favorite drink";
 		rec.favorite = true;
-		rec.photoID = 2;
+		rec.photoId = 2;
 		rec.insert();
 		rec.ingredients.add(ing2);
 		

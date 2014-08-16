@@ -8,7 +8,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.barobot.gui.database.DataContract;
 import com.barobot.gui.database.DbHelper;
 
 abstract public class DbRow {
@@ -22,14 +21,6 @@ abstract public class DbRow {
 		DbHelper dbHelper = new DbHelper(context);
 		dbW = dbHelper.getWritableDatabase();
 		dbR = dbHelper.getReadableDatabase();
-	}
-
-	long insert(){
-		ContentValues cv = new ContentValues();
-		cv.put(DataContract.Liquids.COLUMN_NAME_NAME, "");
-		cv.put(DataContract.Liquids.COLUMN_NAME_TYPE, "");
-		cv.put(DataContract.Liquids.COLUMN_NAME_VOLTAGE, "");
-		return dbW.insert(DataContract.Liquids.TABLE_NAME, null, cv);
 	}
 
 	public ArrayList<HashMap<String, String>> getAllStudents() {

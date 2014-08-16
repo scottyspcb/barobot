@@ -24,11 +24,6 @@ public class CommandsPageRoute extends EmptyRoute {
 		}
 		Chunk action_chunk			= theme.makeChunk("commands#body");
     	action_chunk.set("commands", CommandRoute.geCommands() );
-    	
-    	BarobotConnector barobot = Arduino.getInstance().barobot;
-    	
-    	action_chunk.set("options", barobot.state.getAll() );
-    	
     	return action_chunk.toString();
 	}
 }

@@ -1,12 +1,22 @@
 package com.barobot.sofa.route;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Map.Entry;
+
+import org.orman.mapper.Model;
+import org.orman.mapper.ModelQuery;
+import org.orman.sql.C;
 
 import com.barobot.AppInvoker;
 import com.barobot.common.Initiator;
 import com.barobot.common.constant.Constant;
+import com.barobot.gui.dataobjects.Liquid_t;
+import com.barobot.gui.dataobjects.Recipe_t;
+import com.barobot.gui.dataobjects.Type;
+import com.barobot.gui.utils.LangTool;
 import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
 import com.barobot.other.Android;
@@ -30,12 +40,14 @@ public class CommandRoute extends EmptyRoute {
 		use_raw_output = true;
 		this.init();
 	}
+
 	private class command_listener {
 		public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 				int posx, int posy) {
 			return false;
 		}
 	}
+
 	private static Map<String, command_listener> index = new HashMap<String, command_listener>();
 
 	private static Audio getAudio() {
@@ -47,11 +59,15 @@ public class CommandRoute extends EmptyRoute {
 		return a;
 	}
 
-	public static String[] geCommands() {
-		String[] a = {};
-		return index.keySet().toArray(a);
+	public static Map<String, String> geCommands() {
+		Map<String, String> index2 = new HashMap<String, String>();
+		for (Entry<String, command_listener> entry : index.entrySet()) {
+			String translation = LangTool.translateName( entry.getKey().hashCode(), "command", entry.getKey() );
+			index2.put(entry.getKey(), translation);
+		}
+		return index2;
 	}
-	
+
 	@Override
 	public String run(String url, SofaServer sofaServer, Theme theme,
 			IHTTPSession session) {
@@ -75,8 +91,19 @@ public class CommandRoute extends EmptyRoute {
 		}
 		return false;
 	}
+	public static boolean runCommand2( String command ){
+		return runCommand("command_" + command );
+	}
 
 	private void init() {
+		index.put("system_test", new command_listener() {
+			@Override
+			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq, int posx, int posy) {
+				barobot.systemTest();
+				return true;
+			}
+		});
+
 		index.put("command_clear_queue", new command_listener() {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
@@ -238,24 +265,6 @@ public class CommandRoute extends EmptyRoute {
 			}
 		});
 
-		index.put("command_download_database", new command_listener() {
-			@Override
-			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
-					int posx, int posy) {
-				// !!!
-				return true;
-			}
-		});
-
-		index.put("command_set_neutral_y", new command_listener() {
-			@Override
-			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
-					int posx, int posy) {
-				barobot.state.set("NEUTRAL_POS_Y", "" + posy);
-				String nn = barobot.state.get("NEUTRAL_POS_Y", "0");
-				return true;
-			}
-		});
 
 		index.put("command_goToNeutralY", new command_listener() {
 			@Override
@@ -371,7 +380,13 @@ public class CommandRoute extends EmptyRoute {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
-				mq.add("TEST", false);
+				
+				
+				
+				
+				
+				
+				
 				return true;
 			}
 		});
@@ -651,6 +666,15 @@ public class CommandRoute extends EmptyRoute {
 			}
 		});
 
+		index.put("command_smile", new command_listener() {
+			@Override
+			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
+					int posx, int posy) {
+				
+				return true;
+			}
+		});	
+		
 		index.put("command_goto_max_x", new command_listener() {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
@@ -658,6 +682,7 @@ public class CommandRoute extends EmptyRoute {
 				return true;
 			}
 		});
+
 
 		index.put("command_goto_min_x", new command_listener() {
 			@Override
@@ -689,7 +714,7 @@ public class CommandRoute extends EmptyRoute {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
-				barobot.scann_leds();
+				barobot.scann_leds(q);
 				return true;
 			}
 		});
@@ -698,7 +723,7 @@ public class CommandRoute extends EmptyRoute {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
-				barobot.setLeds("22", 255);
+				barobot.setLeds(q,"22", 255);
 				return true;
 			}
 		});
@@ -707,7 +732,7 @@ public class CommandRoute extends EmptyRoute {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
-				barobot.setLeds("44", 255);
+				barobot.setLeds(q,"44", 255);
 				return true;
 			}
 		});
@@ -716,7 +741,7 @@ public class CommandRoute extends EmptyRoute {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
-				barobot.setLeds("11", 255);
+				barobot.setLeds(q,"11", 255);
 				return true;
 			}
 		});
@@ -757,7 +782,7 @@ public class CommandRoute extends EmptyRoute {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
-				barobot.moveToStart();
+				barobot.moveToStart( q );
 				return true;
 			}
 		});
@@ -806,7 +831,7 @@ public class CommandRoute extends EmptyRoute {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
-				barobot.kalibrcja();
+				barobot.kalibrcja( q );
 				return true;
 			}
 		});
@@ -820,6 +845,78 @@ public class CommandRoute extends EmptyRoute {
 			}
 		});
 
+		index.put("command_index_names", new command_listener() {
+			@Override
+			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq, int posx, int posy) {
+				Initiator.logger.i(Constant.TAG,"index_names");
+				List<Liquid_t> hh =  Model.fetchQuery(ModelQuery.select().from(Liquid_t.class).getQuery(),Liquid_t.class);
+				for(Liquid_t liquid : hh)
+				{
+					boolean exists = LangTool.checkIsTranslated(liquid.id, "liquid", liquid.name);
+					if(!exists){
+						LangTool.InsertTranslation( liquid.id, "liquid", liquid.name );
+					}
+				}
+				Initiator.logger.i(Constant.TAG,"tłumaczenie liquid" + hh.size());
+
+				List<Type> hh2 =  Model.fetchQuery(ModelQuery.select().from(Type.class).getQuery(),Type.class);
+				for(Type tt2 : hh2)
+				{
+					boolean exists = LangTool.checkIsTranslated(tt2.id, "type", tt2.name);
+					if(!exists){
+						LangTool.InsertTranslation( tt2.id, "type", tt2.name );
+					}
+				}
+				Initiator.logger.i(Constant.TAG,"tłumaczenie type" + hh2.size());
+
+				List<Recipe_t> hh3 =  Model.fetchQuery(ModelQuery.select().from(Recipe_t.class).where(C.eq("unlisted", false)).getQuery(),Recipe_t.class);
+				for(Recipe_t tt3 : hh3)
+				{
+					boolean exists = LangTool.checkIsTranslated(tt3.id, "recipe", tt3.name);
+					if(!exists){
+						LangTool.InsertTranslation( tt3.id, "recipe", tt3.name );
+					}
+				}
+				Initiator.logger.i(Constant.TAG,"tłumaczenie recipe" + hh3.size());
+
+				for (Entry<String, command_listener> entry : index.entrySet()) {
+					boolean exists = LangTool.checkIsTranslated( entry.getKey().hashCode(), "command", entry.getKey() );
+					if(!exists){
+						LangTool.InsertTranslation( entry.getKey().hashCode(), "command", entry.getKey() );
+					}
+				}
+
+				return true;
+			}
+		});
+		
+		
+		
+		
+		
+
+		index.put("command_download_database", new command_listener() {
+			@Override
+			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
+					int posx, int posy) {
+				// !!!
+				return true;
+			}
+		});
+
+		index.put("command_set_neutral_y", new command_listener() {
+			@Override
+			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
+					int posx, int posy) {
+				barobot.state.set("NEUTRAL_POS_Y", "" + posy);
+				String nn = barobot.state.get("NEUTRAL_POS_Y", "0");
+				return true;
+			}
+		});
+		
+		
+		
+		
 	}
 
 }

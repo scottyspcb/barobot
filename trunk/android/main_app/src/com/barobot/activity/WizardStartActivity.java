@@ -31,7 +31,7 @@ public class WizardStartActivity extends BarobotMain{
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		
 		setContentView(R.layout.activity_wizard_start);
-		Engine.GetInstance(this).getRecipes();
+		Engine.GetInstance().getRecipes();
 		String langCode = Locale.getDefault().getLanguage();	// i.e. "pl"
 		//Log.i("readLangId1", Locale.getDefault().getDisplayLanguage());
 		LangTool.setLanguage(langCode);

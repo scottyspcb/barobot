@@ -9,7 +9,7 @@ import fi.iki.elonen.NanoHTTPD.IHTTPSession;
 public class OrderPage extends EmptyRoute{
 
 	OrderPage(){
-		this.regex = "^/order/";
+		this.regex = "^/order$";
 	}
 
 	@Override

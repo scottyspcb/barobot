@@ -19,7 +19,7 @@ public class Mainboard{
 	private static StringBuilder buffer = new StringBuilder();
 	
 	protected final Object lock = new Object();				// protect wait_for var
-	
+
 	private static Map<String, GlobalMatch> globalRegex = new HashMap<String, GlobalMatch>();
 	private static Map<String, String> modifiers = new HashMap<String, String>();
 
@@ -36,20 +36,18 @@ public class Mainboard{
 		this.addGlobalModifier( "^RR", "R" );			// RR => R
 	}
 	public void read(String in) {
-	//	synchronized (buffer) {
-			buffer.append(in);
-		//	System.out.println(new String(buffer));
-			int end = buffer.indexOf(separator);
-			if( end!=-1){
-				while( end != -1 ){		// podziel to na kawalki
-					String command	= buffer.substring(0, end);
-					buffer			= buffer.delete(0, end+1);
-					command			= command.trim();
-					analyseInput(command);
-					end		= buffer.indexOf(separator);
-				}
+		buffer.append(in);
+		System.out.println(new String(buffer));
+		int end = buffer.indexOf(separator);
+		if( end!=-1){
+			while( end != -1 ){		// podziel to na kawalki
+				String command	= buffer.substring(0, end);
+				buffer			= buffer.delete(0, end+1);
+				command			= command.trim();
+				analyseInput(command);
+				end		= buffer.indexOf(separator);
 			}
-    //    }
+		}
 	}
 	
 	private void analyseInput(final String command) {
@@ -203,11 +201,11 @@ public class Mainboard{
 				}
 			//	}
 			}else{
-				Initiator.logger.i("Mainboard.Send", "no connect");
+				Initiator.logger.i("Mainboard.Send", "no connect1 [" + command.trim()+"]");
 			//	throw new Exception("No connect");
 			}
 		} catch (NullPointerException e) {	
-			Initiator.logger.i("Mainboard.Send", "no connect");
+			Initiator.logger.i("Mainboard.Send", "no connect2 [" + command.trim()+"]");
 			Initiator.logger.appendError(e);
 		} catch (Exception e) {
 			Initiator.logger.appendError(e);

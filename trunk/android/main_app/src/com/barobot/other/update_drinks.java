@@ -31,12 +31,11 @@ import com.eclipsesource.json.JsonObject;
  
 
 public class update_drinks {
-	private static String metadata	= "http://barobot.com/android_data/database.json";
+//	private static String metadata	= "http://barobot.com/android_data/database.json";
 	private static String drinks	= "http://barobot.com/android_data/drinks.json";	
-	private static String errorlog	= "http://barobot.com/android_data/error.php";
+//	private static String errorlog	= "http://barobot.com/android_data/error.php";
 	private static String upload	= "http://barobot.com/android_data/store.php";
-	public static String fulldb	= "http://barobot.com/android_data/BarobotOrman.db";
-	
+	public static String fulldb		= "http://barobot.com/android_data/BarobotOrman.db";
 
 	public static String firmware		= "http://barobot.com/android_data/barobot.hex";
 	public static String localDbPath	= "/data/data/com.barobot/databases/BarobotOrman.db";

@@ -28,9 +28,7 @@ public class DebugTabLog extends Fragment {
     	this.tab_id = tabCommandsId;
     	this.cc		= debugActivity;
     	mConversation = new ArrayAdapter<History_item>(cc, R.layout.message);
-
     	//Arduino.getInstance().getHistory( mConversation );
-
 	}
 	@Override
     public void onActivityCreated(Bundle savedInstanceState) {
