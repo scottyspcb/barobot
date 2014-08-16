@@ -2,6 +2,7 @@ package com.barobot.gui.dataobjects;
 
 import org.orman.mapper.Model;
 import org.orman.mapper.annotation.Entity;
+import org.orman.mapper.annotation.ManyToOne;
 import org.orman.mapper.annotation.PrimaryKey;
 
 @Entity
@@ -16,4 +17,7 @@ public class Important_position extends Model<Important_position>{
 	public boolean is_end_max;
 	public boolean is_start;
 	public boolean is_end;
+
+	@ManyToOne
+	public Robot robot_id;
 }

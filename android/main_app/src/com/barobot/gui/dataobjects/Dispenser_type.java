@@ -1,29 +1,27 @@
 package com.barobot.gui.dataobjects;
 
+
 import org.orman.mapper.Model;
 import org.orman.mapper.annotation.Entity;
-import org.orman.mapper.annotation.ManyToOne;
+
 import org.orman.mapper.annotation.PrimaryKey;
 
 import com.barobot.gui.utils.LangTool;
 
 @Entity
-public class Ingredient_t extends Model<Ingredient_t>{
+public class Dispenser_type extends Model<Dispenser_type>{
+
 	@PrimaryKey(autoIncrement=true)
-	public long id;
+	public int id;
+	public int capacity;
+	public int pour_time;
+	public String allow_capacity;
+	public String name;
 
-	@ManyToOne
-	public Recipe_t recipe;
-
-	@ManyToOne
-	public Liquid_t liquid;
-	
-	public int quantity;
-	public int ind;
-	
 	public String getName() {
-		return String.valueOf(quantity)+ "ml " + liquid.getName();
+		return LangTool.translateName(id, "dispenser_type", name );
 	}
+
 	@Override
 	public String toString() {
 		return getName();

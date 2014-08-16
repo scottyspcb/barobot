@@ -8,7 +8,7 @@ import fi.iki.elonen.NanoHTTPD.IHTTPSession;
 
 public class DrinkCreatorPage extends EmptyRoute {
 	DrinkCreatorPage(){
-		this.regex = "^/synchro/";
+		this.regex = "^/synchro$";
 	}
 	@Override
 	public String run(String url, SofaServer sofaServer, Theme theme,

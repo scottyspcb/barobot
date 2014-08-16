@@ -8,7 +8,7 @@ import fi.iki.elonen.NanoHTTPD.IHTTPSession;
 
 public class InfoPage extends EmptyRoute {
 	InfoPage(){
-		this.regex = "^/info/";
+		this.regex = "^/info$";
 	}
 	@Override
 	public String run(String url, SofaServer sofaServer, Theme theme,

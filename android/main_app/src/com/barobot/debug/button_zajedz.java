@@ -30,8 +30,8 @@ public class button_zajedz  implements OnClickListener {
 				int posy		=  barobot.state.getInt("POSY", 0 );
 				barobot.hereIsStart(posx, posy);
 			  }else{
-				  barobot.moveToStart();
-				  barobot.onDrinkFinish();
+				  barobot.moveToStart( barobot.main_queue );
+				  barobot.onDrinkFinish( barobot.main_queue );
 			  }
 			  break;
 		  case R.id.nalej1:

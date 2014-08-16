@@ -138,8 +138,18 @@ public final class Uploader {
         mProg.setConfig(mAVRConf, mAVRMem);
         int res = mProg.open();
         if(res == -1){
+        	int counter = 10;
+        	while(res == -1 && counter > 0 ){
+        		res = mProg.open();
+        		Initiator.logger.e(TAG,"Try open "+counter);
+        		counter--;
+        	}
+        }
+        if(res == -1){
+        	Initiator.logger.e(TAG,"STK500.open() FAIL ");
         	return false;
         }
+
         int initOK = mProg.initialize();
         if(initOK < 0) {
         	Initiator.logger.e(TAG,"initialization failed ("+initOK+")");

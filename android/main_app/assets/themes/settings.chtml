@@ -1,0 +1,111 @@
+{#translations}
+<table>
+{.loop in $names as $item}
+	<tr>
+		<td style="width:150px">
+			Typ: {$item.table_name}
+		</td><td style="width:150px">
+			Numer {$item.element_id}
+		</td><td>
+			<b>{$item.language_code}</b>
+		</td><td>
+			<input id="text_translated_{$item.id}" data_type="Translated_name" name="text_translated" value="{$item.translated}" style="width:250px">
+			<input type="button"  class="save_it" id="save_{$item.id}" name="text_translated" value="Zapisz" onclick="save_it( this, '{$item.id}' )">
+		</td>
+	</tr>
+{/loop}
+</table>
+
+<script>
+	function save_it( btn, id ){
+		$(btn).hide();
+		var name = $("#text_translated_"+id).val();
+		var type = $("#text_translated_"+id).attr("data_type");
+		$.get("/save",{
+			  id: id,
+			  type: type,
+			  name: name
+		  }, function(dane){
+			$(btn).show();
+			console.log(dane);
+			if(dane != "OK"){
+				alert("Błąd zapisu");
+			}
+		  }
+		);
+	}
+</script>
+{#}
+
+
+
+{#settings}
+<table>	
+	{.loop in $options as $name:$value}
+		<tr>
+			<td style="width:150px">
+				<b>{$name}</b>
+			</td><td>
+				<input id="option_{$name}" data_type="options" value="{$value}" style="width:250px">
+				<input type="button"  class="save_it" id="save_{$name}" name="text_translated" value="Zapisz" onclick="save_it( this, '{$name}' )">
+			</td>
+		</tr>
+	{/loop}
+	</table>
+	
+	Dodaj nową wartość:
+	<table>
+	<tr class="newrow">
+		<td style="width:150px">
+			<input class="new_id" data_type="options" value="" style="width:250px">
+		</td><td>
+			<input class="new_value" data_type="options" value="" style="width:250px">
+			<input type="button"  class="save_it" name="text_translated" value="Zapisz" onclick="save_new( this )">
+		</td>
+	</tr>
+</table>
+
+<script>
+function save_it( btn, id ){
+		$(btn).hide();
+		var name = $("#option_"+id).val();
+		var type = $("#option_"+id).attr("data_type");
+		$.get("/save",{
+			  id: id,
+			  type: type,
+			  name: name
+		  }, function(dane){
+			$(btn).show();
+			if(dane != "OK"){
+				alert("Błąd zapisu");
+			}
+		  }
+		);
+	}
+function save_new( btn ){
+	$(btn).hide();
+
+	var id = $(btn).parents(".newrow").find(".new_id").val();
+	var value = $(btn).parents(".newrow").find(".new_value").val();
+	var type = $(btn).parents(".newrow").find(".new_value").attr("data_type");
+
+	$.get("/save",{
+		  id: id,
+		  type: type,
+		  name: value
+	  }, function(dane){
+		$(btn).show();
+		if(dane != "OK"){
+			alert("Błąd zapisu");
+		}
+	  }
+	);
+}
+</script>
+
+
+
+{#}
+
+
+

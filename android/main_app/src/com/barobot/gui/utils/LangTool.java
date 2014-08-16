@@ -25,7 +25,7 @@ public class LangTool {
 		ModelQuery query = ModelQuery.select().from(Language.class).where(C.eq("lang_code", readLangCode));
 		Language l = Model.fetchSingle(query.getQuery(), Language.class);
 		if( l == null ){
-			Log.e("setLanguage", "no lang" + readLangCode);
+			Log.e("setLanguage", "no lang " + readLangCode);
 			return;
 		}
 		setLanguage(l.id);

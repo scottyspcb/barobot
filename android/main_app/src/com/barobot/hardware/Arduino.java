@@ -19,7 +19,6 @@ import com.barobot.hardware.serial.BT_wire;
 import com.barobot.hardware.serial.Serial_wire2;
 import com.barobot.parser.Queue;
 
-
 public class Arduino{
 	private final Object lock			= new Object();
 	private static Arduino instance		= null;
@@ -107,10 +106,6 @@ public class Arduino{
 					Initiator.logger.appendError(e);
 				}
 		    }
-			@Override
-			public boolean isEnabled() {
-				return true;
-			}
 		};
     	if(debugConnection !=null){
     		debugConnection.close();
@@ -128,7 +123,7 @@ public class Arduino{
                 state.set( "LAST_BT_DEVICE", address );    	// remember device ID
 			}
 		});	
-		debugConnection.addOnReceive(btl);	
+		debugConnection.setOnReceive(btl);	
 		debugConnection.init();
        	if( debugConnection.implementAutoConnect()){
       //  	this.runTimer(debugConnection);

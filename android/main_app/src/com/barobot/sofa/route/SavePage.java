@@ -23,6 +23,7 @@ public class SavePage extends EmptyRoute {
 		use_raw_output = true;
 		this.regex = "^\\/save$";
 	}
+
 	@Override
 	public String run(String url, SofaServer sofaServer, Theme theme, IHTTPSession session){
 		Log.i("RPCPage command", url);

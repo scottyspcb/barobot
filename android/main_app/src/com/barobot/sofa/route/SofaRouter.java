@@ -28,12 +28,15 @@ public class SofaRouter implements SimpleRouter{
 		ss.addRoute( new SavePage() );
 	//	ss.addRoute( new TemplateRendering() );
 		ss.addRoute( new MainPage() );
-	//	ss.addRoute( new SettingsPage() );
+		ss.addRoute( new SettingsPage() );
 		ss.addRoute( new OrderPage() );
-		ss.addRoute( new SynchroPage() );
 		ss.addRoute( new InfoPage() );
 		ss.addRoute( new DrinkCreatorPage() );
 		ss.addRoute( new CommandRoute() );
 		ss.addRoute( new CommandsPageRoute() );	
+		ss.addRoute( new TranslatePage() );
+		
+		
+		
 	}
 }

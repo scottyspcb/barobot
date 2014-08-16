@@ -12,7 +12,7 @@ public class LightManager {
 	public void startDemo(BarobotConnector barobot) {
 		Queue q = barobot.main_queue;
 		if(!barobot.ledsReady){
-			barobot.scann_leds();
+			barobot.scann_leds(q);
 		}
 		LightManager lm = new LightManager();
 

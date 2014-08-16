@@ -19,7 +19,8 @@ public class Recipe_t extends Model<Recipe_t>{
 	public String name;
 	public boolean favorite;
 	public boolean unlisted;
-	public int photoID;
+	public int photoId;
+	public int counter;
 
 	public String getName() {
 		return LangTool.translateName(id, "recipe", name );

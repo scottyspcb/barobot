@@ -22,6 +22,8 @@ public class Liquid_t extends Model<Liquid_t> {
 	public int sour;
 	public int bitter;
 	public int strenght;
+	public int counter;
+	
 	
 	@ManyToOne
 	public Type type;

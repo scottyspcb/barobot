@@ -94,9 +94,9 @@ public class DebugTabLeds extends Fragment {
 		xb6.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 		    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 		        if (isChecked) {
-		        	barobot.setLeds( "ff", 255 );
+		        	barobot.setLeds( barobot.main_queue,"ff", 255 );
 		        } else {
-		        	barobot.setLeds( "ff", 0 );
+		        	barobot.setLeds( barobot.main_queue,"ff", 0 );
 		        }
 		    }
 		});
@@ -127,9 +127,9 @@ public class DebugTabLeds extends Fragment {
 		whto.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 		    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 		        if (isChecked) {
-		        	barobot.setLeds( "08", 255 );
+		        	barobot.setLeds( barobot.main_queue,"08", 255 );
 		        } else {
-		        	barobot.setLeds( "08", 0 );
+		        	barobot.setLeds( barobot.main_queue,"08", 0 );
 		        }
 		    }
 		});
@@ -137,9 +137,9 @@ public class DebugTabLeds extends Fragment {
 		whbo.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 		    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 		        if (isChecked) {
-		        	barobot.setLeds( "80", 255 );
+		        	barobot.setLeds( barobot.main_queue,"80", 255 );
 		        } else {
-		        	barobot.setLeds( "80", 0 );
+		        	barobot.setLeds( barobot.main_queue,"80", 0 );
 		        }
 		    }
 		});
@@ -187,9 +187,8 @@ public class DebugTabLeds extends Fragment {
 		        	int white	= 0;
 		    		Queue q1	= new Queue();
 		    		BarobotConnector barobot = Arduino.getInstance().barobot;
-		    		Queue q		= barobot.main_queue;
-		    		q.add(q1);
 		  		  	barobot.i2c.carret.setRgbw(q1, red,green,blue,white);
+		  		  	barobot.main_queue.add(q1);
 					lastcolor = color;
 		        }
 		        @Override
@@ -208,7 +207,7 @@ public class DebugTabLeds extends Fragment {
 		        	int green	= Color.green(color);
 		    		int blue	= Color.blue(color);
 		    		BarobotConnector barobot = Arduino.getInstance().barobot;
-		        	barobot.setColor( string, red, green, blue, 0 );
+		        	barobot.setColor( barobot.main_queue, string, red, green, blue, 0 );
 					lastcolor = color;
 		        }
 		        @Override

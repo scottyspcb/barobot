@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import android.app.Activity;
@@ -11,6 +12,8 @@ import android.widget.Button;
 
 import com.barobot.activity.RecipeListActivity;
 import com.barobot.common.Initiator;
+import com.barobot.gui.dataobjects.Engine;
+import com.barobot.gui.dataobjects.Slot;
 import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
 import com.barobot.hardware.serial.AndroidLogger;
@@ -52,6 +55,7 @@ public class AppInvoker {
 		//	cm.findCameras();
 			arduino			= new Arduino( main );
 			arduino.onStart(main);
+			Engine.createInstance(main);
 		}
 	}
 	
@@ -90,7 +94,7 @@ public class AppInvoker {
 	public void onConnected() {
 		BarobotConnector barobot = Arduino.getInstance().barobot;
 		if(!Arduino.getInstance().barobot.ledsReady){
-			Arduino.getInstance().barobot.scann_leds();
+			Arduino.getInstance().barobot.scann_leds( barobot.main_queue );
 		}
 		barobot.doHoming( barobot.main_queue, false );
 

@@ -2,42 +2,12 @@
 <h1>Commands</h1>
 <br>
 <ul>
-{.loop in $commands as $command}
+{.loop in $commands as $command:$name}
 	<li>
-		<a class="btn btn-primary" href="javascript:void(0)" onclick="run_command( '{$command}', this )">{$command}</a>
+		<a class="btn btn-primary" href="javascript:void(0)" onclick="run_command( '{$command}', this )">{$name} ({$command})</a>
 	</li>
 {/loop}
 </ul>
-
-<table>
-
-
-{.loop in $options as $name:$value}
-	<tr>
-		<td style="width:150px">
-			<b>{$name}</b>
-		</td><td>
-			<input id="option_{$name}" data_type="options" value="{$value}" style="width:250px">
-			<input type="button"  class="save_it" id="save_{$name}" name="text_translated" value="Zapisz" onclick="save_it( this, '{$name}' )">
-		</td>
-	</tr>
-{/loop}
-</table>
-
-Dodaj nową wartość:
-<table>
-<tr class="newrow">
-	<td style="width:150px">
-		<input class="new_id" data_type="options" value="" style="width:250px">
-	</td><td>
-		<input class="new_value" data_type="options" value="" style="width:250px">
-		<input type="button"  class="save_it" name="text_translated" value="Zapisz" onclick="save_new( this )">
-	</td>
-</tr>
-</table>
-
-
-
 
 <script>
 function run_command( command, btn ){
@@ -47,43 +17,6 @@ function run_command( command, btn ){
 	    $(btn).removeClass("btn-danger");
 	  }
 	);
-}
-function save_it( btn, id ){
-		$(btn).hide();
-		var name = $("#option_"+id).val();
-		var type = $("#option_"+id).attr("data_type");
-		$.get("/save",{
-			  id: id,
-			  type: type,
-			  name: name
-		  }, function(dane){
-			$(btn).show();
-			if(dane != "OK"){
-				alert("Błąd zapisu");
-			}
-		  }
-		);
-	}
-function save_new( btn ){
-	$(btn).hide();
-
-	var id = $(btn).parents(".newrow").find(".new_id").val();
-	var value = $(btn).parents(".newrow").find(".new_value").val();
-	var type = $(btn).parents(".newrow").find(".new_value").attr("data_type");
-
-	$.get("/save",{
-		  id: id,
-		  type: type,
-		  name: value
-	  }, function(dane){
-		$(btn).show();
-		if(dane != "OK"){
-			alert("Błąd zapisu");
-		}
-	  }
-	);
-}
-
-	
+}	
 </script>
 {#}
