@@ -626,4 +626,13 @@
         android:layout_toRightOf="@+id/pacpac"
         android:text="Nalej tutaj" />
 
+    <Button
+        android:id="@+id/auto_repair"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/pacpac"
+        android:layout_alignBottom="@+id/pacpac"
+        android:layout_toRightOf="@+id/pacpac"
+        android:text="Auto Repair" />
+
 </RelativeLayout>

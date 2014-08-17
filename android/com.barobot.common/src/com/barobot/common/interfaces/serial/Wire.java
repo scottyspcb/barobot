@@ -7,8 +7,7 @@ public interface Wire extends CanSend{
 	public boolean isMainConnection = false;
 	public boolean init();
 	public String getName();
-	public void addOnReceive(SerialInputListener inputListener);
-	public void removeOnReceive(SerialInputListener inputListener);
+	public void setOnReceive(SerialInputListener inputListener);
 	public void setSearching( boolean active );
 	public void resume();
 	public boolean setAutoConnect( boolean active );
@@ -28,4 +27,5 @@ public interface Wire extends CanSend{
 	public void reset();
 	boolean open();
 	void onPause();
+	Wire newInstance();
 }

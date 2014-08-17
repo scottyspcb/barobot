@@ -1,30 +1,26 @@
 package com.barobot.isp;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.util.Properties;
 
 import jssc.SerialPortList;
 
 import com.barobot.common.DesktopLogger;
 import com.barobot.common.Initiator;
 import com.barobot.common.IspSettings;
+import com.barobot.common.interfaces.onReadyListener;
+import com.barobot.common.interfaces.serial.Wire;
 import com.barobot.hardware.devices.LightManager;
-import com.barobot.hardware.devices.i2c.I2C_Device;
+import com.barobot.hardware.devices.UploadFirmware;
 import com.barobot.hardware.devices.i2c.Upanel;
 import com.barobot.parser.Queue;
 import com.barobot.parser.utils.CopyStream;
 
-public class Main{
+public class Main implements onReadyListener{
 	public static Thread mt;
 	public String config_filename	= "isp_settings.txt";
-	public Hardware hw;
+	public static boolean allowClose = true;
 	public static Main main = null;
 	public static void main(String[] args) {
 		String[] portNames = SerialPortList.getPortNames();
@@ -46,7 +42,7 @@ public class Main{
 	}
 
 	private void start() {
-		loadProps();
+	//	loadProps();
 		//String[] comlist = list();
 		Wizard w	= new Wizard();
 		Hardware hw = new Hardware("COM4");
@@ -64,32 +60,36 @@ public class Main{
 		LightManager lm			= new LightManager();
 		hw.connectIfDisconnected();
 		
-		hw.barobot.main_queue.add("X2000", false);
-		
+	//	hw.barobot.main_queue.add("X2000", false);
 		//hw.barobot.kalibrcja();
-		
-		
 	//	hw.barobot.scann_leds();
-		
 /*
 		for( int i =0; i<255;i++){
 			int p = com.barobot.common.constant.Pwm.linear2log(i );
 			System.out.println(""+i + "," + p);
 		}
 		*/
+		/*
+		w.fast_close_test( hw );
+		uc.prepareSlaveMB( hw );
+		uc.prepareMB( hw );
+		uc.prepareMBManualReset( hw );
+*/
+	//	UploadFirmware uf			= new UploadFirmware();
+	//	Wire oldConnection			= hw.getConnection();
+	//	allowClose = false;
+		//uf.prepareMB2( hw.getQueue(), oldConnection, this );
+
+		uc.prepareCarret( hw );
 		
-	//	w.fast_close_test( hw );
-	//	uc.prepareSlaveMB( hw );
-	//	uc.prepareMB( hw );
-		//	uc.prepareMB2( hw );
-	//	uc.prepareMBManualReset( hw );
-	//	uc.prepareCarret( hw );
-	//	mr.createContstans();
-	//	uc.prepareUpanels( hw );
-	//	uc.prepareUpanelNextTo( hw, 18 );
-	//	w.fast_close_test( hw );
-	//	uc.prepare1Upanel( hw, hw.barobot, Upanel.FRONT );
-/*
+		/*
+		
+		mr.createContstans();
+		uc.prepareUpanels( hw );
+		uc.prepareUpanelNextTo( hw, 18 );
+		w.fast_close_test( hw );
+		uc.prepare1Upanel( hw, hw.barobot, Upanel.FRONT );
+
 		q.addWaitThread( Main.main );
 		q.addWaitThread( Main.main );
 
@@ -98,37 +98,29 @@ public class Main{
 			System.out.println("Pusto" );
 			return;
 		}*/
-	//	mm.promo_carret( hw );
-	//	mm.promo1( hw );
 
 		/*
+		mm.promo_carret( hw );
+		mm.promo1( hw );
 		mm.testBpm( hw );
 		w.test_proc( hw );	
-	//	w.swing( hw, 3, 1000, 5000 );
+		w.swing( hw, 3, 1000, 5000 );
 		w.mrygaj_po_butelkach( hw, 100 );
 		w.mrygaj_grb( hw, 30 );
 		w.illumination1( hw );
-*/
-	//	q.addWaitThread( Main.main );
 
-	//	q.addWaitThread( Main.main );
+		q.addWaitThread( Main.main );
+		q.addWaitThread( Main.main );
+		lm.flaga( hw.barobot, q, 6, 100 );
 
-
-	//	lm.flaga( hw.barobot, q, 6 );
-/*
 	//	q.addWaitThread( Main.main );
 		lm.mrygajRGB( hw.barobot, q, 60, 50 );
-
 		lm.nazmiane( hw.barobot, q, 6, 100 );
 		lm.loading(hw.barobot, q, 6);
-		
 		lm.linijka( hw.barobot, q, 6, 100 );
 		lm.tecza( hw.barobot, q, 6 );
 		lm.strobo( hw.barobot, q, 109 );
 		lm.zapal(hw.barobot, q);
-		
-		
-		
 		w.koniec( hw );
 	*/
 		
@@ -139,51 +131,29 @@ public class Main{
 	//	
 	//	w.mrygaj(hw, 10);
 	//	w.mrygaj_po_butelkach( hw, 100 );
+/*
+		w.fadeButelka( hw, 5, 20 );
+		w.ilumination2( hw );
+		w.ilumination3( hw, "88", 255, "00", 2 );
+		w.zamrugaj(hw, 200, 50 );
+		w.fadeAll( hw, 4 );
+*/
 
-	//	w.fadeButelka( hw, 5, 20 );
-	//	w.ilumination2( hw );
-	//	w.ilumination3( hw, "88", 255, "00", 2 );
-	//	w.zamrugaj(hw, 200, 50 );
-	//	w.fadeAll( hw, 4 );
-	//	w.zapal( hw );
-	//	w.zgas( hw );
-		
-	//	w.zapalPrzod( hw );
-		
 	//	hw.close();
 
-		hw.closeOnReady();
-		q.addWaitThread( Main.main );
-		System.out.println("koniec");
+		closeIfReady( hw, q );
 	}
-	public Properties p;
-	private void loadProps() {
-        FileInputStream propFile;
-        p =  new Properties(System.getProperties());
-		try {
-			propFile = new FileInputStream( config_filename );
-			p.load(propFile);
-		} catch (FileNotFoundException e) {
-			Initiator.logger.appendError(e);
-		} catch (IOException e) {
-			Initiator.logger.appendError(e);
-		}	
-	   // p.setProperty("Height", "200");
-	   // p.put("Width", "1500");
-		saveProps();
-	}
-	private void saveProps() {
-		String comments = "PropertiesDemo";
-		OutputStream out;
-		try {
-			out = new FileOutputStream(new File(config_filename));
-			p.store(out, comments);	
-		} catch (FileNotFoundException e) {
-			Initiator.logger.appendError(e);
-		} catch (IOException e) {
-			Initiator.logger.appendError(e);
+	private void closeIfReady( Hardware hw, Queue q ) {
+		if(allowClose){
+			hw.closeOnReady();
+			q.addWaitThread( Main.main );
+			System.out.println("Main koniec");
+		}else{
+			Main.wait(1000);
+			closeIfReady(hw, q);
 		}
 	}
+
 	public void runCommand(String command, Hardware hw ) {
         Process p;
         if(hw != null ){
@@ -228,5 +198,10 @@ public class Main{
 		} catch (InterruptedException e) {
 			Initiator.logger.appendError(e);
 		}
+	}
+
+	@Override
+	public void onReady() {
+		 Main.allowClose		= true;
 	}
 }

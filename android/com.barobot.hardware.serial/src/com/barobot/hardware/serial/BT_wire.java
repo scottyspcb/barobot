@@ -2,6 +2,7 @@ package com.barobot.hardware.serial;
 
 import java.io.IOException;
 
+import com.barobot.common.constant.LowHardware;
 import com.barobot.common.interfaces.serial.SerialEventListener;
 import com.barobot.common.interfaces.serial.SerialInputListener;
 import com.barobot.common.interfaces.serial.Wire;
@@ -17,7 +18,7 @@ public class BT_wire implements Wire {
     private static final String TAG = BT_wire.class.getSimpleName();
     private BluetoothAdapter mBluetoothAdapter = null;    // Local Bluetooth adapter
     private BluetoothChatService mChatService = null;    // Member object for the chat services
-	private int baud = 57600;//115200;
+	private int baud = LowHardware.MAINBOARD_SERIAL0_BOUND;
 	private SerialInputListener listener;
 	private Activity view;
 	private SerialEventListener iel = null;
@@ -25,6 +26,13 @@ public class BT_wire implements Wire {
 		super();
 		this.view = mainActivity;
 	}
+
+	@Override
+	public BT_wire newInstance() {
+		BT_wire sw = new BT_wire(this.view );
+		return sw;
+	}
+
 	@Override
 	public boolean init() {
 		mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -201,12 +209,8 @@ public class BT_wire implements Wire {
 	}
 
 	@Override
-	public void addOnReceive(SerialInputListener inputListener) {
+	public void setOnReceive(SerialInputListener inputListener) {
 		this.listener = inputListener;
-	}
-
-	@Override
-	public void removeOnReceive(SerialInputListener inputListener) {
 	}
 
 	@Override

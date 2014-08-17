@@ -37,7 +37,7 @@ public class Mainboard{
 	}
 	public void read(String in) {
 		buffer.append(in);
-		System.out.println(new String(buffer));
+	//	System.out.println(new String(buffer));
 		int end = buffer.indexOf(separator);
 		if( end!=-1){
 			while( end != -1 ){		// podziel to na kawalki

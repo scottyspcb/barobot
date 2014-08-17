@@ -76,7 +76,7 @@ public class InternetHelpers {
                     URLConnection connection = url.openConnection();
                     connection.connect();
                     // this will be useful so that you can show a typical 0-100% progress bar
-                    int fileLength = connection.getContentLength();
+        //            int fileLength = connection.getContentLength();
 
                     // download the file
                     InputStream input	= new BufferedInputStream(url.openStream());
@@ -96,6 +96,7 @@ public class InternetHelpers {
                     input.close();
                     runnable.sendSource(strFileContents);
             		runnable.run();
+	
              	} catch (FileNotFoundException e) {
              		 Initiator.logger.appendError(e);
                 } catch (Exception e) {

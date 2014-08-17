@@ -1,5 +1,7 @@
 package com.barobot.common;
 
+import com.barobot.common.constant.LowHardware;
+
 public class IspSettings {
 	public static boolean safeMode		= true;
 	public static boolean setFuseBits	= false;
@@ -17,7 +19,7 @@ public class IspSettings {
 	//public static String mbBootloaderPath		= "C:\\workspace\\Barobot\\arduino\\projects2\\barobot_mainboard\\build\\barobot_mainboard.hex";
 	//public static String mbBootloaderPath		= "C:\\workspace\\Barobot\\desktop\\BarobotISP\\assets\\barobot_mainboard.hex";
 
-	public static int fullspeed			= 57600;//115200;
+	public static int fullspeed			= LowHardware.MAINBOARD_SERIAL0_BOUND;//115200;
 	public static int programmspeed		= 19200;
 
 	public static int wait_tries		= 30;

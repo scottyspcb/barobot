@@ -1,7 +1,6 @@
 package com.barobot.isp;
 
 import com.barobot.common.EmptyBarobotState;
-import com.barobot.common.Initiator;
 import com.barobot.common.IspSettings;
 import com.barobot.common.interfaces.HardwareState;
 import com.barobot.common.interfaces.serial.SerialInputListener;
@@ -31,7 +30,6 @@ public class Hardware {
 		MyRetReader mrr = new MyRetReader( bel, barobot );
 		barobot.mb.setRetReader( mrr );
 	}
-
 	SerialInputListener listener = null;
 
 	public void connectIfDisconnected() {

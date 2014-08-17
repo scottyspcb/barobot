@@ -40,17 +40,14 @@ public class BarobotConnector {
 		SerialInputListener listener = new SerialInputListener() {
 			public void onRunError(Exception e) {
 			}
-			public void onNewData(byte[] data, int length) {
+			public synchronized void onNewData(byte[] data, int length) {
 				String in = new String(data, 0, length);
 			//	Log.e("Serial addOnReceive", message);
 				mb.read( in );
 			//	debug( message );
 			}
-			public boolean isEnabled() {
-				return true;
-			}
 		};
-		connection.addOnReceive( listener );
+		connection.setOnReceive( listener );
 		return listener;
 	}
 
@@ -69,8 +66,7 @@ public class BarobotConnector {
 		i2c					= null;
 	}
 
-	public void scann_leds(){
-		Queue q			= main_queue;
+	public void scann_leds( Queue q ){
 		LedOrder lo = new LedOrder();
 		lo.asyncStart(this, q);
 		q.add( new AsyncMessage( true ){
@@ -114,7 +110,7 @@ public class BarobotConnector {
 			mq.add("LIVE A OFF", false );
 	//		add("EZ");
 			int poszdown	=  state.getInt("ENDSTOP_Z_MIN", Constant.SERVOZ_DOWN_POS );
-			mq.add("Z" + poszdown, false );		// zwraca pocz¹tek operacji a nie koniec
+			mq.add("Z" + poszdown, false );		// zwraca poczï¿½tek operacji a nie koniec
 			mq.add("DX", false );
 			mq.add("DY", false );
 			mq.add("DZ", false );
@@ -188,7 +184,7 @@ public class BarobotConnector {
 
 	public void startDoingDrink( Queue q) {// homing
 		i2c.carret.setLed( q, "11", 255 );
-		setLeds( "40", 255 );
+		setLeds( q, "40", 255 );
 		doHoming(q, false);
 	}
 
@@ -200,7 +196,7 @@ public class BarobotConnector {
 		
 		int poszup	=  SERVOZ_UP_POS;
 		q.add("Z" + poszup+","+DRIVER_Z_SPEED, true);
-	//	q.addWait( virtualComponents.SERVOZ_UP_TIME );	// wiec trzeba poczekaæ
+	//	q.addWait( virtualComponents.SERVOZ_UP_TIME );	// wiec trzeba poczekaï¿½
 		if(disableOnReady){
 			q.addWait(300);
 			q.add("DZ", true);
@@ -215,7 +211,7 @@ public class BarobotConnector {
 		
 		int poszup	=  SERVOZ_UP_LIGHT_POS;
 		q.add("Z" + poszup+","+DRIVER_Z_SPEED, true);
-	//	q.addWait( virtualComponents.SERVOZ_UP_TIME );	// wiec trzeba poczekaæ
+	//	q.addWait( virtualComponents.SERVOZ_UP_TIME );	// wiec trzeba poczekaï¿½
 		if(disableOnReady){
 			q.addWait(300);
 			q.add("DZ", true);
@@ -250,11 +246,11 @@ public class BarobotConnector {
 		});
 	}
 
-	public void kalibrcja() {
-		Queue q			= main_queue;
+	public void kalibrcja(Queue q) {
+		// todo, wstawic w kolejke
 		q.add( "\n", false );
 		q.add( "\n", false );
-		setLeds( "ff", 0 );
+		setLeds( q, "ff", 0 );
 		int posx		= driver_x.getSPos();
 		for(int i=0;i<12;i++){
 			state.set("BOTTLE_X_" + i, "0" );
@@ -337,20 +333,19 @@ public class BarobotConnector {
 	    q.add("DZ", true);
 	}
 
-	public void setLeds(String string, int value ) {
+	public void setLeds(Queue q, String string, int value ) {
 		if(!ledsReady){
-			scann_leds();
+			scann_leds(q);
 		}
 		Queue q1		= new Queue();	
 		Upanel[] up		= i2c.getUpanels();
 		for(int i =0; i<up.length;i++){
 			up[i].setLed(q1, string, value);
 		}
-		main_queue.add(q1);
+		q.add(q1);
 	}	
 
-	public void moveToStart() {
-		Queue q = main_queue;
+	public void moveToStart(Queue q) {
 		moveZDown( q ,true );
 		q.add( new AsyncMessage( true ) {
 			@Override	
@@ -448,19 +443,18 @@ public class BarobotConnector {
 		});
 	}
 
-	public void onDrinkFinish(){
-		Queue q 		= main_queue;
+	public void onDrinkFinish(Queue q){
 		Queue q1		= new Queue();
 		Upanel[] up 	= i2c.getUpanels();
-		int posz		= state.getInt("POSZ", 0 );
-		int SERVOZ_DOWN_POS = state.getInt("SERVOZ_DOWN_POS", Constant.SERVOZ_DOWN_POS );
-		if( posz == SERVOZ_DOWN_POS ){
+		//int posz		= state.getInt("POSZ", 0 );
+		//int SERVOZ_DOWN_POS = state.getInt("SERVOZ_DOWN_POS", Constant.SERVOZ_DOWN_POS );
+		//if( posz == SERVOZ_DOWN_POS ){
 			moveZLight(q, true );					// move up to help
-		}
+		//}
 		q.add("DX", true);
 	    q.add("DY", true);
 	    i2c.carret.setLed( q, "22", 255 );
-	    setLeds( "ff", 0 );
+	    setLeds( q, "ff", 0 );
 		for(int i =up.length-1; i>=0;i--){
 			up[i].addLed(q1, "22", 255);
 			q1.addWait(70);
@@ -468,8 +462,8 @@ public class BarobotConnector {
 		}
 		q.add(q1);
 		q.addWait(100);
-		setLeds( "88", 255 );
-		setLeds( "44", 255 );
+		setLeds( q,"88", 255 );
+		setLeds( q, "44", 255 );
 		q.addWait(100);
 		i2c.carret.addLed( q, "22", 20 );
 		q.addWait(100);
@@ -544,8 +538,8 @@ public class BarobotConnector {
 	    q.add(Constant.GETZPOS, true);
 	}
 
-	public void pour( Queue q, final int num, boolean disableOnReady ) {			// num 0-11
-		int time = getPourTime(num);
+	public void pour( Queue q, final int capacity, final int num, boolean disableOnReady ) {			// num 0-11
+		int time = getPourTime(num, capacity);
 
 		final Upanel up	= i2c.getUpanelByBottle(num);
 		q.add("EX", true);
@@ -592,7 +586,7 @@ public class BarobotConnector {
 					if( up != null ){
 						up.addLed( q2, "11", 255 );
 					}
-					int time = getPacWaitTime( num );
+					int time = getPacWaitTime( num, capacity );
 					q2.addWait( time );
 					int SERVOZ_PAC_POS = state.getInt("SERVOZ_PAC_POS", Constant.SERVOZ_PAC_POS );
 					q2.add("Z" + SERVOZ_PAC_POS+",255", true);
@@ -620,31 +614,24 @@ public class BarobotConnector {
 		}
 	}
 	// todo move to slot
-	public int getPourTime( int num ){			// 0 - 11
-		int capacity	= getCapacity( num );
+	public int getPourTime( int num, int capacity ){			// 0 - 11
 		int SERVOZ_POUR_TIME = state.getInt("SERVOZ_POUR_TIME", Constant.SERVOZ_POUR_TIME );
 		return capacity * SERVOZ_POUR_TIME;
 	}
-	public int getRepeatTime(int num) {
-		int capacity	= getCapacity( num );
+	public int getRepeatTime(int num, int capacity) {
 		int time 		= state.getInt("SERVOY_REPEAT_TIME", Constant.SERVOY_REPEAT_TIME );
 		int base_time	= time/ 20;
 		return base_time * capacity;
 	}
-	public int getPacWaitTime(int num) {
-		int capacity	= getCapacity( num );
+	public int getPacWaitTime(int num, int capacity) {
 		int base_time 	= state.getInt("SERVOZ_PAC_TIME_WAIT", Constant.SERVOZ_PAC_TIME_WAIT );
 		int time 		= state.getInt("SERVOZ_PAC_TIME_WAIT_VOL", Constant.SERVOZ_PAC_TIME_WAIT_VOL );
 		return base_time + (time / 20 * capacity);
 	}
-	// todo move to slot
-	public int getCapacity( int num ){			// 0 - 11
-		return state.getInt("BOTTLE_CAP_" + num, 20 );
-	}
 
 	public void startDemo() {
 		if(!this.ledsReady){
-			this.scann_leds();
+			this.scann_leds( main_queue );
 		}
 		LightManager lm = new LightManager();
 		lm.startDemo( this );
@@ -678,23 +665,28 @@ public class BarobotConnector {
 		int margin = state.getInt("BOTTLE_OFFSETX_" + num, 0 );
 		return margin;			
 	}
-	public void setCapacity(int num, int cap) {
-		this.state.set("BOTTLE_CAP_" + num, cap );	
-	}
-	public void setLedsOff(String string ) {
+	public void setLedsOff( Queue q, String string ) {
 		Queue q1		= new Queue();	
 		Upanel[] up		= i2c.getUpanels();
 		for(int i =0; i<up.length;i++){
 			up[i].addLed(q1, "ff", 0);
 		}
-		main_queue.add(q1);
+		q.add(q1);
 	}
-	public void setColor(String leds, int red, int green, int blue, int white) {
+	public void setColor( Queue q, String leds, int red, int green, int blue, int white) {
 		Queue q1	= new Queue();
 		Upanel[] up = i2c.getUpanels();
 		for(int i =0; i<up.length;i++){
 			up[i].setRgbw(q1, red,green,blue,white);
 		}
-		main_queue.add(q1);
+		q.add(q1);
+	}
+
+	public void systemTest() {
+		// todo
+	}
+	public static int getRobotId() {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 }

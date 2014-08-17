@@ -43,6 +43,10 @@ public class Arduino{
 		instance				= this;
 	}
 
+	public Wire gecConnection(){
+		return connection;
+	}
+
 	public void onStart(Activity mainView) {
 		this.mainView = mainView;
 		if( connection != null ){

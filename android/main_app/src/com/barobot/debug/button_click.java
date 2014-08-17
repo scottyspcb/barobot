@@ -18,12 +18,17 @@ import com.barobot.BarobotMain;
 import com.barobot.R;
 import com.barobot.common.Initiator;
 import com.barobot.common.constant.Constant;
+import com.barobot.common.interfaces.onReadyListener;
+import com.barobot.common.interfaces.serial.Wire;
+import com.barobot.gui.dataobjects.Engine;
 import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
+import com.barobot.hardware.devices.UploadFirmware;
 import com.barobot.other.Android;
 import com.barobot.other.InternetHelpers;
 import com.barobot.other.OnDownloadReadyRunnable;
 import com.barobot.other.update_drinks;
+import com.barobot.parser.Queue;
 public class button_click implements OnClickListener{
 	private Context dbw;
 	public static boolean set_bottle_on = false;
@@ -96,7 +101,10 @@ public class button_click implements OnClickListener{
 				        		success = InternetHelpers.copy( update_drinks.localDbPath, backupPath );
 				        		if(success){
 				        			success = InternetHelpers.copy( resetPath, update_drinks.localDbPath );
+				        			Engine.GetInstance().invalidateData();
 				        		}
+				        
+				        		
 							} catch (IOException e) {
 								e.printStackTrace();
 								Initiator.logger.i(Constant.TAG,"download_database", e);
@@ -171,10 +179,20 @@ public class button_click implements OnClickListener{
 	protected void fimwareBurn() {
 		File file = new File(Environment.getExternalStorageDirectory(), "Barobot/firmware.hex");
 		if (!file.exists()) {
-	       
-			
-			
-			
+			Initiator.logger.i(Constant.TAG,"no hex:" + file);
+		}else{
+			Arduino ar 					= Arduino.getInstance();
+			BarobotConnector barobot	= ar.barobot;
+			Queue mq					= barobot.main_queue;
+			UploadFirmware uf			= new UploadFirmware();
+			Wire oldConnection			= ar.gecConnection();
+
+			uf.prepareMB2( mq, oldConnection, new onReadyListener() {
+				@Override
+				public void onReady() {
+					Initiator.logger.i(Constant.TAG,"upload ok");
+				}
+			} );
 	    }		
 	}
 }

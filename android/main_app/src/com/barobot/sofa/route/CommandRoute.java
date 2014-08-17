@@ -470,9 +470,8 @@ public class CommandRoute extends EmptyRoute {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
-				barobot.pour(q, -1, true);
+				barobot.pour(q, 20, -1, true);
 				mq.add(q);
-
 				return true;
 			}
 		});
@@ -894,6 +893,7 @@ public class CommandRoute extends EmptyRoute {
 		
 		
 		
+		
 
 		index.put("command_download_database", new command_listener() {
 			@Override
@@ -913,6 +913,40 @@ public class CommandRoute extends EmptyRoute {
 				return true;
 			}
 		});
+		
+		
+		
+		
+		
+		
+		
+		
+		index.put("command_auto_repair", new command_listener() {
+			@Override
+			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,int posx, int posy) {
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				return true;
+			}
+		});
+		
+		
+		
+		
 		
 		
 		

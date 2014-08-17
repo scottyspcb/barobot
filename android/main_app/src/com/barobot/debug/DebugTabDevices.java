@@ -50,85 +50,22 @@ public class DebugTabDevices extends Fragment {
 				R.id.editb10,
 				R.id.editb11	
 		};
-
-		final int[] capacityBox = {
-				R.id.capacity0,
-				R.id.capacity1,
-				R.id.capacity2,
-				R.id.capacity3,
-				R.id.capacity4,		
-				R.id.capacity5,
-				R.id.capacity6,
-				R.id.capacity7,		
-				R.id.capacity8,
-				R.id.capacity9,
-				R.id.capacity10,
-				R.id.capacity11	
-		};
-
-		int ds = barobot.state.getInt("DRIVER_X_SPEED", Constant.DRIVER_X_SPEED );
-		int dcs = barobot.state.getInt("DRIVER_CALIB_X_SPEED", Constant.DRIVER_CALIB_X_SPEED );
-
-		int srt = barobot.state.getInt("SERVOY_REPEAT_TIME", Constant.SERVOY_REPEAT_TIME );	
-		int sptw = barobot.state.getInt("SERVOZ_PAC_TIME_WAIT", Constant.SERVOZ_PAC_TIME_WAIT );
-		int sptwv = barobot.state.getInt("SERVOZ_PAC_TIME_WAIT_VOL", Constant.SERVOZ_PAC_TIME_WAIT_VOL );
-		
-
-		Initiator.logger.i("DebugTabDevices.", "DRIVER_X_SPEED= " +ds );
-	
-		final EditText editSX = (EditText) rootView.findViewById( R.id.edit_speed_x );
-		final EditText editbCSX = (EditText) rootView.findViewById( R.id.edit_cal_speed_x );
-		final EditText editbSRT = (EditText) rootView.findViewById( R.id.edit_repeat_time );
-		final EditText editbSPTW = (EditText) rootView.findViewById( R.id.edit_pac_time_wait );
-		final EditText editbSPTWV = (EditText) rootView.findViewById( R.id.edit_pac_time_wait_vol );
-
-		editSX.setText(""+ds );
-		editbCSX.setText(""+dcs );
-		editbSRT.setText(""+srt );
-		editbSPTW.setText(""+sptw );
-		editbSPTWV.setText(""+sptwv );
-		
 		Button xb1 = (Button) rootView.findViewById(R.id.save_poss);
 		xb1.setOnClickListener( new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				for(int i=0;i<12;i++){
 					EditText editb0 = (EditText) rootView.findViewById( buttons[i] );
-					Initiator.logger.i("DebugTabDevices.zapisuje", "BOTTLE_OFFSETX_" + i + "= " +editb0.getText().toString() );
 					int a = Integer.parseInt(editb0.getText().toString());
 					barobot.setSlotMarginX(i, a );
-
-					EditText cap0 = (EditText) rootView.findViewById( capacityBox[i] );
-					int cap = Integer.parseInt(cap0.getText().toString());
-					barobot.setCapacity(i, cap);
 				}
-
-				int ds = Integer.parseInt(editSX.getText().toString());
-				int dcs = Integer.parseInt(editbCSX.getText().toString());
-				int srt = Integer.parseInt(editbSRT.getText().toString());
-				int sptw = Integer.parseInt(editbSPTW.getText().toString());
-				int sptwv = Integer.parseInt(editbSPTWV.getText().toString());
-
-				barobot.state.set("DRIVER_X_SPEED", ds);
-				barobot.state.set("DRIVER_CALIB_X_SPEED", dcs);
-				barobot.state.set("SERVOY_REPEAT_TIME", srt);
-				barobot.state.set("SERVOZ_PAC_TIME_WAIT", sptw);
-				barobot.state.set("SERVOZ_PAC_TIME_WAIT_VOL", sptwv);
 			}
 		});
-
 		for(int i=0;i<12;i++){
 			int xpos = barobot.getSlotMarginX( i );
 			EditText editb0 = (EditText) rootView.findViewById( buttons[i] );
-			int num = i;
-			Initiator.logger.i("DebugTabDevices", "set input BOTTLE_OFFSETX_" + num + "= " +xpos );
 			editb0.setText(""+xpos );
-			
-			int cap =  barobot.getCapacity(num);
-			final EditText cap0 = (EditText) rootView.findViewById( capacityBox[i] );
-			cap0.setText(""+cap );
 		}
-
 		return rootView;
 	}
 }

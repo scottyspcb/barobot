@@ -52,8 +52,6 @@ public class DebugActivity extends FragmentActivity implements	ActionBar.TabList
 	public Vector<Fragment> objVector = new Vector<Fragment>(10);
 
 	public DebugActivity(){
-		Initiator.logger.i("DebugActivity", "init");
-		
 	}
 	
 	public static DebugActivity getInstance() {
@@ -132,10 +130,9 @@ public class DebugActivity extends FragmentActivity implements	ActionBar.TabList
 		// Inflate the menu; this adds items to the action bar if it is present.
 		menu.clear();
 		getMenuInflater().inflate(R.menu.device_list, menu);
-		Initiator.logger.i("Debug", "onPrepareOptionsMenu");
 		int position = mViewPager.getCurrentItem();
 		Fragment fff = null;
-		Initiator.logger.i("Debug", "onPrepareOptionsMenu " + position);
+	//	Initiator.logger.i("Debug", "onPrepareOptionsMenu " + position);
 		try {
 			fff = objVector.get(position);
 			fff.onCreateOptionsMenu(menu, getMenuInflater());
@@ -183,7 +180,7 @@ public class DebugActivity extends FragmentActivity implements	ActionBar.TabList
 			// below) with the page number as its lone argument.
 			Bundle args = new Bundle();
 			args.putInt(DebugActivity.ARG_SECTION_NUMBER, position + 1);
-			Initiator.logger.i("DebugActivity", "pos " + position);
+	//		Initiator.logger.i("DebugActivity", "pos " + position);
 			Fragment fff = null;
 			try {
 				fff = objVector.get(position);
