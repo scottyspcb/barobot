@@ -2,14 +2,14 @@ EAGLE AutoRouter Statistics:
 
 Job           : C:/workspace/Barobot/hardware/eagle/simplified/carret/carret.brd
 
-Start at      : 21:51:17 (2014-08-17)
-End at        : 21:51:17 (2014-08-17)
+Start at      : 22:19:30 (2014-08-17)
+End at        : 22:19:30 (2014-08-17)
 Elapsed time  : 00:00:00
 
 Signals       :    33   RoutingGrid: 20 mil  Layers: 2
 Connections   :    96   predefined:  96 ( 15 Vias )
 
-Router memory :   78352
+Router memory :   80580
 
 Passname          :     Route Optimize1 Optimize2 Optimize3 Optimize4 Optimize5
 
