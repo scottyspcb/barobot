@@ -77,19 +77,19 @@ int16_t down_level = 0;
 
 volatile int16_t hallx_state[HXSTATES][4] = {
 	//{CODE, MIN, MAX }
-	{HX_STATE_0,	HX_NEODYM_UP_BELOW,			1024,						0x0f},		// ERROR
-	{HX_STATE_1,	HX_NEODYM_UP_START,			HX_NEODYM_UP_BELOW-1,		0x08},		// to jest neodym max
-	{HX_STATE_2,	HX_FERRITE_UP_IS_BELOW,		HX_NEODYM_UP_START-1,		0x04},		// wznosi siê neodym
-	{HX_STATE_3,	HX_LOCAL_UP_MAX_OVER,		HX_FERRITE_UP_IS_BELOW-1,	0x02},		// czubek lokalnego max
-	{HX_STATE_4,	HX_NOISE_BELOW,				HX_LOCAL_UP_MAX_OVER-1,		0x01},		// wznosi siê
+	{HX_STATE_0,	HX_NEODYM_UP_BELOW,			1024,						0x0f},		// 11		ERROR
+	{HX_STATE_1,	HX_NEODYM_UP_START,			HX_NEODYM_UP_BELOW-1,		0x08},		// 22		to jest neodym max
+	{HX_STATE_2,	HX_FERRITE_UP_IS_BELOW,		HX_NEODYM_UP_START-1,		0x04},		// 33		wznosi siê neodym
+	{HX_STATE_3,	HX_LOCAL_UP_MAX_OVER,		HX_FERRITE_UP_IS_BELOW-1,	0x02},		// 44		czubek lokalnego max
+	{HX_STATE_4,	HX_NOISE_BELOW,				HX_LOCAL_UP_MAX_OVER-1,		0x01},		// 55		wznosi siê
 
-	{HX_STATE_5,	HX_NOISE_OVER,				HX_NOISE_BELOW-1,			0x00},		// neutralne
+	{HX_STATE_5,	HX_NOISE_OVER,				HX_NOISE_BELOW-1,			0x00},		// 66		neutralne
 
-	{HX_STATE_6,	HX_LOCAL_DOWN_IS_BELOW,		HX_NOISE_OVER-1,			0x10},		// opada
-	{HX_STATE_7,	HX_FERRITE_DOWN_IS_BELOW,	HX_LOCAL_DOWN_IS_BELOW-1,	0x20},		// czubek lokalnego min
-	{HX_STATE_8,	HX_NEODYM_DOWN_START,		HX_FERRITE_DOWN_IS_BELOW-1,	0x40},		// opada neodym
-	{HX_STATE_9,	HX_NEODYM_DOWN_OVER,		HX_NEODYM_DOWN_START-1,		0x80},		// to jest neodym min	
-	{HX_STATE_10,	0,							HX_NEODYM_DOWN_OVER-1,		0xf0}		// NOT CONNECTED	
+	{HX_STATE_6,	HX_LOCAL_DOWN_IS_BELOW,		HX_NOISE_OVER-1,			0x10},		// 77		opada
+	{HX_STATE_7,	HX_FERRITE_DOWN_IS_BELOW,	HX_LOCAL_DOWN_IS_BELOW-1,	0x20},		// 88		czubek lokalnego min
+	{HX_STATE_8,	HX_NEODYM_DOWN_START,		HX_FERRITE_DOWN_IS_BELOW-1,	0x40},		// 99		opada neodym
+	{HX_STATE_9,	HX_NEODYM_DOWN_OVER,		HX_NEODYM_DOWN_START-1,		0x80},		// 100		to jest neodym min	
+	{HX_STATE_10,	0,							HX_NEODYM_DOWN_OVER-1,		0xf0}		// 111		NOT CONNECTED	
 };
 
 #define HYSTERESIS  2
@@ -99,7 +99,7 @@ volatile int16_t hallx_state[HXSTATES][4] = {
 volatile int16_t hally_state[HYSTATES][4] = {
 	//{CODE, MIN, MAX  }
 	{'E',	1024,	1024,		0x0f},		// ERROR
-	{'R',	550,	1024-1,		0x04},			// neodym +
+	{'R',	550,	1024-1,		0x04},		// neodym +
 	{'A',	450,	550-1,		0x02},		// normal
 	{'B',	1,		450-1,		0x01},		// neodym -
 	{'N',	0,		0,		0xf0}		// NOT CONNECTED	

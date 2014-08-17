@@ -511,6 +511,13 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 	}else if( input.equals("PING2ARDUINO") ){        // odeslij PONG
 	}else if( input.equals( "PONG" )){			// nic, to byla odpowiedz na moje PING
 		*/
+		
+	}else if( command == 'V' ){
+		Serial.print("RV");
+		Serial.println(String(MAINBOARD_VERSION));
+		Serial.flush();
+		defaultResult = false;
+		
 	}else if( input.equals("RB")) {	// resetuj magistralê i2c
 		reset_wire();
 		defaultResult = false;

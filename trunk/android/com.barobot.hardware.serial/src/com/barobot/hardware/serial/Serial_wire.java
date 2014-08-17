@@ -22,6 +22,7 @@ import android.os.Message;
 import android.util.Log;
 
 import com.barobot.common.Initiator;
+import com.barobot.common.constant.LowHardware;
 import com.barobot.common.interfaces.serial.CanSend;
 import com.barobot.common.interfaces.serial.SerialEventListener;
 import com.barobot.common.interfaces.serial.SerialInputListener;
@@ -43,7 +44,7 @@ public class Serial_wire {
     private SerialInputOutputManager mSerialIoManager;
     private int errors = 0;
 	private Activity view;
-	private int baud = 57600;//115200;
+	private int baud = LowHardware.MAINBOARD_SERIAL0_BOUND;
 	protected Queue<SerialInputListener> listener=new LinkedList<SerialInputListener>();
     private SerialInputOutputManager.Listener mListener = null;
 	private SerialEventListener iel = null;
@@ -55,9 +56,7 @@ public class Serial_wire {
 		    @Override
 		    public synchronized void onRunError(Exception e) {
 		        for (SerialInputListener il : listener){
-		        	if(il.isEnabled()){
-		        		il.onRunError( e );
-		        	}
+		       		il.onRunError( e );
 		        }
 		        stopIoManager();
 		    }
@@ -65,9 +64,7 @@ public class Serial_wire {
 		    public synchronized void onNewData( byte[] data) {
 	//	    	Log.e("Serial_wire.onNewData", new String(data, 0, data.length) );
 		        for (SerialInputListener il : listener){
-		        	if(il.isEnabled()){
-		        		il.onNewData( data, data.length );
-		        	}
+		        	il.onNewData( data, data.length );
 		        }
 		    }
 		};

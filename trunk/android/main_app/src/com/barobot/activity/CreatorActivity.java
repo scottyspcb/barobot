@@ -16,6 +16,8 @@ import android.widget.TextView;
 
 import com.barobot.BarobotMain;
 import com.barobot.R;
+import com.barobot.common.Initiator;
+import com.barobot.gui.database.BarobotData;
 import com.barobot.gui.dataobjects.Engine;
 import com.barobot.gui.dataobjects.Ingredient_t;
 import com.barobot.gui.dataobjects.Liquid_t;
@@ -88,7 +90,7 @@ public class CreatorActivity extends BarobotMain{
 	}
 
 	private void UpdateSlots() {
-		List<Slot> bottles = Engine.GetInstance(this).getSlots();
+		List<Slot> bottles = Engine.GetInstance().loadSlots();
 		Log.w("BOTTLE_SETUP length",""+bottles.size());
 		for(Slot bottle : bottles)
 		{
@@ -106,7 +108,7 @@ public class CreatorActivity extends BarobotMain{
 			}
 		}
 		BarobotConnector barobot = Arduino.getInstance().barobot;
-		barobot.setLedsOff("ff");
+		barobot.setLedsOff(barobot.main_queue,"ff");
 	}
 	
 	public void ShowIngredients()
@@ -139,13 +141,14 @@ public class CreatorActivity extends BarobotMain{
 		}
 		if (position != 0)
 		{
-			Slot slot = Engine.GetInstance(this).getSlot(position);
+			Slot slot =  BarobotData.GetSlot(position);
+
 			if (slot.product != null)
 			{
 				Ingredient_t ingredient = new Ingredient_t();
 				ingredient.liquid = slot.product.liquid;
 				BarobotConnector barobot = Arduino.getInstance().barobot;
-				ingredient.quantity = barobot.getCapacity( slot.position - 1);
+				ingredient.quantity = slot.getCapacity();
 				addIngredient(position, ingredient);
 			}
 			ShowIngredients();
@@ -159,15 +162,14 @@ public class CreatorActivity extends BarobotMain{
 	{
 		clear();
 	}
-	
-	
+
 	private void clear(){
 		ingredients.clear();
 		for (int i = 1; i<=12 ; i++){
 			slot_nums[i] = 0;
 		}
 		BarobotConnector barobot = Arduino.getInstance().barobot;
-		barobot.setLedsOff("ff");
+		barobot.setLedsOff(barobot.main_queue,"ff");
 		ShowIngredients();
 		runOnUiThread(new Runnable() {  
              @Override
@@ -175,7 +177,7 @@ public class CreatorActivity extends BarobotMain{
             	 CalculateDrops();
              }});
 	}
-	
+
 	public void onAddRecipeButtonClicked (View view)
 	{
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -218,7 +220,7 @@ public class CreatorActivity extends BarobotMain{
 		     		Thread t = new Thread(new Runnable() {
 		                 @Override
 		                 public void run() {
-		                 	Engine.GetInstance(CreatorActivity.this).Pour(tempRecipe);
+		                 	Engine.GetInstance().Pour(tempRecipe);
 		                 	clear();
 		                 }});
 		     		t.start();
@@ -280,7 +282,12 @@ public class CreatorActivity extends BarobotMain{
 	public void CalculateDrops()
 	{
 		SetupDrops();
-		List<Integer> sequence = Engine.GetInstance(this).GenerateSequence(ingredients);
+		Initiator.logger.i("CalculateDrops size ingredients : ", ""+ingredients.size() );
+		List<Integer> sequence = Engine.GetInstance().GenerateSequence(ingredients);
+		if(sequence == null){
+			Initiator.logger.e("CalculateDrops sequence", "size null" );
+			return;
+		}
 
 		for(Integer num : sequence) {
 			drops[num]++;
@@ -309,7 +316,7 @@ public class CreatorActivity extends BarobotMain{
 		recipe.unlisted = !showOnList;
 		//if(showOnList){
 			recipe.insert();
-			Engine ee = Engine.GetInstance(this);
+			Engine ee = Engine.GetInstance();
 			ee.addRecipe(recipe, ingredients);
 			if(showOnList){
 				ee.invalidateData();

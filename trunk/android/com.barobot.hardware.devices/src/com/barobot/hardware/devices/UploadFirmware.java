@@ -30,7 +30,7 @@ public class UploadFirmware {
 
 		final I2C_Device current_dev	= new MainboardI2c();
 		final String upanel_code		= current_dev.getHexFile();
-		mSelectedBoard					= Board.ARDUINO_PRO_5V_328;
+		mSelectedBoard					= Board.BAROBOT_MAINBOARD;//.ARDUINO_PRO_5V_328;
 		IspUploader						= new Uploader();
 		final Wire newConnection		= oldConnection.newInstance();
 		final Wire resetingConnection	= oldConnection.newInstance();
@@ -75,6 +75,7 @@ public class UploadFirmware {
 	        public void resetDevice(boolean reset, IspCommunicator mComm ){
 	        	String r = current_dev.getIsp()+"\n";	// mam 2 sek na wystartwanie
 	        //	mComm.write(r);	
+	        	/*
 	        	try {
 	        		newConnection.close();
 	        		resetingConnection.open();
@@ -84,7 +85,7 @@ public class UploadFirmware {
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-				}
+				}*/
 	    	}
 	    } );
 		if(IspSettings.setHex){	

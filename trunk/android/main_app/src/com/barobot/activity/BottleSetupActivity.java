@@ -50,7 +50,7 @@ public class BottleSetupActivity extends BarobotMain{
 					tview.setText(R.string.empty_bottle_string);
 				} else {
 					tview.setText(bottle.getName());	
-				}	
+				}
 			}
 		}
 	}

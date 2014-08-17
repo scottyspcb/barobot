@@ -111,7 +111,7 @@ public class MainActivity extends Activity implements OnSignalsDetectedListener{
 	}
 
 	protected void startQueue() {
-		barobot.scann_leds();
+		barobot.scann_leds(barobot.main_queue);
 		barobot.main_queue.add( new AsyncMessage( true ) {
 			@Override
 			public Queue run(Mainboard dev, Queue queue) {

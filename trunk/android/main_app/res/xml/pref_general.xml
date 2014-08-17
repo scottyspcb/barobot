@@ -29,6 +29,57 @@
         android:title="DRIVER_X_SPEED" />
     
 
+
+     <EditTextPreference
+        android:capitalize="words"
+        android:numeric="integer"
+        android:defaultValue=""
+        android:inputType="number"
+        android:key="SERVOZ_PAC_TIME_WAIT_VOL"
+        android:maxLines="1"
+        android:singleLine="true"
+        android:title="SERVOZ_PAC_TIME_WAIT_VOL" />
+
+     <EditTextPreference
+        android:capitalize="words"
+        android:numeric="integer"
+        android:defaultValue=""
+        android:inputType="number"
+        android:key="DRIVER_CALIB_X_SPEED"
+        android:maxLines="1"
+        android:singleLine="true"
+        android:title="DRIVER_CALIB_X_SPEED" />
+
+     <EditTextPreference
+        android:capitalize="words"
+        android:numeric="integer"
+        android:defaultValue=""
+        android:inputType="number"
+        android:key="SERVOY_REPEAT_TIME"
+        android:maxLines="1"
+        android:singleLine="true"
+        android:title="SERVOY_REPEAT_TIME" />
+ 
+
+     <EditTextPreference
+        android:capitalize="words"
+        android:numeric="integer"
+        android:defaultValue=""
+        android:inputType="number"
+        android:key="PAC_TIME_WAIT"
+        android:maxLines="1"
+        android:singleLine="true"
+        android:title="SERVOZ_PAC_TIME_WAIT" />
+ 
+     
+     
+     
+     
+     
+     
+     
+     
+
      <EditTextPreference
         android:capitalize="words"
         android:numeric="integer"

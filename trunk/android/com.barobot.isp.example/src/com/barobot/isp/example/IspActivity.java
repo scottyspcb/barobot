@@ -15,6 +15,7 @@ import com.barobot.common.EmptyBarobotState;
 import com.barobot.common.Initiator;
 import com.barobot.common.IspOverSerial;
 import com.barobot.common.interfaces.HardwareState;
+import com.barobot.common.interfaces.serial.IspCommunicator;
 import com.barobot.common.interfaces.serial.SerialInputListener;
 import com.barobot.common.interfaces.serial.Wire;
 import com.barobot.hardware.devices.BarobotConnector;
@@ -114,7 +115,7 @@ public class IspActivity extends Activity {
 	            tvAppend(tstart, "Error  : "+err.toString()+"\n");
 	        }
 	        @Override
-	        public void resetDevice(boolean reset ){
+	        public void resetDevice(boolean reset, IspCommunicator mComm ){
 	    	}
 	    };
 

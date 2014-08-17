@@ -18,10 +18,11 @@ public class IspOverSerial implements SerialInputListener, IspCommunicator {
 		qe				= new ArrayBlockingQueue<Byte>(1024);
 		qe.clear();
 		this.connection = connection;
-		this.connection.addOnReceive(this);
+		this.connection.setOnReceive(this);
 	}
 	public boolean open() {
 		clearBuffer();
+		connection.open();
 		return true;
 	}
 	public synchronized boolean close() {
@@ -42,16 +43,25 @@ public class IspOverSerial implements SerialInputListener, IspCommunicator {
     	}
         return 0;
     }
-
 	public synchronized int write(byte[] buf, int size) {
 		try {
 			this.connection.send(buf, size);
-	//		Log.d("Pl2303.write", "qsize(" +qe.size() + "), write("+size+") : "+Utils.toHexStr(buf, size));
+		//	Initiator.logger.d("Pl2303.write", "qsize(" +qe.size() + "), write("+size+") : "+Utils.toHexStr(buf, size));
 		} catch (IOException e) {
 			Initiator.logger.appendError(e);
 		}
 		return size;
 	}
+	public synchronized int write(String s ) {
+		try {
+			this.connection.send(s);
+			Initiator.logger.d("Pl2303.write", "qsize(" +size + "), string: "+s.trim());
+		} catch (IOException e) {
+			Initiator.logger.appendError(e);
+		}
+		return size;
+	}
+
 	public synchronized boolean isConnected() {
 		return this.connection.isConnected(); 
 	}
@@ -76,9 +86,6 @@ public class IspOverSerial implements SerialInputListener, IspCommunicator {
 	public void onRunError(Exception e) {
 	}
 
-	public synchronized boolean isEnabled() {
-		return enabled;
-	}
 	public void showQueue( String name ) {
 		if( size > 0 ){
 	    	byte[] dst = new byte[size];//Arrays.copyOf(buf, buf.length);

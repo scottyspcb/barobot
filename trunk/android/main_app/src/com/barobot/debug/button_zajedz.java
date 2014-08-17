@@ -40,7 +40,7 @@ public class button_zajedz  implements OnClickListener {
 			  }else{
 				  barobot.moveToBottle(barobot.main_queue,0, !autofill);
 				  if( autofill){
-					  barobot.pour(barobot.main_queue, 0, true);
+					  barobot.pour(barobot.main_queue, 20, 0, true);
 				  }
 			  }
 		    break;
@@ -50,7 +50,7 @@ public class button_zajedz  implements OnClickListener {
 			  }else{
 				  barobot.moveToBottle(barobot.main_queue,1, !autofill);
 				  if( autofill){
-					  barobot.pour(barobot.main_queue,1, true);
+					  barobot.pour(barobot.main_queue, 20, 1, true);
 				  }
 			  }
 			  break;
@@ -60,7 +60,7 @@ public class button_zajedz  implements OnClickListener {
 			  }else{
 				  barobot.moveToBottle(barobot.main_queue,2, !autofill);
 				  if( autofill){
-					  barobot.pour(barobot.main_queue,2, true);
+					  barobot.pour(barobot.main_queue, 20, 2, true);
 				  }
 			  }	    	  
 		      break;
@@ -70,7 +70,7 @@ public class button_zajedz  implements OnClickListener {
 			  }else{
 				  barobot.moveToBottle(barobot.main_queue,3, !autofill);
 				  if( autofill){
-					  barobot.pour(barobot.main_queue,3, true);
+					  barobot.pour(barobot.main_queue, 20, 3, true);
 				  }
 			  }
 		      break;
@@ -80,7 +80,7 @@ public class button_zajedz  implements OnClickListener {
 			  }else{
 				  barobot.moveToBottle(barobot.main_queue,4, !autofill);
 				  if( autofill){
-					  barobot.pour(barobot.main_queue,4, true);
+					  barobot.pour(barobot.main_queue, 20, 4, true);
 				  }
 			  }
 		      break;
@@ -90,7 +90,7 @@ public class button_zajedz  implements OnClickListener {
 			  }else{
 				  barobot.moveToBottle(barobot.main_queue,5, !autofill);
 				  if( autofill){
-					  barobot.pour(barobot.main_queue,5, true);
+					  barobot.pour(barobot.main_queue, 20, 5, true);
 				  }
 			  }
 		      break;
@@ -101,7 +101,7 @@ public class button_zajedz  implements OnClickListener {
 			  }else{
 				  barobot.moveToBottle(barobot.main_queue,6, !autofill);
 				  if( autofill){
-					  barobot.pour(barobot.main_queue,6, true);
+					  barobot.pour(barobot.main_queue, 20, 6, true);
 				  }
 			  }
 		      break;
@@ -111,7 +111,7 @@ public class button_zajedz  implements OnClickListener {
 			  }else{
 				  barobot.moveToBottle(barobot.main_queue,7, !autofill);
 				  if( autofill){
-					  barobot.pour(barobot.main_queue,7, true);
+					  barobot.pour(barobot.main_queue, 20, 7, true);
 				  }
 			  }	  
 		      break;
@@ -121,7 +121,7 @@ public class button_zajedz  implements OnClickListener {
 			  }else{
 				  barobot.moveToBottle(barobot.main_queue,8, !autofill);
 				  if( autofill){
-					  barobot.pour(barobot.main_queue,8, true);
+					  barobot.pour(barobot.main_queue, 20, 8, true);
 				  }
 			  }
 			  break;
@@ -131,7 +131,7 @@ public class button_zajedz  implements OnClickListener {
 			  }else{
 				  barobot.moveToBottle(barobot.main_queue,9, !autofill);
 				  if( autofill){
-					  barobot.pour(barobot.main_queue,9, true);
+					  barobot.pour(barobot.main_queue, 20, 9, true);
 				  }
 			  }
 		      break;
@@ -141,7 +141,7 @@ public class button_zajedz  implements OnClickListener {
 			  }else{
 				  barobot.moveToBottle(barobot.main_queue,10, !autofill);
 				  if( autofill){
-					  barobot.pour(barobot.main_queue,10, true);
+					  barobot.pour(barobot.main_queue, 20, 10, true);
 				  }
 			  }
 		      break;
@@ -151,7 +151,7 @@ public class button_zajedz  implements OnClickListener {
 			  }else{
 				  barobot.moveToBottle(barobot.main_queue,11, !autofill);
 				  if( autofill){
-					  barobot.pour(barobot.main_queue,11, true);
+					  barobot.pour(barobot.main_queue, 20, 11, true);
 				  }
 			  }	    	  
 		      break;

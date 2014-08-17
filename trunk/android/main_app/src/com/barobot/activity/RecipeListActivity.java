@@ -74,9 +74,9 @@ public class RecipeListActivity extends BarobotMain{
 		List<Recipe_t> recipes;
 		
 		if (mode == Mode.Favorite){
-			recipes = Engine.GetInstance(this).getFavoriteRecipes();
+			recipes = Engine.GetInstance().getFavoriteRecipes();
 		}else{
-			recipes = Engine.GetInstance(this).getRecipes();
+			recipes = Engine.GetInstance().getRecipes();
 		}
 
 		ArrayAdapter<Recipe_t> mAdapter = new ArrayAdapter<Recipe_t>(this,
@@ -122,7 +122,7 @@ public class RecipeListActivity extends BarobotMain{
 			
 			// Set image
 			
-			imageFragment.SetImage(mCurrentRecipe.photoID);
+			imageFragment.SetImage(mCurrentRecipe.photoId);
 			
 			// Set drink attributes
 			
@@ -132,9 +132,9 @@ public class RecipeListActivity extends BarobotMain{
 			 Thread rr = new Thread(  new Runnable() { 
 				 public void run() {
 						BarobotConnector barobot = Arduino.getInstance().barobot;
-						barobot.setLedsOff("ff"); 
+						barobot.setLedsOff(barobot.main_queue, "ff"); 
 						 List<Ingredient_t> a = mCurrentRecipe.getIngredients();
-						 List<Integer> bottleSequence= Engine.GetInstance(RecipeListActivity.this).GenerateSequence(a); 
+						 List<Integer> bottleSequence= Engine.GetInstance().GenerateSequence(a); 
 						 if(bottleSequence != null){ 
 							 Queue q = Arduino.getMainQ();
 							 for (Integer i : bottleSequence){ 
@@ -164,7 +164,7 @@ public class RecipeListActivity extends BarobotMain{
 		Thread t = new Thread(new Runnable() {  
 	         @Override
 	         public void run() {
-	        	  	Engine.GetInstance(RecipeListActivity.this).Pour(mCurrentRecipe);
+	        	  	Engine.GetInstance().Pour(mCurrentRecipe);
 	        	  	progress.dismiss();
 	        	  	gotoMainMenu(null);
 	         }});

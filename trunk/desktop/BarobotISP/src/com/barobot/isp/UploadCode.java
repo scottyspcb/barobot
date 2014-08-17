@@ -5,7 +5,10 @@ import java.io.IOException;
 
 
 
-import com.barobot.common.Initiator;
+
+
+
+
 import com.barobot.common.IspSettings;
 import com.barobot.common.constant.Methods;
 import com.barobot.hardware.devices.BarobotConnector;
@@ -14,13 +17,11 @@ import com.barobot.hardware.devices.i2c.Carret;
 import com.barobot.hardware.devices.i2c.I2C_Device;
 import com.barobot.hardware.devices.i2c.MainboardI2c;
 import com.barobot.hardware.devices.i2c.Upanel;
-import com.barobot.isp.enums.Board;
-import com.barobot.isp.enums.UploadErrors;
 import com.barobot.parser.Queue;
 import com.barobot.parser.message.AsyncMessage;
 import com.barobot.parser.message.Mainboard;
 import com.barobot.parser.utils.Decoder;
-import com.barobot.common.IspOverSerial;
+import com.barobot.tester.connection.WindowsSerialPort;
 
 public class UploadCode {
 	public void prepareUpanels(Hardware hw ) {
@@ -314,69 +315,6 @@ public class UploadCode {
 		hw.synchro();
 	}
 
-	
-	
-	private Uploader IspUploader;
-    private Board mSelectedBoard;
-    private IspOverSerial mSerial;
-	
-	public void prepareMB2(final Hardware hw) {	
-		final Queue q = hw.getQueue();
-
-		hw.connectIfDisconnected();
-		hw.synchro();
-		final I2C_Device current_dev	= new MainboardI2c();
-		final String upanel_code		= current_dev.getHexFile();
-		hw.synchro();
-		q.addWaitThread(Main.mt);	
-
-		mSerial			= new IspOverSerial(hw.getConnection());
-		mSelectedBoard	= Board.BAROBOT_MAINBOARD;
-        IspUploader		= new Uploader();
-		IspUploader.setSerial(mSerial);
-		IspUploader.setBoard( mSelectedBoard );
-		IspUploader.setCallBack( new UploadCallBack() {
-	        @Override
-	        public void onUploading(int value) {
-	            Initiator.logger.i(" prepareMB2.setProgress",""+value+"%");
-	        }
-	        @Override
-	        public void onPreUpload() {
-	            Initiator.logger.i(" prepareMB2.upload","Upload : Start");
-	        }
-	        @Override
-	        public void onPostUpload(boolean success) {
-	            if(success) {
-	                Initiator.logger.i(" prepareMB2.upload","Upload : Successful");
-	            } else {
-	                Initiator.logger.i(" prepareMB2.upload", "Upload fail");
-	            }
-	        }
-	        @Override
-	        public void onCancel() {
-	            Initiator.logger.i(" prepareMB2.upload","Cancel uploading");
-	        }
-	        @Override
-	        public void onError(UploadErrors err) {
-	            Initiator.logger.i(" prepareMB2.upload","Error  : "+err.toString());
-	        }
-	        @Override
-	        public void resetDevice(boolean reset ){
-	        	current_dev.isp( q );	// mam 2 sek na wystartwanie
-	    	}
-	    } );
-		if(IspSettings.setHex){	
-	        IspUploader.setHex( upanel_code );
-	        try {
-	            IspUploader.upload();
-	        } catch (RuntimeException e) {
-	            Initiator.logger.i(" prepareMB2.upload", e.toString());
-	        }
-		}
-		q.addWaitThread(Main.mt);
-	}
-
-	
 	public void checkCarret(Hardware hw) {
 		String command = "";
 		Queue q = hw.getQueue();

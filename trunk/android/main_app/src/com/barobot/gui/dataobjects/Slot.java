@@ -19,21 +19,35 @@ public class Slot extends Model<Slot>{
 	public int row_id;
 	public int num_in_row;
 	public int margin;
-	public int upanel_address;
+	public int led_address;
 	public int position_id;
+	public int counter;
 
 	@ManyToOne
 	public Product product;
 
+	@ManyToOne
+	public Robot robot_id;
+
 	public String getName(){
-		if (product != null){
+		if (product != null && product.liquid != null ){
 			return product.liquid.getName();
 		}else{
-			return status;
+			return "";
 		}
 	}
 	@Override
 	public String toString() {
 		return getName();
+	}
+	public int getCapacity() {
+		return this.dispenser_type;
+	}
+	public int getSequence(int quantity) {
+		int count = (int) Math.round( quantity / this.dispenser_type );
+		if( count == 0 ){
+			count = 1;
+		}
+		return count;
 	}
 }

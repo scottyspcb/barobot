@@ -22,6 +22,7 @@ import android.os.Message;
 import android.util.Log;
 
 import com.barobot.common.Initiator;
+import com.barobot.common.constant.LowHardware;
 import com.barobot.common.interfaces.serial.CanSend;
 import com.barobot.common.interfaces.serial.SerialEventListener;
 import com.barobot.common.interfaces.serial.SerialInputListener;
@@ -43,8 +44,8 @@ public class Serial_wire2 implements CanSend, Wire{
     private final ExecutorService mExecutor = Executors.newSingleThreadExecutor();
     private SerialInputOutputManager mSerialIoManager;
 	private Activity view;
-	private int baud = 57600;//115200;
-	protected Queue<SerialInputListener> listener=new LinkedList<SerialInputListener>();
+	private int baud = LowHardware.MAINBOARD_SERIAL0_BOUND;
+	protected SerialInputListener listener=null;
     private SerialInputOutputManager.Listener mListener = null;
 	private SerialEventListener iel = null;
     private UsbDevice sDevice;
@@ -55,24 +56,23 @@ public class Serial_wire2 implements CanSend, Wire{
 		mListener = new SerialInputOutputManager.Listener() {
 		    @Override
 		    public synchronized void onRunError(Exception e) {
-		        for (SerialInputListener il : listener){
-		        	if(il.isEnabled()){
-		        		il.onRunError( e );
-		        	}
-		        }
+		       	listener.onRunError( e );
 		        stopIoManager();
 		    }
 		    @Override
 		    public synchronized void onNewData( byte[] data) {
 	//	    	Log.e("Serial_wire.onNewData", new String(data, 0, data.length) );
-		        for (SerialInputListener il : listener){
-		        	if(il.isEnabled()){
-		        		il.onNewData( data, data.length );
-		        	}
-		        }
+		       	listener.onNewData( data, data.length );
 		    }
 		};
 	}
+	
+	@Override
+	public Serial_wire2 newInstance() {
+		Serial_wire2 sw = new Serial_wire2(this.view );
+		return sw;
+	}
+	
     private final Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -199,7 +199,7 @@ public class Serial_wire2 implements CanSend, Wire{
 	public void close() {
 		setSearching(false);
 		stopIoManager();
-		this.listener.clear();
+		this.listener = null;
 		synchronized(lock){
 			if (sPort != null) {
 				if(sPort.isOpen()){
@@ -228,7 +228,7 @@ public class Serial_wire2 implements CanSend, Wire{
         mUsbManager = null;
 	    mSerialIoManager = null;
 	    view = null;
-	    listener.clear();
+	    listener=null;
 	    mListener = null;
 	}
 	@Override
@@ -491,14 +491,10 @@ public class Serial_wire2 implements CanSend, Wire{
 	}
 	
 	@Override
-	public void addOnReceive(SerialInputListener inputListener) {
-		this.listener.add( inputListener );
-		Log.i("serial", "listeners: " +this.listener.size() );
+	public void setOnReceive(SerialInputListener inputListener) {
+		this.listener =  inputListener;
 	}
-	@Override
-	public void removeOnReceive(SerialInputListener inputListener) {
-		this.listener.remove(inputListener);
-	}
+
 	@Override
 	public SerialEventListener getSerialEventListener() {
 		return iel;
