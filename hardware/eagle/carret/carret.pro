@@ -2,24 +2,24 @@ EAGLE AutoRouter Statistics:
 
 Job           : C:/workspace/Barobot/hardware/eagle/carret/carret.brd
 
-Start at      : 18:35:35 (2014-03-04)
-End at        : 18:35:36 (2014-03-04)
-Elapsed time  : 00:00:01
+Start at      : 11:42:07 (2014-07-14)
+End at        : 11:42:14 (2014-07-14)
+Elapsed time  : 00:00:07
 
-Signals       :    73   RoutingGrid: 50 mil  Layers: 2
-Connections   :   197   predefined:  193 ( 82 Vias )
+Signals       :    51   RoutingGrid: 50 mil  Layers: 2
+Connections   :   184   predefined:  155 ( 73 Vias )
 
-Router memory :   20736
+Router memory :   46736
 
-Passname          :     Route Optimize1 Optimize2 Optimize3 Optimize4
+Passname          :    Busses     Route Optimize1 Optimize2 Optimize3 Optimize4
 
-Time per pass     :  00:00:00  00:00:01  00:00:00  00:00:00  00:00:00
-Number of Ripups  :         0         0         0         0         0
-max. Level        :         1         0         0         0         0
-max. Total        :         0         0         0         0         0
+Time per pass     :  00:00:00  00:00:06  00:00:00  00:00:00  00:00:01  00:00:00
+Number of Ripups  :         0         0         0         0         0         0
+max. Level        :         0         3         0         0         0         0
+max. Total        :         0         2         0         0         0         0
 
-Routed            :         0         0         0         0         0
-Vias              :         0         0         0         0         0
-Resolution        :    98.0 %    98.0 %    98.0 %    98.0 %    98.0 %
+Routed            :         2        20        20        20        20        20
+Vias              :         0        20         2         2         2         3
+Resolution        :    85.3 %    95.1 %    95.1 %    95.1 %    95.1 %    95.1 %
 
-Final             : 98.0% finished
+Final             : 95.1% finished. Polygons may have fallen apart.
