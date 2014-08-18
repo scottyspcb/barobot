@@ -2,12 +2,16 @@ package com.barobot.activity;
 
 import java.util.List;
 
+import org.orman.mapper.Model;
+
 import com.barobot.BarobotMain;
 import com.barobot.R;
+import com.barobot.gui.database.BarobotData;
+import com.barobot.gui.dataobjects.Dispenser_type;
 import com.barobot.gui.dataobjects.Engine;
 import com.barobot.gui.dataobjects.Liquid_t;
 import com.barobot.gui.dataobjects.Product;
-import com.barobot.gui.dataobjects.Recipe_t;
+import com.barobot.gui.dataobjects.Slot;
 import com.barobot.gui.dataobjects.Type;
 import com.barobot.gui.utils.CapacityProductWrapper;
 import com.barobot.gui.utils.LangTool;
@@ -30,11 +34,13 @@ public class ProductActivity extends BarobotMain {
 		
 	public static String SLOT_NUMBER = "slotNumber";
 	
-	private int mSlotNumber;
+	//private int mSlotNumber;
 	private Type mCurrentType;
 	private Liquid_t mCurrentLiquid;
 	private Product mCurrentProduct;
-
+	private Slot slot;
+	
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -43,62 +49,65 @@ public class ProductActivity extends BarobotMain {
 		//setupActionBar();
 		
 		Intent intent = getIntent();
+
 		SetSlotNumber(intent.getIntExtra(SLOT_NUMBER, 0));
 		ButtonEnabled(false, R.id.product_liquid_new_button);
 		ButtonEnabled(false, R.id.product_capacity_new_button);
 		
 		FillTypesList();
-		UpdateCapacity(15);
 	}
 
-	public void UpdateCapacity(long selectedRecipeID)
+	public void UpdateCapacity(long dispenserCap)
 	{
-		String[] spinnerArray = {"5","10","15","20","25","40","50"};
-
 		Spinner spinner = (Spinner) findViewById(R.id.capacity_spinner);
-		ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, spinnerArray); //selected item will look like a spinner set from XML
-		spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		spinner.setAdapter(spinnerArrayAdapter);
+		
+		List<Dispenser_type> dispensers = Model.fetchAll(Dispenser_type.class);
+		ArrayAdapter<Dispenser_type> mAdapter = new ArrayAdapter<Dispenser_type>(this, R.layout.spinner_dispensers, dispensers);
+
+		spinner.setAdapter(mAdapter);
+		if (dispenserCap != 0) {
+			for(Dispenser_type rec: dispensers)
+			{
+				if (rec.capacity == dispenserCap ) {
+					spinner.setSelection(dispensers.indexOf(rec));
+					break;
+				}
+			}	
+		}
 		spinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position,long id) {
-				String cap = (String) parent.getItemAtPosition(position);
-				System.out.println("onAddRecipeButtonClicked"+ cap);
+				Dispenser_type dt = (Dispenser_type) parent.getItemAtPosition(position);
+				if(slot.dispenser_type != dt.capacity){
+					slot.dispenser_type = dt.capacity;
+					slot.update();
+					Engine.GetInstance().invalidateData();
+				}
 			}
 			@Override
 			public void onNothingSelected(AdapterView<?> parent) {
 			}
 		});
-
-		for(int i =0;i<spinnerArray.length;i++){
-			String cap= spinnerArray[i];
-			if( Integer.parseInt(cap) == selectedRecipeID ){
-				spinner.setSelection(i);
-				break;	
-			}
-		}
 	}
 
-	
 	private void SetSlotNumber(int position)
 	{
-		mSlotNumber = position;
+	//	mSlotNumber = position;
+		slot		= BarobotData.GetSlot(position);
 		setTextViewText(String.valueOf(position), R.id.product_slot_number_text);
-		
+
 		if (position != 0)
 		{
-			Product prod = Engine.GetInstance(this).getProduct(mSlotNumber);
-			if (prod != null)
-			{
+			UpdateCapacity(slot.dispenser_type);
+			Product prod = slot.product;
+			if (prod != null){
 				SetCurrentProduct(prod);
-				
+
 				setTextViewText(new CapacityProductWrapper(mCurrentProduct).toString(), 
 						R.id.product_capacity_text );
 				setTextViewText(mCurrentProduct.liquid.getName(), R.id.product_liquid_text);
 				setTextViewText(mCurrentProduct.liquid.type.getName(), R.id.product_type_text);
-			}
-			else
-			{
+			}else{
 				ClearCurrentProduct();
 			}
 		}
@@ -106,8 +115,8 @@ public class ProductActivity extends BarobotMain {
 	
 	public void FillTypesList()
 	{
-		Engine engine = Engine.GetInstance(this);
-		
+		Engine engine = Engine.GetInstance();
+	
 		List<Type> types = engine.getTypes();
 
 		
@@ -237,13 +246,11 @@ public class ProductActivity extends BarobotMain {
 
 	    builder.setView(dialogView)
 			.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-				
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
 				}
 			})
 			.setPositiveButton("Add", new DialogInterface.OnClickListener() {
-				
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
 					Type type = new Type();
@@ -280,7 +287,6 @@ public class ProductActivity extends BarobotMain {
 				
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
-					
 					Liquid_t liquid = new Liquid_t();
 					TextView tView = (TextView) dialogView.findViewById(R.id.dialog_liquid_name);
 					liquid.name = tView.getText().toString();
@@ -289,17 +295,16 @@ public class ProductActivity extends BarobotMain {
 
 					LangTool.InsertTranslation(liquid.id, "liquid", tView.getText().toString());
 
-					Engine engine = Engine.GetInstance(ProductActivity.this);
-
-					int[] defaultCapacity = {1500,1000,750,700,500,330,200,100};
+					int[] defaultCapacity = {2000,1500,1000,750,700,500,330,200,100};
 					for( int i=0;i<defaultCapacity.length;i++){
 						Product product = new Product();
 						product.capacity = defaultCapacity[i];
 						product.liquid = liquid;
 						product.insert();
 					}
-					engine.invalidateData();
+			//		Engine.GetInstance().invalidateData();
 					mCurrentLiquid = liquid;
+					mCurrentType.invalidateData();
 					FillProductCapacities(liquid);
 					FillLiquidList();
 				}
@@ -307,7 +312,6 @@ public class ProductActivity extends BarobotMain {
 		AlertDialog ad = builder.create();
 		ad.show();
 	}
-	
 	public void onAddNewProductButtonClicked (View view)
 	{
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -334,10 +338,8 @@ public class ProductActivity extends BarobotMain {
 
 					product.capacity = Integer.parseInt(tView.getText().toString());
 					product.liquid = mCurrentLiquid;
-
-					Engine engine = Engine.GetInstance(ProductActivity.this);
 					product.insert();
-					engine.invalidateData();
+					Engine.GetInstance().invalidateData();
 
 					FillProductCapacities(mCurrentLiquid);
 				}
@@ -345,18 +347,16 @@ public class ProductActivity extends BarobotMain {
 		AlertDialog ad = builder.create();
 		ad.show();
 	}
-	
-	public void onEmptyButtonClicked (View view)
-	{
-		Engine.GetInstance(this).emptySlot(mSlotNumber);
-		this.finish();
-	}
-	
+
 	public void onOKButtonClicked (View view)
 	{
 		if (mCurrentProduct != null)
 		{
-			Engine.GetInstance(this).updateSlot(mSlotNumber, mCurrentProduct);
+			slot.product = mCurrentProduct;
+			slot.status = "OK";
+			slot.currentVolume = mCurrentProduct.capacity;
+			slot.update();
+			Engine.GetInstance().invalidateData();
 			this.finish();	
 		}
 	}

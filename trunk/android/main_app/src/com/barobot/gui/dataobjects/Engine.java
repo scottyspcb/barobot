@@ -275,9 +275,12 @@ public class Engine {
 		}
 		return bottleSequence;
 	}
-	
+
 	public Slot getIngredientSlot(Ingredient_t ing){
 		loadSlots();
+		if(ing.liquid == null){
+			return null;	
+		}
 		return liquid2slot.get(ing.liquid.id);	// id to be more universal
 	}
 }
