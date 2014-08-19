@@ -76,6 +76,12 @@ public class BarobotData {
 						C.eq("favorite", true)
 						)).orderBy("Recipe_t.name").getQuery(),Recipe_t.class);
 	}
+	
+	public static Recipe_t GetRecipe(int id)
+	{
+		return Model.fetchSingle(ModelQuery.select().from(Recipe_t.class).where(
+				C.eq("id",  id)).getQuery(), Recipe_t.class);
+	}
 
 	public static Slot GetSlot(int position)
 	{
