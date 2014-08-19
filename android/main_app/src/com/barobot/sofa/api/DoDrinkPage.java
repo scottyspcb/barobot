@@ -44,6 +44,12 @@ public class DoDrinkPage extends Page {
 			return new ResponseBuilder().status("ERROR")
 					.message("recipe_id=" + id + " does not exist").build();
 		}
+		
+		if (engine.CheckRecipe(recipe)== false)
+		{
+			return new ResponseBuilder().status("ERROR")
+					.message("You lack appropriate ingredients").build();
+		}
 
 		engine.Pour(recipe);
 
