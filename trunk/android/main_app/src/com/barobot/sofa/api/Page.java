@@ -20,7 +20,7 @@ public abstract class Page extends EmptyRoute {
 			return runInternal(url, sofaServer, theme, session).getJSON();
 		} catch (Exception e)
 		{
-			return "{status : FATAL_ERROR, message: "+e.getMessage()+"}";
+			return "{ \"status\" : \"FATAL_ERROR\", \"message\": \""+e.getMessage()+"\"}";
 		}
 	}
 	
