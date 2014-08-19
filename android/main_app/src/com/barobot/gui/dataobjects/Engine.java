@@ -115,6 +115,11 @@ public class Engine {
 		}
 		return recipes;
 	}
+	
+	public Recipe_t getRecipe(int id)
+	{
+		return BarobotData.GetRecipe(id);
+	}
 
 	public List<Recipe_t> getFavoriteRecipes()
 	{

@@ -1,5 +1,7 @@
 package com.barobot.sofa.route;
 
+import com.barobot.sofa.api.DoDrinkPage;
+import com.barobot.sofa.api.GetRecipesPage;
 import com.barobot.web.route.EmptyRoute;
 import com.barobot.web.route.TemplateRendering;
 import com.barobot.web.server.SimpleRouter;
@@ -35,8 +37,7 @@ public class SofaRouter implements SimpleRouter{
 		ss.addRoute( new CommandRoute() );
 		ss.addRoute( new CommandsPageRoute() );	
 		ss.addRoute( new TranslatePage() );
-		
-		
-		
+		ss.addRoute( new GetRecipesPage() );
+		ss.addRoute( new DoDrinkPage());
 	}
 }
