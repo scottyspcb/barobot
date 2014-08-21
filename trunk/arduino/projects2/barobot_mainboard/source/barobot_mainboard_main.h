@@ -15,7 +15,7 @@ uint8_t GetTemp();
 //-------------------------------------------------------------------
  
 // Put yout declarations here
- long unsigned decodeInt(String input, int odetnij );
+ long unsigned decodeInt(String input, byte odetnij );
 boolean reset_device_num( byte num, boolean pin_value );
 
 boolean reset_device_num2( byte num, boolean pin_value );

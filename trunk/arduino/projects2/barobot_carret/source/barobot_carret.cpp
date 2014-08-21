@@ -7,7 +7,6 @@
 #include <i2c_helpers.h>
 #include <barobot_common.h>
 #include "constants.h"
-#include <avr/eeprom.h>
 #include <Servo.h>
 #include <FlexiTimer2.h>
 #include <avr/io.h>
@@ -350,7 +349,7 @@ void update_servo( byte index ) {           // synchroniczne
 }
 void parseInput( String input ){
   byte command= input.charAt( 0 );
-  long unsigned int value= decodeInt( input, 1 );    // po komendzie zawsze jest liczba
+  unsigned int value= decodeInt( input, 1 );    // po komendzie zawsze jest liczba
   if( command == '+'){
     if(value < 10){
       bitSet(sending,  value);
@@ -399,13 +398,11 @@ void serialEvent(){                       // FUNKCJA WBUDOWANA - zbieraj dane z 
     }
   }
 }
-long unsigned decodeInt(String input, int odetnij ){
-  long pos = 0;
+long unsigned decodeInt(String input, byte odetnij ){
   if(odetnij>0){
     input = input.substring(odetnij);    // obetnij znaki z przodu
   }
-  pos = input.toInt();
-  return pos;
+  return input.toInt();
 }
 
 void reload_servo( byte index ){      // in interrupt
@@ -690,8 +687,7 @@ void proceed( volatile byte buffer[MAXCOMMAND_CARRET] ){
 	}else if( command == METHOD_RESETCYCLES ){
 		// resetuj cykl petli pwm
 
-    }else if( command ==  METHOD_EEPROM_WRITE_I2C ){
-    }else if( command ==  METHOD_EEPROM_READ_I2C ){
+
 
 	}else{
 		DEBUG("-proceed unknown - ");

@@ -12,7 +12,7 @@
 //-------------------------------------------------------------------
  
 // Put yout declarations here
- long unsigned decodeInt(String input, int odetnij );
+ long unsigned decodeInt(String input, byte odetnij );
 //-------------------------------------------------------------------
  
 //===================================================================

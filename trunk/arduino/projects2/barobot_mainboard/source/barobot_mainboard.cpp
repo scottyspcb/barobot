@@ -229,6 +229,7 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 	input.trim();
 	boolean defaultResult = true;
 	byte command = serialBuff[0];
+	byte il = input.length();
 
 	if( command == METHOD_SEND2SLAVE ){    // send over i2c to slave
 		if(input.length() < 3 ){
@@ -266,12 +267,12 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 		String digits    	= input.substring( 1 );
 		char charBuf[12];
 		digits.toCharArray(charBuf,12);
-		uint16_t address	= 0;
-		uint16_t red		= 0;
-		uint16_t green		= 0;
-		uint16_t blue		= 0;
-		uint16_t white		= 0;
-		sscanf(charBuf,"%2x%2x%2x%2x%2x", &address, &red, &green, &blue, &white );
+		uint8_t address	= 0;
+		uint8_t red		= 0;
+		uint8_t green	= 0;
+		uint8_t blue	= 0;
+		uint8_t white	= 0;
+		sscanf(charBuf,"%2hhx%2hhx%2hhx%2hhx%2hhx", &address, &red, &green, &blue, &white );
 		/*
 		DEBUG("-adr: ");
 		DEBUG(String(address));
@@ -292,10 +293,10 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 		String digits     = input.substring( 1 );
 		char charBuf[10];
 		digits.toCharArray(charBuf,10);
-		unsigned int num    = 0;
-		unsigned int leds 	= 0;
-		unsigned int power  = 0;
-		sscanf(charBuf,"%i,%2x,%i", &num, &leds, &power );
+		unsigned char num    = 0;
+		unsigned char leds 	= 0;
+		unsigned char power  = 0;
+		sscanf(charBuf,"%hhi,%2hhx,%hhi", &num, &leds, &power );
 		out_buffer[0]  = (command == METHOD_M_ONECOLOR) ? METHOD_ONECOLOR : METHOD_SETLEDS;
 		out_buffer[1]  = leds;
 		out_buffer[2]  = power;
@@ -336,7 +337,7 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 		String ss 		= input.substring( 1 );
 		paserDeriver(DRIVER_X,ss);
 		defaultResult = false;
-	}else if( command == 'Y' ) {    // Y10,10                 // TARGET,ACCELERATION
+	}else if( command == 'Y' ) {    // Y10,10             // TARGET,ACCELERATION
 		String ss 		= input.substring( 1 );		// 10,10
 		paserDeriver(DRIVER_Y,ss);
 		defaultResult = false;
@@ -370,7 +371,7 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 			out_buffer[1]  = DRIVER_Z;
 			writeRegisters(I2C_ADR_CARRET, 2, false );
 		}
-	}else if( command == 'D' ) {    // disable
+	}else if( command == 'D' ) {    // disable motor
 		byte command2 = serialBuff[1];
 		defaultResult = false;
 		if( command2 == 'X' ){
@@ -388,7 +389,7 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 			out_buffer[1]  = DRIVER_Z;
 			writeRegisters(I2C_ADR_CARRET, 2, false );
 		}
-	}else if(command == 'A' ) {    // A
+	}else if(command == 'A' ) {    // Read Analog
 		byte source = serialBuff[1] -48 ;		// ascii to num ( '0' = 48 )
 		if( source == INNER_HALL_X 
 			|| source == INNER_HALL_Y 
@@ -407,7 +408,7 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 			send_error(input);
 		}
 	
-	}else if( input.equals( "PING2ANDROID") ){      // nic nie rob
+	}else if( input.equals( "PING2ANDROID") ){
 		defaultResult = false;
 		
 	}else if( input.equals( "PING") ){
@@ -417,19 +418,15 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 		read_prog_settings(input, 2 );
 		defaultResult = false;
 		
-	}else if( command == METHOD_MASTER_CAN_FILL ) {    // can fill // F METHOD_MASTER_CAN_FILL
+//	}else if( command == METHOD_MASTER_CAN_FILL ) {    // can fill // F METHOD_MASTER_CAN_FILL
 
 	}else if(  command == 'P' ) {    	// P1; P2,0; P3,1; P4,1;   - programuj urzadzenie 0x0A z predkosca 19200, PROG 0,0 - force first, PROG 0A,0 - wozek
 		read_prog_settings(input, 1 );
 		defaultResult = false;
 	}else if( input.startsWith("RESET_NEXT")) {			// RESET_NEXT12
-		String digits     = input.substring( 10 );
-		unsigned int num  = digits.toInt();
-	//	char charBuf[4];
-	//	digits.toCharArray(charBuf,4);
-	//	unsigned int num    = 0;
-	//	sscanf(charBuf,"%i", &num );
-		byte error =reset_device_next_to(num, LOW);
+		String digits   	= input.substring( 10 );
+		unsigned int num 	= digits.toInt();
+		byte error 			= reset_device_next_to(num, LOW);
 		if (error == 0){
 			delay(DELAY4RESET);
 			reset_device_next_to(num, HIGH);
@@ -440,11 +437,7 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 	}else if( input.startsWith("RESET")) {    // RESET0; RESET1; RESET2 
 		String digits   = input.substring( 5 );
 		int num  		= digits.toInt();
-	//	char charBuf[10];
-	//	digits.toCharArray(charBuf,10);
-	//	unsigned int num    = 0;
-	//	sscanf(charBuf,"%i", &num );
-		boolean ret = reset_device_num(num, LOW);
+		boolean ret		= reset_device_num(num, LOW);
 		if(ret){
 			delay(DELAY4RESET);
 			reset_device_num(num, HIGH);
@@ -452,15 +445,10 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 			defaultResult = false;
 			send_error(input);
 		}
-	}else if( command == 'N' ){		// HAS NEXT, N2,N3,N4
-		String digits    	 = input.substring( 1 );
-		unsigned int target  = digits.toInt();
-
-	//	unsigned int target           = 0;
-	//	char charBuf[3];
-	//	digits.toCharArray(charBuf, 3);
-	//	sscanf(charBuf,"%i", &target );
-		defaultResult = false;
+	}else if( command == 'N' ){		// HAS NEXT from mainboard, N2,N3,N4
+		String digits    	= input.substring( 1 );
+		unsigned int target = digits.toInt();
+		defaultResult 		= false;
 		byte pin		= get_local_pin(target);
 		if(pin == 0xff){
 			send_error(input);
@@ -472,18 +460,12 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 			Serial.flush();
 		}
 
-	}else if( command == 'n' ){			// h10,h11,h12,13   - id selected i2c device has next node
-		String digits        = input.substring( 1 );
-		unsigned int target  = digits.toInt();
-		
-	//	unsigned int target  = 0;
-	//	char charBuf[3];
-	//	digits.toCharArray(charBuf, 3);
-	//	sscanf(charBuf,"%i", &target );
-	//	defaultResult = false;
-		byte adr 		= (byte) target;
-		out_buffer[0] 	= METHOD_CHECK_NEXT;
-		byte error		= writeRegisters(adr, 1, true );
+	}else if( command == 'n' ){			// n10,n11,n12,n13   - check if selected i2c device has next node
+		String digits       = input.substring( 1 );
+		unsigned int target = digits.toInt();
+		byte adr 			= (byte) target;
+		out_buffer[0] 		= METHOD_CHECK_NEXT;
+		byte error			= writeRegisters(adr, 1, true );
 		if (error != 0){
 			send_error(input);
 			return;
@@ -501,27 +483,56 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 				nDevices++;
 			}
 		}
+
 		if( nDevices == 0 ){
 			send_error(input);
 			defaultResult = false;
 		}
+
 /*
 		send2debuger( "I2C PARAMS", ss );
-		char const *c	= ss.c_str();				// lista parametrow, pierwszy to komenda
-	}else if( input.equals("PING2ARDUINO") ){        // odeslij PONG
+		char const *c	= ss.c_str();			// lista parametrow, pierwszy to komenda
+	}else if( input.equals("PING2ARDUINO") ){   // odeslij PONG
 	}else if( input.equals( "PONG" )){			// nic, to byla odpowiedz na moje PING
-		*/
-		
 	}else if( command == 'V' ){
 		Serial.print("RV");
 		Serial.println(String(MAINBOARD_VERSION));
 		Serial.flush();
 		defaultResult = false;
-		
-	}else if( input.equals("RB")) {	// resetuj magistralê i2c
+*/
+
+	}else if( command == 'M' && il == 5 ){		// save 1 char to eeprom in 2 cells. address in HEX!!! ie.: M0FF3 = write F3 into addresses: 0F*2 and 0F*2+1
+		char charBuf[5];
+		input.toCharArray(charBuf,5);
+		unsigned char ad    = 0;
+		unsigned char value = 0;
+		sscanf(charBuf,"M%2hhx%2hhx", &ad, &value );
+
+		byte ad1	= ad*2;
+		byte ad2	= ad*2+1;
+
+		while (!eeprom_is_ready());
+		eeprom_write_byte( (uint8_t*)ad1, value);
+
+		while (!eeprom_is_ready());
+		eeprom_write_byte( (uint8_t*)ad2, value);
+
+	}else if( command == 'm' && il == 3 ){		// read 2 chars from eeprom. ie.: m15, address in DEC!!!
+		String ss 	= input.substring( 1 );
+		byte ad		= ss.toInt();
+		byte ad1	= ad*2;
+		byte ad2	= ad*2+1;
+		byte val1	= eeprom_read_byte((unsigned char *) ad1);
+		byte val2	= eeprom_read_byte((unsigned char *) ad2);
+		Serial.print("Re");
+		Serial.print(String(val1));
+		Serial.print(',');
+		Serial.println(String(val2));
+
+	}else if( input.equals("RB")) {			// resetuj magistralê i2c
 		reset_wire();
 		defaultResult = false;
-	}else if( input.equals("RB2")) {	// resetuj magistralê i2c
+	}else if( input.equals("RB2")) {		// resetuj magistralê i2c
 		reset_wire2();
 		defaultResult = false;
 	}else if( input.equals( "TEST") ){
@@ -542,6 +553,8 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 		Serial.flush();
 	}
 }
+
+
 
 void i2c_device_found( byte addr,byte type,byte ver ){
 	byte ttt[4] = {METHOD_DEVICE_FOUND,addr,type,ver};
@@ -663,13 +676,11 @@ void paserDeriver( byte driver, String input ){   // odczytaj komende silnika
 	}
 }
 
-long unsigned decodeInt(String input, int odetnij ){
-	long pos = 0;
+long unsigned decodeInt(String input, byte odetnij ){
 	if(odetnij>0){
 		input = input.substring(odetnij);    // obetnij znaki z przodu
-	}
-	pos = input.toInt();
-	return pos;
+	} 
+	return input.toInt();
 }
 
 void tri_state( byte pin_num, boolean pin_value ){
@@ -772,11 +783,11 @@ void read_prog_settings( String input, byte ns ){
 	// disable stepper
 	stepperX.disableOutputs();
 
-	if( serial_baud_num ){
-		Serial.begin(115200);
-	}else{
+//	if( serial_baud_num ){
+//		Serial.begin(115200);
+//	}else{
 		Serial.begin(PROGRAMMER_SERIAL0_BOUND);
-	}
+//	}
 	if (slow_sck){
 		spi_init = sw_spi_init;
 		spi_send = sw_spi_send;
