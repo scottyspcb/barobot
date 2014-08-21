@@ -4,6 +4,7 @@
 #include <Arduino.h>
 #include <barobot_common.h>
 #include <Servo.h>
+#include <avr/eeprom.h>
 #include <constants.h>
 #include <AsyncDriver.h>
 #include <FlexiTimer2.h>
@@ -302,26 +303,27 @@ void parseInput( String input ){
 //	Serial.println("-input1: " + input );
 	input.trim();
 	boolean defaultResult = true;
-	byte command = input.charAt(0);
+	byte command	= input.charAt(0);
+	byte il			= input.length();
 
 	if( command == METHOD_MSET_TOP_COLOR && command == METHOD_MSET_BOTTOM_COLOR ) {    // CAaColor		// set TOP /BOTTOM color for Aa to Rr Gg Bb
 		// C|03|4294967295
 		String digits    	= input.substring( 1 );
 		char charBuf[15];
 		digits.toCharArray(charBuf,15);
-		uint16_t address	= 0;
+		uint8_t address	= 0;
 		unsigned long int color	= 0;
-		sscanf(charBuf,"%2x%lx", &address, &color );
+		sscanf(charBuf,"%2hhx%lx", &address, &color );
 		setColor(address, color);
 
 	}else if(command == METHOD_MSET_LED || command == METHOD_M_ONECOLOR ) {    // L12,ff,211 or  B12,ff,211
 		String digits     = input.substring( 1 );
 		char charBuf[10];
 		digits.toCharArray(charBuf,10);
-		unsigned int num    = 0;
-		unsigned int leds 	= 0;
+		uint8_t num    = 0;
+		uint8_t leds 	= 0;
 		unsigned int power  = 0;
-		sscanf(charBuf,"%i,%2x,%i", &num, &leds, &power );
+		sscanf(charBuf,"%hhi,%2hhx,%i", &num, &leds, &power );
 		byte r =  bitRead(leds, 0) ? power : 0;
 		byte g =  bitRead(leds, 1) ? power : 0;
 		byte b =  bitRead(leds, 2) ? power : 0;
@@ -357,12 +359,11 @@ void parseInput( String input ){
 		servos[index].enabled= true;
 
 	}else if( command == 'D' ) {    // disable
-		byte command2 = input.charAt(1);
-		defaultResult = false;
-		byte index = (command2 == 'Y') ? 0 : 1;
+		byte command2	= input.charAt(1);
 		if( command2 == 'X' ){
 			stepperX.disableOutputs();
 		}else{
+			byte index		= (command2 == 'Y') ? 0 : 1;
 			servos[index].enabled= false;
 			servo_lib[index].detach();
 			if( servos[index].target_pos != servos[index].last_pos ){    //  wylaczylem w trakcie jechania
@@ -395,19 +396,48 @@ void parseInput( String input ){
 				(val1 >>8),
 			};
 			send(ttt,4); 
-		}else if( source ==  INNER_CURRENTY ){
-		}else if( source ==  INNER_CURRENTZ ){
-		}else if( source ==  INNER_MB_TEMP ){
-		}else if( source ==  INNER_TABLET ){
+		//}else if( source ==  INNER_CURRENTY ){
+		//}else if( source ==  INNER_CURRENTZ ){
+		//}else if( source ==  INNER_MB_TEMP ){
+		//}else if( source ==  INNER_TABLET ){
 		}
-
 	//}else if( command == METHOD_GETVALUE ){
-   // }else if( command == METHOD_EEPROM_WRITE_I2C ){
-   // }else if( command == METHOD_EEPROM_READ_I2C ){
 	}else if( input.equals( "WR") ){      // wait for return - tylko zwróc zwrotke
+
+	}else if( command == 'M' && il == 5 ){		// save 1 char to eeprom in 2 cells. address in HEX!!! ie.: M0FF3 = write F3 into addresses: 0F*2 and 0F*2+1
+		char charBuf[5];
+		input.toCharArray(charBuf,5);
+		unsigned char ad    = 0;
+		unsigned char value = 0;
+		sscanf(charBuf,"M%2hhx%2hhx", &ad, &value );
+
+		byte ad1	= ad*2;
+		byte ad2	= ad*2+1;
+
+		while (!eeprom_is_ready());
+		eeprom_write_byte( (uint8_t*)ad1, value);
+
+		while (!eeprom_is_ready());
+		eeprom_write_byte( (uint8_t*)ad2, value);
+
 	}else{
 		defaultResult = false;
 		if( input.equals( "PING2ANDROID") ){      // nic nie rob
+
+		}else if(command == 'a' ) {    // a2  - read analog value
+			byte source = input.charAt(1) -48;		// ascii to num ( '0' = 48 )
+			if( source == PIN_B2_HALL_Y  || source == PIN_B2_WEIGHT || source == PIN_B2_HALL_X || source == PIN_B2_TABLET_PWR ){	// allow this analog
+				int16_t val1 = analogRead( source );	// 0 = analog 0
+				byte ttt[4] = {
+					METHOD_ANALOG_VALUE, 
+					source,
+					(val1 & 0xFF),
+					(val1 >>8),
+				};
+				send(ttt,4);
+			}else{
+				send_error(input);
+			}
 
 		}else if(command == 'X' ) {    // X10,10              // TARGET,MAXSPEED
 			paserDeriver(DRIVER_X, input);
@@ -451,6 +481,18 @@ void parseInput( String input ){
 			}else{
 				Serial.println("f error");	
 			}
+
+		}else if( command == 'm' && il == 3 ){		// read 2 chars from eeprom. ie.: m15, address in DEC!!!
+			String ss 	= input.substring( 1 );
+			byte ad		= ss.toInt();
+			byte ad1	= ad*2;
+			byte ad2	= ad*2+1;
+			byte val1	= eeprom_read_byte((unsigned char *) ad1);
+			byte val2	= eeprom_read_byte((unsigned char *) ad2);
+			Serial.print("Re");
+			Serial.print(String(val1));
+			Serial.print(',');
+			Serial.println(String(val2));
 		}else{
 			Serial.println("NO_CMD [" + input +"]");
 		}
@@ -459,8 +501,10 @@ void parseInput( String input ){
 		Serial.println("RR" + input );
 		Serial.flush();
 	}
+	// oscyloskop
+	String ss 		= input.substring( 1 );
+	byte value		= ss.toInt();
 
-  long unsigned int value= decodeInt( input, 1 );    // po komendzie zawsze jest liczba
   if( command == '+'){
     if(value < 10){
       bitSet(sending,  value);
@@ -572,13 +616,11 @@ void serialEvent(){				    // Runs after every LOOP (means don't run if loop han
 	}
 }
 
-unsigned int decodeInt(String input, int odetnij ){
-  long pos = 0;
+unsigned int decodeInt(String input, byte odetnij ){
   if(odetnij>0){
     input = input.substring(odetnij);    // obetnij znaki z przodu
   }
-  pos = input.toInt();
-  return pos;
+  return input.toInt();
 }
 
 void reload_servo( byte index ){      // in interrupt
@@ -733,7 +775,7 @@ void send_hx_pos( byte stateId, int16_t value ) {
 	};	
 	send(ttt,10);
 }
-void send_y_pos( byte stateId, int16_t value) {
+void send_y_pos( byte stateId, int16_t value){
 	byte state_name	= hally_state[stateId][0];
 	uint16_t pos = servos[INNER_SERVOY].last_pos;
 	byte ttt[10] = {

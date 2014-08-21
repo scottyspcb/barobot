@@ -10,7 +10,7 @@ uint8_t GetTemp();
 //-------------------------------------------------------------------
  
 // Put yout declarations here
- unsigned int decodeInt(String input, int odetnij );
+ unsigned int decodeInt(String input, byte odetnij );
 //-------------------------------------------------------------------
  
 //===================================================================

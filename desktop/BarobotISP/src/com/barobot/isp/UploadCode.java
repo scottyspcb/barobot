@@ -63,7 +63,6 @@ public class UploadCode {
 			}
 		});
 	}
-
 	private Queue UploadFirst(final Upanel current_dev, final BarobotConnector barobot, final Hardware hw, boolean firstOnly) {
 		final String hex_code = current_dev.getHexFile();
 		Queue nq = new Queue();
@@ -138,7 +137,7 @@ public class UploadCode {
 						current_dev.setAddress(bytes[1]);
 						System.out.println("+Upanel " + current_dev.getNumInRow() + " ma adres " + current_dev.getAddress());
 						Queue qq2	= checkHasNext( hw, barobot, current_dev, hex_code );	
-						current_dev.addLed( qq2, "22", 100 );	// na pocz¹tek daæ
+						current_dev.addLed( qq2, "22", 100 );	// na poczï¿½tek daï¿½
 						q.addFirst(qq2);
 						return true;
 					}
@@ -252,6 +251,7 @@ public class UploadCode {
 			});
 		}
 	}
+	/*
 	public void clearUpanel(Hardware hw) {
 		Upanel[] list = hw.barobot.i2c.getUpanels();
 		while(list.length > 0 ){
@@ -265,15 +265,15 @@ public class UploadCode {
 					 found = true;
 					 break;
 				}
-			}*/
+			}* /
 			if(!found){
-				System.out.println("Brak wêz³ów koñcowych" );
+				System.out.println("Brak wï¿½zï¿½ï¿½w koï¿½cowych" );
 				break;
 			}
 		}
 		System.out.println("Lista pusta" );
 	}
-	
+	*/
 	
 	
 	

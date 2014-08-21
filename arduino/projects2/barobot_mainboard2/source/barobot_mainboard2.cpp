@@ -93,6 +93,7 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 	input.trim();
 	boolean defaultResult = true;
 	byte command = input.charAt(0);
+	byte il = input.length();
 
 	if( command == METHOD_MSET_TOP_COLOR || command == METHOD_MSET_BOTTOM_COLOR ) {    // CAaRrGgBb		// set TOP /BOTTOM color for Aa to Rr Gg Bb
 		String digits    	= input.substring( 1 );
