@@ -1,12 +1,15 @@
 package com.barobot.activity;
 
 import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -23,6 +26,33 @@ import com.barobot.hardware.devices.BarobotConnector;
 
 public class WizardStartActivity extends BarobotMain{
 
+	private static long TIMER_DELAY = 0;
+	private static long TIMER_REPEAT = 1000;
+	private Handler handler;
+	private Timer timer;
+	
+	private class MessageTask extends TimerTask
+	{
+		private Handler mHandler;
+		public MessageTask(Handler handler)
+		{
+			mHandler = handler;
+		}
+
+		@Override
+		public void run() {
+			
+			mHandler.post(new Runnable() {
+				@Override
+				public void run() {
+					CheckMessages();
+				}
+			});
+			
+		}
+		
+	}
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		 super.onCreate(savedInstanceState);
@@ -35,6 +65,39 @@ public class WizardStartActivity extends BarobotMain{
 		String langCode = Locale.getDefault().getLanguage();	// i.e. "pl"
 		//Log.i("readLangId1", Locale.getDefault().getDisplayLanguage());
 		LangTool.setLanguage(langCode);
+		
+		handler = new Handler();
+	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		MessageTask task = new MessageTask(handler);
+		
+		timer = new Timer(true);
+		timer.schedule(task, TIMER_DELAY, TIMER_REPEAT);
+	}
+	
+	@Override
+	protected void onPause() {
+		// TODO Auto-generated method stub
+		super.onPause();
+		
+		timer.cancel();
+	}
+	
+	private void CheckMessages()
+	{
+		String message = Engine.GetInstance().GetMessage();
+		
+		if (message != "")
+		{
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setTitle("Message")
+				.setMessage(message);
+			
+			builder.create().show();
+		}
 	}
 
 	public void onMenuButtonClicked(View view)

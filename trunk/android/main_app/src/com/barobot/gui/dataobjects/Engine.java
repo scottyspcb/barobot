@@ -29,6 +29,9 @@ public class Engine {
 	private static Map<Integer, Slot> liquid2slot = null;
 	private static Engine instance;
 	private static int robotId;
+	
+	private String message = "";
+	private Boolean messagePresent = false;
 
 	public static Engine createInstance(Context context){
 		if (instance == null){
@@ -39,6 +42,30 @@ public class Engine {
 
 	public static Engine GetInstance(){
 		return instance;
+	}
+	
+	public void SetMessage(String message)
+	{
+		this.message = message;
+		this.messagePresent = true;
+	}
+	
+	public Boolean IsMessagePresent()
+	{
+		return messagePresent;
+	}
+	
+	public String GetMessage()
+	{
+		if (messagePresent)
+		{
+			messagePresent = false;
+			return message;
+		}
+		else
+		{
+			return "";
+		}
 	}
 
 	private Engine(Context context)
