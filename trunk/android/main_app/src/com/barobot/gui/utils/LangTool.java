@@ -54,7 +54,7 @@ public class LangTool {
 		o += " END ";
 		order = o;
 
-		Initiator.logger.i(Constant.TAG,"setLanguage order" + order );
+	//	Initiator.logger.i(Constant.TAG,"setLanguage order" + order );
 		
 		/*
 		ORDER BYCASE ID

@@ -16,6 +16,7 @@ import com.barobot.common.Initiator;
 import com.barobot.gui.database.BarobotData;
 import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
+import com.barobot.other.Android;
 import com.barobot.other.InternetHelpers;
 import com.barobot.other.update_drinks;
 import com.barobot.parser.Queue;
@@ -72,13 +73,23 @@ public class Engine {
 	{
 		// check there is a valid database
 		File ss = context.getDatabasePath( BarobotData.DATABASE_NAME );
-		if( !ss.exists() ){
+		if( ss.exists() ){
+			Initiator.logger.e("DB Engine", "db exists" );
+		}else{
 			String resetPath	= 	Environment.getExternalStorageDirectory()+ update_drinks.copyPath;	
-			Initiator.logger.e("DB Engine", "no databse file: "+ resetPath );
-			try {
-				InternetHelpers.copy( resetPath, update_drinks.localDbPath );// copy it from assets
-			} catch (IOException e) {
-				Initiator.logger.e("DB Engine", "copy error", e );
+			File src = new File(resetPath);
+			if(src.exists()){
+				Initiator.logger.e("File exists:", resetPath );
+				try {
+					Initiator.logger.e("DB Engine", "copy from SD card: "+ resetPath );
+					InternetHelpers.copy( resetPath, update_drinks.localDbPath );
+				} catch (IOException e) {
+					Initiator.logger.e("DB Engine", "copy error", e );
+				}
+			}else{
+				Initiator.logger.e("File not exists:", resetPath );
+				Initiator.logger.e("DB Engine", "copy from assets: "+ "default_database/BarobotOrman.db" );
+				Android.copyAsset( context, "BarobotOrman.db", update_drinks.localDbPath );
 			}
 		}
 		BarobotData.StartOrmanMapping(context);
@@ -97,9 +108,6 @@ public class Engine {
 					liquid2slot.put(sl.product.liquid.id, sl);
 				}
 			}
-			Initiator.logger.i("robotId : ", ""+robotId );
-			Initiator.logger.i("loadSlots size: ", ""+slots.size() );
-			Initiator.logger.i("liquid2slot size: ", ""+liquid2slot.size() );
 		}
 		return slots;
 	}
@@ -111,7 +119,12 @@ public class Engine {
 		recipes = null;
 		favoriteRecipes = null;
 	}
-
+	public void invalidateSlots()
+	{
+		slots = null;
+		liquid2slot = null;
+	}
+	
 	public void switchRobotId( int newId ){
 		robotId = newId;
 		invalidateData();
@@ -138,7 +151,7 @@ public class Engine {
 	{
 		if (recipes == null)
 		{
-			recipes = Filter(BarobotData.GetListedRecipes()); 
+			recipes = Filter(BarobotData.GetListedRecipes());
 		}
 		return recipes;
 	}
@@ -156,7 +169,7 @@ public class Engine {
 		}
 		return favoriteRecipes;
 	}
-	
+
 	private List<Recipe_t> Filter(List<Recipe_t> recipes)
 	{
 		List<Recipe_t> result = new ArrayList<Recipe_t>();

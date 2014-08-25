@@ -73,11 +73,11 @@ public class RecipeListActivity extends BarobotMain{
 		mCurrentRecipe = null;
 		List<Recipe_t> recipes;
 		
-		if (mode == Mode.Favorite){
-			recipes = Engine.GetInstance().getFavoriteRecipes();
-		}else{
+	//	if (mode == Mode.Favorite){
+	//		recipes = Engine.GetInstance().getFavoriteRecipes();
+	//	}else{
 			recipes = Engine.GetInstance().getRecipes();
-		}
+	//	}
 
 		ArrayAdapter<Recipe_t> mAdapter = new ArrayAdapter<Recipe_t>(this,
 				R.layout.recipe_list_item_layout, recipes);

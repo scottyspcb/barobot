@@ -247,7 +247,6 @@ public class BarobotConnector {
 	}
 
 	public void kalibrcja(Queue q) {
-		// todo, wstawic w kolejke
 		q.add( "\n", false );
 		q.add( "\n", false );
 		setLeds( q, "ff", 0 );

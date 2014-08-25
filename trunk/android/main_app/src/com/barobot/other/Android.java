@@ -3,9 +3,11 @@ package com.barobot.other;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 
 import android.content.Context;
 import android.content.res.AssetManager;
@@ -164,7 +166,48 @@ public class Android {
 	    }
 	    return null;
 	}
-	
-	
 
+	public static void copyAsset(  Context ctx, String filename, String dest ) {
+		AssetManager assetManager = ctx.getAssets();
+	    InputStream in = null;
+        OutputStream out = null;
+
+        try {
+            String[] files = assetManager.list("");
+            for(String ffff : files) {
+            	Log.e("tag", "Asset file: " + ffff );  
+            }
+        } catch (IOException e) {
+            Log.e("tag", "Failed to get asset file list.", e);
+        }  
+        
+        try {
+            String[] files = assetManager.list("default_database/");
+            for(String ffff : files) {
+            	Log.e("tag", "Asset file: " + ffff );  
+            }
+        } catch (IOException e) {
+            Log.e("tag", "Failed to get asset file list.", e);
+        }
+        try {
+          in = assetManager.open(filename);
+          File outFile = new File(dest);
+          out = new FileOutputStream(outFile);
+          copyFile(in, out);
+          in.close();
+          in = null;
+          out.flush();
+          out.close();
+          out = null;
+        } catch(IOException e) {
+            Log.e("tag", "Failed to copy asset file: " + filename, e);
+        }   
+	}
+	private static void copyFile(InputStream in, OutputStream out) throws IOException {
+	    byte[] buffer = new byte[1024];
+	    int read;
+	    while((read = in.read(buffer)) != -1){
+	      out.write(buffer, 0, read);
+	    }
+	}
 }

@@ -123,9 +123,9 @@ public class DebugTabCommands extends Fragment {
 							new Thread( new Runnable(){
 								@Override
 								public void run() {
-									Log.i("button click","exec "+ command + " start");
+									Log.i("button click1","exec "+ command + " start");
 									CommandRoute.runCommand2(command);	
-									Log.i("button click","exec "+ command + " end");
+									Log.i("button click1","exec "+ command + " end");
 								}}).start();
 						}
 					});			
