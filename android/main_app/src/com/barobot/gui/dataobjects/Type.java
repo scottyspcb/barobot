@@ -32,7 +32,7 @@ public class Type extends Model<Type>{
 	}
 	
 	public void invalidateData(){
-		liquids.clear();
+		liquids.refreshList();
 	}
 
 	public String getName() {
