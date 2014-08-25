@@ -90,14 +90,17 @@ public class SofaServer extends NanoHTTPD {
 			}
 			return new NanoHTTPD.Response(Status.NOT_FOUND, "", "");
 		}else{
-			String system_action_res = route.run( uri, this, theme, session);
 			Response r = null;
+			String mimeType = null;
+
+			String system_action_res = route.run( uri, this, theme, session);
 			if(system_action_res == null){
-				 return null;
+				return null;
 			}
 			if(route.use_raw_output){
 		//		Log.i("SofaServer use_raw_output true", route.getClass().toString() );
 				r = new Response( system_action_res );
+				route.setHeaders( r );
 			}else{
 		//		Log.i("SofaServer use_raw_output false", route.getClass().toString() );
 				Chunk chunk				= theme.makeChunk("main#header");

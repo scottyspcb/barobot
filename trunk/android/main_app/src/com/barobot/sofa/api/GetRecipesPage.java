@@ -9,6 +9,7 @@ import com.barobot.web.server.SofaServer;
 import com.x5.template.Theme;
 
 import fi.iki.elonen.NanoHTTPD.IHTTPSession;
+import fi.iki.elonen.NanoHTTPD.Response;
 
 public class GetRecipesPage extends Page {
 	
@@ -18,13 +19,19 @@ public class GetRecipesPage extends Page {
 	}
 	
 	@Override
-	protected Response runInternal(String Url, SofaServer sofaServer,
+	public void setHeaders(Response r) {
+		super.setHeaders(r);
+		r.setMimeType("application/json");
+	}
+
+	@Override
+	protected JsonResponse runInternal(String Url, SofaServer sofaServer,
 			Theme theme, IHTTPSession session) {
 		
 		Engine engine = Engine.GetInstance();
 		if (engine == null)
 		{
-			return new ResponseBuilder()
+			return new JsonResponseBuilder()
 						.status("ERROR")
 						.message("Engine not initialized")
 						.build();
@@ -33,7 +40,7 @@ public class GetRecipesPage extends Page {
 		
 		if (listAvailable == null)
 		{
-			return new ResponseBuilder()
+			return new JsonResponseBuilder()
 						.status("ERRROR")
 						.message("Getting recipes list failed")
 						.build();
@@ -41,7 +48,7 @@ public class GetRecipesPage extends Page {
 		
 		GetRecipesData data = new GetRecipesData(listAvailable);
 		
-		return new ResponseBuilder()
+		return new JsonResponseBuilder()
 						.status("OK")
 						.data(data)
 						.build();

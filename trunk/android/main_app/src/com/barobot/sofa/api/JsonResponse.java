@@ -6,12 +6,12 @@ import java.io.StringWriter;
 
 import android.util.JsonWriter;
 
-public class Response {
+public class JsonResponse {
 	private String mStatus;
 	private String mMessage;
 	private IData mData;
 	
-	public Response(String status, String message, IData data)
+	public JsonResponse(String status, String message, IData data)
 	{
 		mStatus = status;
 		mMessage = message;

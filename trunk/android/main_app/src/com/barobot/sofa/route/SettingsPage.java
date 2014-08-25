@@ -12,12 +12,11 @@ import fi.iki.elonen.NanoHTTPD.IHTTPSession;
 public class SettingsPage extends EmptyRoute{
 
 	SettingsPage(){
-		this.regex = "^/settings$";
+		this.regex = "^\\/settings$";
 	}
 
 	@Override
 	public String run(String url, SofaServer sofaServer, Theme theme,IHTTPSession session) {
-		
 		Chunk action_chunk			= theme.makeChunk("settings#settings");
     	BarobotConnector barobot = Arduino.getInstance().barobot;
     	action_chunk.set("options", barobot.state.getAll() );
