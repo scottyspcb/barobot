@@ -5,6 +5,7 @@ import com.barobot.web.server.SofaServer;
 import com.x5.template.Theme;
 
 import fi.iki.elonen.NanoHTTPD.IHTTPSession;
+import fi.iki.elonen.NanoHTTPD.Response;
 
 public abstract class Page extends EmptyRoute {
 
@@ -24,7 +25,8 @@ public abstract class Page extends EmptyRoute {
 		}
 	}
 	
-	abstract protected Response runInternal(String Url, SofaServer sofaServer, Theme theme,
+	abstract protected JsonResponse runInternal(String Url, SofaServer sofaServer, Theme theme,
 			IHTTPSession session);
+
 
 }

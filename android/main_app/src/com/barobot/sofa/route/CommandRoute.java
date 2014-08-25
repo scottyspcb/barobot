@@ -44,6 +44,8 @@ public class CommandRoute extends EmptyRoute {
 	private class command_listener {
 		public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 				int posx, int posy) {
+			
+			Initiator.logger.i("CommandRoute", " no listener: command_listener");
 			return false;
 		}
 	}
@@ -82,10 +84,12 @@ public class CommandRoute extends EmptyRoute {
 		Queue mq		= barobot.main_queue;
 		int posx		= barobot.driver_x.getSPos();
 		int posy		= barobot.state.getInt("POSY", 0 );
-
 		command_listener listener = index.get(command);
 		if(listener!=null){
-			return listener.onCall(q, barobot, mq, posx, posy);
+			Initiator.logger.i("CommandRoute", "run command: "+ command);	
+			boolean res = listener.onCall(q, barobot, mq, posx, posy);
+			mq.add(q);
+			return res;
 		}else{
 			Initiator.logger.i("CommandRoute", "brak  listener: "+ command);	
 		}
@@ -131,7 +135,6 @@ public class CommandRoute extends EmptyRoute {
 				// -10000));
 				barobot.moveZDown(q, true);
 				barobot.driver_x.moveTo(q, (posx - 10000));
-				mq.add(q);
 				return true;
 			}
 		});
@@ -144,8 +147,6 @@ public class CommandRoute extends EmptyRoute {
 				// -1000));
 				barobot.moveZDown(q, true);
 				barobot.driver_x.moveTo(q, (posx - 1000));
-
-				mq.add(q);
 				return true;
 			}
 		});
@@ -157,7 +158,6 @@ public class CommandRoute extends EmptyRoute {
 				// Log.i("nextpos-100", "old: "+posx + " next: "+ ( posx -100));
 				barobot.moveZDown(q, true);
 				barobot.driver_x.moveTo(q, (posx - 100));
-				mq.add(q);
 				return true;
 			}
 		});
@@ -168,7 +168,6 @@ public class CommandRoute extends EmptyRoute {
 				// Log.i("nextpos+100", "old: "+posx + " next: "+ ( posx +100));
 				barobot.moveZDown(q, true);
 				barobot.driver_x.moveTo(q, (posx + 100));
-				mq.add(q);
 				return true;
 			}
 		});
@@ -181,7 +180,6 @@ public class CommandRoute extends EmptyRoute {
 				// +1000));
 				barobot.moveZDown(q, true);
 				barobot.driver_x.moveTo(q, (posx + 1000));
-				mq.add(q);
 				return true;
 			}
 		});
@@ -194,7 +192,6 @@ public class CommandRoute extends EmptyRoute {
 				// +10000));
 				barobot.moveZDown(q, true);
 				barobot.driver_x.moveTo(q, (posx + 10000));
-				mq.add(q);
 				return true;
 			}
 		});
@@ -205,7 +202,6 @@ public class CommandRoute extends EmptyRoute {
 					int posx, int posy) {
 				barobot.moveZDown(q, true);
 				barobot.moveY(q, (posy - 1000), true);
-				mq.add(q);
 				return true;
 			}
 		});
@@ -216,7 +212,6 @@ public class CommandRoute extends EmptyRoute {
 					int posx, int posy) {
 				barobot.moveZDown(q, true);
 				barobot.moveY(q, (posy - 100), true);
-				mq.add(q);
 				return true;
 			}
 		});
@@ -227,7 +222,6 @@ public class CommandRoute extends EmptyRoute {
 					int posx, int posy) {
 				barobot.moveZDown(q, true);
 				barobot.moveY(q, (posy - 10), true);
-				mq.add(q);
 				return true;
 			}
 		});
@@ -238,7 +232,6 @@ public class CommandRoute extends EmptyRoute {
 					int posx, int posy) {
 				barobot.moveZDown(q, true);
 				barobot.moveY(q, (posy + 10), true);
-				mq.add(q);
 				return true;
 			}
 		});
@@ -249,7 +242,6 @@ public class CommandRoute extends EmptyRoute {
 					int posx, int posy) {
 				barobot.moveZDown(q, true);
 				barobot.moveY(q, (posy + 100), true);
-				mq.add(q);
 				return true;
 			}
 		});
@@ -260,7 +252,6 @@ public class CommandRoute extends EmptyRoute {
 					int posx, int posy) {
 				barobot.moveZDown(q, true);
 				barobot.moveY(q, (posy + 1000), true);
-				mq.add(q);
 				return true;
 			}
 		});
@@ -272,7 +263,6 @@ public class CommandRoute extends EmptyRoute {
 					int posx, int posy) {
 				barobot.moveY(q, barobot.state.get("NEUTRAL_POS_Y", "0"));
 				q.add("DY", true);
-				mq.add(q);
 				return true;
 			}
 		});
@@ -285,7 +275,6 @@ public class CommandRoute extends EmptyRoute {
 				barobot.moveY(q, 900, false);
 				barobot.moveY(q, 2100, false);
 				barobot.moveY(q, 900, false);
-				mq.add(q);
 				return true;
 			}
 		});
@@ -295,7 +284,6 @@ public class CommandRoute extends EmptyRoute {
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
 				barobot.moveZDown(q, true);
-				mq.add(q);
 				return true;
 			}
 		});
@@ -319,7 +307,6 @@ public class CommandRoute extends EmptyRoute {
 					barobot.driver_x.moveTo(q, lengthx4);
 				}
 				q.add("DX", true);
-				mq.add(q);
 				return true;
 			}
 		});
@@ -341,7 +328,6 @@ public class CommandRoute extends EmptyRoute {
 				}
 				barobot.moveY(q, SERVOY_FRONT_POS2, false);
 				q.add("DY", true);
-				mq.add(q);
 				return true;
 			}
 		});
@@ -356,7 +342,6 @@ public class CommandRoute extends EmptyRoute {
 				}
 				barobot.moveZDown(q, true);
 				q.add("DZ", true);
-				mq.add(q);
 				return true;
 			}
 		});
@@ -380,13 +365,7 @@ public class CommandRoute extends EmptyRoute {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
-				
-				
-				
-				
-				
-				
-				
+
 				return true;
 			}
 		});
@@ -441,7 +420,6 @@ public class CommandRoute extends EmptyRoute {
 					barobot.driver_x.moveTo(q, (right * 100));
 					f = f + 2;
 				}
-				mq.add(q);
 				return true;
 			}
 		});
@@ -461,7 +439,6 @@ public class CommandRoute extends EmptyRoute {
 				 * lengthy5/100 / 2; virtualComponents.moveY( q, (left * 100));
 				 * virtualComponents.moveY( q, (right * 100)); f=f+2; }
 				 */
-				mq.add(q);
 				return true;
 			}
 		});
@@ -471,7 +448,6 @@ public class CommandRoute extends EmptyRoute {
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
 				barobot.pour(q, 20, -1, true);
-				mq.add(q);
 				return true;
 			}
 		});
@@ -486,7 +462,6 @@ public class CommandRoute extends EmptyRoute {
 				q.add("DX", true);
 				q.add("DY", true);
 				q.add(Constant.GETXPOS, true);
-				mq.add(q);
 				return true;
 			}
 		});
@@ -501,7 +476,6 @@ public class CommandRoute extends EmptyRoute {
 				q.add("DX", true);
 				q.add("DY", true);
 				q.add(Constant.GETXPOS, true);
-				mq.add(q);
 				return true;
 			}
 		});
@@ -513,7 +487,6 @@ public class CommandRoute extends EmptyRoute {
 				barobot.moveZDown(q, true);
 				int lengthx2 = barobot.state.getInt("LENGTHX", 600);
 				barobot.driver_x.moveTo(q, posx + lengthx2);
-				mq.add(q);
 				return true;
 			}
 		});
@@ -526,7 +499,6 @@ public class CommandRoute extends EmptyRoute {
 				int SERVOY_BACK_POS2 = barobot.state.getInt("SERVOY_BACK_POS",
 						Constant.SERVOY_BACK_POS);
 				barobot.moveY(q, SERVOY_BACK_POS2, true);
-				mq.add(q);
 				return true;
 			}
 		});
@@ -538,7 +510,6 @@ public class CommandRoute extends EmptyRoute {
 				barobot.moveZDown(q, true);
 				int lengthx3 = barobot.state.getInt("LENGTHX", 600);
 				barobot.driver_x.moveTo(q, -lengthx3);
-				mq.add(q);
 				return true;
 			}
 		});
@@ -551,7 +522,6 @@ public class CommandRoute extends EmptyRoute {
 				int SERVOY_FRONT_POS5 = barobot.state.getInt(
 						"SERVOY_FRONT_POS", Constant.SERVOY_FRONT_POS);
 				barobot.moveY(q, SERVOY_FRONT_POS5, true);
-				mq.add(q);
 				return true;
 			}
 		});
@@ -584,7 +554,6 @@ public class CommandRoute extends EmptyRoute {
 				q.add("DX", true);
 				q.addWait(200);
 				q.add("DZ", true);
-				mq.add(q);
 				return true;
 			}
 		});
@@ -594,7 +563,6 @@ public class CommandRoute extends EmptyRoute {
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
 				// q.add("EY", true);
-				mq.add(q);
 				return true;
 			}
 		});
@@ -604,7 +572,6 @@ public class CommandRoute extends EmptyRoute {
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
 				q.add("DZ", true);
-				mq.add(q);
 				return true;
 			}
 		});
@@ -614,7 +581,6 @@ public class CommandRoute extends EmptyRoute {
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
 				q.add("DY", true);
-				mq.add(q);
 				return true;
 			}
 		});
@@ -624,7 +590,6 @@ public class CommandRoute extends EmptyRoute {
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
 				q.add("EZ", true);
-				mq.add(q);
 				return true;
 			}
 		});
@@ -790,7 +755,7 @@ public class CommandRoute extends EmptyRoute {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
-				barobot.doHoming(mq, true);
+				barobot.doHoming(q, true);
 				return true;
 			}
 		});
@@ -830,6 +795,7 @@ public class CommandRoute extends EmptyRoute {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
+
 				barobot.kalibrcja( q );
 				return true;
 			}
@@ -888,12 +854,6 @@ public class CommandRoute extends EmptyRoute {
 				return true;
 			}
 		});
-		
-		
-		
-		
-		
-		
 
 		index.put("command_download_database", new command_listener() {
 			@Override
@@ -913,44 +873,29 @@ public class CommandRoute extends EmptyRoute {
 				return true;
 			}
 		});
-		
-		
-		
-		
-		
-		
-		
-		
+
 		index.put("command_auto_repair", new command_listener() {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,int posx, int posy) {
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
+				mq.unlock();
+				// send new line
+				// recieve response
+				// if not = error 1
+				// if wrong error 2
+				// send get analog
+				// if no response = error 3
+				// if wrong = error 4
+
+				// if error = reset MB & CARRET
 				return true;
 			}
 		});
 		
-		
-		
-		
-		
-		
-		
-		
+		index.put("command_repair_ingredients", new command_listener() {
+			@Override
+			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,int posx, int posy) {
+				return true;
+			}
+		});
 	}
-
 }

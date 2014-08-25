@@ -10,12 +10,10 @@ public class ApiRoute extends EmptyRoute {
 	ApiRoute(){
 		this.regex = "^/api$";
 	}
-
 	@Override
 	public String run(String url, SofaServer sofaServer, Theme theme,
 			IHTTPSession session) {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
 }

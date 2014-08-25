@@ -4,6 +4,7 @@ import com.barobot.web.server.SofaServer;
 import com.x5.template.Theme;
 
 import fi.iki.elonen.NanoHTTPD.IHTTPSession;
+import fi.iki.elonen.NanoHTTPD.Response;
 
 public abstract class EmptyRoute {
 	public String regex = "####";
@@ -14,4 +15,8 @@ public abstract class EmptyRoute {
 	}
 
 	abstract public String run(String url,SofaServer sofaServer, Theme theme, IHTTPSession session);
+
+	public void setHeaders(Response r) {
+		// TODO Auto-generated method stub
+	}
 }

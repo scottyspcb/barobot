@@ -3,7 +3,6 @@ package com.barobot.sofa.route;
 import com.barobot.sofa.api.DoDrinkPage;
 import com.barobot.sofa.api.GetRecipesPage;
 import com.barobot.web.route.EmptyRoute;
-import com.barobot.web.route.TemplateRendering;
 import com.barobot.web.server.SimpleRouter;
 import com.barobot.web.server.SofaServer;
 import com.x5.template.Theme;
@@ -28,7 +27,6 @@ public class SofaRouter implements SimpleRouter{
 		} );
 		ss.addRoute( new RPCPage() );
 		ss.addRoute( new SavePage() );
-	//	ss.addRoute( new TemplateRendering() );
 		ss.addRoute( new MainPage() );
 		ss.addRoute( new SettingsPage() );
 		ss.addRoute( new OrderPage() );
