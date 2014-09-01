@@ -43,6 +43,7 @@ public class RecipeListActivity extends BarobotMain{
 		}
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_recipe);
+		setFullScreen();
 	}
 
 	@Override
