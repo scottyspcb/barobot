@@ -1,11 +1,16 @@
 {#mainpage}
 {$body2}
 <div style="text-align:center">
-	<br /><a class="btn btn-success" style="margin:10px" href="/api">API</a>
 	<br /><a class="btn btn-success" style="margin:10px" href="/translate">Translations</a>
 	<br /><a class="btn btn-success" style="margin:10px" href="/commands">Commands</a>
 	<br /><a class="btn btn-success" style="margin:10px" href="/settings">Edit System Settings</a>
-	<br /><a class="btn btn-success" style="margin:10px" href="/app">Do drink</a>
+	<br />
+	<br /><a class="btn btn-success" style="margin:10px" href="/api/get_recipes">API get_recipes</a>
+	<br /><a class="btn btn-success" style="margin:10px" href="/api/do_drink">API do_drink</a>
+	<br />
+	<br />
+	<br /><a class="btn btn-success" style="margin:10px" href="/setup/drinks">Manage drinks</a>
+	<br /><a class="btn btn-success" style="margin:10px" href="/setup/edit_db">Edit DB</a>	
 </div>
 {#}
 

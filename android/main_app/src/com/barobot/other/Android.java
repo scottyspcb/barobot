@@ -167,11 +167,10 @@ public class Android {
 	    return null;
 	}
 
-	public static void copyAsset(  Context ctx, String filename, String dest ) {
+	public static void copyAsset( Context ctx, String filename, String dest ) {
 		AssetManager assetManager = ctx.getAssets();
 	    InputStream in = null;
         OutputStream out = null;
-
         try {
             String[] files = assetManager.list("");
             for(String ffff : files) {
@@ -179,8 +178,7 @@ public class Android {
             }
         } catch (IOException e) {
             Log.e("tag", "Failed to get asset file list.", e);
-        }  
-        
+        }
         try {
             String[] files = assetManager.list("default_database/");
             for(String ffff : files) {
@@ -201,7 +199,7 @@ public class Android {
           out = null;
         } catch(IOException e) {
             Log.e("tag", "Failed to copy asset file: " + filename, e);
-        }   
+        } 
 	}
 	private static void copyFile(InputStream in, OutputStream out) throws IOException {
 	    byte[] buffer = new byte[1024];

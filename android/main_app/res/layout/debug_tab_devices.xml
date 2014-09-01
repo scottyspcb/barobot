@@ -49,13 +49,7 @@
                         android:ems="10"
                         android:inputType="number|numberSigned" />
 
-                    <EditText
-                        android:id="@+id/capacity0"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:ems="10"
-                        android:inputType="number" />
+                   
                     
                 </LinearLayout>
 
@@ -74,13 +68,6 @@
                         android:layout_weight="1"
                         android:ems="10"
                         android:inputType="number|numberSigned" />
-                    <EditText
-                        android:id="@+id/capacity1"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:ems="10"
-                        android:inputType="number" />
                 </LinearLayout>       
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -97,14 +84,6 @@
                         android:layout_weight="1"
                         android:ems="10"
                         android:inputType="number|numberSigned" />
-
-                    <EditText
-                        android:id="@+id/capacity2"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:ems="10"
-                        android:inputType="number" />
                     
                 </LinearLayout>
                 <LinearLayout
@@ -122,14 +101,6 @@
                         android:layout_weight="1"
                         android:ems="10"
                         android:inputType="number|numberSigned" />
-
-                    <EditText
-                        android:id="@+id/capacity3"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:ems="10"
-                        android:inputType="number" />
                     
                 </LinearLayout>
                 <LinearLayout
@@ -147,14 +118,6 @@
                         android:layout_weight="1"
                         android:ems="10"
                         android:inputType="number|numberSigned" />
-
-                    <EditText
-                        android:id="@+id/capacity4"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:ems="10"
-                        android:inputType="number" />
                     
                 </LinearLayout>         
                 
@@ -173,14 +136,6 @@
                         android:layout_weight="1"
                         android:ems="10"
                         android:inputType="number|numberSigned" />
-
-                    <EditText
-                        android:id="@+id/capacity5"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:ems="10"
-                        android:inputType="number" />
                     
                 </LinearLayout> 
                 <LinearLayout
@@ -198,14 +153,6 @@
                         android:layout_weight="1"
                         android:ems="10"
                         android:inputType="number|numberSigned" />
-
-                    <EditText
-                        android:id="@+id/capacity6"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:ems="10"
-                        android:inputType="number" />
                     
                 </LinearLayout>   
                 <LinearLayout
@@ -223,14 +170,6 @@
                         android:layout_weight="1"
                         android:ems="10"
                         android:inputType="number|numberSigned" />
-
-                    <EditText
-                        android:id="@+id/capacity7"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:ems="10"
-                        android:inputType="number" />
                     
                 </LinearLayout>
                 <LinearLayout
@@ -248,14 +187,6 @@
                         android:layout_weight="1"
                         android:ems="10"
                         android:inputType="number|numberSigned" />
-
-                    <EditText
-                        android:id="@+id/capacity8"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:ems="10"
-                        android:inputType="number" />
                     
                 </LinearLayout>
                 <LinearLayout
@@ -274,13 +205,7 @@
                         android:ems="10"
                         android:inputType="number|numberSigned" />
 
-                    <EditText
-                        android:id="@+id/capacity9"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:ems="10"
-                        android:inputType="number" />
+                
                     
                 </LinearLayout> 
                 <LinearLayout
@@ -299,13 +224,6 @@
                         android:ems="10"
                         android:inputType="number|numberSigned" />
 
-                    <EditText
-                        android:id="@+id/capacity10"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:ems="10"
-                        android:inputType="number" />
                     
                 </LinearLayout>
                 <LinearLayout
@@ -324,14 +242,7 @@
                         android:ems="10"
                         android:inputType="number|numberSigned" />
 
-                    <EditText
-                        android:id="@+id/capacity11"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:ems="10"
-                        android:inputType="number" />
-                    
+                 
              
             </LinearLayout>
    </LinearLayout>

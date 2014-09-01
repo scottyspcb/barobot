@@ -27,8 +27,8 @@ public class Audio implements OnSignalsDetectedListener{
 	Upanel[] up				= null;
 
 	public void start( final BarobotConnector barobot2 ) {
-		Queue q = barobot.main_queue;
 		this.barobot = barobot2;
+		Queue q = barobot.main_queue;
 		Upanel[] up2		= barobot.i2c.getUpanels();
 		if(up2.length < 12){
 			barobot.scann_leds( q );
