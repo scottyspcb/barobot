@@ -26,7 +26,7 @@ public class SavePage extends EmptyRoute {
 
 	@Override
 	public String run(String url, SofaServer sofaServer, Theme theme, IHTTPSession session){
-		Log.i("RPCPage command", url);
+		//Log.i("RPCPage command", url);
 		if(session.getParms().containsKey("id") && session.getParms().containsKey("name")&& session.getParms().containsKey("type")){
 			String id = session.getParms().get("id");
 			String type = session.getParms().get("type");
