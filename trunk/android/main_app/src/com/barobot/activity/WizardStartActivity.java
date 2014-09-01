@@ -48,9 +48,7 @@ public class WizardStartActivity extends BarobotMain{
 					CheckMessages();
 				}
 			});
-			
 		}
-		
 	}
 
 	@Override
@@ -65,13 +63,14 @@ public class WizardStartActivity extends BarobotMain{
 		String langCode = Locale.getDefault().getLanguage();	// i.e. "pl"
 		//Log.i("readLangId1", Locale.getDefault().getDisplayLanguage());
 		LangTool.setLanguage(langCode);
-		
+		setFullScreen();
 		handler = new Handler();
 	}
 	
 	@Override
 	protected void onResume() {
 		super.onResume();
+		setFullScreen();
 		MessageTask task = new MessageTask(handler);
 		
 		timer = new Timer(true);

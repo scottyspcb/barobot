@@ -14,7 +14,6 @@ public class BarobotActivity extends BarobotMain {
 			savedInstanceState = getIntent().getExtras().getBundle("bundle");
 		}
 		super.onCreate(savedInstanceState);
-
         Intent serverIntent = new Intent(this, WizardStartActivity.class);
 		serverIntent.putExtra(RecipeListActivity.MODE_NAME, RecipeListActivity.Mode.Normal.ordinal());
 		serverIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);

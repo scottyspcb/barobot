@@ -47,6 +47,7 @@ public class CreatorActivity extends BarobotMain{
 	protected void onResume() {
 		super.onResume();
 		UpdateData();
+		setFullScreen();
 	}
 
 	private void UpdateData(){
