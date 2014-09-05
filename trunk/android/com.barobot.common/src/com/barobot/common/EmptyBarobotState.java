@@ -31,4 +31,12 @@ public class EmptyBarobotState implements HardwareState {
 		Map<String, String> nMap 	= new HashMap<String, String>();
 		return nMap;
 	}
+	@Override
+	public void reloadConfig(int robot_Serial) {
+		// TODO Auto-generated method stub
+	}
+	@Override
+	public void saveConfig(int robot_Serial) {		// commit into settings
+		// TODO Auto-generated method stub
+	}
 }

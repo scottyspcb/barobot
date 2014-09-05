@@ -1,3 +1,12 @@
+function run_command( command, btn ){
+	$(btn).addClass("btn-danger");
+	$.get("/command/" + command,{
+	  }, function(dane){
+	    $(btn).removeClass("btn-danger");
+	  }
+	);
+}
+
 function pre(){
 	if(arguments.length == 0){
 		return console.log( arguments[0] );

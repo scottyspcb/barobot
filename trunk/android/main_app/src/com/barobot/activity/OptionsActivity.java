@@ -74,7 +74,6 @@ public class OptionsActivity extends BarobotMain {
 	                public void onClick(DialogInterface dialog, int id) {
 	                	a.stop();
 	                    dialog.cancel();
-	                    
 	                    barobot.main_queue.clear();
 	                    barobot.main_queue.unlock();
 	                }
@@ -89,9 +88,13 @@ public class OptionsActivity extends BarobotMain {
 
 		case R.id.option345:
 			String ip = Android.getLocalIpAddress();
+			String msg = "http://" + ip + ":8000";
+			if(ip.equals("")){
+				msg = "no connection";
+			}
 			new AlertDialog.Builder(this)
 		    .setTitle("Barobot address")
-		    .setMessage("http://" + ip + ":8000")
+		    .setMessage(msg)
 		    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
 		        public void onClick(DialogInterface dialog, int which) { 
 		        }
@@ -110,8 +113,7 @@ public class OptionsActivity extends BarobotMain {
     		startActivity(serverIntent);
     	}
 	}
-	
-	
+
 	private Audio getAudio() {
 		Audio a = (Audio) AppInvoker.container.get("Audio");
     	if(a == null ){

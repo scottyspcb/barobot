@@ -50,7 +50,6 @@ public class BarobotMain extends Activity {
 
 	public void setFullScreen() {
 		int currentapiVersion = android.os.Build.VERSION.SDK_INT;
-		Initiator.logger.e("BarobotMain.setFullScreen", "varsion: "+currentapiVersion);
 		if (currentapiVersion >= 19 ){	// kitkat
 			getWindow().getDecorView().setSystemUiVisibility(
 			          View.SYSTEM_UI_FLAG_LAYOUT_STABLE

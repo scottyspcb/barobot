@@ -44,7 +44,6 @@ public class CommandRoute extends EmptyRoute {
 	private class command_listener {
 		public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 				int posx, int posy) {
-			
 			Initiator.logger.i("CommandRoute", " no listener: command_listener");
 			return false;
 		}
@@ -295,7 +294,7 @@ public class CommandRoute extends EmptyRoute {
 				barobot.moveZDown(q, true);
 
 				int SERVOY_FRONT_POS = barobot.state.getInt("SERVOY_FRONT_POS",
-						Constant.SERVOY_FRONT_POS);
+						1000);
 
 				barobot.moveY(q, SERVOY_FRONT_POS, true);
 				int lengthx4 = barobot.state.getInt("LENGTHX", 600);
@@ -318,9 +317,9 @@ public class CommandRoute extends EmptyRoute {
 				barobot.moveZDown(q, true);
 
 				int SERVOY_FRONT_POS2 = barobot.state.getInt(
-						"SERVOY_FRONT_POS", Constant.SERVOY_FRONT_POS);
+						"SERVOY_FRONT_POS", 0);
 				int SERVOY_BACK_POS = barobot.state.getInt("SERVOY_BACK_POS",
-						Constant.SERVOY_BACK_POS);
+						0);
 
 				for (int i = 0; i < 10; i++) {
 					barobot.moveY(q, SERVOY_FRONT_POS2, false);
@@ -409,7 +408,7 @@ public class CommandRoute extends EmptyRoute {
 				Random generator2 = new Random(19580427);
 				barobot.moveZDown(q, true);
 				int SERVOY_FRONT_POS3 = barobot.state.getInt(
-						"SERVOY_FRONT_POS", Constant.SERVOY_FRONT_POS);
+						"SERVOY_FRONT_POS", 1000);
 				barobot.moveY(q, SERVOY_FRONT_POS3, true);
 				int lengthx5 = barobot.state.getInt("LENGTHX", 600);
 				for (int f = 0; f < 20;) {
@@ -496,8 +495,7 @@ public class CommandRoute extends EmptyRoute {
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
 				barobot.moveZDown(q, true);
-				int SERVOY_BACK_POS2 = barobot.state.getInt("SERVOY_BACK_POS",
-						Constant.SERVOY_BACK_POS);
+				int SERVOY_BACK_POS2 = barobot.state.getInt("SERVOY_BACK_POS",1000);
 				barobot.moveY(q, SERVOY_BACK_POS2, true);
 				return true;
 			}
@@ -520,7 +518,7 @@ public class CommandRoute extends EmptyRoute {
 					int posx, int posy) {
 				barobot.moveZDown(q, true);
 				int SERVOY_FRONT_POS5 = barobot.state.getInt(
-						"SERVOY_FRONT_POS", Constant.SERVOY_FRONT_POS);
+						"SERVOY_FRONT_POS", 1000);
 				barobot.moveY(q, SERVOY_FRONT_POS5, true);
 				return true;
 			}
@@ -544,10 +542,8 @@ public class CommandRoute extends EmptyRoute {
 				q.add("EX", true);
 				// q.add("EY", true);
 				// q.add("EZ", true);
-				int SERVOZ_PAC_POS = barobot.state.getInt("SERVOZ_PAC_POS",
-						Constant.SERVOZ_PAC_POS);
-				int DRIVER_Z_SPEED = barobot.state.getInt("DRIVER_Z_SPEED",
-						Constant.DRIVER_Z_SPEED);
+				int SERVOZ_PAC_POS = barobot.state.getInt("SERVOZ_PAC_POS",0);
+				int DRIVER_Z_SPEED = barobot.state.getInt("DRIVER_Z_SPEED",0);
 				q.add("Z" + SERVOZ_PAC_POS + "," + DRIVER_Z_SPEED, true);
 				barobot.moveZDown(q, true);
 				q.add("DY", true);
@@ -873,7 +869,7 @@ public class CommandRoute extends EmptyRoute {
 				return true;
 			}
 		});
-
+		// TODO
 		index.put("command_auto_repair", new command_listener() {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,int posx, int posy) {
@@ -890,12 +886,35 @@ public class CommandRoute extends EmptyRoute {
 				return true;
 			}
 		});
-		
+		// TODO
 		index.put("command_repair_ingredients", new command_listener() {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,int posx, int posy) {
 				return true;
 			}
 		});
+		
+		
+		// TODO
+		index.put("command_pour_now", new command_listener() {
+			@Override
+			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,int posx, int posy) {
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				return true;
+			}
+		});
+			
+		
+		
+		
+		
 	}
 }

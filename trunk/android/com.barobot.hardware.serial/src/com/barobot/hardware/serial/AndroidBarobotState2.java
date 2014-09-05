@@ -28,13 +28,7 @@ public class AndroidBarobotState2 implements HardwareState{
 		"POS_START_Y",
 		"NEUTRAL_POS_Y",
 		"NEUTRAL_POS_Z",
-		"ENDSTOP_X_MIN",
-		"ENDSTOP_X_MAX",
-		"ENDSTOP_Y_MIN",
-		"ENDSTOP_Y_MAX",
-		"ENDSTOP_Z_MIN",
-		"ENDSTOP_Z_MAX",
-		
+
 		"BOTTLE_OFFSETX_0",
 		"BOTTLE_OFFSETX_1",
 		"BOTTLE_OFFSETX_2",
@@ -119,6 +113,18 @@ public class AndroidBarobotState2 implements HardwareState{
 		    nMap.put(entry.getKey(), entry.getValue().toString());
 		} 
 		return nMap;
+	}
+
+	@Override
+	public void reloadConfig(int robot_Serial) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void saveConfig(int robot_Serial) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 	

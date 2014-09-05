@@ -1,0 +1,174 @@
+{#body}
+<h3>Positions</h3>
+
+Disable servo on ready: <input type="checkbox" checked="checked" id="autodisable" />
+<br />
+
+<table>
+{.loop in $positions as $name:$position}
+	<tr>
+		<td style="width:250px">
+			{$name}
+		</td>
+		<td>
+			<input type="text" class="p_pos" value="{$position}">
+			<input type="text" class="p_speed"  value="20">
+		</td><td>
+			<a class="btn btn-danger" href="javascript:void(0)" onclick="goTo( this,'y' )">GO Y</a>
+			<a class="btn btn-warning" href="javascript:void(0)" onclick="goTo( this,'z' )">GO Z</a>
+		</td>
+	</tr>
+{/loop}
+	<tr>
+		<td style="width:250px">
+		Custom 1
+		</td>
+		<td>
+			<input type="text" class="p_pos" value="1000">
+			<input type="text" class="p_speed"  value="20">
+		</td><td>
+			<a class="btn btn-danger" href="javascript:void(0)" onclick="goTo( this,'y' )">GO Y</a>
+			<a class="btn btn-warning" href="javascript:void(0)" onclick="goTo( this,'z' )">GO Z</a>
+		</td>
+	</tr>
+	<tr>
+		<td style="width:250px">
+		Custom 2
+		</td>
+		<td>
+			<input type="text" class="p_pos" value="1000">
+			<input type="text" class="p_speed"  value="20">
+		</td><td>
+			<a class="btn btn-danger" href="javascript:void(0)" onclick="goTo( this,'y' )">GO Y</a>
+			<a class="btn btn-warning" href="javascript:void(0)" onclick="goTo( this,'z' )">GO Z</a>
+		</td>
+	</tr>
+	<tr>
+		<td style="width:250px">
+		Custom 3
+		</td>
+		<td>
+			<input type="text" class="p_pos" value="1000">
+			<input type="text" class="p_speed"  value="20">
+		</td><td>
+			<a class="btn btn-danger" href="javascript:void(0)" onclick="goTo( this,'y' )">GO Y</a>
+			<a class="btn btn-warning" href="javascript:void(0)" onclick="goTo( this,'z' )">GO Z</a>
+		</td>
+	</tr>
+	<tr>
+		<td style="width:250px">
+		Custom 4
+		</td>
+		<td>
+			<input type="text" class="p_pos" value="1000">
+			<input type="text" class="p_speed"  value="20">
+		</td><td>
+			<a class="btn btn-danger" href="javascript:void(0)" onclick="goTo( this,'y' )">GO Y</a>
+			<a class="btn btn-warning" href="javascript:void(0)" onclick="goTo( this,'z' )">GO Z</a>
+		</td>
+	</tr>
+</table>
+
+<a onclick="run_command( 'command_disabley', this )" href="javascript:void(0)" class="btn btn-primary">disable Y</a>
+<a onclick="run_command( 'command_disablez', this )" href="javascript:void(0)" class="btn btn-primary">disable Z</a>
+<a onclick="run_command( 'command_pacpac', this )" href="javascript:void(0)" class="btn btn-primary">pacpac</a>
+<a onclick="run_command( 'command_pour_now', this )" href="javascript:void(0)" class="btn btn-primary">pour_now</a>
+<a onclick="run_command( 'command_unlock', this )" href="javascript:void(0)" class="btn btn-primary">unlock</a>
+
+<h3>Caly schemat</h3>
+<table>
+	<tr>
+		<td style="width:250px">UP_POS</td>
+		<td><input type="text" class="p_pos" id="UP_POS" value="{$UP_POS}" /></td>
+	</tr><tr>
+		<td style="width:250px">DOWN_POS</td>
+		<td><input type="text" class="p_pos" id="DOWN_POS" value="{$DOWN_POS}" /></td>
+	</tr><tr>
+		<td style="width:250px">UP_SPEED</td>
+		<td><input type="text" class="p_pos" id="UP_SPEED" value="{$UP_SPEED}" /></td>
+	</tr><tr>
+		<td style="width:250px">DOWN_SPEED</td>
+		<td><input type="text" class="p_pos" id="DOWN_SPEED" value="{$DOWN_SPEED}" /></td>
+	</tr><tr>
+		<td style="width:250px">UP_TIME</td>
+		<td><input type="text" class="p_pos" id="UP_TIME" value="{$UP_TIME}" /></td>
+	</tr><tr>
+		<td style="width:250px">LIGHT_POS</td>
+		<td><input type="text" class="p_pos" id="LIGHT_POS" value="{$LIGHT_POS}" /></td>
+	</tr><tr>
+		<td style="width:250px">LIGHT_TIME</td>
+		<td><input type="text" class="p_pos" id="LIGHT_TIME" value="{$LIGHT_TIME}" /></td>
+	</tr><tr>
+		<td style="width:250px">PAC_POS</td>
+		<td><input type="text" class="p_pos" id="PAC_POS" value="{$PAC_POS}" /></td>
+	</tr><tr>
+		<td style="width:250px">PAC_UP_SPEED</td>
+		<td><input type="text" class="p_pos" id="PAC_UP_SPEED" value="{$PAC_UP_SPEED}" /></td>
+	</tr><tr>
+		<td style="width:250px">PAC_WAIT_DOWN_TIME</td>
+		<td><input type="text" class="p_pos" id="PAC_WAIT_DOWN_TIME" value="{$PAC_WAIT_DOWN_TIME}" /></td>
+	</tr><tr>
+		<td style="width:250px">PAC_WAIT_UP_TIME</td>
+		<td><input type="text" class="p_pos" id="PAC_WAIT_UP_TIME" value="{$PAC_WAIT_UP_TIME}" /></td>
+	</tr><tr>
+		<td style="width:250px">PAC_DOWN_SPEED</td>
+		<td><input type="text" class="p_pos" id="PAC_DOWN_SPEED" value="{$PAC_DOWN_SPEED}" /></td>
+	</tr><tr>
+		<td style="width:250px">REPEAT</td>
+		<td><input type="text" class="p_pos" id="REPEAT" value="{$REPEAT}" /></td>
+	</tr><tr>
+		<td style="width:250px">WAIT_AFTER</td>
+		<td><input type="text" class="p_pos" id="WAIT_AFTER" value="{$WAIT_AFTER}" /></td>
+	</tr>
+</table>
+<a class="btn btn-danger" href="javascript:void(0)" onclick="pour()">GO Y</a>
+
+<br /><br /><br /><br />
+<script>
+	function goTo( btn, servo ){
+		var p_pos = $(btn).closest("tr").find("input.p_pos").val();
+		var p_speed = $(btn).closest("tr").find("input.p_speed").val();
+		var disableOnReady = $("#autodisable").is(':checked');
+		$.get("/servo",{
+			  servo			: servo,
+			  position		: p_pos,
+			  speed			: p_speed,
+			  disableOnReady: disableOnReady ? "true" : "false"
+		  }, function(dane){
+		  }
+		);
+	}
+	function pour(){
+		var disableOnReady = $("#autodisable").is(':checked');
+		var inputs =[
+			"UP_POS",
+			"DOWN_POS",
+			"UP_SPEED",
+			"DOWN_SPEED",
+			"UP_TIME",
+			"LIGHT_POS",
+			"LIGHT_TIME",
+			"PAC_POS",
+			"PAC_UP_SPEED",
+			"PAC_WAIT_DOWN_TIME",
+			"PAC_WAIT_UP_TIME",
+			"PAC_DOWN_SPEED",
+			"REPEAT",
+			"WAIT_AFTER"
+		];
+		var output = {
+			nalej			: true,
+			disableOnReady	: disableOnReady ? "true" : "false"
+		};
+	//	console.log(inputs.length );
+		for(var i=0;i<inputs.length;i++){
+			var value = $("#" + inputs[i] ).val();
+			output[ inputs[i] ] = value;
+		//	console.log(inputs[i],value );
+		}
+	//	console.log(output);
+		$.get("/servo",output, function(dane){});
+	}	
+</script>
+
+{#}

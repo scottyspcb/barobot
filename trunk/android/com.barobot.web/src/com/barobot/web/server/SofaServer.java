@@ -76,6 +76,7 @@ public class SofaServer extends NanoHTTPD {
 		    	//		r.addHeader("Vary", "Accept-Encoding,User-Agent");
 		    			r.addHeader("Server", "Apache/2.2.16");
 		    			r.addHeader("X-Cache", "HIT");
+		    			r.addHeader("Access-Control-Allow-Origin", "*");
 	//	    			r.addHeader("Last-Modified", "Wed, 05 Dec 2012 13:23:44 GMT");
 		    	//		Log.i("etag :", path +" " + etag );
 		    			r.addHeader("Etag", "\""+ etag + "\"");	

@@ -406,7 +406,7 @@ public class MyRetReader implements RetReader {
 		*/
 		String decoded = "/METHOD_IMPORTANT_ANALOG";
 		int[] parts = Decoder.decodeBytes( fromArduino );
-		if( parts[1] == Methods.INNER_HALL_X ){
+		if( parts.length >= 10 && parts[1] == Methods.INNER_HALL_X ){
 			decoded += "/INNER_HALL_X";
 			/*
 			if(dir == Methods.DRIVER_DIR_BACKWARD){
@@ -448,7 +448,7 @@ public class MyRetReader implements RetReader {
 					decoded += "/HX_STATE_1";
 					state.set( "LENGTHX", spos);
 					state.set( "X_GLOBAL_MAX", spos );
-					int SERVOY_FRONT_POS = state.getInt("SERVOY_FRONT_POS", Constant.SERVOY_FRONT_POS );
+					int SERVOY_FRONT_POS = state.getInt("SERVOY_FRONT_POS", 1000 );
 					barobot.hereIsBottle(11, spos, SERVOY_FRONT_POS );
 					state_num = 0;
 				}else if(state_name == Methods.HX_STATE_2 ){
@@ -519,7 +519,7 @@ public class MyRetReader implements RetReader {
 					state.set("MARGINX", hpos);
 					// new software pos (equal 0);
 					spos = barobot.driver_x.hard2soft(hpos);
-					int SERVOY_FRONT_POS = state.getInt("SERVOY_FRONT_POS", Constant.SERVOY_FRONT_POS );
+					int SERVOY_FRONT_POS = state.getInt("SERVOY_FRONT_POS", 1000 );
 					barobot.hereIsStart(spos, SERVOY_FRONT_POS );
 					Initiator.logger.i("input_parser", "jestem w: " + spos );
 					barobot.driver_x.setSPos( spos );
@@ -533,7 +533,7 @@ public class MyRetReader implements RetReader {
 					decoded += "/HX_STATE_1";
 					state.set( "LENGTHX", spos);
 					state.set( "X_GLOBAL_MAX", spos );
-					int SERVOY_FRONT_POS = state.getInt("SERVOY_FRONT_POS", Constant.SERVOY_FRONT_POS );
+					int SERVOY_FRONT_POS = state.getInt("SERVOY_FRONT_POS", 1000 );
 					barobot.hereIsBottle(11, spos, SERVOY_FRONT_POS );
 					state_num = 0;
 				}else if(state_name == Methods.HX_STATE_2 ){
@@ -550,7 +550,7 @@ public class MyRetReader implements RetReader {
 					// new software pos (equal 0)
 					spos = barobot.driver_x.hard2soft(hpos);
 					barobot.driver_x.setSPos( spos );
-					int SERVOY_FRONT_POS = state.getInt("SERVOY_FRONT_POS", Constant.SERVOY_FRONT_POS );
+					int SERVOY_FRONT_POS = state.getInt("SERVOY_FRONT_POS", 1000 );
 					barobot.hereIsStart(spos, SERVOY_FRONT_POS );
 					Initiator.logger.i("input_parser", "jestem2 w: " + spos );
 
@@ -576,8 +576,18 @@ public class MyRetReader implements RetReader {
 	}
 	private void hereIsMagnet(int magnetnum, int fromHPos, int toHPos, int bottleIsBack ) {
 		int num		= Constant.magnet_order[magnetnum];
-		int ypos	= Constant.b_pos_y[ num ];
+		int ypos	= 0;
 		int row		= Constant.bottle_row[ num ];
+
+		if( row == Constant.BOTTLE_IS_BACK ){
+			ypos = barobot.state.getInt("SERVOY_BACK_POS", 0);
+
+		}else if(row ==Constant.BOTTLE_IS_FRONT){
+			ypos = barobot.state.getInt("SERVOY_FRONT_POS", 0);
+		}else{
+			Initiator.logger.e("bottle "+ num, "error" );
+		}
+
 		if(row == Constant.BOTTLE_IS_BACK){
 			Initiator.logger.i("bottle "+ num +" BACK", "frontNum: "+ frontNum+" BackNum: "+ BackNum+ "from " +fromHPos + " to " + toHPos );
 		}else{

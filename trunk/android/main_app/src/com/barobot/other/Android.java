@@ -113,7 +113,7 @@ public class Android {
 	    File file = new File(Environment.getExternalStorageDirectory(), path);
 	    if (!file.exists()) {
 	        if (!file.mkdirs()) {
-	            Log.e("TravellerLog :: ", "Problem creating Image folder");
+	            Log.e("TravellerLog :: ", "Problem creating folder:"+path );
 	            ret = false;
 	        }
 	    }
@@ -171,6 +171,7 @@ public class Android {
 		AssetManager assetManager = ctx.getAssets();
 	    InputStream in = null;
         OutputStream out = null;
+        /*
         try {
             String[] files = assetManager.list("");
             for(String ffff : files) {
@@ -187,10 +188,21 @@ public class Android {
         } catch (IOException e) {
             Log.e("tag", "Failed to get asset file list.", e);
         }
+        */
+        
         try {
-          in = assetManager.open(filename);
-          File outFile = new File(dest);
-          out = new FileOutputStream(outFile);
+			in = assetManager.open(filename);
+		} catch (IOException e) {
+			Log.e("tag", "Failed 1 to copy asset file: " + filename, e);
+			return;
+		} 
+        File outFile = new File(dest);
+        try {
+			out = new FileOutputStream(outFile);
+		} catch (FileNotFoundException e) {
+			Log.e("tag", "Failed 2 to copy asset file: " + filename, e);
+		}    
+        try {
           copyFile(in, out);
           in.close();
           in = null;
@@ -198,7 +210,7 @@ public class Android {
           out.close();
           out = null;
         } catch(IOException e) {
-            Log.e("tag", "Failed to copy asset file: " + filename, e);
+            Log.e("tag", "Failed 3 to copy asset file: " + filename, e);
         } 
 	}
 	private static void copyFile(InputStream in, OutputStream out) throws IOException {
