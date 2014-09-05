@@ -25,6 +25,7 @@ import android.os.Environment;
 
 import com.barobot.common.Initiator;
 import com.barobot.common.interfaces.HardwareState;
+import com.barobot.gui.database.BarobotData;
 import com.barobot.hardware.devices.BarobotConnector;
 import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
@@ -35,12 +36,12 @@ public class update_drinks {
 	private static String drinks	= "http://barobot.com/android_data/drinks.json";	
 //	private static String errorlog	= "http://barobot.com/android_data/error.php";
 	private static String upload	= "http://barobot.com/android_data/store.php";
-	public static String fulldb		= "http://barobot.com/android_data/BarobotOrman.db";
+	public static String fulldb		= "http://barobot.com/android_data/" + BarobotData.DATABASE_NAME;
 
 	public static String firmware		= "http://barobot.com/android_data/barobot.hex";
-	public static String localDbPath	= "/data/data/com.barobot/databases/BarobotOrman.db";
-	public static String sourcepath		= "/storage/emulated/0/download/BarobotOrman.db";
-	public static String copyPath		= "/Barobot/BarobotOrman.db";
+	public static String localDbPath	= "/data/data/com.barobot/databases/" + BarobotData.DATABASE_NAME;
+	public static String sourcepath		= "/storage/emulated/0/download/" + BarobotData.DATABASE_NAME;
+	public static String copyPath		= "/Barobot/" + BarobotData.DATABASE_NAME;
 	public static String backupPath		= "/Barobot/BarobotOrman%DATE%.db";
 
 	public void load(){

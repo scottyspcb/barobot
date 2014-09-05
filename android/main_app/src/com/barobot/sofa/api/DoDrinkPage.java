@@ -24,7 +24,7 @@ public class DoDrinkPage extends Page {
 	@Override
 	protected JsonResponse runInternal(String Url, SofaServer sofaServer,
 			Theme theme, IHTTPSession session) {
-				
+
 		if (!session.getParms().containsKey("recipe_id")) {
 			return new JsonResponseBuilder().status("ERROR")
 					.message("recipe_id not found in request").build();

@@ -13,4 +13,8 @@ public interface HardwareState {
 	public abstract String get(String name, String def);
 	
 	public abstract Map<String, String> getAll();
+	
+	public abstract void reloadConfig( int robot_Serial );
+
+	void saveConfig(int robot_Serial);
 }

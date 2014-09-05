@@ -8,9 +8,14 @@ import java.util.List;
 import java.util.Map;
 
 import org.orman.mapper.Model;
+import org.orman.mapper.ModelQuery;
+import org.orman.sql.C;
+import org.orman.sql.Query;
 
 import android.content.Context;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Environment;
+import android.util.Log;
 
 import com.barobot.common.Initiator;
 import com.barobot.gui.database.BarobotData;
@@ -29,8 +34,7 @@ public class Engine {
 	private List<Recipe_t> favoriteRecipes;
 	private static Map<Integer, Slot> liquid2slot = null;
 	private static Engine instance;
-	private static int robotId;
-	
+	//private static int robotId;
 	private String message = "";
 	private Boolean messagePresent = false;
 
@@ -71,24 +75,42 @@ public class Engine {
 
 	private Engine(Context context)
 	{
+		try {
+			String appPath2 	= context.getPackageManager().getPackageInfo(context.getPackageName(), 0).applicationInfo.dataDir;
+			String dbFolderPath = appPath2+"/databases";
+			String dbPath 		= appPath2+"/databases/" + BarobotData.DATABASE_NAME;
+
+			Initiator.logger.i("Engine.app path", appPath2 );
+			Initiator.logger.i("Engine.db path", dbPath );
+
+			File file = new File(dbFolderPath);
+			if (!file.exists()) {
+				if (!file.mkdirs()) {
+					Log.e("TravellerLog :: ", "Problem creating folder:" + file.getAbsolutePath());
+				}
+			}
+
+		} catch (NameNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		// check there is a valid database
 		File ss = context.getDatabasePath( BarobotData.DATABASE_NAME );
 		if( ss.exists() ){
-			Initiator.logger.e("DB Engine", "db exists" );
+			Initiator.logger.i("Engine DB", "db exists in: " + ss.getAbsolutePath() );
 		}else{
 			String resetPath	= 	Environment.getExternalStorageDirectory()+ update_drinks.copyPath;	
 			File src = new File(resetPath);
 			if(src.exists()){
-				Initiator.logger.e("File exists:", resetPath );
 				try {
-					Initiator.logger.e("DB Engine", "copy from SD card: "+ resetPath );
+					Initiator.logger.i("Engine DB ", "copy from SD card: "+ resetPath );
 					InternetHelpers.copy( resetPath, update_drinks.localDbPath );
 				} catch (IOException e) {
-					Initiator.logger.e("DB Engine", "copy error", e );
+					Initiator.logger.e("Engine DB ", "copy error", e );
 				}
 			}else{
-				Initiator.logger.e("File not exists:", resetPath );
-				Initiator.logger.e("DB Engine", "copy from assets: "+ "default_database/BarobotOrman.db" );
+				Initiator.logger.e("Engine DB File not exists:", resetPath );
+				Initiator.logger.e("Engine DB File", "copy from assets: "+ "/BarobotOrman.db" );
 				Android.copyAsset( context, "BarobotOrman.db", update_drinks.localDbPath );
 			}
 		}
@@ -99,8 +121,13 @@ public class Engine {
 	{
 		if (slots == null)
 		{
-			robotId = BarobotConnector.getRobotId();
-			slots = Model.fetchAll(Slot.class);
+			BarobotConnector barobot	= Arduino.getInstance().barobot;
+			int robotId					= barobot.getRobotId();
+
+			Query q = ModelQuery.select().from(Slot.class).where(C.eq("robot_id", robotId)).getQuery();
+			slots		= Model.fetchQuery(q, Slot.class);
+
+			// slots in robot with robotId
 			liquid2slot = new HashMap<Integer, Slot>();
 			for(Slot sl : slots)
 			{
@@ -123,11 +150,6 @@ public class Engine {
 	{
 		slots = null;
 		liquid2slot = null;
-	}
-	
-	public void switchRobotId( int newId ){
-		robotId = newId;
-		invalidateData();
 	}
 /*
 	public void CacheDatabase()

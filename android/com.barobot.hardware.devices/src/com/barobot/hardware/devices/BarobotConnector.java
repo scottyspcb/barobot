@@ -1,5 +1,7 @@
 package com.barobot.hardware.devices;
 
+import javax.print.attribute.standard.MediaSize.Engineering;
+
 import com.barobot.common.Initiator;
 import com.barobot.common.constant.Constant;
 import com.barobot.common.constant.Methods;
@@ -24,16 +26,48 @@ public class BarobotConnector {
 	public Servo driver_z		= null;
 	public HardwareState state	= null;
 	public I2C i2c				= null;
+	public int robot_serial		= 0;
 
 	public BarobotConnector(HardwareState state ){
 		this.state		= state;
+		this.loadDefaults();
 		this.mb			= new Mainboard( state );
 		this.driver_x	= new MotorDriver( state );
 		this.driver_y	= new Servo( state, "Y" );
 		this.driver_z	= new Servo( state, "Z" );
 		this.main_queue = new Queue( mb );
 		this.i2c  		= new I2C();
-		this.driver_x.defaultSpeed = state.getInt("DRIVER_X_SPEED", Constant.DRIVER_X_SPEED );
+		this.driver_x.defaultSpeed = state.getInt("DRIVER_X_SPEED", 2900 );
+	}
+
+	private void loadDefaults() {
+		if(this.state.getInt("DEFAULTS", 0 ) == 0 ){
+			this.state.set( "SERVOZ_PAC_POS", 1880 );
+			this.state.set( "SERVOZ_UP_POS", 2100 );
+			this.state.set( "SERVOZ_UP_LIGHT_POS", 2050 );
+			this.state.set( "SERVOZ_DOWN_POS", 1250 );
+			this.state.set( "SERVOZ_TEST_POS", 1300 );
+
+			this.state.set( "SERVOY_FRONT_POS", 790 );
+			this.state.set( "SERVOY_HFRONT_POS", 790 +20 );	// add histeresis
+
+			this.state.set( "SERVOY_BACK_POS", 2200 );
+			this.state.set( "SERVOY_TEST_POS", 1000 );
+			this.state.set( "SERVOY_BACK_NEUTRAL", 1200 );
+
+			this.state.set( "DRIVER_CALIB_X_SPEED", 1000 );
+			this.state.set( "DRIVER_X_SPEED", 2900 );
+			this.state.set( "DRIVER_Y_SPEED", 30 );
+			this.state.set( "DRIVER_Z_SPEED", 255 );
+
+			this.state.set( "SERVOZ_POUR_TIME", 3200 / 20 );		// predkosc nalewania 20ml
+
+			this.state.set( "SERVOY_REPEAT_TIME", 1000 );
+			this.state.set( "SERVOZ_PAC_TIME_WAIT", 1300 );
+			this.state.set( "SERVOZ_PAC_TIME_WAIT_VOL", 300 );
+
+			this.state.set( "DEFAULTS", 1 );
+		}
 	}
 
 	public SerialInputListener willReadFrom(Wire connection) {
@@ -109,8 +143,8 @@ public class BarobotConnector {
 			mq.clear();
 			mq.add("LIVE A OFF", false );
 	//		add("EZ");
-			int poszdown	=  state.getInt("ENDSTOP_Z_MIN", Constant.SERVOZ_DOWN_POS );
-			mq.add("Z" + poszdown, false );		// zwraca pocz�tek operacji a nie koniec
+			int poszdown	=  state.getInt("SERVOZ_DOWN_POS", 9 );
+			mq.add("Z" + poszdown, false );		// zwraca poczatek operacji a nie koniec
 			mq.add("DX", false );
 			mq.add("DY", false );
 			mq.add("DZ", false );
@@ -125,11 +159,10 @@ public class BarobotConnector {
 			}
 			@Override
 			public Queue run(Mainboard dev, Queue queue) {
-				Queue q4 = new Queue();
+				Queue q4		= new Queue();
 				int margin		= 20;
 				int posy		=  state.getInt("POSY", 0 );
-				int DRIVER_Y_SPEED = state.getInt("DRIVER_Y_SPEED", Constant.DRIVER_Y_SPEED );
-
+				int DRIVER_Y_SPEED = state.getInt("DRIVER_Y_SPEED", 0 );
 			//	if( posy != newpos && posy != newpos -margin && posy != newpos +margin){
 					q4.add("Y" + newpos+ ","+DRIVER_Y_SPEED, true);
 					q4.addWait(10);
@@ -191,8 +224,8 @@ public class BarobotConnector {
 	public void moveZUp( Queue q, boolean disableOnReady ) {
 //		q.add("EZ", true);
 		
-		int SERVOZ_UP_POS = state.getInt("SERVOZ_UP_POS", Constant.SERVOZ_UP_POS );
-		int DRIVER_Z_SPEED = state.getInt("DRIVER_Z_SPEED", Constant.DRIVER_Z_SPEED );
+		int SERVOZ_UP_POS = state.getInt("SERVOZ_UP_POS", 0 );
+		int DRIVER_Z_SPEED = state.getInt("DRIVER_Z_SPEED", 0 );
 		
 		int poszup	=  SERVOZ_UP_POS;
 		q.add("Z" + poszup+","+DRIVER_Z_SPEED, true);
@@ -206,8 +239,8 @@ public class BarobotConnector {
 	public void moveZLight(Queue q, boolean disableOnReady) {
 //		q.add("EZ", true);
 
-		int SERVOZ_UP_LIGHT_POS = state.getInt("SERVOZ_UP_LIGHT_POS", Constant.SERVOZ_UP_LIGHT_POS );
-		int DRIVER_Z_SPEED = state.getInt("DRIVER_Z_SPEED", Constant.DRIVER_Z_SPEED );
+		int SERVOZ_UP_LIGHT_POS = state.getInt("SERVOZ_UP_LIGHT_POS", 0 );
+		int DRIVER_Z_SPEED = state.getInt("DRIVER_Z_SPEED", 0 );
 		
 		int poszup	=  SERVOZ_UP_LIGHT_POS;
 		q.add("Z" + poszup+","+DRIVER_Z_SPEED, true);
@@ -218,7 +251,7 @@ public class BarobotConnector {
 		}
 	}
 	public void moveZ(Queue q, int pos) {
-		int DRIVER_Z_SPEED = state.getInt("DRIVER_Z_SPEED", Constant.DRIVER_Z_SPEED );
+		int DRIVER_Z_SPEED = state.getInt("DRIVER_Z_SPEED", 0 );
 		q.add("Z" + pos +","+DRIVER_Z_SPEED, true);
 	}
 	public void moveZDown(Queue q, final boolean disableOnReady ) {
@@ -231,11 +264,10 @@ public class BarobotConnector {
 			public Queue run(Mainboard dev, Queue queue) {
 				Queue q4 = new Queue();
 				int py =  state.getInt("POSZ", 0 );
-				int SERVOZ_DOWN_POS = state.getInt("SERVOZ_DOWN_POS", Constant.SERVOZ_DOWN_POS );
+				int SERVOZ_DOWN_POS = state.getInt("SERVOZ_DOWN_POS", 0 );
 
 				if( py != SERVOZ_DOWN_POS ){
-					int poszdown	=  state.getInt("ENDSTOP_Z_MIN", SERVOZ_DOWN_POS );
-					moveZ( q4, poszdown );
+					moveZ( q4, SERVOZ_DOWN_POS );
 					if(disableOnReady){
 						q4.addWait( 300 );
 						q4.add("DZ", true);
@@ -261,9 +293,9 @@ public class BarobotConnector {
 		moveZDown( q ,false );
 		q.addWait(5);
 		
-		int SERVOZ_TEST_POS = state.getInt("SERVOZ_TEST_POS", Constant.SERVOZ_TEST_POS );
-		int SERVOY_TEST_POS = state.getInt("SERVOY_TEST_POS", Constant.SERVOY_TEST_POS );
-		int SERVOY_FRONT_POS = state.getInt("SERVOY_FRONT_POS", Constant.SERVOY_FRONT_POS );
+		int SERVOZ_TEST_POS = state.getInt("SERVOZ_TEST_POS", 0 );
+		int SERVOY_TEST_POS = state.getInt("SERVOY_TEST_POS", 0 );
+		int SERVOY_FRONT_POS = state.getInt("SERVOY_FRONT_POS", 0 );
 		
 		moveZ( q, SERVOZ_TEST_POS );
 		q.addWait(10);
@@ -288,7 +320,7 @@ public class BarobotConnector {
 			@Override
 			public Queue run(Mainboard dev, Queue queue) {
 				this.name		= "scanning up";
-				driver_x.defaultSpeed = state.getInt("DRIVER_CALIB_X_SPEED", Constant.DRIVER_CALIB_X_SPEED );
+				driver_x.defaultSpeed = state.getInt("DRIVER_CALIB_X_SPEED", 0 );
 				Initiator.logger.i("+find_bottles", "up");
 				state.set("scann_bottles", 1 );
 				return null;
@@ -299,7 +331,7 @@ public class BarobotConnector {
 			@Override
 			public Queue run(Mainboard dev, Queue queue) {
 				this.name		= "scanning back";
-				driver_x.defaultSpeed = state.getInt("DRIVER_X_SPEED", Constant.DRIVER_X_SPEED );
+				driver_x.defaultSpeed = state.getInt("DRIVER_X_SPEED", 0 );
 				Initiator.logger.i("+find_bottles", "down kalibrcja");
 				return null;
 			}
@@ -361,7 +393,7 @@ public class BarobotConnector {
 				int sposy		= state.getInt("POS_START_Y", 0 );
 
 				Queue	q2	= new Queue();
-				int SERVOZ_DOWN_POS = state.getInt("SERVOZ_DOWN_POS", Constant.SERVOZ_DOWN_POS );
+				int SERVOZ_DOWN_POS = state.getInt("SERVOZ_DOWN_POS", 0 );
 				if( posz != SERVOZ_DOWN_POS ){
 					moveZDown(q2, false );
 				}
@@ -496,7 +528,7 @@ public class BarobotConnector {
 				}
 		//		Initiator.logger.i("moveToBottle","(cx == tx && cy == ty)("+cx+" == "+tx+" && "+cy+" == "+ty+")");
 
-				int SERVOY_HFRONT_POS = state.getInt("SERVOY_HFRONT_POS", Constant.SERVOY_HFRONT_POS );
+				int SERVOY_HFRONT_POS = state.getInt("SERVOY_HFRONT_POS", 0 );
 				
 				if(cx == tx && cy == ty ){				// not needed
 			//		q2.addWait( Constant.SERVOY_REPEAT_TIME );
@@ -520,7 +552,7 @@ public class BarobotConnector {
 
 				}else{									// (change X and Y ) or (change X and Y is back)
 					moveZDown(q2, true );
-					int SERVOY_BACK_NEUTRAL = state.getInt("SERVOY_BACK_NEUTRAL", Constant.SERVOY_BACK_NEUTRAL );
+					int SERVOY_BACK_NEUTRAL = state.getInt("SERVOY_BACK_NEUTRAL", 0 );
 					moveY( q2, SERVOY_BACK_NEUTRAL, true);
 					driver_x.moveTo( q2, tx );
 					moveY( q2, ty, disableOnReady );
@@ -587,7 +619,7 @@ public class BarobotConnector {
 					}
 					int time = getPacWaitTime( num, capacity );
 					q2.addWait( time );
-					int SERVOZ_PAC_POS = state.getInt("SERVOZ_PAC_POS", Constant.SERVOZ_PAC_POS );
+					int SERVOZ_PAC_POS = state.getInt("SERVOZ_PAC_POS", 0 );
 					q2.add("Z" + SERVOZ_PAC_POS+",255", true);
 					moveZDown( q2, false );
 					q2.addWait( 200 );
@@ -614,17 +646,17 @@ public class BarobotConnector {
 	}
 	// todo move to slot
 	public int getPourTime( int num, int capacity ){			// 0 - 11
-		int SERVOZ_POUR_TIME = state.getInt("SERVOZ_POUR_TIME", Constant.SERVOZ_POUR_TIME );
+		int SERVOZ_POUR_TIME = state.getInt("SERVOZ_POUR_TIME", 0 );
 		return capacity * SERVOZ_POUR_TIME;
 	}
 	public int getRepeatTime(int num, int capacity) {
-		int time 		= state.getInt("SERVOY_REPEAT_TIME", Constant.SERVOY_REPEAT_TIME );
+		int time 		= state.getInt("SERVOY_REPEAT_TIME", 0 );
 		int base_time	= time/ 20;
 		return base_time * capacity;
 	}
 	public int getPacWaitTime(int num, int capacity) {
-		int base_time 	= state.getInt("SERVOZ_PAC_TIME_WAIT", Constant.SERVOZ_PAC_TIME_WAIT );
-		int time 		= state.getInt("SERVOZ_PAC_TIME_WAIT_VOL", Constant.SERVOZ_PAC_TIME_WAIT_VOL );
+		int base_time 	= state.getInt("SERVOZ_PAC_TIME_WAIT", 0 );
+		int time 		= state.getInt("SERVOZ_PAC_TIME_WAIT_VOL", 0 );
 		return base_time + (time / 20 * capacity);
 	}
 
@@ -680,12 +712,17 @@ public class BarobotConnector {
 		}
 		q.add(q1);
 	}
-
 	public void systemTest() {
 		// todo
 	}
-	public static int getRobotId() {
-		// TODO Auto-generated method stub
-		return 0;
+	public int getRobotId() {
+		return robot_serial;
+	}
+	public void changeRobotId( int robot_id ) {
+		if(robot_serial != robot_id){
+			robot_serial = robot_id;
+			this.state.saveConfig(robot_id);
+			this.state.reloadConfig(robot_id);
+		}
 	}
 }

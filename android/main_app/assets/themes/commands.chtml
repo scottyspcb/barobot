@@ -8,15 +8,4 @@
 	</li>
 {/loop}
 </ul>
-
-<script>
-function run_command( command, btn ){
-	$(btn).addClass("btn-danger");
-	$.get("/command/" + command,{
-	  }, function(dane){
-	    $(btn).removeClass("btn-danger");
-	  }
-	);
-}	
-</script>
 {#}

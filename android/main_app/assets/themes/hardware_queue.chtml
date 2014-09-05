@@ -1,0 +1,29 @@
+<h3>Queue</h3>
+<table>
+{.loop in $queue as $item}
+	<tr>
+		<td style="width:150px">
+			{$item.command}
+		</td>
+		<td>
+			{$item.command}
+		</td>
+	</tr>
+{/loop}
+</table>
+<a href="/hardware_queue?unlick={$item.id}">Unlock</a>
+
+
+<h3>History</h3>
+<table>
+{.loop in $history as $item}
+	<tr>
+		<td style="width:150px">
+			{$item.command}
+		</td>
+		<td>
+			{$item.command}
+		</td>
+	</tr>
+{/loop}
+</table>
