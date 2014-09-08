@@ -14,7 +14,7 @@ public abstract class Page extends EmptyRoute {
 	{
 		use_raw_output=true;
 	}
-	
+
 	@Override
 	public String run(String url, SofaServer sofaServer, Theme theme,
 			IHTTPSession session) {

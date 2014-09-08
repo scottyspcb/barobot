@@ -45,7 +45,7 @@ public class Main implements onReadyListener{
 	//	loadProps();
 		//String[] comlist = list();
 		Wizard w	= new Wizard();
-		Hardware hw = new Hardware("COM4");
+		Hardware hw = new Hardware("COM5");
 
 		IspSettings.safeMode	= false;
 		IspSettings.verbose		= 2;
@@ -80,7 +80,7 @@ public class Main implements onReadyListener{
 	//	allowClose = false;
 		//uf.prepareMB2( hw.getQueue(), oldConnection, this );
 
-		uc.prepareCarret( hw );
+	//	uc.prepareCarret( hw );
 		
 		/*
 		
@@ -103,24 +103,30 @@ public class Main implements onReadyListener{
 		mm.promo_carret( hw );
 		mm.promo1( hw );
 		mm.testBpm( hw );
-		w.test_proc( hw );	
-		w.swing( hw, 3, 1000, 5000 );
+		*/
+		
+		//w.test_proc( hw );
+		
+	//	w.swing( hw, 3, 1000, 5000 );
 		w.mrygaj_po_butelkach( hw, 100 );
-		w.mrygaj_grb( hw, 30 );
-		w.illumination1( hw );
-
-		q.addWaitThread( Main.main );
-		q.addWaitThread( Main.main );
-		lm.flaga( hw.barobot, q, 6, 100 );
-
-	//	q.addWaitThread( Main.main );
-		lm.mrygajRGB( hw.barobot, q, 60, 50 );
+	//	w.mrygaj_grb( hw, 30 );
+	//	w.illumination1( hw );
+	//	lm.flaga( hw.barobot, q, 6, 100 );
+	//	lm.mrygajRGB( hw.barobot, q, 60, 50 );
 		lm.nazmiane( hw.barobot, q, 6, 100 );
 		lm.loading(hw.barobot, q, 6);
 		lm.linijka( hw.barobot, q, 6, 100 );
 		lm.tecza( hw.barobot, q, 6 );
 		lm.strobo( hw.barobot, q, 109 );
 		lm.zapal(hw.barobot, q);
+
+		/*
+		q.addWaitThread( Main.main );
+		q.addWaitThread( Main.main );
+		
+
+	//	q.addWaitThread( Main.main );
+		
 		w.koniec( hw );
 	*/
 		

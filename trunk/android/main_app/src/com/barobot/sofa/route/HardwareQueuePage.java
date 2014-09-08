@@ -1,7 +1,5 @@
 package com.barobot.sofa.route;
 
-import java.util.HashMap;
-import java.util.Map;
 
 import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;

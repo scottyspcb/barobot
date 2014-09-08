@@ -78,6 +78,7 @@ public class Serial_wire2 implements CanSend, Wire{
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case MESSAGE_REFRESH:
+                	mHandler.removeMessages(MESSAGE_REFRESH);		// usun duplikaty
                 	if(sPort == null){
                 		Log.i("Serial.handleMessage", "trying to connect");
                         refreshDeviceList();
@@ -98,8 +99,7 @@ public class Serial_wire2 implements CanSend, Wire{
 	                        }
 						}
                 	}
-                	mHandler.removeMessages(MESSAGE_REFRESH);		// usun duplikaty
-                    mHandler.sendEmptyMessageDelayed(MESSAGE_REFRESH, REFRESH_TIMEOUT_MILLIS);
+            //        mHandler.sendEmptyMessageDelayed(MESSAGE_REFRESH, REFRESH_TIMEOUT_MILLIS);
                     break;
                 default:
                     super.handleMessage(msg);
@@ -258,39 +258,40 @@ public class Serial_wire2 implements CanSend, Wire{
     };
 
     private void refreshDeviceList() {
+    	Log.d("Serial_wire.refreshDeviceList", "Refreshing device list ...");
+        for (UsbDevice device : mUsbManager.getDeviceList().values()) {
+            UsbSerialDriver driver =  UsbSerialProber.probeSingleDevice(device);
+            if (driver == null) {
+//               Log.d("serial", "  - No UsbSerialDriver available.");
+//               result.add(new DeviceEntry(device, null, 0));
+            } else {
+//                Log.d(TAG, "  + " + driver + ", " + driver.getPortCount() + " ports.");
+            	view.registerReceiver(mPermissionReceiver, new IntentFilter(  ACTION_USB_PERMISSION));
+                mPermissionReceiver_activated = true;
+                if (!mUsbManager.hasPermission(device)){
+                    final PendingIntent pi = PendingIntent.getBroadcast( view, 0, new Intent( ACTION_USB_PERMISSION), 0);
+                    mUsbManager.requestPermission(device, pi);
+                    Log.w("Serial_wire.refreshDeviceList", "requestPermission");
+                }else{
+                    for (int i = 0; i < driver.getPortCount(); ++i) {	
+                    	Log.w("Serial_wire.refreshDeviceList", "ready device: " + i +": "+ device.getVendorId()+" - "+ device.getProductId() );
+        //                result.add(new DeviceEntry(device, driver, i));
+                        if( i == 0 ){
+                        	sDevice = device;
+                        	connectWith(device);
+                        }
+                    }
+                };
+            }
+        }
+    	
+    	/*
         new AsyncTask<Void, Void, List<String>>() {
 			@Override
             protected List<String> doInBackground(Void... params) {   
-                Log.d("Serial_wire.refreshDeviceList", "Refreshing device list ...");
-                for (UsbDevice device : mUsbManager.getDeviceList().values()) {
-                    UsbSerialDriver driver =  UsbSerialProber.probeSingleDevice(device);
-                    if (driver == null) {
-//                       Log.d("serial", "  - No UsbSerialDriver available.");
-//                       result.add(new DeviceEntry(device, null, 0));
-                    } else {
-        //                Log.d(TAG, "  + " + driver + ", " + driver.getPortCount() + " ports.");
-
-                    	view.registerReceiver(mPermissionReceiver, new IntentFilter(  ACTION_USB_PERMISSION));
-                        mPermissionReceiver_activated = true;
-                        if (!mUsbManager.hasPermission(device)){
-                            final PendingIntent pi = PendingIntent.getBroadcast( view, 0, new Intent( ACTION_USB_PERMISSION), 0);
-                            mUsbManager.requestPermission(device, pi);
-                            Log.w("Serial_wire.refreshDeviceList", "requestPermission");
-                        }else{
-                            for (int i = 0; i < driver.getPortCount(); ++i) {	
-                            	Log.w("Serial_wire.refreshDeviceList", "ready device: " + i +": "+ device.getVendorId()+" - "+ device.getProductId() );
-                //                result.add(new DeviceEntry(device, driver, i));
-                                if( i == 0 ){
-                                	sDevice = device;
-                                	connectWith(device);
-                                }
-                            }
-                        };
-                    }
-                }
 				return null;
             }
-        }.execute((Void) null);
+        }.execute((Void) null);*/
     }
 
     protected boolean connectWith(UsbDevice device) {    	// polacz...
