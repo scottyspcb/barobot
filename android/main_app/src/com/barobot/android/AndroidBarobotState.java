@@ -15,10 +15,13 @@ import com.barobot.parser.utils.Decoder;
 public class AndroidBarobotState implements HardwareState{
 	private SharedPreferences.Editor config_editor;			// config systemu android
 	private SharedPreferences myPrefs;
+	private int robot_serial = 0;
+	boolean data_ready = false;
 
 	public AndroidBarobotState( Activity application ){
 		myPrefs			= application.getSharedPreferences(Constant.SETTINGS_TAG, Context.MODE_PRIVATE);
 		config_editor	= myPrefs.edit();
+		data_ready		= true;
 	}
 
 	@Override
@@ -30,21 +33,22 @@ public class AndroidBarobotState implements HardwareState{
 	public int getInt( String name, int def ){
 		return Decoder.toInt(get( name, ""+def ));
 	}
+
 	@Override
 	public void set(String name, long value) {
 		set(name, "" + value );
 	}
+
 	@Override
 	public void set( String name, String value ){
 	//	if(name == "POSX"){
 	//		Initiator.logger.i("virtualComponents.set","save: "+name + ": "+ value );	
 	//	}
 		update( name, value );
-
 		config_editor.putString(name, value);
 		config_editor.commit();
-
 	}
+
 	private void update(String name, String value) {
 		final DebugActivity dialog = DebugActivity.getInstance();
 		if(dialog!=null){
@@ -60,5 +64,15 @@ public class AndroidBarobotState implements HardwareState{
 		    nMap.put(entry.getKey(), entry.getValue().toString());
 		} 
 		return nMap;
+	}
+
+	@Override
+	public void reloadConfig(int robot_Serial) {
+		
+	}
+
+	@Override
+	public void saveConfig(int robot_Serial) {
+		
 	}
 }

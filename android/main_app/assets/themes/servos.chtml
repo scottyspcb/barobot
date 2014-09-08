@@ -114,12 +114,35 @@ Disable servo on ready: <input type="checkbox" checked="checked" id="autodisable
 		<td style="width:250px">PAC_DOWN_SPEED</td>
 		<td><input type="text" class="p_pos" id="PAC_DOWN_SPEED" value="{$PAC_DOWN_SPEED}" /></td>
 	</tr><tr>
-		<td style="width:250px">REPEAT</td>
-		<td><input type="text" class="p_pos" id="REPEAT" value="{$REPEAT}" /></td>
+		<td style="width:250px">REPEAT_Z</td>
+		<td><input type="text" class="p_pos" id="REPEAT" value="{$REPEAT_Z}" /></td>
 	</tr><tr>
 		<td style="width:250px">WAIT_AFTER</td>
 		<td><input type="text" class="p_pos" id="WAIT_AFTER" value="{$WAIT_AFTER}" /></td>
+	</tr><tr>
+		<td style="width:250px">Jechać X-em?</td>
+		<td><input type="checkbox" class="p_pos" id="DRIVE_X" value="1" /></td>
+	</tr><tr>
+		<td style="width:250px">SERVOY_FRONT_POS (przednia pozycja Y)</td>
+		<td><input type="text" class="p_pos" id="SERVOY_FRONT_POS" value="{$SERVOY_FRONT_POS}" /></td>
+	</tr><tr>
+		<td style="width:250px">SERVOY_BACK_POS (tylnia pozycja Y)</td>
+		<td><input type="text" class="p_pos" id="SERVOY_BACK_POS" value="{$SERVOY_BACK_POS}" /></td>
+	</tr><tr>
+		<td style="width:250px">DRIVER_Y_SPEED (prędkość Y)</td>
+		<td><input type="text" class="p_pos" id="DRIVER_Y_SPEED" value="{$DRIVER_Y_SPEED}" /></td>
+	</tr><tr>
+		<td style="width:250px">DRIVER_X_SPEED (prędkość X)</td>
+		<td><input type="text" class="p_pos" id="DRIVER_X_SPEED" value="{$DRIVER_X_SPEED}" /></td>
+	</tr><tr>
+		<td style="width:250px">XPOS1 (o ile zajechać do przodu)</td>
+		<td><input type="text" class="p_pos" id="XPOS1" value="{$XPOS1}" /></td>
+	</tr><tr>
+		<td style="width:250px">REPEAT_X (ile razy powtarzać)</td>
+		<td><input type="text" class="p_pos" id="REPEAT" value="{$REPEAT_X}" /></td>
 	</tr>
+
+	
 </table>
 <a class="btn btn-danger" href="javascript:void(0)" onclick="pour()">GO Y</a>
 
@@ -154,7 +177,15 @@ Disable servo on ready: <input type="checkbox" checked="checked" id="autodisable
 			"PAC_WAIT_UP_TIME",
 			"PAC_DOWN_SPEED",
 			"REPEAT",
-			"WAIT_AFTER"
+			"WAIT_AFTER",
+			"DRIVER_Y_SPEED",
+			"DRIVE_X",
+			"SERVOY_FRONT_POS",
+			"SERVOY_BACK_POS",
+			"DRIVER_Y_SPEED",
+			"XPOS1",
+			"REPEAT_Z",
+			"DRIVER_X_SPEED"
 		];
 		var output = {
 			nalej			: true,
@@ -167,7 +198,7 @@ Disable servo on ready: <input type="checkbox" checked="checked" id="autodisable
 		//	console.log(inputs[i],value );
 		}
 	//	console.log(output);
-		$.get("/servo",output, function(dane){});
+		$.post("/servo",output, function(dane){});
 	}	
 </script>
 

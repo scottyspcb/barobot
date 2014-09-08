@@ -1,7 +1,5 @@
 package com.barobot.hardware.devices;
 
-import javax.print.attribute.standard.MediaSize.Engineering;
-
 import com.barobot.common.Initiator;
 import com.barobot.common.constant.Constant;
 import com.barobot.common.constant.Methods;

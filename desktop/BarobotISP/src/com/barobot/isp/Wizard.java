@@ -38,13 +38,18 @@ public class Wizard {
 	}
 
 	public void mrygaj_po_butelkach(Hardware hw, int time ) {
+		
+		
+		
 		hw.getQueue().addWaitThread( Main.main );
+		Queue q = hw.getQueue();
 		I2C_Device[] list = hw.barobot.i2c.getUpanels();
 		if(list.length == 0 ){
+			hw.barobot.scann_leds(q);
 			System.out.println("Pusto" );
 			return;
 		}
-		Queue q = hw.getQueue();
+
 		for (I2C_Device u2 : list){
 			u2.addLed( q, "ff", 0 );	// off
 		}
@@ -103,12 +108,14 @@ public class Wizard {
 	public void mrygaj_grb(Hardware hw, int repeat) {
 		hw.getQueue().addWaitThread( Main.main );
 		I2C_Device[] list = hw.barobot.i2c.getUpanels();
+		hw.connectIfDisconnected();
+		Queue q = hw.getQueue();
 		if(list.length == 0 ){
+			hw.barobot.scann_leds(q);
 			System.out.println("Pusto" );
 			return;
 		}
-		hw.connectIfDisconnected();
-		Queue q = hw.getQueue();
+
 		int time = 0;
 		while (repeat-- > 0){
 			for (I2C_Device u : list){

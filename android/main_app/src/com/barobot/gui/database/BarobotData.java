@@ -27,6 +27,7 @@ import com.barobot.gui.dataobjects.Robot_config;
 import com.barobot.gui.dataobjects.Slot;
 import com.barobot.gui.dataobjects.Translated_name;
 import com.barobot.gui.dataobjects.Type;
+import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
 
 public class BarobotData {
@@ -85,7 +86,9 @@ public class BarobotData {
 
 	public static Slot GetSlot(int position)
 	{
-		int robotId = BarobotConnector.getRobotId();
+		BarobotConnector barobot	= Arduino.getInstance().barobot;
+		int robotId = barobot.getRobotId();
+
 		return Model.fetchSingle(ModelQuery.select().from(Slot.class).where(
 				C.and(
 						C.eq("robot_id", robotId),

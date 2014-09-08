@@ -55,52 +55,8 @@ public class ServoTestPageRoute extends EmptyRoute {
 			barobot.main_queue.add(q);
 			return "OK";
 		}else if(session.getParms().containsKey("nalej")){
-			int up		= Decoder.toInt(session.getParms().get("UP_POS") );
-			int dp		= Decoder.toInt(session.getParms().get("DOWN_POS") );
-			int us		= Decoder.toInt(session.getParms().get("UP_SPEED") );
-			int ds		= Decoder.toInt(session.getParms().get("DOWN_SPEED") );
 
-			int utime	= Decoder.toInt(session.getParms().get("UP_TIME") );
-
-			int lp		= Decoder.toInt(session.getParms().get("LIGHT_POS") );
-			int lt		= Decoder.toInt(session.getParms().get("LIGHT_TIME") );
-
-			int pp		= Decoder.toInt(session.getParms().get("PAC_POS") );
-			int pus		= Decoder.toInt(session.getParms().get("PAC_UP_SPEED") );
-			int pwdt	= Decoder.toInt(session.getParms().get("PAC_WAIT_DOWN_TIME") );
-			int pwut	= Decoder.toInt(session.getParms().get("PAC_WAIT_UP_TIME") );
-			int pds		= Decoder.toInt(session.getParms().get("PAC_DOWN_SPEED") );
-
-			int repeat	= Decoder.toInt(session.getParms().get("REPEAT") );
-			int wa		= Decoder.toInt(session.getParms().get("WAIT_AFTER") );
-			
-			Queue q						= new Queue();
-			BarobotConnector barobot	= Arduino.getInstance().barobot;
-
-			while( repeat-- >= 0 ){
-				q.add("EX", true);
-				q.add("Z" + up+","+us, true);		// go up
-				q.addWait( lt );
-
-				q.add("Z" + lp+","+us, true);		// go up
-				q.addWait( utime );	
-
-				q.add("DY", true);
-				q.add("Z" + dp +","+ds, true);		// go down
-				q.addWait( pwdt );
-				q.add("Z" + pp+","+pus , true);		// do up
-				q.addWait( pwut );
-				q.add("Z" + dp +","+pds, true);		// go down
-				q.addWait( 100 );
-				q.add("DX", true);
-				q.add("DY", true);
-				q.addWait(100);
-				q.add("DZ", true);
-				if( repeat >= 1 ){
-					q.addWait(wa);
-				}
-			}
-			barobot.main_queue.add(q);
+			this.nalej(session.getParms());
 			return "OK";
 		}else{
 			this.use_raw_output = false;
@@ -129,6 +85,16 @@ public class ServoTestPageRoute extends EmptyRoute {
 	    	action_chunk.set("DOWN_SPEED",			barobot.state.get("DRIVER_Z_SPEED", "1000"));
 	    	action_chunk.set("PAC_DOWN_SPEED",		barobot.state.get("DRIVER_Z_SPEED", "1000"));
 
+	    	action_chunk.set("DRIVER_Y_SPEED",		barobot.state.get("DRIVER_Y_SPEED", "1000"));
+	    	action_chunk.set("DRIVE_X",				"0");
+	    	action_chunk.set("SERVOY_FRONT_POS",	barobot.state.get("SERVOY_FRONT_POS", "1000"));
+	    	action_chunk.set("SERVOY_BACK_POS",		barobot.state.get("SERVOY_BACK_POS", "1000"));
+	    	action_chunk.set("DRIVER_Y_SPEED",		barobot.state.get("DRIVER_Y_SPEED", "1000"));
+	    	action_chunk.set("XPOS1",				"0");
+	    	action_chunk.set("REPEAT_Z",			"0");
+	    	action_chunk.set("REPEAT_X",			"0");
+	    	action_chunk.set("DRIVER_X_SPEED",		barobot.state.get("DRIVER_X_SPEED", "1000"));
+
 
 	    	action_chunk.set("UP_TIME", 			lt*3/4 );	
 	    	action_chunk.set("LIGHT_TIME", 			lt*1/4 );	
@@ -141,5 +107,110 @@ public class ServoTestPageRoute extends EmptyRoute {
 	    	return action_chunk.toString();
 		}
 	}
+	private void nalej(Map<String, String> parms) {
+		int up		= Decoder.toInt(parms.get("UP_POS") );
+		int dp		= Decoder.toInt(parms.get("DOWN_POS") );
+		int us		= Decoder.toInt(parms.get("UP_SPEED") );
+		int ds		= Decoder.toInt(parms.get("DOWN_SPEED") );
 
+		int utime	= Decoder.toInt(parms.get("UP_TIME") );
+
+		int lp		= Decoder.toInt(parms.get("LIGHT_POS") );
+		int lt		= Decoder.toInt(parms.get("LIGHT_TIME") );
+
+		int pp		= Decoder.toInt(parms.get("PAC_POS") );
+		int pus		= Decoder.toInt(parms.get("PAC_UP_SPEED") );
+		int pwdt	= Decoder.toInt(parms.get("PAC_WAIT_DOWN_TIME") );
+		int pwut	= Decoder.toInt(parms.get("PAC_WAIT_UP_TIME") );
+		int pds		= Decoder.toInt(parms.get("PAC_DOWN_SPEED") );
+
+		int repeatx	= Decoder.toInt(parms.get("REPEAT_X") );
+		int repeatz	= Decoder.toInt(parms.get("REPEAT_Z") );
+		int wa		= Decoder.toInt(parms.get("WAIT_AFTER") );
+
+		int dx		= Decoder.toInt(parms.get("DRIVE_X") );
+		int sfp		= Decoder.toInt(parms.get("SERVOY_FRONT_POS") );
+		int sbp		= Decoder.toInt(parms.get("SERVOY_BACK_POS") );
+		int xpos1	= Decoder.toInt(parms.get("XPOS1") );
+		int dys		= Decoder.toInt(parms.get("DRIVER_Y_SPEED") );
+		int dxs		= Decoder.toInt(parms.get("DRIVER_X_SPEED") );
+		
+
+		Queue q						= new Queue();
+		BarobotConnector barobot	= Arduino.getInstance().barobot;
+
+		if(dx > 0 ){							// go to front
+			q.add("Z" + dp +","+ds, true);		// go down
+			q.add("DZ", true);
+			this.goFront(q, parms);
+		}
+		boolean yIsFront = true;
+		while( repeatx-- >= 0 ){
+			while( repeatz-- >= 0 ){
+				q.add("EX", true);
+				q.add("Z" + up+","+us, true);		// go up
+				q.addWait( lt );
+
+				q.add("Z" + lp+","+us, true);		// go up
+				q.addWait( utime );	
+
+				q.add("DY", true);
+				q.add("Z" + dp +","+ds, true);		// go down
+				q.addWait( pwdt );
+				q.add("Z" + pp+","+pus , true);		// do up
+				q.addWait( pwut );
+				q.add("Z" + dp +","+pds, true);		// go down
+				q.addWait( 100 );
+				q.add("DZ", true);
+				q.addWait(100);
+				q.add("DX", true);
+		//		q.add("DY", true);
+				if( repeatz >= 1 ){
+					q.addWait(wa);
+				}
+			}
+			if(dx > 0 ){
+				if(yIsFront){
+					this.moveX(q, parms, true );
+					this.goBack(q, parms);
+				}else{
+					this.goFront(q, parms);
+					this.moveX(q, parms, false );
+				}
+				yIsFront = !yIsFront;
+			}else{
+				break;
+			}
+		}
+
+		if(dx > 0 ){					// go to front
+			this.goFront(q, parms);
+		}
+		barobot.main_queue.add(q);
+	}
+
+	private void moveX(Queue q, Map<String, String> parms, boolean add) {
+		int xpos1	= Decoder.toInt(parms.get("XPOS1") );		
+		int dxs		= Decoder.toInt(parms.get("DRIVER_X_SPEED") );
+
+		BarobotConnector barobot	= Arduino.getInstance().barobot;
+		int poshx = barobot.driver_x.getHardwarePos();
+		int newpos = add ? poshx+ xpos1 : poshx - xpos1;
+
+		q.add("X"+ (newpos) +","+ dxs, true);
+	
+	}
+	private void goBack(Queue q, Map<String, String> parms) {
+		int sfp		= Decoder.toInt(parms.get("SERVOY_FRONT_POS") );
+		int dys		= Decoder.toInt(parms.get("DRIVER_Y_SPEED") );
+		q.add("Y" + sfp +","+dys, true);	// go back
+		q.add("DY", true);
+	}
+
+	private void goFront(Queue q, Map<String, String> parms) {
+		int dys		= Decoder.toInt(parms.get("DRIVER_Y_SPEED") );
+		int sbp		= Decoder.toInt(parms.get("SERVOY_BACK_POS") );
+		q.add("Y" + sbp +","+dys, true);	// go front
+		q.add("DY", true);
+	}
 }
