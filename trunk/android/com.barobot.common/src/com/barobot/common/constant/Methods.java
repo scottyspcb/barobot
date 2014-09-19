@@ -34,7 +34,7 @@ public class Methods {
 	public static final int RETURN_PIN_VALUE 	= 111;
 	public static final int METHOD_STEPPER_MOVING 	= 123;
 	public static final int METHOD_IMPORTANT_ANALOG 	= 125;
-	public static final int METHOD_IMPORTANT_ANALOG_ERROR 	= 124;
+	public static final int METHOD_ANALOG_VALUE 	= 124;
 	public static final int RETURN_I2C_ERROR 	= 153;
 	public static final int METHOD_EXEC_ERROR 	= 133;
 	public static final int METHOD_DEVICE_FOUND 	= 112;
@@ -62,7 +62,7 @@ public class Methods {
 	public static final String METHOD_RWIRE	= "RWIRE";
 	public static final String METHOD_SEND2SLAVE	= "S";
 	public static final String METHOD_TRIGGER	= "T";
-	public static final String METHOD_M_ONECOLOR	= "B";
+
 	public static final String METHOD_WAIT_READY	= "WR";
 	public static final String METHOD_SET_X_POS	= "X";
 	public static final String METHOD_GET_TEMP	= "T";
@@ -71,15 +71,16 @@ public class Methods {
 	public static final String METHOD_MSET_TOP_COLOR	= "C";
 // set bottom color
 	public static final String METHOD_MSET_BOTTOM_COLOR	= "c";
+	public static final String METHOD_M_ONECOLOR	= "B";
 	public static final String METHOD_HAS_NEXT	= "N";
 	public static final String METHOD_SLAVE_HAS_NEXT	= "n";
 	public static final String METHOD_EEPROM_READ	= "M";
 	public static final String METHOD_EEPROM_WRITE	= "S";
-
+	public static final String METHOD_GET_VARSION	= "V";
 
 //24 * 2^0  + 252* 2^1 + 255* 2^2 + 255* 2^3
 
-// typy b³êdów:
+// typy bï¿½ï¿½dï¿½w:
 	public static final int T_UNKNOWN_E		= 0x05;
 	public static final int T_ENGINE_E		= 0x06;
 	public static final int T_WRITE_I2C_E	= 0x07;
@@ -102,12 +103,14 @@ public class Methods {
 	public static final int INNER_HALL_X	= 0;
 	public static final int INNER_HALL_Y	= 1;
 	public static final int INNER_WEIGHT	= 2;
-	public static final int INNER_CURRENTY	= 3;
-	public static final int INNER_CURRENTZ	= 4;
+//	public static final int INNER_CURRENTY	= 3;
+//	public static final int INNER_CURRENTZ	= 4;
 	public static final int INNER_TABLET	= 5;
 	public static final int INNER_MB_TEMP	= 6;
 	public static final int INNER_CARRET_TEMP	= 7;
 
+	public static final int HYSTATES 	= 5;
+	public static final int HXSTATES 	= 11;
 
 	public static final int HX_STATE_0		= 11;
 	public static final int HX_STATE_1		= 22;
@@ -123,12 +126,12 @@ public class Methods {
 	public static final int HX_STATE_9		= 100;
 	public static final int HX_STATE_10		= 111;
 
-
-
 	public static final int HX_SPEED 	= 35;
 
 // HALL X VALUES 
 	public static final int HX_NEODYM_UP_BELOW 	= 750;
+//	public static final int HX_NEODYM_UP_BELOW 	= 880;
+
 	public static final int HX_NEODYM_UP_START 	= 600;
 	public static final int HX_FERRITE_UP_IS_BELOW 	= 560;
 	public static final int HX_LOCAL_UP_MAX_OVER 	= 540;
@@ -139,11 +142,14 @@ public class Methods {
 	public static final int HX_LOCAL_DOWN_IS_BELOW 	= 513;
 	public static final int HX_FERRITE_DOWN_IS_BELOW 	= 495;
 	public static final int HX_NEODYM_DOWN_START 	= 450;
+//	public static final int HX_NEODYM_DOWN_OVER 	= 20;
 	public static final int HX_NEODYM_DOWN_OVER 	= 300;
-
 // end HALL X VALUES 
 
-
-
+	public static final int EEPROM_ROBOT_ID 	= 40;
+	public static final int EEPROM_STARTS_LOW	= 41;
+	public static final int EEPROM_STARTS_HIGH	= 42;
+	public static final int EEPROM_RESETS_LOW	= 43;
+	public static final int EEPROM_RESETS_HIGH	= 44;
 
 }

@@ -1,10 +1,15 @@
 package com.barobot.hardware.serial;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import android.os.Environment;
 import android.util.Log;
@@ -21,7 +26,13 @@ public class AndroidLogger implements CanLog {
 		File dir = new File(sdcardPath + "/Barobot");
 		dir.mkdirs();
         myFile = new File(sdcardPath + "/Barobot/barobot.error.txt");
-        //     myFile.createNewFile();
+        if(!myFile.exists()){
+			try {
+				myFile.createNewFile();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+        }
         try {
 			fos = new FileOutputStream(myFile);
 		} catch (FileNotFoundException e) {
@@ -105,6 +116,8 @@ public class AndroidLogger implements CanLog {
         } finally {
         	 ps.close();
         }
+		String rendered = tr.getMessage() + "\n----\n" + tr.getStackTrace();
+		appendError(rendered);
 	}
 
 	public void appendError( String s ) {
@@ -116,5 +129,31 @@ public class AndroidLogger implements CanLog {
             fOut.close();
         } catch (Exception e) {
         }
+	}
+
+	private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS");
+	@Override
+	public void saveLog(String text){ 
+		
+		String path6 = 	Environment.getExternalStorageDirectory()+ "/Barobot/log.log";
+		File logFile = new File(path6);
+		if (!logFile.exists()) {
+			try {
+				logFile.createNewFile();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		try {
+			Date date = new Date();
+			BufferedWriter buf = new BufferedWriter(new FileWriter(logFile,true));
+			buf.append(dateFormat.format(date)); //2013/10/15 16:16:39
+			buf.append("\t");
+			buf.append(text);
+			buf.newLine();
+			buf.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }

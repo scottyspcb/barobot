@@ -55,12 +55,14 @@ public class DebugTabCommands extends Fragment {
 		buttonToCommand.put( R.id.min_y, "min_y" );
 		buttonToCommand.put( R.id.unlock, "unlock" );
 		buttonToCommand.put( R.id.pacpac, "pacpac" );
-		buttonToCommand.put( R.id.smile, "smile" );
 		buttonToCommand.put( R.id.kalibrujx, "kalibrujx" );
 		buttonToCommand.put( R.id.enabley, "enabley" );
 		buttonToCommand.put( R.id.disablez, "disablez" );
 		buttonToCommand.put( R.id.disabley, "disabley" );
+	
+		buttonToCommand.put( R.id.set_robot_id, "set_robot_id" );
 		buttonToCommand.put( R.id.reset1, "reset1" );
+		buttonToCommand.put( R.id.reset, "reset" );
 		buttonToCommand.put( R.id.reset2, "reset2" );
 		buttonToCommand.put( R.id.reset3, "reset3" );
 		buttonToCommand.put( R.id.reset4, "reset4" );
@@ -90,7 +92,6 @@ public class DebugTabCommands extends Fragment {
 		buttonToCommand.put( R.id.set_y10, "set_y10" );
 		buttonToCommand.put( R.id.set_y100, "set_y100" );
 		buttonToCommand.put( R.id.set_y600, "set_y600" );
-		buttonToCommand.put( R.id.set_neutral_y, "set_neutral_y" );
 		buttonToCommand.put( R.id.goToNeutralY, "goToNeutralY" );
 		buttonToCommand.put( R.id.kalibrujy, "kalibrujy" );
 		buttonToCommand.put( R.id.kalibrujz, "kalibrujz" );

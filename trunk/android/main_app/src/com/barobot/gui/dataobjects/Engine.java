@@ -34,7 +34,6 @@ public class Engine {
 	private List<Recipe_t> favoriteRecipes;
 	private static Map<Integer, Slot> liquid2slot = null;
 	private static Engine instance;
-	//private static int robotId;
 	private String message = "";
 	private Boolean messagePresent = false;
 
@@ -141,30 +140,17 @@ public class Engine {
 
 	public void invalidateData()
 	{
-		slots = null;
-		liquid2slot = null;
-		recipes = null;
+		slots			= null;
+		liquid2slot		= null;
+		recipes			= null;
 		favoriteRecipes = null;
 	}
 	public void invalidateSlots()
 	{
-		slots = null;
+		slots		= null;
 		liquid2slot = null;
 	}
-/*
-	public void CacheDatabase()
-	{
-		invalidateData();
-		loadSlots();
-		getRecipes();
-		getFavoriteRecipes();
-	}
 
-	public List<Product> getProducts()
-	{
-		return Model.fetchAll(Product.class);
-	}
-	*/
 	public List<Type> getTypes() {
 		return BarobotData.GetTypes();
 	}

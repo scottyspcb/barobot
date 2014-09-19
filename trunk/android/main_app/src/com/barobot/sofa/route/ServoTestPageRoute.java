@@ -1,8 +1,10 @@
 package com.barobot.sofa.route;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import com.barobot.common.Initiator;
 import com.barobot.common.constant.Constant;
@@ -20,6 +22,7 @@ import com.x5.template.Theme;
 import com.x5.util.TableData;
 
 import fi.iki.elonen.NanoHTTPD.IHTTPSession;
+import fi.iki.elonen.NanoHTTPD.ResponseException;
 
 public class ServoTestPageRoute extends EmptyRoute {
 
@@ -31,6 +34,31 @@ public class ServoTestPageRoute extends EmptyRoute {
 		if(theme == null){
 			return null;
 		}
+		if("POST".equals(session.getMethod().toString())){
+			Map<String, String> files = new HashMap<String, String>();
+	        try {
+	            session.parseBody(files);
+	    		for(Entry<String, String> entry : files.entrySet()) {
+	    			String key = entry.getKey();
+	    			String value = entry.getValue();
+	    			Initiator.logger.i("ServoTestPageRoute.run", "files key="+key+" value="+value+"");
+	    		}
+	        } catch (IOException ioe) {	
+	        } catch (ResponseException re) {
+	        }	
+		}
+/*
+		Map<String, String> pp = session.getParms();
+		for(Entry<String, String> entry : pp.entrySet()) {
+			String key = entry.getKey();
+			String value = entry.getValue();
+			Initiator.logger.i("ServoTestPageRoute.run", "getParms key="+key+" value="+value+"");
+		}*/
+        
+		//Initiator.logger.i("ServoTestPageRoute.getMethod", ""+session.getMethod().toString());
+		//Initiator.logger.i("ServoTestPageRoute.getMethod", ""+session.getQueryParameterString());
+		//Initiator.logger.i("ServoTestPageRoute.getMethod", ""+session.getUri());	
+
 		if(session.getParms().containsKey("position") && session.getParms().containsKey("servo")&& session.getParms().containsKey("speed")){
 			this.use_raw_output = true;
 			BarobotConnector barobot	= Arduino.getInstance().barobot;
@@ -55,7 +83,7 @@ public class ServoTestPageRoute extends EmptyRoute {
 			barobot.main_queue.add(q);
 			return "OK";
 		}else if(session.getParms().containsKey("nalej")){
-
+			this.use_raw_output = true;
 			this.nalej(session.getParms());
 			return "OK";
 		}else{
@@ -134,20 +162,30 @@ public class ServoTestPageRoute extends EmptyRoute {
 		int xpos1	= Decoder.toInt(parms.get("XPOS1") );
 		int dys		= Decoder.toInt(parms.get("DRIVER_Y_SPEED") );
 		int dxs		= Decoder.toInt(parms.get("DRIVER_X_SPEED") );
-		
 
+		int init_repeatz			= repeatz;
 		Queue q						= new Queue();
 		BarobotConnector barobot	= Arduino.getInstance().barobot;
-
 		if(dx > 0 ){							// go to front
+			Initiator.logger.i( this.getClass().getName(), "front" );
+			Initiator.logger.i( this.getClass().getName(), "down" );
+
 			q.add("Z" + dp +","+ds, true);		// go down
 			q.add("DZ", true);
 			this.goFront(q, parms);
 		}
 		boolean yIsFront = true;
-		while( repeatx-- >= 0 ){
+		
+		int nalan = 2*repeatx +2;
+
+		while( nalan-- > 0 ){
+			repeatz = init_repeatz;
+			Initiator.logger.i( this.getClass().getName(), " nalej?: "+repeatz );
 			while( repeatz-- >= 0 ){
-				q.add("EX", true);
+				
+				Initiator.logger.i( this.getClass().getName(), "repeat + nalej: "+repeatz );
+				
+	//			q.add("EX", true);
 				q.add("Z" + up+","+us, true);		// go up
 				q.addWait( lt );
 
@@ -163,7 +201,7 @@ public class ServoTestPageRoute extends EmptyRoute {
 				q.addWait( 100 );
 				q.add("DZ", true);
 				q.addWait(100);
-				q.add("DX", true);
+	//			q.add("DX", true);
 		//		q.add("DY", true);
 				if( repeatz >= 1 ){
 					q.addWait(wa);
@@ -171,19 +209,25 @@ public class ServoTestPageRoute extends EmptyRoute {
 			}
 			if(dx > 0 ){
 				if(yIsFront){
+					Initiator.logger.i( this.getClass().getName(), "move x" );
 					this.moveX(q, parms, true );
+					Initiator.logger.i( this.getClass().getName(), "back" );
 					this.goBack(q, parms);
-				}else{
+				}else{	
+					Initiator.logger.i( this.getClass().getName(), "front" );
 					this.goFront(q, parms);
+					Initiator.logger.i( this.getClass().getName(), "movex" );
 					this.moveX(q, parms, false );
 				}
 				yIsFront = !yIsFront;
 			}else{
+				Initiator.logger.i( this.getClass().getName(), "break" );
 				break;
 			}
 		}
 
 		if(dx > 0 ){					// go to front
+			Initiator.logger.i( this.getClass().getName(), "front" );
 			this.goFront(q, parms);
 		}
 		barobot.main_queue.add(q);
@@ -201,7 +245,7 @@ public class ServoTestPageRoute extends EmptyRoute {
 	
 	}
 	private void goBack(Queue q, Map<String, String> parms) {
-		int sfp		= Decoder.toInt(parms.get("SERVOY_FRONT_POS") );
+		int sfp		= Decoder.toInt(parms.get("SERVOY_BACK_POS") );
 		int dys		= Decoder.toInt(parms.get("DRIVER_Y_SPEED") );
 		q.add("Y" + sfp +","+dys, true);	// go back
 		q.add("DY", true);
@@ -209,7 +253,7 @@ public class ServoTestPageRoute extends EmptyRoute {
 
 	private void goFront(Queue q, Map<String, String> parms) {
 		int dys		= Decoder.toInt(parms.get("DRIVER_Y_SPEED") );
-		int sbp		= Decoder.toInt(parms.get("SERVOY_BACK_POS") );
+		int sbp		= Decoder.toInt(parms.get("SERVOY_FRONT_POS") );
 		q.add("Y" + sbp +","+dys, true);	// go front
 		q.add("DY", true);
 	}

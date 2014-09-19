@@ -115,7 +115,7 @@ Disable servo on ready: <input type="checkbox" checked="checked" id="autodisable
 		<td><input type="text" class="p_pos" id="PAC_DOWN_SPEED" value="{$PAC_DOWN_SPEED}" /></td>
 	</tr><tr>
 		<td style="width:250px">REPEAT_Z</td>
-		<td><input type="text" class="p_pos" id="REPEAT" value="{$REPEAT_Z}" /></td>
+		<td><input type="text" class="p_pos" id="REPEAT_Z" value="{$REPEAT_Z}" /></td>
 	</tr><tr>
 		<td style="width:250px">WAIT_AFTER</td>
 		<td><input type="text" class="p_pos" id="WAIT_AFTER" value="{$WAIT_AFTER}" /></td>
@@ -139,7 +139,7 @@ Disable servo on ready: <input type="checkbox" checked="checked" id="autodisable
 		<td><input type="text" class="p_pos" id="XPOS1" value="{$XPOS1}" /></td>
 	</tr><tr>
 		<td style="width:250px">REPEAT_X (ile razy powtarzać)</td>
-		<td><input type="text" class="p_pos" id="REPEAT" value="{$REPEAT_X}" /></td>
+		<td><input type="text" class="p_pos" id="REPEAT_X" value="{$REPEAT_X}" /></td>
 	</tr>
 
 	
@@ -176,7 +176,7 @@ Disable servo on ready: <input type="checkbox" checked="checked" id="autodisable
 			"PAC_WAIT_DOWN_TIME",
 			"PAC_WAIT_UP_TIME",
 			"PAC_DOWN_SPEED",
-			"REPEAT",
+			"REPEAT_X",
 			"WAIT_AFTER",
 			"DRIVER_Y_SPEED",
 			"DRIVE_X",
@@ -193,7 +193,15 @@ Disable servo on ready: <input type="checkbox" checked="checked" id="autodisable
 		};
 	//	console.log(inputs.length );
 		for(var i=0;i<inputs.length;i++){
+			var input = $("#" + inputs[i] );
 			var value = $("#" + inputs[i] ).val();
+			if( input.attr("type") == "checkbox" ){
+				if( input.is(":checked")){
+				}else{
+					value=0;
+				}
+			}else{	
+			}
 			output[ inputs[i] ] = value;
 		//	console.log(inputs[i],value );
 		}

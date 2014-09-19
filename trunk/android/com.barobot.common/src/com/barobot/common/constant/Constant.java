@@ -10,11 +10,11 @@ public class Constant {
    // public static final UUID MY_UUID_SECURE =	UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
 
     // commands
-	public static final byte TRIGGER = 'T';
-	public static final byte RET = 'R';
-	public static final byte ERROR = 'R';
-	public static final byte ANALOG = 'A';
-	public static final byte COMMENT = '-';
+	public static final String TRIGGER = "T";
+	public static final String RET = "R";
+	public static final String ERROR = "R";
+	public static final String ANALOG = "A";
+	public static final String COMMENT = "-";
 
 	public static final String GETXPOS = "x";
 	public static final String GETYPOS = "y";

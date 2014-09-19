@@ -20,14 +20,13 @@ public class AndroidBarobotState2 implements HardwareState{
 	private static String[] persistant = {
 		"POSX",
 		"POSY",
-		"POSY",
+		"POSZ",
 		"X_GLOBAL_MIN",
 		"X_GLOBAL_MAX",
-		"LENGTHX","LAST_BT_DEVICE",
+		"LENGTHX",
+		"LAST_BT_DEVICE",
 		"POS_START_X",
 		"POS_START_Y",
-		"NEUTRAL_POS_Y",
-		"NEUTRAL_POS_Z",
 
 		"BOTTLE_OFFSETX_0",
 		"BOTTLE_OFFSETX_1",
@@ -42,7 +41,7 @@ public class AndroidBarobotState2 implements HardwareState{
 		"BOTTLE_OFFSETX_10",
 		"BOTTLE_OFFSETX_11",
 		"BOTTLE_OFFSETX_12",
-		
+
 		"BOTTLE_X_0","BOTTLE_Y_0",
 		"BOTTLE_X_1","BOTTLE_Y_1",
 		"BOTTLE_X_2","BOTTLE_Y_2",
@@ -85,24 +84,12 @@ public class AndroidBarobotState2 implements HardwareState{
 	}
 	@Override
 	public void set( String name, String value ){
-	//	if(name == "POSX"){
-	//		Initiator.logger.i("virtualComponents.set","save: "+name + ": "+ value );	
-	//	}
 		hashmap.put(name, value );
-		update( name, value );
-
 		int remember = Arrays.asList(persistant).indexOf(name);			// czy zapisac w configu tą wartosc?
 		if(remember > -1){
 			config_editor.putString(name, value);
 			config_editor.commit();
 		}
-	}
-	private void update(String name, String value) {
-		/*
-		final DebugActivity dialog = DebugActivity.getInstance();
-		if(dialog!=null){
-			dialog.update(name, value );
-		}*/
 	}
 
 	@Override
@@ -118,7 +105,6 @@ public class AndroidBarobotState2 implements HardwareState{
 	@Override
 	public void reloadConfig(int robot_Serial) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
@@ -126,6 +112,4 @@ public class AndroidBarobotState2 implements HardwareState{
 		// TODO Auto-generated method stub
 		
 	}
-	
-	
 }

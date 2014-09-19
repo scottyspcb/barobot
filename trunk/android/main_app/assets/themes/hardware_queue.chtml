@@ -1,29 +1,94 @@
 <h3>Queue</h3>
-<table>
+
+<table style="width:100%" border="1">
+	<tr>
+		<td>title</td>
+		<td>command</td>
+		<td>unlockingcommand</td>
+		<td>blocking</td>
+		<td>name</td>
+		<td>waitingforme</td>
+		<td>wasstarted</td>
+		<td>timeout</td>
+		<td>direction</td>
+	</tr>
+
+{.loop in $res as $item}
+	<tr>
+		<td>{$item.title}</td>
+		<td>{$item.command}</td>
+		<td>{$item.unlockingcommand}</td>
+		<td>{$item.blocking}</td>
+		<td>{$item.name}</td>
+		<td>{$item.waitingforme}</td>
+		<td>{$item.wasstarted}</td>
+		<td>{$item.timeout}</td>
+		<td>{$item.direction}</td>
+	</tr>
+{/loop}
+</table>
+
+<br/><br/>
+
+
+
+<table style="width:100%" border="1">
 {.loop in $queue as $item}
 	<tr>
 		<td style="width:150px">
-			{$item.command}
+			{$item}
 		</td>
-		<td>
-			{$item.command}
-		</td>
+		<td>{$item.command}</td>
+		<td>{$item.unlockingcommand}</td>
+		<td>{$item.blocking}</td>
+		<td>{$item.name}</td>
+		<td>{$item.waitingforme}</td>
+		<td>{$item.wasstarted}</td>
+		<td>{$item.timeout}</td>
+		<td>{$item.direction}</td>
 	</tr>
 {/loop}
 </table>
+
+
+
+<div id="widget-list">
+ 
+{.loop in $widgets as $w}
+<div id="widg_{$w.widget_id}">
+{$w.widget_id}
+{$w.widget_name}
+</div>
+{/loop}
+ 
+</div>
+
+
+
+
+<h3>Bean</h3>
+[{$item.bbb_BBB}]
+[{$item.bbb_bbb}]
+
+
+[{$item.bbbbbb}]
+[{$item.BBBBBB}]
+[{$item.bbbBBB}]
+[{$item.BBBbbb}]
+
+
+
+[{$item.BBB_bbb}]
+[{$item.BBB_BBB}]
+
+[{$item.BbbBbb}]
+[{$item.bBBbBB}]
+[{$item.bbbBbb}]
+[{$item.Bbbbbb}]
+
+[{$item.a}]
+[{$item.c}]
+
 <a href="/hardware_queue?unlick={$item.id}">Unlock</a>
 
-
-<h3>History</h3>
-<table>
-{.loop in $history as $item}
-	<tr>
-		<td style="width:150px">
-			{$item.command}
-		</td>
-		<td>
-			{$item.command}
-		</td>
-	</tr>
-{/loop}
-</table>
+<br/><br/><br/>

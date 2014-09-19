@@ -10,7 +10,7 @@ uint8_t GetTemp();
 //-------------------------------------------------------------------
  
 // Put yout declarations here
- unsigned int decodeInt(String input, byte odetnij );
+ long unsigned int decodeInt(String input, byte odetnij );
 //-------------------------------------------------------------------
  
 //===================================================================
@@ -25,7 +25,7 @@ uint8_t GetTemp();
 //---- DO NOT DELETE THIS LINE -- @MM_DECLA_BEG@---------------------
 void init_analogs();
 byte localToGlobal( byte ind );
-void send( volatile byte buffer[], byte length );
+void sendln( volatile byte buffer[], byte length );
 void send_y_pos( byte stateId, int16_t value);
 void send_hx_pos( byte stateId, int16_t value );
 void send_servo( boolean error, byte servo, uint16_t pos );
@@ -33,7 +33,6 @@ void run_to(byte index, byte sspeed, uint16_t target);
 void timer();
 void reload_servo( byte index );
 void serialEvent();
-void sendstats();
 void paserDeriver( byte driver, String input2 );
 void send_error( String input);
 void setColor(byte num, unsigned long int color);
@@ -44,10 +43,11 @@ void change_state( byte oldStateId, byte newStateId, int16_t value );
 void init_hallx();
 byte get_hy_state_id( int16_t value);
 byte get_hx_state_id( int16_t value);
-void sendStepperReady( long int pos );
+void sendStepperReady();
 void stepperReady( long int pos );
 void loop();
 void sendVal( byte n );
+void setupConfig();
 void init_leds();
 void setup();
 //---- DO NOT DELETE THIS LINE -- @MM_DECLA_END@---------------------

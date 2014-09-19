@@ -42,6 +42,7 @@ public class update_drinks {
 	public static String localDbPath	= "/data/data/com.barobot/databases/" + BarobotData.DATABASE_NAME;
 	public static String sourcepath		= "/storage/emulated/0/download/" + BarobotData.DATABASE_NAME;
 	public static String copyPath		= "/Barobot/" + BarobotData.DATABASE_NAME;
+	public static String logFile		= "/Barobot/log.log";
 	public static String backupPath		= "/Barobot/BarobotOrman%DATE%.db";
 
 	public void load(){

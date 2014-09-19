@@ -10,6 +10,8 @@
 #include <FlexiTimer2.h>
 #include <avr/io.h>
 #include <avr/wdt.h>
+#include <EEPROM.h>
+
 #define INBFLENGTH 	5
 #define I2CDELAY	10
 #define DELAY4RESET	20
@@ -35,10 +37,9 @@ String serial0Buffer     = "";
 //boolean Console0Complete = false;   // This will be set to true once we have a full string
 boolean last_i2c_read_error = false;
 boolean stepperIsReady = false;
-
+boolean allow_ints		= true;
 byte reprogramm_index	= 0;
 byte reprogramm_address = 0;
-
 
 void disableWd(){
 	// Disable the WDT
@@ -100,8 +101,10 @@ void setupStepper(){
 
 void timer(){
 	timer_counter++;
-	//timer_now = true;
-	stepperX.run();	
+	if(allow_ints){
+		//timer_now = true;
+		stepperX.run();	
+	}
 }
 
 uint16_t divisor = 500;
@@ -145,7 +148,6 @@ void loop(){
 			}
 		}
 	}
-
 	for( byte i=0;i<MAINBOARD_BUFFER_LENGTH;i++){
 		if( input_buffer[i][0] ){
 			proceed( buff_length[i],input_buffer[i] );
@@ -153,8 +155,7 @@ void loop(){
 		}
 	}
 	if(stepperIsReady){
-		long int pos = stepperX.currentPosition();
-		sendStepperReady(pos);
+		sendStepperReady();
 		stepperIsReady = false;
 	}
 	//stepperX.run();	
@@ -303,7 +304,7 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 		writeRegisters(num, 3, false );
 		delayMicroseconds(100);
 
-	}else if( command == 'f') {		// if enable pin is connected to vcc?
+	}else if( command == 'f') {		// is enable pin is connected to vcc?
 		long int dis = stepperX.distanceToGo();
 		if(dis == 0 ){
 			pinMode(PIN_MAINBOARD_STEPPER_ENABLE, INPUT );
@@ -394,8 +395,6 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 		if( source == INNER_HALL_X 
 			|| source == INNER_HALL_Y 
 			|| source == INNER_WEIGHT 
-			|| source == INNER_CURRENTY 
-			|| source == INNER_CURRENTZ
 			|| source == INNER_CARRET_TEMP
 			 )
 		{
@@ -502,8 +501,8 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 */
 
 	}else if( command == 'M' && il == 5 ){		// save 1 char to eeprom in 2 cells. address in HEX!!! ie.: M0FF3 = write F3 into addresses: 0F*2 and 0F*2+1
-		char charBuf[5];
-		input.toCharArray(charBuf,5);
+		char charBuf[6];
+		input.toCharArray(charBuf,6);
 		unsigned char ad    = 0;
 		unsigned char value = 0;
 		sscanf(charBuf,"M%2hhx%2hhx", &ad, &value );
@@ -513,18 +512,22 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 
 		while (!eeprom_is_ready());
 		eeprom_write_byte( (uint8_t*)ad1, value);
-
 		while (!eeprom_is_ready());
 		eeprom_write_byte( (uint8_t*)ad2, value);
 
 	}else if( command == 'm' && il == 3 ){		// read 2 chars from eeprom. ie.: m15, address in DEC!!!
-		String ss 	= input.substring( 1 );
-		byte ad		= ss.toInt();
+		char charBuf[5];
+		unsigned char ad    = 0;
+		input.toCharArray(charBuf,5);
+		sscanf(charBuf,"m%2hhx", &ad );
 		byte ad1	= ad*2;
 		byte ad2	= ad*2+1;
 		byte val1	= eeprom_read_byte((unsigned char *) ad1);
 		byte val2	= eeprom_read_byte((unsigned char *) ad2);
-		Serial.print("Re");
+		defaultResult = false;
+		Serial.print("Rm");
+		Serial.print(String(ad));
+		Serial.print(',');
 		Serial.print(String(val1));
 		Serial.print(',');
 		Serial.println(String(val2));
@@ -571,10 +574,10 @@ void send_error( String input){
 
 void stepperReady( long int pos ){		// in interrupt
 	stepperIsReady = true;
-	//sendStepperReady(pos);
 }
 
-void sendStepperReady( long int pos ){		// in interrupt
+void sendStepperReady(){
+	long int pos = stepperX.currentPosition();
 	//volatile byte (*buffer) = 0;
 //	DEBUG("-input " );
 /*
@@ -617,6 +620,7 @@ void sendStepperReady( long int pos ){		// in interrupt
 	//Serial.println();
 	//Serial.flush();
 	Serial.println("Rx" + String(pos));
+	Serial.flush();
 }
 
 void paserDeriver( byte driver, String input ){   // odczytaj komende silnika

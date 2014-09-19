@@ -6,9 +6,11 @@
 #include <arduino.h>
 #include <twi.h>
 #include <WSWire.h>
+
+#include <EEPROM.h>
  
 //-------------------------------------------------------------------
- 
+
 //-------------------------------------------------------------------
  
 // Put yout declarations here

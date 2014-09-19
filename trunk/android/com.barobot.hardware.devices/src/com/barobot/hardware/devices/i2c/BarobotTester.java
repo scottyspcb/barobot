@@ -24,7 +24,7 @@ public class BarobotTester extends I2C_Device_Imp {
 	}
 	@Override
 	public void isp(Queue q) {
-		q.add( "P"+ getRow(), "SISP" );		// and wait for device
+
 	}
 	public String getHexFile() {
 		return IspSettings.mbBootloaderPath;
