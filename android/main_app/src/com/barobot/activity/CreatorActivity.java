@@ -125,7 +125,7 @@ public class CreatorActivity extends BarobotMain{
 				, Distillery.getBitter(ingredients), Distillery.getStrength(ingredients));
 		}
 		for (int i = 1; i<=12 ; i++){							// 1 - 12
-			barobot.bottleBacklight( i-1, slot_nums[i] );		// 0 -11
+			barobot.bottleBacklight( barobot.main_queue, i-1, slot_nums[i] );		// 0 -11
 		}
 	}
 	public void onBottleClicked(View view)
