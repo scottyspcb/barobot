@@ -6,13 +6,17 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Map.Entry;
 
+import org.orman.dbms.ResultList;
+import org.orman.dbms.ResultList.ResultRow;
 import org.orman.mapper.Model;
 import org.orman.mapper.ModelQuery;
 import org.orman.sql.C;
+import org.orman.sql.Query;
 
 import com.barobot.AppInvoker;
 import com.barobot.common.Initiator;
 import com.barobot.common.constant.Constant;
+import com.barobot.gui.database.BarobotData;
 import com.barobot.gui.dataobjects.Liquid_t;
 import com.barobot.gui.dataobjects.Recipe_t;
 import com.barobot.gui.dataobjects.Type;
@@ -25,6 +29,7 @@ import com.barobot.other.InternetHelpers;
 import com.barobot.other.OnDownloadReadyRunnable;
 import com.barobot.other.update_drinks;
 import com.barobot.parser.Queue;
+import com.barobot.parser.utils.Decoder;
 import com.barobot.web.route.EmptyRoute;
 import com.barobot.web.server.SofaServer;
 import com.x5.template.Theme;
@@ -255,12 +260,10 @@ public class CommandRoute extends EmptyRoute {
 			}
 		});
 
-
 		index.put("command_goToNeutralY", new command_listener() {
 			@Override
-			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
-					int posx, int posy) {
-				barobot.moveY(q, barobot.state.get("NEUTRAL_POS_Y", "0"));
+			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,int posx, int posy) {
+				barobot.moveY(q, barobot.state.get("SERVOY_BACK_NEUTRAL", "0"));
 				q.add("DY", true);
 				return true;
 			}
@@ -309,7 +312,6 @@ public class CommandRoute extends EmptyRoute {
 				return true;
 			}
 		});
-
 		index.put("command_machajy", new command_listener() {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
@@ -325,6 +327,7 @@ public class CommandRoute extends EmptyRoute {
 					barobot.moveY(q, SERVOY_FRONT_POS2, false);
 					barobot.moveY(q, SERVOY_BACK_POS, false);
 				}
+
 				barobot.moveY(q, SERVOY_FRONT_POS2, false);
 				q.add("DY", true);
 				return true;
@@ -379,10 +382,8 @@ public class CommandRoute extends EmptyRoute {
 								// private String source;
 								public void sendSource(String source) {
 									// this.source = source;
-									Initiator.logger.i("firmware_download",
-											"hex ready");
+									Initiator.logger.i("firmware_download","hex ready");
 								}
-
 								@Override
 								public void run() {
 									// this.source
@@ -589,7 +590,36 @@ public class CommandRoute extends EmptyRoute {
 				return true;
 			}
 		});
+		index.put("command_set_robot_id", new command_listener() {
+			@Override
+			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
+					int posx, int posy) {
+	
+				// read from db
+				Query query3 = new Query("SELECT count(*) FROM `robot`");
+				Initiator.logger.i("StartOrmanMapping","query3: "+ query3.toString()); 
+				Object res = BarobotData.omdb.getExecuter().executeForSingleValue(query3);
+				if(res == null){
+					Initiator.logger.i("StartOrmanMapping","results: null"); 
+				}else{
+					Initiator.logger.i("command_set_robot_id","onCall: "+ res); 
+					int rc = Decoder.toInt(""+res);
+					barobot.setRobotId( mq,rc);
+				}
 
+				return true;
+			}
+		});
+		index.put("command_reset", new command_listener() {
+			@Override
+			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
+					int posx, int posy) {
+				mq.add("RESET", false);
+				return true;
+			}
+		});
+
+		
 		index.put("command_reset1", new command_listener() {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
@@ -626,15 +656,6 @@ public class CommandRoute extends EmptyRoute {
 			}
 		});
 
-		index.put("command_smile", new command_listener() {
-			@Override
-			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
-					int posx, int posy) {
-				
-				return true;
-			}
-		});	
-		
 		index.put("command_goto_max_x", new command_listener() {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
@@ -860,15 +881,6 @@ public class CommandRoute extends EmptyRoute {
 			}
 		});
 
-		index.put("command_set_neutral_y", new command_listener() {
-			@Override
-			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
-					int posx, int posy) {
-				barobot.state.set("NEUTRAL_POS_Y", "" + posy);
-				String nn = barobot.state.get("NEUTRAL_POS_Y", "0");
-				return true;
-			}
-		});
 		// TODO
 		index.put("command_auto_repair", new command_listener() {
 			@Override
@@ -893,28 +905,64 @@ public class CommandRoute extends EmptyRoute {
 				return true;
 			}
 		});
-		
-		
+
+		index.put("command_test_queue", new command_listener() {
+			@Override
+			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,int posx, int posy) {
+				int pos = 100;
+				for(int i=0;i<5;i++){
+					barobot.doHoming(q, true);
+				}
+				barobot.driver_x.moveTo(q, 1000);
+				for(int i=0;i<90;i++){
+					q.add("X"+pos, true);
+					pos +=100;
+				}
+				barobot.driver_x.moveTo(q, 1000);
+				barobot.driver_x.moveTo(q, 10000);
+
+				for(int i=0;i<90;i++){
+					q.add("RESET2", true);
+				}
+				for(int i=0;i<90;i++){
+					q.add("RESET3", true);
+				}
+				for(int i=0;i<90;i++){
+					q.add("RESET4", true);
+				}
+				for(int i=0;i<10;i++){
+					q.add("EX", true);
+					q.addWait(400);
+					q.add("DX", true);
+				}
+				for(int i=0;i<10;i++){
+					barobot.doHoming(q, true);
+				}
+				return true;
+			}
+		});
+
 		// TODO
 		index.put("command_pour_now", new command_listener() {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,int posx, int posy) {
-				
-				
-				
-				
-				
-				
-				
-				
-				
 				return true;
 			}
 		});
-			
 		
 		
+		index.put("command_reload_robot_id", new command_listener() {
+			@Override
+			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,int posx, int posy) {
+
+				barobot.changeRobotId(1);
+				barobot.changeRobotId(2);
+				barobot.changeRobotId(3);
+
+				return true;
+			}
+		});
 		
-		
+
 	}
 }

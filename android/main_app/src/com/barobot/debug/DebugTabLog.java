@@ -67,7 +67,7 @@ public class DebugTabLog extends Fragment {
 		xb3.setOnClickListener( new OnClickListener(){
 			@Override
 			public void onClick(View v) {
-				Arduino.getMainQ().unlock();
+		//		Arduino.getMainQ().unlock();
 			};
 		});
 

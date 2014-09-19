@@ -63,7 +63,7 @@ public class Arduino{
 					Queue mq = barobot.main_queue;
 					mq.add( "\n", false );	// clean up input
 					mq.add( "\n", false );
-					mq.unlock();
+			//		mq.unlock();
 			//		mq.add("RESET2", true);		// resetuj MB
 					mq.add(Constant.GETXPOS, true);
 					mq.add(Constant.GETYPOS, true);
@@ -74,7 +74,7 @@ public class Arduino{
 					Queue mq = barobot.main_queue;
 					mq.add( "\n", false );	// clean up input
 					mq.add( "\n", false );
-					mq.unlock();
+			//		mq.unlock();
 				}
 			}
 			@Override
@@ -94,7 +94,7 @@ public class Arduino{
 		MyRetReader mrr			= new MyRetReader( bel, barobot );
 		barobot.mb.setRetReader( mrr );
 	}
-    protected void prepareDebugConnection() {
+    private void prepareDebugConnection() {
 		SerialInputListener btl = new SerialInputListener() {
 		    @Override
 		    public void onRunError(Exception e) {

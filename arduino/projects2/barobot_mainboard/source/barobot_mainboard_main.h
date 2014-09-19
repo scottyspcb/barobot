@@ -84,7 +84,7 @@ byte get_local_pin( byte index );
 void i2c_test_slaves();
 void tri_state( byte pin_num, boolean pin_value );
 void paserDeriver( byte driver, String input );
-void sendStepperReady( long int pos );
+void sendStepperReady();
 void stepperReady( long int pos );
 void send_error( String input);
 void i2c_device_found( byte addr,byte type,byte ver );

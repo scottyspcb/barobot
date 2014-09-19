@@ -33,9 +33,11 @@ import com.barobot.hardware.devices.BarobotConnector;
 public class BarobotData {
 	public static String DATABASE_NAME = "BarobotOrman.db";
 	public static int DATABASE_SCHEMA_VERSION = 3;
+	public static Database omdb = null;
+	
 	public static void StartOrmanMapping(Context context){
 		// Setting up ORMAN
-		Database omdb = new SQLiteAndroid(context, DATABASE_NAME, DATABASE_SCHEMA_VERSION);	
+		omdb = new SQLiteAndroid(context, DATABASE_NAME, DATABASE_SCHEMA_VERSION);	
 		MappingSession.getConfiguration().setCreationPolicy(SchemaCreationPolicy.CREATE_IF_NOT_EXISTS);
 
 		MappingSession.registerEntity(Category.class);
@@ -87,7 +89,7 @@ public class BarobotData {
 	public static Slot GetSlot(int position)
 	{
 		BarobotConnector barobot	= Arduino.getInstance().barobot;
-		int robotId = barobot.getRobotId();
+		int robotId					= barobot.getRobotId();
 
 		return Model.fetchSingle(ModelQuery.select().from(Slot.class).where(
 				C.and(

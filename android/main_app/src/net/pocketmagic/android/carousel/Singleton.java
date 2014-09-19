@@ -87,7 +87,7 @@ public class Singleton extends Application {
 		m_Instance = this;
 		//		
 	}
-	
+
 	// Double-checked singleton fetching
 	public static Singleton getInstance() {
 		// init instance 

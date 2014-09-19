@@ -9,6 +9,7 @@ import android.media.MediaRecorder;
 import com.barobot.audio.DetectorThread;
 import com.barobot.common.constant.Pwm;
 import com.barobot.common.interfaces.OnSignalsDetectedListener;
+import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
 import com.barobot.hardware.devices.i2c.Upanel;
 import com.barobot.parser.Queue;
@@ -29,22 +30,12 @@ public class Audio implements OnSignalsDetectedListener{
 	public void start( final BarobotConnector barobot2 ) {
 		this.barobot = barobot2;
 		Queue q = barobot.main_queue;
-		Upanel[] up2		= barobot.i2c.getUpanels();
-		if(up2.length < 12){
+		if(!barobot.ledsReady){
 			barobot.scann_leds( q );
 		}
-		
-		q.add( new AsyncMessage( true ) {
-			@Override
-			public Queue run(Mainboard dev, Queue queue) {
-				this.name		= "turnoff";
-				up				= barobot.i2c.getUpanels();
-				for( int i=0;i<up.length ;i++){
-					queue.add( "L"+ up[i].getAddress() + ",ff,0", true );
-				}
-				return null;
-			}
-		} );
+
+		barobot.setLedsOff(q,"ff");
+	
 		q.add( new AsyncMessage( true ) {
 			@Override
 			public Queue run(Mainboard dev, Queue queue) {

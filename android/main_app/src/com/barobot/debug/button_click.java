@@ -88,6 +88,7 @@ public class button_click implements OnClickListener{
 				    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
 				        public void onClick(DialogInterface dialog, int which) { 
 				        	boolean success = false;
+				        	String error_name = "Error";
 				        	try {	
 				        		Date dNow = new Date( );
 				        		SimpleDateFormat dd =  new SimpleDateFormat ("yyyy.MM.dd.hh.mm.ss");
@@ -103,13 +104,13 @@ public class button_click implements OnClickListener{
 				        			success = InternetHelpers.copy( resetPath, update_drinks.localDbPath );
 				        			Engine.GetInstance().invalidateData();
 				        		}
-				        
-				        		
 							} catch (IOException e) {
 								e.printStackTrace();
+								success = false;
+								error_name	= e.getMessage();
 								Initiator.logger.i(Constant.TAG,"download_database", e);
 							}
-				        	final String message = success ? "OK": "Error";
+				        	final String message = success ? "OK": error_name;
 							BarobotMain.getInstance().runOnUiThread(new Runnable() {
 								  public void run() {
 							    	new AlertDialog.Builder(dbw).setTitle("Message").setMessage( message )

@@ -74,4 +74,9 @@ public class DesktopLogger implements CanLog {
 	public void appendError(Throwable tr) {
 		tr.printStackTrace();
 	}
+
+	@Override
+	public void saveLog(String text) {
+		System.out.println( text );
+	}
 }

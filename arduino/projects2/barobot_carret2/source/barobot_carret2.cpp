@@ -10,25 +10,35 @@
 #include <FlexiTimer2.h>
 
 // PINS
-#define PIN_B2_STEPPER_ENABLE PPD3	// 3
-#define PIN_B2_STEPPER_STEP PPD4	// 4
-#define PIN_B2_STEPPER_DIR PPD5		// 5
-#define PIN_B2_SERVO_Y PPB2			// 10
-#define PIN_B2_SERVO_Z PPB1			// 9
-#define PIN_B2_LED_TOP PPD7			// 7
-#define PIN_B2_LED_BOTTOM PPB0		// 8
+#define PIN_B2_STEPPER_ENABLE 3		// 
+#define PIN_B2_STEPPER_STEP 12		// 
+#define PIN_B2_STEPPER_DIR 13		// 
+#define PIN_B2_SERVO_Y 9			// 
+#define PIN_B2_SERVO_Z 10			// 
+#define PIN_B2_LED_TOP 11			// 
+#define PIN_B2_LED_BOTTOM 8			// 
+#define PIN_B2_SERVOS_ENABLE_PIN 7	// 
 
-#define PIN_B2_HALL_X A3			// PPC3, 17
-#define PIN_B2_HALL_Y A2			// PPC2, 16
-#define PIN_B2_WEIGHT A0			// PPC0, 14
-#define PIN_B2_TABLET_PWR A1		// 15
+#define PIN_B2_SERVY_ENABLE_PIN 6	// 
+#define PIN_B2_SERVZ_ENABLE_PIN 5	// 
 
+#define PIN_B2_FREE_PIN 4			// 
+#define PIN_B2_SELF_RESET 2			// 
+
+#define PIN_B2_HALL_X A2			// 
+#define PIN_B2_HALL_Y A0			// 
+#define PIN_B2_HALL_Z A1			// 
+#define PIN_B2_WEIGHT A3			// 
+#define PIN_B2_TABLET_PWR A4		// role pe³ni enable pin dla steppera X
 
 // Config
 #define ANALOGS  6
 #define ANALOG_TRIES  4
 #define B2_ACCELERX 9000
 #define B2_SPEEDX 2500
+#define B2_SERIAL0_BOUND 57600
+
+#define MAGIC_LEDS 20
 
 
 volatile boolean stepperIsReady = false;
@@ -68,21 +78,57 @@ byte state_id = 0xff;
 int16_t up_level = 0;
 int16_t down_level = 0;
 
+
+// HALL X VALUES 
+
+// neodym	max  654	
+// 			max  550	561		574
+//			zero 507	
+//			min  465	451		435
+// neodym 	min	 357
+
+#define HX_NEODYM_UP_BELOW  850
+// neodym	max  654
+#define HX_NEODYM_UP_START  620
+
+#define HX_FERRITE_UP_IS_BELOW  590
+// 			max  550	561		574
+#define HX_LOCAL_UP_MAX_OVER  540
+
+#define HX_NOISE_BELOW 531
+//			zero 507	
+#define HX_NOISE_OVER  500
+
+#define HX_LOCAL_DOWN_IS_BELOW  495
+//			min  465	451		435
+#define HX_FERRITE_DOWN_IS_BELOW  420
+
+#define HX_NEODYM_DOWN_START  380
+// neodym 	min	 357
+#define HX_NEODYM_DOWN_OVER  150
+
+
+// end HALL X VALUES 
+
+
+
+
+
 volatile int16_t hallx_state[HXSTATES][4] = {
 	//{CODE, MIN, MAX }
-	{HX_STATE_0,	HX_NEODYM_UP_BELOW,			1024,						0x0f},		// ERROR
-	{HX_STATE_1,	HX_NEODYM_UP_START,			HX_NEODYM_UP_BELOW-1,		0x08},		// to jest neodym max
-	{HX_STATE_2,	HX_FERRITE_UP_IS_BELOW,		HX_NEODYM_UP_START-1,		0x04},		// wznosi siê neodym
-	{HX_STATE_3,	HX_LOCAL_UP_MAX_OVER,		HX_FERRITE_UP_IS_BELOW-1,	0x02},		// czubek lokalnego max
-	{HX_STATE_4,	HX_NOISE_BELOW,				HX_LOCAL_UP_MAX_OVER-1,		0x01},		// wznosi siê
+	{HX_STATE_0,	HX_NEODYM_UP_BELOW,			1024,						0x0f},		// 11		ERROR
+	{HX_STATE_1,	HX_NEODYM_UP_START,			HX_NEODYM_UP_BELOW-1,		0x08},		// 22		to jest neodym max
+	{HX_STATE_2,	HX_FERRITE_UP_IS_BELOW,		HX_NEODYM_UP_START-1,		0x04},		// 33		wznosi siê neodym
+	{HX_STATE_3,	HX_LOCAL_UP_MAX_OVER,		HX_FERRITE_UP_IS_BELOW-1,	0x02},		// 44		czubek lokalnego max
+	{HX_STATE_4,	HX_NOISE_BELOW,				HX_LOCAL_UP_MAX_OVER-1,		0x01},		// 55		wznosi siê
 
-	{HX_STATE_5,	HX_NOISE_OVER,				HX_NOISE_BELOW-1,			0x00},		// neutralne
+	{HX_STATE_5,	HX_NOISE_OVER,				HX_NOISE_BELOW-1,			0x00},		// 66		neutralne
 
-	{HX_STATE_6,	HX_LOCAL_DOWN_IS_BELOW,		HX_NOISE_OVER-1,			0x10},		// opada
-	{HX_STATE_7,	HX_FERRITE_DOWN_IS_BELOW,	HX_LOCAL_DOWN_IS_BELOW-1,	0x20},		// czubek lokalnego min
-	{HX_STATE_8,	HX_NEODYM_DOWN_START,		HX_FERRITE_DOWN_IS_BELOW-1,	0x40},		// opada neodym
-	{HX_STATE_9,	HX_NEODYM_DOWN_OVER,		HX_NEODYM_DOWN_START-1,		0x80},		// to jest neodym min	
-	{HX_STATE_10,	0,							HX_NEODYM_DOWN_OVER-1,		0xf0}		// NOT CONNECTED	
+	{HX_STATE_6,	HX_LOCAL_DOWN_IS_BELOW,		HX_NOISE_OVER-1,			0x10},		// 77		opada
+	{HX_STATE_7,	HX_FERRITE_DOWN_IS_BELOW,	HX_LOCAL_DOWN_IS_BELOW-1,	0x20},		// 88		czubek lokalnego min
+	{HX_STATE_8,	HX_NEODYM_DOWN_START,		HX_FERRITE_DOWN_IS_BELOW-1,	0x40},		// 99		opada neodym
+	{HX_STATE_9,	HX_NEODYM_DOWN_OVER,		HX_NEODYM_DOWN_START-1,		0x80},		// 100		to jest neodym min	
+	{HX_STATE_10,	0,							HX_NEODYM_DOWN_OVER-1,		0xf0}		// 111		NOT CONNECTED	
 };
 
 #define HYSTERESIS  2
@@ -107,8 +153,8 @@ unsigned long int repeat = 0;
 
 AsyncDriver stepperX( PIN_B2_STEPPER_STEP, PIN_B2_STEPPER_DIR, PIN_B2_STEPPER_ENABLE );      // Step, DIR
 
-Adafruit_NeoPixel top_panels = Adafruit_NeoPixel(50, PIN_B2_LED_BOTTOM, NEO_GRB + NEO_KHZ800);
-Adafruit_NeoPixel bottom_panels = Adafruit_NeoPixel(1, PIN_B2_LED_TOP,  NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel top_panels = Adafruit_NeoPixel(MAGIC_LEDS, PIN_B2_LED_TOP, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel bottom_panels = Adafruit_NeoPixel(1, PIN_B2_LED_BOTTOM,  NEO_GRB + NEO_KHZ800);
 
 inline void  setupStepper(){
 	stepperX.disable_on_ready = true;
@@ -118,10 +164,14 @@ inline void  setupStepper(){
 	stepperX.setOnReady(stepperReady);
 	FlexiTimer2::set(1, 1.0/10000, timer);
 	FlexiTimer2::start();
+	Serial.println("-setupStepper ok");
 }
 
 void setup(){
-	pinMode(PIN_B2_TABLET_PWR, INPUT );	
+	pinMode(PIN_B2_TABLET_PWR, OUTPUT );
+	digitalWrite(PIN_B2_SERVOS_ENABLE_PIN, HIGH);
+
+	pinMode(PIN_B2_SELF_RESET, INPUT );	
 
 	pinMode(PIN_B2_SERVO_Y, INPUT );      // nie pozwalaj na przypadkowe machanie na starcie
 	pinMode(PIN_B2_SERVO_Z, INPUT );      // nie pozwalaj na przypadkowe machanie na starcie
@@ -130,8 +180,8 @@ void setup(){
 	pinMode(PIN_B2_HALL_Y, INPUT);
 	pinMode(PIN_B2_WEIGHT, INPUT);
 
-	//pinMode(PIN_CARRET_CURRENTY, INPUT);
-	//pinMode(PIN_CARRET_CURRENTZ, INPUT);
+	Serial.begin(B2_SERIAL0_BOUND);
+	Serial.println("-MSTART1");
 
 	init_leds();
 	serial0Buffer = "";
@@ -139,9 +189,11 @@ void setup(){
 	//init_analogs();
 	init_hallx();
 	//sendstats();
-
-	//pinMode(SS, OUTPUT );	// needed by SPI do enable ISP
 	setupStepper();
+	setupConfig();
+
+	Serial.println("-MSTART2");
+	Serial.flush();
 }
 
 void init_leds(){
@@ -150,6 +202,10 @@ void init_leds(){
 	bottom_panels.begin();
 	bottom_panels.show(); // Initialize all pixels to 'off'
 }
+
+void setupConfig(){
+}
+
 
 void sendVal( byte n ) {
   /*
@@ -165,8 +221,8 @@ void sendVal( byte n ) {
 }
 
 void loop() {
-	mil = millis();
-
+	//mil = millis();
+/*
   if( mil > when_next ){    // debug, mrygaj co 1 sek
 		if( bitRead(sending, 0 ) ){  sendVal(0);}
 		if( bitRead(sending, 1 ) ){  sendVal(1);}
@@ -181,13 +237,12 @@ void loop() {
 			Serial.println();
 		}
 		when_next = mil + time;
-	}
+	}*/
 	readHall();
 	update_servo( INNER_SERVOY );
 	update_servo( INNER_SERVOZ );
 	if(stepperIsReady){
-		long int pos = stepperX.currentPosition();
-		sendStepperReady(pos);
+		sendStepperReady();
 		stepperIsReady = false;
 	}
 //	Serial.println("tutaj8");
@@ -195,14 +250,36 @@ void loop() {
 
 void stepperReady( long int pos ){		// in interrupt
 	stepperIsReady = true;
-	//sendStepperReady(pos);
 }
 
 //uint16_t divisor = 500;
+void sendStepperReady(){
+	long int pos = stepperX.currentPosition();
+	bytepos.i= pos;
+	byte ttt[8] = {
+		METHOD_I2C_SLAVEMSG,
+		1, 
+		RETURN_DRIVER_READY, 
+		DRIVER_X, 
+		bytepos.bytes[3],				// bits 0-7
+		bytepos.bytes[2],				// bits 8-15
+		bytepos.bytes[1],				// bits 16-23
+		bytepos.bytes[0]				// bits 24-32
+	};
+	sendln(ttt,8);
 
-void sendStepperReady( long int pos ){		// in interrupt
-	Serial.print("RRx");
-	Serial.println(String(pos));
+	Serial.println();
+	Serial.flush();
+	//ttt[2] = RETURN_DRIVER_READY_REPEAT;
+	//send2android(ttt,8);
+	//Serial.println();
+	//Serial.flush();
+	Serial.println("Rx" + String(pos));
+	Serial.flush();
+
+	//long int pos = stepperX.currentPosition();
+	//Serial.print("RRx");
+	//Serial.println(String(pos));
 }
 
 int16_t readValue() {           // synchroniczne
@@ -306,7 +383,7 @@ void parseInput( String input ){
 	byte command	= input.charAt(0);
 	byte il			= input.length();
 
-	if( command == METHOD_MSET_TOP_COLOR && command == METHOD_MSET_BOTTOM_COLOR ) {    // CAaColor		// set TOP /BOTTOM color for Aa to Rr Gg Bb
+	if( command == 'C' && command == 'c' ) {    // CAaColor		// set TOP /BOTTOM color for Aa to Rr Gg Bb
 		// C|03|4294967295
 		String digits    	= input.substring( 1 );
 		char charBuf[15];
@@ -314,7 +391,34 @@ void parseInput( String input ){
 		uint8_t address	= 0;
 		unsigned long int color	= 0;
 		sscanf(charBuf,"%2hhx%lx", &address, &color );
+
+		Serial.println("set color");
+		Serial.println(String(address));
+		Serial.println(String(color));
+		Serial.flush();
 		setColor(address, color);
+
+	}else if( command ==  'Q' ) {    // QCOLOR, change all leds, color in hex
+		String digits    	= input.substring( 1 );
+		char charBuf[12];
+		digits.toCharArray(charBuf,12);
+		unsigned long int color	= 0;
+		sscanf(charBuf,"%lx", &color );
+		bottom_panels.setPixelColor(0, color );
+		bottom_panels.show();
+		for(byte i=0;i<MAGIC_LEDS;i++){
+			top_panels.setPixelColor(i, color );
+		}
+		top_panels.show();
+
+	}else if(command == 'l') {    // lnn,color i.e:   l01FFFFFF
+		String digits     = input.substring( 1 );
+		char charBuf[10];
+		digits.toCharArray(charBuf,10);
+		uint8_t num    = 0;
+		unsigned long int color	= 0;
+		sscanf(charBuf,"%hhi,%lx", &num, &color );
+		setColor(num, color);
 
 	}else if(command == METHOD_MSET_LED || command == METHOD_M_ONECOLOR ) {    // L12,ff,211 or  B12,ff,211
 		String digits     = input.substring( 1 );
@@ -345,20 +449,23 @@ void parseInput( String input ){
 		val = val * 100;
 		stepperX.setAcceleration(val);
 		DEBUGLN("-setAcceleration: " + String(val) );
-	}else if( input.equals("EX") ) {    // enable
+	}else if( input.equals("EX") ) {    // enable motor
 		stepperX.enableOutputs();
 
-	}else if( input.equals("EY") ) {    // enable
-		byte index = 0;
+	}else if( input.equals("EY") ) {    // enable motor
+		digitalWrite(PIN_B2_SERVOS_ENABLE_PIN, LOW);
+		byte index = INNER_SERVOY;
 		servo_lib[index].attach(servos[index].pin);
 		servos[index].enabled= true;
 
-	}else if( input.equals("EZ") ) {    // enable
-		byte index = 1;
+	}else if( input.equals("EZ") ) {    // enable motor
+		digitalWrite(PIN_B2_SERVOS_ENABLE_PIN, LOW);
+		byte index = INNER_SERVOZ;
 		servo_lib[index].attach(servos[index].pin);
 		servos[index].enabled= true;
+		
 
-	}else if( command == 'D' ) {    // disable
+	}else if( command == 'D' ) {    // disable motor
 		byte command2	= input.charAt(1);
 		if( command2 == 'X' ){
 			stepperX.disableOutputs();
@@ -372,6 +479,7 @@ void parseInput( String input ){
 			stepperX.fastWrite(servos[index].pin, HIGH);		// set to 1
 			//    pinMode(servos[index].pin, INPUT);
 			servos[index].pos_changed = false;
+			digitalWrite(PIN_B2_SERVOS_ENABLE_PIN, HIGH);
 		}
 	}else if(command == 'A' ) {    // A
 		defaultResult = false;
@@ -395,28 +503,32 @@ void parseInput( String input ){
 				(val1 & 0xFF),
 				(val1 >>8),
 			};
-			send(ttt,4); 
-		//}else if( source ==  INNER_CURRENTY ){
-		//}else if( source ==  INNER_CURRENTZ ){
-		//}else if( source ==  INNER_MB_TEMP ){
-		//}else if( source ==  INNER_TABLET ){
+			sendln(ttt,4);
+		}else if( source ==  INNER_POS_Z ){
+			int16_t val1 = analogRead( PIN_B2_HALL_Z );
+			byte ttt[4] = {
+				METHOD_IMPORTANT_ANALOG, 
+				INNER_POS_Z,
+				(val1 & 0xFF),
+				(val1 >>8),
+			};
+			sendln(ttt,4);
+		}else{
+			send_error(input);
 		}
 	//}else if( command == METHOD_GETVALUE ){
 	}else if( input.equals( "WR") ){      // wait for return - tylko zwrÃ³c zwrotke
 
 	}else if( command == 'M' && il == 5 ){		// save 1 char to eeprom in 2 cells. address in HEX!!! ie.: M0FF3 = write F3 into addresses: 0F*2 and 0F*2+1
-		char charBuf[5];
-		input.toCharArray(charBuf,5);
+		char charBuf[6];
+		input.toCharArray(charBuf,6);
 		unsigned char ad    = 0;
 		unsigned char value = 0;
 		sscanf(charBuf,"M%2hhx%2hhx", &ad, &value );
-
 		byte ad1	= ad*2;
 		byte ad2	= ad*2+1;
-
 		while (!eeprom_is_ready());
 		eeprom_write_byte( (uint8_t*)ad1, value);
-
 		while (!eeprom_is_ready());
 		eeprom_write_byte( (uint8_t*)ad2, value);
 
@@ -434,17 +546,29 @@ void parseInput( String input ){
 					(val1 & 0xFF),
 					(val1 >>8),
 				};
-				send(ttt,4);
+				sendln(ttt,4);
 			}else{
 				send_error(input);
 			}
 
 		}else if(command == 'X' ) {    // X10,10              // TARGET,MAXSPEED
 			paserDeriver(DRIVER_X, input);
-		}else if( command == 'Y' ) {    // Y10,10             // TARGET,ACCELERATION
+		}else if( command == 'Y' ) {    // Y10,10             // TARGET,SPEED
 			paserDeriver(DRIVER_Y,input);
-		}else if(command == 'Z') {    // Z10,10               // TARGET,ACCELERATION
+		}else if(command == 'Z') {    // Z10,10               // TARGET,SPEED
 			paserDeriver(DRIVER_Z,input);
+
+		}else if(command == 'K') {    // K1900               // move Z with max speed TARGET,SPEED(int,decimal)
+			unsigned int pos		= decodeInt(input, 2);
+			byte index				= INNER_SERVOZ;
+			servos[index].last_pos	= pos;
+			servos[index].target_pos= pos;
+			servo_lib[index].attach(servos[index].pin);
+			servo_lib[index].writeMicroseconds(servos[index].last_pos);
+			delay(10);
+			send_servo(false, localToGlobal(index), pos );
+
+			
 		}else if( input.equals( "PING") ){
 			Serial.println("PONG");	
 		}else if( command == METHOD_GET_TEMP ){  
@@ -461,13 +585,14 @@ void parseInput( String input ){
 			Serial.flush();
 			
 		}else if(command == 'y' ) {    // pobierz pozycje
-			byte ttt[4] = {METHOD_I2C_SLAVEMSG, METHOD_GET_Y_POS, (servos[INNER_SERVOY].last_pos & 0xFF),(servos[INNER_SERVOY].last_pos >>8) };
-			send(ttt,4);
+			byte ttt[5] = {METHOD_I2C_SLAVEMSG,  1, METHOD_GET_Y_POS, (servos[INNER_SERVOY].last_pos & 0xFF),(servos[INNER_SERVOY].last_pos >>8) };
+			sendln(ttt,5);
 		
 		}else if( command == 'z' ) {    // pobierz pozycje
-			byte ttt[4] = {METHOD_I2C_SLAVEMSG, METHOD_GET_Z_POS, (servos[INNER_SERVOZ].last_pos & 0xFF),(servos[INNER_SERVOZ].last_pos >>8) };
-			send(ttt,4);
-		}else if( command == 'f') {		// if enable pin is connected to vcc?
+			byte ttt[5] = {METHOD_I2C_SLAVEMSG,  1, METHOD_GET_Z_POS, (servos[INNER_SERVOZ].last_pos & 0xFF),(servos[INNER_SERVOZ].last_pos >>8) };
+			sendln(ttt,5);
+/*
+		}else if( command == 'f') {		// is enable pin is connected to vcc?
 			long int dis = stepperX.distanceToGo();
 			if(dis == 0 ){
 				pinMode(PIN_B2_STEPPER_ENABLE, INPUT );
@@ -481,18 +606,33 @@ void parseInput( String input ){
 			}else{
 				Serial.println("f error");	
 			}
-
+*/
 		}else if( command == 'm' && il == 3 ){		// read 2 chars from eeprom. ie.: m15, address in DEC!!!
-			String ss 	= input.substring( 1 );
-			byte ad		= ss.toInt();
+			char charBuf[5];
+			unsigned char ad    = 0;
+			input.toCharArray(charBuf,5);
+			sscanf(charBuf,"m%2hhx", &ad );
 			byte ad1	= ad*2;
 			byte ad2	= ad*2+1;
 			byte val1	= eeprom_read_byte((unsigned char *) ad1);
 			byte val2	= eeprom_read_byte((unsigned char *) ad2);
-			Serial.print("Re");
+			defaultResult = false;
+			Serial.print("Rm");
+			Serial.print(String(ad));
+			Serial.print(',');
 			Serial.print(String(val1));
 			Serial.print(',');
 			Serial.println(String(val2));
+
+		}else if( command == 'V' ){
+			Serial.print("RV");
+			Serial.println(String(MAINBOARD_VERSION));
+			Serial.flush();
+		}else if( input.equals( "RESET") ){
+			Serial.println("RR" + input );
+			delay(1000);
+			pinMode(PIN_B2_SELF_RESET, OUTPUT );	
+			digitalWrite(PIN_B2_SELF_RESET, LOW );	
 		}else{
 			Serial.println("NO_CMD [" + input +"]");
 		}
@@ -501,6 +641,7 @@ void parseInput( String input ){
 		Serial.println("RR" + input );
 		Serial.flush();
 	}
+/*
 	// oscyloskop
 	String ss 		= input.substring( 1 );
 	byte value		= ss.toInt();
@@ -526,7 +667,7 @@ void parseInput( String input ){
     sendstats();
   }else if( command == 'c'){
     sendstats();
-  }
+  }*/
 }
 
 void setColor(byte num, unsigned long int color){
@@ -534,7 +675,7 @@ void setColor(byte num, unsigned long int color){
 		bottom_panels.setPixelColor(num, color );
 		bottom_panels.show();
 	}else{	//	<= 10
-		top_panels.setPixelColor(num, color );
+		top_panels.setPixelColor(num - 10, color );		// 10 - 20 (0-19)
 		top_panels.show();
 	}
 }
@@ -560,14 +701,12 @@ void paserDeriver( byte driver, String input2 ){   // odczytaj komende silnika
 	//	digits.toCharArray(charBuf, 3);
 	//	sscanf(charBuf,"%i", &target );
 	}else{
-		input           = input.substring(comma + 1 );    // wytnij od tego znaku
 		String current  = input.substring(0, comma);
+		input           = input.substring(comma + 1 );    // wytnij od tego znaku
 		target          = decodeInt( current, 0 );
-	//	Serial.println("-current: " + current );
-	//	Serial.println("-input2: " + input );
 		if( input.length() > 0 ){
 			maxspeed       = input.toInt();
-	//		DEBUGLN("-setMaxSpeed: " + String(maxspeed) );
+			DEBUGLN("-setMaxSpeed: " + String(maxspeed) );
 		}
 	}
 	if( driver == DRIVER_X){
@@ -578,16 +717,12 @@ void paserDeriver( byte driver, String input2 ){   // odczytaj komende silnika
 	}else if( maxspeed > 0 && driver == DRIVER_Y ){            // stepper Y
 		// on wire: low_byte, high_byte, speed
 		// in memory: 1=low_byte, 2=high_byte, 3=speed
-		DEBUG("SERVO Y speed ");
-		DEBUG(String(maxspeed));
-		DEBUG(" target:");
-		DEBUGLN(String(target));
 		run_to(INNER_SERVOY,maxspeed,target);
 	}else if( maxspeed > 0 && driver == DRIVER_Z ){            // stepper Z
 		run_to(INNER_SERVOZ,maxspeed,target);
 	}
 }
-
+/*
 void sendstats(){ 
     Serial.print("state ");
     if( bitRead(sending, 0 ) ){  Serial.print("0");   }
@@ -604,7 +739,7 @@ void sendstats(){
     Serial.print("s" + String(sum ));
     Serial.print("r" + String(repeat) );
 }
-
+*/
 void serialEvent(){				    // Runs after every LOOP (means don't run if loop hangs)
 	while (Serial.available()) {    // odczytuj gdy istnieja dane i poprzednie zostaly odczytane
 		char inChar = (char)Serial.read();
@@ -616,7 +751,7 @@ void serialEvent(){				    // Runs after every LOOP (means don't run if loop han
 	}
 }
 
-unsigned int decodeInt(String input, byte odetnij ){
+long unsigned int decodeInt(String input, byte odetnij ){
   if(odetnij>0){
     input = input.substring(odetnij);    // obetnij znaki z przodu
   }
@@ -625,6 +760,7 @@ unsigned int decodeInt(String input, byte odetnij ){
 
 void reload_servo( byte index ){      // in interrupt
 	volatile ServoChannel &ser = servos[index];
+
 	if( servo_lib[index].attached() && ser.last_pos != ser.target_pos ){
 		long int this_distance =0;
 		long int delta = 0;
@@ -664,31 +800,41 @@ void reload_servo( byte index ){      // in interrupt
 			ser.last_pos = ser.target_pos;
 		}
 		ser.pos_changed = true;
-    /*
-    if(ser.pos_changed){
-      DEBUG(String(delta));
-      DEBUG(" ");
-      DEBUG(String(ser.delta_pos));
-      DEBUG(" ");
-      DEBUG(String(ser.target_pos));
-      DEBUG(" ");
-      DEBUGLN(String(ser.last_pos));
+/*
+		if(ser.pos_changed){
+		  Serial.print(String(delta));
+		  Serial.print(" ");
+		  Serial.print(String(ser.delta_pos));
+		  Serial.print(" ");
+		  Serial.print(String(ser.target_pos));
+		  Serial.print(" ");
+		  Serial.println(String(ser.last_pos));
 		}*/
 	}
 }
 
+volatile uint16_t prescaler = 0;
+volatile uint16_t prescaler_max = 200;
 void timer(){
 	timer_counter++;
 	//timer_now = true;
 	stepperX.run();
-	ticks++;
-	//DW(PIN_PANEL_LED1_NUM,  !digitalRead(PIN_PANEL_LED1_NUM));    // Toggle led. Read from register (not from pin)
-	reload_servo(INNER_SERVOY);
-	reload_servo(INNER_SERVOZ);
+//	ticks++;
+	if((--prescaler) == 0 ){
+		reload_servo(INNER_SERVOY);
+		reload_servo(INNER_SERVOZ);
+		prescaler = prescaler_max;
+	}
 }
 
 void run_to(byte index, byte sspeed, uint16_t target){
-	if( servos[index].target_pos  == target && servos[index].last_pos == target ){      // the same pos
+	//DEBUG("-SERVO speed ");
+	//DEBUG(String(sspeed));
+	//DEBUG(" target:");
+	//DEBUGLN(String(target));
+
+	if( servos[index].target_pos  == target &&
+			servos[index].last_pos == target ){      // the same pos
 		servo_lib[index].attach(servos[index].pin);
 		servo_lib[index].writeMicroseconds(servos[index].last_pos);
 		send_servo(false, localToGlobal(index), target );
@@ -712,34 +858,37 @@ void run_to(byte index, byte sspeed, uint16_t target){
 
 void send_servo( boolean error, byte servo, uint16_t pos ){
 	if(error){
-		byte ttt[5] = {METHOD_I2C_SLAVEMSG,  RETURN_DRIVER_READY, servo, (pos & 0xFF), (pos >>8) };
-		send(ttt,5);
-		byte ttt2[3] = {METHOD_EXEC_ERROR,  RETURN_DRIVER_ERROR, servo};
-		send(ttt2,3);
+		byte ttt[6] = {METHOD_I2C_SLAVEMSG, 1, RETURN_DRIVER_READY, servo, (pos & 0xFF), (pos >>8) };
+		sendln(ttt,6);
+
+		byte ttt2[4] = {METHOD_EXEC_ERROR, 1, RETURN_DRIVER_ERROR, servo};
+		sendln(ttt2,4);
 	}else{
-		byte ttt[5] = {METHOD_I2C_SLAVEMSG,  RETURN_DRIVER_READY, servo, (pos & 0xFF), (pos >>8) };
-		send(ttt,5);
+		byte ttt[6] = {METHOD_I2C_SLAVEMSG, 1, RETURN_DRIVER_READY, servo, (pos & 0xFF), (pos >>8) };
+		sendln(ttt,6);
+
 		if(servo == DRIVER_Y ){
 			servos[INNER_SERVOY].moving= DRIVER_DIR_STOP;
 		}else if(servo == DRIVER_Z ){
 			servos[INNER_SERVOZ].moving= DRIVER_DIR_STOP;
 		}
 		ttt[2] = RETURN_DRIVER_READY_REPEAT;
-		send(ttt,6);
+		sendln(ttt,6);
 	}
 }
 
 void send_hx_pos( byte stateId, int16_t value ) {
 	//Serial.println("new state: " + String(stateId) + " @ " + String(value) );
+	/*
 	byte i = COUNT_CARRET_ONBOARD_LED;
 	while(i--){
 		if( bitRead( hallx_state[stateId][3], i) ){
-			top_panels.setPixelColor(i, 100);
+	//		top_panels.setPixelColor(i, 100);
 		}else{
-			top_panels.setPixelColor(i, 0 );
+	//		top_panels.setPixelColor(i, 0 );
 		}
-		top_panels.show();
-	}
+	//	top_panels.show();
+	}*/
 	byte state_name	= hallx_state[stateId][0];
 	byte dir = 0;
 	boolean stop_moving = false;
@@ -761,6 +910,7 @@ void send_hx_pos( byte stateId, int16_t value ) {
 		stepperX.stopNow();
 		dir = 0;
 	}
+	bytepos.i		= stepperX.currentPosition();
 	byte ttt[10] = {
 		METHOD_IMPORTANT_ANALOG, 	// 0
 		INNER_HALL_X, 		// 1	
@@ -773,7 +923,11 @@ void send_hx_pos( byte stateId, int16_t value ) {
 		(value & 0xFF),
 		(value >>8),
 	};	
-	send(ttt,10);
+	Serial.print("-A0,");
+	Serial.println(String(value));
+	
+	
+	sendln(ttt,10);
 }
 void send_y_pos( byte stateId, int16_t value){
 	byte state_name	= hally_state[stateId][0];
@@ -790,16 +944,18 @@ void send_y_pos( byte stateId, int16_t value){
 		(value & 0xFF),
 		(value >>8),
 	}; 
-	send(ttt,10);
+	sendln(ttt,10);
 }
 
-void send( volatile byte buffer[], byte length ){
+void sendln( volatile byte buffer[], byte length ){
 	//Serial.write(buf, len);
 	Serial.print(buffer[0]);
 	for (int i=1; i<length; i++) { 
 		Serial.print(",");	
 		Serial.print(buffer[i]);
 	}
+	Serial.println();
+	Serial.flush();
 }
 
 byte localToGlobal( byte ind ){      // get global device index used in android

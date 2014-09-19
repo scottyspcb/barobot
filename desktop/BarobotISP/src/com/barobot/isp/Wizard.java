@@ -38,15 +38,12 @@ public class Wizard {
 	}
 
 	public void mrygaj_po_butelkach(Hardware hw, int time ) {
-		
-		
-		
 		hw.getQueue().addWaitThread( Main.main );
 		Queue q = hw.getQueue();
 		I2C_Device[] list = hw.barobot.i2c.getUpanels();
 		if(list.length == 0 ){
+			System.out.println("Pusto, skanuje" );
 			hw.barobot.scann_leds(q);
-			System.out.println("Pusto" );
 			return;
 		}
 

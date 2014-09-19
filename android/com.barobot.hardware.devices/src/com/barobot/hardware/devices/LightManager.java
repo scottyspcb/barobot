@@ -67,15 +67,6 @@ public class LightManager {
 		});
 	}
 
-	public void zapalPrzod(final BarobotConnector barobot, final Queue q) {
-		Upanel[] list = barobot.i2c.getUpanels();
-		for(int i =list.length-1; i>=0;i--){
-			Upanel uu = list[i];
-			if (uu.getRow() == Upanel.FRONT ){
-				uu.addLed( q, "ff", 200 );
-			}
-		}
-	}
 
 	public void strobo(final BarobotConnector barobot, final Queue q, int repeat) {
 		I2C_Device[] list = barobot.i2c.getDevicesWithLeds();

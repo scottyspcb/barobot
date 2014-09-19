@@ -45,7 +45,7 @@ public class Main implements onReadyListener{
 	//	loadProps();
 		//String[] comlist = list();
 		Wizard w	= new Wizard();
-		Hardware hw = new Hardware("COM5");
+		Hardware hw = new Hardware("COM4");
 
 		IspSettings.safeMode	= false;
 		IspSettings.verbose		= 2;
@@ -59,9 +59,14 @@ public class Main implements onReadyListener{
 		Queue q					= hw.getQueue();
 		LightManager lm			= new LightManager();
 		hw.connectIfDisconnected();
-		
+		mr.createContstans();
 	//	hw.barobot.main_queue.add("X2000", false);
-		//hw.barobot.kalibrcja();
+		
+	//	hw.barobot.kalibrcja(hw.getQueue());
+		
+		hw.barobot.readRobotId( q );
+		
+
 	//	hw.barobot.scann_leds();
 /*
 		for( int i =0; i<255;i++){
@@ -84,7 +89,6 @@ public class Main implements onReadyListener{
 		
 		/*
 		
-		mr.createContstans();
 		uc.prepareUpanels( hw );
 		uc.prepareUpanelNextTo( hw, 18 );
 		w.fast_close_test( hw );
@@ -108,18 +112,20 @@ public class Main implements onReadyListener{
 		//w.test_proc( hw );
 		
 	//	w.swing( hw, 3, 1000, 5000 );
-		w.mrygaj_po_butelkach( hw, 100 );
+		//w.mrygaj_po_butelkach( hw, 100 );
 	//	w.mrygaj_grb( hw, 30 );
 	//	w.illumination1( hw );
 	//	lm.flaga( hw.barobot, q, 6, 100 );
 	//	lm.mrygajRGB( hw.barobot, q, 60, 50 );
-		lm.nazmiane( hw.barobot, q, 6, 100 );
+		
+	//	lm.nazmiane( hw.barobot, q, 6, 100 );
+		/*
 		lm.loading(hw.barobot, q, 6);
 		lm.linijka( hw.barobot, q, 6, 100 );
 		lm.tecza( hw.barobot, q, 6 );
 		lm.strobo( hw.barobot, q, 109 );
 		lm.zapal(hw.barobot, q);
-
+*/
 		/*
 		q.addWaitThread( Main.main );
 		q.addWaitThread( Main.main );
@@ -154,6 +160,7 @@ public class Main implements onReadyListener{
 			hw.closeOnReady();
 			q.addWaitThread( Main.main );
 			System.out.println("Main koniec");
+			q.destroy();
 		}else{
 			Main.wait(1000);
 			closeIfReady(hw, q);

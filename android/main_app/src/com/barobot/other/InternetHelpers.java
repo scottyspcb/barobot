@@ -110,7 +110,7 @@ public class InternetHelpers {
 	public static boolean copy(String src1, String dst1) throws IOException {
 		File src = new File(src1);
 		File dst = new File(dst1);
-		
+
 	    InputStream in = new FileInputStream(src);
 	    OutputStream out = new FileOutputStream(dst);
 
@@ -122,7 +122,6 @@ public class InternetHelpers {
 	    }
 	    in.close();
 	    out.close();
-	 
 	    return true;
 	}
 	public static void doDownload(final String urlLink, final String fileName) {
@@ -182,6 +181,4 @@ public class InternetHelpers {
         };
         dx.start();      
     }
-	
-	
 }

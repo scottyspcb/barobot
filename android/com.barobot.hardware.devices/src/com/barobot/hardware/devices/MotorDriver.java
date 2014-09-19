@@ -27,7 +27,7 @@ public class MotorDriver {
 	}	
 	public void setM( int margin1 ){
 		m1 = margin1;
-		Initiator.logger.w("set MARGIN X", "" + m1);
+	//	Initiator.logger.w("set MARGIN X", "" + m1);
 	}
 	public int getSPos(){
 		return software_pos;
@@ -40,7 +40,7 @@ public class MotorDriver {
 		hardware_pos = software_pos + m1;
 		state.set( "POSX", software_pos );
 		int lx	=  state.getInt("LENGTHX", 600 );
-		if( software_pos > lx){		// Pozycja wieksza niz d³ugosc? Zwieksz d³ugosc
+		if( software_pos > lx){		// Pozycja wieksza niz dï¿½ugosc? Zwieksz dï¿½ugosc
 			state.set( "LENGTHX", software_pos);
 		}
 	//	Initiator.logger.w("MotorDriver setSPos1", "" + software_pos + ", setHPos1: "+hardware_pos );
@@ -50,7 +50,7 @@ public class MotorDriver {
 		software_pos = hardware_pos - m1;
 		state.set( "POSX", software_pos );
 		int lx	=  state.getInt("LENGTHX", 600 );
-		if( software_pos > lx){		// Pozycja wieksza niz d³ugosc? Zwieksz d³ugosc
+		if( software_pos > lx){		// Pozycja wieksza niz dï¿½ugosc? Zwieksz dï¿½ugosc
 			state.set( "LENGTHX", software_pos);
 		}
 	//	Initiator.logger.w("MotorDriver setSPos2", "" + software_pos+ ", setHPos2: "+hardware_pos );

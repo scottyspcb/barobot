@@ -161,7 +161,7 @@ public class MyRetReader implements RetReader {
 		if(wait_for2!= null && wait_for2.command != null && wait_for2.command != "" ){
 			command = wait_for2.command;
 		}
-	//	Log.w("MyRetReader.isRetOf", fromArduino+ " for "+ command );
+	//	Initiator.logger.w("MyRetReader.isRetOf", fromArduino+ " for "+ command );
 
 		if(wait_for2!= null && wait_for2.command != null && wait_for2.command != "" ){
 			if( fromArduino.startsWith( "R" + wait_for2.command )){
@@ -172,6 +172,9 @@ public class MyRetReader implements RetReader {
 			}
 			if( fromArduino.startsWith("RX") && wait_for2.command.startsWith("x") ){
 				return true;
+			}
+			if( fromArduino.equals( "NO_CMD ["+ wait_for2.command +"]")){
+				return true;	// no command = unlock and log
 			}
 		}
 	
@@ -236,7 +239,7 @@ public class MyRetReader implements RetReader {
 				if(command.equals(retLike)){		// DX, DY, DZ
 					return true;
 				}else{
-					Initiator.logger.e("MyRetReader.decoded.wrong", command + ", expected:" + retLike+ " because of " + decoded );
+					Initiator.logger.e("MyRetReader.decoded.wrong1", "[" + command + "], expected output:" + retLike+ " because of " + decoded );
 					return false;
 				}
 				
@@ -259,7 +262,7 @@ public class MyRetReader implements RetReader {
 				if(command.startsWith("E")){		// EX, EY, EZ
 					return true;
 				}else{
-					Initiator.logger.e("MyRetReader.decoded.wrong", command + ", expected output:" + "E..." + " fromArduino:'"+ fromArduino+"'" );
+					Initiator.logger.e("MyRetReader.decoded.wrong3", command + ", expected output:" + "E..." + " fromArduino:'"+ fromArduino+"'" );
 					return false;
 				}
 			}else if( parts[2] == Methods.RETURN_DRIVER_READY || parts[2] == Methods.RETURN_DRIVER_READY_REPEAT){
@@ -279,7 +282,7 @@ public class MyRetReader implements RetReader {
 						Initiator.logger.i("MyRetReader.decoded OK", decoded);
 						return true;
 					}else{
-						Initiator.logger.e("MyRetReader.decoded.wrong", command + ", expected output:" + "X..." + " because of " + decoded + " fromArduino:'"+ fromArduino+"'" );
+						Initiator.logger.e("MyRetReader.decoded.wrong5", command + ", expected output:" + "X..." + " because of " + decoded + " fromArduino:'"+ fromArduino+"'" );
 					}
 				}else if( parts[3] == Methods.DRIVER_Y){
 					int pos = parts[4] + (parts[5] << 8);
@@ -290,7 +293,7 @@ public class MyRetReader implements RetReader {
 						return true;
 					}else{
 						
-						Initiator.logger.e("MyRetReader.decoded.wrong", command + ", expected output:" + "Y..." + " because of " + decoded + " fromArduino:'"+ fromArduino+"'" );
+						Initiator.logger.e("MyRetReader.decoded.wrong7", command + ", expected output:" + "Y..." + " because of " + decoded + " fromArduino:'"+ fromArduino+"'" );
 					}
 				}else if( parts[3] == Methods.DRIVER_Z){
 					int pos = parts[4] + (parts[5] << 8);
@@ -300,7 +303,7 @@ public class MyRetReader implements RetReader {
 						Initiator.logger.i("MyRetReader.decoded OK", decoded);
 						return true;
 					}else{
-						Initiator.logger.e("MyRetReader.decoded.wrong", command + ", expected output:" + "Z..." + " because of " + decoded + " fromArduino:'"+ fromArduino+"'" );
+						Initiator.logger.e("MyRetReader.decoded.wrong9", command + ", expected output:" + "Z..." + " because of " + decoded + " fromArduino:'"+ fromArduino+"'" );
 					}
 				}else{
 					decoded += "/???";
@@ -309,12 +312,13 @@ public class MyRetReader implements RetReader {
 				}
 
 			}else{
-				Initiator.logger.e("MyRetReader", "no METHOD_I2C_SLAVEMSG => false(fromArduino: '"+ fromArduino +"')");
+				Initiator.logger.e("MyRetReader", "unknown METHOD_I2C_SLAVEMSG => false(fromArduino: '"+ fromArduino +"')");
 				return false;
 			}
 			//Initiator.logger.i("MyRetReader.retLike", retLike);
 			Initiator.logger.i("MyRetReader.decoded", decoded);
 			return false;
+
 		}else if(fromArduino.startsWith(""+Methods.RETURN_PIN_VALUE) ){
 			return false;
 		}else if(fromArduino.startsWith(""+Methods.METHOD_CHECK_NEXT) ){
@@ -338,10 +342,34 @@ public class MyRetReader implements RetReader {
 				decoded += "/GETZPOS";
 				String fromArduino3 = fromArduino2.replace(Constant.GETZPOS, "");
 				state.set( "POSZ",fromArduino3);
+
+		//	}else if(fromArduino2.startsWith( "M" ) ){				// save in eeprom memory
+			}else if(fromArduino2.startsWith( "m" ) ){				// eeprom memory
+				decoded += "/EEPROM";
+				String fromArduino3 = fromArduino2.substring(1);
+				String[] parts		= fromArduino3.split(",");
+				if(parts.length == 3){
+					int address = Decoder.toInt(parts[0]);
+					int value1 = Decoder.toInt(parts[1]);
+					int value2 = Decoder.toInt(parts[2]);
+					decoded += "/"+address+"/"+value1;
+					if(value1 != value2 ){
+						Initiator.logger.e("MyRetReader.decoded.fatal", "memory error: "+ address + ", value1 "+ value1+ ", value2 "+ value2 );
+					}
+					from_eeprom_memory( address, value1 );
+					String expected = "m"+ Integer.toHexString(address);
+					if( command.equals(expected) ){
+						return true;
+					}else{
+						Initiator.logger.e("MyRetReader.decoded.wrong8", "[" + command + "], decoded: " + decoded + " fromArduino:"+ fromArduino );
+						return false;
+					}
+				}else{
+					Initiator.logger.e("MyRetReader.decoded.wrong8", "[" + command + "], decoded: " + decoded + " fromArduino:"+ fromArduino );
+				}
 			}else{
 				decoded += "/????";
 			}
-
 		}else if( fromArduino.startsWith( "" + Methods.METHOD_IMPORTANT_ANALOG) ){		// msg od slave		
 			Initiator.logger.i("MyRetReader.decoded checkInput", decoded);
 			if( command.startsWith("A")){
@@ -349,12 +377,11 @@ public class MyRetReader implements RetReader {
 			}else{
 				return false;
 			}
-
 		}else if( fromArduino.startsWith( "" + Methods.RETURN_I2C_ERROR) ){
 			decoded += "/RETURN_I2C_ERROR";
 			// short ttt[4] = {RETURN_I2C_ERROR,my_address, deviceAddress,length, command }
 			// Urządzenie 'my_address' wysyłało do 'deviceAddress' bajtów length
-			barobot.main_queue.unlock();
+			//barobot.main_queue.unlock();
 			// todo, obsłużyc to lepiej
 
 		}else if( fromArduino.startsWith( "" + Methods.METHOD_EXEC_ERROR) ){		// msg od slave		
@@ -379,6 +406,13 @@ public class MyRetReader implements RetReader {
 			Initiator.logger.i("MyRetReader.decoded", decoded);
 		}
 		return false;
+	}
+
+	private void from_eeprom_memory(int address, int value ) {
+		if( address == Methods.EEPROM_ROBOT_ID ){
+			Initiator.logger.i("MyRetReader.from_eeprom_memory", "EEPROM_ROBOT_ID: "+ value );
+			this.barobot.changeRobotId( value );
+		}
 	}
 
 	private int state_num = 0;
@@ -431,7 +465,7 @@ public class MyRetReader implements RetReader {
 			int dir			= parts[3];
 		//	int hpos		= parts[7] + (parts[6] << 8) + (parts[5] << 16 + (parts[4] << 24));
 			short hpos		= (short) (parts[6] << 8);
-			hpos += (short)parts[7];
+			hpos			+= (short)parts[7];
 			int value		= parts[8] + (parts[9] << 8);
 			int spos		= barobot.driver_x.hard2soft(hpos);
 			decoded += "/@s:" + spos;
@@ -578,20 +612,17 @@ public class MyRetReader implements RetReader {
 		int num		= Constant.magnet_order[magnetnum];
 		int ypos	= 0;
 		int row		= Constant.bottle_row[ num ];
-
 		if( row == Constant.BOTTLE_IS_BACK ){
 			ypos = barobot.state.getInt("SERVOY_BACK_POS", 0);
-
 		}else if(row ==Constant.BOTTLE_IS_FRONT){
 			ypos = barobot.state.getInt("SERVOY_FRONT_POS", 0);
 		}else{
 			Initiator.logger.e("bottle "+ num, "error" );
 		}
-
 		if(row == Constant.BOTTLE_IS_BACK){
-			Initiator.logger.i("bottle "+ num +" BACK", "frontNum: "+ frontNum+" BackNum: "+ BackNum+ "from " +fromHPos + " to " + toHPos );
+	//		Initiator.logger.i("bottle "+ num +" BACK", "frontNum: "+ frontNum+" BackNum: "+ BackNum+ "from " +fromHPos + " to " + toHPos );
 		}else{
-			Initiator.logger.i("bottle "+ num +" FRONT", "frontNum: "+ frontNum+" BackNum: "+ BackNum+ "from " +fromHPos + " to " + toHPos );
+	//		Initiator.logger.i("bottle "+ num +" FRONT", "frontNum: "+ frontNum+" BackNum: "+ BackNum+ "from " +fromHPos + " to " + toHPos );
 		}
 		if( bottleIsBack == row ){
 			int hposx = (fromHPos + toHPos) / 2;
@@ -604,7 +635,7 @@ public class MyRetReader implements RetReader {
 		    	q.sendNow(  "L"+ up.getAddress() + ",02,200" );
 				//up.setLed( q, "ff", 0 );
 			}else{
-				Initiator.logger.i("bottle "+ num +"","nie ma upanela dla id " + num );	
+	//			Initiator.logger.i("bottle "+ num +"","nie ma upanela dla id " + num );	
 			}
 		}else{
 			Initiator.logger.i("bottle "+ num +"", "nie zgadza sie");

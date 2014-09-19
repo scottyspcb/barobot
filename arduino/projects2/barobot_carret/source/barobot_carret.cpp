@@ -13,7 +13,6 @@
 //#include <stdint.h>       // needed for uint8_t
 #include <avr/interrupt.h>
 #include <avr/io.h>
-
 #define ANALOGS  6
 #define ANALOG_TRIES  4
 
@@ -535,7 +534,6 @@ void proceed( volatile byte buffer[MAXCOMMAND_CARRET] ){
 		byte index = globalToLocal( buffer[1] );
 		servos[index].enabled= false;
 		servo_lib[index].detach();
-
 		if( servos[index].target_pos != servos[index].last_pos ){    //  wyłączyłem w trakcie jechania
 			 send_servo(false, localToGlobal(index), servos[index].target_pos );
 		}
@@ -631,7 +629,7 @@ void proceed( volatile byte buffer[MAXCOMMAND_CARRET] ){
 			send(ttt,10);
 
 		}else if( source ==  INNER_HALL_Y ){ 
-			int16_t val1 = analogRead(PIN_CARRET_HALL_X );
+			int16_t val1 = analogRead(PIN_CARRET_HALL_Y );
 			byte newStateId = get_hy_state_id( val1 );
 			byte state_name	= hally_state[newStateId][0];
 			byte ttt[10] = {
