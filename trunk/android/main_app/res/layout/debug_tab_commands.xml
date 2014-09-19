@@ -310,14 +310,6 @@
         android:textStyle="bold" />
 
     <Button
-        android:id="@+id/pacpac"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/goToNeutralY"
-        android:layout_toRightOf="@+id/smile"
-        android:text="Pacnij" />
-
-    <Button
         android:id="@+id/enabley"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -350,30 +342,6 @@
         android:text="Znajdź MAX STOP" />
 
     <Button
-        android:id="@+id/set_neutral_y"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/goToNeutralY"
-        android:layout_toRightOf="@+id/goToNeutralY"
-        android:text="Tu jest neutralny Y" />
-
-    <Button
-        android:id="@+id/goToNeutralY"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/position_z"
-        android:text="Idź do neutral Y" />
-
-    <Button
-        android:id="@+id/smile"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/goToNeutralY"
-        android:layout_toRightOf="@+id/set_neutral_y"
-        android:text="smile" />
-
-    <Button
         android:id="@+id/disablez"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -381,32 +349,6 @@
         android:layout_alignBottom="@+id/machajz"
         android:layout_toRightOf="@+id/machajz"
         android:text="DZ" />
-
-    <Button
-        android:id="@+id/i2c_test"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/dlugosc_y"
-        android:layout_alignBottom="@+id/dlugosc_y"
-        android:layout_alignRight="@+id/goto_min_x"
-        android:text="I2CTEST" />
-
-    <Button
-        android:id="@+id/analog_temp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/goToNeutralY"
-        android:layout_alignParentRight="true"
-        android:text="GET TEMP" />
-
-    <Button
-        android:id="@+id/scann_i2c"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/analog_temp"
-        android:layout_alignBottom="@+id/analog_temp"
-        android:layout_toLeftOf="@+id/analog_temp"
-        android:text="Scann I2C" />
 
     <LinearLayout
         android:id="@+id/linearLayout1"
@@ -422,6 +364,66 @@
             android:layout_height="wrap_content"
             android:gravity="right" >
 
+            <Button
+                android:id="@+id/fill5000"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Nalej tutaj" />
+
+            <Button
+                android:id="@+id/pacpac"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Pacnij" />
+
+            <Button
+                android:id="@+id/goToNeutralY"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Idź do neutral Y" />
+
+            <Button
+                android:id="@+id/auto_repair"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Auto Repair" />
+
+            <Button
+                android:id="@+id/set_neutral_y"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tu jest neutralny Y" />
+
+            <Button
+                android:id="@+id/i2c_test"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="I2CTEST" />
+
+            <Button
+                android:id="@+id/analog_temp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="GET TEMP" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="right" >
+
+            <Button
+                android:id="@+id/set_robot_id"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Set ID" />
+
+ 			<Button
+                android:id="@+id/reset"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="RESET" />
+ 
             <Button
                 android:id="@+id/reset1"
                 android:layout_width="wrap_content"
@@ -457,7 +459,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="RESETBUS2" />
-
         </LinearLayout>
 
         <LinearLayout
@@ -506,6 +507,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Index_names" />
+
+            <Button
+                android:id="@+id/scann_i2c"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Scann I2C" />
 
         </LinearLayout>
 
@@ -578,7 +585,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Burn Firmware" />
-
         </LinearLayout>
 
         <LinearLayout
@@ -614,25 +620,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Reset Margin" />
-
-
         </LinearLayout>
     </LinearLayout>
-
-    <Button
-        android:id="@+id/fill5000"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@+id/pacpac"
-        android:text="Nalej tutaj" />
-
-    <Button
-        android:id="@+id/auto_repair"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/pacpac"
-        android:layout_alignBottom="@+id/pacpac"
-        android:layout_toRightOf="@+id/pacpac"
-        android:text="Auto Repair" />
 
 </RelativeLayout>

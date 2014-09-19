@@ -24,7 +24,7 @@ public class BarobotConnector {
 	public Servo driver_z		= null;
 	public HardwareState state	= null;
 	public I2C i2c				= null;
-	public int robot_serial		= 0;
+	protected int robot_id			= 0;
 
 	public BarobotConnector(HardwareState state ){
 		this.state		= state;
@@ -99,41 +99,50 @@ public class BarobotConnector {
 	}
 
 	public void scann_leds( Queue q ){
-		LedOrder lo = new LedOrder();
-		lo.asyncStart(this, q);
-		q.add( new AsyncMessage( true ){
-			@Override	
-			public String getName() {
-				return "onReady LedOrder" ;
-			}
-			@Override
-			public Queue run(Mainboard dev, Queue queue) {
-				System.out.println(" run scann_leds");
-				Upanel[] up		= i2c.getUpanels();
-				for(int i =0; i<up.length;i++){
-					Upanel uu = up[i];
-					System.out.println("+Upanel "
-							+ "dla butelki: " + uu.getBottleNum() 
-							+ " w wierszu " + uu.getRow()
-							+ " pod numerem " + uu.getNumInRow()
-							+ " o indeksie " + uu.getRow()
-							+ " ma adres " + uu.getAddress() );
+		boolean isNewVersion = false;
+		if(isNewVersion){
+	
+		
+			
+			
+			
+		}else{
+			LedOrder lo = new LedOrder();
+			lo.asyncStart(this, q);
+			q.add( new AsyncMessage( true ){
+				@Override	
+				public String getName() {
+					return "onReady LedOrder" ;
 				}
-				i2c.rememberStructure();
-				ledsReady	= true;
-				Queue q3	= new Queue();
-				Queue q1	= new Queue();
-				Queue q2	= new Queue();
-				for(int i =0; i<up.length;i++){
-					up[i].addLed(q1, "ff", 255);
-					up[i].addLed(q2, "ff", 0);
+				@Override
+				public Queue run(Mainboard dev, Queue queue) {
+					System.out.println(" run scann_leds");
+					Upanel[] up		= i2c.getUpanels();
+					for(int i =0; i<up.length;i++){
+						Upanel uu = up[i];
+						System.out.println("+Upanel "
+								+ "dla butelki: " + uu.getBottleNum() 
+								//+ " w wierszu " + uu.getRow()
+								+ " pod numerem " + uu.getNumInRow()
+								//+ " o indeksie " + uu.getRow()
+								+ " ma adres " + uu.getAddress() );
+					}
+					i2c.reloadIndex();
+					ledsReady	= true;
+					Queue q3	= new Queue();
+					Queue q1	= new Queue();
+					Queue q2	= new Queue();
+					for(int i =0; i<up.length;i++){
+						up[i].addLed(q1, "ff", 255);
+						up[i].addLed(q2, "ff", 0);
+					}
+					q3.add(q1);
+					q3.addWait(200);
+					q3.add(q2);
+					return q3;
 				}
-				q3.add(q1);
-				q3.addWait(200);
-				q3.add(q2);
-				return q3;
-			}
-		});
+			});
+		}
 	}
 
 	public void cancel_all() {
@@ -221,7 +230,6 @@ public class BarobotConnector {
 
 	public void moveZUp( Queue q, boolean disableOnReady ) {
 //		q.add("EZ", true);
-		
 		int SERVOZ_UP_POS = state.getInt("SERVOZ_UP_POS", 0 );
 		int DRIVER_Z_SPEED = state.getInt("DRIVER_Z_SPEED", 0 );
 		
@@ -324,17 +332,19 @@ public class BarobotConnector {
 				return null;
 			}
 		});
-		driver_x.moveTo( q, 30000);		// go down
+		q.addWait( 100 );
+		driver_x.moveTo( q, 20000 );		// go down
+		q.addWait( 200 );
 		q.add( new AsyncMessage( true ) {
 			@Override
 			public Queue run(Mainboard dev, Queue queue) {
 				this.name		= "scanning back";
 				driver_x.defaultSpeed = state.getInt("DRIVER_X_SPEED", 0 );
-				Initiator.logger.i("+find_bottles", "down kalibrcja");
+				Initiator.logger.i("+find_bottles", "down kalibracja");
 				return null;
 			}
 		} );
-		driver_x.moveTo( q, -lengthx19);
+		driver_x.moveTo( q, -20000);
 		q.add( new AsyncMessage( true ) {
 			@Override
 			public Queue run(Mainboard dev, Queue queue) {
@@ -484,11 +494,13 @@ public class BarobotConnector {
 	    q.add("DY", true);
 	    i2c.carret.setLed( q, "22", 255 );
 	    setLeds( q, "ff", 0 );
+
 		for(int i =up.length-1; i>=0;i--){
 			up[i].addLed(q1, "22", 255);
 			q1.addWait(70);
 			up[i].addLed(q1, "22", 0);
 		}
+
 		q.add(q1);
 		q.addWait(100);
 		setLeds( q,"88", 255 );
@@ -666,8 +678,7 @@ public class BarobotConnector {
 		lm.startDemo( this );
 	}
 
-	public void bottleBacklight( final int bottleNum, final int count ) {
-		Queue q	= main_queue;
+	public void bottleBacklight(  Queue q, final int bottleNum, final int count ) {
 		Upanel u = i2c.getUpanelByBottle(bottleNum);
 		if(u!=null){
 			if(count == 0 ){
@@ -714,13 +725,22 @@ public class BarobotConnector {
 		// todo
 	}
 	public int getRobotId() {
-		return robot_serial;
+		return robot_id;
 	}
-	public void changeRobotId( int robot_id ) {
-		if(robot_serial != robot_id){
-			robot_serial = robot_id;
-			this.state.saveConfig(robot_id);
+	public void changeRobotId( int new_robot_id ) {
+		if(robot_id != new_robot_id){
+			robot_id = new_robot_id;
+			if(robot_id!=0){
+				this.state.saveConfig(robot_id);
+			}
 			this.state.reloadConfig(robot_id);
 		}
+	}
+	public void readRobotId( Queue q ) {
+		q.add("m"+ Integer.toHexString(Methods.EEPROM_ROBOT_ID), true);
+	}
+	public void setRobotId( Queue q, int robot_id ) {
+		q.add("M"+ Integer.toHexString(Methods.EEPROM_ROBOT_ID)+Integer.toHexString(robot_id), true);
+		this.changeRobotId( robot_id );
 	}
 }

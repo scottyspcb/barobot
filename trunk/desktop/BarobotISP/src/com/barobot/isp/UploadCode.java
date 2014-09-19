@@ -1,14 +1,5 @@
 package com.barobot.isp;
 
-import java.io.IOException;
-
-
-
-
-
-
-
-
 import com.barobot.common.IspSettings;
 import com.barobot.common.constant.Methods;
 import com.barobot.hardware.devices.BarobotConnector;
@@ -21,7 +12,6 @@ import com.barobot.parser.Queue;
 import com.barobot.parser.message.AsyncMessage;
 import com.barobot.parser.message.Mainboard;
 import com.barobot.parser.utils.Decoder;
-import com.barobot.tester.connection.WindowsSerialPort;
 
 public class UploadCode {
 	public void prepareUpanels(Hardware hw ) {
