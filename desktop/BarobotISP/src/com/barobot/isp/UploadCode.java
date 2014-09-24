@@ -3,7 +3,6 @@ package com.barobot.isp;
 import com.barobot.common.IspSettings;
 import com.barobot.common.constant.Methods;
 import com.barobot.hardware.devices.BarobotConnector;
-import com.barobot.hardware.devices.i2c.BarobotTester;
 import com.barobot.hardware.devices.i2c.Carret;
 import com.barobot.hardware.devices.i2c.I2C_Device;
 import com.barobot.hardware.devices.i2c.MainboardI2c;
@@ -183,7 +182,7 @@ public class UploadCode {
 		Queue q = hw.getQueue();
 		hw.connectIfDisconnected();
 		hw.synchro();
-		final Carret current_dev	= hw.barobot.i2c.carret;
+		final Carret current_dev	= new Carret(Constant.cdefault_index, Constant.cdefault_address);	
 		final String carret_code = current_dev.getHexFile();
 		if( IspSettings.setFuseBits){
 			q.addWait(100);
@@ -310,7 +309,7 @@ public class UploadCode {
 		Queue q = hw.getQueue();
 		hw.connectIfDisconnected();
 		//I2C_Device current_dev	= new Upanel( 3, 0 );
-		I2C_Device current_dev	= hw.barobot.i2c.carret;
+		I2C_Device current_dev	=  new Carret(Constant.cdefault_index, Constant.cdefault_address);	
 		current_dev.isp( q );
 		command = current_dev.checkFuseBits( hw.comPort );
 		Main.main.runCommand(command, hw);
@@ -327,6 +326,7 @@ public class UploadCode {
 	}
 
 	public void prepareSlaveMB(final Hardware hw) {
+		/*
 		final I2C_Device current_dev	= new BarobotTester();
 		Queue q = hw.getQueue();
 
@@ -369,7 +369,7 @@ public class UploadCode {
 			});
 			hw.closeOnReady();
 			q.addWaitThread(Main.main);
-		}
+		}*/
 	}
 	public void prepare1Upanel(final Hardware hw, final BarobotConnector barobot, final int row ) {
 		hw.connectIfDisconnected();
