@@ -1,6 +1,7 @@
 package com.barobot.isp;
 
 import com.barobot.common.IspSettings;
+import com.barobot.common.constant.Constant;
 import com.barobot.common.constant.Methods;
 import com.barobot.hardware.devices.BarobotConnector;
 import com.barobot.hardware.devices.i2c.Carret;
