@@ -23,7 +23,6 @@ uint8_t GetTemp();
 //		simply delete the lines below, with "&MM_DECLA" text
 //===================================================================
 //---- DO NOT DELETE THIS LINE -- @MM_DECLA_BEG@---------------------
-void init_analogs();
 byte localToGlobal( byte ind );
 void sendln( volatile byte buffer[], byte length );
 void send_y_pos( byte stateId, int16_t value);
@@ -47,7 +46,7 @@ void sendStepperReady();
 void stepperReady( long int pos );
 void loop();
 void sendVal( byte n );
-void setupConfig();
+void set_all_leds(unsigned long int color);
 void init_leds();
 void setup();
 //---- DO NOT DELETE THIS LINE -- @MM_DECLA_END@---------------------
