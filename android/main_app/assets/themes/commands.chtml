@@ -1,6 +1,16 @@
 {#body}
 <h1>Commands</h1>
 <br>
+
+
+<input type="text" value="" id="message_text">
+<input type="checkbox" value="1" id="blocking" checked="checked"><lable for="blocking">Blocking</label>
+<input type="checkbox" value="1" id="bypass"><lable for="bypass">Bypass</label>
+<a class="btn btn-primary" href="javascript:void(0)" onclick="send_message( this )">SEND</a>
+
+
+<br /><br />
+
 <ul>
 {.loop in $commands as $command:$name}
 	<li>

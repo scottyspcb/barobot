@@ -123,10 +123,11 @@ public class ServoTestPageRoute extends EmptyRoute {
 	    	action_chunk.set("REPEAT_X",			"0");
 	    	action_chunk.set("DRIVER_X_SPEED",		barobot.state.get("DRIVER_X_SPEED", "1000"));
 
-
 	    	action_chunk.set("UP_TIME", 			lt*3/4 );	
-	    	action_chunk.set("LIGHT_TIME", 			lt*1/4 );	
-	    	action_chunk.set("PAC_WAIT_DOWN_TIME",	1500);
+	    	action_chunk.set("LIGHT_TIME", 			barobot.state.get("SERVOZ_UP_LIGHT_TIME", "1000") );
+	    	
+
+	    	action_chunk.set("PAC_WAIT_DOWN_TIME",	barobot.state.get("SERVOZ_PAC_TIME_WAIT", "1000"));
 	    	action_chunk.set("PAC_WAIT_UP_TIME", 	0);
 
 	    	action_chunk.set("REPEAT", 0 );
@@ -198,7 +199,7 @@ public class ServoTestPageRoute extends EmptyRoute {
 				q.add("Z" + pp+","+pus , true);		// do up
 				q.addWait( pwut );
 				q.add("Z" + dp +","+pds, true);		// go down
-				q.addWait( 100 );
+				q.addWait( 200 );		// wait for servo
 				q.add("DZ", true);
 				q.addWait(100);
 	//			q.add("DX", true);

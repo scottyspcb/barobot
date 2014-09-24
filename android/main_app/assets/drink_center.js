@@ -6,6 +6,20 @@ function run_command( command, btn ){
 	  }
 	);
 }
+function send_message( btn ){
+	$(btn).addClass("btn-danger");
+	var blocking	= $("#blocking:checked").val();
+	var bypass		= $("#bypass:checked").val();
+	var msg			= $("#message_text").val();
+	$.get("/message",{
+		  message		: msg,
+		  blocking		: blocking || false,
+		  bypass		: bypass || false,
+	  }, function(dane){
+		$(btn).removeClass("btn-danger");
+	  }
+	);
+}
 
 function pre(){
 	if(arguments.length == 0){

@@ -362,7 +362,7 @@ public class DebugTabGraph extends Fragment {
 
 		@Override
 		public void onClick(View v) {
-			final Queue mq			= Arduino.getMainQ();
+			final Queue mq			= Arduino.getInstance().barobot.main_queue;
 			switch (v.getId()) {
 			case R.id.graph_source:
 	  	  		((ToggleButton) rootView.findViewById(R.id.graph_active)).setChecked(true);
@@ -436,7 +436,7 @@ public class DebugTabGraph extends Fragment {
 
 		@Override
 		public void onCheckedChanged(CompoundButton buttonView,boolean isChecked) {
-			Queue mq			= Arduino.getMainQ();
+			Queue mq			= Arduino.getInstance().barobot.main_queue;
 			switch (buttonView.getId()) {
 			case R.id.graph_active:
 				Initiator.logger.i("graph_active","isChecked: " + isChecked );
@@ -447,7 +447,6 @@ public class DebugTabGraph extends Fragment {
 					enableUI(false);
 					int graph_source9	= DebugTabGraph.graph_source;
 					mq.add("LIVE A OFF", false);
-
 					if(jsInterface!=null){
 						jsInterface.runJs("show_random", "0");
 					}
