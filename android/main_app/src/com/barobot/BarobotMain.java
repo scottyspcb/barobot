@@ -1,11 +1,9 @@
 package com.barobot;
 
-
-import com.barobot.common.Initiator;
-
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -22,6 +20,7 @@ public class BarobotMain extends Activity {
 		if(instance == null){
 			instance = this; // Set up the window layout
 		}
+		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 		AppInvoker.createInstance(this);
 		AppInvoker.getInstance().onCreate();
 	}
@@ -49,6 +48,7 @@ public class BarobotMain extends Activity {
 	}
 
 	public void setFullScreen() {
+		/*
 		int currentapiVersion = android.os.Build.VERSION.SDK_INT;
 		if (currentapiVersion >= 19 ){	// kitkat
 			getWindow().getDecorView().setSystemUiVisibility(
@@ -58,7 +58,7 @@ public class BarobotMain extends Activity {
 			        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
 			        | View.SYSTEM_UI_FLAG_FULLSCREEN
 			        | View.SYSTEM_UI_FLAG_IMMERSIVE);			
-		}
+		}*/
 	}
 }
 /*

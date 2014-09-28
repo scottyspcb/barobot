@@ -704,7 +704,7 @@ public class CommandRoute extends EmptyRoute {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
-				barobot.setLeds(q,"22", 255);
+				barobot.setAllLeds(q,"22", 255, 0,255,0);
 				return true;
 			}
 		});
@@ -713,7 +713,7 @@ public class CommandRoute extends EmptyRoute {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
-				barobot.setLeds(q,"44", 255);
+				barobot.setAllLeds(q,"44", 255, 0,0,255);
 				return true;
 			}
 		});
@@ -722,7 +722,7 @@ public class CommandRoute extends EmptyRoute {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
-				barobot.setLeds(q,"11", 255);
+				barobot.setAllLeds(q,"11", 255, 255,0,0);
 				return true;
 			}
 		});

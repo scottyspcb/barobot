@@ -93,24 +93,18 @@ public class AppInvoker {
 
 	public void onConnected() {
 		BarobotConnector barobot = Arduino.getInstance().barobot;
-		if(!Arduino.getInstance().barobot.ledsReady){
-			Arduino.getInstance().barobot.scann_leds( barobot.main_queue );
+		if(barobot.ledsReady){
+			if(barobot.newLeds){
+				barobot.setAllLeds(barobot.main_queue, "22", 0, 255, 0, 255);
+			}
+		}else{
+			barobot.scann_leds( barobot.main_queue );
 		}
 		barobot.doHoming( barobot.main_queue, false );
 
-		main.runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				Button xb1 = (Button) main.findViewById(R.id.choose_pour_button);
-				if(xb1!=null){
-					xb1.setEnabled(true);
-				}
-				Button xb2 = (Button) main.findViewById(R.id.creator_pour_button);
-				if(xb2!=null){
-					xb2.setEnabled(true);
-				}
-			}
-		});
+		if(barobot.newLeds){
+			barobot.setAllLeds(barobot.main_queue, "22", 255, 255, 204, 221 );
+		}
 	}
 	public void onDisconnect() {
 	}

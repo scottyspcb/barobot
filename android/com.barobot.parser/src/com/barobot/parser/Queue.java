@@ -73,11 +73,12 @@ public class Queue {
 				if( !canExec ){
 					synchronized (exec_lock) {
 						try {
-							Initiator.logger.i("Queue.worker.wait", "start + " + ( output.isEmpty() ? "empty" : "not empty" ));	
+				//			Initiator.logger.i("Queue.worker.wait", "start + " + ( output.isEmpty() ? "empty" : "not empty" ));	
 							exec_lock.wait(timeout);
-							Initiator.logger.i("Queue.worker.wait", "end + " + ( output.isEmpty() ? "empty" : "not empty" ));	
-			//				show("exec");
-							
+							Initiator.logger.i("Queue.worker.wait", "end + " + ( output.isEmpty() ? "empty" : "not empty" ));
+				//			if(!output.isEmpty()){
+				//				show("exec");
+				//			}
 						} catch (InterruptedException e) {
 							Initiator.logger.e("Queue.worker.exec_lock.wait", "InterruptedException", e);	
 						} catch (Exception e) {
@@ -355,7 +356,7 @@ public class Queue {
 		//		Initiator.logger.i("Queue.run", "empty");
 		//	}
 	}*/
-	
+
     public void sendNow( String command ) {	 // send without waiting
 	//	synchronized (lock) {
 			mb.send(command + "\n");
@@ -505,19 +506,20 @@ public class Queue {
 	}
 	public void show( String prefix ) {
 		String res = "Queue (" + prefix + "):\n";
-		synchronized (QueueLock.lock_wait_for) {
+	//	synchronized (QueueLock.lock_wait_for) {
 			if(isMainQueue){
-				if( Mainboard.lock.wait_for!=null){
-					String s = Mainboard.lock.wait_for.toString();
+				AsyncMessage w = Mainboard.lock.wait_for;
+				if( w!=null){
+					String s = w.toString();
 					res += "\tWaiting for:"+  s + "\n";				
 				}
 			}
-		}
-		synchronized (lock_output) {
+	//	}
+		//synchronized (lock_output) {
 			for (AsyncMessage msg : this.output){
 				res += "\t" + msg.toString() + "\n";
 			}
-		}
+		//}
 		Initiator.logger.w("Queue.show", res);
 	}
 
