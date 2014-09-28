@@ -38,7 +38,7 @@ public class UploadCode {
 					if(bytes[2] == Methods.METHOD_CHECK_NEXT  ){
 						if(bytes[3] == 1 ){							// has next
 							System.out.println("has next ROW "+row+"- OK");
-							q.show("run");
+				//			q.show("run");
 							hw.barobot.i2c.add( firstInRow );
 							q.addWait(100);
 							Queue qq2	= UploadFirst( firstInRow, barobot, hw, firstOnly );

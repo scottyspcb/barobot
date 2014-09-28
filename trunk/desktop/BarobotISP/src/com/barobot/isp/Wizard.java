@@ -1,7 +1,6 @@
 package com.barobot.isp;
 
 import com.barobot.hardware.devices.LightManager;
-import com.barobot.hardware.devices.i2c.BarobotTester;
 import com.barobot.hardware.devices.i2c.Carret;
 import com.barobot.hardware.devices.i2c.I2C_Device;
 import com.barobot.hardware.devices.i2c.Upanel;
@@ -43,13 +42,10 @@ public class Wizard {
 		I2C_Device[] list = hw.barobot.i2c.getUpanels();
 		if(list.length == 0 ){
 			System.out.println("Pusto, skanuje" );
-			hw.barobot.scann_leds(q);
 			return;
 		}
 
-		for (I2C_Device u2 : list){
-			u2.addLed( q, "ff", 0 );	// off
-		}
+		hw.barobot.turnOffLeds(q);
 	//	get 2 random from array java
 		for (I2C_Device u : list){
 			q.addWait(time );
@@ -104,38 +100,14 @@ public class Wizard {
 
 	public void mrygaj_grb(Hardware hw, int repeat) {
 		hw.getQueue().addWaitThread( Main.main );
-		I2C_Device[] list = hw.barobot.i2c.getUpanels();
 		hw.connectIfDisconnected();
 		Queue q = hw.getQueue();
-		if(list.length == 0 ){
-			hw.barobot.scann_leds(q);
-			System.out.println("Pusto" );
-			return;
-		}
 
 		int time = 0;
 		while (repeat-- > 0){
-			for (I2C_Device u : list){
-				u.addLed( q, "ff", 0 );	// off
-			}
+			hw.barobot.turnOffLeds(q);
 			q.addWait(time );
-
-			for (I2C_Device u : list){
-				u.addLed( q, "ff", 0 );	// off
-			//	u.setLed( q, "02", 0 );		// bottom green
-			//	u.setLed( q, "08", 0 );		// bottom blue
-			//	u.setLed( q, "04", 0 );		// bottom red 
-				u.addLed( q, "07", 255 );	// top RGB
-			//	u.setLed( q, "10", 255 );	// top green
-			//	u.setLed( q, "20", 255 );	// top blue
-			//	u.setLed( q, "40", 255 );	// top red
-			}
-			q.addWait(time );
-
-			for (I2C_Device u : list){
-				u.addLed( q, "ff", 0 );	// off
-				u.addLed( q, "70", 255 );	// boottm RGB
-			}
+			hw.barobot.setAllLeds(q, "07", 255, 255, 255, 255);
 			q.addWait(time );
 			time--;	
 		}
@@ -159,54 +131,18 @@ public class Wizard {
 	}
 	public void ilumination2(Hardware hw) {
 		hw.getQueue().addWaitThread( Main.main );
-		I2C_Device[] list = hw.barobot.i2c.getDevicesWithLeds();
-		System.out.println("upaneli: " +list.length);
 		hw.connectIfDisconnected();
 		Queue q = hw.getQueue();
-
 		for (int b = 0;b<4;b++){
 			int i=0;
 			for (;i<245;i+=5){
-				for (I2C_Device u2 : list){
-					u2.addLed( q, "ff", i );
-				}
+				hw.barobot.setAllLeds(q, "ff", i, i, i, i);
 			}
 			for (;i>=0;i-=5){
-				for (I2C_Device u2 : list){
-					u2.addLed( q, "ff", i );
-				}
+				hw.barobot.setAllLeds(q, "ff", i, i, i, i);
 			}
 		}
-		/*
-		for (I2C_Device u : Upanel.list){
-			u.setLed( q, "ff", 255);
-		}
-		for (I2C_Device u2 : Upanel.list){
-			u2.setLed( hw, "ff", 0 );	// off
-		}
-		*/
-		System.out.println("koniec ilumination2");
-	}
 
-	public void ilumination3(Hardware hw, String led, int value, String led2, int value2 ) {
-		hw.getQueue().addWaitThread( Main.main );
-		hw.connectIfDisconnected();
-		I2C_Device[] list = hw.barobot.i2c.getDevicesWithLeds();
-		System.out.println("upaneli: " + list.length);
-		Queue q = hw.getQueue();
-		Carret current_dev	= hw.barobot.i2c.carret;
-		current_dev.addLed( q, "ff", 0 );
-		current_dev.addLed( q, led2, value2 );
-		for (I2C_Device u2 : list){
-			u2.addLed( q, "ff", 0 );
-			u2.addLed( q, led, value );
-		}
-		for (I2C_Device u2 : list){
-			u2.addLed( q, "ff", 255);
-		}
-		for (I2C_Device u2 : list){
-			u2.addLed( q, "ff", 0 );	// off
-		}
 		System.out.println("koniec ilumination2");
 	}
 
@@ -215,16 +151,11 @@ public class Wizard {
 	public void zamrugaj(Hardware hw, int time, int razy ){
 		hw.getQueue().addWaitThread( Main.main );
 		hw.connectIfDisconnected();
-		I2C_Device[] list = hw.barobot.i2c.getDevicesWithLeds();
 		int swiec = 255;
 		Queue q = hw.getQueue();
 		for( int i =0; i<razy;i++){
-			for (I2C_Device u2 : list){
-				u2.addLed( q, "f0", 0 );
-			}
-			for (I2C_Device u2 : list){
-				u2.addLed( q, "f0", swiec );
-			}
+			hw.barobot.setAllLeds(q, "f0", 0, 0, 0, 0);
+			hw.barobot.setAllLeds(q, "f0", swiec, swiec, swiec, swiec);
 		}
 		System.out.println("koniec mrygaj");
 	}
@@ -239,15 +170,13 @@ public class Wizard {
 			public Queue run(Mainboard dev, Queue queue) {
 				Queue q2 = new Queue();
 				LightManager.zgas( hw.barobot, q2 );
-				Upanel[] list = hw.barobot.i2c.getUpanels();
-				final Upanel butelka = list[num];
 				for (int b = 0;b<count;b++){
 					int i=0;
 					for (;i<255;i+=4){
-						butelka.addLed( q2, "ff", i );
+						hw.barobot.setLedsByBottle(q2, num, "ff", i, i, i, i, true);					
 					}
 					for (i=255;i>=0;i-=4){
-						butelka.addLed( q2, "ff", i );
+						hw.barobot.setLedsByBottle(q2, num, "ff", i, i, i, i, true);
 					}
 					LightManager.zgas( hw.barobot, q2 );
 				} 
@@ -269,18 +198,13 @@ public class Wizard {
 			public Queue run(Mainboard dev, Queue queue) {
 				Queue q2 = new Queue();
 				LightManager.zgas( hw.barobot, q2 );
-				Upanel[] list = hw.barobot.i2c.getUpanels();
 				for (int b = 0;b<count;b++){
 					int i=0;
 					for (;i<255;i+=8){
-						for (I2C_Device u2 : list){
-							u2.addLed( q2, "ff", i );
-						}
+						hw.barobot.setAllLeds(q2, "ff", i, i, i, i);
 					}
 					for (i=255;i>=0;i-=8){
-						for (I2C_Device u2 : list){
-							u2.addLed( q2, "ff", i );
-						}
+						hw.barobot.setAllLeds(q2, "ff", i, i, i, i);
 					}
 					LightManager.zgas( hw.barobot, q2 );
 				} 
@@ -319,7 +243,7 @@ public class Wizard {
 
 	public void fast_close_test(Hardware hw) {
 		Queue q = hw.getQueue();
-		I2C_Device current_dev	= new BarobotTester();
+	//	I2C_Device current_dev	= new BarobotTester();
 		hw.connectIfDisconnected();
 		q.add("K1","RK1");
 

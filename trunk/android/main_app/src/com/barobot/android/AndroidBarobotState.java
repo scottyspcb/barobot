@@ -36,7 +36,6 @@ public class AndroidBarobotState implements HardwareState{
 		"POS_START_Y",
 		"NEUTRAL_POS_Y",
 		"NEUTRAL_POS_Z",
-
 	};
 	
 	public AndroidBarobotState( Activity application ){

@@ -20,7 +20,7 @@ import com.barobot.hardware.serial.Serial_wire2;
 import com.barobot.parser.Queue;
 
 public class Arduino{
-	private final Object lock			= new Object();
+//	private final Object lock			= new Object();
 	private static Arduino instance		= null;
 	private Wire connection				= null;
 	private Wire debugConnection		= null;
@@ -166,16 +166,7 @@ public class Arduino{
 			debugConnection.resume();
 		}
 	}
-/*
-	public void onPause() {
-		if(connection!=null){
-			connection.onPause();
-		}
-		if(debugConnection!=null){
-			debugConnection.onPause();
-		}
-	}
-*/
+
 	public boolean allowAutoconnect() {
 		if( debugConnection == null ){
 			//	Initiator.logger.i(Constant.TAG, "nie autoconnect bo juz połączony");
@@ -249,9 +240,7 @@ public class Arduino{
 			connection.reset();
 		}
 	}
-	public static Queue getMainQ() {
-		return Arduino.getInstance().barobot.main_queue;
-	}
+
 }
 
 /*
