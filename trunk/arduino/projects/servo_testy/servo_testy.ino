@@ -7,7 +7,7 @@ boolean dir = true;
 Servo servoZ;
 
 #define STEPPER_Z_PWM 9
-#define USETIMER false
+#define USETIMER true
 #define SEPARATOR_CHAR '\n'
 boolean enabled = false;
 
@@ -24,17 +24,13 @@ void setup(){
   Serial.begin(115200); 
   Serial.println("HELLO");
   Serial.println("przyklad: 10,1900");
-
   pinMode(STEPPER_Z_PWM, OUTPUT );
- 
 //  FlexiTimer2::set(40, 1.0/1000, flash); // call every 500 1ms "ticks"
   // FlexiTimer2::set(500, flash); // MsTimer2 style is also supported
-
   if(USETIMER){
     FlexiTimer2::set(40, 1.0/100, flash);
     FlexiTimer2::start();
   }
-  
   servoZ.writeMicroseconds(1100);
   servoZ.attach(STEPPER_Z_PWM); 
   
