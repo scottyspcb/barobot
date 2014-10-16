@@ -20,6 +20,7 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry exported="true" kind="lib" path="libs/orman-20120316.jar"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/com.barobot.isp"/>
 	<classpathentry kind="lib" path="libs/android-support-v4.jar"/>
 	<classpathentry kind="lib" path="C:/PROG/adt-bundle-windows/sdk/platforms/android-15/android.jar" sourcepath="C:/Program Files/Android/android-sdk/sources/android-15">
 		<attributes>

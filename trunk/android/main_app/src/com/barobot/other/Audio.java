@@ -30,41 +30,44 @@ public class Audio implements OnSignalsDetectedListener{
 	public void start( final BarobotConnector barobot2 ) {
 		this.barobot = barobot2;
 		Queue q = barobot.main_queue;
-		if(!barobot.ledsReady){
-			barobot.scann_leds( q );
-		}
-
-		barobot.setLedsOff(q,"ff");
-	
+		q.add( new AsyncMessage( true ) {
+			@Override
+			public Queue run(Mainboard dev, Queue queue) {
+				this.name		= "turnoff";
+				up				= barobot.i2c.getUpanels();
+				Queue q = new Queue();
+				barobot.turnOffLeds(q);
+				return q;
+			}
+		} );
 		q.add( new AsyncMessage( true ) {
 			@Override
 			public Queue run(Mainboard dev, Queue queue) {
 				this.name		= "scanning";
-				if(up.length >= 12){
-					Map<String, Integer> config = new HashMap<String, Integer>();
-					config.put("source",  MediaRecorder.AudioSource.MIC);
-					config.put("frameByteSize", 2048);
-					config.put("channelDef", AudioFormat.CHANNEL_IN_MONO);
-					config.put("channels", 1 );
-					config.put("sampleSize", 2048 );
-					config.put("averageLength", 2048 );
-					config.put("audioEncoding",  AudioFormat.ENCODING_PCM_16BIT);
-					config.put("bitDepth",   16 );
-					config.put("sampleRate", 44100);
+				Map<String, Integer> config = new HashMap<String, Integer>();
+				config.put("source",  MediaRecorder.AudioSource.MIC);
+				config.put("frameByteSize", 2048);
+				config.put("channelDef", AudioFormat.CHANNEL_IN_MONO);
+				config.put("channels", 1 );
+				config.put("sampleSize", 2048 );
+				config.put("averageLength", 2048 );
+				config.put("audioEncoding",  AudioFormat.ENCODING_PCM_16BIT);
+				config.put("bitDepth",   16 );
+				config.put("sampleRate", 44100);
 
-					recorderThread = new AndroidRecorderThread( config );
-					recorderThread.start();
-					detectorThread = new DetectorThread( config, recorderThread);
-					detectorThread.setOnSignalsDetectedListener(Audio.this);
-					detectorThread.start();
-				}
+				recorderThread = new AndroidRecorderThread( config );
+				recorderThread.start();
+				detectorThread = new DetectorThread( config, recorderThread);
+				detectorThread.setOnSignalsDetectedListener(Audio.this);
+				detectorThread.start();
+
 				return null;
 			}
 		} );
 	}
 
 	public void stop() {
-		barobot.main_queue.add( new AsyncMessage( false, true ) {
+		barobot.main_queue.add( new AsyncMessage( true ) {
 			@Override
 			public Queue run(Mainboard dev, Queue queue) {
 				this.name		= "Audio.stop";
@@ -79,9 +82,8 @@ public class Audio implements OnSignalsDetectedListener{
 				max = 10;
 
 				Queue q = new Queue();
-				for( int i=0;i<up.length ;i++){
-					q.add( "B"+ up[i].getAddress() + ",ff,0", true );
-				}
+				barobot.turnOffLeds(q);
+
 				return q;
 			}
 		} );

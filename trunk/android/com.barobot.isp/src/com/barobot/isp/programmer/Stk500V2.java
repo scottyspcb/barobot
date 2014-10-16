@@ -834,7 +834,7 @@ public class Stk500V2 extends UploadProtocol{
 
         for (addr=0; addr < n_bytes; addr += page_size) {
             if(Thread.interrupted()) {
-                report_cancel();
+        //        report_cancel();
                 return 0;
             }
 

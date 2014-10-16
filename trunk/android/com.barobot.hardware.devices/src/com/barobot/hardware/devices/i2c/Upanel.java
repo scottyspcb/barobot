@@ -35,7 +35,7 @@ public class Upanel extends I2C_Device_Imp {
 		}
 		return -1;
 	}
-	public void isp_next(Queue q) {	// pod³¹czony do mnie
+	public void isp_next(Queue q) {	// podï¿½ï¿½czony do mnie
 		q.add( "p"+ getAddress(), "SISP" );
 	}
 	public void reset_next(Queue q) {

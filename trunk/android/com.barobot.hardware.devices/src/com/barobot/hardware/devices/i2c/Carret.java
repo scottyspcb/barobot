@@ -7,7 +7,7 @@ public class Carret extends I2C_Device_Imp {
 	public Carret(int index, int address ){
 		this.myaddress	= address;
 		this.row		= index;
-		this.resetIndex		= index;
+		this.resetIndex	= index;
 		this.numInRow	= 0;	
 		
 		this.cpuname	= "m328p";

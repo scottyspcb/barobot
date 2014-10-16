@@ -11,7 +11,7 @@ public class Interval {
 	public Interval( Runnable r){
 		this.rrr= r;
 	}
-	public void run( long zaile ){
+	public void run( long zaile ){		// run once
 		run( zaile, 0 );
 	}
 	public void run( long zaile, long coile ){

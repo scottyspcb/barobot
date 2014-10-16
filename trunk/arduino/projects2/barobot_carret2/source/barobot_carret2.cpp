@@ -1,5 +1,6 @@
+#define B2_VERSION 0x0005
 #include "barobot_carret2_main.h"
-#include "constants.h"
+
 #include <Adafruit_NeoPixel.h>
 #include <Arduino.h>
 #include <barobot_common.h>
@@ -8,7 +9,6 @@
 #include <constants.h>
 #include <AsyncDriver.h>
 #include <FlexiTimer2.h>
-
 
 //3, 5, 6, 9, 10, 11
 // PINS
@@ -31,7 +31,6 @@
 #define PIN_B2_HALL_Y A0			// 
 #define PIN_B2_HALL_Z A1			// 
 #define PIN_B2_WEIGHT A3			// 
-//#define PIN_B2_TABLET_PWR A4		// role pe³ni enable pin dla steppera X
 
 // Config
 #define ANALOGS  6
@@ -42,7 +41,15 @@
 
 #define MAGIC_LEDS 20
 
+#define SERVO_MAX_TIME 10000				// in milis = 10s
+#define MAX_TIME_WITHOUT_ANDROID 10000		// in milis = 20s
+#define POKE_ANDROID_TIME 5000				// in milis = 20s
+
 volatile boolean stepperIsReady = false;
+unsigned long int mil = 0;
+unsigned long int servo_start_time = 0;
+unsigned long int last_android = 0;
+unsigned long int last_poke = 0;
 
 byteint bytepos;
 #define MIN_DELTA  20
@@ -67,11 +74,9 @@ volatile ServoChannel servos[2]= {
 
 //unsigned long mil = 0;
 
-
 byte state_id = 0xff;
 int16_t up_level = 0;
 int16_t down_level = 0;
-
 
 // HALL X VALUES 
 
@@ -125,13 +130,13 @@ volatile int16_t hallx_state[HXSTATES][3] = {
 #define SEPARATOR_CHAR '\n'
 #define TRIES  10
 
-volatile int16_t hally_state[HYSTATES][4] = {
+volatile int16_t hally_state[HYSTATES][3] = {
 	//{CODE, MIN, MAX  }
-	{'E',	1024,	1024,		0x0f},		// ERROR
-	{'R',	550,	1024-1,		0x04},		// neodym +
-	{'A',	450,	550-1,		0x02},		// normal
-	{'B',	1,		450-1,		0x01},		// neodym -
-	{'N',	0,		0,			0xf0}		// NOT CONNECTED	
+	{'E',	1024,	1024		},		// ERROR
+	{'R',	550,	1024-1		},		// neodym +
+	{'A',	450,	550-1		},		// normal
+	{'B',	1,		450-1		},		// neodym -
+	{'N',	0,		0			}		// NOT CONNECTED	
 };
 
 String serial0Buffer = "";
@@ -143,9 +148,70 @@ String serial0Buffer = "";
 
 AsyncDriver stepperX( PIN_B2_STEPPER_STEP, PIN_B2_STEPPER_DIR, PIN_B2_STEPPER_ENABLE );      // Step, DIR
 Adafruit_NeoPixel top_panels	= Adafruit_NeoPixel(MAGIC_LEDS, PIN_B2_LED_TOP, NEO_GRB + NEO_KHZ800);
-Adafruit_NeoPixel bottom_panels = Adafruit_NeoPixel(2, PIN_B2_LED_BOTTOM,  NEO_RBG+ NEO_KHZ800);	// NEO_RBG added in Adafruit_NeoPixel: rOffset = 1;gOffset = 2;bOffset = 0;
+Adafruit_NeoPixel bottom_panels = Adafruit_NeoPixel(2, PIN_B2_LED_BOTTOM,  NEO_RGB + NEO_KHZ800);
 
-inline void  setupStepper(){
+// NEO_RBG added in Adafruit_NeoPixel: rOffset = 1;gOffset = 2;bOffset = 0;
+
+static EEMEM uint16_t eeprom_starts = 0x02; 
+
+void setup(){
+	disable6v();
+	pinMode(PIN_B2_SERVO_Y, INPUT );      // nie pozwalaj na przypadkowe machanie na starcie
+	pinMode(PIN_B2_SERVO_Z, INPUT );      // nie pozwalaj na przypadkowe machanie na starcie
+	pinMode(PIN_B2_SELF_RESET, INPUT );	
+	pinMode(PIN_B2_HALL_X, INPUT);
+	pinMode(PIN_B2_HALL_Y, INPUT);
+	pinMode(PIN_B2_WEIGHT, INPUT);
+	Serial.begin(B2_SERIAL0_BOUND);
+
+	init_leds();
+	serial0Buffer = "";
+
+	init_hallx();
+	setupStepper();
+
+	unsigned long int color = bottom_panels.Color(0,  0,  20 );	
+	set_all_leds(color);
+	Serial.println("");	// remove dust
+	Serial.flush();
+
+	Serial.println("BSTART");
+	sendStats();
+	Serial.flush();
+}
+
+void sendStats() {
+	uint8_t tt			= GetTemp();
+	uint16_t starts		= eeprom_read_word(&eeprom_starts);
+	uint8_t rid_low		= eeprom_read_byte((unsigned char *)(EEPROM_ROBOT_ID_LOW*2));
+	uint8_t rid_high	= eeprom_read_byte((unsigned char *)(EEPROM_ROBOT_ID_HIGH*2));
+
+	// RRS,VERSION,TEMP,STARTS,ROBOT_ID
+	// RRS,4,60,3222,40,0		= version 4, TEMP = 60 somethings (not celsius or fahrenheits), starts 3222, robot_id_low = 40,  robot_id_high = 0
+
+	Serial.print("RRS,");
+	Serial.print(B2_VERSION, DEC );
+	Serial.print(",");
+	Serial.print(tt, DEC);
+	Serial.print(",");
+	Serial.print(starts, DEC);
+	Serial.print(",");
+	Serial.print(rid_low, DEC);
+	Serial.print(",");
+	Serial.print(rid_high, DEC);
+	Serial.println();
+}
+
+inline void change_state( byte oldStateId, byte newStateId, int16_t value ) {           // synchroniczne
+	if( newStateId != 0xff ){
+		state_id		= newStateId;
+		up_level		= hallx_state[newStateId][2] + HYSTERESIS;		// max is a limit
+		down_level		= hallx_state[newStateId][1] - HYSTERESIS;		// min is a limit
+		send_hx_pos( newStateId, value );	// send to mainboard
+	}
+}
+
+inline void setupStepper(){
 	stepperX.disable_on_ready = true;
 	stepperX.disableOutputs();
 	stepperX.setAcceleration(B2_ACCELERX);
@@ -155,54 +221,12 @@ inline void  setupStepper(){
 	FlexiTimer2::start();
 }
 
-void setup(){
-	pinMode(PIN_B2_SERVOS_ENABLE_PIN, OUTPUT );
-	digitalWrite(PIN_B2_SERVOS_ENABLE_PIN, HIGH );
-//	stepperX.fastWrite(PIN_B2_SERVO_Y, HIGH);		// set to 1
-//	stepperX.fastWrite(PIN_B2_SERVO_Z, HIGH);		// set to 1
-
-	pinMode(PIN_B2_SELF_RESET, INPUT );	
-	pinMode(PIN_B2_SERVO_Y, INPUT );      // nie pozwalaj na przypadkowe machanie na starcie
-	pinMode(PIN_B2_SERVO_Z, INPUT );      // nie pozwalaj na przypadkowe machanie na starcie
-	pinMode(PIN_B2_HALL_X, INPUT);
-	pinMode(PIN_B2_HALL_Y, INPUT);
-	pinMode(PIN_B2_WEIGHT, INPUT);
-	pinMode(PIN_B2_SERVZ_ENABLE_PIN, INPUT);
-
-	Serial.begin(B2_SERIAL0_BOUND);
-
-	init_leds();
-	serial0Buffer = "";
-
-	init_hallx();
-	//sendstats();
-	setupStepper();
-
-	unsigned long int color = bottom_panels.Color(0,  0,  20 );	
-	set_all_leds(color);
-	Serial.println("");	// remove dust
-	Serial.flush();
-	Serial.println("BSTART");
-	Serial.flush();
-}
-
-void init_leds(){
+inline void init_leds(){
 	top_panels.begin();
 	bottom_panels.begin();
 	unsigned long int color = bottom_panels.Color(50,  0,  0 );
 	set_all_leds(color);
 }
-
-void set_all_leds(unsigned long int color){
-	for(byte i=0;i<MAGIC_LEDS;i++){
-		top_panels.setPixelColor(i, color );
-	}
-	bottom_panels.setPixelColor(0, color );
-	bottom_panels.setPixelColor(1, color );	
-	top_panels.show();
-	bottom_panels.show();
-}
-
 
 void sendVal( byte n ) {
   int value =  analogRead( A0 + n ); 
@@ -214,7 +238,7 @@ int16_t agv = 0;
 //byte pre=0;
 
 void loop() {
-	//mil = millis();
+	mil = millis();
 /*
   if( mil > when_next ){    // debug, mrygaj co 1 sek
 		if( bitRead(sending, 0 ) ){  sendVal(0);}
@@ -253,13 +277,54 @@ void loop() {
 			bottom_panels.show();
 		}
 	}*/
+
+	if( mil - last_android > MAX_TIME_WITHOUT_ANDROID ){			// no android
+		last_android	= mil;
+		disableServeNow( INNER_SERVOY );
+		disableServeNow( INNER_SERVOZ );
+		disable6v();
+		stepperX.disableOutputs();
+		unsigned long int color = bottom_panels.Color(20,  0,  0 );	
+		set_all_leds(color);
+	}
+	if( servo_start_time != 0 ){
+		unsigned long period = millis() - servo_start_time;
+		if( period > SERVO_MAX_TIME ){		// emergency stop
+			disableServeNow( INNER_SERVOY );
+			disableServeNow( INNER_SERVOZ );
+			disable6v();
+			servo_start_time = 0;
+			unsigned long int color = bottom_panels.Color(255,  0,  0 );	
+			set_all_leds(color);
+		}
+	}
+	if( mil - last_poke > POKE_ANDROID_TIME ){			// no android
+		Serial.print("POKE ");
+		Serial.println(String(mil));
+		Serial.flush();
+		last_poke = mil;
+	}
 }
 
-void stepperReady( long int pos ){		// in interrupt
-	stepperIsReady = true;
+void disableServeNow(byte index){
+	if(servos[index].enabled ){
+		servos[index].target_pos	= servos[index].last_pos; // here is target pos
+		servos[index].enabled 		= false;				
+		servos[index].moving		= DRIVER_DIR_STOP;
+		send_servo(false, localToGlobal(index), servos[index].target_pos );	
+	}
 }
 
-//uint16_t divisor = 500;
+void set_all_leds(unsigned long int color){
+	for(byte i=0;i<MAGIC_LEDS;i++){
+		top_panels.setPixelColor(i, color );
+	}
+	bottom_panels.setPixelColor(0, color );
+	bottom_panels.setPixelColor(1, color );	
+	top_panels.show();
+	bottom_panels.show();
+}
+
 void sendStepperReady(){
 	long int pos = stepperX.currentPosition();
 	bytepos.i= pos;
@@ -268,24 +333,16 @@ void sendStepperReady(){
 		1, 
 		RETURN_DRIVER_READY, 
 		DRIVER_X, 
-		bytepos.bytes[3],				// bits 0-7
-		bytepos.bytes[2],				// bits 8-15
-		bytepos.bytes[1],				// bits 16-23
-		bytepos.bytes[0]				// bits 24-32
+		bytepos.bytes[3],		// bits 0-7
+		bytepos.bytes[2],		// bits 8-15
+		bytepos.bytes[1],		// bits 16-23
+		bytepos.bytes[0]		// bits 24-32
 	};
-	sendln(ttt,8);
-
-	Serial.println();
-	Serial.flush();
-	//ttt[2] = RETURN_DRIVER_READY_REPEAT;
-	//send2android(ttt,8);
-	//Serial.println();
-	//Serial.flush();
 	Serial.println("Rx" + String(pos));
 	Serial.flush();
-	//long int pos = stepperX.currentPosition();
-	//Serial.print("RRx");
-	//Serial.println(String(pos));
+	sendln(ttt,8);
+	Serial.println();
+	Serial.flush();
 }
 
 int16_t readValue(byte pin) {           // synchroniczne
@@ -318,20 +375,13 @@ void init_hallx() {           // synchroniczne
 	byte new_state_id = get_hx_state_id( val1 );
 	change_state( state_id, new_state_id, val1 );
 }
-void change_state( byte oldStateId, byte newStateId, int16_t value ) {           // synchroniczne
-	if( newStateId != 0xff ){
-		state_id		= newStateId;
-		up_level		= hallx_state[newStateId][2] + HYSTERESIS;		// max is a limit
-		down_level		= hallx_state[newStateId][1] - HYSTERESIS;		// min is a limit
-		send_hx_pos( newStateId, value );	// send to mainboard
-	}
-}
 
 uint16_t cc = 0;
 void readHall() {           // synchroniczne
-	if( stepperX.distanceToGo() != 0
-		&& servos[INNER_SERVOY].moving == DRIVER_DIR_STOP 
-		&& servos[INNER_SERVOZ].moving == DRIVER_DIR_STOP ){
+	if( 
+		//stepperX.distanceToGo() != 0 && 
+		servos[INNER_SERVOY].moving == DRIVER_DIR_STOP && 
+		servos[INNER_SERVOZ].moving == DRIVER_DIR_STOP ){
 		if( cc>HX_SPEED){
 			cc   = 0;
 			int16_t val1 = readValue(PIN_B2_HALL_X);
@@ -381,6 +431,7 @@ void parseInput( String input ){
 	boolean defaultResult = true;
 	byte command	= input.charAt(0);
 	byte il			= input.length();
+	last_android	= millis();
 
 	if( command == 'Q' ) {    // QCOLOR, change all leds, color in hex
 		String digits    	= input.substring( 1 );
@@ -405,20 +456,17 @@ void parseInput( String input ){
 		DEBUGLN("-setAcceleration: " + String(val) );
 	}else if( input.equals("EX") ) {    // enable motor
 		stepperX.enableOutputs();
-
+		/*
 	}else if( input.equals("EY") ) {    // enable motor
-		digitalWrite(PIN_B2_SERVOS_ENABLE_PIN, LOW);
 		byte index = INNER_SERVOY;
 		servo_lib[index].attach(servos[index].pin);
 		servos[index].enabled= true;
-
+		enable6v();
 	}else if( input.equals("EZ") ) {    // enable motor
-		digitalWrite(PIN_B2_SERVOS_ENABLE_PIN, LOW);
 		byte index = INNER_SERVOZ;
 		servo_lib[index].attach(servos[index].pin);
 		servos[index].enabled= true;
-		
-
+		enable6v();*/
 	}else if( command == 'D' ) {    // disable motor
 		byte command2	= input.charAt(1);
 		if( command2 == 'X' ){
@@ -432,40 +480,8 @@ void parseInput( String input ){
 			}
 			stepperX.fastWrite(servos[index].pin, HIGH);		// set to 1
 			servos[index].pos_changed = false;
-			digitalWrite(PIN_B2_SERVOS_ENABLE_PIN, HIGH);
+			disable6v();
 		}
-	}else if(command == 'A' ) {    // A
-		defaultResult = false;
-		byte source = input.charAt(1) -48;		// ascii to num ( '0' = 48 )
-
-		if( source == INNER_HALL_X ){
-			int16_t val1 = readValue(PIN_B2_HALL_X);
-			byte newStateId = get_hx_state_id( val1 );
-			send_hx_pos(newStateId, val1 );
-
-		}else if( source ==  INNER_HALL_Y ){ 				// A1
-			int16_t val1 = readValue(PIN_B2_HALL_Y );
-			byte newStateId = get_hy_state_id( val1 );
-			send_y_pos(newStateId, val1 );
-
-		}else if( source ==  INNER_WEIGHT ){				// A2 
-			int16_t val1 = readValue(PIN_B2_WEIGHT );			
-			Serial.print("RRA2,");
-			Serial.println(String(val1));
-
-		}else if( source ==  INNER_POS_Z ){
-			int16_t val1 = readValue( PIN_B2_HALL_Z );
-			byte ttt[4] = {
-				METHOD_IMPORTANT_ANALOG, 
-				INNER_POS_Z,
-				(val1 & 0xFF),
-				(val1 >>8),
-			};
-			sendln(ttt,4);
-		}else{
-			send_error(input);
-		}
-		
 	}else if(command == 'G' ) {    // G
 		unsigned int val		= decodeInt(input, 1);
 		Serial.print("-G");
@@ -474,7 +490,7 @@ void parseInput( String input ){
 
 	}else if( input.equals( "WR") ){      // wait for return - tylko zwrÃ³c zwrotke
 
-	}else if( command == 'M' && il == 5 ){		// save 1 char to eeprom in 2 cells. address in HEX!!! ie.: M0FF3 = write F3 into addresses: 0F*2 and 0F*2+1
+	}else if( command == 'M' && il >= 4 ){		// save 1 char to eeprom in 2 cells. address in HEX!!! ie.: M0FF3 = write F3 into addresses: 0F*2 and 0F*2+1
 		char charBuf[6];
 		input.toCharArray(charBuf,6);
 		unsigned char ad    = 0;
@@ -489,21 +505,57 @@ void parseInput( String input ){
 
 	}else{
 		defaultResult = false;
-		if( input.equals( "PING2ANDROID") ){      // nic nie rob
+		if( input.equals( "AA") ){    	// android active	// no result
 
+		}else if(command == 'A' ) {    // A
+			byte source = input.charAt(1) -48;		// ascii to num ( '0' = 48 )
+			if( source == INNER_HALL_X ){
+				int16_t val1 = readValue(PIN_B2_HALL_X);
+				byte newStateId = get_hx_state_id( val1 );
+				send_hx_pos(newStateId, val1 );
+
+			}else if( source ==  INNER_HALL_Y ){ 				// A1
+				int16_t val1 = readValue(PIN_B2_HALL_Y );
+				byte newStateId = get_hy_state_id( val1 );
+				send_y_pos(newStateId, val1 );
+
+			}else if( source ==  INNER_WEIGHT ){				// A2
+				int16_t val1 = readValue(PIN_B2_WEIGHT );			
+				Serial.print("RRA2,");
+				Serial.println(String(val1));
+
+			}else if( source ==  INNER_POS_Z ){
+				int16_t val1 = readValue( PIN_B2_HALL_Z );
+				byte ttt[4] = {
+					METHOD_IMPORTANT_ANALOG, 
+					INNER_POS_Z,
+					(val1 & 0xFF),
+					(val1 >>8),
+				};
+				sendln(ttt,4);
+			}else{
+				send_error(input);
+			}
 		}else if(command == 'a' ) {    				// a2  - read analog value
 			byte source = input.charAt(1) -48;		// ascii to num ( '0' = 48 )
 			int16_t val1 = readValue( A0 + source );	// 0 = analog 0
 			Serial.print("RRa");
-			Serial.print(String(source));
+			Serial.print(source, DEC);
 			Serial.print(",");	
 			Serial.println(String(val1));
+
+		}else if( input.equals( "IH") ){						// is home, reset X pos to 0
+			stepperX.setCurrentPosition(0);
+			Serial.print("RRx0");
+			Serial.println();
+			Serial.println("RRIH");
 		}else if(command == 'X' ) {    // X10,10              // TARGET,MAXSPEED
 			paserDeriver(DRIVER_X, input);
 		}else if( command == 'Y' ) {    // Y10,10             // TARGET,SPEED
 			paserDeriver(DRIVER_Y,input);
 		}else if(command == 'Z') {    // Z10,10               // TARGET,SPEED
 			paserDeriver(DRIVER_Z,input);
+			/*
 		}else if(command == 'K') {    // K1900               // move Z with max speed TARGET,SPEED(int,decimal)
 			unsigned int pos		= decodeInt(input, 1);
 			byte index				= INNER_SERVOZ;
@@ -511,21 +563,21 @@ void parseInput( String input ){
 			servos[index].target_pos= pos;
 			servo_lib[index].attach(servos[index].pin);
 			servo_lib[index].writeMicroseconds(servos[index].last_pos);
-			digitalWrite(PIN_B2_SERVOS_ENABLE_PIN, LOW);
-			delay(10);
+			enable6v();
+			delay(100);
 			send_servo(false, localToGlobal(index), pos );
-
+*/
 		}else if( input.equals( "PING") ){
-			Serial.println("PONG");	
-		}else if( command == METHOD_GET_TEMP ){  
+			Serial.println("PONG");
+			/*
+		}else if( command == 'T' ){  
 			uint8_t tt = GetTemp();
-			Serial.print("RT");
-			Serial.println(String(tt));
-			Serial.flush();
-
+			Serial.print("RRT");
+			Serial.println(tt, DEC);
+*/
 		}else if( command == 'x') {	//METHOD_GET_X_POS
 			long int pos = stepperX.currentPosition();
-			Serial.print("Rx"); 
+			Serial.print("RRx"); 
 			Serial.print(String(pos)); 
 			Serial.println();
 			Serial.flush();
@@ -535,7 +587,7 @@ void parseInput( String input ){
 		}else if( command == 'z' ) {    // pobierz pozycje
 			byte ttt[5] = {METHOD_I2C_SLAVEMSG,  1, METHOD_GET_Z_POS, (servos[INNER_SERVOZ].last_pos & 0xFF),(servos[INNER_SERVOZ].last_pos >>8) };
 			sendln(ttt,5);
-		}else if( command == 'm' && il == 3 ){		// read 2 chars from eeprom. ie.: m15, address in DEC!!!
+		}else if( command == 'm' && il == 3 ){		// read 2 chars from eeprom. ie.: m15, address in HEX, value in dec
 			char charBuf[5];
 			unsigned char ad    = 0;
 			input.toCharArray(charBuf,5);
@@ -544,20 +596,23 @@ void parseInput( String input ){
 			byte ad2	= ad*2+1;
 			byte val1	= eeprom_read_byte((unsigned char *) ad1);
 			byte val2	= eeprom_read_byte((unsigned char *) ad2);
-			defaultResult = false;
-			Serial.print("Rm");
-			Serial.print(String(ad));
+			Serial.print("RRm");
+			Serial.print(ad, HEX);
 			Serial.print(',');
-			Serial.print(String(val1));
+			Serial.print(val1, DEC);
 			Serial.print(',');
-			Serial.println(String(val2));
+			Serial.println(val2, DEC);
 		}else if( command == 'V' ){
-			Serial.print("RV");
-			Serial.println(String(MAINBOARD_VERSION));
-			Serial.flush();
+			Serial.print("RRV");
+			Serial.println(String(B2_VERSION));
+		}else if( command == 'S' ){
+			defaultResult = false;
+			sendStats();
 		}else if( input.equals( "RESET") ){
-			Serial.println("RR" + input );
-			delay(1000);
+			Serial.println("RRRESET");		// R R RESET
+			delay(3000);
+			Serial.println("RRESET_START");
+			Serial.flush();
 			pinMode(PIN_B2_SELF_RESET, OUTPUT );	
 			digitalWrite(PIN_B2_SELF_RESET, LOW );	
 		}else{
@@ -606,11 +661,22 @@ void setColor(byte num, unsigned long int color){
 		top_panels.show();
 	}
 }
-
 void send_error( String input){
 	Serial.print("E" );	
 	Serial.println( input );
 	Serial.flush();
+}
+void enable6v(){
+//	pinMode(PIN_B2_SERVOS_ENABLE_PIN, INPUT );		// make pin low (with pull-down)
+//	digitalWrite(PIN_B2_SERVOS_ENABLE_PIN, LOW );	// disable pull up
+	pinMode(PIN_B2_SERVOS_ENABLE_PIN, OUTPUT );		// make pin low (with pull-down)
+	digitalWrite(PIN_B2_SERVOS_ENABLE_PIN, LOW );	// disable pull up
+	servo_start_time	= millis();
+}
+void disable6v(){
+	pinMode(PIN_B2_SERVOS_ENABLE_PIN, OUTPUT );
+	digitalWrite(PIN_B2_SERVOS_ENABLE_PIN, HIGH );	// disable power
+	servo_start_time	= 0;
 }
 
 void paserDeriver( byte driver, String input2 ){   // odczytaj komende silnika
@@ -638,30 +704,31 @@ void paserDeriver( byte driver, String input2 ){   // odczytaj komende silnika
 		if(maxspeed > 0){
 			stepperX.setMaxSpeed(maxspeed);
 		}
-		int16_t val1	= readValue(PIN_B2_HALL_X);
-		byte stateId	= get_hx_state_id( val1 );
+		int16_t value	= readValue(PIN_B2_HALL_X);
+		byte stateId	= get_hx_state_id( value );
 		byte state_name	= hallx_state[stateId][0];
 		byte dir		= 0;
 		boolean stop_moving = false;
 		long int dis = target - stepperX.currentPosition();	// distance
 		if( dis > 0 ){	// DRIVER_DIR_FORWARD
+			dir = DRIVER_DIR_FORWARD;
 			if( state_name == HX_STATE_1 ){			// moving up, max found
 				stop_moving = true;
 			}
 		}else if( dis < 0 ){	// DRIVER_DIR_BACKWARD
+			dir = DRIVER_DIR_BACKWARD;
 			if( state_name == HX_STATE_9 ){   		// moving down, min found
 				stop_moving = true;
 			}
+		}else{
+			dir = DRIVER_DIR_STOP;
 		}
 		if(stop_moving){
-			send_hx_pos( newStateId, value );	// send to mainboard
-
-			Serial.print("-stop_moving: " );
+			Serial.print("-stop_moving " );
 			Serial.println(String(dis));
+			send_hx_pos2(state_name, dir, value);				// send hall value to mainboard
 			stepperIsReady = true;		//
 		}else{
-			Serial.print("-ok, move: " );
-			Serial.println(String(dis));
 			stepperX.moveTo(target);
 		}
 	}else if( maxspeed > 0 && driver == DRIVER_Y ){            // stepper Y
@@ -803,7 +870,7 @@ void run_to(byte index, byte sspeed, uint16_t target){
 		servo_lib[index].attach(servos[index].pin);
 		servos[index].enabled = true;
 	}
-	digitalWrite(PIN_B2_SERVOS_ENABLE_PIN, LOW);
+	enable6v();
 }
 
 void send_servo( boolean error, byte servo, uint16_t pos ){
@@ -828,7 +895,7 @@ void send_servo( boolean error, byte servo, uint16_t pos ){
 }
 
 void send_hx_pos( byte stateId, int16_t value ) {
-	//Serial.println("new state: " + String(stateId) + " @ " + String(value) );
+	//Serial.println("new state: " + String(stateId) + " - " + String(value) );
 	byte state_name	= hallx_state[stateId][0];
 	byte dir = 0;
 	boolean stop_moving = false;
@@ -850,6 +917,10 @@ void send_hx_pos( byte stateId, int16_t value ) {
 		stepperX.stopNow();
 		dir = 0;
 	}
+	send_hx_pos2(state_name, dir, value);
+}
+
+void send_hx_pos2( byte state_name, byte dir, int16_t value ) {
 	bytepos.i		= stepperX.currentPosition();
 	byte ttt[10] = {
 		METHOD_IMPORTANT_ANALOG, 	// 0
@@ -865,9 +936,9 @@ void send_hx_pos( byte stateId, int16_t value ) {
 	};	
 	Serial.print("-A0,");
 	Serial.println(String(value));
-
 	sendln(ttt,10);
 }
+
 void send_y_pos( byte stateId, int16_t value){
 	byte state_name	= hally_state[stateId][0];
 	uint16_t pos = servos[INNER_SERVOY].last_pos;
@@ -902,6 +973,10 @@ byte localToGlobal( byte ind ){      // get global device index used in android
 		return DRIVER_Y;
 	}
 	return DRIVER_Z;  // INNER_SERVOZ
+}
+
+void stepperReady( long int pos ){		// in interrupt
+	stepperIsReady = true;
 }
 
 uint8_t GetTemp(){

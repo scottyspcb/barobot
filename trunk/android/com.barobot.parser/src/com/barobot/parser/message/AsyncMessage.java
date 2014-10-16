@@ -51,13 +51,13 @@ public class AsyncMessage extends History_item{
 		blocking= false;
 	}
 
-	public final Queue start(Mainboard dev, Queue queue) {
+	public final Queue start(Mainboard dev, Queue mainQueue) {
 		Queue nextq = null;
 		this.wasstarted = true;
 		if(this.command != ""){
 			dev.send( addSufix() ? ( command + "\n") : command );
 		}else{
-			nextq = this.run(dev, queue);
+			nextq = this.run(dev, mainQueue);
 		}
 		if(this.wait4Finish()){
 		//	this.send_timestamp	= System.currentTimeMillis();

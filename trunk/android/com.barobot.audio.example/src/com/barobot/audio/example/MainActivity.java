@@ -116,10 +116,7 @@ public class MainActivity extends Activity implements OnSignalsDetectedListener{
 			@Override
 			public Queue run(Mainboard dev, Queue queue) {
 				this.name		= "turnoff";
-				Upanel[] up		= barobot.i2c.getUpanels();
-				for( int i=0;i<up.length ;i++){
-					barobot.main_queue.add( "L"+ up[i].getAddress() + ",ff,0", true );
-				}
+				barobot.turnOffLeds(barobot.main_queue);
 				return null;
 			}
 		} );
@@ -127,25 +124,23 @@ public class MainActivity extends Activity implements OnSignalsDetectedListener{
 			@Override
 			public Queue run(Mainboard dev, Queue queue) {
 				this.name		= "scanning";
-				Upanel[] up		= barobot.i2c.getUpanels();
-				if(up.length >= 12){
-					Map<String, Integer> config = new HashMap<String, Integer>();
-					config.put("source",  MediaRecorder.AudioSource.MIC);
-					config.put("frameByteSize", 2048);
-					config.put("channelDef", AudioFormat.CHANNEL_IN_MONO);
-					config.put("channels", 1 );
-					config.put("sampleSize", 2048 );
-					config.put("averageLength", 2048 );
-					config.put("audioEncoding",  AudioFormat.ENCODING_PCM_16BIT);
-					config.put("bitDepth",   16 );
-					config.put("sampleRate", 44100);
-	
-					recorderThread = new AndroidRecorderThread( config );
-					recorderThread.start();
-					detectorThread = new DetectorThread( config, recorderThread);
-					detectorThread.setOnSignalsDetectedListener(MainActivity.this);
-					detectorThread.start();
-				}
+				Map<String, Integer> config = new HashMap<String, Integer>();
+				config.put("source",  MediaRecorder.AudioSource.MIC);
+				config.put("frameByteSize", 2048);
+				config.put("channelDef", AudioFormat.CHANNEL_IN_MONO);
+				config.put("channels", 1 );
+				config.put("sampleSize", 2048 );
+				config.put("averageLength", 2048 );
+				config.put("audioEncoding",  AudioFormat.ENCODING_PCM_16BIT);
+				config.put("bitDepth",   16 );
+				config.put("sampleRate", 44100);
+
+				recorderThread = new AndroidRecorderThread( config );
+				recorderThread.start();
+				detectorThread = new DetectorThread( config, recorderThread);
+				detectorThread.setOnSignalsDetectedListener(MainActivity.this);
+				detectorThread.start();
+
 				return null;
 			}
 		} );

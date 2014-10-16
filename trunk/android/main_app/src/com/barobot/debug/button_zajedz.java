@@ -3,6 +3,7 @@ import com.barobot.BarobotMain;
 import com.barobot.R;
 import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
+import com.barobot.parser.Queue;
 
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -21,146 +22,86 @@ public class button_zajedz  implements OnClickListener {
 		BarobotMain bb			= BarobotMain.getInstance();
 		BarobotConnector barobot = Arduino.getInstance().barobot;
 		boolean autofill		= ( barobot.state.getInt("AUTOFILL", 1 ) == 1 );
-		boolean setting_mode	= button_click.set_bottle_on;
+		Queue q					= new Queue();
 
 		switch (v.getId()) {
 		  case R.id.start_pos:
-			  if(setting_mode){
-				int posx		=  barobot.driver_x.getSPos();;	
-				int posy		=  barobot.state.getInt("POSY", 0 );
-				barobot.hereIsStart(posx, posy);
-			  }else{
-				  barobot.moveToStart( barobot.main_queue );
-				  barobot.onDrinkFinish( barobot.main_queue );
-			  }
+				  barobot.moveToStart( q );
+				  barobot.onDrinkFinish( q );
 			  break;
 		  case R.id.nalej1:
-			  if(setting_mode){
-				  barobot.hereIsBottle(0);
-			  }else{
-				  barobot.moveToBottle(barobot.main_queue,0, !autofill);
+				  barobot.moveToBottle(q,0, !autofill);
 				  if( autofill){
-					  barobot.pour(barobot.main_queue, 20, 0, true);
+					  barobot.pour(q, 20, 0, true);
 				  }
-			  }
 		    break;
 		  case R.id.nalej2:
-			  if(setting_mode){
-				  barobot.hereIsBottle(1);
-			  }else{
-				  barobot.moveToBottle(barobot.main_queue,1, !autofill);
+				  barobot.moveToBottle(q,1, !autofill);
 				  if( autofill){
-					  barobot.pour(barobot.main_queue, 20, 1, true);
+					  barobot.pour(q, 20, 1, true);
 				  }
-			  }
 			  break;
 		  case R.id.nalej3:
-			  if(setting_mode){
-				  barobot.hereIsBottle(2);
-			  }else{
-				  barobot.moveToBottle(barobot.main_queue,2, !autofill);
+				  barobot.moveToBottle(q,2, !autofill);
 				  if( autofill){
-					  barobot.pour(barobot.main_queue, 20, 2, true);
-				  }
-			  }	    	  
+					  barobot.pour(q, 20, 2, true);
+				  }   	  
 		      break;
 		  case R.id.nalej4:
-			  if(setting_mode){
-				  barobot.hereIsBottle(3);
-			  }else{
-				  barobot.moveToBottle(barobot.main_queue,3, !autofill);
+				  barobot.moveToBottle(q,3, !autofill);
 				  if( autofill){
-					  barobot.pour(barobot.main_queue, 20, 3, true);
+					  barobot.pour(q, 20, 3, true);
 				  }
-			  }
 		      break;
 		  case R.id.nalej5:
-			  if(setting_mode){
-				  barobot.hereIsBottle(4);
-			  }else{
-				  barobot.moveToBottle(barobot.main_queue,4, !autofill);
+				  barobot.moveToBottle(q,4, !autofill);
 				  if( autofill){
-					  barobot.pour(barobot.main_queue, 20, 4, true);
+					  barobot.pour(q, 20, 4, true);
 				  }
-			  }
 		      break;
 		  case R.id.nalej6:
-			  if(setting_mode){
-				  barobot.hereIsBottle(5);
-			  }else{
-				  barobot.moveToBottle(barobot.main_queue,5, !autofill);
+				  barobot.moveToBottle(q,5, !autofill);
 				  if( autofill){
-					  barobot.pour(barobot.main_queue, 20, 5, true);
+					  barobot.pour(q, 20, 5, true);
 				  }
-			  }
 		      break;
 		  case R.id.nalej7:
-			  if(setting_mode){
-				  barobot.hereIsBottle(6);
-
-			  }else{
-				  barobot.moveToBottle(barobot.main_queue,6, !autofill);
+				  barobot.moveToBottle(q,6, !autofill);
 				  if( autofill){
-					  barobot.pour(barobot.main_queue, 20, 6, true);
+					  barobot.pour(q, 20, 6, true);
 				  }
-			  }
 		      break;
 		  case R.id.nalej8:
-			  if(setting_mode){
-				  barobot.hereIsBottle(7);
-			  }else{
-				  barobot.moveToBottle(barobot.main_queue,7, !autofill);
+				  barobot.moveToBottle(q,7, !autofill);
 				  if( autofill){
-					  barobot.pour(barobot.main_queue, 20, 7, true);
-				  }
-			  }	  
+					  barobot.pour(q, 20, 7, true);
+				  } 
 		      break;
 		  case R.id.nalej9:
-			  if(setting_mode){
-				  barobot.hereIsBottle(8);
-			  }else{
-				  barobot.moveToBottle(barobot.main_queue,8, !autofill);
+				  barobot.moveToBottle(q,8, !autofill);
 				  if( autofill){
-					  barobot.pour(barobot.main_queue, 20, 8, true);
+					  barobot.pour(q, 20, 8, true);
 				  }
-			  }
 			  break;
 	      case R.id.nalej10:
-			  if(setting_mode){
-				  barobot.hereIsBottle(9);
-			  }else{
-				  barobot.moveToBottle(barobot.main_queue,9, !autofill);
+				  barobot.moveToBottle(q,9, !autofill);
 				  if( autofill){
-					  barobot.pour(barobot.main_queue, 20, 9, true);
+					  barobot.pour(q, 20, 9, true);
 				  }
-			  }
 		      break;
 	      case R.id.nalej11:
-			  if(setting_mode){
-				  barobot.hereIsBottle(10);
-			  }else{
-				  barobot.moveToBottle(barobot.main_queue,10, !autofill);
+				  barobot.moveToBottle(q,10, !autofill);
 				  if( autofill){
-					  barobot.pour(barobot.main_queue, 20, 10, true);
+					  barobot.pour(q, 20, 10, true);
 				  }
-			  }
 		      break;
 	      case R.id.nalej12:
-			  if(setting_mode){
-				  barobot.hereIsBottle(11);
-			  }else{
-				  barobot.moveToBottle(barobot.main_queue,11, !autofill);
+				  barobot.moveToBottle(q,11, !autofill);
 				  if( autofill){
-					  barobot.pour(barobot.main_queue, 20, 11, true);
-				  }
-			  }	    	  
+					  barobot.pour(q, 20, 11, true);
+				  }    	  
 		      break;
 		}
-	  if(setting_mode){
-		button_click.set_bottle_on= false;
-		int posx		=  barobot.driver_x.getSPos();;	
-		int posy		=  barobot.state.getInt("POSY", 0 );
-		Toast.makeText(bb, "Zapisano ["+posx+"/"+posy+"] jako butelka", Toast.LENGTH_LONG).show();
-	  }
+		barobot.main_queue.add(q);
 	}
 }

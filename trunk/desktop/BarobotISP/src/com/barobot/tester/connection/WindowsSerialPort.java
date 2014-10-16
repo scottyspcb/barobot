@@ -181,7 +181,11 @@ public class WindowsSerialPort implements Wire, CanSend{
 	public void reset() {
 		// TODO Auto-generated method stub
 	}
-
+	
+	@Override
+	public SerialInputListener getReceiveListener() {
+		return this.listener;
+	}
 
 	class SerialPortReader implements SerialPortEventListener {
         public void serialEvent(SerialPortEvent event) {

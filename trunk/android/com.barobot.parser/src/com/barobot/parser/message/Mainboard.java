@@ -57,13 +57,15 @@ public class Mainboard{
 		}
 	}
 
-	private void analyseInput(final String command) {
-		Initiator.logger.i("input command: " , command);
+	private void analyseInput(String command) {	
+		command = command.replaceAll("[^-A-Za-z0-9,.!\\[\\] !]","");			// all other chars are unallowed
+	//	Initiator.logger.i("input command: " , command);
 	//	History_item hi = new History_item( command, History_item.INPUT );	
 	//	new Thread( new Runnable(){		// geto out of the serial port thread
 	//		@Override
 	//		public void run() {
 				try {
+					
 					if("".equals(command)){
 						//			Log.i(Constant.TAG, "pusta komenda!!!]");
 					}else{

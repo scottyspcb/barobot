@@ -1,6 +1,9 @@
 package com.barobot.hardware;
 
 import java.io.IOException;
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 import android.app.Activity;
 
@@ -18,13 +21,15 @@ import com.barobot.hardware.devices.MyRetReader;
 import com.barobot.hardware.serial.BT_wire;
 import com.barobot.hardware.serial.Serial_wire2;
 import com.barobot.parser.Queue;
+import com.barobot.parser.utils.Interval;
 
 public class Arduino{
-//	private final Object lock			= new Object();
-	private static Arduino instance		= null;
-	private Wire connection				= null;
-	private Wire debugConnection		= null;
-	public boolean stop_autoconnect		= false;
+	private static Arduino instance			= null;
+	private Wire connection					= null;
+	private Wire debugConnection			= null;
+	public boolean stop_autoconnect			= false;
+	public SerialInputListener listener;
+	public static boolean firmwareUpload	= false;
 
 	private AndroidHardwareContext ahc;
 	private Activity mainView;
@@ -36,14 +41,22 @@ public class Arduino{
 	}
 	public Arduino(Activity main) {
 		this.state					= new AndroidBarobotState(main);		
-		this.barobot				= new BarobotConnector( state );
 		state.set("show_unknown", 1 );
 		state.set("show_sending", 1 );
 		state.set("show_reading", 1 );
+		this.barobot			= new BarobotConnector( state );
 		instance				= this;
+		Interval ii1 = new Interval(new Runnable(){
+			public void run() {
+				if( Arduino.getInstance().getConnection().isConnected() && !barobot.main_queue.isBusy() && !firmwareUpload){
+					barobot.main_queue.sendNow("AA");
+				}
+			}});
+		AppInvoker.getInstance().inters.add(ii1);
+		ii1.run( 2000, 2000 );
 	}
 
-	public Wire gecConnection(){
+	public Wire getConnection(){
 		return connection;
 	}
 
@@ -59,22 +72,14 @@ public class Arduino{
 			boolean firstTime = true;
 			@Override
 			public void onConnect() {
+				barobot.state.set( "STAT2", barobot.state.getInt( "STAT2", 0 ) + 1 );				// serial start
 				if(firstTime){
-					Queue mq = barobot.main_queue;
-					mq.add( "\n", false );	// clean up input
-					mq.add( "\n", false );
-			//		mq.unlock();
-			//		mq.add("RESET2", true);		// resetuj MB
-					mq.add(Constant.GETXPOS, true);
-					mq.add(Constant.GETYPOS, true);
-					mq.add(Constant.GETZPOS, true);
-					AppInvoker.getInstance().onConnected();
+					AppInvoker.getInstance().onConnected(barobot.main_queue);
 					firstTime = false;
 				}else{
 					Queue mq = barobot.main_queue;
 					mq.add( "\n", false );	// clean up input
 					mq.add( "\n", false );
-			//		mq.unlock();
 				}
 			}
 			@Override
@@ -85,7 +90,7 @@ public class Arduino{
 			public void connectedWith(String bt_connected_device, String address) {
 			}
 		});
-		SerialInputListener listener = barobot.willReadFrom( connection );
+		listener				= barobot.willReadFrom( connection );
 		barobot.willWriteThrough( connection );
 	//		prepareDebugConnection();
 	//	ahc = new AndroidHardwareContext( barobot, state );
@@ -227,71 +232,26 @@ public class Arduino{
 			}
 		}
     }
-
 	public void connectId(String address) {
 		Initiator.logger.i("Arduino.connectId", "autoconnect z: " +address);
 		if(debugConnection!=null){
 			debugConnection.connectToId(address);
 		}
 	}
-	
 	public void resetSerial() {
 		if( connection != null ){
 			connection.reset();
 		}
 	}
-
-}
-
-/*
-    private void sendSomething(){
-   		stopping = false;
-
-   		Log.d("serial", "sendSomething");
-	    Runnable tt = new Runnable(){
-	        @Override
-	        public void run() {
-	            Random generator = new Random( 19580427 );
-	            Log.d("serial", "Start writter");
-	            while(!stopping && connection != null ){
-	            	if( connection.isConnected()){
-		                int r = generator.nextInt();
-		                String test = "hello arduino "+ r + "\n";
-		                send(test);
-		                try {
-		                    Thread.sleep(500);
-		                } catch (InterruptedException e) {
-		                   Initiator.logger.appendError(e);
-		                }
-	            	}
-	            }
-	            Log.d("serial", "koniec writter");
-	        }};
-	        Thread writer = new Thread(tt);
-	        writer.start();
-    }
-
-    private void runTimer( final Wire connection ) {
-//    	interval inn = new interval();
-//   	inn.run(1000,5000);
-//    	this.inters.add(inn);
-    	interval inn = new interval(new Runnable() {
-    		private int count = 0;
-		    public void run() {
-		    	Arduino ar = Arduino.getInstance();
-		        if( ar.allowAutoconnect()){
-		        	count++;
-		        	if(count > 2){		// po 10 sek
-		//        		Initiator.logger.i("RUNNABLE", "3 try autoconnect" );
-		        		connection.setAutoConnect( true ); 
-		        	}
-			    }else{
-			    	count = 0;
-		        }
-		   }
-		});
-    	inn.run(1000,5000);
-    	inn.pause();
-    	AppInvoker.getInstance().inters.add(inn);
+	public static String MD5Hash(String toHash) throws RuntimeException {
+	   try{
+	       return String.format("%032x", // produces lower case 32 char wide hexa left-padded with 0
+	      new BigInteger(1, // handles large POSITIVE numbers 
+	           MessageDigest.getInstance("MD5").digest(toHash.getBytes())));
+	   }
+	   catch (NoSuchAlgorithmException e) {
+	      // do whatever seems relevant
+	   }
+	   return null;
 	}
-*/
+}

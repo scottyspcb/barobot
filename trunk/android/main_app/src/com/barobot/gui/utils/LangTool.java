@@ -15,6 +15,8 @@ import com.barobot.common.Initiator;
 import com.barobot.common.constant.Constant;
 import com.barobot.gui.dataobjects.Language;
 import com.barobot.gui.dataobjects.Translated_name;
+import com.barobot.hardware.Arduino;
+import com.barobot.hardware.devices.BarobotConnector;
 
 public class LangTool {
 	private static String order =  " ";
@@ -22,6 +24,7 @@ public class LangTool {
 	private static Map<String, String> translation_cache = new HashMap<String, String>();
 
 	public static void setLanguage(String readLangCode) {
+		Initiator.logger.w("setLanguage", readLangCode);
 		ModelQuery query = ModelQuery.select().from(Language.class).where(C.eq("lang_code", readLangCode));
 		Language l = Model.fetchSingle(query.getQuery(), Language.class);
 		if( l == null ){
@@ -29,6 +32,9 @@ public class LangTool {
 			return;
 		}
 		setLanguage(l.id);
+
+		BarobotConnector barobot = Arduino.getInstance().barobot;
+		barobot.state.set("LANG", readLangCode );
 	}
 
 	public static void setLanguage(int newLangId) {

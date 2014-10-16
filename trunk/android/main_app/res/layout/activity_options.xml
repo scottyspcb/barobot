@@ -35,6 +35,7 @@
             style="@style/OptionsMenuButton"
             android:layout_alignParentLeft="true"
             android:layout_below="@id/options_recipe_setup_button"
+            android:enabled="false"
             android:onClick="onOptionsButtonClicked"
             android:text="@string/options_extra_setup_button" />
 
@@ -43,6 +44,7 @@
             style="@style/OptionsMenuButton"
             android:layout_alignParentTop="true"
             android:layout_toRightOf="@id/options_bottle_setup_button"
+            android:enabled="false"
             android:onClick="onOptionsButtonClicked"
             android:text="@string/options_lights_button"
             android:textOff="@string/options_lights_button"
@@ -53,6 +55,7 @@
             style="@style/OptionsMenuButton"
             android:layout_below="@id/options_lights_button"
             android:layout_toRightOf="@id/options_bottle_setup_button"
+            android:enabled="false"
             android:onClick="onOptionsButtonClicked"
             android:text="@string/options_demo_button" />
 

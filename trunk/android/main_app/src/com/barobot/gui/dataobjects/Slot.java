@@ -5,6 +5,11 @@ import org.orman.mapper.annotation.Entity;
 import org.orman.mapper.annotation.ManyToOne;
 import org.orman.mapper.annotation.PrimaryKey;
 
+import com.barobot.BarobotMain;
+import com.barobot.hardware.Arduino;
+import com.barobot.hardware.devices.BarobotConnector;
+import com.barobot.parser.Queue;
+
 @Entity
 public class Slot extends Model<Slot>{
 	public static String STATUS_EMPTY = "Empty"; 
@@ -45,9 +50,15 @@ public class Slot extends Model<Slot>{
 	}
 	public int getSequence(int quantity) {
 		int count = (int) Math.round( quantity / this.dispenser_type );
-		if( count == 0 ){
+		if( count == 0 && quantity > 0 ){			// todo sub-values
 			count = 1;
 		}
 		return count;
+	}
+	public void setLed(int r, int g, int b, boolean always ) {
+		BarobotConnector barobot = Arduino.getInstance().barobot;
+		if( always || !barobot.main_queue.isBusy() ){				// only if queue empty or isAlways
+			barobot.setLedsByBottle( barobot.main_queue, position - 1, "00", 0, r, g, b, true );	
+		}
 	}
 }

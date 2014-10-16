@@ -70,7 +70,7 @@
     <string name="options_lights_button">Światła</string>
     <string name="options_demo_button">Demo świateł</string>
     <string name="options_advanced_button">Zaawansowane</string>
-    <string name="options_about_button">Konfiguracja</string>
+    <string name="options_about_button">Aktualizacja</string>
     <string name="options_turn_off_button">Homeing</string>
 
     <!-- Create Activity -->
@@ -119,4 +119,10 @@
     <string name="goto_main_menu">Główne menu</string>
     <string name="myip">Pokaż adres urządzenia</string>
 
+    <string name="update_title">Aktualizacja</string>
+    <string name="update_msg">Pojawiła się nowa, lepsza wersja aplikacji Barobot. Zalecana jest jej instalacja. Czy chcesz pobrać ją teraz?</string>
+    <string name="update_yes">Tak</string>
+    <string name="update_no">Nie</string>
+    
+    
 </resources>

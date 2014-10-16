@@ -126,8 +126,8 @@ class STK500Const{
 
 public class Stk500 extends UploadProtocol{
     static final String TAG = Stk500.class.getSimpleName();
-    private static final boolean DEBUG_SHOW_RECV        = true;
-    static final boolean DEBUG_SHOW_DUMP_LOGE   = true;
+    private static final boolean DEBUG_SHOW_RECV     = false;
+    static final boolean DEBUG_SHOW_DUMP_LOGE  		 = true;
 
     IspCommunicator mComm;
     AvrConf mAVRConf;
@@ -156,6 +156,7 @@ public class Stk500 extends UploadProtocol{
         int totalRetval=0;
         long endTime;
         long startTime = System.currentTimeMillis();
+        int timeout	= 600;
         byte[] tmpbuf = new byte[length];
 
      //   Log.d(TAG, "start recv " +length);
@@ -175,7 +176,7 @@ public class Stk500 extends UploadProtocol{
             if(totalRetval >= length){break;}
 
             endTime = System.currentTimeMillis();
-            if((endTime - startTime) > 1500) {
+            if((endTime - startTime) > timeout) {
                 Log.e(TAG,"recv timeout recieved:" + totalRetval  + "/ expected " + length+ " loop: " + l);
                 break;
             }
@@ -183,7 +184,9 @@ public class Stk500 extends UploadProtocol{
         return retval;
     }
     private int getsync() {
-    	Log.i(TAG,"getsync");
+    	if(DEBUG_SHOW_RECV) {
+    		Log.i(TAG,"getsync");
+    	}
 
         byte[] buf  = new byte[32];
         byte[] resp = new byte[32];
@@ -212,12 +215,16 @@ public class Stk500 extends UploadProtocol{
           Log.e(TAG,"STK500.getsync(): can't communicate with device: resp="+Utils.toHexStr(resp[0]));
           return -1;
         }
-        Log.e(TAG,"STK500.getsync() OK");
+    	if(DEBUG_SHOW_RECV) {
+    		 Log.i(TAG,"STK500.getsync() OK");
+    	}
         return 0;
     }
 
     public int check_sig_bytes() {
-    	Log.i(TAG,"check_sig_bytes");
+    	if(DEBUG_SHOW_RECV) {
+    		Log.i(TAG,"check_sig_bytes");
+    	}
         byte[] buf = new byte[32];
 
         buf[0] = STK500Const.Cmnd_STK_READ_SIGN;
@@ -246,14 +253,16 @@ public class Stk500 extends UploadProtocol{
             return -3;
         }
         if(mAVRConf.signature[0] == buf[1] && mAVRConf.signature[1] == buf[2] && mAVRConf.signature[2] == buf[3]) {
-        	Log.e(TAG,"STK500.check_sig_bytes() OK");
+        	Log.i(TAG,"STK500.check_sig_bytes() OK");
         	return 0;
         }
         return -4;
     }
 
     public int open() {
-    	Log.i(TAG,"open");
+    	if(DEBUG_SHOW_RECV) {
+    		Log.i(TAG,"open");
+    	}
         callback.resetDevice( true, mComm );
         try { Thread.sleep(20); } catch (InterruptedException e) {}
         callback.resetDevice( false, mComm );
@@ -273,12 +282,16 @@ public class Stk500 extends UploadProtocol{
         if(res<0) { 
         	return -1;
         }
-        Log.e(TAG,"STK500.open() OK");
+        if(DEBUG_SHOW_RECV) {
+        	Log.i(TAG,"STK500.open() OK");
+        }
         return 0;
     }
 
     public int initialize() {
-    	Log.i(TAG,"initialize");
+    	if(DEBUG_SHOW_RECV) {
+    		Log.i(TAG,"initialize");
+    	}
         byte[] buf = new byte[32];
         int tries;
         int[] majArr={0};
@@ -423,7 +436,9 @@ public class Stk500 extends UploadProtocol{
     }
 
     private int program_enable() {
-    	Log.i(TAG,"program_enable");
+    	if(DEBUG_SHOW_RECV) {
+    		Log.i(TAG,"program_enable");
+    	}
         byte[] buf = new byte[16];
         int tries = 0;
         boolean bRetry = true;
@@ -641,7 +656,7 @@ public class Stk500 extends UploadProtocol{
 
         for (addr = 0; addr < n; addr += page_size) {
             if(Thread.interrupted()) {
-                report_cancel();
+             //   report_cancel();
                 return 0;
             }
             report_progress((int)(addr*100/n));

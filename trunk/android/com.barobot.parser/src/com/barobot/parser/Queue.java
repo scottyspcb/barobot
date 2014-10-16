@@ -8,6 +8,7 @@ import com.barobot.common.Initiator;
 import com.barobot.parser.message.AsyncMessage;
 import com.barobot.parser.message.LimitedBuffer;
 import com.barobot.parser.message.Mainboard;
+import com.barobot.parser.utils.Interval;
 
 /*
  * LinkedList<E>
@@ -199,7 +200,7 @@ public class Queue {
 			msg = new AsyncMessage( command, true ){
 				@Override
 				public boolean isRet(String result, Queue q) {
-					Initiator.logger.i("Queue.add.isRet1?:", result  + " of " + command );
+			//		Initiator.logger.i("Queue.add.isRet1?:", result  + " of " + command );
 					if( retcmd.equals( result )){
 						return true;
 					}
@@ -399,7 +400,6 @@ public class Queue {
 					}
 				}
 	//			Initiator.logger.i("Queue.addWaitThread length", ""+output.size() );
-
 				exec();
 			//	Initiator.logger.i("Queue", "START wait");
 				synchronized(thread){

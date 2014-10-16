@@ -47,25 +47,6 @@ public abstract class I2C_Device_Imp implements I2C_Device{
 	//	System.out.println("+addLed " +command);
 		q.add( command, true );
 	}
-
-	public void setRgbw(Queue q1, int red, int green, int blue, int white) {
-		float ratio		= ((float)I2C_Device_Imp.level)/I2C_Device_Imp.MAX_LEVEL;
-		red		= Pwm.linear2log(red, ratio);
-		green	= Pwm.linear2log(green, ratio);	
-		blue	= Pwm.linear2log(blue, ratio);
-		white	= Pwm.linear2log(white, ratio);
-		if(ledOrderType == 1){
-			this.addLed(q1, "11", red);
-			this.addLed(q1, "22", green);
-			this.addLed(q1, "44", blue);
-//			this.setLed(q1, "88", white);
-		}else{
-			this.addLed(q1, "11", red);
-			this.addLed(q1, "24", green);
-			this.addLed(q1, "42", blue);
-//			this.setLed(q1, "88", white);
-		}
-	}
 	
 	@Override
 	public void setLed(Queue q, String selector, int pwm ) {
@@ -263,40 +244,7 @@ public abstract class I2C_Device_Imp implements I2C_Device{
 	public static String verbose( int verbose ) {
 		return Decoder.strRepeat(" -v", verbose);
 	}
-	/*
-	public Queue progStartCommand() {
-		Queue q = new Queue();
-		// prog mode on, powiadom wszystkich
-		for (I2C_Device v : I2C.lista){
-		    if(v.getAddress() > 0 && v.getAddress() !=  LowHardware.I2C_ADR_MAINBOARD){
-		    	q.add( 
-		    			I2C.send( LowHardware.I2C_ADR_MAINBOARD, 
-		    					Methods.METHOD_PROG_MODE_ON,
-		    					new byte[]{(byte) this.myaddress}
-		    			));
-		    }
-		}
-		if( myindex > 0 ){
-			q.add(new AsyncMessage( "RESETN " + myindex, true, true ));
-		}else{
-			// znajdz poprzedni i kaz zresetowac mnie
-			if(canBeResetedBy!= null){
-				q.add(I2C.send( canBeResetedBy.getAddress(), Methods.METHOD_RESET_NEXT ));
-			}
-		}
-		return q;
-	}*/
-/*
-	public Queue progEndCommand() {
-		Queue q = new Queue();
-		// prog mode off, powiadom wszystkich
-		for (I2C_Device v : I2C.lista){
-		    if(v.getAddress() > 0 && v.getAddress() !=  LowHardware.I2C_ADR_MAINBOARD){
-		    	q.add( I2C.send( LowHardware.I2C_ADR_MAINBOARD, Methods.METHOD_PROG_MODE_OFF ));
-		    }
-		}
-		return q;
-	}*/
+	
 	public void hasResetTo(int index, I2C_Device dev2 ) {
 		dev2.isResetedBy( this );
 		//canReset.add(dev2);
@@ -308,21 +256,6 @@ public abstract class I2C_Device_Imp implements I2C_Device{
 			onchange.run();
 		}
 	}
-
-	/*
-	public Queue resetCommand() {
-		Queue q = new Queue();
-		if( myindex > 0 ){
-			q.add( new AsyncMessage( "RESETN " + myindex, true, true ));
-		}else{
-			// znajdz poprzedni i kaz zresetowac mnie
-			if(canBeResetedBy!= null){
-				q.add(I2C.send( canBeResetedBy.getAddress(), Methods.METHOD_RESET_NEXT ));
-				q.add(I2C.send( canBeResetedBy.getAddress(), Methods.METHOD_RUN_NEXT ));
-			}
-		}
-		return q;
-	}*/
 
 	public void onchange(Runnable runnable) {
 		this.onchange = runnable;

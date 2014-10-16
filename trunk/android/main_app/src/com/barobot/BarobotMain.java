@@ -1,7 +1,16 @@
 package com.barobot;
 
+import java.io.File;
+import java.util.Locale;
+
+import com.barobot.gui.utils.LangTool;
+import com.barobot.other.Android;
+
 import android.app.Activity;
+import android.content.res.Resources;
 import android.os.Bundle;
+import android.os.Environment;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -25,7 +34,7 @@ public class BarobotMain extends Activity {
 		AppInvoker.getInstance().onCreate();
 	}
 
-    protected void setTextViewText(String text, int id){
+	protected void setTextViewText(String text, int id){
 		TextView tView = (TextView) findViewById(id);
 		tView.setText(text);
 	}
@@ -59,6 +68,19 @@ public class BarobotMain extends Activity {
 			        | View.SYSTEM_UI_FLAG_FULLSCREEN
 			        | View.SYSTEM_UI_FLAG_IMMERSIVE);			
 		}*/
+	}
+
+	public void changeLanguage(String langCode) {
+		Resources res = this.getBaseContext().getResources();
+		DisplayMetrics dm = res.getDisplayMetrics();
+
+		android.content.res.Configuration conf = res.getConfiguration();
+
+		conf.locale = new Locale(langCode);
+		res.updateConfiguration(conf, dm);
+
+		LangTool.setLanguage(langCode);
+
 	}
 }
 /*

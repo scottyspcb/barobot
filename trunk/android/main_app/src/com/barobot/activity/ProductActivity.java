@@ -60,7 +60,6 @@ public class ProductActivity extends BarobotMain {
 		if(slot_changes){
 			Engine.GetInstance().invalidateData();
 			Engine.GetInstance().loadSlots();
-			Log.w("ProductActivity","onDestroy");
 		}
 	}
 
@@ -107,6 +106,7 @@ public class ProductActivity extends BarobotMain {
 		if (position != 0)
 		{
 			UpdateCapacity(slot.dispenser_type);
+			slot.setLed( 100, 0, 0, false );
 			Product prod = slot.product;
 			if (prod != null){
 				SetCurrentProduct(prod);
@@ -339,6 +339,7 @@ public class ProductActivity extends BarobotMain {
 			slot.product = null;
 			slot.status = "Empty";
 			slot.currentVolume = 0;
+			slot.setLed( 0, 100, 0, false );
 			slot.update();
 			Engine.GetInstance().invalidateData();
 		}
@@ -353,6 +354,7 @@ public class ProductActivity extends BarobotMain {
 			slot.status = "OK";
 			slot.currentVolume = mCurrentProduct.capacity;
 			slot.update();
+			slot.setLed( 0, 100, 0, false );
 			slot_changes = true;
 			this.finish();	
 		}

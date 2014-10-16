@@ -222,6 +222,10 @@ public class BT_wire implements Wire {
 		this.iel = iel;
 	}
 	@Override
+	public SerialInputListener getReceiveListener() {
+		return this.listener;
+	}
+	@Override
 	public void reset() {		
 	}
 	@Override

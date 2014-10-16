@@ -2,6 +2,7 @@ package com.barobot.hardware.serial;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -66,13 +67,13 @@ public class Serial_wire2 implements CanSend, Wire{
 		    }
 		};
 	}
-	
+
 	@Override
 	public Serial_wire2 newInstance() {
 		Serial_wire2 sw = new Serial_wire2(this.view );
 		return sw;
 	}
-	
+
     private final Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -99,7 +100,7 @@ public class Serial_wire2 implements CanSend, Wire{
 	                        }
 						}
                 	}
-            //        mHandler.sendEmptyMessageDelayed(MESSAGE_REFRESH, REFRESH_TIMEOUT_MILLIS);
+           //         mHandler.sendEmptyMessageDelayed(MESSAGE_REFRESH, REFRESH_TIMEOUT_MILLIS);
                     break;
                 default:
                     super.handleMessage(msg);
@@ -143,12 +144,16 @@ public class Serial_wire2 implements CanSend, Wire{
 
 	@Override
 	public void resume() {
+		Initiator.logger.e("Serial_wire.resume","resume");
 		//this.open();
 		synchronized(lock){
 	        if (sPort == null) {
+	        	Initiator.logger.i("Serial_wire.resume","setSearching");
 	        	setSearching(true);
 	        }else if(sPort.isOpen()){
+	        	Initiator.logger.i("Serial_wire.resume","opened");
 	        }else{
+	        	Initiator.logger.i("Serial_wire.resume","try open");
 	            try {
 				sPort.open(mUsbManager);
 				sPort.setParameters(baud, 8, UsbSerialPort.STOPBITS_1, UsbSerialPort.PARITY_NONE); 
@@ -174,6 +179,7 @@ public class Serial_wire2 implements CanSend, Wire{
 
 	@Override
 	public void onPause() {
+		Log.i("serial", "onPause");
         synchronized(lock){
 	        if (sPort != null) {
 	        //	closePort();
@@ -183,7 +189,6 @@ public class Serial_wire2 implements CanSend, Wire{
         }
     }
 
-	
 	private void closePort() {
 		try {
     		sPort.close();
@@ -212,7 +217,7 @@ public class Serial_wire2 implements CanSend, Wire{
     		iel.onClose();
     	}
 	}
-	
+
 	@Override
 	public void destroy() {
 		mHandler.removeMessages(MESSAGE_REFRESH);
@@ -237,7 +242,6 @@ public class Serial_wire2 implements CanSend, Wire{
 		return false;
 	}
 
-	
     private final BroadcastReceiver mPermissionReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -259,7 +263,11 @@ public class Serial_wire2 implements CanSend, Wire{
 
     private void refreshDeviceList() {
     	Log.d("Serial_wire.refreshDeviceList", "Refreshing device list ...");
-        for (UsbDevice device : mUsbManager.getDeviceList().values()) {
+    	if( mUsbManager == null ){
+    		Log.e("Serial_wire.refreshDeviceList", "mUsbManager is null");
+    	}
+    	Collection<UsbDevice> vs = mUsbManager.getDeviceList().values();
+        for (UsbDevice device : vs ) {
             UsbSerialDriver driver =  UsbSerialProber.probeSingleDevice(device);
             if (driver == null) {
 //               Log.d("serial", "  - No UsbSerialDriver available.");
@@ -332,6 +340,7 @@ public class Serial_wire2 implements CanSend, Wire{
 	}
 
     private void knowIsClosed() {
+    	Log.i("serial", "Notice serial closed 1");
     	setSearching(false);
 		stopIoManager();
 		synchronized(lock){
@@ -345,6 +354,9 @@ public class Serial_wire2 implements CanSend, Wire{
     	if(iel!=null){
     		iel.onClose();
     	}
+    	// 
+    	Log.i("serial", "Notice serial closed 2");
+    	startIoManager();
 	}
 
 	private void onDeviceStateChange() {
@@ -494,6 +506,11 @@ public class Serial_wire2 implements CanSend, Wire{
 	@Override
 	public void setOnReceive(SerialInputListener inputListener) {
 		this.listener =  inputListener;
+	}
+	
+	@Override
+	public SerialInputListener getReceiveListener() {
+		return this.listener;
 	}
 
 	@Override

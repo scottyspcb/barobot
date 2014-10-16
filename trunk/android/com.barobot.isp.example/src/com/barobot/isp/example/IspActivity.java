@@ -107,10 +107,6 @@ public class IspActivity extends Activity {
 	            }
 	        }
 	        @Override
-	        public void onCancel() {
-	            tvAppend(tstart, "Cancel uploading\n");
-	        }
-	        @Override
 	        public void onError(UploadErrors err) {
 	            tvAppend(tstart, "Error  : "+err.toString()+"\n");
 	        }

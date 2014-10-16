@@ -19,7 +19,6 @@ public interface I2C_Device {
 	public abstract String getIsp();
 
 	public abstract void addLed(Queue q, String selector, int pwm);
-	public abstract void setRgbw(Queue q, int red, int green, int blue, int white);
 	public abstract void setLed(Queue q, String selector, int pwm);
 	public abstract void setColor(Queue q, boolean top, int red, int green, int blue, int white);
 
@@ -42,6 +41,7 @@ public interface I2C_Device {
 	public void hasResetTo(int index, I2C_Device dev2 );
 
 	public abstract String checkExists(Queue q);
+
 
 	
 

@@ -72,7 +72,7 @@
     <string name="options_lights_button">Настройки освещения</string>
     <string name="options_demo_button">Деморежим</string>
     <string name="options_advanced_button">Расширенные настройки</string>
-    <string name="options_about_button">О Barobot</string>
+    <string name="options_about_button">Update</string>
 	<string name="options_turn_off_button">Калибровка</string>
 
     <!-- Create Activity -->

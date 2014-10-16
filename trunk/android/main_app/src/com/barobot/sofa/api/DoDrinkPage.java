@@ -57,11 +57,9 @@ public class DoDrinkPage extends Page {
 			return new JsonResponseBuilder().status("ERROR")
 					.message("You lack appropriate ingredients").build();
 		}
-
-		engine.Pour(recipe);
+		engine.Pour(recipe, "api");
 	//	engine.SetMessage("Pouring recipe no. " + recipe.id + ": " + recipe.name);
 
 		return new JsonResponseBuilder().status("OK").build();
 	}
-
 }

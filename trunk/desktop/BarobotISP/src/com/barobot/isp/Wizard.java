@@ -267,33 +267,4 @@ public class Wizard {
 		q.addWait(5000 );
 		LightManager.zgas(hw.barobot, q);
 	}
-
-
 }
-
-
-/*
-
-hw.send("I", "RI");
-Operation  op	= new Operation( "runTo" );
-op.needParam("x", 10 );
-op.needParam("y" );
-op.needParam("z", 20 );
-op.needParam("sth", null );		
-//hw.send("TEST", "RTEST");
-//	q.addWaitThread( Main.main );
-System.out.println("wizard end");
-
-
-
-		/*
-		Queue q						= hw.getQueue();
-		MotorDriver driver_x		= new MotorDriver();
-		driver_x.defaultSpeed		= 2500;
-		driver_x.setSPos( 0 );
-		driver_x.movoTo(q, 1000);
-		driver_x.movoTo(q, 2000);
-		driver_x.movoTo(q, 1000);
-	//	MainBoard mb	= new MainBoard();
-	//	mb.moveX(max);
-*/

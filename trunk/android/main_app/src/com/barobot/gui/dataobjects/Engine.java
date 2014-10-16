@@ -18,12 +18,12 @@ import android.os.Environment;
 import android.util.Log;
 
 import com.barobot.common.Initiator;
+import com.barobot.common.constant.Constant;
 import com.barobot.gui.database.BarobotData;
 import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
 import com.barobot.other.Android;
 import com.barobot.other.InternetHelpers;
-import com.barobot.other.update_drinks;
 import com.barobot.parser.Queue;
 import com.barobot.parser.message.AsyncMessage;
 import com.barobot.parser.message.Mainboard;
@@ -76,46 +76,38 @@ public class Engine {
 	{
 		try {
 			String appPath2 	= context.getPackageManager().getPackageInfo(context.getPackageName(), 0).applicationInfo.dataDir;
-			String dbFolderPath = appPath2+"/databases";
 			String dbPath 		= appPath2+"/databases/" + BarobotData.DATABASE_NAME;
 
-			Initiator.logger.i("Engine.app path", appPath2 );
-			Initiator.logger.i("Engine.db path", dbPath );
+		//	Initiator.logger.i("Engine.app path", appPath2 );	// /data/data/com.barobot/databases/
+			Initiator.logger.i("Engine.db path", dbPath );	// /data/data/com.barobot/databases/ + DATABASE_NAME;
 
-			File file = new File(dbFolderPath);
-			if (!file.exists()) {
-				if (!file.mkdirs()) {
-					Log.e("TravellerLog :: ", "Problem creating folder:" + file.getAbsolutePath());
+			// check there is a valid database
+			File ss = context.getDatabasePath( BarobotData.DATABASE_NAME );
+			if( ss.exists() ){
+				Initiator.logger.i("Engine DB", "db exists in: " + ss.getAbsolutePath() );
+			}else{
+				String resetPath	= 	Environment.getExternalStorageDirectory()+ Constant.copyPath;	
+				File src = new File(resetPath);
+				if(src.exists()){
+					try {
+						Initiator.logger.i("Engine DB ", "copy from SD card: "+ resetPath );
+						InternetHelpers.copy( resetPath, dbPath );
+					} catch (IOException e) {
+						Initiator.logger.e("Engine DB ", "copy error", e );
+					}
+				}else{
+					Initiator.logger.e("Engine DB File not exists:", resetPath );
+					Initiator.logger.e("Engine DB File", "copy from assets: "+ "/BarobotOrman.db" );
+					Android.copyAsset( context, "BarobotOrman.db", Constant.localDbPath );
 				}
 			}
+			BarobotData.StartOrmanMapping(context);
 
 		} catch (NameNotFoundException e1) {
-			// TODO Auto-generated catch block
+			Initiator.logger.w("Engine.Engine", "NameNotFoundException", e1);
 			e1.printStackTrace();
 		}
-		// check there is a valid database
-		File ss = context.getDatabasePath( BarobotData.DATABASE_NAME );
-		if( ss.exists() ){
-			Initiator.logger.i("Engine DB", "db exists in: " + ss.getAbsolutePath() );
-		}else{
-			String resetPath	= 	Environment.getExternalStorageDirectory()+ update_drinks.copyPath;	
-			File src = new File(resetPath);
-			if(src.exists()){
-				try {
-					Initiator.logger.i("Engine DB ", "copy from SD card: "+ resetPath );
-					InternetHelpers.copy( resetPath, update_drinks.localDbPath );
-				} catch (IOException e) {
-					Initiator.logger.e("Engine DB ", "copy error", e );
-				}
-			}else{
-				Initiator.logger.e("Engine DB File not exists:", resetPath );
-				Initiator.logger.e("Engine DB File", "copy from assets: "+ "/BarobotOrman.db" );
-				Android.copyAsset( context, "BarobotOrman.db", update_drinks.localDbPath );
-			}
-		}
-		BarobotData.StartOrmanMapping(context);
 	}
-
 	public List<Slot> loadSlots()
 	{
 		if (slots == null)
@@ -123,7 +115,7 @@ public class Engine {
 			BarobotConnector barobot	= Arduino.getInstance().barobot;
 			int robotId					= barobot.getRobotId();
 
-			Query q = ModelQuery.select().from(Slot.class).where(C.eq("robot_id", robotId)).getQuery();
+			Query q		= ModelQuery.select().from(Slot.class).where(C.eq("robot_id", robotId)).getQuery();
 			slots		= Model.fetchQuery(q, Slot.class);
 
 			// slots in robot with robotId
@@ -191,12 +183,12 @@ public class Engine {
 		}
 		return result;
 	}
-	
+
 	public List<Recipe_t> getAllRecipes()
 	{
 		return BarobotData.GetRecipes();
 	}
-	
+
 	public void addRecipe(Recipe_t recipe, List<Ingredient_t> ingredients)
 	{
 		for(Ingredient_t ing : ingredients)
@@ -219,22 +211,47 @@ public class Engine {
 		return true;
 	}
 
-	public Boolean Pour(final Recipe_t recipe)
+	public Boolean Pour(final Recipe_t recipe, String orderSource)
 	{
 		//	List<Integer> bottleSequence = GenerateSequence(ings);
 		List<Ingredient_t> ings = recipe.getIngredients();
-		BarobotConnector barobot = Arduino.getInstance().barobot;
+		final BarobotConnector barobot = Arduino.getInstance().barobot;
+		final Log_drink ld	= new Log_drink();
+		int pours			= 0;
+		int quantity		= 0;
+		int real_quantity	= 0;
+
+		ld.robot_id			= barobot.getRobotId();
+		ld.order_source		= orderSource;
+		ld.datetime			= Android.getTimestamp();
+		ld.id_drink			= recipe.id;
+		ld.ingredients		= ings.size(); 
 
 		Queue q = new Queue();
+		q.add( new AsyncMessage( true ) {
+			@Override	
+			public String getName() {
+				return "start drink" ;
+			}
+			@Override
+			public Queue run(Mainboard dev, Queue queue) {
+				ld.temp_before	= barobot.getLastTemp();
+				return null;
+			}
+		} );
 		barobot.startDoingDrink(q);
 
 		for(Ingredient_t ing : ings){
 			Slot slot = getIngredientSlot(ing);
 			if (slot != null){
-				int position = slot.position;
-				int count = slot.getSequence( ing.quantity );
+				int position	= slot.position;
+				int count		= slot.getSequence( ing.quantity );
+				quantity		+=ing.quantity;
+				real_quantity	+=slot.dispenser_type * count;
+				pours 			+=count;
 		//		Log.i("Prepare", ""+position+"/"+count );
-				barobot.moveToBottle(q, position-1, false );
+
+				barobot.moveToBottle(q, position-1, true );
 				for (int iter = 1; iter <= count ; iter++){
 					if( iter > 1){
 		//				Log.i("Prepare", "addWait" );
@@ -249,6 +266,11 @@ public class Engine {
 			}else{// We could not find some of the ingredients
 			}
 		}
+		ld.size			= pours;
+		ld.size_ml		= quantity;
+		ld.size_real_ml	= real_quantity;
+		ld.error_code	= 0;
+
 		q.add( new AsyncMessage( true ) {
 			@Override	
 			public String getName() {
@@ -264,7 +286,7 @@ public class Engine {
 				return q2;
 			}
 		} );
-	
+		q.add( "S", true );		// read temp after
 		q.add( new AsyncMessage( true ) {
 			@Override	
 			public String getName() {
@@ -274,6 +296,9 @@ public class Engine {
 			public Queue run(Mainboard dev, Queue queue) {
 				recipe.counter++;
 				recipe.update();
+				ld.temp_after	= barobot.getLastTemp();
+				ld.time			= Android.getTimestamp() - ld.datetime;		// time diff in sec
+				ld.insert();
 				return null;
 			}
 		} );
@@ -328,6 +353,25 @@ public class Engine {
 		}
 		return bottleSequence;
 	}
+	public Map<Integer, Integer> GenerateBottleUsage(List<Ingredient_t> ingredients)
+	{
+		Map<Integer, Integer> nMap 	= new HashMap<Integer, Integer>();
+		for(Ingredient_t ing : ingredients)
+		{
+			Slot slot = getIngredientSlot(ing);
+			if (slot == null){
+				return null;
+			}else{
+				int count = slot.getSequence( ing.quantity );
+				nMap.put(slot.position, count);
+			}
+		}
+		return nMap;
+	}
+	
+	
+	
+	
 
 	public Slot getIngredientSlot(Ingredient_t ing){
 		loadSlots();

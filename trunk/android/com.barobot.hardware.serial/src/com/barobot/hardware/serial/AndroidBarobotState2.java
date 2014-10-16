@@ -18,6 +18,7 @@ public class AndroidBarobotState2 implements HardwareState{
 	private SharedPreferences myPrefs;
 
 	private static String[] persistant = {
+		"STAT1",
 		"POSX",
 		"POSY",
 		"POSZ",

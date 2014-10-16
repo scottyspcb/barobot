@@ -12,6 +12,7 @@ import org.orman.sql.C;
 
 import android.content.Context;
 
+import com.barobot.common.constant.Constant;
 import com.barobot.gui.dataobjects.Category;
 import com.barobot.gui.dataobjects.Dispenser_type;
 import com.barobot.gui.dataobjects.Important_position;
@@ -19,6 +20,8 @@ import com.barobot.gui.dataobjects.Ingredient_t;
 import com.barobot.gui.dataobjects.Language;
 import com.barobot.gui.dataobjects.Liquid_t;
 import com.barobot.gui.dataobjects.Log;
+import com.barobot.gui.dataobjects.Log_drink;
+import com.barobot.gui.dataobjects.Log_start;
 import com.barobot.gui.dataobjects.Photo;
 import com.barobot.gui.dataobjects.Product;
 import com.barobot.gui.dataobjects.Recipe_t;
@@ -31,7 +34,7 @@ import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
 
 public class BarobotData {
-	public static String DATABASE_NAME = "BarobotOrman.db";
+	public static String DATABASE_NAME = Constant.DATABASE_NAME;
 	public static int DATABASE_SCHEMA_VERSION = 3;
 	public static Database omdb = null;
 	
@@ -55,7 +58,8 @@ public class BarobotData {
 		MappingSession.registerEntity(Slot.class);
 		MappingSession.registerEntity(Translated_name.class);
 		MappingSession.registerEntity(Type.class);
-		
+		MappingSession.registerEntity(Log_drink.class);
+		MappingSession.registerEntity(Log_start.class);
 		MappingSession.registerDatabase(omdb);
 		MappingSession.start();
 	}

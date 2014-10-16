@@ -56,24 +56,25 @@ public class DebugTabCommands extends Fragment {
 		buttonToCommand.put( R.id.unlock, "unlock" );
 		buttonToCommand.put( R.id.pacpac, "pacpac" );
 		buttonToCommand.put( R.id.kalibrujx, "kalibrujx" );
-		buttonToCommand.put( R.id.enabley, "enabley" );
 		buttonToCommand.put( R.id.disablez, "disablez" );
-		buttonToCommand.put( R.id.disabley, "disabley" );
-	
+		buttonToCommand.put( R.id.disabley, "disabley" );	
+		buttonToCommand.put( R.id.disablex, "disablex" );	
+
 		buttonToCommand.put( R.id.set_robot_id, "set_robot_id" );
 		buttonToCommand.put( R.id.reset1, "reset1" );
 		buttonToCommand.put( R.id.reset, "reset" );
 		buttonToCommand.put( R.id.reset2, "reset2" );
 		buttonToCommand.put( R.id.reset3, "reset3" );
 		buttonToCommand.put( R.id.reset4, "reset4" );
-		buttonToCommand.put( R.id.goto_max_x, "goto_max_x" );
-		buttonToCommand.put( R.id.goto_min_x, "goto_min_x" );
+
+		
 		buttonToCommand.put( R.id.find_bottles, "find_bottles" );
 		buttonToCommand.put( R.id.reset_margin, "reset_margin" );
-		buttonToCommand.put( R.id.scann_i2c, "scann_i2c" );
 		buttonToCommand.put( R.id.analog_temp, "analog_temp" );
 		buttonToCommand.put( R.id.clear_queue, "clear_queue" );
 		buttonToCommand.put( R.id.reset_serial, "reset_serial" );
+		buttonToCommand.put( R.id.wait_for_cup, "wait_for_cup" );
+		
 		buttonToCommand.put( R.id.rb, "rb" );
 		buttonToCommand.put( R.id.rb2, "rb2" );
 		buttonToCommand.put( R.id.scann_leds, "scann_leds" );
@@ -94,12 +95,10 @@ public class DebugTabCommands extends Fragment {
 		buttonToCommand.put( R.id.set_y600, "set_y600" );
 		buttonToCommand.put( R.id.goToNeutralY, "goToNeutralY" );
 		buttonToCommand.put( R.id.kalibrujy, "kalibrujy" );
-		buttonToCommand.put( R.id.kalibrujz, "kalibrujz" );
 		buttonToCommand.put( R.id.machajx, "machajx" );
 		buttonToCommand.put( R.id.machajy, "machajy" );
 		buttonToCommand.put( R.id.machajz, "machajz" );
 		buttonToCommand.put( R.id.wznow, "wznow" );
-		buttonToCommand.put( R.id.i2c_test, "i2c_test" );
 		buttonToCommand.put( R.id.losujx, "losujx" );
 		buttonToCommand.put( R.id.losujy, "losujy" );
 		buttonToCommand.put( R.id.fill5000, "fill5000" );
@@ -139,8 +138,7 @@ public class DebugTabCommands extends Fragment {
 				R.id.download_database,
 				R.id.reset_database,
 				R.id.firmware_download,
-				R.id.firmware_burn,
-				R.id.set_bottle,
+				R.id.firmware_download_manual,
 		};
 
 		for(int i =0; i<buttons.length;i++){
@@ -162,7 +160,6 @@ public class DebugTabCommands extends Fragment {
 
 		button_toggle bt = new button_toggle();
 		int[] togglers = {
-				R.id.wagi_live,
 				R.id.need_glass,
 				R.id.auto_fill_on_ready
 		};

@@ -11,6 +11,8 @@ import java.io.OutputStream;
 
 import android.content.Context;
 import android.content.res.AssetManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Environment;
 import android.os.PowerManager;
 import android.text.format.Formatter;
@@ -136,8 +138,8 @@ public class Android {
 	                InetAddress inetAddress = enumIpAddr.nextElement();
 	                if (!inetAddress.isLoopbackAddress()) {
 	                	String ip = Formatter.formatIpAddress(inetAddress.hashCode());
-	                	res=  inetAddress.getHostAddress().toString();
-	                	Log.e("getLocalIpAddress","log:"+res + " / " + ip);
+	                	res= inetAddress.getHostAddress().toString();
+	                	Log.e("getLocalIpAddress","log:"+res + " / " + ip + "/" + inetAddress.hashCode());
 	                }
 	            }
 	        }
@@ -147,7 +149,7 @@ public class Android {
 	    }
 	    return null;
 	}
-	
+
 	public static String getLocalIpAddress2() {
 	    try {
 	        for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
@@ -219,5 +221,18 @@ public class Android {
 	    while((read = in.read(buffer)) != -1){
 	      out.write(buffer, 0, read);
 	    }
+	}
+
+	public static int isOnline( Context c) {
+	    ConnectivityManager cm = (ConnectivityManager) c.getSystemService(Context.CONNECTIVITY_SERVICE);
+	    NetworkInfo netInfo = cm.getActiveNetworkInfo();
+	    if (netInfo != null && netInfo.isConnectedOrConnecting()) {
+	        return netInfo.getType();
+	    }
+	    return -1;
+	}
+	public static long getTimestamp() {
+		java.util.Date date= new java.util.Date();
+		return new java.sql.Timestamp(date.getTime()).getTime();
 	}
 }
