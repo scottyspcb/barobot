@@ -10,4 +10,5 @@ public interface IspCommunicator {
     public void clearBuffer();
     public void reset(boolean b);
 	public void destroy();
+	public void init();
 }

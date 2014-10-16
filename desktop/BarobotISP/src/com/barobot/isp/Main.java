@@ -64,7 +64,7 @@ public class Main implements onReadyListener{
 		
 	//	hw.barobot.kalibrcja(hw.getQueue());
 		
-		hw.barobot.readRobotId( q );
+		hw.barobot.readHardwareRobotId( q );
 		
 
 	//	hw.barobot.scann_leds();
@@ -216,5 +216,15 @@ public class Main implements onReadyListener{
 	@Override
 	public void onReady() {
 		 Main.allowClose		= true;
+	}
+
+	@Override
+	public void setMessage(String string) {
+		// TODO Auto-generated method stub
+	}
+	@Override
+	public void setError(int num) {
+		// TODO Auto-generated method stub
+		
 	}
 }

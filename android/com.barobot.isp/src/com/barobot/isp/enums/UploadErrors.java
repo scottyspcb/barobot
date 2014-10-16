@@ -31,10 +31,12 @@ public enum UploadErrors {
     AVR_CHIPTYPE    (1,    "Unexpected AVR chip type."),
     FILE_OPEN       (2,    "Cannot open file."),
     HEX_FILE_OPEN   (3,    "Illegal .hex file."),
+
+    HEX_STREAM_NUll (25,   "HEX stream null"),
     
     HEX_FILE_OPEN1  (30,   "FileNotFoundException."),
-    HEX_FILE_OPEN2  (31,   "IOException."),
-    HEX_FILE_OPEN3  (32,   "Exception."),
+    HEX_FILE_OPEN2  (31,   "HEX_FILE_OPEN2."),
+    HEX_FILE_OPEN3  (32,   "HEX_FILE_OPEN3."),
 
     CHIP_INIT       (4,    "Cannot initialize a chip."),
     SIGNATURE       (5,    "Incorrect chip type."),

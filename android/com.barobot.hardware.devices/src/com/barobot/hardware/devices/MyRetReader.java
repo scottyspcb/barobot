@@ -17,6 +17,7 @@ public class MyRetReader implements RetReader {
 	private BarobotConnector barobot;
 	private HardwareState state;
 	private BarobotEventListener bel;
+	private int robot_id_high = 0;
 
 	public MyRetReader( BarobotEventListener bel, BarobotConnector brb ){
 		this.barobot	= brb;
@@ -44,6 +45,23 @@ public class MyRetReader implements RetReader {
 		} );
 		barobot.mb.addGlobalRegex( new GlobalMatch(){
 			@Override
+			public String getMatchRet() {
+				return "^POKE \\d+$";		// i.e. "POKE 820166"
+			}
+			@Override
+			public boolean run(Mainboard asyncDevice, String fromArduino, String wait4Command, AsyncMessage wait_for) {
+				fromArduino = fromArduino.replace("POKE ", "");
+				int millis = Decoder.toInt(fromArduino);
+				barobot.setLastSeen(millis);
+				return true;
+			}
+			@Override
+			public String getMatchCommand() {
+				return null;		// all
+			}
+		} );	
+		barobot.mb.addGlobalRegex( new GlobalMatch(){
+			@Override
 			public boolean run(Mainboard asyncDevice, String fromArduino, String wait4Command, AsyncMessage wait_for) {
 			//	Initiator.logger.i("Arduino.GlobalMatch.METHOD_IMPORTANT_ANALOG", fromArduino);
 				mrr.importantAnalog(asyncDevice, wait_for, fromArduino, false );
@@ -59,34 +77,6 @@ public class MyRetReader implements RetReader {
 			}
 		} );
 
-
-		barobot.mb.addGlobalRegex( new GlobalMatch(){
-			@Override
-			public boolean run(Mainboard asyncDevice, String fromArduino, String wait4Command, AsyncMessage wait_for) {
-			//	Initiator.logger.i("Arduino.GlobalMatch.RETURN_PIN_VALUE", fromArduino);
-				//{METHOD_I2C_SLAVEMSG,my_address, RETURN_PIN_VALUE, pin,value}
-				int[] parts = Decoder.decodeBytes( fromArduino );
-				short my_address	= (short) parts[1];
-				short pin			= (short) parts[3];
-				short value			= (short) parts[4];
-				Initiator.logger.i("Arduino.POKE-BUTTON", "Address:" + my_address + ", pin: " + pin+ ", value: " + value );
-				Queue q = barobot.main_queue;
-				if(value > 0 ){
-					q.add("L"+my_address+",ff,0", true);
-				}else{
-					q.add("L"+my_address+",ff,200", true);
-				}
-				return true;
-			}
-			@Override
-			public String getMatchRet() {
-				return "^" +  Methods.METHOD_I2C_SLAVEMSG + ",\\d+," + Methods.RETURN_PIN_VALUE + ",.*";
-			}
-			@Override
-			public String getMatchCommand() {
-				return null;		// all
-			}
-		} );
 		barobot.mb.addGlobalRegex( new GlobalMatch(){		// METHOD_DEVICE_FOUND
 			@Override
 			public boolean run(Mainboard asyncDevice, String fromArduino, String wait4Command, AsyncMessage wait_for) {				
@@ -133,6 +123,28 @@ public class MyRetReader implements RetReader {
 				return null;
 			}
 		} );
+	
+		barobot.mb.addGlobalRegex( new GlobalMatch(){		// METHOD_DEVICE_FOUND
+			@Override
+			public boolean run(Mainboard asyncDevice, String fromArduino, String wait4Command, AsyncMessage wait_for) {				
+				String decoded = "Arduino.GlobalMatch.METHOD_DEVICE_FOUND/MAINBOARD_DEVICE_TYPE";
+				int cx		= barobot.driver_x.getSPos();
+				barobot.driver_x.setM(cx);	// ostatnia znana pozycja jest marginesem
+				state.set("MARGINX", cx);
+				Queue mq = barobot.main_queue;
+				mq.clear();
+				Initiator.logger.i("MyRetReader.decoded", decoded);
+				return true;
+			}
+			@Override
+			public String getMatchRet() {
+				return "^BSTART$";
+			}
+			@Override
+			public String getMatchCommand() {
+				return null;
+			}
+		} );
 
 		barobot.mb.addGlobalRegex(  new GlobalMatch(){		// METHOD_TEST_SLAVE
 			@Override
@@ -157,32 +169,66 @@ public class MyRetReader implements RetReader {
 	public boolean isRetOf(Mainboard asyncDevice,
 			AsyncMessage wait_for2, String fromArduino, Queue mainQueue ) {
 
+	//	Initiator.logger.w("MyRetReader.isRetOf", fromArduino+ " for "+ command );
+
+		//	RESET	RRESET			RESET MAINBOARD
+		//	RESET3	RRESET3		OLD RESET NODE 3
+		//	RB		RRB			OLD	RESET I2C BUS
+		//	RB2		RRB2		OLD	RESET I2C BUS
+		//	TEST	RTEST		OLD	I2C TEST
+		//	T		RT94			TEMPERATURE
+		//	EX		REX				ENABLE X
+		//	EY		REY			OLD	ENABLE Y
+		//	EZ		REZ			OLD	ENABLE Z
+		//	DX		RDX				DISABLE X
+		//	DY		RDY				DISABLE Y
+		//	DZ		RDZ				DISABLE Z
+		//	x		Rx				GET X POS
+		//	y		Ry				GET Y POS
+		//	z		Rz				GET Z POS
+		//	Q		RQ				SET ALL LEDS
+		//	l		Rl				SET 1 LED
+		//	L		RL			OLD LEDS
+		//	B		RB			OLD LEDS
+		//	C		RC			OLD LEDS
+		//	AX		RAX				ACCELERATION X
+		//	G		RG
+		//	WR		RWR
+		//	M		RM				SET EEPROM
+		//	m		Rm				READ EEPROM
+		//	A		RA				READ ANALOG
+		//	a		Ra				READ ANALOG DIRECTLY
+		//	K		RK
+		//	PING	RPONG		OLD SYNCHRO
+		//	AA		-				ANDORID ACTIVE
+		//	V		RV				PCB VERSION
+		//	P		RP			OLD	PROGRAMER
+		//	N		RN			OLD HAS NEXT ON I2C
+		//	n		Rn			OLD HAS NEXT ON I2C
+		//	I		RI			OLD TEST I2C
+		//	IH		RIH				IS HOME
+
 		String command = "";
 		if(wait_for2!= null && wait_for2.command != null && wait_for2.command != "" ){
 			command = wait_for2.command;
-		}
-	//	Initiator.logger.w("MyRetReader.isRetOf", fromArduino+ " for "+ command );
-
-		if(wait_for2!= null && wait_for2.command != null && wait_for2.command != "" ){
-			if( fromArduino.startsWith( "R" + wait_for2.command )){
+			if( fromArduino.startsWith( "R" + command )){
+				if( fromArduino.startsWith( "Rm" ) || command.equals( "S" ) || command.equals("IH") || command.equals("A2") ){
+					// analyse below
+				}else{
+					Initiator.logger.i("Arduino.GlobalMatch", "auto_unlock");
+					return true;
+				}
+			}
+			if( fromArduino.startsWith( "E" + command)){		// error tez odblokowuje
 				return true;
 			}
-			if( fromArduino.startsWith( "E" + wait_for2.command)){		// error tez odblokowuje
-				return true;
-			}
-			if( fromArduino.startsWith("RX") && wait_for2.command.startsWith("x") ){
-				return true;
-			}
-			if( fromArduino.equals( "NO_CMD ["+ wait_for2.command +"]")){
+		//	if( fromArduino.startsWith("RX") && wait_for2.command.startsWith("x") ){
+		//		return true;
+		//	}
+			if( fromArduino.equals( "NO_CMD ["+ command +"]")){
 				return true;	// no command = unlock and log
 			}
 		}
-	
-	//	RESET3	RRESET3
-	//	RB		RRB
-	//	RB2		RRB2
-	//	TEST	RTEST
-	//	T		RT94
 
 		String decoded = "";
 		if( fromArduino.startsWith( "" + Methods.METHOD_I2C_SLAVEMSG) ){
@@ -319,56 +365,117 @@ public class MyRetReader implements RetReader {
 			Initiator.logger.i("MyRetReader.decoded", decoded);
 			return false;
 
-		}else if(fromArduino.startsWith(""+Methods.RETURN_PIN_VALUE) ){
-			return false;
 		}else if(fromArduino.startsWith(""+Methods.METHOD_CHECK_NEXT) ){
 			decoded += "/METHOD_CHECK_NEXT";
 
 		}else if(fromArduino.startsWith(""+Constant.RET) ){		// na końcu bo to może odblokować wysyłanie i spowodować zapętlenie
 			decoded += "/RET";
-			String fromArduino2 = fromArduino.substring(1);
-			if(fromArduino2.startsWith(Constant.GETXPOS)){
+			String fromArduino2 = fromArduino.substring(1);		// without R
+			if(fromArduino2.startsWith(Constant.GETXPOS)  ){
 				decoded += "/GETXPOS";
 				String fromArduino3 = fromArduino2.replace(Constant.GETXPOS, "");	
 				int hpos = Decoder.toInt(fromArduino3);	// hardware pos
 				barobot.driver_x.setHPos( hpos );
+				if( command.startsWith(Constant.GETXPOS)){
+					return true;
+				}else{
+					Initiator.logger.e("MyRetReader.decoded.wrong12", "command:" +command+ ", decoded: " + decoded + " fromArduino:'"+ fromArduino+"'" );
+				}
 			}else if(fromArduino2.startsWith(Constant.GETYPOS)){
 				decoded += "/GETYPOS";
-				
 				String fromArduino3 = fromArduino2.replace(Constant.GETYPOS, "");
 				state.set( "POSY",fromArduino3);
-
+				if( command.startsWith(Constant.GETYPOS)){
+					return true;
+				}else{
+					Initiator.logger.e("MyRetReader.decoded.wrong13", "command:" +command+ ", decoded: " + decoded + " fromArduino:'"+ fromArduino+"'" );
+				}
 			}else if(fromArduino2.startsWith(Constant.GETZPOS)){
 				decoded += "/GETZPOS";
 				String fromArduino3 = fromArduino2.replace(Constant.GETZPOS, "");
 				state.set( "POSZ",fromArduino3);
+				if( command.startsWith(Constant.GETZPOS)){
+					return true;
+				}else{
+					Initiator.logger.e("MyRetReader.decoded.wrong13", "command:" +command+ ", decoded: " + decoded + " fromArduino:'"+ fromArduino+"'" );
+				}
 
-		//	}else if(fromArduino2.startsWith( "M" ) ){				// save in eeprom memory
-			}else if(fromArduino2.startsWith( "m" ) ){				// eeprom memory
+			//}else if(fromArduino2.startsWith( "T" ) && command.equals("T")){				// temperature
+			//	return true;
+			//}else if(fromArduino2.startsWith( "V" ) && command.equals("V")){				// pcb version
+			//	return true;
+
+			}else if(fromArduino2.equals( "IH" ) && command.equals("IH")){				// is home
+				barobot.driver_x.setM(0);
+				barobot.driver_x.setHPos( 0 );
+				Initiator.logger.e("MyRetReader.decoded", "this is home");
+				return true;
+
+			}else if(fromArduino2.startsWith( "S" ) ){				// stats
+				String fromArduino3 = fromArduino2.substring(2);
+				int[] parts = Decoder.decodeBytes( fromArduino3 );
+				if(parts.length >= 5 ){
+					// RRS,VERSION,TEMP,STARTS,ROBOT_ID_LOW, ROBOT_ID_HIGH
+					if( parts[0] > 0 ){
+						state.set( "ARDUINO_VERSION", parts[0]);
+						Initiator.logger.e("MyRetReader.decoded.version", "is " + parts[0]);
+					}
+					if( parts[1] > 0 ){
+						state.set("TEMPERATURE", parts[1] );
+						Initiator.logger.e("MyRetReader.decoded.TEMPERATURE", "s " + parts[1]);
+					}
+					if( parts[2] > 0 ){
+						state.set("ARDUINO_STARTS", parts[2] );
+						Initiator.logger.e("MyRetReader.decoded.ARDUINO_STARTS", "is " + parts[2]);
+					}
+					if( parts[3] > 0 || parts[4] > 0 ){			// OR is ok
+						int id = (parts[4] << 8) + parts[3];
+						if( id > 0 && id < 65535 ){			// 65535 = 1111111111111111b (empty eeprom)
+							barobot.changeRobotId( id );
+						}
+					}
+				}
+				if( command.equals("S")){
+					return true;
+				}
+			}else if(fromArduino2.startsWith( "A2" ) && command.equals("A2")){
+				String fromArduino3 = fromArduino2.substring(3);		// 	RA2,598		=> A2,598		=> 598
+				int weight			= Decoder.toInt(fromArduino3);
+				if( weight > 0 ){			// 0 is imposible
+					state.set("LAST_WEIGHT", weight);
+				}
+				if( command.equals("A2") ){
+					return true;
+				}
+		//	}else if(fromArduino2.startsWith( "M" ) && command.startsWith("M") ){	// save in eeprom memory
+			}else if(fromArduino2.startsWith( "m" ) && command.startsWith("m")){	// eeprom memory
 				decoded += "/EEPROM";
 				String fromArduino3 = fromArduino2.substring(1);
 				String[] parts		= fromArduino3.split(",");
 				if(parts.length == 3){
-					int address = Decoder.toInt(parts[0]);
+					String addressHex	= parts[0];
+					int addressDec	= Decoder.fromHex(addressHex, -1);
+				//	int address 	= Decoder.fromHex(parts[0], -1);
 					int value1 = Decoder.toInt(parts[1]);
 					int value2 = Decoder.toInt(parts[2]);
-					decoded += "/"+address+"/"+value1;
+					decoded += "/"+addressDec+"/"+value1;
 					if(value1 != value2 ){
-						Initiator.logger.e("MyRetReader.decoded.fatal", "memory error: "+ address + ", value1 "+ value1+ ", value2 "+ value2 );
+						Initiator.logger.e("MyRetReader.decoded.fatal", "memory error: "+ addressDec + ", value1 "+ value1+ ", value2 "+ value2 );
 					}
-					from_eeprom_memory( address, value1 );
-					String expected = "m"+ Integer.toHexString(address);
+					from_eeprom_memory( addressDec, value1 );
+					String expected = "m"+ addressHex;
 					if( command.equals(expected) ){
+		//				Initiator.logger.e("MyRetReader.decoded", "[" + command + "], decoded: " + decoded + " fromArduino:"+ fromArduino );
 						return true;
 					}else{
-						Initiator.logger.e("MyRetReader.decoded.wrong8", "[" + command + "], decoded: " + decoded + " fromArduino:"+ fromArduino );
+		//				Initiator.logger.e("MyRetReader.decoded.wrong8", "[" + command + "], decoded: " + decoded + " fromArduino:"+ fromArduino );
 						return false;
 					}
 				}else{
 					Initiator.logger.e("MyRetReader.decoded.wrong8", "[" + command + "], decoded: " + decoded + " fromArduino:"+ fromArduino );
 				}
 			}else{
-				decoded += "/????";
+				decoded += "/????" + "fromArduino2: [" + fromArduino2+"], command: [" + command + "]";
 			}
 		}else if( fromArduino.startsWith( "" + Methods.METHOD_IMPORTANT_ANALOG) ){		// msg od slave		
 			Initiator.logger.i("MyRetReader.decoded checkInput", decoded);
@@ -409,9 +516,15 @@ public class MyRetReader implements RetReader {
 	}
 
 	private void from_eeprom_memory(int address, int value ) {
-		if( address == Methods.EEPROM_ROBOT_ID ){
-			Initiator.logger.i("MyRetReader.from_eeprom_memory", "EEPROM_ROBOT_ID: "+ value );
-			this.barobot.changeRobotId( value );
+		if( address == Methods.EEPROM_ROBOT_ID_HIGH ){
+			this.robot_id_high  = value;
+		}
+		if( address == Methods.EEPROM_ROBOT_ID_LOW ){		// always check high and then low, so here set robot_id
+			int value2 = (this.robot_id_high << 8) + value;
+			if( value2 > 0 && value2 < 65535 ){			// 65535 = 1111111111111111b (empty eeprom)
+				Initiator.logger.i("MyRetReader.from_eeprom_memory", "value4: "+ value2 );
+				this.barobot.changeRobotId( value2 );
+			}
 		}
 	}
 
@@ -629,13 +742,17 @@ public class MyRetReader implements RetReader {
 			//int hposx	= fromPos;
 			int spos2	= barobot.driver_x.hard2soft(hposx);
 			barobot.hereIsBottle(num, spos2, ypos );
-			Upanel up	= barobot.i2c.getUpanelByBottle(num);
 			Queue q		= barobot.main_queue;
-		    if( up != null ){
-		    	q.sendNow(  "L"+ up.getAddress() + ",02,200" );
-				//up.setLed( q, "ff", 0 );
+
+			if( barobot.newLeds){
+				barobot.setLedsByBottle(q, num, "02", 200, 0, 200, 0, false);
 			}else{
-	//			Initiator.logger.i("bottle "+ num +"","nie ma upanela dla id " + num );	
+				Upanel up	= barobot.i2c.getUpanelByBottle(num);
+			    if( up != null ){
+			    	q.sendNow(  "L"+ up.getAddress() + ",02,200" );
+				}else{
+		//			Initiator.logger.i("bottle "+ num +"","nie ma upanela dla id " + num );	
+				}
 			}
 		}else{
 			Initiator.logger.i("bottle "+ num +"", "nie zgadza sie");

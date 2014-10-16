@@ -48,32 +48,34 @@ public final class Uploader {
 	public void setHex(InputStream fileStream) {
 		mFileStream = fileStream;
 	}
-	public void setHex( String filePath) {
+	public boolean setHex( String filePath) {
 	    if (mCallBack == null) {
-	    	return;
+	    	return false;
 	    }
         if(filePath == null) {
             mCallBack.onError(UploadErrors.FILE_OPEN);
-            return;
+            return false;
         }
         File file = new File(filePath);
         if(!file.exists() || !file.isFile() || !file.canRead()) {
             mCallBack.onError(UploadErrors.FILE_OPEN);
-            return;
+            return false;
         }
         InputStream is;
         try {
             is = new FileInputStream(filePath);
         } catch(Exception e) {
             mCallBack.onError(UploadErrors.FILE_OPEN); 
-            return;
+            return false;
         }
         this.mFileStream = is;
+        return true;
 	}
 	public void setCallBack(UploadCallBack mUploadCallback) {
 		this.mCallBack   = mUploadCallback;
 	}
 	public void setSerial(IspCommunicator mSerial) {
+		mSerial.init();
 		this.mSerial = mSerial;
 	}
     public boolean close() throws RuntimeException {
@@ -88,13 +90,17 @@ public final class Uploader {
         }
     }
 	private boolean uploadCode() {
+	//	Initiator.logger.i("Uploader.uploadCode", "1");
         if(this.mBoard == null) {
             this.mCallBack.onError(UploadErrors.AVR_CHIPTYPE);
             return false;
         }
+      //  Initiator.logger.i("Uploader.uploadCode", "4");
         boolean ret = false;
         this.mCallBack.onPreUpload();
+      //  Initiator.logger.i("Uploader.uploadCode", "5");
         ret =  uploadCode2();
+      //  Initiator.logger.i("Uploader.uploadCode", "7");
         this.mCallBack.onPostUpload(ret);
         return ret;
     }
@@ -123,16 +129,24 @@ public final class Uploader {
             mAVRMem = new AvrMem(mAVRConf);
         } catch(Exception e) {
             mCallBack.onError(UploadErrors.AVR_CHIPTYPE);
+            logger.appendError(e);
             return false;
+        }
+        if( mFileStream == null ){
+            mCallBack.onError(UploadErrors.HEX_STREAM_NUll);
+        	return false;
         }
         try {
             getFileToBuf(mFileStream);
         } catch(FileNotFoundException  e) {
             mCallBack.onError(UploadErrors.HEX_FILE_OPEN1);
+            logger.appendError(e);
         } catch(IOException e) {   
             mCallBack.onError(UploadErrors.HEX_FILE_OPEN2);
+            logger.appendError(e);
         } catch(Exception e) {
             mCallBack.onError(UploadErrors.HEX_FILE_OPEN3);
+            logger.appendError(e);
             return false;
         }
         mProg.setConfig(mAVRConf, mAVRMem);
@@ -152,20 +166,20 @@ public final class Uploader {
 
         int initOK = mProg.initialize();
         if(initOK < 0) {
-        	Initiator.logger.e(TAG,"initialization failed ("+initOK+")");
+      //  	Initiator.logger.e(TAG,"initialization failed ("+initOK+")");
             mCallBack.onError(UploadErrors.CHIP_INIT);
             return false;
         }
         int sigOK = mProg.check_sig_bytes();
         if( sigOK != 0) {
-        	Initiator.logger.e(TAG,"check signature failed ("+sigOK+")");
+      //  	Initiator.logger.e(TAG,"check signature failed ("+sigOK+")");
             mCallBack.onError(UploadErrors.SIGNATURE);
             return false;
         }
         int writeOK = mProg.paged_write();
         if(writeOK == 0) { return false; } // canceled
         if(writeOK < 0) {
-        	Initiator.logger.e(TAG,"paged write failed ("+initOK+")");
+       // 	Initiator.logger.e(TAG,"paged write failed ("+initOK+")");
             mCallBack.onError(UploadErrors.PAGE_WRITE);
             return false;
         }
@@ -187,6 +201,7 @@ public final class Uploader {
     
    private class UploadThread extends Thread {
         public void run() {
+     //   	Initiator.logger.i(" UploadThread.run", "ok");
             synchronized (LOCK) {
                 if(mSerial.isConnected()){
                 } else {

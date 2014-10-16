@@ -94,9 +94,9 @@ public class DebugTabLeds extends Fragment {
 		xb6.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 		    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 		        if (isChecked) {
-		        	barobot.setLeds( barobot.main_queue,"ff", 255 );
+		        	barobot.setAllLeds( barobot.main_queue,"ff", 255, 255,255,255 );
 		        } else {
-		        	barobot.setLeds( barobot.main_queue,"ff", 0 );
+		        	barobot.turnOffLeds(barobot.main_queue);
 		        }
 		    }
 		});
@@ -122,27 +122,7 @@ public class DebugTabLeds extends Fragment {
 				changeColorOf("f0");
 			}
 		});
-		
-		Switch whto = (Switch) rootView.findViewById(R.id.white_top_on);	
-		whto.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-		    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-		        if (isChecked) {
-		        	barobot.setLeds( barobot.main_queue,"08", 255 );
-		        } else {
-		        	barobot.setLeds( barobot.main_queue,"08", 0 );
-		        }
-		    }
-		});
-		Switch whbo = (Switch) rootView.findViewById(R.id.white_bottom_on);	
-		whbo.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-		    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-		        if (isChecked) {
-		        	barobot.setLeds( barobot.main_queue,"80", 255 );
-		        } else {
-		        	barobot.setLeds( barobot.main_queue,"80", 0 );
-		        }
-		    }
-		});
+
 		Button cc = (Button) rootView.findViewById(R.id.carret_color);
 		cc.setOnClickListener( new OnClickListener(){
 			@Override
@@ -159,11 +139,7 @@ public class DebugTabLeds extends Fragment {
 		if(white_scale!=null){
 			
 		}
-		
-		
-		
-		
-		
+
 		return rootView;
 	}
 
@@ -184,10 +160,9 @@ public class DebugTabLeds extends Fragment {
 		    		int blue	= Color.blue(color);
 		        	int red		= Color.red(color);
 		        	int green	= Color.green(color);
-		        	int white	= 0;
 		    		Queue q1	= new Queue();
-		    		BarobotConnector barobot = Arduino.getInstance().barobot;
-		  		  	barobot.i2c.carret.setRgbw(q1, red,green,blue,white);
+		    		BarobotConnector barobot = Arduino.getInstance().barobot;	
+		  		  	barobot.carret_color(q1, red,green,blue);
 		  		  	barobot.main_queue.add(q1);
 					lastcolor = color;
 		        }
@@ -207,7 +182,7 @@ public class DebugTabLeds extends Fragment {
 		        	int green	= Color.green(color);
 		    		int blue	= Color.blue(color);
 		    		BarobotConnector barobot = Arduino.getInstance().barobot;
-		        	barobot.setColor( barobot.main_queue, string, red, green, blue, 0 );
+		        	barobot.setAllLeds(barobot.main_queue, "ff", 100, red, green, blue);
 					lastcolor = color;
 		        }
 		        @Override

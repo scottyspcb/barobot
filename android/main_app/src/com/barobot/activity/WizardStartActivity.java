@@ -72,7 +72,6 @@ public class WizardStartActivity extends BarobotMain{
 		super.onResume();
 		setFullScreen();
 		MessageTask task = new MessageTask(handler);
-		
 		timer = new Timer(true);
 		timer.schedule(task, TIMER_DELAY, TIMER_REPEAT);
 	}
@@ -145,18 +144,8 @@ public class WizardStartActivity extends BarobotMain{
 				langCode = "en";
 				break;
 		}
-		Resources res = getBaseContext().getResources();
-		DisplayMetrics dm = res.getDisplayMetrics();
-
-		android.content.res.Configuration conf = res.getConfiguration();
-
-		conf.locale = new Locale(langCode);
-		res.updateConfiguration(conf, dm);
-		LangTool.setLanguage(langCode);
-		
-		Log.i("lang changed to", langCode);
+		BarobotMain.getInstance().changeLanguage(langCode);
 		setContentView(R.layout.activity_wizard_start);	//reload
-
 		Log.i("translateName2 ", LangTool.translateName(2, "type", "aa" ));
 	}
 

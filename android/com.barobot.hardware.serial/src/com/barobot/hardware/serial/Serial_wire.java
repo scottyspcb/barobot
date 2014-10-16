@@ -1,33 +1,5 @@
 package com.barobot.hardware.serial;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import android.app.Activity;
-import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.hardware.usb.UsbDevice;
-import android.hardware.usb.UsbManager;
-import android.os.Handler;
-import android.os.Message;
-import android.util.Log;
-
-import com.barobot.common.Initiator;
-import com.barobot.common.constant.LowHardware;
-import com.barobot.common.interfaces.serial.CanSend;
-import com.barobot.common.interfaces.serial.SerialEventListener;
-import com.barobot.common.interfaces.serial.SerialInputListener;
-import com.barobot.common.interfaces.serial.Wire;
-import com.hoho.android.usbserial.util.SerialInputOutputManager;
-
 public class Serial_wire {
 	/*
 	 implements CanSend, Wire

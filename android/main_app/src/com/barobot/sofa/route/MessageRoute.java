@@ -1,6 +1,5 @@
 package com.barobot.sofa.route;
 
-import com.barobot.common.Initiator;
 import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
 import com.barobot.parser.Queue;
@@ -27,7 +26,7 @@ public class MessageRoute extends EmptyRoute {
 			boolean blocking	= session.getParms().get("blocking").equals("1");
 			BarobotConnector barobot = Arduino.getInstance().barobot;
 			Queue mq			= barobot.main_queue;
-			Initiator.logger.i( this.getClass().getName(), "add message " + message + " bypass:" +bypass+ " blocking" + blocking );
+		//	Initiator.logger.i( this.getClass().getName(), "add message " + message + " bypass:" +bypass+ " blocking" + blocking );
 			if(bypass){
 				mq.sendNow(message+"\n");
 			}else{

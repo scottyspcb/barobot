@@ -1,13 +1,34 @@
 package com.barobot.activity;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+
 import com.barobot.AppInvoker;
 import com.barobot.BarobotMain;
 import com.barobot.R;
+import com.barobot.common.Initiator;
 import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
 import com.barobot.other.Android;
 import com.barobot.other.Audio;
+import com.barobot.other.UpdateManager;
 import com.barobot.parser.Queue;
+import com.barobot.parser.message.AsyncMessage;
+import com.barobot.parser.message.Mainboard;
 import com.barobot.sofa.route.CommandRoute;
 
 import android.os.Bundle;
@@ -24,10 +45,50 @@ public class OptionsActivity extends BarobotMain {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_options);
 	}
-
+	static boolean wasVersionChecked = false;
+	
 	@Override
 	protected void onResume() {
 		super.onResume();
+		this.checkVersion( false );
+	}
+
+	private int checkVersion( boolean force ) {
+		if(!wasVersionChecked || force ){
+			wasVersionChecked = true;
+			int isOnline = Android.isOnline(this);
+			if(isOnline > -1 ){	// check ne version of firmware and APK
+				final BarobotConnector barobot = Arduino.getInstance().barobot;
+				if( barobot.getRobotId() == 0 ){
+					Queue q = new Queue();
+					barobot.readHardwareRobotId(q);			// check hardware version
+					q.add( new AsyncMessage( true ) {		// when version readed
+						@Override
+						public String getName() {
+							return "Check robot_id";
+						}
+						@Override
+						public Queue run(Mainboard dev, Queue queue) {
+							if( barobot.getRobotId() == 0 ){						// once again
+								int robot_id = UpdateManager.getNewRobotId();		// download new robot_id (init hardware)
+								Initiator.logger.w("onResume", "robot_id" + robot_id);
+								if( robot_id > 0 ){		// save robot_id to android and arduino
+									Queue q = new Queue();
+									barobot.setRobotId( q, robot_id);
+									return q;	// before all other commands currently in queue
+								}
+							}
+							return null;
+						}
+					});
+					barobot.main_queue.add(q);
+				}
+				UpdateManager.checkNewVersion( this );
+			}else{
+				return 0;
+			}
+		}
+		return 1;
 	}
 
 	public void onOptionsButtonClicked(View view)
@@ -51,14 +112,15 @@ public class OptionsActivity extends BarobotMain {
 			break;
 		case R.id.options_turn_off_button:
 			mq = barobot.main_queue;
+			barobot.readHardwareRobotId(mq);
 			barobot.doHoming(mq, true);
 			break;
 		case R.id.options_about_button:
-			startActivity(new Intent(this, SettingsActivity.class));
+	//		startActivity(new Intent(this, SettingsActivity.class));
+			this.checkVersion(true);
 			break;
 		case R.id.options_lights_button:
 			final Audio a = getAudio();
-
 	    	if(a.isRunning()){
 	    		System.out.println("getAudio stop1");
 	        	a.stop();

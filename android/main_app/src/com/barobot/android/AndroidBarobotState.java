@@ -6,18 +6,25 @@ import java.util.Map;
 
 import org.orman.dbms.ResultList;
 import org.orman.dbms.ResultList.ResultRow;
+import org.orman.mapper.Model;
+import org.orman.mapper.ModelQuery;
+import org.orman.sql.C;
 import org.orman.sql.Query;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.widget.Spinner;
 
+import com.barobot.R;
 import com.barobot.activity.DebugActivity;
 import com.barobot.common.Initiator;
 import com.barobot.common.constant.Constant;
 import com.barobot.common.interfaces.HardwareState;
 import com.barobot.gui.database.BarobotData;
 import com.barobot.gui.dataobjects.Engine;
+import com.barobot.gui.dataobjects.Robot;
+import com.barobot.gui.dataobjects.Slot;
 import com.barobot.parser.utils.Decoder;
 
 public class AndroidBarobotState implements HardwareState{
@@ -89,6 +96,7 @@ public class AndroidBarobotState implements HardwareState{
 	 * */
 	@Override
 	public void reloadConfig(int new_robot_id) {
+		int old_robot_id	= robot_id;
 		robot_id = new_robot_id;
 
 		// read from db
@@ -99,15 +107,19 @@ public class AndroidBarobotState implements HardwareState{
 			Initiator.logger.i("StartOrmanMapping","results: null"); 
 		}else{
 			int rc = res.getRowCount();
-			Initiator.logger.i("StartOrmanMapping","results: "+ rc); 
+	//		Initiator.logger.i("StartOrmanMapping","results: "+ rc); 
 			for(int i=0;i<rc;i++){
 				ResultRow rr = res.getResultRow(i);
 				String aa = (String) rr.getColumn("id");
 				String tr = (String) rr.getColumn("config_name");
 				String tv = (String) rr.getColumn("value");
-				Initiator.logger.i("StartOrmanMapping","res: "+ aa.toString()+ " - "+ tr +" - value: "+ tv); 
+				config_editor.putString(tr, tv);
+		//		Initiator.logger.i("StartOrmanMapping","res: "+ aa.toString()+ " - "+ tr +" - value: "+ tv); 
 			}
+			config_editor.commit();
 		}
+		createRobot(new_robot_id);
+		this.set("ROBOT_ID", new_robot_id );
 		Engine.GetInstance().invalidateData();
 	}
 
@@ -130,6 +142,46 @@ public class AndroidBarobotState implements HardwareState{
 				Query query3 = new Query("INSERT OR REPLACE INTO `robot_config` (`robot`,`config_name`,`value`) VALUES ('"+robot_id+"','"+entry.getKey()+"','"+entry.getValue().toString()+"')");
 				Initiator.logger.i("StartOrmanMapping","save: "+ query3); 
 				BarobotData.omdb.getExecuter().executeOnly(query3);
+			}
+		}
+	}
+
+	public void createRobot( int new_robot_id){
+		Robot robot = Model.fetchSingle(ModelQuery.select().from(Robot.class).where(C.eq("id", new_robot_id)).limit(1).getQuery(),Robot.class);
+		if(robot==null){
+			// FUCK YOU ORMAN ORM. I WANT TO SET ID WITHOUT AUTOINC!!!!
+			Query query4 = new Query("INSERT OR REPLACE INTO `robot` (`id`,`serial`,`sversion`,`is_current`) VALUES ('"+robot_id+"','"+robot_id+"','"+robot_id+"','1')");
+	//		Initiator.logger.i("StartOrmanMapping","save: "+ query3); 
+			BarobotData.omdb.getExecuter().executeOnly(query4);
+			/*
+			robot = new Robot();
+			robot.id		= new_robot_id;		// aaaaaaaaaaaa. doesn't work with OROMAN ORM !!!!!!
+			robot.serial	= new_robot_id;
+			robot.sversion	= new_robot_id;
+			robot.is_current= true;
+			robot.insert();
+			*/
+			robot = Model.fetchSingle(ModelQuery.select().from(Robot.class).where(C.eq("id", new_robot_id)).limit(1).getQuery(),Robot.class);
+		}else{
+		}
+
+		for (int i= 1 ; i <= 12; i++)
+		{
+			Slot slot = Model.fetchSingle(ModelQuery.select().from(Slot.class).where(
+					C.and(
+							C.eq("robot_id", new_robot_id),
+							C.eq("position", i)
+					)
+				).limit(1).getQuery(), Slot.class);
+
+			if(slot == null){
+				slot = new Slot();
+				slot.position		= i;
+				slot.robot_id		= robot;
+				slot.dispenser_type = 20;
+				slot.status			= "Empty";
+				//slot.product = null;
+				slot.insert();
 			}
 		}
 	}

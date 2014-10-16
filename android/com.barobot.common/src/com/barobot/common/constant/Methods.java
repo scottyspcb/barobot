@@ -146,10 +146,12 @@ public class Methods {
 	public static final int HX_NEODYM_DOWN_OVER 	= 300;
 // end HALL X VALUES 
 
-	public static final int EEPROM_ROBOT_ID 	= 40;
-	public static final int EEPROM_STARTS_LOW	= 41;
-	public static final int EEPROM_STARTS_HIGH	= 42;
-	public static final int EEPROM_RESETS_LOW	= 43;
-	public static final int EEPROM_RESETS_HIGH	= 44;
+	public static final int EEPROM_ROBOT_ID_LOW 	= 40;
+	public static final int EEPROM_ROBOT_ID_HIGH 	= 41;
+
+	public static final int EEPROM_STARTS_LOW	= 50;
+	public static final int EEPROM_STARTS_HIGH	= 51;
+	public static final int EEPROM_RESETS_LOW	= 52;
+	public static final int EEPROM_RESETS_HIGH	= 53;
 
 }

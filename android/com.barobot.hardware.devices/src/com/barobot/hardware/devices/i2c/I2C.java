@@ -18,11 +18,6 @@ public class I2C{
 	private List<Upanel> list		= new ArrayList<Upanel>();
 	private static Map<Integer, Upanel> bybottle = new HashMap<Integer, Upanel>();
 
-	public I2C() {
-		super();
-		carret		= new Carret(Constant.cdefault_index, Constant.cdefault_address);	
-	}
-
 	public Upanel getUpanelByBottle( int num ) {
 		return bybottle.get(num);
 	}
@@ -36,15 +31,11 @@ public class I2C{
 		});
 		reloadIndex();
 	}
-
 	public Upanel[] getUpanels() {
 		Upanel[] a = {};
 		return bybottle.values().toArray(a);
 	}
-	public I2C_Device[] getDevicesWithLeds() {
-		I2C_Device[] a = {};
-		return list.toArray(a);
-	}
+
 	public void clear() {		
 		list.clear();
 		bybottle.clear();

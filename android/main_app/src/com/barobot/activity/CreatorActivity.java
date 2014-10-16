@@ -109,12 +109,12 @@ public class CreatorActivity extends BarobotMain{
 			}
 		}
 		BarobotConnector barobot = Arduino.getInstance().barobot;
-		barobot.setLedsOff(barobot.main_queue,"ff");
+		barobot.turnOffLeds(barobot.main_queue);
 	}
-	
-	public void ShowIngredients()
+
+	public void ShowIngredients(boolean setLeds )
 	{
-		BarobotConnector barobot = Arduino.getInstance().barobot;
+		BarobotConnector barobot	= Arduino.getInstance().barobot;
 		IngredientListFragment frag = (IngredientListFragment) getFragmentManager().findFragmentById(R.id.fragment_ingredient_list);
 		if(frag!=null){
 			frag.ShowIngredients(ingredients);
@@ -152,7 +152,7 @@ public class CreatorActivity extends BarobotMain{
 				ingredient.quantity = slot.getCapacity();
 				addIngredient(position, ingredient);
 			}
-			ShowIngredients();
+			ShowIngredients(true);
 			CalculateDrops();
 		}else{
 			Log.w("BOTTLE_SETUP", "onBottleClicked called by an unknown view");
@@ -161,17 +161,19 @@ public class CreatorActivity extends BarobotMain{
 	
 	public void onClearButtonClicked(View view)
 	{
-		clear();
+		clear(true);
 	}
 
-	private void clear(){
+	private void clear( boolean setLeds ){
 		ingredients.clear();
 		for (int i = 1; i<=12 ; i++){
 			slot_nums[i] = 0;
 		}
-		BarobotConnector barobot = Arduino.getInstance().barobot;
-		barobot.setLedsOff(barobot.main_queue,"ff");
-		ShowIngredients();
+		if(setLeds){
+			BarobotConnector barobot = Arduino.getInstance().barobot;
+			barobot.setAllLeds(barobot.main_queue, "ff", 5, 5, 5, 5);	// disable all leds
+			ShowIngredients(setLeds);
+		}
 		runOnUiThread(new Runnable() {  
              @Override
              public void run() {
@@ -221,8 +223,8 @@ public class CreatorActivity extends BarobotMain{
 		     		Thread t = new Thread(new Runnable() {
 		                 @Override
 		                 public void run() {
-		                 	Engine.GetInstance().Pour(tempRecipe);
-		                 	clear();
+		                 	Engine.GetInstance().Pour(tempRecipe, "creator");
+		                 	clear(false);
 		                 }});
 		     		t.start();
 		    //    	wt.setReady();

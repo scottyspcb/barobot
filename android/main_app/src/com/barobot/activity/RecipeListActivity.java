@@ -1,6 +1,9 @@
 package com.barobot.activity;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;
@@ -130,21 +133,19 @@ public class RecipeListActivity extends BarobotMain{
 			attributesFragment.SetAttributes(mCurrentRecipe.GetSweet(), mCurrentRecipe.GetSour(), 
 					mCurrentRecipe.GetBitter(), mCurrentRecipe.GetStrength());
 
-			 Thread rr = new Thread(  new Runnable() { 
+			 Thread rr = new Thread(  new Runnable() {
 				 public void run() {
-						BarobotConnector barobot = Arduino.getInstance().barobot;
-						barobot.setLedsOff(barobot.main_queue, "ff"); 
-						 List<Ingredient_t> a = mCurrentRecipe.getIngredients();
-						 List<Integer> bottleSequence= Engine.GetInstance().GenerateSequence(a); 
-						 if(bottleSequence != null){ 
-							 Queue q = Arduino.getMainQ();
-							 for (Integer i : bottleSequence){ 
-								 Upanel u =barobot.i2c.getUpanelByBottle(i-1); 
-								 if(u!=null){
-									 u.setLed(q, "44", 255);
-								 }
-							 } }
-						 }
+					BarobotConnector barobot = Arduino.getInstance().barobot;
+					barobot.turnOffLeds(barobot.main_queue);
+					List<Ingredient_t> a = mCurrentRecipe.getIngredients();
+					Map<Integer, Integer> usage = Engine.GetInstance().GenerateBottleUsage(a);
+					Queue q = barobot.main_queue;
+					for(Entry<Integer, Integer> entry : usage.entrySet()) {
+						    Integer key = entry.getKey();
+						    Integer value = entry.getValue();
+						    barobot.bottleBacklight(q, key-1, value);
+					}
+				 }
 			}); 
 			rr.start();
 		}
@@ -165,7 +166,7 @@ public class RecipeListActivity extends BarobotMain{
 		Thread t = new Thread(new Runnable() {  
 	         @Override
 	         public void run() {
-	        	  	Engine.GetInstance().Pour(mCurrentRecipe);
+	        	  	Engine.GetInstance().Pour(mCurrentRecipe, "list");
 	        	  	progress.dismiss();
 	        	  	gotoMainMenu(null);
 	         }});

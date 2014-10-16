@@ -1,9 +1,12 @@
 package com.barobot.common;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.logging.Logger;
 
+import com.barobot.common.constant.Constant;
 import com.barobot.common.interfaces.serial.IspCommunicator;
 import com.barobot.common.interfaces.serial.SerialInputListener;
 import com.barobot.common.interfaces.serial.Wire;
@@ -11,22 +14,36 @@ import com.barobot.common.interfaces.serial.Wire;
 public class IspOverSerial implements SerialInputListener, IspCommunicator {
 	public boolean enabled = true;
 	protected Wire connection;
-	protected Queue<Byte> qe;
+	SerialInputListener oldListener	= null;
+	protected Queue<Byte> qe = null;
 	int size = 0;
 
 	public IspOverSerial(Wire connection) {
-		qe				= new ArrayBlockingQueue<Byte>(1024);
-		qe.clear();
 		this.connection = connection;
-		this.connection.setOnReceive(this);
 	}
+
+	@Override
+	public void init() {
+		if( this.qe == null){
+			this.qe				= new ArrayBlockingQueue<Byte>(1024);
+			this.oldListener	= this.connection.getReceiveListener();
+			this.connection.setOnReceive(this);
+		}
+	}
+	public void free() {
+		connection.setOnReceive( oldListener );
+	}
+
 	public boolean open() {
+		init();
+	//	Initiator.logger.i(Constant.TAG, "IspOverSerial.open");
 		clearBuffer();
-		connection.open();
+	//	connection.open();
 		return true;
 	}
 	public synchronized boolean close() {
-		this.connection.close();
+	//	Initiator.logger.i(Constant.TAG, "IspOverSerial.close");
+	//	this.connection.close();
 		return true;
 	}
     public synchronized int read(byte[] buf, int wantBytes) {
@@ -34,19 +51,20 @@ public class IspOverSerial implements SerialInputListener, IspCommunicator {
         	for( int i=0; i<wantBytes;i++ ){
         		buf[i] = qe.poll(); 	 // get from head
         		size--;
-        		//Log.d("Pl2303.read", "size--");
+     //   		Initiator.logger.d("Pl2303.read", "size--");
         	}
-        //	String gg = Utils.toHexStr(buf, wantBytes );
-        //	Log.d("Pl2303.read", "qsize:(" + qe.size() + "), want("+wantBytes+") : "+gg);
-        	showQueue("read");
+      //  	String gg = toHexStr(buf, wantBytes );
+     //   	Initiator.logger.d("Pl2303.read", "qsize:(" + qe.size() + "), want("+wantBytes+") : "+gg);
+     //   	showQueue("read");
         	return wantBytes;
     	}
         return 0;
     }
+    
 	public synchronized int write(byte[] buf, int size) {
 		try {
 			this.connection.send(buf, size);
-		//	Initiator.logger.d("Pl2303.write", "qsize(" +qe.size() + "), write("+size+") : "+Utils.toHexStr(buf, size));
+	//		Initiator.logger.d("Pl2303.write", "qsize(" +qe.size() + "), write("+size+") : "+toHexStr(buf, size));
 		} catch (IOException e) {
 			Initiator.logger.appendError(e);
 		}
@@ -55,7 +73,7 @@ public class IspOverSerial implements SerialInputListener, IspCommunicator {
 	public synchronized int write(String s ) {
 		try {
 			this.connection.send(s);
-			Initiator.logger.d("Pl2303.write", "qsize(" +size + "), string: "+s.trim());
+	//		Initiator.logger.d("Pl2303.write", "qsize(" +size + "), string: "+s.trim());
 		} catch (IOException e) {
 			Initiator.logger.appendError(e);
 		}
@@ -73,14 +91,17 @@ public class IspOverSerial implements SerialInputListener, IspCommunicator {
     	for( int i=0; i<putLength;i++ ){
     		qe.add( (byte) (buf[i] & 0xff)); // add on end
     		size++;
-    	//	Log.d("Pl2303.add", "qsize("+qe.size()+") : "+Utils.toHexStr(buf[i]));
-    		showQueue("add");
+    		//Initiator.logger.d("Pl2303.add", "qsize("+qe.size()+") : "+toHexStr(buf[i]));
+   // 		showQueue("add");
     	}
     	if( qe.size() > 1024 ){
     	}
-    	//byte[] dst = Arrays.copyOf(buf, buf.length);
-        showQueue("onNewData");
-    	//Log.d("Pl2303.onNewData", "qsize("+qe.size()+") : "+Utils.toHexStr(dst, dst.length));
+
+    //	byte[] dst = Arrays.copyOf(buf, buf.length);
+     //   showQueue("onNewData");
+
+     //   String value = new String(buf, 0, length);
+    //    Initiator.logger.d("Pl2303.onNewData", "qsize("+qe.size()+") : "+toHexStr(dst, dst.length) + " value: " + value);
 	}
 
 	public void onRunError(Exception e) {
@@ -111,4 +132,12 @@ public class IspOverSerial implements SerialInputListener, IspCommunicator {
 		qe.clear();
 		size = 0;
 	}
+	public static String toHexStr(byte[] b, int length) {
+        String str="";
+        for(int i=0; i<length; i++) {
+            str += String.format("%02x ", b[i]);
+        }
+        return str;
+    }
+
 }

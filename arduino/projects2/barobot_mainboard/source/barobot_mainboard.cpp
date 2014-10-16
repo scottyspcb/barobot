@@ -106,6 +106,30 @@ void timer(){
 		stepperX.run();	
 	}
 }
+static EEMEM uint16_t eeprom_starts = 0x02; 
+void sendStats() {
+	uint8_t tt			= GetTemp();
+	uint16_t starts		= eeprom_read_word(&eeprom_starts);
+	uint8_t rid_low		= eeprom_read_byte((unsigned char *)(EEPROM_ROBOT_ID_LOW*2));
+	uint8_t rid_high	= eeprom_read_byte((unsigned char *)(EEPROM_ROBOT_ID_HIGH*2));
+
+	// RRS,VERSION,TEMP,STARTS,ROBOT_ID
+	// RRS,4,60,3222,40,0		= version 4, TEMP = 60 somethings (not celsius or fahrenheits), starts 3222, robot_id_low = 40,  robot_id_high = 0
+
+	Serial.print("RRS,");
+	Serial.print(MAINBOARD_VERSION, DEC );
+	Serial.print(",");
+	Serial.print(tt, DEC);
+	Serial.print(",");
+	Serial.print(starts, DEC);
+	Serial.print(",");
+	Serial.print(rid_low, DEC);
+	Serial.print(",");
+	Serial.print(rid_high, DEC);
+	Serial.println();
+}
+
+
 
 uint16_t divisor = 500;
 byteint bytepos;
@@ -115,7 +139,7 @@ void loop(){
 /*
 	long int b = millis();
 	if( b > next_time){
-		Serial.print("timer: ");
+		Serial.print("timer ");
 		Serial.println(timer_counter);
 		next_time	= next_time + 1000;
 		timer_counter = 0;
@@ -304,24 +328,9 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 		writeRegisters(num, 3, false );
 		delayMicroseconds(100);
 
-	}else if( command == 'f') {		// is enable pin is connected to vcc?
-		long int dis = stepperX.distanceToGo();
-		if(dis == 0 ){
-			pinMode(PIN_MAINBOARD_STEPPER_ENABLE, INPUT );
-			boolean connected = digitalRead(PIN_MAINBOARD_STEPPER_ENABLE);
-			if(connected){
-				Serial.println("f true");	
-			}else{
-				Serial.println("f false");	
-			}
-			pinMode(PIN_MAINBOARD_STEPPER_ENABLE, OUTPUT );
-		}else{
-			Serial.println("f error");	
-		}
-
 	}else if( command == 'x') {
 		long int pos = stepperX.currentPosition();
-		Serial.print("Rx"); 
+		Serial.print("RRx"); 
 		Serial.print(String(pos)); 
 		Serial.println();
 		Serial.flush();
@@ -334,7 +343,7 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 		stepperX.setAcceleration(val);
 		DEBUGLN("-setAcceleration: " + String(val) );
 	}else if(command == 'X' ) {    // X10,10              // TARGET,MAXSPEED
-	//	Serial.println("-input0: " + input );
+	//	Serial.println("-input0 " + input );
 		String ss 		= input.substring( 1 );
 		paserDeriver(DRIVER_X,ss);
 		defaultResult = false;
@@ -469,6 +478,16 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 			send_error(input);
 			return;
 		}
+	}else if( input.equals( "IH") ){						// is home, reset X pos to 0
+		stepperX.setCurrentPosition(0);
+		Serial.println("RRIH");
+		Serial.print("RRx0");
+		Serial.println();
+		Serial.flush();
+
+	}else if( command == 'S' ){
+		defaultResult = false;
+		sendStats();
 
 	}else if( command == 'I' ){
 		byte nDevices=0;
@@ -500,22 +519,20 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 		defaultResult = false;
 */
 
-	}else if( command == 'M' && il == 5 ){		// save 1 char to eeprom in 2 cells. address in HEX!!! ie.: M0FF3 = write F3 into addresses: 0F*2 and 0F*2+1
+	}else if( command == 'M' && il >= 4 ){		// save 1 char to eeprom in 2 cells. address in HEX!!! ie.: M0FF3 = write F3 into addresses: 0F*2 and 0F*2+1
 		char charBuf[6];
 		input.toCharArray(charBuf,6);
 		unsigned char ad    = 0;
 		unsigned char value = 0;
 		sscanf(charBuf,"M%2hhx%2hhx", &ad, &value );
-
 		byte ad1	= ad*2;
 		byte ad2	= ad*2+1;
-
 		while (!eeprom_is_ready());
 		eeprom_write_byte( (uint8_t*)ad1, value);
 		while (!eeprom_is_ready());
 		eeprom_write_byte( (uint8_t*)ad2, value);
 
-	}else if( command == 'm' && il == 3 ){		// read 2 chars from eeprom. ie.: m15, address in DEC!!!
+	}else if( command == 'm' && il == 3 ){		// read 2 chars from eeprom. ie.: m15, address in HEX, value in dec
 		char charBuf[5];
 		unsigned char ad    = 0;
 		input.toCharArray(charBuf,5);
@@ -526,7 +543,7 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 		byte val2	= eeprom_read_byte((unsigned char *) ad2);
 		defaultResult = false;
 		Serial.print("Rm");
-		Serial.print(String(ad));
+		Serial.print(ad, HEX);
 		Serial.print(',');
 		Serial.print(String(val1));
 		Serial.print(',');
@@ -540,12 +557,6 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 		defaultResult = false;
 	}else if( input.equals( "TEST") ){
 		i2c_test_slaves();		
-	}else if( command == METHOD_GET_TEMP ){  
-		uint8_t tt = GetTemp();
-		defaultResult = false;
-		Serial.print("RT");
-		Serial.println(String(tt));
-		Serial.flush();
 	}else if( input.equals( "WR") ){      // wait for return - tylko zwróc zwrotke
 	}else{
 		Serial.println("NO_CMD [" + input +"]");
@@ -612,14 +623,15 @@ void sendStepperReady(){
 		bytepos.bytes[1],				// bits 16-23
 		bytepos.bytes[0]				// bits 24-32
 	};
-	send2android(ttt,8);
-	Serial.println();
-	Serial.flush();
 	//ttt[2] = RETURN_DRIVER_READY_REPEAT;
 	//send2android(ttt,8);
 	//Serial.println();
 	//Serial.flush();
 	Serial.println("Rx" + String(pos));
+	Serial.flush();
+
+	send2android(ttt,8);
+	Serial.println();
 	Serial.flush();
 }
 
@@ -628,7 +640,7 @@ void paserDeriver( byte driver, String input ){   // odczytaj komende silnika
 	long maxspeed  = 0;
 	long target    = 0;
 
-//	Serial.println("-input: " + input );
+//	Serial.println("-input " + input );
 
 	if( comma == -1 ){      // tylko jedna komenda
 		target          = input.toInt();
@@ -640,25 +652,25 @@ void paserDeriver( byte driver, String input ){   // odczytaj komende silnika
 		String current  = input.substring(0, comma);
 		input           = input.substring(comma + 1 );    // wytnij od tego znaku
 		target          = decodeInt( current, 0 );
-	//	Serial.println("-current: " + current );
-	//	Serial.println("-input2: " + input );
+	//	Serial.println("-current " + current );
+	//	Serial.println("-input2 " + input );
 		if( input.length() > 0 ){
 			maxspeed       = input.toInt();
 	//		DEBUGLN("-setMaxSpeed: " + String(maxspeed) );
 		}
 	}
-//	Serial.println("-target: " + String(target) );
+//	Serial.println("-target " + String(target) );
 	if( driver == DRIVER_X){
 		if(maxspeed > 0){
 			stepperX.setMaxSpeed(maxspeed);
 		}
 		//long int tar = stepperX.targetPosition();	
 		stepperX.moveTo(target);
-	//	Serial.println("-moveTo: " + String(stepperX.targetPosition()) );
+	//	Serial.println("-moveTo " + String(stepperX.targetPosition()) );
 		long int dis = stepperX.distanceToGo();
-	//	Serial.println("-distanceToGo: " + String(dis) );
+	//	Serial.println("-distanceToGo " + String(dis) );
 		//tar = stepperX.targetPosition();
-		//Serial.println("-tar2: " + String(tar) );
+		//Serial.println("-tar2 " + String(tar) );
 		if( dis != 0 ){
 			out_buffer[0]  = METHOD_STEPPER_MOVING;
 			out_buffer[1]  = DRIVER_X;

@@ -16,7 +16,7 @@ public class QueueLock{
 		boolean allowUnlock = false;
 		synchronized (QueueLock.lock_wait_for) {
 			if(wait_for!=null){
-				Initiator.logger.i(">>>QueueLock.unlockRet", "["+wait_for.toString() +"] with: ["+ withCommand.trim()+"]");
+		//		Initiator.logger.i(">>>QueueLock.unlockRet", "["+wait_for.toString() +"] with: ["+ withCommand.trim()+"]");
 				wait_for.unlockWith(withCommand);
 				wait_for.setWaiting( false );
 				wait_for = null;
@@ -32,7 +32,7 @@ public class QueueLock{
 		boolean allowUnlock = false;
 		synchronized (QueueLock.lock_wait_for) {
 			if(wait_for == asyncMessage ){
-				Initiator.logger.i(">>>QueueLock.unlockRet", "["+wait_for.toString() +"] with: ["+ withCommand.trim()+"]");
+		//		Initiator.logger.i(">>>QueueLock.unlockRet", "["+wait_for.toString() +"] with: ["+ withCommand.trim()+"]");
 				wait_for.unlockWith(withCommand);
 				wait_for.setWaiting( false );
 				wait_for = null;
@@ -47,7 +47,7 @@ public class QueueLock{
 	public void unlock() {
 		synchronized (lock_wait_for) {
 			if( wait_for!=null ){
-				Initiator.logger.i("QueueLock.unlock", "unlock id:" + wait_for.toString() );
+	//			Initiator.logger.i("QueueLock.unlock", "unlock id:" + wait_for.toString() );
 				wait_for.unlockWith("force unlock");
 				wait_for.setWaiting( false );
 				wait_for = null;

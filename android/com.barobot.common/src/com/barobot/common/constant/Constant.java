@@ -2,27 +2,29 @@ package com.barobot.common.constant;
 
 public class Constant {
  
+	public static final int ANDROID_APP_VERSION = 4;
+
     // Debugging
     public static final String TAG = "BarobotMainApp";
     public static final String SETTINGS_TAG = "BAROBOT";
-
+    
     // Unique UUID for this application
    // public static final UUID MY_UUID_SECURE =	UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
 
     // commands
-	public static final String TRIGGER = "T";
+//	public static final String TRIGGER = "T";
 	public static final String RET = "R";
 	public static final String ERROR = "R";
-	public static final String ANALOG = "A";
-	public static final String COMMENT = "-";
+//	public static final String ANALOG = "A";
+//	public static final String COMMENT = "-";
 
 	public static final String GETXPOS = "x";
 	public static final String GETYPOS = "y";
 	public static final String GETZPOS = "z";
-	public static final String REBOOT = "REBOOT";
+//	public static final String REBOOT = "REBOOT";
 
-	public static final String PING = "PING";
-	public static final String PONG = "PONG";
+//	public static final String PING = "PING";
+//	public static final String PONG = "PONG";
 
 //  public static final int DRIVER_X 		= 4;
 //	public static final int DRIVER_Y 		= 8;
@@ -38,6 +40,7 @@ public class Constant {
 	public static int mdefault_index	= 1;
 	public static final int BOTTLE_IS_BACK = 2;
 	public static final int BOTTLE_IS_FRONT = 4;
+	public static final String DATABASE_NAME = "BarobotOrman.db";
 
 	public static int[] magnet_order = {0,2,1,4,3,6,5,8,7,10,9,11 };	// numer butelki, odjac 1 aby numer ID
 	public static int[] bottle_row = {
@@ -54,4 +57,26 @@ public class Constant {
 		BOTTLE_IS_BACK,					// 10, num 11
 		BOTTLE_IS_FRONT,				// 11, num 12
 	};
+	//	private static String metadata		= "http://barobot.com/android_data/database.json";
+	public static String drinks				= "http://barobot.com/android_data/drinks.json";
+	//	private static String errorlog		= "http://barobot.com/android_data/error.php";
+	public static String upload				= "http://barobot.com/synchro/store.php";
+	public static String databaseWeb		= "http://barobot.com/synchro/" + DATABASE_NAME;
+	public static String firmwareWeb		= "http://barobot.com/synchro/barobot.hex";
+	public static String android_app		= "http://barobot.com/synchro/Barobot.apk";
+	public static String firmwareWeb_beta	= "http://barobot.com/synchro/barobot_beta.hex";
+	public static String android_app_beta	= "http://barobot.com/synchro/Barobot_beta.apk";
+	public static String databaseWeb_beta	= "http://barobot.com/synchro/"+ "BarobotOrman_beta.db";
+
+	public static String localDbPath		= "/data/data/com.barobot/databases/" + DATABASE_NAME;
+//	public static String sourcepath			= "/storage/emulated/0/download/" + DATABASE_NAME;
+	public static String copyPath			= "/Barobot/" + DATABASE_NAME;
+	public static String logFile			= "/Barobot/log.log";
+	public static String firmware			= "/Barobot/barobot.hex";
+	public static String backupPath			= "/Barobot/BarobotOrman%DATE%.db";
+	
+
+	public static String robot_id_manager	= "http://barobot.com/synchro/init.php";
+	public static String version_index		= "http://barobot.com/synchro/check_version.php";
+
 }

@@ -28,4 +28,5 @@ public interface Wire extends CanSend{
 	boolean open();
 	void onPause();
 	Wire newInstance();
+	SerialInputListener getReceiveListener();
 }

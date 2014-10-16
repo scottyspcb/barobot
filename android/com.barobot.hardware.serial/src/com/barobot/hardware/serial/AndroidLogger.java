@@ -14,12 +14,13 @@ import java.util.Date;
 import android.os.Environment;
 import android.util.Log;
 
+import com.barobot.common.constant.Constant;
 import com.barobot.common.interfaces.CanLog;
 
 public class AndroidLogger implements CanLog {
 	File myFile;
 	FileOutputStream fos;
-	
+
 	public AndroidLogger() {
 		File external = Environment.getExternalStorageDirectory();
 		String sdcardPath = external.getPath();
@@ -134,8 +135,7 @@ public class AndroidLogger implements CanLog {
 	private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS");
 	@Override
 	public void saveLog(String text){ 
-		
-		String path6 = 	Environment.getExternalStorageDirectory()+ "/Barobot/log.log";
+		String path6 = 	Environment.getExternalStorageDirectory()+ Constant.logFile;
 		File logFile = new File(path6);
 		if (!logFile.exists()) {
 			try {
