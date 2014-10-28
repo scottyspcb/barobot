@@ -14,7 +14,6 @@ import com.barobot.parser.message.AsyncMessage;
 import com.barobot.parser.message.Mainboard;
 
 public class I2C{
-	public Carret carret			= null;
 	private List<Upanel> list		= new ArrayList<Upanel>();
 	private static Map<Integer, Upanel> bybottle = new HashMap<Integer, Upanel>();
 

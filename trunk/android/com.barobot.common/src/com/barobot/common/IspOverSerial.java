@@ -25,7 +25,7 @@ public class IspOverSerial implements SerialInputListener, IspCommunicator {
 	@Override
 	public void init() {
 		if( this.qe == null){
-			this.qe				= new ArrayBlockingQueue<Byte>(1024);
+			this.qe				= new ArrayBlockingQueue<Byte>(2048);
 			this.oldListener	= this.connection.getReceiveListener();
 			this.connection.setOnReceive(this);
 		}

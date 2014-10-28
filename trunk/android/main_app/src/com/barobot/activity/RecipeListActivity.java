@@ -12,6 +12,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.barobot.BarobotMain;
 import com.barobot.R;
@@ -31,6 +32,7 @@ public class RecipeListActivity extends BarobotMain{
 
 	public static String MODE_NAME = "ActivityMode";
 	private Recipe_t mCurrentRecipe;
+	private int drink_size	= 0;
 
 	private Mode mode;
 	public enum Mode
@@ -114,31 +116,45 @@ public class RecipeListActivity extends BarobotMain{
 			ingredientFragment.ClearIngredients();
 			imageFragment.ClearImage();
 			attributesFragment.ClearAttributes();
+			
+			drink_size = 0;
+			TextView drinkSizeBox = (TextView) findViewById(R.id.drink_size);
+			drinkSizeBox.setText("" + drink_size + "ml");
+			drinkSizeBox.setVisibility(View.INVISIBLE);
 		}
 		else
 		{
 			// Set the name
 			setTextViewText(mCurrentRecipe.getName(), R.id.recipe_name_textview);
 
-			// Set ingredients
-			
-			ingredientFragment.ShowIngredients(mCurrentRecipe.getIngredients());
-			
 			// Set image
-			
 			imageFragment.SetImage(mCurrentRecipe.photoId);
-			
+
+			List<Ingredient_t> a = mCurrentRecipe.getIngredients();
+			final Map<Integer, Integer> usage = Engine.GetInstance().GenerateBottleUsage(a);
+			drink_size	= Ingredient_t.getSize( a );
+
 			// Set drink attributes
-			
 			attributesFragment.SetAttributes(mCurrentRecipe.GetSweet(), mCurrentRecipe.GetSour(), 
 					mCurrentRecipe.GetBitter(), mCurrentRecipe.GetStrength());
 
-			 Thread rr = new Thread(  new Runnable() {
+			// Set ingredients
+			ingredientFragment.ShowIngredients(mCurrentRecipe.getIngredients());
+
+			// set drink size
+			TextView drinkSizeBox = (TextView) findViewById(R.id.drink_size);
+			if( drink_size > 0 ){
+				drinkSizeBox.setText("" + drink_size + "ml");
+				drinkSizeBox.setVisibility(View.VISIBLE);
+			}else{
+				drinkSizeBox.setVisibility(View.INVISIBLE);
+			}
+
+			// set leds
+			Thread rr = new Thread(  new Runnable() {
 				 public void run() {
 					BarobotConnector barobot = Arduino.getInstance().barobot;
 					barobot.turnOffLeds(barobot.main_queue);
-					List<Ingredient_t> a = mCurrentRecipe.getIngredients();
-					Map<Integer, Integer> usage = Engine.GetInstance().GenerateBottleUsage(a);
 					Queue q = barobot.main_queue;
 					for(Entry<Integer, Integer> entry : usage.entrySet()) {
 						    Integer key = entry.getKey();

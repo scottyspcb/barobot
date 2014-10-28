@@ -75,7 +75,7 @@ public class Constant {
 	public static String firmware			= "/Barobot/barobot.hex";
 	public static String backupPath			= "/Barobot/BarobotOrman%DATE%.db";
 	
-
+	public static String raport_manager		= "http://barobot.com/synchro/raport_error.php";
 	public static String robot_id_manager	= "http://barobot.com/synchro/init.php";
 	public static String version_index		= "http://barobot.com/synchro/check_version.php";
 

@@ -9,11 +9,9 @@
     <string name="select_device">select a device to connect</string>
     <string name="none_paired">No devices have been paired</string>
     <string name="none_found">No devices found</string>
-
     <string name="button_scan">Szukanie urządzeń w pobliżu</string>
     <string name="about_info">Autorzy</string>
     <string name="title_activity_about">O programie</string>
-
     <string name="title_activity_device_list">Barobot</string>
     <string name="title_section1">Options</string>
     <string name="title_section2">Settings</string>
@@ -21,7 +19,6 @@
     <string name="title_section4">Bottles</string>
     <string name="title_section5">Sounds</string>
     <string name="title_section6">History</string>
-
     <string name="empty_slot"></string>
     <string name="liquid_select_title">Select liquid</string>
     <string name="liquid_name">Liquid Name (Brand)</string>
@@ -56,9 +53,7 @@
     <string name="action_recipe_setup">Customize Recipes</string>
     <string name="action_creator">Create</string>
     <string name="menu_favorite">Try Favorites</string>
-
     <string name="menu_lucky">I feel lucky</string>
-
     <string name="menu_bottles">Setup bottles</string>
     <string name="menu_mobile">Mobile orders</string>
     <string name="menu_options">Options and Setup</string>
@@ -67,7 +62,7 @@
     <string name="options_bottle_setup_button">Bottle Setup</string>
     <string name="options_recipe_setup_button">Recipe Setup</string>
     <string name="options_extra_setup_button">External Ingredient Setup</string>
-    <string name="options_lights_button">Lights Presets</string>
+    <string name="options_lights_button">Lights Show</string>
     <string name="options_demo_button">Demo mode</string>
     <string name="options_advanced_button">Advanced Setup</string>
     <string name="options_about_button">Update</string>
@@ -117,12 +112,13 @@
     <string name="add_recipe_btn">+ recipe</string>
     <string name="remove_recipe_btn">- recipe</string>
     <string name="goto_main_menu">Main menu</string>
-
     <string name="myip">Show device address</string>
-   
     <string name="update_title">Barobot Software Update</string>
     <string name="update_msg">New Barobot Software version was released. It is strongly recommended that you apply this update as soon as possible. Do you want to download it now?</string>
     <string name="update_yes">Yes</string>
     <string name="update_no">No</string>
+    <string name="title_activity_validator">ValidatorActivity</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="title_activity_power">Power</string>
 
 </resources>

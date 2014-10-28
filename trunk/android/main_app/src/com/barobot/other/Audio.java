@@ -25,7 +25,8 @@ public class Audio implements OnSignalsDetectedListener{
 	public long min			= 10000;
 	public boolean sync		= false;
 	BarobotConnector barobot = null;
-	Upanel[] up				= null;
+	private boolean disabled	= false;
+//	Upanel[] up				= null;
 
 	public void start( final BarobotConnector barobot2 ) {
 		this.barobot = barobot2;
@@ -34,7 +35,7 @@ public class Audio implements OnSignalsDetectedListener{
 			@Override
 			public Queue run(Mainboard dev, Queue queue) {
 				this.name		= "turnoff";
-				up				= barobot.i2c.getUpanels();
+		//		up				= barobot.i2c.getUpanels();
 				Queue q = new Queue();
 				barobot.turnOffLeds(q);
 				return q;
@@ -67,6 +68,7 @@ public class Audio implements OnSignalsDetectedListener{
 	}
 
 	public void stop() {
+		disabled = true;
 		barobot.main_queue.add( new AsyncMessage( true ) {
 			@Override
 			public Queue run(Mainboard dev, Queue queue) {
@@ -80,17 +82,18 @@ public class Audio implements OnSignalsDetectedListener{
 					detectorThread = null;
 				}
 				max = 10;
-
-				Queue q = new Queue();
-				barobot.turnOffLeds(q);
-
-				return q;
+				return null;
 			}
 		} );
+		barobot.turnOffLeds(barobot.main_queue);
 	}
 
 	@Override
 	public void peek(final float averageAbsValue) {
+		if(disabled){
+			return;
+		}
+		
 		//final int current = (int) averageAbsValue;
 		final long current = (long) (averageAbsValue * (averageAbsValue));
 		if( current > max ){
@@ -103,24 +106,24 @@ public class Audio implements OnSignalsDetectedListener{
 		float scope				= max - min;
 		final float div 		= ( overmin / scope);
 		final int norm			= (int) (div * 1024);
-	//	System.out.println("\t>>>add: " + current);
+	//	Initiator.logger.i( this.getClass().getName(), "\t>>>add: " + current);
 		if( Math.abs(norm - last) > 6 ){
-	//		System.out.println("\t>>>add: " + Math.abs(norm - last)+ "/ "+ norm );
-			float b = div * 255;
-			b = Math.min(b, 255);
-			int val1 = (int) b;
-			int val2 = Pwm.linear2log((int) b, 1 );
-	//		
+	//		Initiator.logger.i( this.getClass().getName(), "\t>>>add: " + Math.abs(norm - last)+ "/ "+ norm );
+			float b		= div * 255;
+			b			= Math.min(b, 255);
+			int val1	= (int) b;
+			int val2	= Pwm.linear2log((int) b, 1 );
+			Queue q		= barobot.main_queue;
+			barobot.setAllLeds(q, "44", val2, 0, 0, val2);
+
+			/*
 			final String command1f = ",11," + val2;
 			final String command2f = ",22," + val2;
 			final String command3f = ",44," + val2;
 			final String command4f = ",80," + val2;
-
 			final String command1b = ",11," + val1;
 			final String command2b = ",22," + val1;
 			final String command3b = ",44," + val1;
-			
-			Queue q = barobot.main_queue;
 			
 			q.add( "B"+ "10" +command4f, sync);
 			q.add( "B"+ up[1].getAddress() +command3f, sync);
@@ -136,6 +139,7 @@ public class Audio implements OnSignalsDetectedListener{
 			q.add( "B"+ up[6].getAddress() +command1b, sync);
 			q.add( "B"+ up[8].getAddress() +command1b, sync);
 			q.add( "B"+ up[10].getAddress() +command1b, sync);
+			*/
 			min+=1;		// auto ajdist
 			max = (long) (max * 0.95);		// auto ajdist
 			last= norm;

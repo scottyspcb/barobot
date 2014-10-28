@@ -1,6 +1,5 @@
 package com.barobot.parser;
 
-import com.barobot.common.Initiator;
 import com.barobot.parser.message.AsyncMessage;
 
 public class QueueLock{

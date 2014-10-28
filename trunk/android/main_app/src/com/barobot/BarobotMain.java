@@ -1,15 +1,25 @@
 package com.barobot;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.Locale;
 
+import com.barobot.common.Initiator;
+import com.barobot.gui.dataobjects.StartupException;
 import com.barobot.gui.utils.LangTool;
 import com.barobot.other.Android;
+import com.barobot.other.InternetHelpers;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.content.res.Resources;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.PowerManager;
+import android.os.PowerManager.WakeLock;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.WindowManager;
@@ -18,7 +28,8 @@ import android.widget.TextView;
 
 public class BarobotMain extends Activity {
 	private static BarobotMain instance;
-
+	public static boolean canStart				= true;
+	public static Exception lastException		= null;
 	public static BarobotMain getInstance() {
 		return instance;
 	}
@@ -29,9 +40,57 @@ public class BarobotMain extends Activity {
 		if(instance == null){
 			instance = this; // Set up the window layout
 		}
+		/*
+		Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler() {
+		    @Override
+		    public void uncaughtException(Thread thread, Throwable ex)
+		    {
+		        new Thread() {
+		            @Override
+		            public void run() {
+		                Looper.prepare();
+		                Toast.makeText(getApplicationContext(), "Application crashed", Toast.LENGTH_LONG).show();
+		                Looper.loop();
+		            }
+		        }.start();
+
+		        try
+		        {
+		            Thread.sleep(4000); // Let the Toast display before app will get shutdown
+		        }
+		        catch (InterruptedException e)
+		        {
+		            // Ignored.
+		        }
+		    }
+		});
+		*/
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-		AppInvoker.createInstance(this);
-		AppInvoker.getInstance().onCreate();
+		try {
+			AppInvoker.createInstance(this);
+			AppInvoker.getInstance().onCreate();
+		} catch (StartupException e) {
+			Initiator.logger.e("BarobotMain.onCreate", "StartupException", e);
+			canStart = false;	
+			lastException = e;
+		} catch (NullPointerException e) {
+			Initiator.logger.e("BarobotMain.onCreate", "NullPointerException", e);
+			canStart = false;
+			lastException = e;
+		} catch (RuntimeException e) {
+			Initiator.logger.e("RuntimeException.onCreate", "NullPointerException", e);
+			canStart = false;
+			lastException = e;
+		} catch (Exception e) {
+			Initiator.logger.e("BarobotMain.onCreate", "Exception", e);
+			canStart = false;
+			lastException = e;
+		}
+		if(canStart){
+			AppInvoker.getInstance().onResume();
+		}else{
+			showRaportError( lastException );
+		}
 	}
 
 	protected void setTextViewText(String text, int id){
@@ -42,12 +101,6 @@ public class BarobotMain extends Activity {
     protected void ButtonEnabled(boolean enabled, int id){
 		Button okButton = (Button) findViewById(id);
 		okButton.setEnabled(enabled);
-	}
-    
-	@Override
-	protected void onResume() {			// resume this activity
-		super.onResume();
-		AppInvoker.getInstance().onResume();
 	}
 
 	@Override
@@ -80,7 +133,25 @@ public class BarobotMain extends Activity {
 		res.updateConfiguration(conf, dm);
 
 		LangTool.setLanguage(langCode);
-
+	}
+	private void showRaportError(final Exception lastException2) {
+		final String msg = Android.tttt( lastException2 );
+		AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+        dialog.setTitle("Exception Occured");
+        dialog.setMessage(msg);
+        dialog.setPositiveButton("Raport Error", new OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				InternetHelpers.raportError( lastException2, msg );
+			}
+		});
+        dialog.setNegativeButton("Close", new OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				finish();
+			}
+		});
+        dialog.create().show();
 	}
 }
 /*

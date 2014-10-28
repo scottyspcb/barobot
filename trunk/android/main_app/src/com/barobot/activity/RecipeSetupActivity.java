@@ -21,6 +21,7 @@ import android.widget.TextView;
 
 import com.barobot.BarobotMain;
 import com.barobot.R;
+import com.barobot.common.Initiator;
 import com.barobot.gui.dataobjects.Engine;
 import com.barobot.gui.dataobjects.Ingredient_t;
 import com.barobot.gui.dataobjects.Liquid_t;
@@ -48,7 +49,7 @@ public class RecipeSetupActivity extends BarobotMain implements OnItemSelectedLi
 	{
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
-		System.out.println("onAddRecipeButtonClicked");
+		Initiator.logger.i( this.getClass().getName(), "onAddRecipeButtonClicked");
 		
 	    LayoutInflater inflater = getLayoutInflater();
 	    final View dialogView = inflater.inflate(R.layout.dialog_add_recipe, null); 
@@ -67,7 +68,7 @@ public class RecipeSetupActivity extends BarobotMain implements OnItemSelectedLi
 					Recipe_t recipe = new Recipe_t();
 					recipe.name = name;
 					recipe.unlisted = false;
-					System.out.println("onAddRecipeButtonClicked: insert" );
+					Initiator.logger.i( this.getClass().getName(), "onAddRecipeButtonClicked: insert" );
 					recipe.insert();
 					
 					LangTool.InsertTranslation(recipe.id, "recipe", name);

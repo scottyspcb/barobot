@@ -39,62 +39,36 @@ public class Wizard {
 	public void mrygaj_po_butelkach(Hardware hw, int time ) {
 		hw.getQueue().addWaitThread( Main.main );
 		Queue q = hw.getQueue();
-		I2C_Device[] list = hw.barobot.i2c.getUpanels();
-		if(list.length == 0 ){
-			System.out.println("Pusto, skanuje" );
-			return;
-		}
 
 		hw.barobot.turnOffLeds(q);
 	//	get 2 random from array java
-		for (I2C_Device u : list){
+		
+		for( int i =0; i<11; i++){
+
 			q.addWait(time );
-			u.addLed( q, "ff", 0 );	// off
+			hw.barobot.setLedsByBottle(q, i, "ff", 0, 0, 0, 0, true);
+
 			q.addWait(time );
 
-			u.addLed( q, "ff", 0 );	// off
-			u.addLed( q, "01", 255 );
-			
-			q.addWait(time );
-
-			u.addLed( q, "ff", 0 );	// off
-			u.addLed( q, "02", 255 );
+			hw.barobot.setLedsByBottle(q, i, "ff", 0, 0, 0, 0, true);
+			hw.barobot.setLedsByBottle(q, i, "01", 255, 255, 0, 0, true);
 			
 			q.addWait(time );
 
-			u.addLed( q, "ff", 0 );	// off
-			u.addLed( q, "04", 255 );
-			
+			hw.barobot.setLedsByBottle(q, i, "ff", 0, 0, 0, 0, true);
+			hw.barobot.setLedsByBottle(q, i, "02", 255, 0, 255, 0, true);
 			q.addWait(time );
-			u.addLed( q, "ff", 0 );	// off
-			u.addLed( q, "08", 255 );
-			
+
+			hw.barobot.setLedsByBottle(q, i, "ff", 0, 0, 0, 0, true);
+			hw.barobot.setLedsByBottle(q, i, "04", 255, 0, 0, 255, true);
 			q.addWait(time );
 			
-			u.addLed( q, "ff", 0 );	// off
-			u.addLed( q, "10", 255 );
 	
-			q.addWait(time );
-			
-
-			u.addLed( q, "ff", 0 );	// off
-			u.addLed( q, "20", 255 );
-			
-			q.addWait(time );
-			
-			
-			u.addLed( q, "ff", 0 );	// off
-			u.addLed( q, "40", 255 );
-			
-			q.addWait(time );
-			
-
-			u.addLed( q, "ff", 0 );	// off
-			u.addLed( q, "80", 255 );
-			
+			hw.barobot.setLedsByBottle(q, i, "ff", 0, 0, 0, 0, true);
+			hw.barobot.setLedsByBottle(q, i, "08", 255, 255, 255, 255, true);
 			q.addWait(time );
 
-			u.addLed( q, "ff", 0 );	// off
+			hw.barobot.setLedsByBottle(q, i, "ff", 0, 0, 0, 0, true);
 		}
 	}
 

@@ -67,17 +67,17 @@ public class ServoTestPageRoute extends EmptyRoute {
 			String speed = session.getParms().get("speed");
 			boolean disableOnReady = session.getParms().get("disableOnReady").equals("true");
 			int pos		=  Decoder.toInt(position);
-			int sp		=  Decoder.toInt(speed);
+		//	int sp		=  Decoder.toInt(speed);
 
 			Initiator.logger.i( this.getClass().getName(), "run servo " + servo + " position:" +position+ " speed" + speed + " disableOnReady" + session.getParms().get("disableOnReady") );
 			Queue q = new Queue();
 			if(servo.equals("y")){
 				barobot.moveY(q, pos, disableOnReady);
 			}else if(servo.equals("z")){
-				q.add("Z" + pos+","+sp, true);
+				q.add("K" + pos, true);
 				if(disableOnReady){
 					q.addWait(300);
-					q.add("DZ", true);
+					barobot.disablez(q);
 				}
 			}
 			barobot.main_queue.add(q);
@@ -156,14 +156,7 @@ public class ServoTestPageRoute extends EmptyRoute {
 		int repeatx	= Decoder.toInt(parms.get("REPEAT_X") );
 		int repeatz	= Decoder.toInt(parms.get("REPEAT_Z") );
 		int wa		= Decoder.toInt(parms.get("WAIT_AFTER") );
-
 		int dx		= Decoder.toInt(parms.get("DRIVE_X") );
-		int sfp		= Decoder.toInt(parms.get("SERVOY_FRONT_POS") );
-		int sbp		= Decoder.toInt(parms.get("SERVOY_BACK_POS") );
-		int xpos1	= Decoder.toInt(parms.get("XPOS1") );
-		int dys		= Decoder.toInt(parms.get("DRIVER_Y_SPEED") );
-		int dxs		= Decoder.toInt(parms.get("DRIVER_X_SPEED") );
-
 		int init_repeatz			= repeatz;
 		Queue q						= new Queue();
 		BarobotConnector barobot	= Arduino.getInstance().barobot;
@@ -171,8 +164,8 @@ public class ServoTestPageRoute extends EmptyRoute {
 			Initiator.logger.i( this.getClass().getName(), "front" );
 			Initiator.logger.i( this.getClass().getName(), "down" );
 
-			q.add("Z" + dp +","+ds, true);		// go down
-			q.add("DZ", true);
+			q.add("K" + dp, true);		// go down
+			barobot.disablez(q);
 			this.goFront(q, parms);
 		}
 		boolean yIsFront = true;
@@ -187,23 +180,22 @@ public class ServoTestPageRoute extends EmptyRoute {
 				Initiator.logger.i( this.getClass().getName(), "repeat + nalej: "+repeatz );
 				
 	//			q.add("EX", true);
-				q.add("Z" + up+","+us, true);		// go up
+				q.add("K" + up, true);		// go up
 				q.addWait( lt );
 
-				q.add("Z" + lp+","+us, true);		// go up
+				q.add("K" + lp, true);		// go up
 				q.addWait( utime );	
 
-				q.add("DY", true);
-				q.add("Z" + dp +","+ds, true);		// go down
+				barobot.disabley( q );
+				q.add("K" + dp, true);		// go down
 				q.addWait( pwdt );
-				q.add("Z" + pp+","+pus , true);		// do up
+				q.add("K" + pp , true);		// do up
 				q.addWait( pwut );
-				q.add("Z" + dp +","+pds, true);		// go down
+				q.add("K" + dp, true);		// go down
 				q.addWait( 200 );		// wait for servo
-				q.add("DZ", true);
-				q.addWait(100);
+				barobot.disablez(q);
 	//			q.add("DX", true);
-		//		q.add("DY", true);
+		//		barobot.disabley( q );
 				if( repeatz >= 1 ){
 					q.addWait(wa);
 				}
@@ -250,6 +242,7 @@ public class ServoTestPageRoute extends EmptyRoute {
 		int dys		= Decoder.toInt(parms.get("DRIVER_Y_SPEED") );
 		q.add("Y" + sfp +","+dys, true);	// go back
 		q.add("DY", true);
+		q.addWait(100);
 	}
 
 	private void goFront(Queue q, Map<String, String> parms) {
@@ -257,5 +250,6 @@ public class ServoTestPageRoute extends EmptyRoute {
 		int sbp		= Decoder.toInt(parms.get("SERVOY_FRONT_POS") );
 		q.add("Y" + sbp +","+dys, true);	// go front
 		q.add("DY", true);
+		q.addWait(100);
 	}
 }

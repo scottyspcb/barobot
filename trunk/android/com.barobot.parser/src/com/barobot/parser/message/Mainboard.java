@@ -52,25 +52,23 @@ public class Mainboard{
 				buffer			= buffer.delete(0, end+1);
 				command			= command.trim();
 				analyseInput(command);
-				end		= buffer.indexOf(separator);
+				end				= buffer.indexOf(separator);
 			}
 		}
 	}
 
 	private void analyseInput(String command) {	
 		command = command.replaceAll("[^-A-Za-z0-9,.!\\[\\] !]","");			// all other chars are unallowed
+		if("".equals(command)){
+			return;
+		}	
 	//	Initiator.logger.i("input command: " , command);
 	//	History_item hi = new History_item( command, History_item.INPUT );	
 	//	new Thread( new Runnable(){		// geto out of the serial port thread
 	//		@Override
 	//		public void run() {
 				try {
-					
-					if("".equals(command)){
-						//			Log.i(Constant.TAG, "pusta komenda!!!]");
-					}else{
-						useInput( command );
-					}
+					useInput( command );
 				} catch (java.lang.NullPointerException e) {
 					Initiator.logger.appendError(e);
 				} catch (java.lang.NumberFormatException e) {
@@ -85,9 +83,12 @@ public class Mainboard{
 	}
 
 	private boolean useInput(String command) {
-		boolean handled =false;
+		boolean used		= false;
+		boolean handled 	= false;
 		String wait4Command = "";
-		String command2 = this.modyfyInput( command );
+		String command2		= this.modyfyInput( command );
+		AsyncMessage local_wait_for = null;
+
 		if( !command2.equals(command)){
 		//	Initiator.logger.e("Mainboard.useInput changed to:", command2 );
 			command = command2;
@@ -96,8 +97,7 @@ public class Mainboard{
 			Initiator.logger.w("Mainboard.useInput", command );
 		}
 	//	in_buffer.push(command);
-		boolean used = false;
-		AsyncMessage local_wait_for = null;
+
 		synchronized (QueueLock.lock_wait_for) {
 			local_wait_for = lock.wait_for;
 	//		Initiator.logger.i("wait_for? ", ( (local_wait_for == null)? "null" : local_wait_for.toString()) );
@@ -265,7 +265,7 @@ public class Mainboard{
 
 			if( state.getInt("show_unknown", 0) > 0 ){
 				if( in.startsWith( "-") ){			// comment
-					Initiator.logger.i("Mainboard.unknown.comment", in);
+				//	Initiator.logger.i("Mainboard.unknown.comment", in);
 					return true;
 				}else if( in.equals("NO_CMD []" ) ){
 				}else{

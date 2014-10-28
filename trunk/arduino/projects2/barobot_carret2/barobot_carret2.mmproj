@@ -1,4 +1,4 @@
-<mm_project serial_port="COM4" board="!Arduino Pro or Pro Mini (5V, 16 MHz) w/ ATmega328" programmer="" includePaths="" libPaths="" libs="" default="yes" useCodeAutomation="yes" linkPrintfVersion="1" serialPortSpeed="" >
+<mm_project serial_port="COM13" board="!Arduino Pro or Pro Mini (5V, 16 MHz) w/ ATmega328" programmer="" includePaths="" libPaths="" libs="" default="yes" useCodeAutomation="yes" linkPrintfVersion="1" serialPortSpeed="" >
   <files>
     <file name="barobot_carret2_main.h" open="no" />
     <file name="barobot_carret2.cpp" open="yes" />

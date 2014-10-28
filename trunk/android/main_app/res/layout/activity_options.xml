@@ -8,116 +8,114 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".OptionsActivity" >
 
-    <RelativeLayout
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        >
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:orientation="vertical" >
 
-        <Button
-            android:id="@+id/options_bottle_setup_button"
-            style="@style/OptionsMenuButton"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
-            android:onClick="onOptionsButtonClicked"
-            android:text="@string/options_bottle_setup_button" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
 
-        <Button
-            android:id="@+id/options_recipe_setup_button"
-            style="@style/OptionsMenuButton"
-            android:layout_alignParentLeft="true"
-            android:layout_below="@id/options_bottle_setup_button"
-            android:onClick="onOptionsButtonClicked"
-            android:text="@string/options_recipe_setup_button" />
+            <Button
+                android:id="@+id/options_bottle_setup_button"
+                style="@style/OptionsMenuButton"
+                android:onClick="onOptionsButtonClicked"
+                android:text="@string/options_bottle_setup_button" />
 
-        <Button
-            android:id="@+id/options_extra_setup_button"
-            style="@style/OptionsMenuButton"
-            android:layout_alignParentLeft="true"
-            android:layout_below="@id/options_recipe_setup_button"
-            android:enabled="false"
-            android:onClick="onOptionsButtonClicked"
-            android:text="@string/options_extra_setup_button" />
+            <Button
+                android:id="@+id/options_lights_button"
+                style="@style/OptionsMenuButton"
+                android:onClick="onOptionsButtonClicked"
+                android:text="@string/options_lights_button"
+            />
 
-        <ToggleButton
-            android:id="@+id/options_lights_button"
-            style="@style/OptionsMenuButton"
-            android:layout_alignParentTop="true"
-            android:layout_toRightOf="@id/options_bottle_setup_button"
-            android:enabled="false"
-            android:onClick="onOptionsButtonClicked"
-            android:text="@string/options_lights_button"
-            android:textOff="@string/options_lights_button"
-            android:textOn="@string/options_lights_button" />
+            <Button
+                android:id="@+id/options_demo_button"
+                style="@style/OptionsMenuButton"
+                android:onClick="onOptionsButtonClicked"
+                android:text="@string/options_demo_button" />
 
-        <Button
-            android:id="@+id/options_demo_button"
-            style="@style/OptionsMenuButton"
-            android:layout_below="@id/options_lights_button"
-            android:layout_toRightOf="@id/options_bottle_setup_button"
-            android:enabled="false"
-            android:onClick="onOptionsButtonClicked"
-            android:text="@string/options_demo_button" />
+        </LinearLayout>
 
-        <Button
-            android:id="@+id/options_advanced_button"
-            style="@style/OptionsMenuButton"
-            android:layout_alignParentTop="true"
-            android:layout_toRightOf="@id/options_lights_button"
-            android:onClick="onOptionsButtonClicked"
-            android:text="@string/options_advanced_button" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
 
-        <Button
-            android:id="@+id/options_about_button"
-            style="@style/OptionsMenuButton"
-            android:layout_below="@id/options_demo_button"
-            android:layout_toRightOf="@id/options_lights_button"
-            android:onClick="onOptionsButtonClicked"
-            android:text="@string/options_about_button" />
+            <Button
+                android:id="@+id/options_recipe_setup_button"
+                style="@style/OptionsMenuButton"
+                android:onClick="onOptionsButtonClicked"
+                android:text="@string/options_recipe_setup_button" />
 
-        <Button
-            android:id="@+id/options_turn_off_button"
-            style="@style/OptionsMenuButton"
-            android:layout_below="@id/options_demo_button"
-            android:layout_toRightOf="@id/options_bottle_setup_button"
-            android:layout_margin="@dimen/OptionsMenuButtonMargin"
-             android:onClick="onOptionsButtonClicked"
-            android:text="@string/options_turn_off_button" />
+            <Button
+                android:id="@+id/options_calibrate_button"
+                style="@style/OptionsMenuButton"
+                android:onClick="onOptionsButtonClicked"
+                android:text="@string/options_calibrate" />
 
-        <Button
-            android:id="@+id/options_calibrate_button"
-            style="@style/OptionsMenuButton"
-            android:layout_below="@id/options_bottle_setup_button"
-            android:layout_toRightOf="@+id/options_demo_button"
-            android:onClick="onOptionsButtonClicked"
-            android:text="@string/options_calibrate" />
+            <Button
+                android:id="@+id/options_extra_setup_button"
+                style="@style/OptionsMenuButton"
+                android:enabled="false"
+                android:onClick="onOptionsButtonClicked"
+                android:text="@string/options_extra_setup_button" />
 
-        <Button
-            android:id="@+id/options_stop"
-            style="@style/OptionsMenuButton"
-            android:layout_alignParentLeft="true"
-            android:layout_below="@+id/options_extra_setup_button"
-            android:layout_marginTop="24dp"
-            android:onClick="onOptionsButtonClicked"
-            android:text="@string/options_stop" />
+        </LinearLayout>
 
-        <Button
-            android:id="@+id/settings_unlock"
-            style="@style/OptionsMenuButton"
-            android:layout_below="@+id/options_turn_off_button"
-            android:layout_toRightOf="@+id/options_stop"
-            android:onClick="onOptionsButtonClicked"
-            android:text="@string/unlock" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
 
-        <Button
-            android:id="@+id/option345"
-            style="@style/OptionsMenuButton"
-            android:layout_below="@+id/options_about_button"
-            android:layout_toRightOf="@+id/settings_unlock"
-            android:onClick="onOptionsButtonClicked"
-            android:text="@string/myip" />
+            <Button
+                android:id="@+id/options_turn_off_button"
+                style="@style/OptionsMenuButton"
+                android:layout_margin="@dimen/OptionsMenuButtonMargin"
+                android:onClick="onOptionsButtonClicked"
+                android:text="@string/options_turn_off_button" />
 
-    </RelativeLayout>
+            <Button
+                android:id="@+id/options_about_button"
+                style="@style/OptionsMenuButton"
+                android:onClick="onOptionsButtonClicked"
+                android:text="@string/options_about_button" />
 
+            <Button
+                android:id="@+id/options_advanced_button"
+                style="@style/OptionsMenuButton"
+                android:onClick="onOptionsButtonClicked"
+                android:text="@string/options_advanced_button" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <Button
+                android:id="@+id/settings_unlock"
+                style="@style/OptionsMenuButton"
+                android:onClick="onOptionsButtonClicked"
+                android:text="@string/unlock" />
+
+            <Button
+                android:id="@+id/options_stop"
+                style="@style/OptionsMenuButton"
+                android:layout_marginTop="24dp"
+                android:onClick="onOptionsButtonClicked"
+                android:text="@string/options_stop" />
+
+            <Button
+                android:id="@+id/option345"
+                style="@style/OptionsMenuButton"
+                android:onClick="onOptionsButtonClicked"
+                android:text="@string/myip" />
+
+        </LinearLayout>
+
+    </LinearLayout>
 
 </RelativeLayout>

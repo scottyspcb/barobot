@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import android.app.Activity;
@@ -13,17 +12,13 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Environment;
 import android.os.Handler;
 import android.util.Log;
-import android.widget.Button;
 
-import com.barobot.activity.RecipeListActivity;
 import com.barobot.common.Initiator;
 import com.barobot.common.constant.Constant;
 import com.barobot.common.interfaces.HardwareState;
-import com.barobot.gui.database.BarobotData;
 import com.barobot.gui.dataobjects.Engine;
 import com.barobot.gui.dataobjects.Log_start;
-import com.barobot.gui.dataobjects.Slot;
-import com.barobot.gui.utils.LangTool;
+import com.barobot.gui.dataobjects.StartupException;
 import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
 import com.barobot.hardware.serial.AndroidLogger;
@@ -49,7 +44,7 @@ public class AppInvoker {
 		return ins;
 	}
 
-	public void onCreate() {
+	public void onCreate() throws StartupException {
 		if(!isCreated){
 			isCreated = true;
 		    AndroidLogger dl = new AndroidLogger();
@@ -72,24 +67,30 @@ public class AppInvoker {
 					}
 			    }
 			};
+
 			handler.postDelayed(r, 1000);
 			arduino			= new Arduino( main );
 			arduino.onStart(main);
+
+			doOnlyOnce(arduino.barobot.state);
 			Engine.createInstance(main);
+
+			BarobotConnector barobot = arduino.barobot;
+			if(barobot.getRobotId() > 0 ){			// check exists in db
+				Android.createRobot( -1, barobot.getRobotId() );
+			}
 
 			String lang = arduino.barobot.state.get("LANG", "pl" );
 			Initiator.logger.w("set new lang", lang);
 			BarobotMain.getInstance().changeLanguage(lang);
 
-			doOnlyOnce(arduino.barobot.state);
-
-			BarobotConnector barobot = arduino.barobot;
 			Log_start ls 			= new Log_start();
 			ls.datetime				= Android.getTimestamp() ;
+			ls.start_type			= "app";
 			ls.robot_id				= barobot.getRobotId();
 			ls.language				= barobot.state.get("LANG", "pl" );
 			ls.app_starts			= barobot.state.getInt("STAT1", 0);
-			ls.arduino_starts		= barobot.state.getInt("STAT1", 0);
+			ls.arduino_starts		= barobot.state.getInt("ARDUINO_STARTS", 0);
 			ls.serial_starts		= barobot.state.getInt("STAT2", 0);
 			ls.app_version			= Constant.ANDROID_APP_VERSION;
 	//		ls.arduino_version		= Constant.ANDROID_APP_VERSION;
@@ -129,13 +130,13 @@ public class AppInvoker {
 	        cm.onDestroy();	
 	//	}
 	}
-	private void doOnlyOnce(HardwareState state) {
-		if(state.getInt("INIT", 0 ) > Constant.ANDROID_APP_VERSION ){
+	private void doOnlyOnce(HardwareState state) throws StartupException {
+		Initiator.logger.i("AppInvoker.doOnlyOnce", "value:" +state.getInt("INIT", 0 ));
+		if(state.getInt("INIT", 0 ) < Constant.ANDROID_APP_VERSION ){
 			File dir = new File(Environment.getExternalStorageDirectory(), "Barobot");
 			if (!dir.exists()) {
 				Android.createDirIfNotExists("Barobot");
 			}
-			state.getInt("INIT", Constant.ANDROID_APP_VERSION );
 			try {
 				String appPath2 	= main.getPackageManager().getPackageInfo(main.getPackageName(), 0).applicationInfo.dataDir;
 				String dbFolderPath = appPath2+"/databases";
@@ -144,11 +145,13 @@ public class AppInvoker {
 				if (!file.exists()) {
 					if (!file.mkdirs()) {
 						Log.e("TravellerLog :: ", "Problem creating folder:" + file.getAbsolutePath());
+						throw new StartupException( "mkdirs Error" );
 					}
 				}
+				state.set("INIT", Constant.ANDROID_APP_VERSION );
 			} catch (NameNotFoundException e1) {
 				Initiator.logger.w("AppInvoker.doOnlyOnce", "NameNotFoundException", e1);
-				e1.printStackTrace();
+				throw new StartupException( "AppInvoker.doOnlyOnce", e1 );
 			}
 		}
 	}
@@ -158,8 +161,8 @@ public class AppInvoker {
 		mq.add( "\n", false );	// clean up input
 		mq.add( "\n", false );
 //		mq.unlock();
-		mq.add("DY", true);
-		mq.add("DZ", true);
+		barobot.disabley( mq );
+		barobot.disablez(mq);
 		mq.add("DX", true);
 		mq.add(Constant.GETXPOS, true);
 		mq.add(Constant.GETYPOS, true);

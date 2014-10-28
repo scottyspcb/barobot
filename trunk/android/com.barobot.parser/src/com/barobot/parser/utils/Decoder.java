@@ -15,15 +15,13 @@ public class Decoder {
 		return toInt(input, 0 );
 	}
 	public static int toInt( String input, int defaultVal ){
-		input	= input.replaceAll( "[^-\\d]", "" );
-		int res = 0;
+	//	input	= input.replaceAll( "[^-\\d]", "" );
 		try {
-			res = Integer.parseInt(input);
+			return Integer.parseInt(input);
 		} catch (NumberFormatException e) {
 			return defaultVal;
 		}
 	//	Initiator.logger.i(Constant.TAG,"toInt:"+ input + "/ "+ res );
-		return res;
 	}
 	public static int fromHex(String input, int defaultVal) {
 		input	= input.replaceAll( "[^-\\d]", "" );
@@ -53,5 +51,6 @@ public class Decoder {
 	//	Initiator.logger.i("Decoder","toHexByte:"+ oneByte + "/ "+ oneByte2 + " / "+ (0x100 | oneByte2) + " / "+ Integer.toHexString(0x100 | oneByte2));
 		return Integer.toHexString(0x100 | oneByte2).substring(1);
 	}
+	
 }
 

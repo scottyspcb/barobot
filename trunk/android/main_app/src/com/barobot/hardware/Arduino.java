@@ -5,6 +5,11 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import org.orman.mapper.Model;
+import org.orman.mapper.ModelQuery;
+import org.orman.sql.C;
+import org.orman.sql.Query;
+
 import android.app.Activity;
 
 import com.barobot.AppInvoker;
@@ -15,6 +20,9 @@ import com.barobot.common.interfaces.HardwareState;
 import com.barobot.common.interfaces.serial.SerialEventListener;
 import com.barobot.common.interfaces.serial.SerialInputListener;
 import com.barobot.common.interfaces.serial.Wire;
+import com.barobot.gui.database.BarobotData;
+import com.barobot.gui.dataobjects.Robot;
+import com.barobot.gui.dataobjects.Slot;
 import com.barobot.hardware.devices.BarobotConnector;
 import com.barobot.hardware.devices.BarobotEventListener;
 import com.barobot.hardware.devices.MyRetReader;
@@ -30,7 +38,6 @@ public class Arduino{
 	public boolean stop_autoconnect			= false;
 	public SerialInputListener listener;
 	public static boolean firmwareUpload	= false;
-
 	private AndroidHardwareContext ahc;
 	private Activity mainView;
 	public BarobotConnector barobot;
@@ -46,14 +53,18 @@ public class Arduino{
 		state.set("show_reading", 1 );
 		this.barobot			= new BarobotConnector( state );
 		instance				= this;
+
 		Interval ii1 = new Interval(new Runnable(){
 			public void run() {
-				if( Arduino.getInstance().getConnection().isConnected() && !barobot.main_queue.isBusy() && !firmwareUpload){
-					barobot.main_queue.sendNow("AA");
+				// if is connected AND is not busy AND not uploading firmware
+				if( Arduino.getInstance().getConnection().isConnected() && !barobot.main_queue.isBusy() && !firmwareUpload ){
+					barobot.mb.send("AA\n");
+				//	barobot.main_queue.sendNow("A2");
+				//	barobot.main_queue.add("A2", true);
 				}
 			}});
 		AppInvoker.getInstance().inters.add(ii1);
-		ii1.run( 2000, 2000 );
+		ii1.run( 3000, 3000 );
 	}
 
 	public Wire getConnection(){
@@ -108,7 +119,7 @@ public class Arduino{
 		    public void onNewData(final byte[] data, int length) {
 		    	String message = new String(data, 0, length);
 		  //  	Log.e("Serial input", message);
-		    	barobot.main_queue.read( message );
+		    	barobot.mb.read(message);
 				try {
 					Arduino.getInstance().low_send(message);
 				} catch (IOException e) {

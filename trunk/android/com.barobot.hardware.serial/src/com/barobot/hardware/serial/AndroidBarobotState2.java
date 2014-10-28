@@ -43,18 +43,18 @@ public class AndroidBarobotState2 implements HardwareState{
 		"BOTTLE_OFFSETX_11",
 		"BOTTLE_OFFSETX_12",
 
-		"BOTTLE_X_0","BOTTLE_Y_0",
-		"BOTTLE_X_1","BOTTLE_Y_1",
-		"BOTTLE_X_2","BOTTLE_Y_2",
-		"BOTTLE_X_3","BOTTLE_Y_3",
-		"BOTTLE_X_4","BOTTLE_Y_4",
-		"BOTTLE_X_5","BOTTLE_Y_5",
-		"BOTTLE_X_6","BOTTLE_Y_6",
-		"BOTTLE_X_7","BOTTLE_Y_7",
-		"BOTTLE_X_8","BOTTLE_Y_8",
-		"BOTTLE_X_9","BOTTLE_Y_9",
-		"BOTTLE_X_10","BOTTLE_Y_10",
-		"BOTTLE_X_11","BOTTLE_Y_11",
+		"BOTTLE_X_0",
+		"BOTTLE_X_1",
+		"BOTTLE_X_2",
+		"BOTTLE_X_3",
+		"BOTTLE_X_4",
+		"BOTTLE_X_5",
+		"BOTTLE_X_6",
+		"BOTTLE_X_7",
+		"BOTTLE_X_8",
+		"BOTTLE_X_9",
+		"BOTTLE_X_10",
+		"BOTTLE_X_11",
 	};
 	
 	public AndroidBarobotState2( Activity application ){
@@ -77,7 +77,7 @@ public class AndroidBarobotState2 implements HardwareState{
 
 	@Override
 	public int getInt( String name, int def ){
-		return Decoder.toInt(get( name, ""+def ));
+		return Decoder.toInt(get( name, ""+def ), def);
 	}
 	@Override
 	public void set(String name, long value) {

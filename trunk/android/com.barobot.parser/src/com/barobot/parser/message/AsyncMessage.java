@@ -1,8 +1,9 @@
 package com.barobot.parser.message;
 
+import com.barobot.common.Initiator;
 import com.barobot.parser.Queue;
 
-public class AsyncMessage extends History_item{
+public class AsyncMessage extends History_item implements Cloneable{
 	protected static final long NO_TIMEOUT		= -1;
 	protected static final long DEFAULT_TIME	= 15;
 	public String unlockingcommand	= "";
@@ -16,6 +17,10 @@ public class AsyncMessage extends History_item{
 	//public Runnable isRet		= null;
 //	private long wait_until		= 0;
 //	private boolean addSufix	= true;
+	
+	public AsyncMessage( boolean dir ) {
+		this.direction		= dir;
+	}
 
 	public AsyncMessage( String cmd, boolean blocking, boolean dir ){
 		this.blocking		= blocking;
@@ -31,9 +36,6 @@ public class AsyncMessage extends History_item{
 		this.blocking		= blocking;
 	}
 
-	public AsyncMessage( boolean dir ) {
-		this.direction		= dir;
-	}
 
 	public AsyncMessage( boolean blocking, boolean dir ) {
 		this.blocking		= blocking;
@@ -147,5 +149,31 @@ public class AsyncMessage extends History_item{
 		sss = sss.replace(",", ";");
 		sss = sss.replace("#", ",");
 		return sss;
+	}
+
+	public AsyncMessage copy() {			// make copy of message to run it one more time, copy must be done borefo command is run
+	//	AsyncMessage am = new AsyncMessage( this.direction );
+		AsyncMessage am = null;
+		try {
+			am = (AsyncMessage) this.clone();
+			if(am==null){
+				Initiator.logger.i("AsyncMessage.copy", "is null" );
+			}else{
+				am.unlockingcommand		= this.unlockingcommand;
+				am.blocking				= this.blocking;
+				am.name					= this.name;
+				am.waitingforme			= this.waitingforme;
+				am.name					= this.name;
+				am.timeout				= this.timeout;
+				am.waitingforme			= this.waitingforme;
+				am.wasstarted			= this.wasstarted;
+				am.command				= this.command;
+				am.direction			= this.direction;
+			}
+		} catch (CloneNotSupportedException e) {
+			e.printStackTrace();
+			Initiator.logger.e("AsyncMessage.copy", "CloneNotSupportedException", e );
+		}
+		return am;
 	}
 }

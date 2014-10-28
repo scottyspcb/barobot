@@ -1,14 +1,18 @@
 package com.barobot.gui.fragment;
 
 
+import com.barobot.BarobotMain;
 import com.barobot.R;
 import com.barobot.gui.TextProgressBar;
 
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 
 public class RecipeAttributesFragment extends Fragment {
 	@Override
@@ -16,7 +20,6 @@ public class RecipeAttributesFragment extends Fragment {
 			Bundle savedInstanceState) {
 
 		return inflater.inflate(R.layout.fragment_recipe_attributes, container, false);
-	
 		// TODO: Add onClickListener to all buttons on this fragment
 	}
 
@@ -31,6 +34,7 @@ public class RecipeAttributesFragment extends Fragment {
 		sourPB.setProgress(Normalize(sour, 100 ));
 		bitterPB.setProgress(Normalize(bitter, 100 ));
 		strengthPB.setProgress(Normalize(strength, 40 ));
+		getView().setVisibility(View.VISIBLE);
 	}
 
 	public void ClearAttributes()
@@ -52,5 +56,21 @@ public class RecipeAttributesFragment extends Fragment {
 		if (value < 0) return 0;
 
 		return (int) ((float)((float)value / (float)max)  * 100);
+	}
+
+	public void hide() {
+		BarobotMain.getInstance().runOnUiThread(new Runnable() {  
+            @Override
+            public void run() {
+            	getView().setVisibility(View.INVISIBLE);
+            	/*
+            	FragmentManager fm = getFragmentManager();
+            	fm.beginTransaction()
+            	          .setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out)
+            	          .show(somefrag)
+            	          .commit();
+            	*/
+            }
+		 });
 	}
 }

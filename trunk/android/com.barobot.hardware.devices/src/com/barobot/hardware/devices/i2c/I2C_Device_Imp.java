@@ -36,7 +36,7 @@ public abstract class I2C_Device_Imp implements I2C_Device{
 	@Override
 	public void addLed(Queue q, String selector, int pwm ) {
 		float ratio		= ((float)I2C_Device_Imp.level)/I2C_Device_Imp.MAX_LEVEL;
-		pwm				= Pwm.linear2log(pwm, ratio );
+		pwm				= Pwm.linear2log(pwm, 1 );
 		if(ledOrderType == 1){
 		}else{
 			selector = selector.replaceAll("2$", "a");
@@ -91,16 +91,6 @@ public abstract class I2C_Device_Imp implements I2C_Device{
 					+ String.format("%02x", white );
 		}
 		q.add( command, true );
-	}
-
-	@Override
-	public String checkExists(Queue q) {
-		if( myaddress > 0 ){
-			return "n"+ this.myaddress;
-		}else if( row > 0 ){
-			return "N"+ this.row;
-		}
-		return "-checkExists";
 	}
 
 	@Override
@@ -188,7 +178,7 @@ public abstract class I2C_Device_Imp implements I2C_Device{
 		}
 		return command;
 	}
-
+/*
 	@Override
 	public String erase(String filePath, String comPort) {
 		String command = IspSettings.avrDudePath + " -C"+ IspSettings.configPath +" "+I2C_Device_Imp.verbose( IspSettings.verbose )+ " " +
@@ -199,7 +189,7 @@ public abstract class I2C_Device_Imp implements I2C_Device{
 		}
 		return command;
 	}
-
+*/
 	//public String uploadCode( Queue doAfter, String filePath, String comPort ) {
 	@Override
 	public String uploadCode( String filePath, String comPort ) {
@@ -211,11 +201,7 @@ public abstract class I2C_Device_Imp implements I2C_Device{
 		}
 		return command;
 	}
-	public long isFresh() {
-		long b = new File( getHexFile() ).lastModified() / 1000;
-		//System.out.println("isFresh " + b );
-		return b;
-	}
+
 	@Override
 	public void reset(Queue q ) {
 		q.add( this.getReset(), true );

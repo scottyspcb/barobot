@@ -20,8 +20,12 @@ import com.barobot.common.interfaces.OnDownloadReadyRunnable;
 import com.barobot.gui.dataobjects.Engine;
 import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
+import com.barobot.other.Android;
 import com.barobot.other.InternetHelpers;
 import com.barobot.other.UpdateManager;
+import com.barobot.parser.Queue;
+import com.barobot.parser.message.AsyncMessage;
+import com.barobot.parser.message.Mainboard;
 public class button_click implements OnClickListener{
 	private Activity dbw;
 	public button_click(Activity debugWindow){
@@ -39,7 +43,7 @@ public class button_click implements OnClickListener{
 			}}).start();
 	}
 	public void exec(View v) {
-		BarobotConnector barobot	= Arduino.getInstance().barobot;
+		final BarobotConnector barobot	= Arduino.getInstance().barobot;
 
 		switch (v.getId()) {
 		case R.id.download_database:
@@ -118,7 +122,22 @@ public class button_click implements OnClickListener{
 
 		case R.id.firmware_download_manual:
 			UpdateManager.downloadAndBurnFirmware( dbw, barobot.use_beta, true );
-			break;		
+			break;	
+		case R.id.new_robot_id:
+			int isOnline = Android.isOnline(dbw);
+			if(isOnline > -1 ){
+				int robot_id = UpdateManager.getNewRobotId();		// download new robot_id (init hardware)
+				Initiator.logger.w("button_click.new_robot_id", "robot_id" + robot_id);
+				if( robot_id > 0 ){		// save robot_id to android and arduino
+					Queue q = new Queue();
+					barobot.setRobotId( q, robot_id);
+					barobot.main_queue.add(q);
+				}
+				alertMessage("New ID= "+ robot_id);
+			}else{
+				alertMessage("No internet connection");
+			}
+			break;
 		}
 	}
 	private void pleaseResetApp() {
@@ -145,4 +164,18 @@ public class button_click implements OnClickListener{
 			  }
 			});
 	}
+	private void alertMessage( final String msg ) {
+		BarobotMain.getInstance().runOnUiThread(new Runnable() {
+			  public void run() {
+				  new AlertDialog.Builder(dbw).setTitle("Message").setMessage(msg)
+				    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+				        public void onClick(DialogInterface dialog, int which) { 
+				        }
+				    })
+				    .setIcon(android.R.drawable.ic_dialog_alert).show();
+			  }
+			});
+	}	
+	
+	
 }

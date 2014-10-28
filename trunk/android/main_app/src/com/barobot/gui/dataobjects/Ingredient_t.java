@@ -1,5 +1,9 @@
 package com.barobot.gui.dataobjects;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.orman.mapper.Model;
 import org.orman.mapper.annotation.Entity;
 import org.orman.mapper.annotation.ManyToOne;
@@ -27,5 +31,17 @@ public class Ingredient_t extends Model<Ingredient_t>{
 	@Override
 	public String toString() {
 		return getName();
+	}
+	public static int getSize(List<Ingredient_t> ingredients) {
+		int size	= 0;
+		for(Ingredient_t ing : ingredients)
+		{
+			Slot slot = Engine.GetInstance().getIngredientSlot(ing);
+			if (slot != null){
+				int count = slot.getSequence( ing.quantity );
+				size		+= count * slot.dispenser_type;
+			}
+		}
+		return size;
 	}
 }
