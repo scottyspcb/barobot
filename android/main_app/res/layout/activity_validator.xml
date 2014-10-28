@@ -1,0 +1,163 @@
+
+    <LinearLayout xmlns:tools="http://schemas.android.com/tools"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:orientation="vertical"
+        android:paddingBottom="6dp"
+        android:paddingLeft="6dp"
+        android:paddingRight="6dp"
+        android:paddingTop="6dp"
+        tools:context="${relativePackage}.${activityClass}" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <Button
+                android:id="@+id/wizard0"
+                style="@style/BigValidatorMenuButton"
+                android:onClick="onOptionsButtonClicked"
+                android:text="Start Wizard" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/textView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Other tests" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <Button
+                android:id="@+id/wizard1"
+                style="@style/ValidatorMenuButton"
+                android:onClick="onOptionsButtonClicked"
+                android:text="@string/wizard_text_1" />
+            
+            <Button
+                android:id="@+id/wizard2"
+                style="@style/ValidatorMenuButton"
+                android:onClick="onOptionsButtonClicked"
+                android:text="@string/wizard_text_2" />
+
+            <Button
+                android:id="@+id/wizard3"
+                style="@style/ValidatorMenuButton"
+                android:onClick="onOptionsButtonClicked"
+                android:text="@string/wizard_text_3" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <Button
+                android:id="@+id/wizard4"
+                style="@style/ValidatorMenuButton"
+                android:onClick="onOptionsButtonClicked"
+                android:text="@string/wizard_text_4" />
+
+            <Button
+                android:id="@+id/wizard5"
+                style="@style/ValidatorMenuButton"
+                android:onClick="onOptionsButtonClicked"
+                android:text="@string/wizard_text_5" />
+
+            <Button
+                android:id="@+id/wizard6"
+                style="@style/ValidatorMenuButton"
+                android:enabled="false"
+                android:onClick="onOptionsButtonClicked"
+                android:text="@string/wizard_text_6" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <Button
+                android:id="@+id/wizard7"
+                style="@style/ValidatorMenuButton"
+                android:layout_margin="@dimen/OptionsMenuButtonMargin"
+                android:onClick="onOptionsButtonClicked"
+                android:text="@string/wizard_text_7" />
+
+            <Button
+                android:id="@+id/wizard8"
+                style="@style/ValidatorMenuButton"
+                android:onClick="onOptionsButtonClicked"
+                android:text="@string/wizard_text_8" />
+
+            <Button
+                android:id="@+id/wizard9"
+                style="@style/ValidatorMenuButton"
+                android:onClick="onOptionsButtonClicked"
+                android:text="@string/wizard_text_9" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <Button
+                android:id="@+id/wizard10"
+                style="@style/ValidatorMenuButton"
+                android:onClick="onOptionsButtonClicked"
+                android:text="@string/wizard_text_10" />
+
+            <Button
+                android:id="@+id/wizard11"
+                style="@style/ValidatorMenuButton"
+                android:layout_marginTop="24dp"
+                android:onClick="onOptionsButtonClicked"
+                android:text="@string/wizard_text_11" />
+
+            <Button
+                android:id="@+id/wizard12"
+                style="@style/ValidatorMenuButton"
+                android:onClick="onOptionsButtonClicked"
+                android:text="@string/wizard_text_12" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <Button
+                android:id="@+id/wizard13"
+                style="@style/ValidatorMenuButton"
+                android:onClick="onOptionsButtonClicked"
+                android:text="@string/wizard_text_13" />
+
+            <Button
+                android:id="@+id/wizard14"
+                style="@style/ValidatorMenuButton"
+                android:layout_marginTop="24dp"
+                android:onClick="onOptionsButtonClicked"
+                android:text="@string/wizard_text_14" />
+
+            <Button
+                android:id="@+id/wizard15"
+                style="@style/ValidatorMenuButton"
+                android:onClick="onOptionsButtonClicked"
+                android:text="@string/wizard_text_15" />
+
+        </LinearLayout>
+        
+    </LinearLayout>
+
+
+
+
+

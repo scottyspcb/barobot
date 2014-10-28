@@ -74,9 +74,8 @@ public class Methods {
 	public static final String METHOD_M_ONECOLOR	= "B";
 	public static final String METHOD_HAS_NEXT	= "N";
 	public static final String METHOD_SLAVE_HAS_NEXT	= "n";
-	public static final String METHOD_EEPROM_READ	= "M";
-	public static final String METHOD_EEPROM_WRITE	= "S";
-	public static final String METHOD_GET_VARSION	= "V";
+
+
 
 //24 * 2^0  + 252* 2^1 + 255* 2^2 + 255* 2^3
 

@@ -24,78 +24,33 @@ import com.barobot.gui.utils.LangTool;
 import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
 
-public class WizardStartActivity extends BarobotMain{
-
-	private static long TIMER_DELAY = 0;
-	private static long TIMER_REPEAT = 1000;
-	private Handler handler;
-	private Timer timer;
-	
-	private class MessageTask extends TimerTask
-	{
-		private Handler mHandler;
-		public MessageTask(Handler handler)
-		{
-			mHandler = handler;
-		}
-
-		@Override
-		public void run() {
-			
-			mHandler.post(new Runnable() {
-				@Override
-				public void run() {
-					CheckMessages();
-				}
-			});
-		}
-	}
-
+public class StartupActivity extends BarobotMain{
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		 super.onCreate(savedInstanceState);
-        // remove title
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-		
-		setContentView(R.layout.activity_wizard_start);
-		Engine.GetInstance().getRecipes();
-		String langCode = Locale.getDefault().getLanguage();	// i.e. "pl"
-		//Log.i("readLangId1", Locale.getDefault().getDisplayLanguage());
-		LangTool.setLanguage(langCode);
-		setFullScreen();
-		handler = new Handler();
+		super.onCreate(savedInstanceState);
+		if( BarobotMain.canStart ){
+	        requestWindowFeature(Window.FEATURE_NO_TITLE);
+	        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+			setContentView(R.layout.activity_startup);
+			Engine.GetInstance().getRecipes();
+			String langCode = Locale.getDefault().getLanguage();	// i.e. "pl"
+			//Log.i("readLangId1", Locale.getDefault().getDisplayLanguage());
+			LangTool.setLanguage(langCode);
+			setFullScreen();
+		 }
 	}
 	
 	@Override
 	protected void onResume() {
 		super.onResume();
-		setFullScreen();
-		MessageTask task = new MessageTask(handler);
-		timer = new Timer(true);
-		timer.schedule(task, TIMER_DELAY, TIMER_REPEAT);
+		if( BarobotMain.canStart ){
+			setFullScreen();
+		}
 	}
 	
 	@Override
 	protected void onPause() {
-		// TODO Auto-generated method stub
 		super.onPause();
-		
-		timer.cancel();
-	}
-	
-	private void CheckMessages()
-	{
-		String message = Engine.GetInstance().GetMessage();
-		
-		if (message != "")
-		{
-			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-			builder.setTitle("Message")
-				.setMessage(message);
-			
-			builder.create().show();
-		}
 	}
 
 	public void onMenuButtonClicked(View view)
@@ -145,7 +100,7 @@ public class WizardStartActivity extends BarobotMain{
 				break;
 		}
 		BarobotMain.getInstance().changeLanguage(langCode);
-		setContentView(R.layout.activity_wizard_start);	//reload
+		setContentView(R.layout.activity_startup);	//reload
 		Log.i("translateName2 ", LangTool.translateName(2, "type", "aa" ));
 	}
 
@@ -165,6 +120,7 @@ public class WizardStartActivity extends BarobotMain{
 		return super.onKeyDown(keyCode, event);
 	}
 
+/*
  	@Override
 	public void onBackPressed() {
 		new AlertDialog.Builder(this)
@@ -180,5 +136,5 @@ public class WizardStartActivity extends BarobotMain{
 								finish();
 							}
 						}).setNegativeButton("No", null).show();
-	}
+	}*/
 }

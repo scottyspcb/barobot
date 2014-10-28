@@ -74,27 +74,3 @@ public class CoversationHistory {
 	}
 }
 
-/*
-public boolean addRetToList( final String last, final String ret ) {
-	final DebugWindow dd = DebugWindow.getInstance();
-	if(dd!=null){
-		int count = dd.mConversationArrayAdapter.getCount();
-		for(int i =count-1; i>=0;i--){
-			History_item hi = dd.mConversationArrayAdapter.getItem(i);
-		//	Initiator.logger.i("+addRetToList", last + "/" + ret + "/" + i +"/"+ hi.getCommand() );
-			if( hi.direction && hi.getCommand().equals(last)){
-				hi.setRet(ret);
-	//			Initiator.logger.i("+addRetToList","ustawiam " + i + " na " + hi.toString() );
-				dd.runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						dd.mConversationArrayAdapter.notifyDataSetChanged();
-					}
-				});
-				return true;
-			}			
-		}
-	}
-	return false;
-}
-*/

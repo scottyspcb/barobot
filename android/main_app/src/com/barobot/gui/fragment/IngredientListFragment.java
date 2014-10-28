@@ -28,7 +28,7 @@ public class IngredientListFragment extends Fragment {
 	public void ShowIngredients(List<Ingredient_t> ingredients)
 	{
 		final ArrayAdapter<Ingredient_t> mAdapter = new ArrayAdapter<Ingredient_t>(getActivity(), R.layout.ingredient_list_item, ingredients);
-		
+
 		//ListView view = (ListView)  getView();
 		final ListView listView = (ListView) getView().findViewById(R.id.ingredient_list);
 		
@@ -37,11 +37,21 @@ public class IngredientListFragment extends Fragment {
 			BarobotMain.getInstance().runOnUiThread(new Runnable() {  
                  @Override
                  public void run() {
-                     // TODO Auto-generated method stub
+                	 listView.setVisibility(View.VISIBLE);
                 	 listView.setAdapter(mAdapter);
                  }
 			 });
 		}
+	}
+
+	public void hide(){
+		BarobotMain.getInstance().runOnUiThread(new Runnable() {  
+            @Override
+            public void run() {
+        		ListView listView = (ListView) getView().findViewById(R.id.ingredient_list);
+        		listView.setVisibility(View.INVISIBLE);	
+            }
+		 });
 	}
 
 	public void ClearIngredients() {
@@ -52,6 +62,7 @@ public class IngredientListFragment extends Fragment {
 		// view.setAdapter(mAdapter);
 		if (listView != null) {
 			listView.setAdapter(null);
+			listView.setVisibility(View.INVISIBLE);	
 		}
 	}
 }

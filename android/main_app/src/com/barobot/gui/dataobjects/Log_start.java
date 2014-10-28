@@ -14,6 +14,7 @@ public class Log_start extends Model<Log_start> implements JsonSerializable{
 	public int id;
 	public long datetime;
 	public int app_starts;
+	public String start_type;
 	public int arduino_starts;
 	public int app_version;
 	public int arduino_version;

@@ -1,5 +1,8 @@
 package com.barobot.debug;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import yuku.ambilwarna.AmbilWarnaDialog;
 import yuku.ambilwarna.AmbilWarnaDialog.OnAmbilWarnaListener;
 import android.app.Activity;
@@ -41,7 +44,8 @@ public class DebugTabLeds extends Fragment {
 		//Integer.toString(getArguments().getInt(DebugActivity.ARG_SECTION_NUMBER))
    // 	Initiator.logger.i("DebugTabLeds", "onActivityCreated");
         super.onActivityCreated(savedInstanceState);
-    }
+    }	
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
 	//	Initiator.logger.i("DebugTabLeds", "onCreateView");
@@ -50,34 +54,20 @@ public class DebugTabLeds extends Fragment {
 		//View rootView = inflater.inflate( R.layout.fragment_device_list_dummy, container, false);
 		this.rootView = inflater.inflate( lay, container, false);
 
-		
-		button_toggle bt = new button_toggle();
-		int[] togglers = {
-			
-		};
-		for(int i =0; i<togglers.length;i++){
-			View w = rootView.findViewById(togglers[i]);
-			String classname = w.getClass().getName();
-			if( "android.widget.ToggleButton".equals( classname )){
-				Button xb3 = (ToggleButton) rootView.findViewById(togglers[i]);	
-				xb3.setOnClickListener(bt);	
-			}	
-		}
 
 		Switch xb5 = (Switch) rootView.findViewById(R.id.light_show);	
 		xb5.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 		    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 		    	Audio a = getAudio();
-		    	
 		    	if(a.isRunning()){
-		    		System.out.println("getAudio stop1");
+		    		Initiator.logger.i( this.getClass().getName(), "getAudio stop1");
 		        	a.stop();
 		    	}else if (isChecked ) {
-		    		System.out.println("getAudio start");
+		    		Initiator.logger.i( this.getClass().getName(), "getAudio start");
 		    		final BarobotConnector barobot = Arduino.getInstance().barobot;
 		        	a.start(barobot);
 		        } else {
-		        	System.out.println("getAudio stop2");
+		        	Initiator.logger.i( this.getClass().getName(), "getAudio stop2");
 		        	a.stop();
 		        }
 		    }
@@ -135,11 +125,17 @@ public class DebugTabLeds extends Fragment {
 		if(light_scale!=null){
 			light_scale.setProgress(I2C_Device_Imp.level);	
 		}
-		SeekBar white_scale = (SeekBar) rootView.findViewById( R.id.white_scale );
-		if(white_scale!=null){
-			
-		}
+		
+		Map<Integer, String> buttonToCommand = new HashMap<Integer, String>();
+		buttonToCommand.put( R.id.led_off, "led_off" );
+		buttonToCommand.put( R.id.scann_leds, "scann_leds" );
+		buttonToCommand.put( R.id.led_green_on, "led_green_on" );
+		buttonToCommand.put( R.id.led_blue_on, "led_blue_on" );
+		buttonToCommand.put( R.id.led_red_on, "led_red_on" );
 
+		View rootView = inflater.inflate( lay, container, false);
+		DebugTabCommands.assignButtons(buttonToCommand, rootView );
+		
 		return rootView;
 	}
 
@@ -193,11 +189,11 @@ public class DebugTabLeds extends Fragment {
 		dialog.show();
 	};
 	
-
+/*
     public int getDipsFromPixel(float pixels) {
         // Get the screen's density scale
         final float scale = getResources().getDisplayMetrics().density;
         // Convert the dps to pixels, based on density scale
         return (int) (pixels * scale + 0.5f);
-    } 
+    } */
 }

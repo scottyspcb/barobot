@@ -1,5 +1,6 @@
 package com.barobot.activity;
 
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Vector;
 
@@ -129,7 +130,6 @@ public class DebugActivity extends FragmentActivity implements	ActionBar.TabList
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		menu.clear();
-		getMenuInflater().inflate(R.menu.device_list, menu);
 		int position = mViewPager.getCurrentItem();
 		Fragment fff = null;
 	//	Initiator.logger.i("Debug", "onPrepareOptionsMenu " + position);
@@ -219,16 +219,21 @@ public class DebugActivity extends FragmentActivity implements	ActionBar.TabList
 		}
 	}
 
+	
+	private static String[] list = {
+		"LENGTHX",
+		"HALLX",
+		"LAST_WEIGHT",
+		"TEMPERATURE",
+		"HALLY",
+		"POSX",
+		"POSY",
+		"POSZ",
+		"ROBOT_ID",
+	};
+	
 	public void update(String name, String value) {
-		if( "LENGTHX".equals(name)){
-			setText( R.id.dlugosc_x, value, false );
-		}else if("POSX".equals(name)){
-			setText( R.id.position_x, value, false );
-		}else if("POSY".equals(name) ){
-			setText( R.id.position_y, value, false );
-		}else if("POSZ".equals(name) ){
-			setText( R.id.position_z, value, false );
-		}
+		DebugTabCommands.updateValue(name, value);	
 	}
 
 	// Any update to UI can not be carried out in a non UI thread like the one
@@ -279,16 +284,3 @@ public class DebugActivity extends FragmentActivity implements	ActionBar.TabList
 		return super.onKeyDown(keyCode, event);
 	}
 }
-
-/*
- * 
- * 
-	public View getObject(String namespace, String mDrawableName) {
-		int resID = getResources().getIdentifier(mDrawableName, namespace,getPackageName());
-		return findViewById(resID);
-	}
-
-	public int getResource(String namespace, String mDrawableName) {
-		int resID = getResources().getIdentifier(mDrawableName, namespace,getPackageName());
-		return resID;
-	}*/

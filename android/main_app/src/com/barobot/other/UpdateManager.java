@@ -22,6 +22,7 @@ import com.barobot.common.constant.Constant;
 import com.barobot.common.interfaces.OnDownloadReadyRunnable;
 import com.barobot.common.interfaces.serial.IspCommunicator;
 import com.barobot.common.interfaces.serial.Wire;
+import com.barobot.gui.dataobjects.Log_start;
 import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
 import com.barobot.isp.UploadCallBack;
@@ -227,6 +228,9 @@ public class UpdateManager{
 	
 	public static void downloadAndBurnFirmware(final Activity c, final boolean use_beta, final boolean manual_reset ) {
 		// ask before
+		if(BarobotMain.getInstance().isDestroyed() ||BarobotMain.getInstance().isFinishing()){
+			return;
+		}
 		BarobotMain.getInstance().runOnUiThread(new Runnable() {
 			  public void run() {
 				  new AlertDialog.Builder(c).setTitle("Are you sure?").setMessage("Do you want to update your firmware now?")
@@ -243,6 +247,21 @@ public class UpdateManager{
 		// download new version
 		final String url	= (use_beta) ? Constant.firmwareWeb_beta : Constant.firmwareWeb;
 		final String path9	= Environment.getExternalStorageDirectory() + Constant.firmware;
+
+		final BarobotConnector barobot	= Arduino.getInstance().barobot;
+		Log_start ls 			= new Log_start();
+		ls.datetime				= Android.getTimestamp() ;
+		ls.start_type			= "fu";
+		ls.robot_id				= barobot.getRobotId();
+		ls.language				= barobot.state.get("LANG", "pl" );
+		ls.app_starts			= barobot.state.getInt("STAT1", 0);
+		ls.arduino_starts		= barobot.state.getInt("ARDUINO_STARTS", 0);
+		ls.serial_starts		= barobot.state.getInt("STAT2", 0);
+		ls.app_version			= Constant.ANDROID_APP_VERSION;
+//		ls.arduino_version		= Constant.ANDROID_APP_VERSION;
+//		ls.database_version		= Constant.ANDROID_APP_VERSION;
+		ls.temp_start			= barobot.getLastTemp();
+		ls.insert();
 
 		c.runOnUiThread(new Runnable() {
 			   public void run() {

@@ -6,4 +6,24 @@
     <string name="wizard_lang_ru">русский</string>
     <string name="wizard_lang_pl">Polski</string>
     <string name="wizard_lang_en">English</string>
+    
+    
+  	<string name="wizard_text_0">Start wizard</string>    
+    <string name="wizard_text_1">1. Power</string>    
+    <string name="wizard_text_2">2. Internal cable</string>
+    <string name="wizard_text_3">3. Firmware</string>  
+    <string name="wizard_text_4">4. Tablet connection</string>  
+    <string name="wizard_text_5">5. LED</string>  
+    <string name="wizard_text_6">6. Left-right movement</string>  
+    <string name="wizard_text_7">7. Left-right magnets</string>  
+    <string name="wizard_text_8">8. Left-right calibration</string>  
+    <string name="wizard_text_9">9. Front - back movement</string>  
+    <string name="wizard_text_10">10. Front - back  magnets</string>  
+    <string name="wizard_text_11">11. Front - back calibration</string>  
+    <string name="wizard_text_12">12. Top-down movement</string>  
+    <string name="wizard_text_13">13. Top-down calibration</string>  
+    <string name="wizard_text_14">14. Weight sensor</string>  
+    <string name="wizard_text_15">15. Pouring</string>      
+
+    
 </resources>

@@ -25,6 +25,7 @@ import com.barobot.gui.database.BarobotData;
 import com.barobot.gui.dataobjects.Engine;
 import com.barobot.gui.dataobjects.Robot;
 import com.barobot.gui.dataobjects.Slot;
+import com.barobot.other.Android;
 import com.barobot.parser.utils.Decoder;
 
 public class AndroidBarobotState implements HardwareState{
@@ -43,19 +44,17 @@ public class AndroidBarobotState implements HardwareState{
 		"POS_START_Y",
 		"NEUTRAL_POS_Y",
 		"NEUTRAL_POS_Z",
+		"MIN_WEIGHT"
 	};
-	
 	public AndroidBarobotState( Activity application ){
 		myPrefs			= application.getSharedPreferences(Constant.SETTINGS_TAG, Context.MODE_PRIVATE);
 		config_editor	= myPrefs.edit();
 		data_ready		= true;
 	}
-
 	@Override
 	public int getInt( String name, int def ){
-		return Decoder.toInt(get( name, ""+def ));
+		return Decoder.toInt(get( name, ""+def ), def );
 	}
-
 	@Override
 	public void set(String name, long value) {
 		set(name, "" + value );
@@ -82,7 +81,7 @@ public class AndroidBarobotState implements HardwareState{
 
 	@Override
 	public Map<String, String> getAll() {
-		Map<String, ?> allEntries 	=  myPrefs.getAll();
+		Map<String, ?> allEntries 	= myPrefs.getAll();
 		Map<String, String> nMap 	= new HashMap<String, String>();
 		for (Map.Entry<String, ?> entry : allEntries.entrySet()) {
 		    nMap.put(entry.getKey(), entry.getValue().toString());
@@ -97,7 +96,7 @@ public class AndroidBarobotState implements HardwareState{
 	@Override
 	public void reloadConfig(int new_robot_id) {
 		int old_robot_id	= robot_id;
-		robot_id = new_robot_id;
+		robot_id			= new_robot_id;
 
 		// read from db
 		Query query3 = new Query("SELECT * FROM `robot_config` WHERE `robot` = '0' OR `robot`= '"+robot_id+"' ORDER BY `robot` ASC");
@@ -118,8 +117,7 @@ public class AndroidBarobotState implements HardwareState{
 			}
 			config_editor.commit();
 		}
-		createRobot(new_robot_id);
-		this.set("ROBOT_ID", new_robot_id );
+		Android.createRobot( old_robot_id, new_robot_id);
 		Engine.GetInstance().invalidateData();
 	}
 
@@ -146,43 +144,5 @@ public class AndroidBarobotState implements HardwareState{
 		}
 	}
 
-	public void createRobot( int new_robot_id){
-		Robot robot = Model.fetchSingle(ModelQuery.select().from(Robot.class).where(C.eq("id", new_robot_id)).limit(1).getQuery(),Robot.class);
-		if(robot==null){
-			// FUCK YOU ORMAN ORM. I WANT TO SET ID WITHOUT AUTOINC!!!!
-			Query query4 = new Query("INSERT OR REPLACE INTO `robot` (`id`,`serial`,`sversion`,`is_current`) VALUES ('"+robot_id+"','"+robot_id+"','"+robot_id+"','1')");
-	//		Initiator.logger.i("StartOrmanMapping","save: "+ query3); 
-			BarobotData.omdb.getExecuter().executeOnly(query4);
-			/*
-			robot = new Robot();
-			robot.id		= new_robot_id;		// aaaaaaaaaaaa. doesn't work with OROMAN ORM !!!!!!
-			robot.serial	= new_robot_id;
-			robot.sversion	= new_robot_id;
-			robot.is_current= true;
-			robot.insert();
-			*/
-			robot = Model.fetchSingle(ModelQuery.select().from(Robot.class).where(C.eq("id", new_robot_id)).limit(1).getQuery(),Robot.class);
-		}else{
-		}
-
-		for (int i= 1 ; i <= 12; i++)
-		{
-			Slot slot = Model.fetchSingle(ModelQuery.select().from(Slot.class).where(
-					C.and(
-							C.eq("robot_id", new_robot_id),
-							C.eq("position", i)
-					)
-				).limit(1).getQuery(), Slot.class);
-
-			if(slot == null){
-				slot = new Slot();
-				slot.position		= i;
-				slot.robot_id		= robot;
-				slot.dispenser_type = 20;
-				slot.status			= "Empty";
-				//slot.product = null;
-				slot.insert();
-			}
-		}
-	}
+	
 }

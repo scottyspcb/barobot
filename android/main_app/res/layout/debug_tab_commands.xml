@@ -3,566 +3,369 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
-    <Button
-        android:id="@+id/set_x_100"
-        style="android:buttonStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/set_x_1000"
-        android:layout_below="@+id/position_x"
-        android:layout_toRightOf="@+id/set_x_1000"
-        android:text="-100" />
-
-    <Button
-        android:id="@+id/set_x_10"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/set_x_1000"
-        android:layout_alignBottom="@+id/set_x_100"
-        android:layout_below="@+id/position_x"
-        android:layout_toRightOf="@+id/set_x_100"
-        android:text="-10" />
-
-    <Button
-        android:id="@+id/set_x10"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/set_x_1000"
-        android:layout_toRightOf="@+id/set_x_10"
-        android:text="+10" />
-
-    <Button
-        android:id="@+id/set_y_100"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/set_y_600"
-        android:layout_toLeftOf="@+id/set_y_10"
-        android:text="-100" />
-
-    <Button
-        android:id="@+id/set_y_10"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/set_y_600"
-        android:layout_toLeftOf="@+id/set_y10"
-        android:text="-10" />
-
-    <Button
-        android:id="@+id/set_y600"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/set_y_600"
-        android:layout_alignParentRight="true"
-        android:text="+600" />
-
-    <Button
-        android:id="@+id/set_y10"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/set_y_600"
-        android:layout_toLeftOf="@+id/set_y100"
-        android:text="+10" />
-
-    <Button
-        android:id="@+id/set_y100"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/set_y_600"
-        android:layout_toLeftOf="@+id/set_y600"
-        android:text="+100" />
-
-    <Button
-        android:id="@+id/set_x100"
-        style="android:buttonStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/set_x_1000"
-        android:layout_toRightOf="@+id/set_x10"
-        android:text="+100" />
-
-    <Button
-        android:id="@+id/set_x1000"
-        style="android:buttonStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/set_x_1000"
-        android:layout_toRightOf="@+id/set_x100"
-        android:text="+1000" />
-
-    <Button
-        android:id="@+id/min_x"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/kalibrujx"
-        android:layout_alignRight="@+id/min_y"
-        android:layout_toRightOf="@+id/max_x"
-        android:text="MIN X" />
-
-    <Button
-        android:id="@+id/kalibrujx"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/set_x_1000"
-        android:layout_toRightOf="@+id/dlugosc_x"
-        android:text="Kalibruj" />
-
-    <Button
-        android:id="@+id/kalibrujy"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/kalibrujx"
-        android:layout_toRightOf="@+id/dlugosc_y"
-        android:text="Kalibruj" />
-
-    <Button
-        android:id="@+id/max_x"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/kalibrujx"
-        android:layout_toRightOf="@+id/kalibrujx"
-        android:text="MAX X" />
-
-    <Button
-        android:id="@+id/min_y"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/kalibrujy"
-        android:layout_toRightOf="@+id/max_y"
-        android:text="FRONT" />
-
-    <Button
-        android:id="@+id/max_y"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/kalibrujy"
-        android:layout_alignRight="@+id/max_x"
-        android:layout_toRightOf="@+id/kalibrujy"
-        android:text="BACK" />
-
-    <Button
-        android:id="@+id/machajy"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/min_y"
-        android:layout_toRightOf="@+id/min_y"
-        android:text="MACHAJ" />
-
-    <Button
-        android:id="@+id/machajx"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/kalibrujx"
-        android:layout_toRightOf="@+id/min_x"
-        android:text="MACHAJ" />
-
-    <Button
-        android:id="@+id/losujx"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/kalibrujx"
-        android:layout_toRightOf="@+id/machajx"
-        android:text="LOSUJ" />
-
-    <Button
-        android:id="@+id/losujy"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/machajy"
-        android:layout_toRightOf="@+id/machajy"
-        android:text="LOSUJ" />
-
-    <Button
-        android:id="@+id/set_x_1000"
-        style="android:buttonStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:text="-1000" />
-
-    <TextView
-        android:id="@+id/position_x"
-        android:layout_width="120dp"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/kalibrujy"
-        android:layout_alignParentLeft="true"
-        android:layout_margin="5dp"
-        android:ellipsize="end"
-        android:gravity="center"
-        android:text="0"
-        android:textSize="32sp"
-        android:textStyle="bold" />
-
-    <TextView
-        android:id="@+id/position_z"
-        android:layout_width="120dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/position_y"
-        android:layout_margin="5dp"
-        android:ellipsize="end"
-        android:gravity="center"
-        android:text="0"
-        android:textSize="32sp"
-        android:textStyle="bold" />
-
-    <TextView
-        android:id="@+id/position_y"
-        android:layout_width="120dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="false"
-        android:layout_below="@+id/position_x"
-        android:layout_margin="5dp"
-        android:ellipsize="end"
-        android:gravity="center"
-        android:text="0"
-        android:textSize="32sp"
-        android:textStyle="bold" />
-
-    <Button
-        android:id="@+id/set_y_600"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_toLeftOf="@+id/set_y_100"
-        android:text="-600" />
-
-    <TextView
-        android:id="@+id/dlugosc_x"
-        android:layout_width="120dp"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/position_x"
-        android:layout_alignBottom="@+id/position_x"
-        android:layout_margin="5dp"
-        android:layout_toRightOf="@+id/position_x"
-        android:ellipsize="end"
-        android:gravity="center"
-        android:text="0"
-        android:textSize="32sp"
-        android:textStyle="bold" />
-
-    <TextView
-        android:id="@+id/dlugosc_y"
-        android:layout_width="120dp"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/position_y"
-        android:layout_alignParentLeft="false"
-        android:layout_alignParentTop="false"
-        android:layout_margin="5dp"
-        android:layout_toRightOf="@+id/position_y"
-        android:ellipsize="end"
-        android:gravity="center"
-        android:text="0"
-        android:textSize="32sp"
-        android:textStyle="bold" />
-
-    <TextView
-        android:id="@+id/dlugosc_z"
-        android:layout_width="120dp"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/position_z"
-        android:layout_alignParentLeft="false"
-        android:layout_alignParentTop="false"
-        android:layout_margin="5dp"
-        android:layout_toRightOf="@+id/position_z"
-        android:ellipsize="end"
-        android:gravity="center"
-        android:text="0"
-        android:textSize="32sp"
-        android:textStyle="bold" />
-
-    <Button
-        android:id="@+id/disabley"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/losujy"
-        android:layout_toRightOf="@+id/losujy"
-        android:text="DY" />
-
     <LinearLayout
-        android:id="@+id/linearLayout1"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/position_z"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:orientation="vertical" >
+        android:layout_height="fill_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true" >
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="right" >
+            android:id="@+id/linearLayout1"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:orientation="vertical" >
 
-            <Button
-                android:id="@+id/fill5000"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Nalej tutaj" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
 
-            <Button
-                android:id="@+id/pacpac"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Pacnij" />
+                <Button
+                    android:id="@+id/kalibrujx"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Kalibruj" />
 
-            <Button
-                android:id="@+id/goToNeutralY"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Idź do neutral Y" />
+                <Button
+                    android:id="@+id/disablex"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="DX" />
 
-            <Button
-                android:id="@+id/auto_repair"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Auto Repair" />
+                <Button
+                    android:id="@+id/machajx"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="MACHAJ" />
 
-            <Button
-                android:id="@+id/set_neutral_y"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Tu jest neutralny Y" />
+                <Button
+                    android:id="@+id/max_x"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="MAX X" />
 
-            <Button
-                android:id="@+id/analog_temp"
-                android:layout_width="wrap_content"
+                <Button
+                    android:id="@+id/min_x"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="MIN X" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+
+                <Button
+                    android:id="@+id/kalibrujy"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Kalibruj" />
+
+                <Button
+                    android:id="@+id/disabley"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="DY" />
+
+                <Button
+                    android:id="@+id/machajy"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="MACHAJ" />
+
+                <Button
+                    android:id="@+id/max_y"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="BACK" />
+
+                <Button
+                    android:id="@+id/min_y"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="FRONT" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+
+                <Button
+                    android:id="@+id/max_z"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="UP" />
+
+                <Button
+                    android:id="@+id/min_z"
+                    style="android:buttonStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="DOWN" />
+
+                <Button
+                    android:id="@+id/machajz"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="MACHAJ" />
+
+                <Button
+                    android:id="@+id/disablez"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="DZ" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+
+                <Button
+                    android:id="@+id/set_x_1000"
+                    style="android:buttonStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="-1000" />
+
+                <Button
+                    android:id="@+id/set_x_100"
+                    style="android:buttonStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="-100" />
+
+                <Button
+                    android:id="@+id/set_x_10"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="-10" />
+
+                <Button
+                    android:id="@+id/set_x10"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="+10" />
+
+                <Button
+                    android:id="@+id/set_x100"
+                    style="android:buttonStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="+100" />
+
+                <Button
+                    android:id="@+id/set_x1000"
+                    style="android:buttonStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="+1000" />
+
+                <Button
+                    android:id="@+id/new_robot_id"
+                    style="android:buttonStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Set new Id" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="GET TEMP" />
+                android:gravity="left" >
+
+                <Button
+                    android:id="@+id/fill5000"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Nalej tutaj" />
+
+                <Button
+                    android:id="@+id/analog_temp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="ANALOGS" />
+
+                <Button
+                    android:id="@+id/find_bottles"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/options_calibrate" />
+
+                <Button
+                    android:id="@+id/reset_margin"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Reset Margin" />
+
+                <Button
+                    android:id="@+id/index_names"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Index_names" />
+
+                <Button
+                    android:id="@+id/wait_for_cup"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Wait 4 cup" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+
+                <Button
+                    android:id="@+id/reset1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="RESET1" />
+
+                <Button
+                    android:id="@+id/reset2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="RESET2" />
+
+                <Button
+                    android:id="@+id/reset3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="RESET3" />
+
+                <Button
+                    android:id="@+id/reset4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="RESET4" />
+
+                <Button
+                    android:id="@+id/rb2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="RESETBUS2" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+
+                <Button
+                    android:id="@+id/reset_database"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Reset Database" />
+
+                <Button
+                    android:id="@+id/download_database"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Download Database" />
+
+                <Button
+                    android:id="@+id/firmware_download"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Firmware Update" />
+
+                <Button
+                    android:id="@+id/firmware_download_manual"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Manual Firmware Update" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+
+                <Button
+                    android:id="@+id/unlock"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Odblokuj" />
+
+                <Button
+                    android:id="@+id/clear_queue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="RESET QUEUE" />
+
+                <Button
+                    android:id="@+id/reset"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="RESET" />
+
+                <Button
+                    android:id="@+id/reset_serial"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="RESET SERIAL" />
+
+                <Button
+                    android:id="@+id/auto_repair"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Auto Repair" />
+
+                <Button
+                    android:id="@+id/upload_data"
+                    style="android:buttonStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Upload Data" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+
+                <ToggleButton
+                    android:id="@+id/need_glass"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="ToggleButton"
+                    android:textOff="Don&apos;t need glass"
+                    android:textOn="Wait 4 Glass" />
+
+                <ToggleButton
+                    android:id="@+id/need_hall_up"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="ToggleButton"
+                    android:textOff="Don&apos;t use Hall"
+                    android:textOn="Need hall to UP" />
+
+                <ToggleButton
+                    android:id="@+id/auto_fill_on_ready"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="ToggleButton"
+                    android:textOff="Nie nalewaj od razu"
+                    android:textOn="Nalewaj od razu" />
+
+                <ToggleButton
+                    android:id="@+id/allow_light_cup"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Allow light cups"
+                    android:textOff="Allow light cups"
+                    android:textOn="No light cups" />
+            </LinearLayout>
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="right" >
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:orientation="vertical" >
 
-            <Button
-                android:id="@+id/set_robot_id"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Set ID" />
+            <ListView
+                android:id="@+id/analog_spinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+            </ListView>
 
- 			<Button
-                android:id="@+id/reset"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="RESET" />
- 
-            <Button
-                android:id="@+id/reset1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="RESET1" />
-
-            <Button
-                android:id="@+id/reset2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="RESET2" />
-
-            <Button
-                android:id="@+id/reset3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="RESET3" />
-
-            <Button
-                android:id="@+id/reset4"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="RESET4" />
-
-            <Button
-                android:id="@+id/rb"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="RESETBUS" />
-
-            <Button
-                android:id="@+id/rb2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="RESETBUS2" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
-
-            <ToggleButton
-                android:id="@+id/need_glass"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="ToggleButton"
-                android:textOff="Nie wymagaj szklanki"
-                android:textOn="Wymagaj szklanki" />
-
-            <ToggleButton
-                android:id="@+id/auto_fill_on_ready"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="ToggleButton"
-                android:textOff="Nie nalewaj od razu"
-                android:textOn="Nalewaj od razu" />
-
-            <Button
-                android:id="@+id/index_names"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Index_names" />
-
-            <Button
-                android:id="@+id/reset_serial"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="RESET SERIAL" />
-
-            <Button
-                android:id="@+id/wait_for_cup"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Wait 4 cup" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
-
-            <Button
-                android:id="@+id/scann_leds"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="SCAN LEDS" />
-
-            <Button
-                android:id="@+id/led_red_on"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="RED LED" />
-
-            <Button
-                android:id="@+id/led_green_on"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="GREEN LED" />
-
-            <Button
-                android:id="@+id/led_blue_on"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="BLUE LED" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
-
-            <Button
-                android:id="@+id/reset_database"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Reset Database" />
-
-            <Button
-                android:id="@+id/download_database"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Download Database" />
-
-            <Button
-                android:id="@+id/upload_data"
-                style="android:buttonStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Upload Data" />
-
-            <Button
-                android:id="@+id/firmware_download"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Firmware Update" />
-
-            <Button
-                android:id="@+id/firmware_download_manual"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Manual Firmware Update" />
-            
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
-
-            <Button
-                android:id="@+id/unlock"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Odblokuj" />
-
-            <Button
-                android:id="@+id/clear_queue"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="RESET QUEUE" />
-
-            <Button
-                android:id="@+id/find_bottles"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Szukaj butelek" />
-
-            <Button
-                android:id="@+id/wznow"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Wznow" />
-
-            <Button
-                android:id="@+id/reset_margin"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Reset Margin" />
         </LinearLayout>
     </LinearLayout>
-
-    <Button
-        android:id="@+id/machajz"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/dlugosc_z"
-        android:layout_toRightOf="@+id/dlugosc_z"
-        android:text="MACHAJ" />
-
-    <Button
-        android:id="@+id/disablez"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/machajz"
-        android:layout_toRightOf="@+id/machajz"
-        android:text="DZ" />
-
-    <Button
-        android:id="@+id/min_z"
-        style="android:buttonStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/disablez"
-        android:layout_toRightOf="@+id/disablez"
-        android:text="DOWN" />
-	<Button
-        android:id="@+id/max_z"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/min_z"
-        android:layout_toRightOf="@+id/min_z"
-        android:text="UP" />
-
-	<Button
-	    android:id="@+id/disablex"
-	    android:layout_width="wrap_content"
-	    android:layout_height="wrap_content"
-	    android:layout_alignBaseline="@+id/losujx"
-	    android:layout_toRightOf="@+id/losujx"
-	    android:text="DX" />
 
 </RelativeLayout>

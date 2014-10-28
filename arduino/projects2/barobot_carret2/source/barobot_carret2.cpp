@@ -27,9 +27,9 @@
 #define PIN_B2_FREE_PIN 4			// 
 #define PIN_B2_SELF_RESET 2			// 
 
-#define PIN_B2_HALL_X A2			// 
 #define PIN_B2_HALL_Y A0			// 
 #define PIN_B2_HALL_Z A1			// 
+#define PIN_B2_HALL_X A2			// 
 #define PIN_B2_WEIGHT A3			// 
 
 // Config
@@ -52,8 +52,10 @@ unsigned long int last_android = 0;
 unsigned long int last_poke = 0;
 
 byteint bytepos;
-#define MIN_DELTA  20
+#define MIN_DELTA  15
+#define SERVO_PRESCALER  200
 
+volatile long int delta = 0;
 volatile unsigned int ticks  = 0;
 struct ServoChannel {
 	uint8_t pin;
@@ -68,8 +70,8 @@ struct ServoChannel {
 
 Servo servo_lib[2];
 volatile ServoChannel servos[2]= {
-	{PIN_B2_SERVO_Y,0,0,0,0,false,false,DRIVER_DIR_STOP },
-	{PIN_B2_SERVO_Z,0,0,0,0,false,false,DRIVER_DIR_STOP },
+	{PIN_B2_SERVO_Y,0, 770, 770,0,false,false,DRIVER_DIR_STOP },
+	{PIN_B2_SERVO_Z,0,2400,2400,0,false,false,DRIVER_DIR_STOP },
 };
 
 //unsigned long mil = 0;
@@ -81,17 +83,17 @@ int16_t down_level = 0;
 // HALL X VALUES 
 
 // neodym	max  654	
-// 			max  550	561		574
+// 			max  548	561		574
 //			zero 507	
 //			min  465	451		435
 // neodym 	min	 357
 
 #define HX_NEODYM_UP_BELOW  850
 // neodym	max  654
-#define HX_NEODYM_UP_START  620
+#define HX_NEODYM_UP_START  640
 
 #define HX_FERRITE_UP_IS_BELOW  590
-// 			max  550	561		574
+// 			max  548	561		574
 #define HX_LOCAL_UP_MAX_OVER  540
 
 #define HX_NOISE_BELOW 531
@@ -102,12 +104,11 @@ int16_t down_level = 0;
 //			min  465	451		435
 #define HX_FERRITE_DOWN_IS_BELOW  420
 
-#define HX_NEODYM_DOWN_START  380
+#define HX_NEODYM_DOWN_START  370
 // neodym 	min	 357
 #define HX_NEODYM_DOWN_OVER  150
 
 // end HALL X VALUES 
-
 
 volatile int16_t hallx_state[HXSTATES][3] = {
 	//{CODE, MIN, MAX }
@@ -126,7 +127,7 @@ volatile int16_t hallx_state[HXSTATES][3] = {
 	{HX_STATE_10,	0,							HX_NEODYM_DOWN_OVER-1		}		// 111		NOT CONNECTED	
 };
 
-#define HYSTERESIS  2
+#define HYSTERESIS  3
 #define SEPARATOR_CHAR '\n'
 #define TRIES  10
 
@@ -156,13 +157,24 @@ static EEMEM uint16_t eeprom_starts = 0x02;
 
 void setup(){
 	disable6v();
-	pinMode(PIN_B2_SERVO_Y, INPUT );      // nie pozwalaj na przypadkowe machanie na starcie
-	pinMode(PIN_B2_SERVO_Z, INPUT );      // nie pozwalaj na przypadkowe machanie na starcie
+	pinMode(PIN_B2_SERVO_Y, INPUT+INPUT_PULLUP );      // nie pozwalaj na przypadkowe machanie na starcie
+	pinMode(PIN_B2_SERVO_Z, INPUT+INPUT_PULLUP );      // nie pozwalaj na przypadkowe machanie na starcie
+
 	pinMode(PIN_B2_SELF_RESET, INPUT );	
 	pinMode(PIN_B2_HALL_X, INPUT);
 	pinMode(PIN_B2_HALL_Y, INPUT);
 	pinMode(PIN_B2_WEIGHT, INPUT);
 	Serial.begin(B2_SERIAL0_BOUND);
+
+	// blind led	
+	pinMode(PIN_B2_STEPPER_DIR, OUTPUT );
+	digitalWrite( PIN_B2_STEPPER_DIR, HIGH );
+	delay(100);
+	digitalWrite( PIN_B2_STEPPER_DIR, LOW );
+	delay(200);
+	digitalWrite( PIN_B2_STEPPER_DIR, HIGH );
+	delay(100);
+	digitalWrite( PIN_B2_STEPPER_DIR, LOW );
 
 	init_leds();
 	serial0Buffer = "";
@@ -257,7 +269,7 @@ void loop() {
 	}*/
 	readHall();
 	update_servo( INNER_SERVOY );
-	update_servo( INNER_SERVOZ );
+//	update_servo( INNER_SERVOZ );
 	if(stepperIsReady){
 		sendStepperReady();
 		stepperIsReady = false;
@@ -284,8 +296,8 @@ void loop() {
 		disableServeNow( INNER_SERVOZ );
 		disable6v();
 		stepperX.disableOutputs();
-		unsigned long int color = bottom_panels.Color(20,  0,  0 );	
-		set_all_leds(color);
+	//	unsigned long int color = bottom_panels.Color(20,  0,  0 );	
+	//	set_all_leds(color);
 	}
 	if( servo_start_time != 0 ){
 		unsigned long period = millis() - servo_start_time;
@@ -398,30 +410,17 @@ void update_servo( byte index ) {           // synchroniczne
 	if( servos[index].pos_changed == true ){  // mam byc gdzie indziej
 	//	Serial.println("teraz");
 	//	Serial.flush();
-		//    DEBUG( "-przesuwam Y " );
-		//    DEBUGLN( String(servos[index].last_pos) );
+	//	Serial.print("-pos= " + String(servos[index].last_pos ));
+	//	Serial.print("\t targetpos= " + String(servos[index].target_pos) );
+	//	Serial.println("\t delta= " + String(delta) );  
+
 		servo_lib[index].writeMicroseconds(servos[index].last_pos);
 	//	Serial.println("po");
 	//	Serial.flush();
 		servos[index].pos_changed = false;
 		if( servos[index].last_pos == servos[index].target_pos){
-	//		DEBUGLN( "-gotowe servo" );
-			/*
-			if( index == INNER_SERVOY ){
-				uint16_t margin = servos[index].last_pos;    // odwrotnie do ostatniej komendy
-				if( servos[index].delta_pos > 0 ){      // jechalem w gore
-					DEBUGLN( "- -100" );
-					margin -= 20;
-				}else if(  servos[index].delta_pos < 0){  // jechalem w dol
-					DEBUGLN( "- +100" );
-					margin += 20;
-				}
-				servo_lib[index].writeMicroseconds(margin);				
-			}*/
 			send_servo(false, localToGlobal(index), servos[index].target_pos );
 		}
-	//	Serial.println("po2");
-	//	Serial.flush();
 	}
 }
 
@@ -453,7 +452,7 @@ void parseInput( String input ){
 		unsigned int val = decodeInt(input, 2);
 		val = val * 100;
 		stepperX.setAcceleration(val);
-		DEBUGLN("-setAcceleration: " + String(val) );
+		Serial.println("-setAcceleration: " + String(val) );
 	}else if( input.equals("EX") ) {    // enable motor
 		stepperX.enableOutputs();
 		/*
@@ -473,14 +472,15 @@ void parseInput( String input ){
 			stepperX.disableOutputs();
 		}else{
 			byte index		= (command2 == 'Y') ? 0 : 1;
+			disable6v();
+	//		servo_lib[index].detach();
+			stepperX.fastWrite(servos[index].pin, HIGH);		// set to 1
 			servos[index].enabled= false;
-			servo_lib[index].detach();
 			if( servos[index].target_pos != servos[index].last_pos ){    //  wylaczylem w trakcie jechania
 				 send_servo(false, localToGlobal(index), servos[index].target_pos );
 			}
-			stepperX.fastWrite(servos[index].pin, HIGH);		// set to 1
 			servos[index].pos_changed = false;
-			disable6v();
+			
 		}
 	}else if(command == 'G' ) {    // G
 		unsigned int val		= decodeInt(input, 1);
@@ -503,6 +503,20 @@ void parseInput( String input ){
 		while (!eeprom_is_ready());
 		eeprom_write_byte( (uint8_t*)ad2, value);
 
+	}else if(command == 'K') {    // K1900               // move Z with max speed TARGET,SPEED(int,decimal)
+		unsigned int pos		= decodeInt(input, 1);
+		byte index				= INNER_SERVOZ;
+		servos[index].last_pos	= pos;
+		servos[index].target_pos= pos;
+		servo_lib[index].attach(servos[index].pin);
+		servo_lib[index].writeMicroseconds(pos);
+		enable6v();
+	//	delay(0);
+	//	send_servo(false, localToGlobal(index), pos );
+	//	byte ttt[6] = {METHOD_I2C_SLAVEMSG, 1, RETURN_DRIVER_READY, DRIVER_Z, (pos & 0xFF), (pos >>8) };
+	//	sendln(ttt,6);
+	//	ttt[2]		= RETURN_DRIVER_READY_REPEAT;
+	//	sendln(ttt,6);
 	}else{
 		defaultResult = false;
 		if( input.equals( "AA") ){    	// android active	// no result
@@ -519,20 +533,15 @@ void parseInput( String input ){
 				byte newStateId = get_hy_state_id( val1 );
 				send_y_pos(newStateId, val1 );
 
-			}else if( source ==  INNER_WEIGHT ){				// A2
+			}else if( source ==  INNER_WEIGHT ){				// A2 but pin A3
 				int16_t val1 = readValue(PIN_B2_WEIGHT );			
 				Serial.print("RRA2,");
 				Serial.println(String(val1));
 
-			}else if( source ==  INNER_POS_Z ){
+			}else if( source ==  INNER_POS_Z ){					// A3
 				int16_t val1 = readValue( PIN_B2_HALL_Z );
-				byte ttt[4] = {
-					METHOD_IMPORTANT_ANALOG, 
-					INNER_POS_Z,
-					(val1 & 0xFF),
-					(val1 >>8),
-				};
-				sendln(ttt,4);
+				Serial.print("RRA3,");
+				Serial.println(String(val1));
 			}else{
 				send_error(input);
 			}
@@ -555,18 +564,6 @@ void parseInput( String input ){
 			paserDeriver(DRIVER_Y,input);
 		}else if(command == 'Z') {    // Z10,10               // TARGET,SPEED
 			paserDeriver(DRIVER_Z,input);
-			/*
-		}else if(command == 'K') {    // K1900               // move Z with max speed TARGET,SPEED(int,decimal)
-			unsigned int pos		= decodeInt(input, 1);
-			byte index				= INNER_SERVOZ;
-			servos[index].last_pos	= pos;
-			servos[index].target_pos= pos;
-			servo_lib[index].attach(servos[index].pin);
-			servo_lib[index].writeMicroseconds(servos[index].last_pos);
-			enable6v();
-			delay(100);
-			send_servo(false, localToGlobal(index), pos );
-*/
 		}else if( input.equals( "PING") ){
 			Serial.println("PONG");
 			/*
@@ -578,7 +575,7 @@ void parseInput( String input ){
 		}else if( command == 'x') {	//METHOD_GET_X_POS
 			long int pos = stepperX.currentPosition();
 			Serial.print("RRx"); 
-			Serial.print(String(pos)); 
+			Serial.print(String(pos));
 			Serial.println();
 			Serial.flush();
 		}else if(command == 'y' ) {    // pobierz pozycje
@@ -602,9 +599,9 @@ void parseInput( String input ){
 			Serial.print(val1, DEC);
 			Serial.print(',');
 			Serial.println(val2, DEC);
-		}else if( command == 'V' ){
-			Serial.print("RRV");
-			Serial.println(String(B2_VERSION));
+	//	}else if( command == 'V' ){
+	//		Serial.print("RRV");
+	//		Serial.println(String(B2_VERSION));
 		}else if( command == 'S' ){
 			defaultResult = false;
 			sendStats();
@@ -668,15 +665,17 @@ void send_error( String input){
 }
 void enable6v(){
 //	pinMode(PIN_B2_SERVOS_ENABLE_PIN, INPUT );		// make pin low (with pull-down)
-//	digitalWrite(PIN_B2_SERVOS_ENABLE_PIN, LOW );	// disable pull up
 	pinMode(PIN_B2_SERVOS_ENABLE_PIN, OUTPUT );		// make pin low (with pull-down)
-	digitalWrite(PIN_B2_SERVOS_ENABLE_PIN, LOW );	// disable pull up
+	digitalWrite(PIN_B2_SERVOS_ENABLE_PIN, LOW );	// enable power
 	servo_start_time	= millis();
 }
 void disable6v(){
 	pinMode(PIN_B2_SERVOS_ENABLE_PIN, OUTPUT );
 	digitalWrite(PIN_B2_SERVOS_ENABLE_PIN, HIGH );	// disable power
 	servo_start_time	= 0;
+
+	servo_lib[INNER_SERVOY].detach();
+	servo_lib[INNER_SERVOZ].detach();
 }
 
 void paserDeriver( byte driver, String input2 ){   // odczytaj komende silnika
@@ -697,7 +696,7 @@ void paserDeriver( byte driver, String input2 ){   // odczytaj komende silnika
 		target          = decodeInt( current, 0 );
 		if( input.length() > 0 ){
 			maxspeed       = input.toInt();
-	//		DEBUGLN("-setMaxSpeed: " + String(maxspeed) );
+	//		Serial.println("-setMaxSpeed: " + String(maxspeed) );
 		}
 	}
 	if( driver == DRIVER_X){
@@ -775,28 +774,29 @@ long unsigned int decodeInt(String input, byte odetnij ){
   return input.toInt();
 }
 
+
 void reload_servo( byte index ){      // in interrupt
 	volatile ServoChannel &ser = servos[index];
 
 	if( servo_lib[index].attached() && ser.last_pos != ser.target_pos ){
 		long int this_distance =0;
-		long int delta = 0;
+		delta = 0;
 		if( ser.last_pos > ser.target_pos ){
 			this_distance  = ser.last_pos - ser.target_pos;
 		}else if( ser.last_pos < ser.target_pos ){
 			this_distance  = ser.target_pos - ser.last_pos;
 		}
-		int quoter = (ser.last_distance >> 2);                // this_distance zawsze sie zmiejsza
+		int quoter = (ser.last_distance >> 2);            // this_distance zawsze sie zmiejsza
 		if( this_distance < quoter){                      // ostatnia cwiatrka = zwalniaj
 			delta = (ser.delta_pos * this_distance);
 			delta = delta /quoter;
-			//      DEBUG("delta4 = " );
+			//      Serial.print("delta4 = " );
 		}else if( this_distance > (ser.last_distance - quoter)){        // pierwsza cwiatrka = przyspieszaj. tu zawsze this_distance > 3/4 * last_distance
 			delta = (ser.delta_pos * (ser.last_distance - this_distance ) );      // tu zawsze (last_distance - this_distance ) < quoter
 			delta = delta /quoter;
-			//      DEBUG("delta1 = " );
+			//      Serial.print("delta1 = " );
 		}else{  // na maxa
-			//      DEBUG("delta2 = " );
+			//      Serial.print("delta2 = " );
 			delta = ser.delta_pos;
 		}
 		if(ser.delta_pos > 0){
@@ -811,9 +811,9 @@ void reload_servo( byte index ){      // in interrupt
 		ser.last_pos = ser.last_pos + delta;
 		if( ser.delta_pos > 0 && ser.last_pos > ser.target_pos ){        // nie przekraczaj docelowej pozycji
 			ser.last_pos = ser.target_pos;
-			//     DEBUGLN("gotowe1");
+			//     Serial.println("gotowe1");
 		}else if( ser.delta_pos < 0 && ser.last_pos < ser.target_pos ){
-			//      DEBUGLN("gotowe2");
+			//      Serial.println("gotowe2");
 			ser.last_pos = ser.target_pos;
 		}
 		ser.pos_changed = true;
@@ -831,7 +831,6 @@ void reload_servo( byte index ){      // in interrupt
 }
 
 volatile uint16_t prescaler = 0;
-volatile uint16_t prescaler_max = 200;
 void timer(){
 //	timer_counter++;
 	//timer_now = true;
@@ -840,15 +839,15 @@ void timer(){
 	if((--prescaler) == 0 ){
 		reload_servo(INNER_SERVOY);
 		reload_servo(INNER_SERVOZ);
-		prescaler = prescaler_max;
+		prescaler = SERVO_PRESCALER;
 	}
 }
 
 void run_to(byte index, byte sspeed, uint16_t target){
-	//DEBUG("-SERVO speed ");
-	//DEBUG(String(sspeed));
-	//DEBUG(" target:");
-	//DEBUGLN(String(target));
+	//Serial.print("-SERVO speed ");
+	//Serial.print(String(sspeed));
+	//Serial.print(" target:");
+	//Serial.println(String(target));
 	if( servos[index].target_pos  == target &&
 			servos[index].last_pos == target ){      // the same pos
 		servo_lib[index].attach(servos[index].pin);
@@ -866,11 +865,11 @@ void run_to(byte index, byte sspeed, uint16_t target){
 			servos[index].moving	= DRIVER_DIR_BACKWARD;
 		}
 	}
+	enable6v();
 	if(!servo_lib[index].attached()){            //  turn on even if the same target pos
 		servo_lib[index].attach(servos[index].pin);
 		servos[index].enabled = true;
 	}
-	enable6v();
 }
 
 void send_servo( boolean error, byte servo, uint16_t pos ){
@@ -953,7 +952,7 @@ void send_y_pos( byte stateId, int16_t value){
 		(pos >>8),				// position
 		(value & 0xFF),
 		(value >>8),
-	}; 
+	};
 	sendln(ttt,10);
 }
 

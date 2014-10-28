@@ -10,8 +10,6 @@ public interface I2C_Device {
 	//public abstract String uploadCode(Queue doAfter, String filePath, String comPort);
 	public abstract String uploadCode( String filePath, String comPort);
 
-	public abstract String erase( String filePath, String comPort);
-
 	public abstract void reset(Queue q );
 	public abstract void isp(Queue q );
 
@@ -39,10 +37,5 @@ public interface I2C_Device {
 	public abstract void isResetedBy(I2C_Device i2c_device);
 
 	public void hasResetTo(int index, I2C_Device dev2 );
-
-	public abstract String checkExists(Queue q);
-
-
-	
 
 }

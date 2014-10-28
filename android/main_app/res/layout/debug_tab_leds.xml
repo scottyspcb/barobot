@@ -3,108 +3,129 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
-    <RelativeLayout
-        android:id="@+id/relativeLayout1"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true" >
-    </RelativeLayout>
+        android:layout_alignParentRight="true"
+        android:orientation="vertical" >
 
-    <Button
-        android:id="@+id/main_color"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/relativeLayout1"
-        android:layout_centerHorizontal="true"
-        android:text="Change main color" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
 
-    <Button
-        android:id="@+id/top_color"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/main_color"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="32dp"
-        android:text="Chnage top color" />
+            <Button
+                android:id="@+id/scann_leds"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="SCAN LEDS" />
 
-    <Button
-        android:id="@+id/bottom_color"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/top_color"
-        android:layout_centerHorizontal="true"
-        android:text="Change bottom color" />
+            <Button
+                android:id="@+id/led_red_on"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="RED LED" />
 
-    <Switch
-        android:id="@+id/all_lights_on"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/light_show"
-        android:layout_alignRight="@+id/light_show"
-        android:layout_below="@+id/light_show"
-        android:layout_marginTop="10dp"
-        android:text="Turn ON all lights"
-        android:textSize="16dp" />
+            <Button
+                android:id="@+id/led_green_on"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="GREEN LED" />
 
-    <Button
-        android:id="@+id/carret_color"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/bottom_color"
-        android:layout_centerHorizontal="true"
-        android:text="Change carret color" />
+            <Button
+                android:id="@+id/led_blue_on"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="BLUE LED" />
+            
+            
+            <Button
+                android:id="@+id/led_off"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="LEDS OFF" />
+            
+            
+            
+        </LinearLayout>
 
-    <Switch
-        android:id="@+id/light_show"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/carret_color"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="14dp"
-        android:text="Light show for your music"
-        android:textSize="16dp" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
 
-    <Switch
-        android:id="@+id/white_top_on"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/all_lights_on"
-        android:layout_alignRight="@+id/all_lights_on"
-        android:layout_below="@+id/all_lights_on"
-        android:layout_marginTop="10dp"
-        android:text="Turn ON TOP white"
-        android:textSize="16dp" />
+            <Button
+                android:id="@+id/top_color"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Chnage top color" />
 
-    <SeekBar
-        android:id="@+id/light_scale"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_marginTop="10dp"
-        android:max="100"
-        android:progress="90" />
+            <Button
+                android:id="@+id/bottom_color"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Change bottom color" />
 
-    <SeekBar
-        android:id="@+id/white_scale"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/light_scale"
-        android:layout_alignParentLeft="true"
-        android:layout_marginTop="10dp"
-        android:max="100"
-        android:progress="90" />
+            <Button
+                android:id="@+id/carret_color"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Change carret color" />
 
-    <Switch
-        android:id="@+id/white_bottom_on"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/white_top_on"
-        android:layout_alignRight="@+id/white_top_on"
-        android:layout_below="@+id/white_top_on"
-        android:layout_marginTop="11dp"
-        android:text="Turn ON white"
-        android:textSize="16dp" />
+            <Button
+                android:id="@+id/main_color"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Change main color" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <LinearLayout
+                android:layout_width="620dp"
+                android:layout_height="match_parent"
+                android:orientation="vertical" >
+
+                <SeekBar
+                    android:id="@+id/light_scale"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:max="100"
+                    android:progress="90" />
+
+                <Switch
+                    android:id="@+id/all_lights_on"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Turn ON all lights"
+                    android:textSize="16dp" />
+
+                <Switch
+                    android:id="@+id/white_bottom_on"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Turn ON white"
+                    android:textSize="16dp" />
+
+                <Switch
+                    android:id="@+id/white_top_on"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Turn ON TOP white"
+                    android:textSize="16dp" />
+
+                <Switch
+                    android:id="@+id/light_show"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Light show for your music"
+                    android:textSize="16dp" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
 
 </RelativeLayout>

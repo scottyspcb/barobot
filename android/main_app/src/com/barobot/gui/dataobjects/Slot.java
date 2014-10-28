@@ -27,12 +27,9 @@ public class Slot extends Model<Slot>{
 	public int led_address;
 	public int position_id;
 	public int counter;
-
+	public int robot_id;
 	@ManyToOne
 	public Product product;
-
-	@ManyToOne
-	public Robot robot_id;
 
 	public String getName(){
 		if (product != null && product.liquid != null ){

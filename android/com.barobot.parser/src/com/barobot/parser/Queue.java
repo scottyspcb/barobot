@@ -42,11 +42,20 @@ ArrayList<E>
  * */
 
 public class Queue {
-	protected static final Object lock_output			= new Object();	// protect output var
-	protected LinkedList<AsyncMessage> output		= new LinkedList<AsyncMessage>();
-	protected boolean isMainQueue = false;
+	protected final static Object lock_output	= new Object();	// protect output var
+	protected final static Object exec_lock		= new Object();
+	protected LinkedList<AsyncMessage> output	= new LinkedList<AsyncMessage>();
+	protected boolean isMainQueue				= false;
 	protected Mainboard mb;
-	private LimitedBuffer<AsyncMessage> history		= new LimitedBuffer<AsyncMessage>(500);
+	private LimitedBuffer<AsyncMessage> history	= new LimitedBuffer<AsyncMessage>(500);
+	private int timeout = 5000;
+//	private int try_count = 0;
+//	private int try_max = 5;
+	private AsyncMessage last_msg = null;
+	private boolean canExec = false;
+	private boolean writing = true;
+
+	private int ticks = 0;
 
 	public Queue(){
 	}
@@ -54,18 +63,10 @@ public class Queue {
 	public Queue(Mainboard mb2){
 		this.isMainQueue	= true;
 		this.mb				= mb2;
-		mb.setMainQueue( this );
+
 		this.worker.start();
 	}
 
-	private int timeout = 5000;
-	private int try_count = 0;
-	private int try_max = 5;
-	private AsyncMessage last_msg = null;
-	private boolean canExec = false;
-	private boolean writing = true;
-	private Object exec_lock = new Object();
-	private int ticks = 0;
 
 	private Thread worker = new Thread( new Runnable() {
 		@Override
@@ -137,7 +138,7 @@ public class Queue {
 					}
 				}
 			}
-			Initiator.logger.e("Queue.worker.finish", ""+ticks);	
+		//	Initiator.logger.e("Queue.worker.finish", ""+ticks);	
 		}
 
 		private void exec2(AsyncMessage m) {
@@ -173,8 +174,10 @@ public class Queue {
 			synchronized (lock_output) {
 				this.output.clear();
 			}
-			Mainboard.lock.unlock("<clear>", this);
+		}else{
+			this.output.clear();
 		}
+		Mainboard.lock.unlock("<clear>", this);
 	}
 
 	public void destroy() {
@@ -185,91 +188,93 @@ public class Queue {
 			synchronized (exec_lock) {
 				exec_lock.notify();
 			}
-			mb.destroy();
+
 		}
 	}
-
-	public void read( String in) {
-		mb.read( in );
+	public void addWithDefaultReader( String command) {
+		AsyncMessage msg = new AsyncMessage( command, true ){
+			@Override
+			public boolean isRet(String result, Queue q) {
+				return false;
+			}
+		};
+		this.add(msg);
 	}
-
 	public void add( String command, boolean blocking) {
 		AsyncMessage msg = null;
-		final String retcmd = "R" + command;
 		if(blocking){
-			msg = new AsyncMessage( command, true ){
-				@Override
-				public boolean isRet(String result, Queue q) {
-			//		Initiator.logger.i("Queue.add.isRet1?:", result  + " of " + command );
-					if( retcmd.equals( result )){
-						return true;
-					}
-					return false;
-				}
-			};
+			String retcmd = "R" + command;
+			this.add(command, retcmd);
 		}else{
 			msg =new AsyncMessage( command, false );
+			this.add(msg);
 		}
-		synchronized (lock_output) {
-			output.add(msg);
-			if(isMainQueue){
-				history.push(msg);
-			}
-		}
-	//	Initiator.logger.i("Queue.add2 length", ""+output.size() );
-	//	Initiator.logger.i("Queue.add2", "exec" );
-		exec();
 	}
 	public void add(String command, final String retcmd) {
 		AsyncMessage msg = new AsyncMessage( command, true ){
 			@Override
 			public boolean isRet(String result, Queue q) {
-				Initiator.logger.i("Queue.isRet2?:", retcmd );
+			//	Initiator.logger.i("Queue.isRet2?:", retcmd );
 				if( retcmd.equals( result )){
 					return true;
 				}
 				return false;
 			}
 		};
-		synchronized (lock_output) {
-			output.add(msg);
-			if(isMainQueue){
-				history.push(msg);
+		if(isMainQueue){
+			synchronized (lock_output) {
+				output.add(msg);
+	//			history.push(msg);
 			}
+			exec();
+		}else{
+			output.add(msg);
 		}
 	//	Initiator.logger.i("Queue.add4 length", ""+output.size() );
-		exec();
+
 	}
 
-	public void add(AsyncMessage asyncMessage) {
-		synchronized (lock_output) {
-			output.add(asyncMessage);
-			if(isMainQueue){
-				history.push(asyncMessage);
+	public void add(AsyncMessage msg) {
+		if(msg == null){
+			return;
+		}
+		if(isMainQueue){
+			synchronized (lock_output) {
+				output.add(msg);
+		//		history.push(msg);
 			}
+			exec();
+		}else{
+			output.add(msg);
 		}
 	//	Initiator.logger.i("Queue.add3 length", ""+output.size() );
-		exec();
 	}
 
 	public void add(Queue q2) {
-		synchronized (lock_output) {
-			output.addAll(q2.output);
-			if(isMainQueue){
-				history.addAll(q2.output);
+		if(isMainQueue){
+			synchronized (lock_output) {
+				output.addAll(q2.output);
+
+		//		history.addAll(q2.copy().output);
 			}
+			exec();
+		}else{
+			output.addAll(q2.output);
 		}
 //		Initiator.logger.i("Queue.addAll length", ""+output.size() );
-		exec();
+
 	}
 	public void addFirst(Queue q2) {
-		synchronized (lock_output) {
-			this.output.addAll( 0, q2.output);		// add on start
-			if(isMainQueue){
+		if(isMainQueue){
+			synchronized (lock_output) {
+				this.output.addAll( 0, q2.output);		// add on start
 				history.addBefore( this.output.peek(), q2.output);
 			}
+			exec();
+		}else{
+			this.output.addAll( 0, q2.output);		// add on start
 		}
-		exec();
+
 	}
 
 	protected void exec() {
@@ -358,11 +363,11 @@ public class Queue {
 		//	}
 	}*/
 
-    public void sendNow( String command ) {	 // send without waiting
-	//	synchronized (lock) {
-			mb.send(command + "\n");
-	//	}
-    }
+
+
+
+
+
 	public void unlock() {
 		if(isMainQueue){
 			Mainboard.lock.unlock();
@@ -396,7 +401,7 @@ public class Queue {
 				synchronized (lock_output) {
 					output.add(msg);
 					if(isMainQueue){
-						history.push(msg);
+			//			history.push(msg);
 					}
 				}
 	//			Initiator.logger.i("Queue.addWaitThread length", ""+output.size() );
@@ -441,12 +446,13 @@ public class Queue {
 				this.unlockingcommand = "end";
 			}
 		};
-		synchronized (lock_output) {
-			output.add( m2 );
-			if(isMainQueue){
-				history.push(m2);
-			}
-		}
+		this.add(m2);
+
+
+
+
+
+
 	//	Initiator.logger.i("Queue.addWait2 length", ""+output.size() );
 	}
 	public void addWait(final int time) {
@@ -460,7 +466,7 @@ public class Queue {
 			}
 			@Override
 			public Queue run(final Mainboard dev, Queue queue) {
-		///		Initiator.logger.w("Queue.addWait.run", "time: " +time);
+				Initiator.logger.w("Queue.addWait.run", "time: " +time);
 				final AsyncMessage msg	= this;
 				/*
 				final Handler handler	= new Handler();
@@ -484,13 +490,13 @@ public class Queue {
 				return true;
 			}
 		};
-		synchronized (lock_output) {
-			output.add( m2 );
-			if(isMainQueue){
-				history.push(m2);
-			}
-		}
-		exec();
+
+		this.add(m2);
+
+
+
+
+
 //		Initiator.logger.i("Queue.addWait length", ""+output.size() );
 	}
 	public boolean isBusy() {
@@ -525,6 +531,16 @@ public class Queue {
 
 	public LimitedBuffer<AsyncMessage> getHistory(){
 		return this.history;
+	}
+
+	public Queue copy() {
+		Queue q = new Queue();
+		synchronized (lock_output) {
+			for (AsyncMessage msg : output){
+				q.add( msg.copy() );
+			}
+		}
+		return q;
 	}
 }
 

@@ -28,7 +28,7 @@ public class MessageRoute extends EmptyRoute {
 			Queue mq			= barobot.main_queue;
 		//	Initiator.logger.i( this.getClass().getName(), "add message " + message + " bypass:" +bypass+ " blocking" + blocking );
 			if(bypass){
-				mq.sendNow(message+"\n");
+				barobot.mb.send(message+"\n");
 			}else{
 				mq.add(message, blocking);
 			}

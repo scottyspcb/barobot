@@ -69,7 +69,7 @@ public class OptionsActivity extends BarobotMain {
 						}
 						@Override
 						public Queue run(Mainboard dev, Queue queue) {
-							if( barobot.getRobotId() == 0 ){						// once again
+							if( barobot.getRobotId() == 0 && barobot.robot_id_ready ){						// once again
 								int robot_id = UpdateManager.getNewRobotId();		// download new robot_id (init hardware)
 								Initiator.logger.w("onResume", "robot_id" + robot_id);
 								if( robot_id > 0 ){		// save robot_id to android and arduino
@@ -104,8 +104,8 @@ public class OptionsActivity extends BarobotMain {
 			serverIntent = new Intent(this, RecipeSetupActivity.class);
 			break;
 		case R.id.options_stop:
-			CommandRoute.runCommand("command_clear");
-			CommandRoute.runCommand("command_move_to_start");
+			CommandRoute.runCommand("command_clear_queue");
+		//	CommandRoute.runCommand("command_move_to_start");
 			break;
 		case R.id.options_advanced_button:
 			serverIntent  = new Intent(this, DebugActivity.class);
@@ -122,10 +122,10 @@ public class OptionsActivity extends BarobotMain {
 		case R.id.options_lights_button:
 			final Audio a = getAudio();
 	    	if(a.isRunning()){
-	    		System.out.println("getAudio stop1");
+	    		Initiator.logger.i( this.getClass().getName(), "getAudio stop1");
 	        	a.stop();
 	        } else {
-	        	System.out.println("getAudio start");
+	        	Initiator.logger.i( this.getClass().getName(), "getAudio start");
 	        	a.start(barobot);
 
 	        	AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
@@ -145,7 +145,7 @@ public class OptionsActivity extends BarobotMain {
 	        }
 			break;
 		case R.id.options_calibrate_button:
-			CommandRoute.runCommand("command_find_bottles");
+			serverIntent = new Intent(this, ValidatorActivity.class);
 			break;
 
 		case R.id.option345:

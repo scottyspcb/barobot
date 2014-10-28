@@ -43,7 +43,7 @@ public class Servo {
 		hardware_pos = software_pos + m1;
 		state.set( "POS" + this.axis, software_pos );
 		int lx	=  state.getInt("LENGTH" + this.axis, 600 );
-		if( spos > lx){		// Pozycja wieksza niz d³ugosc? Zwieksz d³ugosc
+		if( spos > lx){		// Pozycja wieksza niz dï¿½ugosc? Zwieksz dï¿½ugosc
 			state.set( "LENGTH" + this.axis, spos);
 		}
 	}
@@ -86,7 +86,7 @@ public class Servo {
 			public Queue run(Mainboard dev, Queue queue){
 				this.name		= "Check Hall " + axis;
 				Initiator.logger.w("MotorDriver.movoTo.AsyncMessage.run", "want to s:" + pos + " / hpos" + newx );
-				q.sendNow( "A0");
+				dev.send("A0" + "\n");
 				return null;
 			}
 			@Override

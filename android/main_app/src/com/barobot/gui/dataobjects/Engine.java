@@ -17,6 +17,7 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Environment;
 import android.util.Log;
 
+import com.barobot.BarobotMain;
 import com.barobot.common.Initiator;
 import com.barobot.common.constant.Constant;
 import com.barobot.gui.database.BarobotData;
@@ -34,10 +35,8 @@ public class Engine {
 	private List<Recipe_t> favoriteRecipes;
 	private static Map<Integer, Slot> liquid2slot = null;
 	private static Engine instance;
-	private String message = "";
-	private Boolean messagePresent = false;
 
-	public static Engine createInstance(Context context){
+	public static Engine createInstance(Context context) throws StartupException{
 		if (instance == null){
 			instance = new Engine(context);
 		}
@@ -47,32 +46,8 @@ public class Engine {
 	public static Engine GetInstance(){
 		return instance;
 	}
-	
-	public void SetMessage(String message)
-	{
-		this.message = message;
-		this.messagePresent = true;
-	}
-	
-	public Boolean IsMessagePresent()
-	{
-		return messagePresent;
-	}
-	
-	public String GetMessage()
-	{
-		if (messagePresent)
-		{
-			messagePresent = false;
-			return message;
-		}
-		else
-		{
-			return "";
-		}
-	}
 
-	private Engine(Context context)
+	private Engine(Context context) throws StartupException
 	{
 		try {
 			String appPath2 	= context.getPackageManager().getPackageInfo(context.getPackageName(), 0).applicationInfo.dataDir;
@@ -94,19 +69,26 @@ public class Engine {
 						InternetHelpers.copy( resetPath, dbPath );
 					} catch (IOException e) {
 						Initiator.logger.e("Engine DB ", "copy error", e );
+						throw new StartupException( "BarobotOrman Error", e );
 					}
 				}else{
 					Initiator.logger.e("Engine DB File not exists:", resetPath );
 					Initiator.logger.e("Engine DB File", "copy from assets: "+ "/BarobotOrman.db" );
-					Android.copyAsset( context, "BarobotOrman.db", Constant.localDbPath );
+					if(Android.copyAsset( context, "BarobotOrman.db", Constant.localDbPath ) == false){
+						Initiator.logger.e("Engine.Engine", "BarobotOrman Erro");
+						throw new StartupException( "BarobotOrman Error" );
+					}
 				}
 			}
 			BarobotData.StartOrmanMapping(context);
 
 		} catch (NameNotFoundException e1) {
 			Initiator.logger.w("Engine.Engine", "NameNotFoundException", e1);
-			e1.printStackTrace();
+			BarobotMain.lastException = e1;
+			throw new StartupException( "BarobotOrman Error", e1 );
+		//	return false;
 		}
+		//return true;
 	}
 	public List<Slot> loadSlots()
 	{
@@ -116,6 +98,9 @@ public class Engine {
 			int robotId					= barobot.getRobotId();
 
 			Query q		= ModelQuery.select().from(Slot.class).where(C.eq("robot_id", robotId)).getQuery();
+
+			Initiator.logger.w("Engine.loadSlots.sql", q.toString());
+
 			slots		= Model.fetchQuery(q, Slot.class);
 
 			// slots in robot with robotId
@@ -226,6 +211,10 @@ public class Engine {
 		ld.datetime			= Android.getTimestamp();
 		ld.id_drink			= recipe.id;
 		ld.ingredients		= ings.size(); 
+		ld.size				= pours;
+		ld.size_ml			= quantity;
+		ld.size_real_ml		= real_quantity;
+		ld.error_code		= 0;
 
 		Queue q = new Queue();
 		q.add( new AsyncMessage( true ) {
@@ -254,22 +243,19 @@ public class Engine {
 				barobot.moveToBottle(q, position-1, true );
 				for (int iter = 1; iter <= count ; iter++){
 					if( iter > 1){
-		//				Log.i("Prepare", "addWait" );
 						int repeat_time = barobot.getRepeatTime( position-1, slot.dispenser_type );
+					//	Log.i("Prepare", "addWait"+repeat_time );
 						q.addWait( repeat_time  );			// wait for refill
 					}
 		//			Log.i("Prepare", "pour" );
 					barobot.pour(q, slot.dispenser_type, position-1, false);
-					saveStats( slot, q);
-					saveStats( ing.liquid, q);
 				}
+				saveStats( slot, q, count );
+				saveStats( ing.liquid, q, count);
+
 			}else{// We could not find some of the ingredients
 			}
 		}
-		ld.size			= pours;
-		ld.size_ml		= quantity;
-		ld.size_real_ml	= real_quantity;
-		ld.error_code	= 0;
 
 		q.add( new AsyncMessage( true ) {
 			@Override	
@@ -280,7 +266,6 @@ public class Engine {
 			public Queue run(Mainboard dev, Queue queue) {
 				this.name		= "moveToStart";
 				Queue q2		= new Queue();
-				BarobotConnector barobot = Arduino.getInstance().barobot;
 				barobot.moveToStart( q2 );		// na koniec
 				barobot.onDrinkFinish( q2 );
 				return q2;
@@ -306,7 +291,7 @@ public class Engine {
 		return true;
 	}
 	
-	private static void saveStats(final Liquid_t liquid, Queue q) {
+	private static void saveStats(final Liquid_t liquid, Queue q, final int count) {
 		q.add( new AsyncMessage( true ) {
 			@Override	
 			public String getName() {
@@ -314,14 +299,14 @@ public class Engine {
 			}
 			@Override
 			public Queue run(Mainboard dev, Queue queue) {
-				liquid.counter++;
+				liquid.counter+=count;
 				liquid.update();
 				return null;
 			}
 		} );
 	}
 
-	private static void saveStats(final Slot slot, Queue q) {
+	private static void saveStats(final Slot slot, Queue q, final int count) {
 		q.add( new AsyncMessage( true ) {
 			@Override	
 			public String getName() {
@@ -329,7 +314,7 @@ public class Engine {
 			}
 			@Override
 			public Queue run(Mainboard dev, Queue queue) {
-				slot.counter++;
+				slot.counter+=count;
 				slot.update();
 				return null;
 			}
@@ -363,6 +348,7 @@ public class Engine {
 				return null;
 			}else{
 				int count = slot.getSequence( ing.quantity );
+			//	int newQuantity	= count * slot.dispenser_type;
 				nMap.put(slot.position, count);
 			}
 		}

@@ -31,8 +31,6 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 
-import android.os.Environment;
-
 import com.barobot.common.Initiator;
 import com.barobot.common.constant.Constant;
 import com.barobot.common.interfaces.OnDownloadReadyRunnable;
@@ -239,13 +237,17 @@ public class InternetHelpers {
 					String ip = Android.getLocalIpAddress();
 
 					List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-					nameValuePairs.add(new BasicNameValuePair("robot_id", ""+barobot.getRobotId()));
-					nameValuePairs.add(new BasicNameValuePair("address", ip ));
+					nameValuePairs.add(new BasicNameValuePair("app_version", ""+Constant.ANDROID_APP_VERSION ));
+					nameValuePairs.add(new BasicNameValuePair("firmware_version", barobot.state.get("ARDUINO_VERSION", "0") ));
+					nameValuePairs.add(new BasicNameValuePair("robot_id", ""+barobot.getRobotId() ));
+
 					nameValuePairs.add(new BasicNameValuePair("stat1", barobot.state.get("STAT1", "0") ));
 					nameValuePairs.add(new BasicNameValuePair("stat2", barobot.state.get("STAT2", "0") ));
+					nameValuePairs.add(new BasicNameValuePair("lang", barobot.state.get("LANG", "pl" ) ));
+					nameValuePairs.add(new BasicNameValuePair("starts", barobot.state.get("ARDUINO_STARTS", "0") ));
+					nameValuePairs.add(new BasicNameValuePair("temp", ""+barobot.getLastTemp() ));
 
 					httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-
 					HttpResponse response = httpclient.execute(httppost);	        // Execute HTTP Post Request
 					String ret = InternetHelpers.response2String(response);
 					runnable.sendSource(ret);	
@@ -281,5 +283,44 @@ public class InternetHelpers {
 			Initiator.logger.e("update_drinks.downloadRobotId", "IOException", e );
 		}
 		return null;
+	}
+
+	public static void raportError(Exception lastException, final String msg) {
+		Thread dx = new Thread() {
+			public void run() {
+			HttpClient httpclient	= new DefaultHttpClient();
+			HttpPost httppost		= new HttpPost(Constant.raport_manager);
+			List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
+			String ip				= Android.getLocalIpAddress();
+			if(ip!=null){
+				nameValuePairs.add(new BasicNameValuePair("address", ip ));
+			}
+			if( Arduino.getInstance() != null  ){
+				BarobotConnector barobot = Arduino.getInstance().barobot;
+				if(barobot != null){
+					nameValuePairs.add(new BasicNameValuePair("app_version", ""+Constant.ANDROID_APP_VERSION ));
+					nameValuePairs.add(new BasicNameValuePair("firmware_version", barobot.state.get("ARDUINO_VERSION", "0") ));
+					nameValuePairs.add(new BasicNameValuePair("robot_id", ""+barobot.getRobotId() ));
+					if( barobot.state != null){
+						nameValuePairs.add(new BasicNameValuePair("stat1", barobot.state.get("STAT1", "0") ));
+						nameValuePairs.add(new BasicNameValuePair("stat2", barobot.state.get("STAT2", "0") ));
+						nameValuePairs.add(new BasicNameValuePair("lang", barobot.state.get("LANG", "pl" ) ));
+						nameValuePairs.add(new BasicNameValuePair("starts", barobot.state.get("ARDUINO_STARTS", "0") ));
+						nameValuePairs.add(new BasicNameValuePair("temp", ""+barobot.getLastTemp() ));
+					}
+				}
+			}
+			nameValuePairs.add(new BasicNameValuePair("error", msg ));
+			try {
+				httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+				HttpResponse response = httpclient.execute(httppost);	        // Execute HTTP Post Request
+				InternetHelpers.response2String(response);
+			} catch (ClientProtocolException e) {
+				Initiator.logger.e("InternetHelpers.raportError", "ClientProtocolException", e );
+			} catch (IOException e) {
+				Initiator.logger.e("InternetHelpers.raportError", "IOException", e );
+			}	
+		}};
+		dx.start();
 	}
 }

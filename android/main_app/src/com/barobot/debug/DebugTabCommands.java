@@ -1,9 +1,14 @@
 package com.barobot.debug;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.barobot.BarobotMain;
 import com.barobot.R;
 import com.barobot.activity.DebugActivity;
 import com.barobot.common.Initiator;
@@ -21,6 +26,10 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ListAdapter;
+import android.widget.ListView;
+import android.widget.SimpleAdapter;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
@@ -37,16 +46,21 @@ public class DebugTabCommands extends Fragment {
         super.onActivityCreated(savedInstanceState);
     }
 
-	private static Map<Integer, String> buttonToCommand = new HashMap<Integer, String>();
+//	public static List<Map<String,String>> data = new ArrayList<Map<String,String>>();
+	private static LinkedHashMap<String, String> analog_list = new LinkedHashMap<String, String>();
+	private static KeyValueAdapter kva = null;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
 	//	Initiator.logger.i("DebugTabCommands", "onCreateView");
-
+		BarobotConnector barobot = Arduino.getInstance().barobot;
+		HardwareState state = barobot.state;
 		int lay = DebugActivity.layouts[tab_id];
 		//View rootView = inflater.inflate( R.layout.fragment_device_list_dummy, container, false);
 		View rootView = inflater.inflate( lay, container, false);
-		
+
+		Map<Integer, String> buttonToCommand = new HashMap<Integer, String>();
+
 		buttonToCommand.put( R.id.max_z, "max_z" );
 		buttonToCommand.put( R.id.min_z, "min_z" );
 		buttonToCommand.put( R.id.max_x, "max_x" );
@@ -54,84 +68,61 @@ public class DebugTabCommands extends Fragment {
 		buttonToCommand.put( R.id.min_x, "min_x" );
 		buttonToCommand.put( R.id.min_y, "min_y" );
 		buttonToCommand.put( R.id.unlock, "unlock" );
-		buttonToCommand.put( R.id.pacpac, "pacpac" );
 		buttonToCommand.put( R.id.kalibrujx, "kalibrujx" );
 		buttonToCommand.put( R.id.disablez, "disablez" );
 		buttonToCommand.put( R.id.disabley, "disabley" );	
 		buttonToCommand.put( R.id.disablex, "disablex" );	
 
-		buttonToCommand.put( R.id.set_robot_id, "set_robot_id" );
 		buttonToCommand.put( R.id.reset1, "reset1" );
 		buttonToCommand.put( R.id.reset, "reset" );
 		buttonToCommand.put( R.id.reset2, "reset2" );
 		buttonToCommand.put( R.id.reset3, "reset3" );
 		buttonToCommand.put( R.id.reset4, "reset4" );
 
-		
 		buttonToCommand.put( R.id.find_bottles, "find_bottles" );
 		buttonToCommand.put( R.id.reset_margin, "reset_margin" );
-		buttonToCommand.put( R.id.analog_temp, "analog_temp" );
+		buttonToCommand.put( R.id.analog_temp, "analogs" );
 		buttonToCommand.put( R.id.clear_queue, "clear_queue" );
 		buttonToCommand.put( R.id.reset_serial, "reset_serial" );
 		buttonToCommand.put( R.id.wait_for_cup, "wait_for_cup" );
 		
-		buttonToCommand.put( R.id.rb, "rb" );
 		buttonToCommand.put( R.id.rb2, "rb2" );
-		buttonToCommand.put( R.id.scann_leds, "scann_leds" );
-		buttonToCommand.put( R.id.led_green_on, "led_green_on" );
-		buttonToCommand.put( R.id.led_blue_on, "led_blue_on" );
-		buttonToCommand.put( R.id.led_red_on, "led_red_on" );
+
+
 		buttonToCommand.put( R.id.set_x_1000, "set_x_1000" );
 		buttonToCommand.put( R.id.set_x_100, "set_x_100" );
 		buttonToCommand.put( R.id.set_x_10, "set_x_10" );
 		buttonToCommand.put( R.id.set_x10, "set_x10" );
 		buttonToCommand.put( R.id.set_x100, "set_x100" );
 		buttonToCommand.put( R.id.set_x1000, "set_x1000" );
-		buttonToCommand.put( R.id.set_y_600, "set_y_600" );
-		buttonToCommand.put( R.id.set_y_100, "set_y_100" );
-		buttonToCommand.put( R.id.set_y_10, "set_y_10" );
-		buttonToCommand.put( R.id.set_y10, "set_y10" );
-		buttonToCommand.put( R.id.set_y100, "set_y100" );
-		buttonToCommand.put( R.id.set_y600, "set_y600" );
-		buttonToCommand.put( R.id.goToNeutralY, "goToNeutralY" );
 		buttonToCommand.put( R.id.kalibrujy, "kalibrujy" );
 		buttonToCommand.put( R.id.machajx, "machajx" );
 		buttonToCommand.put( R.id.machajy, "machajy" );
 		buttonToCommand.put( R.id.machajz, "machajz" );
-		buttonToCommand.put( R.id.wznow, "wznow" );
-		buttonToCommand.put( R.id.losujx, "losujx" );
-		buttonToCommand.put( R.id.losujy, "losujy" );
 		buttonToCommand.put( R.id.fill5000, "fill5000" );
 		buttonToCommand.put( R.id.index_names, "index_names" );
 		buttonToCommand.put( R.id.auto_repair, "auto_repair" );
 
-		for (Entry<Integer, String> entry : buttonToCommand.entrySet()) {
-			int id =  entry.getKey();
-			final String command =  entry.getValue();
-			View w = rootView.findViewById( id );
-			if( w == null){
-				Initiator.logger.i(Constant.TAG,"pomijam: "+ id );
-			}else{
-				String classname = w.getClass().getName();
-				if( "android.widget.Button".equals( classname ) || "android.widget.ToggleButton".equals( classname )){
-					Button xb1 = (Button) rootView.findViewById(id);	
-					xb1.setOnClickListener( new OnClickListener() {
-						@Override
-						public void onClick(View v) {
+		
+		assignButtons(buttonToCommand, rootView);
+		
 
-							Log.i("button click","click");
-							new Thread( new Runnable(){
-								@Override
-								public void run() {
-									Log.i("button click1","exec "+ command + " start");
-									CommandRoute.runCommand2(command);	
-									Log.i("button click1","exec "+ command + " end");
-								}}).start();
-						}
-					});			
-				}
-			}
-		}
+		int need_light_cup	= state.getInt("ALLOW_LIGHT_CUP", 1 );
+		int need_glass		= state.getInt("NEED_GLASS", 1 );
+		int autofill		= state.getInt("AUTOFILL", 1 );
+		int need_hall_x		= state.getInt("NEED_HALL_X", 1 );
+
+		ToggleButton tbng1 = (ToggleButton) rootView.findViewById(R.id.need_glass);	
+		tbng1.setChecked( (need_glass == 1) ? true : false);
+
+		ToggleButton tbng2 = (ToggleButton)rootView.findViewById(R.id.auto_fill_on_ready);		
+		tbng2.setChecked( (autofill == 1) ? true : false);
+
+		ToggleButton tbng3 = (ToggleButton) rootView.findViewById(R.id.need_hall_up);	
+		tbng3.setChecked( (need_hall_x == 1) ? true : false);
+
+		ToggleButton tbng4 = (ToggleButton) rootView.findViewById(R.id.allow_light_cup);	
+		tbng4.setChecked( (need_light_cup == 1) ? true : false);
 
 		button_click bc = new button_click( this.cc );
 		int[] buttons = {
@@ -139,8 +130,8 @@ public class DebugTabCommands extends Fragment {
 				R.id.reset_database,
 				R.id.firmware_download,
 				R.id.firmware_download_manual,
+				R.id.new_robot_id
 		};
-
 		for(int i =0; i<buttons.length;i++){
 			View w = rootView.findViewById(buttons[i]);
 			if( w == null){
@@ -160,6 +151,8 @@ public class DebugTabCommands extends Fragment {
 
 		button_toggle bt = new button_toggle();
 		int[] togglers = {
+				R.id.need_hall_up,
+				R.id.allow_light_cup,
 				R.id.need_glass,
 				R.id.auto_fill_on_ready
 		};
@@ -171,28 +164,58 @@ public class DebugTabCommands extends Fragment {
 				xb3.setOnClickListener(bt);
 			}	
 		}
-		ToggleButton toggle = (ToggleButton)rootView.findViewById(R.id.auto_fill_on_ready);		
-		toggle.setChecked(true);
 
-		TextView ttt = (TextView)rootView.findViewById(R.id.position_z);
-
-		BarobotConnector barobot = Arduino.getInstance().barobot;
-		HardwareState state = barobot.state;
-		if(ttt!=null){
-			String posz = "" + state.getInt( "POSZ",0);
-			ttt.setText(posz);
-		}
-		ttt = (TextView)rootView.findViewById(R.id.position_y);
-		if(ttt!=null){
-			String posy = "" + state.get( "POSY","0");
-			ttt.setText(posy);
-		}
-
-		ttt = (TextView)rootView.findViewById(R.id.position_x);
-		if(ttt!=null){
-			String posx = "" + barobot.driver_x.getSPos();
-			ttt.setText(posx);
-		}
+		analog_list.put("POSX", ""+barobot.driver_x.getSPos());
+		analog_list.put("POSY", ""+state.get( "POSY","0"));
+		analog_list.put("POSZ", ""+state.getInt( "POSZ",0));		
+	
+        kva = new KeyValueAdapter(rootView.getContext(), analog_list);
+        ListView analog_spinner = (ListView) rootView.findViewById(R.id.analog_spinner);
+        analog_spinner.setAdapter(kva);
 		return rootView;
+	}
+
+	public static void assignButtons(Map<Integer, String> buttonToCommand2, View rootView) {
+		for (Entry<Integer, String> entry : buttonToCommand2.entrySet()) {
+			int id =  entry.getKey();
+			final String command =  entry.getValue();
+			View w = rootView.findViewById( id );
+			if( w == null){
+				Initiator.logger.i(Constant.TAG,"pomijam: "+ id );
+			}else{
+				String classname = w.getClass().getName();
+				if( "android.widget.Button".equals( classname ) || "android.widget.ToggleButton".equals( classname )){
+					Button xb1 = (Button) rootView.findViewById(id);	
+					xb1.setOnClickListener( new OnClickListener() {
+						@Override
+						public void onClick(View v) {
+							Log.i("button click","click");
+							new Thread( new Runnable(){
+								@Override
+								public void run() {
+									Log.i("button click1","exec "+ command + " start");
+									CommandRoute.runCommand2(command);	
+									Log.i("button click1","exec "+ command + " end");
+								}}).start();
+						}
+					});			
+				}
+			}
+		}
+	}
+	public synchronized static void updateValue( final String name, final String value ){
+		if(kva !=null){
+			BarobotMain.getInstance().runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					if(kva !=null){
+						synchronized(kva){
+							analog_list.put(name, value);
+							kva.notifyDataSetChanged();
+						}
+					}
+				}
+			});
+		}
 	}
 }

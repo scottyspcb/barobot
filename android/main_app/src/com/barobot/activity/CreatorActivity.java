@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.barobot.BarobotMain;
@@ -29,6 +30,9 @@ import com.barobot.gui.utils.Distillery;
 import com.barobot.gui.utils.LangTool;
 import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
+import com.barobot.other.InternetHelpers;
+
+//    and_oid:ba_ckground="@drawable/background"
 
 public class CreatorActivity extends BarobotMain{
 	private int[] slot_nums = {0,0,0,0,0,0,0,0,0,0,0,0,0};
@@ -36,6 +40,7 @@ public class CreatorActivity extends BarobotMain{
 	private int[] drops;
 	private int[] dropIds;
 	private List<Ingredient_t> ingredients;
+	private int drink_size = 0;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +59,7 @@ public class CreatorActivity extends BarobotMain{
 		SetupBottles();
 		SetupDrops();
 		UpdateSlots();	
+		UpdateButtons();
 	}
 	
 	private void SetupBottles()
@@ -90,23 +96,51 @@ public class CreatorActivity extends BarobotMain{
 		dropIds[5] = R.drawable.drop_5;
 	}
 
+	private void UpdateButtons() {
+		TextView drinkSizeBox		= (TextView) findViewById(R.id.drink_size);
+		Button save_as_drink		= (Button) findViewById(R.id.save_as_drink);
+		Button clear_list			= (Button) findViewById(R.id.clear_list);
+		Button start_btn			= (Button) findViewById(R.id.creator_pour_button);
+		IngredientListFragment frag = (IngredientListFragment) getFragmentManager().findFragmentById(R.id.fragment_ingredient_list);
+		RecipeAttributesFragment attrFrag = (RecipeAttributesFragment) getFragmentManager().findFragmentById(R.id.fragment_attributes);
+
+		if(drink_size > 0 ){
+			drinkSizeBox.setVisibility(View.VISIBLE);
+			save_as_drink.setVisibility(View.VISIBLE);
+			clear_list.setVisibility(View.VISIBLE);
+			drinkSizeBox.setText("" + drink_size + "ml");
+			start_btn.setVisibility(View.VISIBLE);
+		}else{
+			drinkSizeBox.setVisibility(View.INVISIBLE);
+			save_as_drink.setVisibility(View.INVISIBLE);
+			clear_list.setVisibility(View.INVISIBLE);
+			start_btn.setVisibility(View.INVISIBLE);
+			if(frag!=null){
+				frag.hide();
+			}
+			attrFrag.hide();
+		}
+	}
+
 	private void UpdateSlots() {
 		List<Slot> bottles = Engine.GetInstance().loadSlots();
 		Log.w("BOTTLE_SETUP length",""+bottles.size());
-		for(Slot bottle : bottles)
+		for(Slot slot : bottles)
 		{
-			if (bottle.position > 0 && bottle.position <= ids.length )
-			{
-				TextView tview = (TextView) findViewById(ids[bottle.position]);
-				if (bottle.status == Slot.STATUS_EMPTY) {
-				//	tview.setText(R.string.empty_bottle_string);
+			if (slot.position > 0 && slot.position <= ids.length ){
+				TextView tview = (TextView) findViewById(ids[slot.position]);
+				if (slot.status == Slot.STATUS_EMPTY || slot.product == null || slot.getName().equals("Empty")) {
 					tview.setText("");	
-				} else if(	bottle.getName().equals("Empty")){
-					tview.setText("");
+					tview.setEnabled(false);
 				} else {
-					tview.setText(bottle.getName());	
+					tview.setEnabled(true);
+					tview.setText( slot.getName() + "\n\n\n+"+ slot.dispenser_type +"ml");	
 				}	
 			}
+		}
+		IngredientListFragment frag = (IngredientListFragment) getFragmentManager().findFragmentById(R.id.fragment_ingredient_list);
+		if(frag!=null){
+			frag.hide();
 		}
 		BarobotConnector barobot = Arduino.getInstance().barobot;
 		barobot.turnOffLeds(barobot.main_queue);
@@ -117,7 +151,11 @@ public class CreatorActivity extends BarobotMain{
 		BarobotConnector barobot	= Arduino.getInstance().barobot;
 		IngredientListFragment frag = (IngredientListFragment) getFragmentManager().findFragmentById(R.id.fragment_ingredient_list);
 		if(frag!=null){
-			frag.ShowIngredients(ingredients);
+			if(ingredients.size() > 0 ){
+				frag.ShowIngredients(ingredients);	
+			}else{
+				frag.hide();
+			}
 		}
 		RecipeAttributesFragment attrFrag = (RecipeAttributesFragment) getFragmentManager().findFragmentById(R.id.fragment_attributes);
 		if(attrFrag!=null){
@@ -128,6 +166,7 @@ public class CreatorActivity extends BarobotMain{
 			barobot.bottleBacklight( barobot.main_queue, i-1, slot_nums[i] );		// 0 -11
 		}
 	}
+
 	public void onBottleClicked(View view)
 	{
 		int viewID = view.getId();
@@ -143,17 +182,23 @@ public class CreatorActivity extends BarobotMain{
 		if (position != 0)
 		{
 			Slot slot =  BarobotData.GetSlot(position);
+			try {
+				if (slot.product != null){
+					Ingredient_t ingredient = new Ingredient_t();
+					ingredient.liquid = slot.product.liquid;
+					ingredient.quantity = slot.dispenser_type;
+					addIngredient(position, ingredient);
+					drink_size += slot.dispenser_type;
 
-			if (slot.product != null)
-			{
-				Ingredient_t ingredient = new Ingredient_t();
-				ingredient.liquid = slot.product.liquid;
-				BarobotConnector barobot = Arduino.getInstance().barobot;
-				ingredient.quantity = slot.getCapacity();
-				addIngredient(position, ingredient);
+				}
+			} catch (NullPointerException e) {
+				InternetHelpers.raportError(lastException, "NullPointerException");
+				e.printStackTrace();
 			}
+			
 			ShowIngredients(true);
 			CalculateDrops();
+			UpdateButtons();
 		}else{
 			Log.w("BOTTLE_SETUP", "onBottleClicked called by an unknown view");
 		}
@@ -166,6 +211,7 @@ public class CreatorActivity extends BarobotMain{
 
 	private void clear( boolean setLeds ){
 		ingredients.clear();
+		drink_size = 0;
 		for (int i = 1; i<=12 ; i++){
 			slot_nums[i] = 0;
 		}
@@ -177,7 +223,8 @@ public class CreatorActivity extends BarobotMain{
 		runOnUiThread(new Runnable() {  
              @Override
              public void run() {
-            	 CalculateDrops();
+     			UpdateButtons();
+            	CalculateDrops();
              }});
 	}
 

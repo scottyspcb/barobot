@@ -35,9 +35,6 @@ public class TranslatePage extends EmptyRoute{
 		}
 		Chunk action_chunk			= theme.makeChunk("settings#translations");
 	//	Map<String, List<String>> decodedQueryParameters =sofaServer.decodeParameters(session.getQueryParameterString());
-
-		//	List<Language> ls = Model.fetchQuery(ModelQuery.select().from(Language.class).getQuery(),Language.class);
-
 		List<Translated_name> tn = Model.fetchQuery(ModelQuery.select().from(Translated_name.class).orderBy("Translated_name.table_name","Translated_name.element_id").getQuery(),Translated_name.class);
 		List<Map<String, String>> data = new ArrayList<Map<String, String>>();
 		for (Translated_name item : tn) {

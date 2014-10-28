@@ -1,6 +1,5 @@
 package com.barobot.hardware.devices;
 
-import com.barobot.common.Initiator;
 import com.barobot.common.constant.Methods;
 import com.barobot.common.interfaces.HardwareState;
 import com.barobot.parser.Queue;
@@ -73,8 +72,8 @@ public class MotorDriver {
 	//	Initiator.logger.w("MARGIN X2", "Margin: " + m1 + "  soft: " + pos3 + " => hard " + (pos3 -( -m1)));
 		return pos3 - (- m1);
 	}
-	public void moveTo( Queue q, final int pos ) {
-		final int newx		= soft2hard(pos);
+	public void moveTo( Queue q, final int sPos ) {
+		final int newx		= soft2hard(sPos);
 		final int currentx	= getSPos();
 
 		q.add( new AsyncMessage( true, true ) {
@@ -90,7 +89,7 @@ public class MotorDriver {
 			public Queue run(Mainboard dev, Queue queue){
 				this.name		= "Check Hall X";
 		//		Initiator.logger.w("MotorDriver.movoTo.AsyncMessage.run", "want to s:" + pos + " / hpos" + newx );
-				queue.sendNow("A0");
+				dev.send("A0" + "\n");
 				return null;
 			}
 			@Override
@@ -100,12 +99,12 @@ public class MotorDriver {
 					int[] parts = Decoder.decodeBytes( input );
 					boolean can = true;
 					if( parts[2] == Methods.HX_STATE_9 ){		// this is max	//	224,0,100,0,204,3,185,1
-						if(pos < currentx ){		// move backward
+						if(sPos < currentx ){		// move backward
 							can = false;
 	//						Initiator.logger.w("MotorDriver.movoTo.AsyncMessage.onInput2", "BELOW MIN1 newx: "+ pos+ "currentx:"+currentx   );
 						}
 					}else if( parts[2] == Methods.HX_STATE_1 ){		// this is min
-						if( pos > currentx ){		// move forward
+						if( sPos > currentx ){		// move forward
 							can = false;
 	//						Initiator.logger.w("MotorDriver.movoTo.AsyncMessage.onInput2", "OVER max newx: "+ pos+ "currentx:"+currentx  );
 						}

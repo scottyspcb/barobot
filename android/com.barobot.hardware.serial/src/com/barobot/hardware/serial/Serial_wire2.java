@@ -144,7 +144,7 @@ public class Serial_wire2 implements CanSend, Wire{
 
 	@Override
 	public void resume() {
-		Initiator.logger.e("Serial_wire.resume","resume");
+		Initiator.logger.w("Serial_wire.resume","resume");
 		//this.open();
 		synchronized(lock){
 	        if (sPort == null) {
@@ -265,6 +265,7 @@ public class Serial_wire2 implements CanSend, Wire{
     	Log.d("Serial_wire.refreshDeviceList", "Refreshing device list ...");
     	if( mUsbManager == null ){
     		Log.e("Serial_wire.refreshDeviceList", "mUsbManager is null");
+    		return;
     	}
     	Collection<UsbDevice> vs = mUsbManager.getDeviceList().values();
         for (UsbDevice device : vs ) {
