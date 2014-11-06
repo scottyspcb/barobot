@@ -1,12 +1,9 @@
 package com.barobot.hardware.devices;
 
-import com.barobot.common.Initiator;
-import com.barobot.common.constant.Constant;
 import com.barobot.common.constant.Methods;
 import com.barobot.parser.Queue;
 import com.barobot.parser.message.AsyncMessage;
 import com.barobot.parser.message.Mainboard;
-import com.barobot.parser.utils.Decoder;
 
 /*
  * 
@@ -29,7 +26,7 @@ public class AsyncCondition extends AsyncMessage{
 			@Override
 			public boolean isRet(String result, Queue mainQueue) {
 				if(result.matches("^" +  Methods.METHOD_IMPORTANT_ANALOG + ",0,.*" )){	// 125,0,100,0,0,0,255,202,126,1
-					int[] parts = Decoder.decodeBytes( result );
+			//		int[] parts = Decoder.decodeBytes( result );
 					boolean allowUp		 = false;
 					if( allowUp ){
 						Queue	q2			= new Queue(); 

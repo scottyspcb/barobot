@@ -284,7 +284,7 @@ public class UploadCode {
 		final I2C_Device current_dev	= new MainboardI2c();
 		final String upanel_code = current_dev.getHexFile();
 		q.add("", false);		
-		q.add("PING", "PONG");
+		q.add("PING", "RPONG");
 		q.addWaitThread(Main.mt);
 		if(IspSettings.setHex){	
 			current_dev.isp( q );	// mam 2 sek na wystartwanie

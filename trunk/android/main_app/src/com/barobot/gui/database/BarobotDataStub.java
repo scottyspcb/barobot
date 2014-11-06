@@ -1,7 +1,11 @@
 package com.barobot.gui.database;
 
-import com.barobot.gui.dataobjects.*;
-import com.barobot.hardware.devices.BarobotConnector;
+import com.barobot.gui.dataobjects.Ingredient_t;
+import com.barobot.gui.dataobjects.Liquid_t;
+import com.barobot.gui.dataobjects.Product;
+import com.barobot.gui.dataobjects.Recipe_t;
+import com.barobot.gui.dataobjects.Slot;
+import com.barobot.gui.dataobjects.Type;
 
 public class BarobotDataStub {
 	

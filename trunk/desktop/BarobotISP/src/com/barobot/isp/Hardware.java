@@ -6,7 +6,6 @@ import com.barobot.common.interfaces.HardwareState;
 import com.barobot.common.interfaces.serial.SerialInputListener;
 import com.barobot.common.interfaces.serial.Wire;
 import com.barobot.hardware.devices.BarobotConnector;
-import com.barobot.hardware.devices.BarobotEventListener;
 import com.barobot.hardware.devices.MyRetReader;
 import com.barobot.parser.Queue;
 import com.barobot.parser.message.AsyncMessage;
@@ -26,8 +25,7 @@ public class Hardware {
 		this.state.set("show_sending", 1 );
 		this.state.set("show_reading", 1 );
 		this.comPort	= comPort;
-		BarobotEventListener bel = new DesktopEventListener( barobot );
-		MyRetReader mrr = new MyRetReader( bel, barobot );
+		MyRetReader mrr = new MyRetReader( barobot );
 		barobot.mb.setRetReader( mrr );
 	}
 	SerialInputListener listener = null;
@@ -73,8 +71,8 @@ public class Hardware {
 	//	Initiator.logger.i("synchro",  "synchro" );
 		barobot.main_queue.add( "\n", false );
 		barobot.main_queue.add( "\n", false );
-		barobot.main_queue.add( "PING", "PONG" );
-		barobot.main_queue.add( "PING", "PONG" );
+		barobot.main_queue.add( "PING", "RPONG" );
+		barobot.main_queue.add( "PING", "RPONG" );
 	}
 	public Wire getConnection(){
 		return connection;

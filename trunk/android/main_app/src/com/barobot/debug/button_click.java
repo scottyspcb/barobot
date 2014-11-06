@@ -24,8 +24,6 @@ import com.barobot.other.Android;
 import com.barobot.other.InternetHelpers;
 import com.barobot.other.UpdateManager;
 import com.barobot.parser.Queue;
-import com.barobot.parser.message.AsyncMessage;
-import com.barobot.parser.message.Mainboard;
 public class button_click implements OnClickListener{
 	private Activity dbw;
 	public button_click(Activity debugWindow){
@@ -52,7 +50,7 @@ public class button_click implements OnClickListener{
 			    	new AlertDialog.Builder(dbw).setTitle("Are you sure?").setMessage("Are you sure?")
 				    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
 				        public void onClick(DialogInterface dialog, int which) {
-				        	boolean success = false;
+				    //    	boolean success = false;
 				        	String path6 = 	Environment.getExternalStorageDirectory()+ Constant.copyPath;
 				  			InternetHelpers.doDownload(Constant.databaseWeb, path6, new OnDownloadReadyRunnable() {
 				  				public void sendSource( String source ) {	
@@ -81,7 +79,7 @@ public class button_click implements OnClickListener{
 				        	boolean success = false;
 				        	String error_name = "Error";
 				        	try {
-				        		Date dNow = new Date( );
+				        		Date dNow			= new Date( );
 				        		SimpleDateFormat dd =  new SimpleDateFormat ("yyyy.MM.dd.hh.mm.ss");
 				        		String resetPath	= 	Environment.getExternalStorageDirectory()+ Constant.copyPath;
 				        		String backupPath 	= 	Environment.getExternalStorageDirectory()+ Constant.backupPath;
@@ -89,10 +87,11 @@ public class button_click implements OnClickListener{
 				        		Initiator.logger.i(Constant.TAG,"backupPath path" + backupPath);
 
 				        		// do backup
-				        		success = InternetHelpers.copy( Constant.localDbPath, backupPath );
+				        		success = Android.copy( Constant.localDbPath, backupPath );
 				        		if(success){
-				        			success = InternetHelpers.copy( resetPath, Constant.localDbPath );
+				        			success = Android.copy( resetPath, Constant.localDbPath );
 				        			Engine.GetInstance().invalidateData();
+				        			resetApplicationData(barobot);
 				        		}
 							} catch (IOException e) {
 								e.printStackTrace();
@@ -122,10 +121,10 @@ public class button_click implements OnClickListener{
 
 		case R.id.firmware_download_manual:
 			UpdateManager.downloadAndBurnFirmware( dbw, barobot.use_beta, true );
-			break;	
+			break;
 		case R.id.new_robot_id:
 			int isOnline = Android.isOnline(dbw);
-			if(isOnline > -1 ){
+			if(isOnline > -1 && barobot.use_beta ){					// beta only
 				int robot_id = UpdateManager.getNewRobotId();		// download new robot_id (init hardware)
 				Initiator.logger.w("button_click.new_robot_id", "robot_id" + robot_id);
 				if( robot_id > 0 ){		// save robot_id to android and arduino
@@ -133,9 +132,9 @@ public class button_click implements OnClickListener{
 					barobot.setRobotId( q, robot_id);
 					barobot.main_queue.add(q);
 				}
-				alertMessage("New ID= "+ robot_id);
+				Android.alertMessage(dbw, "New ID= "+ robot_id);
 			}else{
-				alertMessage("No internet connection");
+				Android.alertMessage(dbw,"No internet connection");
 			}
 			break;
 		}
@@ -155,7 +154,7 @@ public class button_click implements OnClickListener{
 	private void alertOk() {
 		BarobotMain.getInstance().runOnUiThread(new Runnable() {
 			  public void run() {
-				  new AlertDialog.Builder(dbw).setTitle("Message").setMessage("We have pleasure to inform that operation was completed successfully.")
+				  new AlertDialog.Builder(dbw).setTitle("Message").setMessage("It is pleasure to inform that operation was completed successfully.")
 				    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
 				        public void onClick(DialogInterface dialog, int which) { 
 				        }
@@ -164,18 +163,13 @@ public class button_click implements OnClickListener{
 			  }
 			});
 	}
-	private void alertMessage( final String msg ) {
-		BarobotMain.getInstance().runOnUiThread(new Runnable() {
-			  public void run() {
-				  new AlertDialog.Builder(dbw).setTitle("Message").setMessage(msg)
-				    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-				        public void onClick(DialogInterface dialog, int which) { 
-				        }
-				    })
-				    .setIcon(android.R.drawable.ic_dialog_alert).show();
-			  }
-			});
-	}	
-	
-	
+
+	private void resetApplicationData(BarobotConnector barobot) {
+		barobot.state.set("ONCE_PER_APP_START", 0 );
+		barobot.state.set("ONCE_PER_ROBOT_START", 0 );
+		barobot.state.set("ONCE_PER_ROBOT_LIFE", 0 );
+		barobot.state.set("ROBOT_CAN_MOVE", 0 );
+		barobot.state.set("ROBOT_ID", 0 );
+		barobot.state.set("INIT", 0 );
+	}
 }

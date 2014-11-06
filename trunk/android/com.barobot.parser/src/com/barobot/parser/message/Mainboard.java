@@ -29,6 +29,7 @@ public class Mainboard{
 	private RetReader retReader;
 	private Queue mainQueue = null;
 	private HardwareState state;
+	public long last_response = 0l;
 
 	public Mainboard( HardwareState state ) {
 		this.state			= state;
@@ -36,6 +37,7 @@ public class Mainboard{
 		this.addGlobalModifier( "^([0-9][0-9]),", "1$1," );	// add 1 if command num < 100
 		this.addGlobalModifier( "^RR", "R" );			// RR => R
 	}
+
 	public synchronized void read(String in) {
 	//	String s1 = in;
 
@@ -62,6 +64,8 @@ public class Mainboard{
 		if("".equals(command)){
 			return;
 		}	
+		last_response = Decoder.getTimestamp();
+
 	//	Initiator.logger.i("input command: " , command);
 	//	History_item hi = new History_item( command, History_item.INPUT );	
 	//	new Thread( new Runnable(){		// geto out of the serial port thread

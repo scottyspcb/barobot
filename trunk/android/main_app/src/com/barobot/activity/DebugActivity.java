@@ -1,6 +1,5 @@
 package com.barobot.activity;
 
-import java.util.HashMap;
 import java.util.Locale;
 import java.util.Vector;
 
@@ -26,8 +25,6 @@ import com.barobot.debug.DebugTabDevices;
 import com.barobot.debug.DebugTabGraph;
 import com.barobot.debug.DebugTabLeds;
 import com.barobot.debug.DebugTabLog;
-import com.barobot.hardware.Arduino;
-import com.barobot.hardware.devices.BarobotConnector;
 
 public class DebugActivity extends FragmentActivity implements	ActionBar.TabListener {
 	private static DebugActivity instance;
@@ -218,19 +215,6 @@ public class DebugActivity extends FragmentActivity implements	ActionBar.TabList
 			return null;
 		}
 	}
-
-	
-	private static String[] list = {
-		"LENGTHX",
-		"HALLX",
-		"LAST_WEIGHT",
-		"TEMPERATURE",
-		"HALLY",
-		"POSX",
-		"POSY",
-		"POSZ",
-		"ROBOT_ID",
-	};
 	
 	public void update(String name, String value) {
 		DebugTabCommands.updateValue(name, value);	

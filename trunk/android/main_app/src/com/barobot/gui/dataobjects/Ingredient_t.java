@@ -1,15 +1,11 @@
 package com.barobot.gui.dataobjects;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.orman.mapper.Model;
 import org.orman.mapper.annotation.Entity;
 import org.orman.mapper.annotation.ManyToOne;
 import org.orman.mapper.annotation.PrimaryKey;
-
-import com.barobot.gui.utils.LangTool;
 
 @Entity
 public class Ingredient_t extends Model<Ingredient_t>{

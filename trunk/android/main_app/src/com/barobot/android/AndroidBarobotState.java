@@ -6,25 +6,18 @@ import java.util.Map;
 
 import org.orman.dbms.ResultList;
 import org.orman.dbms.ResultList.ResultRow;
-import org.orman.mapper.Model;
-import org.orman.mapper.ModelQuery;
-import org.orman.sql.C;
 import org.orman.sql.Query;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.widget.Spinner;
 
-import com.barobot.R;
 import com.barobot.activity.DebugActivity;
 import com.barobot.common.Initiator;
 import com.barobot.common.constant.Constant;
 import com.barobot.common.interfaces.HardwareState;
 import com.barobot.gui.database.BarobotData;
 import com.barobot.gui.dataobjects.Engine;
-import com.barobot.gui.dataobjects.Robot;
-import com.barobot.gui.dataobjects.Slot;
 import com.barobot.other.Android;
 import com.barobot.parser.utils.Decoder;
 
@@ -32,24 +25,24 @@ public class AndroidBarobotState implements HardwareState{
 	private SharedPreferences.Editor config_editor;			// config systemu android
 	private SharedPreferences myPrefs;
 	private int robot_id = 0;
-	boolean data_ready = false;
-
+//	private boolean data_ready = false;
 	private static String[] notPersistant = {
 		"POSX",
 		"POSY",
 		"POSZ",
-		"X_GLOBAL_MIN",
-		"X_GLOBAL_MAX",
 		"POS_START_X",
-		"POS_START_Y",
 		"NEUTRAL_POS_Y",
 		"NEUTRAL_POS_Z",
-		"MIN_WEIGHT"
+		"TEMPERATURE",
+		"ARDUINO_VERSION",
+		"MIN_WEIGHT",
+		"ONCE_PER_APP_START",
+		"ONCE_PER_ROBOT_START",
 	};
 	public AndroidBarobotState( Activity application ){
 		myPrefs			= application.getSharedPreferences(Constant.SETTINGS_TAG, Context.MODE_PRIVATE);
 		config_editor	= myPrefs.edit();
-		data_ready		= true;
+	//	data_ready		= true;
 	}
 	@Override
 	public int getInt( String name, int def ){
@@ -109,7 +102,7 @@ public class AndroidBarobotState implements HardwareState{
 	//		Initiator.logger.i("StartOrmanMapping","results: "+ rc); 
 			for(int i=0;i<rc;i++){
 				ResultRow rr = res.getResultRow(i);
-				String aa = (String) rr.getColumn("id");
+		//		String aa = (String) rr.getColumn("id");
 				String tr = (String) rr.getColumn("config_name");
 				String tv = (String) rr.getColumn("value");
 				config_editor.putString(tr, tv);

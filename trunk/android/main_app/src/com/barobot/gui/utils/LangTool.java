@@ -3,16 +3,12 @@ package com.barobot.gui.utils;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.orman.mapper.Model;
 import org.orman.mapper.ModelQuery;
 import org.orman.sql.C;
 import org.orman.sql.Query;
-
 import android.util.Log;
-
 import com.barobot.common.Initiator;
-import com.barobot.common.constant.Constant;
 import com.barobot.gui.dataobjects.Language;
 import com.barobot.gui.dataobjects.Translated_name;
 import com.barobot.hardware.Arduino;

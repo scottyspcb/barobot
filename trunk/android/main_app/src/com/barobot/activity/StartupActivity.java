@@ -1,16 +1,9 @@
 package com.barobot.activity;
 
 import java.util.Locale;
-import java.util.Timer;
-import java.util.TimerTask;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.os.Bundle;
-import android.os.Handler;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -31,15 +24,15 @@ public class StartupActivity extends BarobotMain{
 		if( BarobotMain.canStart ){
 	        requestWindowFeature(Window.FEATURE_NO_TITLE);
 	        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+	//        getWindow().addFlags(WindowManager.LayoutParams.PREVENT_POWER_KEY);
 			setContentView(R.layout.activity_startup);
 			Engine.GetInstance().getRecipes();
 			String langCode = Locale.getDefault().getLanguage();	// i.e. "pl"
-			//Log.i("readLangId1", Locale.getDefault().getDisplayLanguage());
 			LangTool.setLanguage(langCode);
 			setFullScreen();
 		 }
 	}
-	
+
 	@Override
 	protected void onResume() {
 		super.onResume();
@@ -47,7 +40,7 @@ public class StartupActivity extends BarobotMain{
 			setFullScreen();
 		}
 	}
-	
+
 	@Override
 	protected void onPause() {
 		super.onPause();
@@ -98,12 +91,14 @@ public class StartupActivity extends BarobotMain{
 			case R.id.lang_en:
 				langCode = "en";
 				break;
+			default:
+				langCode = "en";
+				break;
 		}
 		BarobotMain.getInstance().changeLanguage(langCode);
 		setContentView(R.layout.activity_startup);	//reload
 		Log.i("translateName2 ", LangTool.translateName(2, "type", "aa" ));
 	}
-
 
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -117,24 +112,14 @@ public class StartupActivity extends BarobotMain{
 			barobot.main_queue.unlock();
 			return true;
 		}
+		if (event.getKeyCode() == KeyEvent.KEYCODE_POWER) {
+			Log.i("onKeyDown", "KEYCODE_POWER");
+	        return true;
+	    }
+		if (keyCode == KeyEvent.KEYCODE_POWER) {
+			Log.i("onKeyDown", "KEYCODE_POWER");
+	        return true;
+	    }		
 		return super.onKeyDown(keyCode, event);
 	}
-
-/*
- 	@Override
-	public void onBackPressed() {
-		new AlertDialog.Builder(this)
-				.setIcon(android.R.drawable.ic_dialog_alert)
-				.setTitle("Koniec?")
-				.setMessage(
-						"Czy na pewno zamknąć aplikację i przerwać pracę robota?")
-				.setPositiveButton("Yes",
-						new DialogInterface.OnClickListener() {
-							@Override
-							public void onClick(DialogInterface dialog,
-									int which) {
-								finish();
-							}
-						}).setNegativeButton("No", null).show();
-	}*/
 }

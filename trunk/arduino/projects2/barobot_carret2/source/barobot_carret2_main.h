@@ -52,7 +52,7 @@ void set_all_leds(unsigned long int color);
 void disableServeNow(byte index);
 void loop();
 void sendVal( byte n );
-void sendStats();
+void sendStats( boolean isStart );
 void setup();
 //---- DO NOT DELETE THIS LINE -- @MM_DECLA_END@---------------------
 // -> ...AND HERE. This space is reserved for automated code generation!

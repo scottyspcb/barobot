@@ -59,8 +59,8 @@ public class AJS {
 		});
     }*/
     public void loadMore(final String url, final String data, final String onready, final String onerror ){
-    	final AJS appi = this;
     	/*
+    	 * final AJS appi = this;
     	RemoteData rd = new RemoteData("element_get");
     	rd.query("page", data);
     	rd.query("element_type", "exhibit");

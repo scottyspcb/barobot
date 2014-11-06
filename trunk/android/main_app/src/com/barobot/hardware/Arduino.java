@@ -5,11 +5,6 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import org.orman.mapper.Model;
-import org.orman.mapper.ModelQuery;
-import org.orman.sql.C;
-import org.orman.sql.Query;
-
 import android.app.Activity;
 
 import com.barobot.AppInvoker;
@@ -20,15 +15,9 @@ import com.barobot.common.interfaces.HardwareState;
 import com.barobot.common.interfaces.serial.SerialEventListener;
 import com.barobot.common.interfaces.serial.SerialInputListener;
 import com.barobot.common.interfaces.serial.Wire;
-import com.barobot.gui.database.BarobotData;
-import com.barobot.gui.dataobjects.Robot;
-import com.barobot.gui.dataobjects.Slot;
 import com.barobot.hardware.devices.BarobotConnector;
-import com.barobot.hardware.devices.BarobotEventListener;
 import com.barobot.hardware.devices.MyRetReader;
-import com.barobot.hardware.serial.BT_wire;
 import com.barobot.hardware.serial.Serial_wire2;
-import com.barobot.parser.Queue;
 import com.barobot.parser.utils.Interval;
 
 public class Arduino{
@@ -38,8 +27,8 @@ public class Arduino{
 	public boolean stop_autoconnect			= false;
 	public SerialInputListener listener;
 	public static boolean firmwareUpload	= false;
-	private AndroidHardwareContext ahc;
-	private Activity mainView;
+	//private AndroidHardwareContext ahc;
+	//private Activity mainView;
 	public BarobotConnector barobot;
 	//public static BarobotConnector barobot;
 	private HardwareState state;
@@ -47,12 +36,9 @@ public class Arduino{
 		return instance;
 	}
 	public Arduino(Activity main) {
-		this.state					= new AndroidBarobotState(main);		
-		state.set("show_unknown", 1 );
-		state.set("show_sending", 1 );
-		state.set("show_reading", 1 );
-		this.barobot			= new BarobotConnector( state );
-		instance				= this;
+		this.state		= new AndroidBarobotState(main);
+		this.barobot	= new BarobotConnector( state );
+		instance		= this;
 
 		Interval ii1 = new Interval(new Runnable(){
 			public void run() {
@@ -72,7 +58,7 @@ public class Arduino{
 	}
 
 	public void onStart(Activity mainView) {
-		this.mainView = mainView;
+	//	this.mainView = mainView;
 		if( connection != null ){
 			connection.close();
 			connection = null;
@@ -80,18 +66,10 @@ public class Arduino{
 		connection		= new Serial_wire2( mainView );
 		connection.init();
 		connection.setSerialEventListener( new SerialEventListener() {
-			boolean firstTime = true;
 			@Override
 			public void onConnect() {
 				barobot.state.set( "STAT2", barobot.state.getInt( "STAT2", 0 ) + 1 );				// serial start
-				if(firstTime){
-					AppInvoker.getInstance().onConnected(barobot.main_queue);
-					firstTime = false;
-				}else{
-					Queue mq = barobot.main_queue;
-					mq.add( "\n", false );	// clean up input
-					mq.add( "\n", false );
-				}
+				barobot.onConnected(barobot.main_queue, false );
 			}
 			@Override
 			public void onClose() {
@@ -104,12 +82,10 @@ public class Arduino{
 		listener				= barobot.willReadFrom( connection );
 		barobot.willWriteThrough( connection );
 	//		prepareDebugConnection();
-	//	ahc = new AndroidHardwareContext( barobot, state );
-		BarobotEventListener bel = new AndroidEventListener( barobot );
-
-		MyRetReader mrr			= new MyRetReader( bel, barobot );
+		MyRetReader mrr			= new MyRetReader( barobot );
 		barobot.mb.setRetReader( mrr );
 	}
+	/*
     private void prepareDebugConnection() {
 		SerialInputListener btl = new SerialInputListener() {
 		    @Override
@@ -149,7 +125,7 @@ public class Arduino{
       //  	this.runTimer(debugConnection);
         }
     //   	this.sendSomething();
-	}
+	}*/
 	public void destroy() {
 		Initiator.logger.i("Arduino.destroy", "--- ON DESTROY1 ---");
 		Initiator.logger.i("Arduino.destroy", "--- ON DESTROY2 ---");
@@ -157,7 +133,7 @@ public class Arduino{
 			@Override
 			public void run() {
 				Initiator.logger.i("Arduino.destroy", "--- ON DESTROY3 ---");
-				ahc					= null;
+		//		ahc					= null;
 				Initiator.logger.i("Arduino.destroy", "--- ON DESTROY4 ---");
 				barobot.destroy();
 				Initiator.logger.i("Arduino.destroy", "--- ON DESTROY5 ---");

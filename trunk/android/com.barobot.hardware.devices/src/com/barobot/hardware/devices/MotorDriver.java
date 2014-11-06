@@ -1,5 +1,6 @@
 package com.barobot.hardware.devices;
 
+import com.barobot.common.Initiator;
 import com.barobot.common.constant.Methods;
 import com.barobot.common.interfaces.HardwareState;
 import com.barobot.parser.Queue;
@@ -21,12 +22,13 @@ public class MotorDriver {
 
 	public MotorDriver(HardwareState state ){
 		this.state = state;
-		this.setM( state.getInt( "MARGINX", 0 ) );
+		this.setMargin( state.getInt( "MARGINX", 0 ) );
 		//this.setSPos( state.getInt( "POSX", 0 ) );
 	}	
-	public void setM( int margin1 ){
+	public void setMargin( int margin1 ){
 		m1 = margin1;
-	//	Initiator.logger.w("set MARGIN X", "" + m1);
+		state.set( "MARGINX", margin1 );
+		Initiator.logger.w("set MARGIN X", "" + m1);
 	}
 	public int getSPos(){
 		return software_pos;

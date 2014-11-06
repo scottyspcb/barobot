@@ -1,9 +1,6 @@
 package com.barobot.audio;
 
-import java.util.LinkedList;
 import java.util.Map;
-import java.util.Queue;
-import java.util.logging.Logger;
 
 import com.barobot.common.Initiator;
 import com.barobot.common.interfaces.OnSignalsDetectedListener;
@@ -14,17 +11,17 @@ public class DetectorThread extends Thread{
 	//private WaveHeader waveHeader;
 	private volatile Thread _thread;
 	public BpmProcessor processor;
-	private Queue<Short> instantBuffer = new LinkedList<Short>();
+//	private Queue<Short> instantBuffer = new LinkedList<Short>();
 	private OnSignalsDetectedListener onSignalsDetectedListener;
 	private int frameByteSize = -1;
-	private int averageLength = -1;
+//	private int averageLength = -1;
 	int channels = 0;
 	public boolean isRunning;
 
 	public DetectorThread(Map<String, Integer> config, SampleAudioRecorder recorder){
 		processor = new BpmProcessor( config );
         this.frameByteSize	= config.get("frameByteSize");
-        this.averageLength	= config.get("averageLength");
+ //       this.averageLength	= config.get("averageLength");
         this.channels		= config.get("channels");
 		this.recorder = recorder;
 	}

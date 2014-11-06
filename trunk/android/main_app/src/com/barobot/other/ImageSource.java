@@ -3,14 +3,12 @@ package com.barobot.other;
 import android.content.Context;
 
 public class ImageSource {
-
-    private static final String SCHEME_DB = "db";
-    private static final String DB_URI_PREFIX = SCHEME_DB + "://";
-
     public ImageSource(Context context) {
     //    super(context);
     }
 /*
+    private static final String SCHEME_DB = "db";
+    private static final String DB_URI_PREFIX = SCHEME_DB + "://";
     protected InputStream getStreamFromOtherSource(String imageUri, Object extra) throws IOException {
         if (imageUri.startsWith(DB_URI_PREFIX)) {
             String path = imageUri.substring(DB_URI_PREFIX.length());

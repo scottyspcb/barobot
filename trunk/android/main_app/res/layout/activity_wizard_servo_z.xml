@@ -1,0 +1,239 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="${relativePackage}.${activityClass}" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/wizard_servoz_bottom_layout"
+        android:layout_alignParentTop="true" >
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="0.50"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/wizard_servoz_textView13"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:text="@string/wizard_servoz_info" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp" >
+
+                <TextView
+                    android:id="@+id/wizard_servoz_textView31"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:paddingLeft="20dp"
+                    android:text="@string/wizard_servoz_current_position"
+                    android:textAppearance="?android:attr/textAppearanceLarge" />
+
+                <TextView
+                    android:id="@+id/wizard_servoz_pos"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="0"
+                    android:textAppearance="?android:attr/textAppearanceLarge" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+                <Button
+                    android:id="@+id/wizard_servoz_up"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:onClick="onOptionsButtonClicked"
+                    android:text="@string/wizard_text_servos_up" />
+
+                <Button
+                    android:id="@+id/wizard_servoz_down"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:onClick="onOptionsButtonClicked"
+                    android:text="@string/wizard_text_servos_down" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp" >
+
+                <TextView
+                    android:id="@+id/wizard_servoz_textView18"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:paddingLeft="20dp"
+                    android:text="@string/wizard_servoz_change_up_position"
+                    android:textAppearance="?android:attr/textAppearanceLarge" />
+                
+                <TextView
+                    android:id="@+id/wizard_servoz_up_pos"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="0"
+                    android:textAppearance="?android:attr/textAppearanceLarge" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/wizard_servoz_textView1t"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="20dp"
+                android:text="@string/wizard_servoz_move_slider_up" />
+
+            <SeekBar
+                android:id="@+id/wizard_servoz_seek_up"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_weight="1"
+                    android:gravity="right"
+                    android:text="@string/wizard_servoz_lower"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_weight="1"
+                    android:gravity="left"
+                    android:text="@string/wizard_servoz_higher"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp" >
+
+                <TextView
+                    android:id="@+id/wizard_servoz_textView29"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:paddingLeft="20dp"
+                    android:text="@string/wizard_servoz_change_down_position"
+                    android:textAppearance="?android:attr/textAppearanceLarge" />
+
+                <TextView
+                    android:id="@+id/wizard_servoz_down_pos"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="0"
+                    android:textAppearance="?android:attr/textAppearanceLarge" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/wizard_servoz_textView28"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="20dp"
+                android:text="@string/wizard_servoz_move_down" />
+
+            <SeekBar
+                android:id="@+id/wizard_servoz_seek_down"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_weight="1"
+                    android:gravity="right"
+                    android:text="@string/wizard_servoz_lower"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_weight="1"
+                    android:gravity="left"
+                    android:text="@string/wizard_servoz_higher"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textSize="12sp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/wizard_servoz_imageView16"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:contentDescription="@string/wizard_servoz_howto_img"
+            android:src="@drawable/ic_launcher" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/wizard_servoz_bottom_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true" >
+
+        <Button
+            android:id="@+id/wizard_servoz_prev"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onOptionsButtonClicked"
+            android:text="@string/wizard_previous"
+            android:textSize="40sp" />
+
+        <Button
+            android:id="@+id/wizard_servoz_close"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onOptionsButtonClicked"
+            android:text="@string/wizard_main_menu"
+            android:textSize="40sp" />
+
+        <Button
+            android:id="@+id/wizard_servoz_next"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:layout_weight="0.10"
+            android:onClick="onOptionsButtonClicked"
+            android:text="@string/wizard_save_and_next"
+            android:textSize="40sp" />
+    </LinearLayout>
+
+</RelativeLayout>

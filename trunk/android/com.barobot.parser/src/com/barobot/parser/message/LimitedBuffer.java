@@ -2,8 +2,6 @@ package com.barobot.parser.message;
 
 import java.util.LinkedList;
 
-import com.barobot.common.Initiator;
-
 public class LimitedBuffer<T> {
 	LinkedList<T> stack;
     private int size;

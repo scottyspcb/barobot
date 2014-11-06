@@ -9,9 +9,7 @@ import android.media.MediaRecorder;
 import com.barobot.audio.DetectorThread;
 import com.barobot.common.constant.Pwm;
 import com.barobot.common.interfaces.OnSignalsDetectedListener;
-import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
-import com.barobot.hardware.devices.i2c.Upanel;
 import com.barobot.parser.Queue;
 import com.barobot.parser.message.AsyncMessage;
 import com.barobot.parser.message.Mainboard;
@@ -37,7 +35,7 @@ public class Audio implements OnSignalsDetectedListener{
 				this.name		= "turnoff";
 		//		up				= barobot.i2c.getUpanels();
 				Queue q = new Queue();
-				barobot.turnOffLeds(q);
+				barobot.lightManager.turnOffLeds(q);
 				return q;
 			}
 		} );
@@ -85,7 +83,7 @@ public class Audio implements OnSignalsDetectedListener{
 				return null;
 			}
 		} );
-		barobot.turnOffLeds(barobot.main_queue);
+		barobot.lightManager.turnOffLeds(barobot.main_queue);
 	}
 
 	@Override
@@ -111,10 +109,10 @@ public class Audio implements OnSignalsDetectedListener{
 	//		Initiator.logger.i( this.getClass().getName(), "\t>>>add: " + Math.abs(norm - last)+ "/ "+ norm );
 			float b		= div * 255;
 			b			= Math.min(b, 255);
-			int val1	= (int) b;
+	//		int val1	= (int) b;
 			int val2	= Pwm.linear2log((int) b, 1 );
 			Queue q		= barobot.main_queue;
-			barobot.setAllLeds(q, "44", val2, 0, 0, val2);
+			barobot.lightManager.setAllLeds(q, "44", val2, 0, 0, val2);
 
 			/*
 			final String command1f = ",11," + val2;

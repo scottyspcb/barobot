@@ -1,6 +1,5 @@
 package com.barobot.other;
 
-import java.io.File;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -9,7 +8,6 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.DialogInterface.OnDismissListener;
 import android.net.Uri;
 import android.os.Environment;
 import android.os.Handler;
@@ -133,7 +131,7 @@ public class UpdateManager{
 	}
 */
 
-	public static void checkNewVersion( final Activity c) {
+	public static void checkNewVersion( final Activity c, final boolean alertResult) {
 		InternetHelpers.downloadNewestVersionNumber( new OnDownloadReadyRunnable() {
 			private String res;
 			public void sendSource(String source) {
@@ -144,6 +142,9 @@ public class UpdateManager{
 		//		Initiator.logger.w("update_drinks.checkNewVersion", ""+res );
 				if(res == null){
 					Initiator.logger.e("update_drinks.checkNewVersion", "null" );
+					if(alertResult){
+						Android.alertMessage(c, "Server Response error");
+					}
 				}else{
 					JsonObject jsonObject = JsonObject.readFrom( res );
 					if( res.length()> 20 && jsonObject.isObject()){
@@ -168,21 +169,27 @@ public class UpdateManager{
 								url = Constant.android_app_beta;
 							}
 							openInBrowser( c, url );
-						}
-						if( newest_arduino_version > barobot.state.getInt("ARDUINO_VERSION", 0) ){
+
+						}else if( newest_arduino_version > barobot.state.getInt("ARDUINO_VERSION", 0) ){
 							downloadAndBurnFirmware( c, barobot.use_beta, false );
-						}						
+						}else{
+							if(alertResult){
+								Android.alertMessage(c, "Your version " + newest_android_version + ".0 is up to date.");
+							}
+						}
 						if( newest_database_version > barobot.state.getInt("ARDUINO_VERSION", 0 ) ){
 				//			downloadAndUseDatabase( c, barobot.use_beta );
 						}
 					}else{
 						Initiator.logger.e("update_drinks.checkNewVersion", "error: "+ res );
+						if(alertResult){
+							Android.alertMessage(c, "Server Response error 32");
+						}
 					}
 				}
 			}
 			@Override
 			public void sendProgress(int value) {
-				
 			}
 		});
 	}
@@ -250,7 +257,7 @@ public class UpdateManager{
 
 		final BarobotConnector barobot	= Arduino.getInstance().barobot;
 		Log_start ls 			= new Log_start();
-		ls.datetime				= Android.getTimestamp() ;
+		ls.datetime				= Decoder.getTimestamp() ;
 		ls.start_type			= "fu";
 		ls.robot_id				= barobot.getRobotId();
 		ls.language				= barobot.state.get("LANG", "pl" );
@@ -328,7 +335,7 @@ public class UpdateManager{
 		final IspOverSerial mSerial		= new IspOverSerial(connection);
 		final Uploader  ispUploader		= new Uploader();
 
-		barobot.setAllLeds(q, "11", 254, 254, 0, 0);
+		barobot.lightManager.setAllLeds(q, "11", 254, 254, 0, 0);
 		Arduino.firmwareUpload			= true;
 
         q.add( new AsyncMessage( true ) {		// download new file
@@ -427,7 +434,7 @@ public class UpdateManager{
 			}
 		});
 		q.addWait( 500 );
-		q.add( "PING", "PONG" );
+		q.add( "PING", "RPONG" );
 		q.add( "Q00ff0000", true );			// set red
 		q.addWait( 500 );
 		q.add( "Q000000ff", true );			// set blue
@@ -450,7 +457,7 @@ public class UpdateManager{
 		});
 		q.add( "Q00ffffff", true );		// set white
 		barobot.readHardwareRobotId(q);
-		barobot.doHoming(q, true);
+//		barobot.doHoming(q, true);
 		q.add( "Q00112211", true );				// set green
 		q.addWait( 500 );
 		q.add( "Q00115511", true );				// set green
@@ -497,7 +504,7 @@ public class UpdateManager{
 	public static void alertOk( final Activity c ) {
 		BarobotMain.getInstance().runOnUiThread(new Runnable() {
 			  public void run() {
-				  new AlertDialog.Builder(c).setTitle("Message").setMessage("We have pleasure to inform that operation was completed successfully.")
+				  new AlertDialog.Builder(c).setTitle("Message").setMessage("It is pleasure to inform that operation was completed successfully.")
 				    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
 				        public void onClick(DialogInterface dialog, int which) { 
 				        }
@@ -509,19 +516,6 @@ public class UpdateManager{
 	
 	
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 
 	
 	public static void update_firmware_manual_reset(final Activity c, boolean use_beta, String url) {
@@ -530,7 +524,7 @@ public class UpdateManager{
 		   public void run() {
 				barProgressDialog	= new ProgressDialog(c);
 				barProgressDialog.setTitle("Uploading firmware...");
-				barProgressDialog.setMessage("Uploading in progress. Don't touch Barobot. Don't unplug anything before done.");
+				barProgressDialog.setMessage("Press RESET button on arduino or turn OFF an ON Barobot.");
 				barProgressDialog.setProgressStyle(barProgressDialog.STYLE_HORIZONTAL);
 				barProgressDialog.setProgress(0);
 				barProgressDialog.setMax(100);
@@ -554,13 +548,14 @@ public class UpdateManager{
 			public void setProgress( final int value ) {
 	        	updateBarHandler.post(new Runnable() {
                     public void run() {
+                    	barProgressDialog.setMessage("Uploading in progress. Don't touch Barobot. Don't unplug anything before done.");
                     	barProgressDialog.setProgress(value);
                     }
                 });
 			}
 			private void afterReady(Mainboard dev, Queue queue) {
 				q.addWait( 1000 );
-				q.add( "PING", "PONG" );
+				q.add( "PING", "RPONG" );
 				q.add( "Q00ff0000", true );		// set red
 				q.addWait( 1000 );
 				q.add( "Q000000ff", true );		// set blue
@@ -583,7 +578,7 @@ public class UpdateManager{
 				});
 				q.add( "Q00ffffff", true );		// set white
 				barobot.readHardwareRobotId(q);
-				barobot.doHoming(q, true);
+		//		barobot.doHoming(q, true);
 				q.add( "Q00112211", true );				// set green
 				q.addWait( 1000 );
 				q.add( "Q00115511", true );				// set green
@@ -628,7 +623,7 @@ public class UpdateManager{
 			}
 			public Queue run(final Mainboard dev, final Queue queue) {
 				final IspOverSerial mSerial		= new IspOverSerial(connection);
-				final AsyncMessage msg			= this;
+			//	final AsyncMessage msg			= this;
 				Uploader  ispUploader			= new Uploader();
 				ispUploader.setCallBack( new UploadCallBack() {	// call back is very important for error handling so do it first
 			        @Override

@@ -20,12 +20,11 @@ import com.barobot.common.interfaces.serial.SerialInputListener;
 import com.barobot.common.interfaces.serial.Wire;
 import com.barobot.hardware.devices.BarobotConnector;
 import com.barobot.hardware.serial.AndroidLogger;
-import com.barobot.hardware.serial.Serial_wire;
 import com.barobot.hardware.serial.Serial_wire2;
+import com.barobot.isp.UploadCallBack;
 import com.barobot.isp.Uploader;
 import com.barobot.isp.enums.Board;
 import com.barobot.isp.enums.UploadErrors;
-import com.barobot.isp.UploadCallBack;
 import com.barobot.parser.Queue;
 
 public class IspActivity extends Activity {
@@ -64,7 +63,8 @@ public class IspActivity extends Activity {
     	connection.setBaud( mSelectedBoard.uploadBaudrate );
    	 	connection.init();
 
-		SerialInputListener listener = barobot.willReadFrom( connection );
+		//SerialInputListener listener = 
+		barobot.willReadFrom( connection );
 		barobot.willWriteThrough( connection );
 
    	 	mSerial			= new IspOverSerial(connection);

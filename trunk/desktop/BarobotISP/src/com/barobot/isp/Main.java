@@ -10,10 +10,7 @@ import com.barobot.common.DesktopLogger;
 import com.barobot.common.Initiator;
 import com.barobot.common.IspSettings;
 import com.barobot.common.interfaces.onReadyListener;
-import com.barobot.common.interfaces.serial.Wire;
 import com.barobot.hardware.devices.LightManager;
-import com.barobot.hardware.devices.UploadFirmware;
-import com.barobot.hardware.devices.i2c.Upanel;
 import com.barobot.parser.Queue;
 import com.barobot.parser.utils.CopyStream;
 
@@ -57,7 +54,7 @@ public class Main implements onReadyListener{
 		Macro mm				= new Macro();
 		MetaRendering mr		= new MetaRendering();
 		Queue q					= hw.getQueue();
-		LightManager lm			= new LightManager();
+		LightManager lm			= hw.barobot.lightManager;
 		hw.connectIfDisconnected();
 		mr.createContstans();
 	//	hw.barobot.main_queue.add("X2000", false);

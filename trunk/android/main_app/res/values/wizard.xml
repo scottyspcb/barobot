@@ -6,24 +6,89 @@
     <string name="wizard_lang_ru">русский</string>
     <string name="wizard_lang_pl">Polski</string>
     <string name="wizard_lang_en">English</string>
-    
+
     
   	<string name="wizard_text_0">Start wizard</string>    
-    <string name="wizard_text_1">1. Power</string>    
-    <string name="wizard_text_2">2. Internal cable</string>
-    <string name="wizard_text_3">3. Firmware</string>  
-    <string name="wizard_text_4">4. Tablet connection</string>  
-    <string name="wizard_text_5">5. LED</string>  
-    <string name="wizard_text_6">6. Left-right movement</string>  
-    <string name="wizard_text_7">7. Left-right magnets</string>  
+    <string name="wizard_text_1">1. Power</string>
+    <string name="wizard_text_2">2. Software</string>  
+    <string name="wizard_text_3">3. Sensors</string>
+    <string name="wizard_text_4">4. Up-down movement</string>  
+    <string name="wizard_text_5">5. Front-back movement</string>
+    <string name="wizard_text_6">6. Left-right movement</string>
+    <string name="wizard_text_7">7. Weight sensor</string>  
     <string name="wizard_text_8">8. Left-right calibration</string>  
+    
+    
     <string name="wizard_text_9">9. Front - back movement</string>  
     <string name="wizard_text_10">10. Front - back  magnets</string>  
     <string name="wizard_text_11">11. Front - back calibration</string>  
-    <string name="wizard_text_12">12. Top-down movement</string>  
+    <string name="wizard_text_12">7. Left-right magnets</string>  
+    
     <string name="wizard_text_13">13. Top-down calibration</string>  
-    <string name="wizard_text_14">14. Weight sensor</string>  
+    <string name="wizard_text_14">6. Left-right movement</string>  
     <string name="wizard_text_15">15. Pouring</string>      
 
+    
+    <string name="wizard_text_servos_up">Go UP</string>
+    <string name="wizard_text_servos_down">Go DOWN</string>
+    <string name="wizard_text_servos_front">Go FRONT</string>
+    <string name="wizard_text_servos_back">Go BACK</string>
+
+    <string name="wizard_text_servos_left">LEFT</string>
+    <string name="wizard_text_servos_right">RIGHT</string>
+
+    <string name="wizard_text_servos_z_save">Save position</string>
+    <string name="wizard_text_servos_y_save">Save position</string>
+    
+
+    <string name="wizard_text_power_restart">Please restart the Barobot Application. It it doesn\'t work please restart tablet.</string>
+    <string name="wizard_text_replug">Unplug USB cable from tablet and plug it back.</string>
+    
+    <string name="wizard_text_plug_dc">Connect Barobot to the power supply and switch it ON. Connect DC wire to tablet.</string>
+    <string name="wizard_text_turn_on">Connect USB-mini USB adapter (host adapter) to tablet and to Barobot</string>
+    <string name="wizard_text_connect_wifi">Connect tablet to your local WiFi. Slide down right corner and select WiFi logo to show more options.</string>
+
+    <string name="wizard_previous">Previous</string>
+    <string name="wizard_main_menu">Main menu</string>
+    <string name="wizard_save_and_next">Save and Next</string>
+    <string name="wizard_refresh">Refresh</string>
+    <string name="wizard_next">Next</string>
+    <string name="wizard_servoy_more_back">more back &gt;</string>
+    <string name="wizard_servoy_more_front">&lt; more front</string>
+    <string name="wizard_servoy_change_front_position">Change front position</string>
+    <string name="wizard_servoy_current_position">Current position</string>
+    <string name="wizard_servoy_change_back_position">Change back position</string>
+    <string name="wizard_servoy_move_slider_back">Move slider to calibrate servo in back position</string>
+    <string name="wizard_servoy_move_slider_front">Move slider to calibrate servo in front position</string>
+    <string name="wizard_servoy_info">Adjust front and rear positions. Robot should touch edges gently. Loud banging means the position is too far. Poor alignment can cause premature damage of the engines. If something goes realy wrong just turn robot OFF and remove the obstacle..</string>
+    <string name="wizard_servoz_info">Move the carriage so that is not under any of the dispensers, and then check the upper and lower position match with the picture. Poor alignment can cause dispensers are not pressed hard enough or the carriage will hook them during movement.</string>
+    <string name="wizard_servoz_move_slider_up">Move slider to calibrate servo in UP position</string>
+    <string name="wizard_servoz_move_down">Move slider to calibrate servo in DOWN position</string>
+   	<string name="wizard_servoz_change_up_position">Change UP position</string>
+    <string name="wizard_servoz_change_down_position">Change DOWN position</string>
+
+    <string name="wizard_weight_remove_glass_tray">Please remove Glass Tray and press measure button:</string>
+    <string name="wizard_weight_measure_without">Measure without Glass Tray</string>
+    <string name="wizard_weight_put_glass_tray">Please put the Glass Tray back and press measure button:</string>
+    <string name="wizard_weight_measure_with">Measure with Glass Tray</string>
+    <string name="wizard_weight_current_value">Current value</string>
+    <string name="wizard_weight_current_weight">Current weight</string>
+    <string name="wizard_servoz_current_position">Current position</string>
+    <string name="wizard_servoz_lower">&lt; lower</string>
+    <string name="wizard_servoz_higher">higher &gt;</string>
+    <string name="wizard_servoz_howto_img">Howto img</string>
+    <string name="wizard_servoy_howto_img">Howto img</string>
+    <string name="wizard_save_and_close">Save settings and close</string>
+    <string name="wizard_calibration_info">"Left-right calibration: Barobot will move Carriage from left to right and collect data from HALL X sensor. Green color indicates that dispenser above was founded. "</string>
+    <string name="wizard_firmware_info">If new version is available please download it and install. WiFi connection is required.</string>
+    <string name="wizard_firmware_check_button_text">Check for software updates</string>
+    <string name="wizard_firmware_check_upload_button_text">Upload firmware</string>
+    <string name="wizard_firmware_check_manual_button_text">Manual Upload (emergency only)</string>
+    <string name="wizard_firmware_manual_options_info">Manual options (if something went wrong)</string>
+    <string name="wizard_servos_info">Now please check Stepper X (left - right movement)</string>
+    <string name="wizard_servos_solution">If something goes wrong just turn robot OFF using power switch and remove obstacles, check stepper, wirings and motor driver on mainboard.</string>
+
+    
+    
     
 </resources>

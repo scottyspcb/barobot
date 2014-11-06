@@ -5,10 +5,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Map;
 
 import android.app.Activity;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.res.Configuration;
 import android.os.Environment;
 import android.os.Handler;
 import android.util.Log;
@@ -24,7 +26,7 @@ import com.barobot.hardware.devices.BarobotConnector;
 import com.barobot.hardware.serial.AndroidLogger;
 import com.barobot.other.Android;
 import com.barobot.other.CameraManager;
-import com.barobot.parser.Queue;
+import com.barobot.parser.utils.Decoder;
 import com.barobot.parser.utils.Interval;
 import com.barobot.sofa.route.SofaRouter;
 import com.barobot.web.server.SofaServer;
@@ -35,9 +37,9 @@ public class AppInvoker {
 	public CameraManager cm;
     public ArrayList<Interval> inters = new ArrayList<Interval>();
 	private static Arduino arduino;
+	SofaRouter sr = null;
 	public static Map<String, Object> container =  new HashMap<String, Object>();
-
-	SofaServer ss =null; 
+	SofaServer ss =null;
 	static boolean isCreated = false;
 
 	public static AppInvoker getInstance() {
@@ -57,7 +59,7 @@ public class AppInvoker {
 			    public void run() 
 			    {
 			    	try {
-						SofaRouter sr = new SofaRouter();
+						sr = new SofaRouter();
 						ss = SofaServer.getInstance();
 						ss.setBaseContext(main.getBaseContext());
 						ss.addRouter( sr );
@@ -72,11 +74,11 @@ public class AppInvoker {
 			arduino			= new Arduino( main );
 			arduino.onStart(main);
 
-			doOnlyOnce(arduino.barobot.state);
+			doOnlyOnce(arduino.barobot.state, main);
 			Engine.createInstance(main);
 
 			BarobotConnector barobot = arduino.barobot;
-			if(barobot.getRobotId() > 0 ){			// check exists in db
+			if(barobot.getRobotId() > 0 ){
 				Android.createRobot( -1, barobot.getRobotId() );
 			}
 
@@ -85,7 +87,7 @@ public class AppInvoker {
 			BarobotMain.getInstance().changeLanguage(lang);
 
 			Log_start ls 			= new Log_start();
-			ls.datetime				= Android.getTimestamp() ;
+			ls.datetime				= Decoder.getTimestamp() ;
 			ls.start_type			= "app";
 			ls.robot_id				= barobot.getRobotId();
 			ls.language				= barobot.state.get("LANG", "pl" );
@@ -130,8 +132,17 @@ public class AppInvoker {
 	        cm.onDestroy();	
 	//	}
 	}
-	private void doOnlyOnce(HardwareState state) throws StartupException {
+	private void doOnlyOnce(HardwareState state, Activity main2) throws StartupException {
 		Initiator.logger.i("AppInvoker.doOnlyOnce", "value:" +state.getInt("INIT", 0 ));
+
+		Locale locale = new Locale("de");
+		Locale.setDefault(locale);
+		Configuration config = new Configuration();
+		config.locale = locale;
+		main.getApplicationContext().getResources().updateConfiguration(config, null);
+
+		Initiator.logger.i( "doOnlyOnce", "doOnlyOnce" );
+
 		if(state.getInt("INIT", 0 ) < Constant.ANDROID_APP_VERSION ){
 			File dir = new File(Environment.getExternalStorageDirectory(), "Barobot");
 			if (!dir.exists()) {
@@ -153,36 +164,14 @@ public class AppInvoker {
 				Initiator.logger.w("AppInvoker.doOnlyOnce", "NameNotFoundException", e1);
 				throw new StartupException( "AppInvoker.doOnlyOnce", e1 );
 			}
-		}
-	}
-
-	public void onConnected(Queue mq) {
-		BarobotConnector barobot = Arduino.getInstance().barobot;
-		mq.add( "\n", false );	// clean up input
-		mq.add( "\n", false );
-//		mq.unlock();
-		barobot.disabley( mq );
-		barobot.disablez(mq);
-		mq.add("DX", true);
-		mq.add(Constant.GETXPOS, true);
-		mq.add(Constant.GETYPOS, true);
-		mq.add(Constant.GETZPOS, true);
-
-		if(barobot.ledsReady){
-			if(barobot.newLeds){
-				barobot.setAllLeds(mq, "22", 0, 255, 0, 255);
-			}
-		}else{
-			barobot.scann_leds( mq );
-		}
-		barobot.readHardwareRobotId(mq);
-		barobot.doHoming( mq, false );
-
-		if(barobot.newLeds){
-			barobot.setAllLeds(mq, "22", 255, 255, 204, 221 );
+			Android.createShortcutOnDesktop(main);
+			/*
+			KeyguardManager keyguardManager = (KeyguardManager) main2.getSystemService(Activity.KEYGUARD_SERVICE);
+			KeyguardLock lock = keyguardManager.n.newKeyguardLock(Context.KEYGUARD_SERVICE);
+			lock.disableKeyguard();*/
 		}
 	}
 	public void onDisconnect() {
+		Android.alertMessage( main, "Barobot has been disconnected.");
 	}
-
 }

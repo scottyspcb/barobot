@@ -2,7 +2,8 @@ package com.barobot.common.constant;
 
 public class Constant {
  
-	public static final int ANDROID_APP_VERSION = 4;
+	public static final int ANDROID_APP_VERSION	= 5;
+	public static final int WIZARD_VERSION		= 5;
 
     // Debugging
     public static final String TAG = "BarobotMainApp";
@@ -24,7 +25,7 @@ public class Constant {
 //	public static final String REBOOT = "REBOOT";
 
 //	public static final String PING = "PING";
-//	public static final String PONG = "PONG";
+//	public static final String PONG = "RPONG";
 
 //  public static final int DRIVER_X 		= 4;
 //	public static final int DRIVER_Y 		= 8;
@@ -78,5 +79,7 @@ public class Constant {
 	public static String raport_manager		= "http://barobot.com/synchro/raport_error.php";
 	public static String robot_id_manager	= "http://barobot.com/synchro/init.php";
 	public static String version_index		= "http://barobot.com/synchro/check_version.php";
+
+	public static int glass_try_weight		 = 121;	// glass try weight in g
 
 }

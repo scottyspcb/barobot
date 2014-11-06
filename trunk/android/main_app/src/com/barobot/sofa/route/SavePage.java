@@ -4,10 +4,7 @@ import org.orman.mapper.Model;
 import org.orman.mapper.ModelQuery;
 import org.orman.sql.C;
 
-import android.util.Log;
-
 import com.barobot.gui.dataobjects.Translated_name;
-import com.barobot.gui.dataobjects.Type;
 import com.barobot.gui.utils.LangTool;
 import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;

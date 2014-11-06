@@ -2,24 +2,17 @@ package com.barobot.sofa.route;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
 import com.barobot.common.Initiator;
-import com.barobot.common.constant.Constant;
 import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
-import com.barobot.hardware.devices.i2c.Upanel;
 import com.barobot.parser.Queue;
-import com.barobot.parser.message.AsyncMessage;
-import com.barobot.parser.message.Mainboard;
 import com.barobot.parser.utils.Decoder;
 import com.barobot.web.route.EmptyRoute;
 import com.barobot.web.server.SofaServer;
 import com.x5.template.Chunk;
 import com.x5.template.Theme;
-import com.x5.util.TableData;
 
 import fi.iki.elonen.NanoHTTPD.IHTTPSession;
 import fi.iki.elonen.NanoHTTPD.ResponseException;
@@ -139,8 +132,8 @@ public class ServoTestPageRoute extends EmptyRoute {
 	private void nalej(Map<String, String> parms) {
 		int up		= Decoder.toInt(parms.get("UP_POS") );
 		int dp		= Decoder.toInt(parms.get("DOWN_POS") );
-		int us		= Decoder.toInt(parms.get("UP_SPEED") );
-		int ds		= Decoder.toInt(parms.get("DOWN_SPEED") );
+	//	int us		= Decoder.toInt(parms.get("UP_SPEED") );
+	//	int ds		= Decoder.toInt(parms.get("DOWN_SPEED") );
 
 		int utime	= Decoder.toInt(parms.get("UP_TIME") );
 
@@ -148,10 +141,10 @@ public class ServoTestPageRoute extends EmptyRoute {
 		int lt		= Decoder.toInt(parms.get("LIGHT_TIME") );
 
 		int pp		= Decoder.toInt(parms.get("PAC_POS") );
-		int pus		= Decoder.toInt(parms.get("PAC_UP_SPEED") );
+	//	int pus		= Decoder.toInt(parms.get("PAC_UP_SPEED") );
 		int pwdt	= Decoder.toInt(parms.get("PAC_WAIT_DOWN_TIME") );
 		int pwut	= Decoder.toInt(parms.get("PAC_WAIT_UP_TIME") );
-		int pds		= Decoder.toInt(parms.get("PAC_DOWN_SPEED") );
+	//	int pds		= Decoder.toInt(parms.get("PAC_DOWN_SPEED") );
 
 		int repeatx	= Decoder.toInt(parms.get("REPEAT_X") );
 		int repeatz	= Decoder.toInt(parms.get("REPEAT_Z") );

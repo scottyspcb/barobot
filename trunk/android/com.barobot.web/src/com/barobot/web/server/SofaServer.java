@@ -30,7 +30,7 @@ public class SofaServer extends NanoHTTPD {
     private static SofaServer ins;
 	private Theme theme;
 	private AssetManager am;
-	private static boolean inited = false;
+//	private static boolean inited = false;
 
 	public SofaServer(int liport) {
     	super(liport);
@@ -39,7 +39,7 @@ public class SofaServer extends NanoHTTPD {
 		if( ins == null){
 			//int SOFA_SERVER_PORT = state.getInt("SOFA_SERVER_PORT", Constant.SOFA_SERVER_PORT );
 			ins = new SofaServer( Constant.SOFA_SERVER_PORT );
-			inited = true;
+	//		inited = true;
 		}
 		return ins;
 	}
@@ -92,7 +92,7 @@ public class SofaServer extends NanoHTTPD {
 			return new NanoHTTPD.Response(Status.NOT_FOUND, "", "");
 		}else{
 			Response r = null;
-			String mimeType = null;
+		//	String mimeType = null;
 
 			String system_action_res = route.run( uri, this, theme, session);
 			if(system_action_res == null){

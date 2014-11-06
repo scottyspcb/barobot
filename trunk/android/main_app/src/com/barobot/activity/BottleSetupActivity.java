@@ -15,7 +15,7 @@ import android.widget.TextView;
 
 public class BottleSetupActivity extends BarobotMain{
 	private int[] ids;
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);

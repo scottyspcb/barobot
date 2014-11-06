@@ -119,6 +119,15 @@
     <string name="update_no">No</string>
     <string name="title_activity_validator">ValidatorActivity</string>
     <string name="hello_world">Hello world!</string>
-    <string name="title_activity_power">Power</string>
+    <string name="title_activity_power">Power tests</string>
+    <string name="title_activity_sensors">Sensors tests</string>
+    <string name="title_activity_calibration">Calibration</string>
+    <string name="title_activity_servos">Left - right movement test</string>
+    <string name="title_activity_firmware">Software update</string>
+    <string name="title_activity_servo_z">Servo up-down</string>
+    <string name="title_activity_servo_y">Servo front - back</string>
+    <string name="title_activity_weight_sensor">Weigh Sensor Calibration</string>
+    <string name="wizard_other_tests">Other tests</string>
 
 </resources>
+

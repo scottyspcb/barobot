@@ -6,7 +6,6 @@ import android.widget.ToggleButton;
 import com.barobot.R;
 import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
-import com.barobot.parser.Queue;
 
 public class button_toggle implements OnClickListener{
 

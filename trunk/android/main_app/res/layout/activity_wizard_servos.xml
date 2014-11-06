@@ -1,0 +1,91 @@
+<RelativeLayout xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="${relativePackage}.${activityClass}" xmlns:android="http://schemas.android.com/apk/res/android">
+    
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/wizard_servos_bottom_layout"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:orientation="vertical"
+        android:paddingLeft="10dp"
+        android:paddingTop="10dp" >
+
+        <TextView
+            android:id="@+id/textView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/wizard_servos_info" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <Button
+                android:id="@+id/wizard_servos_left"
+                style="@style/ValidatorMenuButton"
+                android:onClick="onOptionsButtonClicked"
+                android:text="@string/wizard_text_servos_left" />
+
+            <Button
+                android:id="@+id/wizard_servos_right"
+                style="@style/ValidatorMenuButton"
+                android:onClick="onOptionsButtonClicked"
+                android:text="@string/wizard_text_servos_right" />
+            <TextView
+                android:id="@+id/wizard_servos_x_pos"
+                android:layout_width="400dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="0"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
+        </LinearLayout>
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/wizard_servos_solution" />
+
+    </LinearLayout>
+    
+
+    <LinearLayout
+        android:id="@+id/wizard_servos_bottom_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true">
+		<Button
+            android:id="@+id/wizard_servos_prev"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+             android:text="@string/wizard_previous"
+            android:onClick="onOptionsButtonClicked"
+            android:textSize="40sp" />
+
+        <Button
+            android:id="@+id/wizard_servos_close"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/wizard_main_menu"
+            android:onClick="onOptionsButtonClicked"
+            android:textSize="40sp" />
+
+		
+
+        <Button
+            android:id="@+id/wizard_servos_next"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:layout_weight="0.10"
+            android:onClick="onOptionsButtonClicked"
+            android:text="@string/wizard_next"
+            android:textSize="40sp" />
+
+    </LinearLayout>
+
+</RelativeLayout>

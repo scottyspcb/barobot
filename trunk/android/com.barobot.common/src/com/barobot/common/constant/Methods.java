@@ -54,7 +54,7 @@ public class Methods {
 	public static final String METHOD_ERROR	= "E";
 	public static final String METHOD_SET_X_ENABLE	= "EX";
 	public static final String METHOD_POING	= "POING";
-	public static final String METHOD_PONG	= "PONG";
+	public static final String METHOD_PONG	= "RPONG";
 	public static final String METHOD_PROG	= "PROG";
 	public static final String METHOD_PROGN	= "PROGN";
 	public static final String METHOD_RESET_BUS	= "RB";

@@ -8,16 +8,16 @@ import android.os.BatteryManager;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
-import android.view.WindowManager;
 
 import com.barobot.AppInvoker;
 import com.barobot.BarobotMain;
-import com.barobot.R;
+import com.barobot.common.Initiator;
+import com.barobot.hardware.Arduino;
+import com.barobot.hardware.devices.BarobotConnector;
 import com.barobot.other.Android;
 
 public class BarobotActivity extends BarobotMain {
 	private WakeLock wakeLock;
-	private static final String WAKE_TAG = "com.blundell.tut.ui.phone.ScreenOnWakeLockActivity.WAKE_LOCK_TAG";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -25,37 +25,78 @@ public class BarobotActivity extends BarobotMain {
 			savedInstanceState = getIntent().getExtras().getBundle("bundle");
 		}
 		super.onCreate(savedInstanceState);
-		Android.createShortcutOnDesktop(this);
 
-		PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
-	    wakeLock = powerManager.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, WAKE_TAG );
+	//	PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
+	//    wakeLock = powerManager.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, WAKE_TAG );
+
+		PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
+	    wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "no sleep");
 
 		BroadcastReceiver receiver = new BroadcastReceiver() {
 	        public void onReceive(Context context, Intent intent) {
 	            int plugged = intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1);
-	            if (plugged == BatteryManager.BATTERY_PLUGGED_AC) {
-	                // on AC power
-	            	
-	            	
-	            	
-	            	
-	            } else if (plugged == BatteryManager.BATTERY_PLUGGED_USB) {
-	                // on USB power
-	            } else if (plugged == 0) {
-	                // on battery power
-	            } else {
-	                // intent didnt include extra info
+	            if (plugged == BatteryManager.BATTERY_PLUGGED_AC) { // on AC power
+	            	setPowerState( true );
+	            } else if (plugged == BatteryManager.BATTERY_PLUGGED_USB) {  // on USB power
+	            	setPowerState( true );
+	            } else if (plugged == 0) {   // on battery power
+	            	setPowerState( false );
+	            } else { // intent didnt include extra info
+	            	Initiator.logger.i( "EXTRA_PLUGGED", "undefined");
 	            }
 	        }
 	    };
+	    setPowerState(Android.isDcConnected(this));
 	    IntentFilter filter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
 	    registerReceiver(receiver, filter);
-        Intent serverIntent = new Intent(this, StartupActivity.class);
+
+	    BroadcastReceiver receiver2 = new BroadcastReceiver() {
+            public void onReceive(Context context, Intent intent) {
+                if (intent.getAction().equals(Intent.ACTION_SCREEN_OFF)) {
+                	Initiator.logger.i( "POWER", "ACTION_SCREEN_OFF");
+                } else if (intent.getAction().equals(Intent.ACTION_SCREEN_ON)) {
+                	Initiator.logger.i( "POWER", "ACTION_SCREEN_ON");
+                }
+            }
+        };
+	    IntentFilter filter2 = new IntentFilter(Intent.ACTION_SCREEN_ON);
+	    filter2.addAction(Intent.ACTION_SCREEN_OFF);
+	    registerReceiver(receiver2, filter2);
+
+	    /*
+	    Intent serverIntent = new Intent(this, StartupActivity.class);
 		serverIntent.putExtra(RecipeListActivity.MODE_NAME, RecipeListActivity.Mode.Normal.ordinal());
 		serverIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+
         int requestCode = 0;
         startActivityForResult(serverIntent,requestCode); 
-	}    
+	     */
+
+		BarobotConnector barobot = Arduino.getInstance().barobot;
+		if(barobot==null || barobot.state.getInt("ROBOT_CAN_MOVE", 0) == 0 ){
+			Intent serverIntent = new Intent(this, ValidatorActivity.class);
+			serverIntent.putExtra(RecipeListActivity.MODE_NAME, RecipeListActivity.Mode.Normal.ordinal());
+			serverIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+			serverIntent.putExtra("BACK_TO_WIZARD", 1 );
+	        int requestCode = 0;
+	        startActivityForResult(serverIntent,requestCode); 
+	    }else{
+	        Intent serverIntent = new Intent(this, StartupActivity.class);
+			serverIntent.putExtra(RecipeListActivity.MODE_NAME, RecipeListActivity.Mode.Normal.ordinal());
+			serverIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+	        int requestCode = 0;
+	        startActivityForResult(serverIntent,requestCode); 
+	    }
+	}
+
+	protected void setPowerState(boolean isPowered) {
+    	Initiator.logger.i( "EXTRA_PLUGGED", isPowered? "dc": "battery");
+		BarobotConnector barobot = Arduino.getInstance().barobot;
+		if(barobot!=null ){
+			barobot.state.set("DC_PLUGGED", isPowered ? 1 : 0 );
+		}
+	}
+
 	@Override
 	protected void onResume() {			// resume this activity
 		super.onResume();
@@ -82,5 +123,4 @@ public class BarobotActivity extends BarobotMain {
 		AppInvoker.getInstance().onDestroy();
 		super.onDestroy();
 	}
-
 }

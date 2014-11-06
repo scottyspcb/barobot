@@ -1,7 +1,5 @@
 package com.barobot.gui.dataobjects;
 
-import android.content.pm.PackageManager.NameNotFoundException;
-
 public class StartupException extends Exception {
 	public String message;
 	private Exception exc;

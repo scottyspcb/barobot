@@ -9,6 +9,7 @@
         android:targetSdkVersion="20" />
 
     <uses-feature android:name="android.hardware.usb.host" />
+
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -21,10 +22,11 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT" />
+    <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
 
     <application
         android:icon="@drawable/app_icon"
-        android:label="@string/app_name" >
+        android:label="@string/app_name" android:allowBackup="true">
         <activity
             android:name=".activity.BarobotActivity"
             android:configChanges="orientation|keyboardHidden"
@@ -33,13 +35,16 @@
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-    			<action android:name="android.intent.action.ACTION_POWER_CONNECTED"/>
-    			<action android:name="android.intent.action.ACTION_POWER_DISCONNECTED"/>
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.ACTION_POWER_CONNECTED" />
+                <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED" />
             </intent-filter>
 
             <meta-data
@@ -63,12 +68,6 @@
             android:configChanges="orientation|keyboardHidden"
             android:label="@string/select_device"
             android:screenOrientation="sensorLandscape" />
-        <activity
-            android:name=".activity.AboutActivity"
-            android:label="@string/title_activity_about"
-            android:screenOrientation="sensorLandscape"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
-        </activity>
         <activity
             android:name=".activity.DebugActivity"
             android:label="@string/title_activity_device_list"
@@ -95,7 +94,7 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.barobot.gui.BarobotActivity" />
-        </activity
+        </activity
         -->
         <activity
             android:name=".activity.ProductActivity"
@@ -132,11 +131,48 @@
         <activity
             android:name=".activity.ValidatorActivity"
             android:label="@string/title_activity_validator"
+            android:screenOrientation="sensorLandscape"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
         </activity>
         <activity
-            android:name=".Power"
+            android:name=".wizard.PowerActivity"
+             android:screenOrientation="sensorLandscape"
             android:label="@string/title_activity_power" >
+        </activity>
+        <activity
+            android:name=".wizard.SensorsActivity"
+             android:screenOrientation="sensorLandscape"
+            android:label="@string/title_activity_sensors" >
+        </activity>
+        <activity
+            android:name=".wizard.CalibrationActivity"
+            android:screenOrientation="sensorLandscape"
+            android:label="@string/title_activity_calibration" >
+        </activity>
+        <activity
+            android:name=".wizard.ServosActivity"
+            android:screenOrientation="sensorLandscape"
+            android:label="@string/title_activity_servos" >
+        </activity>
+        <activity
+            android:name=".wizard.FirmwareActivity"
+            android:screenOrientation="sensorLandscape"
+            android:label="@string/title_activity_firmware" >
+        </activity>
+        <activity
+            android:name=".wizard.ServoZActivity"
+            android:screenOrientation="sensorLandscape"
+            android:label="@string/title_activity_servo_z" >
+        </activity>
+        <activity
+            android:name=".wizard.ServoYActivity"
+            android:screenOrientation="sensorLandscape"
+            android:label="@string/title_activity_servo_y" >
+        </activity>
+        <activity
+            android:name="com.barobot.wizard.WeightSensorActivity"
+             android:screenOrientation="sensorLandscape"
+            android:label="@string/title_activity_weight_sensor" >
         </activity>
     </application>
 

@@ -8,11 +8,11 @@ public class Macro {
 		Queue q = hw.getQueue();
 		hw.connectIfDisconnected();
 		int i = 50;
-		hw.barobot.turnOffLeds(q);
+		hw.barobot.lightManager.turnOffLeds(q);
 		while( i-- >0 ){
-			hw.barobot.setAllLeds(q, "80", 0, 0, 0, 0);
+			hw.barobot.lightManager.setAllLeds(q, "80", 0, 0, 0, 0);
 			q.addWait(5 );
-			hw.barobot.setAllLeds(q, "80", 255, 255, 255, 255);
+			hw.barobot.lightManager.setAllLeds(q, "80", 255, 255, 255, 255);
 		}
 		q.addWaitThread(Main.mt);
 
@@ -26,13 +26,13 @@ public class Macro {
 		Interval ii1 = new Interval(new Runnable(){
 			public void run() {
 				System.out.println("teraz");
-				hw.barobot.setAllLeds(q, "ff", 255, 255, 255, 255);
+				hw.barobot.lightManager.setAllLeds(q, "ff", 255, 255, 255, 255);
 			}});
 		ii1.run(100, 60 * 1000 /bpm );
 		Interval ii2 = new Interval(new Runnable(){
 			public void run() {
 				System.out.println("teraz2");
-				hw.barobot.setAllLeds(q, "ff", 0, 0, 0, 0);
+				hw.barobot.lightManager.setAllLeds(q, "ff", 0, 0, 0, 0);
 			}});
 		ii2.run(200, 60 * 1000 /bpm );
 		q.addWait( 50000 );

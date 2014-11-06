@@ -13,8 +13,6 @@
  	    android:ems="10"
  	    android:inputType="number"
  	    android:textSize="28dp" >
-
-         <requestFocus />
      </EditText>
 
      <Button

@@ -2,18 +2,13 @@ package com.barobot.web.server;
 
 import java.math.BigInteger;
 import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.nio.ByteOrder;
-import java.util.Enumeration;
-
-import com.barobot.common.Initiator;
 
 import android.content.Context;
-import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
-import android.text.format.Formatter;
+
+import com.barobot.common.Initiator;
 
 public class Info {
 
