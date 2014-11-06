@@ -2,26 +2,32 @@ package com.barobot.other;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.RandomAccessFile;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Application;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.AssetManager;
+import android.hardware.Sensor;
+import android.hardware.SensorManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.BatteryManager;
 import android.os.Build;
+import android.os.Debug;
 import android.os.Environment;
 import android.os.PowerManager;
-import android.text.format.Formatter;
 import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
@@ -45,6 +51,8 @@ import com.barobot.gui.dataobjects.Slot;
 import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
 import com.barobot.parser.Queue;
+import com.barobot.parser.message.AsyncMessage;
+import com.barobot.parser.message.Mainboard;
 public class Android {
 	public void powerOff( Context c ){
 		PowerManager powerManager = (PowerManager)c.getSystemService(Context.POWER_SERVICE);
@@ -57,7 +65,24 @@ public class Android {
 			Initiator.logger.appendError(e);
 		}
 	}
-    public static String loadTextFile(InputStream inputStream) throws IOException {
+    public static boolean copy(String src1, String dst1) throws IOException {
+		File src = new File(src1);
+		File dst = new File(dst1);
+	
+		InputStream in = new FileInputStream(src);
+		OutputStream out = new FileOutputStream(dst);
+	
+		// Transfer bytes from in to out
+		byte[] buf = new byte[1024];
+		int len;
+		while ((len = in.read(buf)) > 0) {
+			out.write(buf, 0, len);
+		}
+		in.close();
+		out.close();
+		return true;
+	}
+	public static String loadTextFile(InputStream inputStream) throws IOException {
         ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
         int size = inputStream.available();
         byte[] bytes = new byte[size];
@@ -157,11 +182,11 @@ public class Android {
 	            for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements();) {
 	                InetAddress inetAddress = enumIpAddr.nextElement();
 	                if (!inetAddress.isLoopbackAddress()) {		// wrong:    fe80::2c6:a1ff:fe00:5ed5%wlan0
-	                	String ip = Formatter.formatIpAddress(inetAddress.hashCode());
+	            //    	String ip = Formatter.formatIpAddress(inetAddress.hashCode());
 	                	String address= inetAddress.getHostAddress().toString();
 	                	if( !address.contains("%")){
 	                		res= address;
-		                	Log.e("getLocalIpAddress","log: "+res + " / " + ip + "/" + inetAddress.hashCode());
+		            //    	Log.e("getLocalIpAddress","log: "+res + " / " + ip + "/" + inetAddress.hashCode());
 	                	}
 	                }
 	            }
@@ -173,24 +198,6 @@ public class Android {
 	    return null;
 	}
 
-	public static String getLocalIpAddress2() {
-	    try {
-	        for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
-	            NetworkInterface intf = en.nextElement();
-	            for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements();) {
-	                InetAddress inetAddress = enumIpAddr.nextElement();
-	                if (!inetAddress.isLoopbackAddress()) {
-	                    String ip = Formatter.formatIpAddress(inetAddress.hashCode());
-	                    Log.i("getLocalIpAddress2", "***** IP="+ ip);
-	                    return ip;
-	                }
-	            }
-	        }
-	    } catch (SocketException ex) {
-	        Log.e("getLocalIpAddress2", ex.toString());
-	    }
-	    return null;
-	}
 
 	public static boolean copyAsset( Context ctx, String filename, String dest ) {
 		AssetManager assetManager = ctx.getAssets();
@@ -250,19 +257,6 @@ public class Android {
 	    while((read = in.read(buffer)) != -1){
 	      out.write(buffer, 0, read);
 	    }
-	}
-
-	public static int isOnline( Context c) {
-	    ConnectivityManager cm = (ConnectivityManager) c.getSystemService(Context.CONNECTIVITY_SERVICE);
-	    NetworkInfo netInfo = cm.getActiveNetworkInfo();
-	    if (netInfo != null && netInfo.isConnectedOrConnecting()) {
-	        return netInfo.getType();
-	    }
-	    return -1;
-	}
-	public static long getTimestamp() {
-		java.util.Date date= new java.util.Date();
-		return new java.sql.Timestamp(date.getTime()).getTime();
 	}
 
 	public static void createRobot( int old_robot_id, int new_robot_id){
@@ -329,41 +323,17 @@ public class Android {
 		}
 	}
 
-	public static void createShortcutOnDesktop( Activity act) {
-	    Intent shortcutIntent = new Intent();
-	    shortcutIntent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, Android.getIntentShortcut());
-	    shortcutIntent.putExtra(Intent.EXTRA_SHORTCUT_NAME, "Barobot" );
-	    shortcutIntent.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, Intent.ShortcutIconResource.fromContext(act, R.drawable.app_icon));
-	    shortcutIntent.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
-	    act.sendBroadcast(shortcutIntent);
-	    
-	    
-	   
+	public static void createShortcutOnDesktop( Activity act) {	   
 	    Intent shortcutIntent4 = new Intent(act.getApplicationContext(),BarobotActivity.class);
 	    Intent shortcutIntent2 = new Intent();
 	    shortcutIntent2.putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent4);
-	    shortcutIntent2.putExtra(Intent.EXTRA_SHORTCUT_NAME, "Barobot2" );
+	    shortcutIntent2.putExtra(Intent.EXTRA_SHORTCUT_NAME, "Barobot" );
 	    shortcutIntent2.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, Intent.ShortcutIconResource.fromContext(act, R.drawable.app_icon));
 	    shortcutIntent2.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
 	    act.sendBroadcast(shortcutIntent2);
-	      
-	    
-	    
-	    
 //	    act.finish();
-
 	}
-	private static Intent getIntentShortcut(){       
-	 //   Intent i = new Intent();
-	 //   i.setClassName("com.barobot", ".activity.BarobotActivity");
-	    
-	    Intent i = new Intent("com.barobot.activity.BarobotActivity");
-	    
-	    
-	    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-	    i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-	    return i;
-	}	
+	
 	public static String tttt( Exception e ){
 		String DOUBLE_LINE_SEP = "\n\n";
 		String SINGLE_LINE_SEP = "\n";
@@ -413,9 +383,6 @@ public class Android {
         report.append(SINGLE_LINE_SEP);
         report.append(lineSeperator);
         report.append("--------- Firmware ---------\n\n");
-        report.append("SDK: ");
-        report.append(Build.VERSION.SDK);
-        report.append(SINGLE_LINE_SEP);
         report.append("Release: ");
         report.append(Build.VERSION.RELEASE);
         report.append(SINGLE_LINE_SEP);
@@ -423,21 +390,142 @@ public class Android {
         report.append(Build.VERSION.INCREMENTAL);
         report.append(SINGLE_LINE_SEP);
         report.append(lineSeperator);
-
         return report.toString();
 	}
-	
-	
-	
-	
-	public static boolean isConnected(Context context) {
+
+	public static boolean isDcConnected(Context context) {
         Intent intent = context.registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
         int plugged = intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1);
         return plugged == BatteryManager.BATTERY_PLUGGED_AC || plugged == BatteryManager.BATTERY_PLUGGED_USB;
     }
-	
-	
-	
-	
-	
+
+	public static int isOnline( Context c) {
+	    ConnectivityManager cm = (ConnectivityManager) c.getSystemService(Context.CONNECTIVITY_SERVICE);
+	    NetworkInfo netInfo = cm.getActiveNetworkInfo();
+	    if (netInfo != null && netInfo.isConnectedOrConnecting()) {
+	        return netInfo.getType();
+	    }
+	    return -1;
+	}
+	public static void readTabletTemp(Queue q) {
+		q.add( new AsyncMessage( true ) {
+			@Override	
+			public String getName() {
+				return "check  tablet temp" ;
+			}
+			@Override
+			public Queue run(Mainboard dev, Queue queue) {
+				Application ba = BarobotMain.getInstance().getApplication();
+			    SensorManager mSensorManager = (SensorManager)ba.getSystemService(Context.SENSOR_SERVICE);
+			    Sensor mTemperature = mSensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE );
+			    int power = Math.round(mTemperature.getPower() * 10000);
+				BarobotConnector barobot = Arduino.getInstance().barobot;
+				barobot.state.set("TABLET_TEMPERATURE", power );
+				return null;
+			}
+		} );
+	}
+
+	public static float readCpuUsage() {
+	    try {
+	        RandomAccessFile reader = new RandomAccessFile("/proc/stat", "r");
+	        String load = reader.readLine();
+
+	        String[] toks = load.split(" ");
+
+	        long idle1 = Long.parseLong(toks[4]);
+	        long cpu1 = Long.parseLong(toks[2]) + Long.parseLong(toks[3]) + Long.parseLong(toks[5])
+	              + Long.parseLong(toks[6]) + Long.parseLong(toks[7]) + Long.parseLong(toks[8]);
+
+	        try {
+	            Thread.sleep(360);
+	        } catch (Exception e) {}
+
+	        reader.seek(0);
+	        load = reader.readLine();
+	        reader.close();
+
+	        toks = load.split(" ");
+
+	        long idle2 = Long.parseLong(toks[4]);
+	        long cpu2 = Long.parseLong(toks[2]) + Long.parseLong(toks[3]) + Long.parseLong(toks[5])
+	            + Long.parseLong(toks[6]) + Long.parseLong(toks[7]) + Long.parseLong(toks[8]);
+
+	        return (float)(cpu2 - cpu1) / ((cpu2 + idle2) - (cpu1 + idle1));
+
+	    } catch (IOException ex) {
+	        ex.printStackTrace();
+	    }
+
+	    return 0;
+	}
+	public static int[] readMemUsage() {
+		Debug.MemoryInfo memoryInfo = new Debug.MemoryInfo();
+        Debug.getMemoryInfo(memoryInfo);
+
+        String memMessage = String.format("App Memory: Pss=%.2f MB, Private=%.2f MB, Shared=%.2f MB",
+            memoryInfo.getTotalPss() / 1024.0,
+            memoryInfo.getTotalPrivateDirty() / 1024.0,
+            memoryInfo.getTotalSharedDirty() / 1024.0);
+
+        Log.i("log_tag", memMessage);
+        //Pss, Private,Shared
+		int mem[]	= {memoryInfo.getTotalPss(),memoryInfo.getTotalPrivateDirty(), memoryInfo.getTotalSharedDirty() };
+		return mem;
+	}
+	public static void alertMessage(final Activity activity, final String msg) {
+		BarobotMain.getInstance().runOnUiThread(new Runnable() {
+			  public void run() {
+				  new AlertDialog.Builder(activity).setTitle("Message").setMessage(msg)
+				    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+				        public void onClick(DialogInterface dialog, int which) { 
+				        }
+				    })
+				    .setIcon(android.R.drawable.ic_dialog_alert).show();
+			  }
+			});
+	}
+	public static int checkNewSoftwareVersion(boolean alertResult, Activity act ) {
+		int isOnline = Android.isOnline(act);
+		if(isOnline > -1 ){	// check ne version of firmware and APK
+			final BarobotConnector barobot = Arduino.getInstance().barobot;
+			if( barobot.getRobotId() == 0 ){
+				Queue q = new Queue();
+				barobot.readHardwareRobotId(q);			// check hardware version
+				q.add( new AsyncMessage( true ) {		// when version readed
+					@Override
+					public String getName() {
+						return "Check robot_id";
+					}
+					@Override
+					public Queue run(Mainboard dev, Queue queue) {
+						if( barobot.getRobotId() == 0 && barobot.robot_id_ready ){						// once again
+							int robot_id = UpdateManager.getNewRobotId();		// download new robot_id (init hardware)
+							Initiator.logger.w("onResume", "robot_id" + robot_id);
+							if( robot_id > 0 ){		// save robot_id to android and arduino
+								Queue q = new Queue();
+								barobot.setRobotId( q, robot_id);
+								return q;	// before all other commands currently in queue
+							}
+						}
+						return null;
+					}
+				});
+				barobot.main_queue.add(q);
+			}
+			UpdateManager.checkNewVersion( act, alertResult );
+			return 1;
+		}else{
+			if(alertResult){
+				alertMessage(act, "No connection");
+			}
+			return 0;
+		}
+	} 
+
+	public static void askForTurnOff( Activity act ) {
+		Intent i = new Intent("android.intent.action.ACTION_REQUEST_SHUTDOWN");
+		i.putExtra("android.intent.extra.KEY_CONFIRM", true);
+		act.startActivity(i);
+	}
 }

@@ -4,8 +4,6 @@ import com.barobot.common.Initiator;
 import com.barobot.common.constant.Constant;
 import com.barobot.common.constant.Methods;
 import com.barobot.common.interfaces.HardwareState;
-import com.barobot.hardware.devices.BarobotEventListener;
-import com.barobot.hardware.devices.i2c.Upanel;
 import com.barobot.parser.Queue;
 import com.barobot.parser.interfaces.RetReader;
 import com.barobot.parser.message.AsyncMessage;
@@ -16,14 +14,14 @@ import com.barobot.parser.utils.GlobalMatch;
 public class MyRetReader implements RetReader {
 	private BarobotConnector barobot;
 	private HardwareState state;
-	private BarobotEventListener bel;
+//	private BarobotEventListener bel;
 	private int robot_id_high = 0;
 	boolean checkInput	= false;		// pokazuj logi z analoga
 
-	public MyRetReader( BarobotEventListener bel, BarobotConnector brb ){
+	public MyRetReader(  BarobotConnector brb ){
 		this.barobot	= brb;
 		this.state		= brb.state;
-		this.bel		= bel;
+
 		final MyRetReader mrr	= this;
 		barobot.mb.addGlobalRegex( new GlobalMatch(){
 			@Override
@@ -102,8 +100,7 @@ public class MyRetReader implements RetReader {
 				if(parts[2] == Constant.MAINBOARD_DEVICE_TYPE ){
 					decoded += "/MAINBOARD_DEVICE_TYPE";
 					int cx		= barobot.driver_x.getSPos();
-					barobot.driver_x.setM(cx);	// ostatnia znana pozycja jest marginesem
-					state.set("MARGINX", cx);
+					barobot.driver_x.setMargin(cx);	// ostatnia znana pozycja jest marginesem
 					Queue mq = barobot.main_queue;
 					mq.clear();
 				}else if(parts[2] == Constant.UPANEL_DEVICE_TYPE ){		// upaneld
@@ -123,17 +120,17 @@ public class MyRetReader implements RetReader {
 				return null;
 			}
 		} );
-	
+
 		barobot.mb.addGlobalRegex( new GlobalMatch(){		// METHOD_DEVICE_FOUND
 			@Override
 			public boolean run(Mainboard asyncDevice, String fromArduino, String wait4Command, AsyncMessage wait_for) {				
-				String decoded = "Arduino.GlobalMatch.METHOD_DEVICE_FOUND/MAINBOARD_DEVICE_TYPE";
-				int cx		= barobot.driver_x.getSPos();
-				barobot.driver_x.setM(cx);	// ostatnia znana pozycja jest marginesem
-				state.set("MARGINX", cx);
-				Queue mq = barobot.main_queue;
+				String decoded	= "Arduino.GlobalMatch.METHOD_DEVICE_FOUND/MAINBOARD_DEVICE_TYPE";
+				int cx			= barobot.driver_x.getSPos();
+				barobot.driver_x.setMargin(-cx);	// ostatnia znana pozycja jest marginesem
+				Queue mq		= barobot.main_queue;
 				mq.clear();
 				Initiator.logger.i("MyRetReader.decoded", decoded);
+				barobot.onConnected(barobot.main_queue, true );
 				return true;
 			}
 			@Override
@@ -145,29 +142,12 @@ public class MyRetReader implements RetReader {
 				return null;
 			}
 		} );
-/*
-		barobot.mb.addGlobalRegex(  new GlobalMatch(){		// METHOD_TEST_SLAVE
-			@Override
-			public boolean run(Mainboard asyncDevice, String fromArduino, String wait4Command, AsyncMessage wait_for) {
-				Initiator.logger.i("Arduino.GlobalMatch.METHOD_TEST_SLAVE", fromArduino);
-				return true;
-			}
-			@Override
-			public String getMatchRet() {
-				return "^" +  Methods.METHOD_TEST_SLAVE + ",.*";
-			}
-			@Override
-			public String getMatchCommand() {
-				return null;
-			}
-		} );*/
 	}
 
 	@Override
 	public boolean isRetOf(Mainboard asyncDevice,
 			AsyncMessage wait_for2, String fromArduino, Queue mainQueue ) {
 
-	
 		//	RESET	RRESET			RESET MAINBOARD
 		//	RESET3	RRESET3		OLD RESET NODE 3
 		//	RB		RRB			OLD	RESET I2C BUS
@@ -209,7 +189,6 @@ public class MyRetReader implements RetReader {
 		if(wait_for2!= null && wait_for2.command != null && wait_for2.command != "" ){
 			command = wait_for2.command;
 	//		Initiator.logger.w("MyRetReader.isRetOf", fromArduino+ " for "+ command );
-
 			if( fromArduino.startsWith( "R" + command )){
 				if( fromArduino.startsWith( "Rm" ) || command.equals( "S" ) || command.equals("IH") || command.startsWith("K") || command.equals("A2") ){
 					// analyse below
@@ -397,13 +376,8 @@ public class MyRetReader implements RetReader {
 				}else{
 					Initiator.logger.e("MyRetReader.decoded.wrong13", "command:" +command+ ", decoded: " + decoded + " fromArduino:'"+ fromArduino+"'" );
 				}
-			//}else if(fromArduino2.startsWith( "T" ) && command.equals("T")){				// temperature
-			//	return true;
-			//}else if(fromArduino2.startsWith( "V" ) && command.equals("V")){				// pcb version
-			//	return true;
-
 			}else if(fromArduino2.equals( "IH" ) && command.equals("IH")){				// is home
-				barobot.driver_x.setM(0);
+				barobot.driver_x.setMargin(0);
 				barobot.driver_x.setHPos( 0 );
 				Initiator.logger.e("MyRetReader.decoded", "this is home");
 				return true;
@@ -526,13 +500,11 @@ public class MyRetReader implements RetReader {
 		return false;
 	}
 
-	private static int weight_grow = 0;
-	private static int weight_stay_high = 0;
+	//private static int weight_grow = 0;
+	//private static int weight_stay_high = 0;
 
 	private void new_weight(int weight) {
-
 		state.set( "LAST_WEIGHT", weight );
-
 		/*
 		int prev_weight		= state.getInt("LAST_WEIGHT", 1 );
 		int need_light_cup	= state.getInt("ALLOW_LIGHT_CUP", 1 );
@@ -651,7 +623,6 @@ public class MyRetReader implements RetReader {
 					decoded += "/HX_STATE_1/"+ spos;
 				//	spos += 300;				// hall stops 400 points before magnet
 					state.set( "LENGTHX", spos);
-					state.set( "X_GLOBAL_MAX", spos );
 					Initiator.logger.i("input_parser.11", decoded );
 				//	barobot.hereIsBottle(11, spos, SERVOY_FRONT_POS );
 					state_num = 0;
@@ -718,9 +689,7 @@ public class MyRetReader implements RetReader {
 					decoded += "/HX_STATE_9";
 					last_3 = 0;
 					last_7 = 0;
-					state.set( "X_GLOBAL_MIN", hpos );
-					barobot.driver_x.setM(hpos);
-					state.set("MARGINX", hpos);
+					barobot.driver_x.setMargin(hpos);
 					// new software pos (equal 0);
 					spos = barobot.driver_x.hard2soft(hpos);
 					int SERVOY_FRONT_POS = state.getInt("SERVOY_FRONT_POS", 1000 );
@@ -736,7 +705,6 @@ public class MyRetReader implements RetReader {
 				}else if(state_name == Methods.HX_STATE_1 ){
 					decoded += "/HX_STATE_1";
 					state.set( "LENGTHX", spos);
-					state.set( "X_GLOBAL_MAX", spos );
 					int SERVOY_FRONT_POS = state.getInt("SERVOY_FRONT_POS", 1000 );
 
 					Initiator.logger.i("input_parser", "koniec skali: " + spos );
@@ -751,11 +719,8 @@ public class MyRetReader implements RetReader {
 				}else if(state_name == Methods.HX_STATE_7 ){
 				}else if(state_name == Methods.HX_STATE_8 ){
 				}else if(state_name == Methods.HX_STATE_9 ){
-					state.set( "X_GLOBAL_MIN", hpos );
-					barobot.driver_x.setM(hpos);
-					state.set("MARGINX", hpos);
-					// new software pos (equal 0)
-					spos = barobot.driver_x.hard2soft(hpos);
+					barobot.driver_x.setMargin(hpos);
+					spos = barobot.driver_x.hard2soft(hpos);// new software pos (equal 0)
 					barobot.driver_x.setSPos( spos );
 					int SERVOY_FRONT_POS = state.getInt("SERVOY_FRONT_POS", 1000 );
 					barobot.hereIsStart(spos, SERVOY_FRONT_POS );
@@ -782,7 +747,7 @@ public class MyRetReader implements RetReader {
 				};
 				// 125,1,66,0,0,0,228,2,177,1
 			*/
-			int state_name	= parts[2];
+		//	int state_name	= parts[2];
 			short hpos		= (short) (parts[6] << 8);
 			hpos			+= (short)parts[7];
 			int value		= parts[8] + (parts[9] << 8);
@@ -830,7 +795,7 @@ public class MyRetReader implements RetReader {
 				//int hposx	= fromPos;
 				int spos2	= barobot.driver_x.hard2soft(hposx);
 				barobot.hereIsBottle(num, spos2, ypos );
-				barobot.setLedsByBottle(barobot.main_queue, num, "02", 200, 0, 200, 0, false);
+				barobot.lightManager.setLedsByBottle(barobot.main_queue, num, "02", 200, 0, 200, 0, false);
 			}
 		}else{
 			Initiator.logger.i("bottle "+ num +"", "nie zgadza sie");

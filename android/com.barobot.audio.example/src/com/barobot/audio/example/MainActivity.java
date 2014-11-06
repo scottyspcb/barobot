@@ -111,12 +111,12 @@ public class MainActivity extends Activity implements OnSignalsDetectedListener{
 	}
 
 	protected void startQueue() {
-		barobot.scann_leds(barobot.main_queue);
+		barobot.lightManager.scann_leds(barobot.main_queue);
 		barobot.main_queue.add( new AsyncMessage( true ) {
 			@Override
 			public Queue run(Mainboard dev, Queue queue) {
 				this.name		= "turnoff";
-				barobot.turnOffLeds(barobot.main_queue);
+				barobot.lightManager.turnOffLeds(barobot.main_queue);
 				return null;
 			}
 		} );
@@ -246,11 +246,13 @@ public class MainActivity extends Activity implements OnSignalsDetectedListener{
 			final String command2f = ",22," + val2;
 			final String command3f = ",44," + val2;
 			final String command4f = ",88," + val2;
-
+			
 			final String command1b = ",11," + val1;
+/*
+			
 			final String command2b = ",22," + val1;
 			final String command3b = ",44," + val1;
-
+*/
 			barobot.main_queue.add( "B"+ "10" +command4f, sync);
 			barobot.main_queue.add( "B"+ up[1].getAddress() +command3f, sync);
 			barobot.main_queue.add( "B"+ up[3].getAddress() +command2f, sync);

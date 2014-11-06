@@ -1,10 +1,5 @@
 package com.barobot.sofa.route;
 
-import java.util.List;
-import java.util.Map;
-
-import com.barobot.hardware.Arduino;
-import com.barobot.hardware.devices.BarobotConnector;
 import com.barobot.web.route.EmptyRoute;
 import com.barobot.web.server.SofaServer;
 import com.x5.template.Chunk;

@@ -6,4 +6,57 @@
     <string name="wizard_lang_ru">русский</string>
     <string name="wizard_lang_pl">Polski</string>
     <string name="wizard_lang_en">English</string>
+    
+   
+  	<string name="wizard_text_0">Kreator ustawień</string>    
+    <string name="wizard_text_1">1. Zasilanie</string>
+    <string name="wizard_text_2">2. Oprogramowanie</string>  
+    <string name="wizard_text_3">3. Sensory</string>
+    <string name="wizard_text_4">4. Ruch góra - dół</string>  
+    <string name="wizard_text_5">5. Ruch przód- tył</string>
+    <string name="wizard_text_6">6. Ruch lewo - prawo</string>
+    <string name="wizard_text_7">7. Czujnik wagi</string>  
+    <string name="wizard_text_8">8. Kalibracja</string>  
+ 
+    <string name="wizard_previous">Previous</string>
+    <string name="wizard_main_menu">Main menu</string>
+    <string name="wizard_save_and_next">Save and Next</string>
+    <string name="wizard_refresh">Refresh</string>
+    <string name="wizard_next">Next</string>
+    <string name="wizard_servoy_more_back">more back &gt;</string>
+    <string name="wizard_servoy_more_front">&lt; more front</string>
+    <string name="wizard_servoy_change_front_position">Change front position</string>
+    <string name="wizard_servoy_current_position">Current position</string>
+    <string name="wizard_servoy_change_back_position">Change back position</string>
+    <string name="wizard_servoy_move_slider_back">Move slider to calibrate servo in back position</string>
+    <string name="wizard_servoy_move_slider_front">Move slider to calibrate servo in front position</string>
+    <string name="wizard_servoy_info">Ustaw tak pozycje aby w pozycji Przedniej i Tylniej robot dotykał granic możliwości ruchu. Głośne uderzanie oznacza zbyt daleką pozycję. Złe ustawienie może spowodowac przedwczesne zuzycie serwomotorów.</string>
+    <string name="wizard_servoz_info">Przesuń wózek tak aby nie znajdował sie pod żadnym z nalewaków, a następnie sprawdź czy górna i dolna pozycja zgadza się z obrazkiem.  Złe ustawienie może spowodować, że nalewaki nie będą dostatecznie mocno naciskane lub robot będzie zaczepiał o nie w trakcie ruchu.</string>
+    <string name="wizard_servoz_move_slider_up">Move slider to calibrate servo in UP position</string>
+    <string name="wizard_servoz_move_down">Move slider to calibrate servo in DOWN position</string>
+   	<string name="wizard_servoz_change_up_position">Change UP position</string>
+    <string name="wizard_servoz_change_down_position">Change DOWN position</string>
+
+    <string name="wizard_weight_remove_glass_tray">Please remove Glass Tray and press measure button:</string>
+    <string name="wizard_weight_measure_without">Measure without Glass Tray</string>
+    <string name="wizard_weight_put_glass_tray">Please put the Glass Tray back and press measure button:</string>
+    <string name="wizard_weight_measure_with">Measure with Glass Tray</string>
+    <string name="wizard_weight_current_value">Current value</string>
+    <string name="wizard_weight_current_weight">Current weight</string>
+    <string name="wizard_servoz_current_position">Current position</string>
+    <string name="wizard_servoz_lower">&lt; lower</string>
+    <string name="wizard_servoz_higher">higher &gt;</string>
+    <string name="wizard_servoz_howto_img">Howto img</string>
+    <string name="wizard_servoy_howto_img">Howto img</string>
+    <string name="wizard_save_and_close">Save settings and close</string>
+    <string name="wizard_calibration_info">"Left-right calibration: Barobot will move Carriage from left to right and collect data from HALL X sensor. Green color indicates that dispenser above was founded. "</string>
+    <string name="wizard_firmware_info">If new version is available please download it and install. WiFi connection is required.</string>
+    <string name="wizard_firmware_check_button_text">Check for software updates</string>
+    <string name="wizard_firmware_check_upload_button_text">Upload firmware</string>
+    <string name="wizard_firmware_check_manual_button_text">Manual Upload (emergency only)</string>
+    <string name="wizard_firmware_manual_options_info">Manual options (if something went wrong)</string>
+    <string name="wizard_servos_info">Now please check Stepper X (left - right movement)</string>
+    <string name="wizard_servos_solution">If something goes wrong just turn robot OFF using power switch and remove obstacles, check stepper, wirings and motor driver on mainboard.</string>
+
+    
 </resources>

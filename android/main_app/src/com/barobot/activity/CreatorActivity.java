@@ -61,7 +61,6 @@ public class CreatorActivity extends BarobotMain{
 		UpdateSlots();	
 		UpdateButtons();
 	}
-	
 	private void SetupBottles()
 	{
 		ids = new int[13];
@@ -78,7 +77,6 @@ public class CreatorActivity extends BarobotMain{
 		ids[11] = R.id.bottle_button11;
 		ids[12] = R.id.bottle_button12;
 	}
-	
 	private void SetupDrops()
 	{
 		drops = new int[13];
@@ -86,7 +84,6 @@ public class CreatorActivity extends BarobotMain{
 		{
 			drops[idx] = 0;
 		}
-		
 		dropIds = new int[6];
 		dropIds[0] = 0;
 		dropIds[1] = R.drawable.drop_1;
@@ -134,7 +131,8 @@ public class CreatorActivity extends BarobotMain{
 					tview.setEnabled(false);
 				} else {
 					tview.setEnabled(true);
-					tview.setText( slot.getName() + "\n\n\n+"+ slot.dispenser_type +"ml");	
+			//		tview.setText( slot.getName() + "\n\n\n+"+ slot.dispenser_type +"ml");	
+					tview.setText( slot.getName());	
 				}	
 			}
 		}
@@ -143,7 +141,7 @@ public class CreatorActivity extends BarobotMain{
 			frag.hide();
 		}
 		BarobotConnector barobot = Arduino.getInstance().barobot;
-		barobot.turnOffLeds(barobot.main_queue);
+		barobot.lightManager.turnOffLeds(barobot.main_queue);
 	}
 
 	public void ShowIngredients(boolean setLeds )
@@ -217,7 +215,7 @@ public class CreatorActivity extends BarobotMain{
 		}
 		if(setLeds){
 			BarobotConnector barobot = Arduino.getInstance().barobot;
-			barobot.setAllLeds(barobot.main_queue, "ff", 5, 5, 5, 5);	// disable all leds
+			barobot.lightManager.setAllLeds(barobot.main_queue, "ff", 5, 5, 5, 5);	// disable all leds
 			ShowIngredients(setLeds);
 		}
 		runOnUiThread(new Runnable() {  

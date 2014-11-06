@@ -6,8 +6,6 @@ import android.hardware.Camera;
 import android.hardware.Camera.CameraInfo;
 import android.util.Log;
 import android.widget.Toast;
-
-import com.barobot.activity.BarobotActivity;
 import com.barobot.common.Initiator;
 
 public class CameraManager {

@@ -5,10 +5,8 @@ import org.orman.mapper.annotation.Entity;
 import org.orman.mapper.annotation.ManyToOne;
 import org.orman.mapper.annotation.PrimaryKey;
 
-import com.barobot.BarobotMain;
 import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
-import com.barobot.parser.Queue;
 
 @Entity
 public class Slot extends Model<Slot>{
@@ -55,7 +53,7 @@ public class Slot extends Model<Slot>{
 	public void setLed(int r, int g, int b, boolean always ) {
 		BarobotConnector barobot = Arduino.getInstance().barobot;
 		if( always || !barobot.main_queue.isBusy() ){				// only if queue empty or isAlways
-			barobot.setLedsByBottle( barobot.main_queue, position - 1, "00", 0, r, g, b, true );	
+			barobot.lightManager.setLedsByBottle( barobot.main_queue, position - 1, "00", 0, r, g, b, true );	
 		}
 	}
 }

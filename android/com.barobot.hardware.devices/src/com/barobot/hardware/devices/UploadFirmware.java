@@ -100,7 +100,7 @@ public class UploadFirmware {
 			}
 		});
 		q.addWait( 1000 );
-		q.add( "PING", "PONG" );
+		q.add( "PING", "RPONG" );
 		q.add( "Q00ff0000", true );		// set red
 		q.addWait( 1000 );
 		q.add( "Q000000ff", true );		// set blue

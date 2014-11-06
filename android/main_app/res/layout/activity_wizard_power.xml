@@ -4,9 +4,37 @@
     android:layout_height="match_parent"
     tools:context="${relativePackage}.${activityClass}" >
 
-    <TextView
-        android:layout_width="wrap_content"
+    <ListView
+        android:id="@+id/power_list"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/hello_world" />
+        android:layout_above="@+id/wizard_power_bottom_layout"
+        android:layout_alignParentTop="true" >
+
+    </ListView>
+
+    <LinearLayout
+        android:id="@+id/wizard_power_bottom_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true">
+
+        <Button
+            android:id="@+id/wizard_power_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/wizard_main_menu"
+            android:onClick="onOptionsButtonClicked"
+            android:textSize="40sp" />
+        <Button
+            android:id="@+id/wizard_power_next"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:layout_weight="0.10"
+            android:text="@string/wizard_next"
+            android:onClick="onOptionsButtonClicked"
+            android:textSize="40sp" />
+    </LinearLayout>
 
 </RelativeLayout>

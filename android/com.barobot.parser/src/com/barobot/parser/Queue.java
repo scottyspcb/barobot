@@ -8,7 +8,6 @@ import com.barobot.common.Initiator;
 import com.barobot.parser.message.AsyncMessage;
 import com.barobot.parser.message.LimitedBuffer;
 import com.barobot.parser.message.Mainboard;
-import com.barobot.parser.utils.Interval;
 
 /*
  * LinkedList<E>
@@ -26,8 +25,7 @@ ArrayList<E>
     remove(int index) is O(n - index) (i.e. removing last is O(1))
     Iterator.remove() is O(n - index)
     ListIterator.add(E element) is O(n - index)
- */
-
+*/
 /*
  * Queue
  * 
@@ -54,8 +52,8 @@ public class Queue {
 	private AsyncMessage last_msg = null;
 	private boolean canExec = false;
 	private boolean writing = true;
-
-	private int ticks = 0;
+//	public int commandSend = 0;
+//	private int ticks = 0;
 
 	public Queue(){
 	}
@@ -63,10 +61,8 @@ public class Queue {
 	public Queue(Mainboard mb2){
 		this.isMainQueue	= true;
 		this.mb				= mb2;
-
 		this.worker.start();
 	}
-
 
 	private Thread worker = new Thread( new Runnable() {
 		@Override
@@ -77,7 +73,7 @@ public class Queue {
 						try {
 				//			Initiator.logger.i("Queue.worker.wait", "start + " + ( output.isEmpty() ? "empty" : "not empty" ));	
 							exec_lock.wait(timeout);
-							Initiator.logger.i("Queue.worker.wait", "end + " + ( output.isEmpty() ? "empty" : "not empty" ));
+				//			Initiator.logger.i("Queue.worker.wait", "end + " + ( output.isEmpty() ? "empty" : "not empty" ));
 				//			if(!output.isEmpty()){
 				//				show("exec");
 				//			}
@@ -214,7 +210,7 @@ public class Queue {
 		AsyncMessage msg = new AsyncMessage( command, true ){
 			@Override
 			public boolean isRet(String result, Queue q) {
-			//	Initiator.logger.i("Queue.isRet2?:", retcmd );
+		//		Initiator.logger.i("Queue.isRet of?:", command+ " / " +retcmd );
 				if( retcmd.equals( result )){
 					return true;
 				}
@@ -447,12 +443,6 @@ public class Queue {
 			}
 		};
 		this.add(m2);
-
-
-
-
-
-
 	//	Initiator.logger.i("Queue.addWait2 length", ""+output.size() );
 	}
 	public void addWait(final int time) {
@@ -466,7 +456,7 @@ public class Queue {
 			}
 			@Override
 			public Queue run(final Mainboard dev, Queue queue) {
-				Initiator.logger.w("Queue.addWait.run", "time: " +time);
+			//	Initiator.logger.w("Queue.addWait.run", "time: " +time);
 				final AsyncMessage msg	= this;
 				/*
 				final Handler handler	= new Handler();
@@ -490,13 +480,7 @@ public class Queue {
 				return true;
 			}
 		};
-
 		this.add(m2);
-
-
-
-
-
 //		Initiator.logger.i("Queue.addWait length", ""+output.size() );
 	}
 	public boolean isBusy() {

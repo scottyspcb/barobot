@@ -1,14 +1,5 @@
 package com.barobot.sofa.route;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.orman.mapper.Model;
-import org.orman.sql.Query;
-
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-
 import com.barobot.web.route.EmptyRoute;
 import com.barobot.web.server.SofaServer;
 import com.x5.template.Chunk;

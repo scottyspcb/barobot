@@ -77,7 +77,7 @@
         <item name="android:textColor">@android:color/black</item>
         <item name="android:textSize">20sp</item>
         <item name="android:padding">15dp</item>
-        <item name="android:background">#FF9900</item>
+        <!-- item name="android:background">#FF9900</item-->
         <item name="android:shadowRadius">1</item>
         <item name="android:shadowDx">1</item>
         <item name="android:shadowDy">1</item>

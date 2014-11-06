@@ -2,9 +2,7 @@ package com.barobot.sofa.route;
 
 
 import java.util.LinkedList;
-import java.util.ListIterator;
 
-import com.barobot.common.Initiator;
 import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
 import com.barobot.parser.message.AsyncMessage;
@@ -13,7 +11,6 @@ import com.barobot.web.route.EmptyRoute;
 import com.barobot.web.server.SofaServer;
 import com.x5.template.Chunk;
 import com.x5.template.Theme;
-import com.x5.util.DataCapsule;
 
 import fi.iki.elonen.NanoHTTPD.IHTTPSession;
 

@@ -1,7 +1,5 @@
 package com.barobot.hardware.devices.i2c;
 
-import java.io.File;
-
 import com.barobot.common.Initiator;
 import com.barobot.common.IspSettings;
 import com.barobot.common.constant.Pwm;
@@ -35,7 +33,7 @@ public abstract class I2C_Device_Imp implements I2C_Device{
 
 	@Override
 	public void addLed(Queue q, String selector, int pwm ) {
-		float ratio		= ((float)I2C_Device_Imp.level)/I2C_Device_Imp.MAX_LEVEL;
+	//	float ratio		= ((float)I2C_Device_Imp.level)/I2C_Device_Imp.MAX_LEVEL;
 		pwm				= Pwm.linear2log(pwm, 1 );
 		if(ledOrderType == 1){
 		}else{

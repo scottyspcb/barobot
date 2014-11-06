@@ -22,12 +22,9 @@ public class AndroidBarobotState2 implements HardwareState{
 		"POSX",
 		"POSY",
 		"POSZ",
-		"X_GLOBAL_MIN",
-		"X_GLOBAL_MAX",
 		"LENGTHX",
 		"LAST_BT_DEVICE",
 		"POS_START_X",
-		"POS_START_Y",
 
 		"BOTTLE_OFFSETX_0",
 		"BOTTLE_OFFSETX_1",

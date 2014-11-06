@@ -3,9 +3,6 @@ package com.barobot.hardware.serial;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -17,7 +14,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
-import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -29,14 +25,14 @@ import com.barobot.common.interfaces.serial.SerialEventListener;
 import com.barobot.common.interfaces.serial.SerialInputListener;
 import com.barobot.common.interfaces.serial.Wire;
 import com.hoho.android.usbserial.driver.UsbSerialDriver;
-import com.hoho.android.usbserial.driver.UsbSerialProber;
 import com.hoho.android.usbserial.driver.UsbSerialPort;
+import com.hoho.android.usbserial.driver.UsbSerialProber;
 import com.hoho.android.usbserial.util.SerialInputOutputManager;
 
 public class Serial_wire2 implements CanSend, Wire{
 	private static final Object lock			= new Object();
 	private static final int MESSAGE_REFRESH = 101;
-    private static final long REFRESH_TIMEOUT_MILLIS = 5000;
+ //   private static final long REFRESH_TIMEOUT_MILLIS = 5000;
 	protected static final String ACTION_USB_PERMISSION = "com.hoho.android.usbserial.USB";
     private static UsbSerialPort sPort = null;
 
@@ -412,29 +408,14 @@ public class Serial_wire2 implements CanSend, Wire{
 	
 	
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
 	@Override
 	public void connectToId(String address) {
 	}
 
 	@Override
 	public String getName() {
-		return "Android Serial Port";
+		return "Android-Barobot Serial Port Driver";
 	}
 
 	@Override

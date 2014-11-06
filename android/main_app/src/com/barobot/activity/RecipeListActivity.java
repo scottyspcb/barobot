@@ -1,6 +1,5 @@
 package com.barobot.activity;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -25,7 +24,6 @@ import com.barobot.gui.fragment.IngredientListFragment;
 import com.barobot.gui.fragment.RecipeAttributesFragment;
 import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
-import com.barobot.hardware.devices.i2c.Upanel;
 import com.barobot.parser.Queue;
 
 public class RecipeListActivity extends BarobotMain{
@@ -154,7 +152,7 @@ public class RecipeListActivity extends BarobotMain{
 			Thread rr = new Thread(  new Runnable() {
 				 public void run() {
 					BarobotConnector barobot = Arduino.getInstance().barobot;
-					barobot.turnOffLeds(barobot.main_queue);
+					barobot.lightManager.turnOffLeds(barobot.main_queue);
 					Queue q = barobot.main_queue;
 					for(Entry<Integer, Integer> entry : usage.entrySet()) {
 						    Integer key = entry.getKey();

@@ -1,5 +1,7 @@
 package com.barobot.activity;
 
+import java.util.List;
+
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.Configuration;
@@ -17,11 +19,7 @@ import android.preference.PreferenceManager;
 import android.preference.RingtonePreference;
 import android.text.TextUtils;
 
-import java.util.List;
-
 import com.barobot.R;
-import com.barobot.R.string;
-import com.barobot.R.xml;
 
 /**
  * A {@link PreferenceActivity} that presents a set of application settings. On

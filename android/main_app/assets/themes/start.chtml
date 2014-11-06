@@ -1,10 +1,7 @@
 {#mainpage}
-{$body2}
 <div style="text-align:center">
-
 	<h2>Drinks</h2>
 	<h4>TODO</h4>
-
 	<h2>API</h2>
 	<br /><a class="btn btn-success" style="margin:10px" href="/api/get_recipes">API get_recipes</a>
 	<br /><a class="btn btn-success" style="margin:10px" href="/api/do_drink">API do_drink</a>
@@ -20,7 +17,7 @@
 	<br /><a class="btn btn-success" style="margin:10px" href="/setup/edit_db">Edit DB</a>
 
 	<br /><a class="btn btn-success" style="margin:10px" href="/servo">Servo test</a>
-	<br /><a class="btn btn-success" style="margin:10px" href="/hardware_queue">Queue</a>
+	<br /><!--a class="btn btn-success" style="margin:10px" href="/hardware_queue">Queue</a-->
 
 </div>
 {#}

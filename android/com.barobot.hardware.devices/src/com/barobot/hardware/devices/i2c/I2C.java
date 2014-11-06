@@ -1,17 +1,9 @@
 package com.barobot.hardware.devices.i2c;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import com.barobot.common.constant.Constant;
-import com.barobot.common.constant.LowHardware;
-import com.barobot.common.constant.Methods;
-import com.barobot.parser.Queue;
-import com.barobot.parser.message.AsyncMessage;
-import com.barobot.parser.message.Mainboard;
 
 public class I2C{
 	private List<Upanel> list		= new ArrayList<Upanel>();

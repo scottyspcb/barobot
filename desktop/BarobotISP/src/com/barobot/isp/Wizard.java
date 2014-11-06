@@ -1,9 +1,5 @@
 package com.barobot.isp;
 
-import com.barobot.hardware.devices.LightManager;
-import com.barobot.hardware.devices.i2c.Carret;
-import com.barobot.hardware.devices.i2c.I2C_Device;
-import com.barobot.hardware.devices.i2c.Upanel;
 import com.barobot.parser.Queue;
 import com.barobot.parser.message.AsyncMessage;
 import com.barobot.parser.message.Mainboard;
@@ -40,35 +36,35 @@ public class Wizard {
 		hw.getQueue().addWaitThread( Main.main );
 		Queue q = hw.getQueue();
 
-		hw.barobot.turnOffLeds(q);
+		hw.barobot.lightManager.turnOffLeds(q);
 	//	get 2 random from array java
 		
 		for( int i =0; i<11; i++){
 
 			q.addWait(time );
-			hw.barobot.setLedsByBottle(q, i, "ff", 0, 0, 0, 0, true);
+			hw.barobot.lightManager.setLedsByBottle(q, i, "ff", 0, 0, 0, 0, true);
 
 			q.addWait(time );
 
-			hw.barobot.setLedsByBottle(q, i, "ff", 0, 0, 0, 0, true);
-			hw.barobot.setLedsByBottle(q, i, "01", 255, 255, 0, 0, true);
+			hw.barobot.lightManager.setLedsByBottle(q, i, "ff", 0, 0, 0, 0, true);
+			hw.barobot.lightManager.setLedsByBottle(q, i, "01", 255, 255, 0, 0, true);
 			
 			q.addWait(time );
 
-			hw.barobot.setLedsByBottle(q, i, "ff", 0, 0, 0, 0, true);
-			hw.barobot.setLedsByBottle(q, i, "02", 255, 0, 255, 0, true);
+			hw.barobot.lightManager.setLedsByBottle(q, i, "ff", 0, 0, 0, 0, true);
+			hw.barobot.lightManager.setLedsByBottle(q, i, "02", 255, 0, 255, 0, true);
 			q.addWait(time );
 
-			hw.barobot.setLedsByBottle(q, i, "ff", 0, 0, 0, 0, true);
-			hw.barobot.setLedsByBottle(q, i, "04", 255, 0, 0, 255, true);
+			hw.barobot.lightManager.setLedsByBottle(q, i, "ff", 0, 0, 0, 0, true);
+			hw.barobot.lightManager.setLedsByBottle(q, i, "04", 255, 0, 0, 255, true);
 			q.addWait(time );
 			
 	
-			hw.barobot.setLedsByBottle(q, i, "ff", 0, 0, 0, 0, true);
-			hw.barobot.setLedsByBottle(q, i, "08", 255, 255, 255, 255, true);
+			hw.barobot.lightManager.setLedsByBottle(q, i, "ff", 0, 0, 0, 0, true);
+			hw.barobot.lightManager.setLedsByBottle(q, i, "08", 255, 255, 255, 255, true);
 			q.addWait(time );
 
-			hw.barobot.setLedsByBottle(q, i, "ff", 0, 0, 0, 0, true);
+			hw.barobot.lightManager.setLedsByBottle(q, i, "ff", 0, 0, 0, 0, true);
 		}
 	}
 
@@ -79,9 +75,9 @@ public class Wizard {
 
 		int time = 0;
 		while (repeat-- > 0){
-			hw.barobot.turnOffLeds(q);
+			hw.barobot.lightManager.turnOffLeds(q);
 			q.addWait(time );
-			hw.barobot.setAllLeds(q, "07", 255, 255, 255, 255);
+			hw.barobot.lightManager.setAllLeds(q, "07", 255, 255, 255, 255);
 			q.addWait(time );
 			time--;	
 		}
@@ -110,10 +106,10 @@ public class Wizard {
 		for (int b = 0;b<4;b++){
 			int i=0;
 			for (;i<245;i+=5){
-				hw.barobot.setAllLeds(q, "ff", i, i, i, i);
+				hw.barobot.lightManager.setAllLeds(q, "ff", i, i, i, i);
 			}
 			for (;i>=0;i-=5){
-				hw.barobot.setAllLeds(q, "ff", i, i, i, i);
+				hw.barobot.lightManager.setAllLeds(q, "ff", i, i, i, i);
 			}
 		}
 
@@ -128,8 +124,8 @@ public class Wizard {
 		int swiec = 255;
 		Queue q = hw.getQueue();
 		for( int i =0; i<razy;i++){
-			hw.barobot.setAllLeds(q, "f0", 0, 0, 0, 0);
-			hw.barobot.setAllLeds(q, "f0", swiec, swiec, swiec, swiec);
+			hw.barobot.lightManager.setAllLeds(q, "f0", 0, 0, 0, 0);
+			hw.barobot.lightManager.setAllLeds(q, "f0", swiec, swiec, swiec, swiec);
 		}
 		System.out.println("koniec mrygaj");
 	}
@@ -143,16 +139,16 @@ public class Wizard {
 			@Override
 			public Queue run(Mainboard dev, Queue queue) {
 				Queue q2 = new Queue();
-				LightManager.zgas( hw.barobot, q2 );
+				hw.barobot.lightManager.turnOffLeds( q2 );
 				for (int b = 0;b<count;b++){
 					int i=0;
 					for (;i<255;i+=4){
-						hw.barobot.setLedsByBottle(q2, num, "ff", i, i, i, i, true);					
+						hw.barobot.lightManager.setLedsByBottle(q2, num, "ff", i, i, i, i, true);					
 					}
 					for (i=255;i>=0;i-=4){
-						hw.barobot.setLedsByBottle(q2, num, "ff", i, i, i, i, true);
+						hw.barobot.lightManager.setLedsByBottle(q2, num, "ff", i, i, i, i, true);
 					}
-					LightManager.zgas( hw.barobot, q2 );
+					hw.barobot.lightManager.turnOffLeds( q2 );
 				} 
 				System.out.println("koniec fadeButelka1");
 				return q2;
@@ -171,16 +167,16 @@ public class Wizard {
 			@Override
 			public Queue run(Mainboard dev, Queue queue) {
 				Queue q2 = new Queue();
-				LightManager.zgas( hw.barobot, q2 );
+				hw.barobot.lightManager.turnOffLeds( q2 );
 				for (int b = 0;b<count;b++){
 					int i=0;
 					for (;i<255;i+=8){
-						hw.barobot.setAllLeds(q2, "ff", i, i, i, i);
+						hw.barobot.lightManager.setAllLeds(q2, "ff", i, i, i, i);
 					}
 					for (i=255;i>=0;i-=8){
-						hw.barobot.setAllLeds(q2, "ff", i, i, i, i);
+						hw.barobot.lightManager.setAllLeds(q2, "ff", i, i, i, i);
 					}
-					LightManager.zgas( hw.barobot, q2 );
+					hw.barobot.lightManager.turnOffLeds( q2 );
 				} 
 				System.out.println("koniec fadeButelka");
 				return q2;
@@ -239,6 +235,6 @@ public class Wizard {
 		hw.getQueue().addWaitThread( Main.main );
 		Queue q = hw.getQueue();
 		q.addWait(5000 );
-		LightManager.zgas(hw.barobot, q);
+		hw.barobot.lightManager.turnOffLeds( q );
 	}
 }

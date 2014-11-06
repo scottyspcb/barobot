@@ -1,7 +1,7 @@
 package com.barobot.web.route;
 
-import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import com.barobot.web.server.SofaServer;
 import com.x5.template.Chunk;
@@ -20,7 +20,7 @@ public class MainPage extends EmptyRoute{
 			return null;
 		}
 		Chunk action_chunk			= theme.makeChunk("main#body");
-		Map<String, List<String>> decodedQueryParameters =sofaServer.decodeParameters(session.getQueryParameterString());
+	//	Map<String, List<String>> decodedQueryParameters =sofaServer.decodeParameters(session.getQueryParameterString());
 
     	  StringBuilder sb = new StringBuilder(); 
    //       sb.append("<p><blockquote><b>URI</b> = ").append(
@@ -105,7 +105,7 @@ public class MainPage extends EmptyRoute{
     private String unsortedList(Map<String, ? extends Object> map) {
         StringBuilder sb = new StringBuilder();
         sb.append("<ul>");
-        for (Map.Entry entry : map.entrySet()) {
+        for (Entry<String, ? extends Object> entry : map.entrySet()) {
             sb.append("<li><code><b>").append(entry.getKey()).append("</b> = ").append(entry.getValue()).append("</code></li>");
         }
         sb.append("</ul>");

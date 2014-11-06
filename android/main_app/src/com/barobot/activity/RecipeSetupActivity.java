@@ -28,8 +28,6 @@ import com.barobot.gui.dataobjects.Liquid_t;
 import com.barobot.gui.dataobjects.Recipe_t;
 import com.barobot.gui.dataobjects.Type;
 import com.barobot.gui.utils.LangTool;
-import com.barobot.hardware.Arduino;
-import com.barobot.hardware.devices.BarobotConnector;
 
 public class RecipeSetupActivity extends BarobotMain implements OnItemSelectedListener {
 
@@ -196,7 +194,7 @@ public class RecipeSetupActivity extends BarobotMain implements OnItemSelectedLi
 				ing.liquid = liquid;
 				ing.quantity = 20;
 
-				BarobotConnector barobot = Arduino.getInstance().barobot;
+		//		BarobotConnector barobot = Arduino.getInstance().barobot;
 		//		int a = barobot.getCapacity(8);
 				currentRecipe.addIngredient(ing);
 				UpdateRecipeDetails();

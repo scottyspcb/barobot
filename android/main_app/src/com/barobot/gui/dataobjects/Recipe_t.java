@@ -7,8 +7,6 @@ import org.orman.mapper.Model;
 import org.orman.mapper.annotation.Entity;
 import org.orman.mapper.annotation.OneToMany;
 import org.orman.mapper.annotation.PrimaryKey;
-
-import com.barobot.gui.database.BarobotData;
 import com.barobot.gui.utils.Distillery;
 import com.barobot.gui.utils.LangTool;
 

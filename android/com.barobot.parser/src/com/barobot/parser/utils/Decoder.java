@@ -1,6 +1,5 @@
 package com.barobot.parser.utils;
 
-import com.barobot.common.Initiator;
 
 public class Decoder {
 	public static int[] decodeBytes(String fromArduino) {
@@ -51,6 +50,17 @@ public class Decoder {
 	//	Initiator.logger.i("Decoder","toHexByte:"+ oneByte + "/ "+ oneByte2 + " / "+ (0x100 | oneByte2) + " / "+ Integer.toHexString(0x100 | oneByte2));
 		return Integer.toHexString(0x100 | oneByte2).substring(1);
 	}
-	
+
+	//private static java.util.Date date= new java.util.Date();
+
+	public static long getTimestamp() {
+	//	Timestamp a = new java.sql.Timestamp(date.getTime());
+	//	long lDateTime = 
+	//	date.getTime();
+	//	return new java.sql.Timestamp(date.getTime()).getTime();
+	//	new Timestamp(System.currentTimeMillis());
+		return System.currentTimeMillis();
+		//return new Date().getTime();
+	}
 }
 

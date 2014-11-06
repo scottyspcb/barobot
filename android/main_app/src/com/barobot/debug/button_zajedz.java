@@ -1,13 +1,11 @@
 package com.barobot.debug;
-import com.barobot.BarobotMain;
+import android.view.View;
+import android.view.View.OnClickListener;
+
 import com.barobot.R;
 import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
 import com.barobot.parser.Queue;
-
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Toast;
 
 public class button_zajedz  implements OnClickListener {
 	@Override
@@ -19,7 +17,7 @@ public class button_zajedz  implements OnClickListener {
 			}}).start();
 	}
 	public void exec(View v) {
-		BarobotMain bb			= BarobotMain.getInstance();
+	//	BarobotMain bb			= BarobotMain.getInstance();
 		BarobotConnector barobot = Arduino.getInstance().barobot;
 		boolean autofill		= ( barobot.state.getInt("AUTOFILL", 1 ) == 1 );
 		Queue q					= new Queue();

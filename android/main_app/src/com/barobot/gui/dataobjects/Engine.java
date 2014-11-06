@@ -15,7 +15,6 @@ import org.orman.sql.Query;
 import android.content.Context;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Environment;
-import android.util.Log;
 
 import com.barobot.BarobotMain;
 import com.barobot.common.Initiator;
@@ -24,10 +23,10 @@ import com.barobot.gui.database.BarobotData;
 import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
 import com.barobot.other.Android;
-import com.barobot.other.InternetHelpers;
 import com.barobot.parser.Queue;
 import com.barobot.parser.message.AsyncMessage;
 import com.barobot.parser.message.Mainboard;
+import com.barobot.parser.utils.Decoder;
 
 public class Engine {
 	private List<Slot> slots;
@@ -66,7 +65,7 @@ public class Engine {
 				if(src.exists()){
 					try {
 						Initiator.logger.i("Engine DB ", "copy from SD card: "+ resetPath );
-						InternetHelpers.copy( resetPath, dbPath );
+						Android.copy( resetPath, dbPath );
 					} catch (IOException e) {
 						Initiator.logger.e("Engine DB ", "copy error", e );
 						throw new StartupException( "BarobotOrman Error", e );
@@ -208,7 +207,7 @@ public class Engine {
 
 		ld.robot_id			= barobot.getRobotId();
 		ld.order_source		= orderSource;
-		ld.datetime			= Android.getTimestamp();
+		ld.datetime			= Decoder.getTimestamp();
 		ld.id_drink			= recipe.id;
 		ld.ingredients		= ings.size(); 
 		ld.size				= pours;
@@ -271,7 +270,8 @@ public class Engine {
 				return q2;
 			}
 		} );
-		q.add( "S", true );		// read temp after
+		Android.readTabletTemp( q );
+		q.addWithDefaultReader("S" );		// read temp after
 		q.add( new AsyncMessage( true ) {
 			@Override	
 			public String getName() {
@@ -282,7 +282,7 @@ public class Engine {
 				recipe.counter++;
 				recipe.update();
 				ld.temp_after	= barobot.getLastTemp();
-				ld.time			= Android.getTimestamp() - ld.datetime;		// time diff in sec
+				ld.time			= Decoder.getTimestamp() - ld.datetime;		// time diff in sec
 				ld.insert();
 				return null;
 			}

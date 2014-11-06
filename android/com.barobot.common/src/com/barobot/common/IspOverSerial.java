@@ -1,12 +1,9 @@
 package com.barobot.common;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.logging.Logger;
 
-import com.barobot.common.constant.Constant;
 import com.barobot.common.interfaces.serial.IspCommunicator;
 import com.barobot.common.interfaces.serial.SerialInputListener;
 import com.barobot.common.interfaces.serial.Wire;

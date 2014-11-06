@@ -31,11 +31,11 @@ public class CarouselDataItem {
 	String m_szDocName;
 	int drink_id;
 	
-	public CarouselDataItem(String path, long date, String name, int drink_id) {
+	public CarouselDataItem(String path, long date, String name, int drink_id4) {
 		m_szImgPath = path;
 		m_nDocDate = date;
 		m_szDocName = name;
-		drink_id = drink_id;
+		drink_id = drink_id4;
 	}
 
 	

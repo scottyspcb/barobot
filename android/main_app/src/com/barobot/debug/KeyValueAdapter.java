@@ -64,7 +64,5 @@ public class KeyValueAdapter extends BaseAdapter {
         mKeys = mData.keySet().toArray(new String[mData.size()]);
 		super.notifyDataSetInvalidated();
 	}
-
 }
-
 

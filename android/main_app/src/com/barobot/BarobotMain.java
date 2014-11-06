@@ -1,30 +1,24 @@
 package com.barobot;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.Locale;
-
-import com.barobot.common.Initiator;
-import com.barobot.gui.dataobjects.StartupException;
-import com.barobot.gui.utils.LangTool;
-import com.barobot.other.Android;
-import com.barobot.other.InternetHelpers;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.res.Resources;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
-import android.os.PowerManager;
-import android.os.PowerManager.WakeLock;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
+
+import com.barobot.common.Initiator;
+import com.barobot.gui.dataobjects.StartupException;
+import com.barobot.gui.utils.LangTool;
+import com.barobot.other.Android;
+import com.barobot.other.InternetHelpers;
 
 public class BarobotMain extends Activity {
 	private static BarobotMain instance;
@@ -65,7 +59,9 @@ public class BarobotMain extends Activity {
 		    }
 		});
 		*/
+		getWindow().addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
 		try {
 			AppInvoker.createInstance(this);
 			AppInvoker.getInstance().onCreate();
@@ -110,7 +106,6 @@ public class BarobotMain extends Activity {
 	}
 
 	public void setFullScreen() {
-		/*
 		int currentapiVersion = android.os.Build.VERSION.SDK_INT;
 		if (currentapiVersion >= 19 ){	// kitkat
 			getWindow().getDecorView().setSystemUiVisibility(
@@ -120,7 +115,7 @@ public class BarobotMain extends Activity {
 			        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
 			        | View.SYSTEM_UI_FLAG_FULLSCREEN
 			        | View.SYSTEM_UI_FLAG_IMMERSIVE);			
-		}*/
+		}
 	}
 
 	public void changeLanguage(String langCode) {

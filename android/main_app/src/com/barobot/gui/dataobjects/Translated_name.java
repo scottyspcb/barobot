@@ -1,11 +1,9 @@
 package com.barobot.gui.dataobjects;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.orman.mapper.Model;
-import org.orman.mapper.ModelQuery;
 import org.orman.mapper.annotation.Entity;
 import org.orman.mapper.annotation.PrimaryKey;
 

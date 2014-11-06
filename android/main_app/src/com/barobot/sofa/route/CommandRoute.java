@@ -1,39 +1,26 @@
 package com.barobot.sofa.route;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.Map.Entry;
+import java.util.Random;
 
-import org.orman.dbms.ResultList;
-import org.orman.dbms.ResultList.ResultRow;
 import org.orman.mapper.Model;
 import org.orman.mapper.ModelQuery;
 import org.orman.sql.C;
-import org.orman.sql.Query;
-
-import android.os.Environment;
 
 import com.barobot.AppInvoker;
-import com.barobot.BarobotMain;
-import com.barobot.R;
 import com.barobot.common.Initiator;
 import com.barobot.common.constant.Constant;
-import com.barobot.common.interfaces.OnDownloadReadyRunnable;
-import com.barobot.debug.DebugTabCommands;
-import com.barobot.gui.database.BarobotData;
 import com.barobot.gui.dataobjects.Liquid_t;
 import com.barobot.gui.dataobjects.Recipe_t;
-import com.barobot.gui.dataobjects.Slot;
 import com.barobot.gui.dataobjects.Type;
 import com.barobot.gui.utils.LangTool;
 import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
 import com.barobot.other.Android;
 import com.barobot.other.Audio;
-import com.barobot.other.InternetHelpers;
 import com.barobot.parser.Queue;
 import com.barobot.parser.message.AsyncMessage;
 import com.barobot.parser.message.Mainboard;
@@ -314,7 +301,7 @@ public class CommandRoute extends EmptyRoute {
 				q.add("A2", true);
 				return true;
 			}
-		});	
+		});
 
 		index.put("command_machajx", new command_listener() {
 			@Override
@@ -395,25 +382,6 @@ public class CommandRoute extends EmptyRoute {
 			}
 		});
 
-		index.put("command_losujy", new command_listener() {
-			@Override
-			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
-					int posx, int posy) {
-				Random generator3 = new Random(19580427);
-				barobot.moveZDown(q, true);
-
-				/*
-				 * virtualComponents.SERVOY_BACK_POS
-				 * virtualComponents.SERVOY_FRONT_POS for(int f = 0;f<20;){ int
-				 * left = generator3.nextInt((int)(lengthy5/100 / 2)); int right
-				 * =generator3.nextInt((int)(lengthy5/100)); right+=
-				 * lengthy5/100 / 2; virtualComponents.moveY( q, (left * 100));
-				 * virtualComponents.moveY( q, (right * 100)); f=f+2; }
-				 */
-				return true;
-			}
-		});
-
 		index.put("command_fill5000", new command_listener() {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
@@ -427,11 +395,7 @@ public class CommandRoute extends EmptyRoute {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
-				q.add("EX", true);
 				barobot.moveZUp(q, -1, true);
-				q.add("DX", true);
-				barobot.disabley( q );
-				q.add(Constant.GETXPOS, true);
 				return true;
 			}
 		});
@@ -440,11 +404,8 @@ public class CommandRoute extends EmptyRoute {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
-				q.add("EX", true);
+
 				barobot.moveZDown(q, true);
-				q.add("DX", true);
-				barobot.disabley( q );
-				q.add(Constant.GETXPOS, true);
 				return true;
 			}
 		});
@@ -486,6 +447,7 @@ public class CommandRoute extends EmptyRoute {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
+
 				barobot.moveZDown(q, true);
 				int SERVOY_FRONT_POS5 = barobot.state.getInt(
 						"SERVOY_FRONT_POS", 1000);
@@ -569,7 +531,6 @@ public class CommandRoute extends EmptyRoute {
 			}
 		});
 
-		
 		index.put("command_reset1", new command_listener() {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
@@ -628,7 +589,7 @@ public class CommandRoute extends EmptyRoute {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
-				barobot.scann_leds(q);
+				barobot.lightManager.scann_leds(q);
 				return true;
 			}
 		});
@@ -637,7 +598,7 @@ public class CommandRoute extends EmptyRoute {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
-				barobot.setAllLeds(q,"22", 255, 0,255,0);
+				barobot.lightManager.setAllLeds(q, "22",255, 0, 255,0);
 				return true;
 			}
 		});
@@ -646,7 +607,7 @@ public class CommandRoute extends EmptyRoute {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
-				barobot.setAllLeds(q,"44", 255, 0,0,255);
+				barobot.lightManager.setAllLeds(q, "44",255, 0, 0,255);
 				return true;
 			}
 		});
@@ -654,7 +615,7 @@ public class CommandRoute extends EmptyRoute {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
-				barobot.turnOffLeds(mq);
+				barobot.lightManager.turnOffLeds(mq);
 				return true;
 			}
 		});	
@@ -665,7 +626,7 @@ public class CommandRoute extends EmptyRoute {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
-				barobot.setAllLeds(q,"11", 255, 255,0,0);
+				barobot.lightManager.setAllLeds(q, "11",255, 255, 0,0);
 				return true;
 			}
 		});
@@ -674,8 +635,7 @@ public class CommandRoute extends EmptyRoute {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
-				barobot.driver_x.setM(0);
-				barobot.state.set("MARGINX", 0);
+				barobot.driver_x.setMargin(0);
 				barobot.driver_x.setHPos(0);
 				return true;
 			}
@@ -685,10 +645,12 @@ public class CommandRoute extends EmptyRoute {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
+
+				Android.readTabletTemp( mq );
 				mq.add("x", true);
 				mq.add("y", true);
 				mq.add("z", true);
-				mq.add("S", true);		// temp
+				mq.addWithDefaultReader("S");		// temp
 				mq.add("A0", true);		// hall x
 				mq.add("A1", true);		// hall y
 				mq.add("A2", true);		// load cell
@@ -835,13 +797,13 @@ public class CommandRoute extends EmptyRoute {
 				final Queue q2			= new Queue();
 				
 				final Queue q_ready		= new Queue();
-				barobot.carret_color( q_ready, 0, 100, 100 );
+				barobot.lightManager.carret_color( q_ready, 0, 100, 100 );
 				
-				final long timestamp	= Android.getTimestamp();
-				barobot.carret_color( q2, 100, 100, 0);
+				final long timestamp	= Decoder.getTimestamp();
+				barobot.lightManager.carret_color( q2, 100, 100, 0);
 				q2.addWait(100);
 				q2.add("A2", true );	// read load cell
-				barobot.carret_color( q2, 0, 100, 100 );
+				barobot.lightManager.carret_color( q2, 0, 100, 100 );
 				q2.addWait(100);
 
 				AsyncMessage am = new AsyncMessage( true ) {
@@ -853,7 +815,7 @@ public class CommandRoute extends EmptyRoute {
 					public Queue run(Mainboard dev, Queue mainQueue) {
 						boolean cupFound = false;
 						Initiator.logger.i("cupFound"," test ");
-						long timestamp2 = Android.getTimestamp();
+						long timestamp2 = Decoder.getTimestamp();
 						if (timestamp2 - timestamp > 7000 ){			// 5 sec
 							cupFound = true;
 						}
@@ -871,7 +833,7 @@ public class CommandRoute extends EmptyRoute {
 				q.add(q2.copy());		// this queue content will be send
 
 				q2.addWait(2000);		// add to q2 (not to q). Wait will be used in AsyncMessage before next
-				barobot.carret_color( q2, 0, 0, 0 );
+				barobot.lightManager.carret_color( q2, 0, 0, 0 );
 
 				return true;
 			}

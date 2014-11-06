@@ -3,7 +3,6 @@ package com.barobot.other;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -13,9 +12,6 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.nio.file.Paths;
-import java.security.DigestInputStream;
-import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -142,23 +138,6 @@ public class InternetHelpers {
 		};
 		dx.start();    
 	}
-	public static boolean copy(String src1, String dst1) throws IOException {
-		File src = new File(src1);
-		File dst = new File(dst1);
-
-		InputStream in = new FileInputStream(src);
-		OutputStream out = new FileOutputStream(dst);
-
-		// Transfer bytes from in to out
-		byte[] buf = new byte[1024];
-		int len;
-		while ((len = in.read(buf)) > 0) {
-			out.write(buf, 0, len);
-		}
-		in.close();
-		out.close();
-		return true;
-	}
 	public static void doDownload(final String urlLink, final String fileName) {
 		Thread dx = new Thread() {
 			public void run() {
@@ -175,17 +154,17 @@ public class InternetHelpers {
 					URLConnection connection = url.openConnection();
 					connection.connect();
 					// this will be useful so that you can show a typical 0-100% progress bar
-					int fileLength = connection.getContentLength();
+			//		int fileLength = connection.getContentLength();
 
 					// download the file
 					InputStream input = new BufferedInputStream(url.openStream());
 					OutputStream output = new FileOutputStream(dir+"/"+fileName);
 
 					byte data[] = new byte[1024];
-					long total = 0;
+			//		long total = 0;
 					int count;
 					while ((count = input.read(data)) != -1) {
-						total += count;
+			//			total += count;
 						output.write(data, 0, count);
 						//            publishProgress((int) (total * 100 / fileLength));
 					}
@@ -234,18 +213,17 @@ public class InternetHelpers {
 				HttpPost httppost = new HttpPost(Constant.version_index);
 				try {
 					BarobotConnector barobot = Arduino.getInstance().barobot;
-					String ip = Android.getLocalIpAddress();
 
 					List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
 					nameValuePairs.add(new BasicNameValuePair("app_version", ""+Constant.ANDROID_APP_VERSION ));
 					nameValuePairs.add(new BasicNameValuePair("firmware_version", barobot.state.get("ARDUINO_VERSION", "0") ));
 					nameValuePairs.add(new BasicNameValuePair("robot_id", ""+barobot.getRobotId() ));
-
 					nameValuePairs.add(new BasicNameValuePair("stat1", barobot.state.get("STAT1", "0") ));
 					nameValuePairs.add(new BasicNameValuePair("stat2", barobot.state.get("STAT2", "0") ));
 					nameValuePairs.add(new BasicNameValuePair("lang", barobot.state.get("LANG", "pl" ) ));
 					nameValuePairs.add(new BasicNameValuePair("starts", barobot.state.get("ARDUINO_STARTS", "0") ));
 					nameValuePairs.add(new BasicNameValuePair("temp", ""+barobot.getLastTemp() ));
+					nameValuePairs.add(new BasicNameValuePair("ip", ""+Android.getLocalIpAddress() ));
 
 					httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 					HttpResponse response = httpclient.execute(httppost);	        // Execute HTTP Post Request

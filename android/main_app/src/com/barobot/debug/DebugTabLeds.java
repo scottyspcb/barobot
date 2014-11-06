@@ -18,8 +18,6 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.SeekBar;
 import android.widget.Switch;
-import android.widget.ToggleButton;
-
 import com.barobot.AppInvoker;
 import com.barobot.R;
 import com.barobot.activity.DebugActivity;
@@ -84,9 +82,9 @@ public class DebugTabLeds extends Fragment {
 		xb6.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 		    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 		        if (isChecked) {
-		        	barobot.setAllLeds( barobot.main_queue,"ff", 255, 255,255,255 );
+		        	barobot.lightManager.setAllLeds( barobot.main_queue, "ff",255, 255, 255,255 );
 		        } else {
-		        	barobot.turnOffLeds(barobot.main_queue);
+		        	barobot.lightManager.turnOffLeds(barobot.main_queue);
 		        }
 		    }
 		});
@@ -158,7 +156,7 @@ public class DebugTabLeds extends Fragment {
 		        	int green	= Color.green(color);
 		    		Queue q1	= new Queue();
 		    		BarobotConnector barobot = Arduino.getInstance().barobot;	
-		  		  	barobot.carret_color(q1, red,green,blue);
+		  		  	barobot.lightManager.carret_color(q1, red, green,blue);
 		  		  	barobot.main_queue.add(q1);
 					lastcolor = color;
 		        }
@@ -178,7 +176,7 @@ public class DebugTabLeds extends Fragment {
 		        	int green	= Color.green(color);
 		    		int blue	= Color.blue(color);
 		    		BarobotConnector barobot = Arduino.getInstance().barobot;
-		        	barobot.setAllLeds(barobot.main_queue, "ff", 100, red, green, blue);
+		        	barobot.lightManager.setAllLeds(barobot.main_queue, "ff", 100, red, green, blue);
 					lastcolor = color;
 		        }
 		        @Override
