@@ -19,10 +19,10 @@
     <string name="wizard_text_9">9. Weight sensor</string>  
     <string name="wizard_text_10">10. Left-right calibration</string>  
 
-    <string name="wizard_text_11">11. Front - back  magnets</string>  
-    <string name="wizard_text_12">12. Front - back calibration</string>      
+    <string name="wizard_text_11">11. Front-back  magnets</string>  
+    <string name="wizard_text_12">12. Front-back calibration</string>      
     <string name="wizard_text_14">13. Top-down calibration</string>  
-    <string name="wizard_text_16">15. Pouring</string>      
+    <string name="wizard_text_16">15. Pouring test</string>      
 
     
     <string name="wizard_text_servos_up">Go UP</string>
@@ -37,82 +37,81 @@
     <string name="wizard_text_servos_y_save">Save position</string>
     
 
-    <string name="wizard_text_power_restart">Please restart the Barobot Application. It it doesn\'t work please restart tablet.</string>
-    <string name="wizard_text_replug">Unplug USB cable from tablet and plug it back.</string>
+    <string name="wizard_text_power_restart">Please restart the Barobot Application. If that doesn\'t work please restart tablet.</string>
+    <string name="wizard_text_replug">Unplug microUSB cable from tablet and plug it back.</string>
     
     <string name="wizard_text_plug_dc">Connect Barobot to the power supply and switch it ON. Connect DC wire to tablet.</string>
     <string name="wizard_text_turn_on">Connect USB-mini USB adapter (host adapter) to tablet and to Barobot</string>
-    <string name="wizard_text_connect_wifi">Connect tablet to your local WiFi. Slide down right corner and select WiFi logo to show more options.</string>
+    <string name="wizard_text_connect_wifi">Connect tablet to your local WiFi. Slide down top right corner and select WiFi logo to show more options.</string>
 
     <string name="wizard_previous">Previous</string>
     <string name="wizard_main_menu">Main menu</string>
     <string name="wizard_save_and_next">Save and Next</string>
     <string name="wizard_refresh">Refresh</string>
     <string name="wizard_next">Next</string>
-    <string name="wizard_servoy_more_back">little more back &gt;</string>
-    <string name="wizard_servoy_more_front">&lt; little more front</string>
+    <string name="wizard_servoy_more_back">a little to the back &gt;</string>
+    <string name="wizard_servoy_more_front">&lt;a little to the front</string>
     <string name="wizard_servoy_change_front_position">Change front position</string>
     <string name="wizard_servoy_current_position">Current position</string>
     <string name="wizard_servoy_change_back_position">Change back position</string>
-    <string name="wizard_servoy_move_slider_back">Move slider to calibrate servo in back position</string>
-    <string name="wizard_servoy_move_slider_front">Move slider to calibrate servo in front position</string>
-    <string name="wizard_servoy_info">Adjust front and rear positions. Robot should touch edges gently. Loud banging means the position is too far. Poor alignment can cause premature damage of the engines. If something goes realy wrong just turn robot OFF and remove the obstacle..</string>
-    <string name="wizard_servoz_info">Move the carriage so that is not under any of the dispensers, and then check the upper and lower position match with the picture. Poor alignment can cause dispensers are not pressed hard enough or the carriage will hook them during movement.</string>
+    <string name="wizard_servoy_move_slider_back">Move slider to calibrate arm\'s back position</string>
+    <string name="wizard_servoy_move_slider_front">Move slider to calibrate arm\'s front position</string>
+    <string name="wizard_servoy_info">Adjust front and rear positions. Robot should touch edges gently. Loud banging means that arm tries to go too far front or back. Poor alignment can cause premature damage of the servomotors. If something goes really wrong just turn robot OFF and remove the obstacle..</string>
+    <string name="wizard_servoz_info">Move the carriage so that is not under any of the dispensers. Check if the upper and lower positions match with the picture. If top position is too low dispensers won\'t be pressed hard enough for smooth pouring. If down position is too high carriage will hit dispensers during left-right movement.</string>
     <string name="wizard_servoz_move_slider_up">Move slider to calibrate servo in UP position</string>
     <string name="wizard_servoz_move_down">Move slider to calibrate servo in DOWN position</string>
    	<string name="wizard_servoz_change_up_position">Change UP position</string>
     <string name="wizard_servoz_change_down_position">Change DOWN position</string>
 
-    <string name="wizard_weight_remove_glass_tray">Please remove Glass Tray and press measure button:</string>
+    <string name="wizard_weight_remove_glass_tray">Remove Glass Tray and press measure button:</string>
     <string name="wizard_weight_measure_without">Measure without Glass Tray</string>
-    <string name="wizard_weight_put_glass_tray">Please put the Glass Tray back and press measure button:</string>
+    <string name="wizard_weight_put_glass_tray">Put the Glass Tray back and press measure button:</string>
     <string name="wizard_weight_measure_with">Measure with Glass Tray</string>
     <string name="wizard_weight_current_value">Current value</string>
     <string name="wizard_weight_current_weight">Current weight</string>
-
     <string name="wizard_servoz_current_position">Current position</string>
-    <string name="wizard_servoz_lower">&lt; little lower</string>
-    <string name="wizard_servoz_higher">little higher &gt;</string>
+    <string name="wizard_servoz_lower">&lt; a little lower</string>
+    <string name="wizard_servoz_higher">a little higher &gt;</string>
     <string name="wizard_servoz_howto_img">Howto img</string>
     <string name="wizard_servoy_howto_img">Howto img</string>
     <string name="wizard_save_and_close">Save settings and close</string>
-    <string name="wizard_calibration_info">"Left-right calibration: Barobot will move Carriage from left to right and collect data from HALL X sensor. Green color indicates that dispenser above was founded. "</string>
+    <string name="wizard_calibration_info">"Left-right calibration: Barobot will move carriage from left to right and collect data from magnetic field sensor. Green color under the bottles indicates that dispenser position was found."</string>
     <string name="wizard_firmware_info">If new version is available please download it and install. WiFi connection is required.</string>
     <string name="wizard_firmware_check_button_text">Check for software updates</string>
     <string name="wizard_firmware_check_upload_button_text">Upload firmware</string>
     <string name="wizard_firmware_check_manual_button_text">Manual Upload (emergency only)</string>
     <string name="wizard_firmware_manual_options_info">Manual options (if something went wrong)</string>
-    <string name="wizard_servos_info">Now please check Stepper X (left - right movement). If robot moves properly click Next</string>
-    <string name="wizard_servos_solution">If something goes wrong just turn robot OFF using power switch and remove obstacles, check stepper, wirings and motor driver on mainboard.</string>
+    <string name="wizard_servos_info">Now check left - right motor. If carriage moves properly click Next</string>
+    <string name="wizard_servos_solution">If something goes wrong just turn robot OFF using power switch and remove obstacle, check: if pulley is firmly attached to the shaft; sequence of stepper motor wiring at the mainboard (and if the screwing touches actual wire and not the insulation); if motor driver sits firmly in the mainboard socket.</string>
 
     
     <string name="wizard_text_power_arduino">Barobot driver exists</string>
     <string name="wizard_text_power_queue">Commands module loaded</string>
 
     <string name="wizard_power_hints">Hints</string>
-    <string name="wizard_power_test_completed">Test completed successfully without error. Click Next to continue.</string>
+    <string name="wizard_power_test_completed">Test completed successfully. Click Next to continue.</string>
     
-    <string name="title_activity_hall_x">Left right senor</string>
+    <string name="title_activity_hall_x">Left right sensor</string>
     <string name="title_activity_finish">Calibration complete</string>
 
     <string name="wizard_sensors_hints">Hints</string>
-    <string name="wizard_sensors_completed">Test completed successfully without error. Click Next to continue.</string>    
+    <string name="wizard_sensors_completed">Test completed successfully. Click Next to continue.</string>    
   
     <string name="wizard_hallx_step0">Look at the robot from the front and then...</string>   
-    <string name="wizard_hallx_step1">- move Carriage gently to the extreme left and click Check button</string>
-    <string name="wizard_hallx_step2">- move Carriage gently to the extreme right and click Check button</string>
+    <string name="wizard_hallx_step1">- move carriage gently to the extreme left and click Check left button</string>
+    <string name="wizard_hallx_step2">- move carriage gently to the extreme right and click Check right button</string>
     <string name="wizard_hallx_check_step1">Check left</string>
     <string name="wizard_hallx_check_step2">Check right</string>
 
-    <string name="wizard_led_carriage_lights">Are carriage lights white?</string>
-    <string name="wizard_led_all_lights">Now, are all lights white?</string>
+    <string name="wizard_led_carriage_lights">Are glass tray lights all white?</string>
+    <string name="wizard_led_all_lights">Now, are all robot the lights white?</string>
 
-    <string name="wizard_led_result_ok">Test completed successfully without error. Click Next to continue.</string>
-    <string name="wizard_led_check_carret">Turn robot OFF and check leds wires. Isn\'t connector reversed or damaged?</string>
-    <string name="wizard_led_check_top">Turn robot OFF and check top leds wires. Isn\'t connector reversed or damaged?</string>
+    <string name="wizard_led_result_ok">Test completed successfully. Click Next to continue.</string>
+    <string name="wizard_led_check_carret">Turn robot OFF and check LEDs wires. Check against the manual if cables are attached in the right sequence.</string>
+    <string name="wizard_led_check_top">Turn robot OFF and check LEDs wires. Check against the manual if cables are attached in the right sequence.</string>
 
-    <string name="wizard_calibration_result_ok">Test completed successfully without error. Click Next to continue.</string>
-    <string name="wizard_calibration_waiting">Please wait for results...</string>
+    <string name="wizard_calibration_result_ok">Test completed successfully. Click Next to continue.</string>
+    <string name="wizard_calibration_waiting">Please wait for the results...</string>
 
     <string name="title_activity_led">LED Test</string>
     <string name="wizard_led_start_test">Start LED test</string>
@@ -120,11 +119,11 @@
     <string name="wizard_weight_sensor_error">Sensor error. Turn OFF barobot and check wires.</string>
 	<string name="wizard_diff_to_low">Difference is to small. Did you followed the wizard?</string>
  	<string name="wizard_weight_is_ok">Test completed successfully without error. Click Next to continue.</string>
- 
+
 	<string name="wizard_text_sensors_refresh">Click Refresh. If it doesn\'t help turn OFF Barobot using main power switch and turn it ON again. Check small red light on Carriage board. Check main-bus.</string>
  	<string name="wizard_text_sensors_upload_firmware">Please upload firmware using "Software update" wizard. If something still wont work please use "Manual update".</string>
- 	<string name="wizard_text_sensors_hallx">Test</string>
- 	<string name="wizard_text_sensors_hally">Test</string>
- 	<string name="wizard_text_sensors_weight">Test</string>
+ 	<string name="wizard_text_sensors_hallx">Is sensor connected? Check against the manual if cables are attached in the right sequence.</string>
+ 	<string name="wizard_text_sensors_hally">Is sensor connected? Check against the manual if cables are attached in the right sequence.</string>
+ 	<string name="wizard_text_sensors_weight">Is load cell connected? Check against the manual if cables are attached in the right sequence.</string>
 
 </resources>
