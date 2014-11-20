@@ -19,12 +19,16 @@ import android.widget.ToggleButton;
 
 import com.barobot.R;
 import com.barobot.common.Initiator;
+import com.barobot.common.interfaces.HardwareState;
+import com.barobot.common.interfaces.StateListener;
 import com.barobot.debug.DebugTabBottles;
 import com.barobot.debug.DebugTabCommands;
 import com.barobot.debug.DebugTabDevices;
 import com.barobot.debug.DebugTabGraph;
 import com.barobot.debug.DebugTabLeds;
 import com.barobot.debug.DebugTabLog;
+import com.barobot.hardware.Arduino;
+import com.barobot.hardware.devices.BarobotConnector;
 
 public class DebugActivity extends FragmentActivity implements	ActionBar.TabListener {
 	private static DebugActivity instance;
@@ -70,6 +74,7 @@ public class DebugActivity extends FragmentActivity implements	ActionBar.TabList
 	 * The {@link ViewPager} that will host the section contents.
 	 */
 	ViewPager mViewPager;
+	private StateListener sl;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -121,6 +126,15 @@ public class DebugActivity extends FragmentActivity implements	ActionBar.TabList
 					.setText(mSectionsPagerAdapter.getPageTitle(i))
 					.setTabListener(this));
 		}
+
+		BarobotConnector barobot = Arduino.getInstance().barobot;
+		sl = new StateListener(){
+			@Override
+			public void onUpdate( HardwareState state, String name, String value ) {
+				DebugTabCommands.updateValue(name, value);	
+			}
+		};
+		barobot.state.registerListener( sl );
 	}
 
 	@Override
@@ -215,10 +229,6 @@ public class DebugActivity extends FragmentActivity implements	ActionBar.TabList
 			return null;
 		}
 	}
-	
-	public void update(String name, String value) {
-		DebugTabCommands.updateValue(name, value);	
-	}
 
 	// Any update to UI can not be carried out in a non UI thread like the one
 	// used
@@ -267,4 +277,14 @@ public class DebugActivity extends FragmentActivity implements	ActionBar.TabList
 		}
 		return super.onKeyDown(keyCode, event);
 	}
+	
+	
+	
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		BarobotConnector barobot = Arduino.getInstance().barobot;
+		barobot.state.unregisterListener( sl );
+	}
+	
 }

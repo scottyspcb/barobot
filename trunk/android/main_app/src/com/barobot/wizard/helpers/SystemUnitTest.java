@@ -13,17 +13,24 @@ public class SystemUnitTest {
 	public int size() {
 		return list.size();
 	}
-	@SuppressWarnings("rawtypes")
-	public SystemTestItem get(int position) {
+
+	public SystemTestItem<?> get(int position) {
 		return list.get(position);
 	}
 
-	@SuppressWarnings("rawtypes")
 	public boolean checkAllOk() {
 		boolean ok = true;
-		for(SystemTestItem item : list){
-			ok = ok && item.getResult();
+		for(SystemTestItem<?> item : list){
+			ok = ok && item.getResult();		// always check all
 		}
 		return ok;
+	}
+	public int getHintId() {
+		for(SystemTestItem<?> item : list){
+			if( !item.getResult() ){
+				return item.getSolutionId();
+			}
+		}
+		return 0;
 	}
 }

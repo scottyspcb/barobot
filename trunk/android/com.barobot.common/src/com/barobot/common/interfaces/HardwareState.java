@@ -17,4 +17,8 @@ public interface HardwareState {
 	public abstract void reloadConfig( int robot_id );
 
 	void saveConfig(int robot_Serial);
+
+	public abstract void registerListener(StateListener sl);
+
+	public abstract void unregisterListener( StateListener sl);
 }

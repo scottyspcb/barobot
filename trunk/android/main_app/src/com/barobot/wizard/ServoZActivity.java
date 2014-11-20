@@ -8,8 +8,7 @@ import android.widget.TextView;
 
 import com.barobot.R;
 import com.barobot.common.Initiator;
-import com.barobot.hardware.Arduino;
-import com.barobot.hardware.devices.BarobotConnector;
+import com.barobot.common.interfaces.HardwareState;
 import com.barobot.parser.utils.Decoder;
 
 public class ServoZActivity extends BlankWizardActivity {
@@ -45,7 +44,6 @@ public class ServoZActivity extends BlankWizardActivity {
 		wizard_servoz_pos = (TextView) findViewById(R.id.wizard_servoz_pos);
 		enableTimer(500, 200);
 
-		final BarobotConnector barobot = Arduino.getInstance().barobot;
 		wizard_servoz_up_pos	= (TextView) findViewById(R.id.wizard_servoz_up_pos);
 		wizard_servoz_down_pos	= (TextView) findViewById(R.id.wizard_servoz_down_pos);
 
@@ -100,18 +98,41 @@ public class ServoZActivity extends BlankWizardActivity {
 	}
 
 	public void onOptionsButtonClicked(View view) {
-		final BarobotConnector barobot = Arduino.getInstance().barobot;
 		switch (view.getId()) {
 		case R.id.wizard_servoz_up:
 			int value1 = Decoder.toInt( ""+wizard_servoz_up_pos.getText(), -1);
 			barobot.moveZ(barobot.main_queue, value1 );
 			barobot.disablez(barobot.main_queue);
 			break;
+
+		case R.id.wizard_servoz_up_more_up:
+			int val2 = wizard_servoz_seek_up.getProgress();
+			wizard_servoz_seek_up.setProgress( val2+1 );	
+			break;
+
+		case R.id.wizard_servoz_up_more_down:
+			int val1 = wizard_servoz_seek_up.getProgress();
+			wizard_servoz_seek_up.setProgress( val1-1 );
+			break;
+
+			
+			
+		case R.id.wizard_servoz_down_more_up:
+			int val3 = wizard_servoz_seek_down.getProgress();
+			wizard_servoz_seek_down.setProgress( val3+1 );
+			break;
+
+		case R.id.wizard_servoz_down_more_down:
+			int val4 = wizard_servoz_seek_down.getProgress();
+			wizard_servoz_seek_down.setProgress( val4-1 );
+			break;
+
 		case R.id.wizard_servoz_down:
 			int value2 = Decoder.toInt( ""+wizard_servoz_down_pos.getText(), -1);
 			barobot.moveZ(barobot.main_queue, value2 );
 			barobot.disablez(barobot.main_queue);
 			break;
+
 		case R.id.wizard_servoz_next:
 			int valueUp		= Decoder.toInt( ""+wizard_servoz_up_pos.getText(), -1);
 			int valueDown	= Decoder.toInt( ""+wizard_servoz_down_pos.getText(), -1);
@@ -136,31 +157,12 @@ public class ServoZActivity extends BlankWizardActivity {
 		}
 	}
 	public void onTick() {
-		this.runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				final BarobotConnector barobot = Arduino.getInstance().barobot;
-				int value = barobot.state.getInt("POSZ", 0);
-				wizard_servoz_pos.setText(""+value);
-
-				int progress_up =-(value- up_min) / up_step;
-				if(progress_up>=0){
-					wizard_servoz_seek_up.setSecondaryProgress(progress_up);
-				}
-
-				int progress_down =-(value- down_min) / down_step;
-				if(progress_down>=0){
-					wizard_servoz_seek_down.setSecondaryProgress(progress_up);
-				}
-			}
-		});
-		final BarobotConnector barobot = Arduino.getInstance().barobot;
 		if( newValue !=lastValue && newValue > 700 && newValue < 2600 ){
 			if(++prescaler >= prescaler_max ){
 				if( newValue < neutral ){
-					barobot.moveZ(barobot.main_queue, newValue -200 );
-				}else{
 					barobot.moveZ(barobot.main_queue, newValue +200 );
+				}else{
+					barobot.moveZ(barobot.main_queue, newValue -200 );
 				}
 				barobot.moveZ(barobot.main_queue, newValue );
 				barobot.disablez(barobot.main_queue);
@@ -169,4 +171,24 @@ public class ServoZActivity extends BlankWizardActivity {
 			}
 		}
 	}
+	
+	protected void updateState(HardwareState state, String name, String value) {
+		if( "POSZ".equals(name)){
+			wizard_servoz_pos.setText(value);
+			
+			int value2	= Decoder.toInt(value, 0);
+			
+			int progress_up =-(value2- up_min) / up_step;
+			if(progress_up>=0){
+				wizard_servoz_seek_up.setSecondaryProgress(progress_up);
+			}
+
+			int progress_down =-(value2- down_min) / down_step;
+			if(progress_down>=0){
+				wizard_servoz_seek_down.setSecondaryProgress(progress_up);
+			}
+
+		}
+	}
+	
 }

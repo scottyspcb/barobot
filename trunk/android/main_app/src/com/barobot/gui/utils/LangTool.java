@@ -20,7 +20,7 @@ public class LangTool {
 	private static Map<String, String> translation_cache = new HashMap<String, String>();
 
 	public static void setLanguage(String readLangCode) {
-		Initiator.logger.w("setLanguage", readLangCode);
+	//	Initiator.logger.w("setLanguage", readLangCode);
 		ModelQuery query = ModelQuery.select().from(Language.class).where(C.eq("lang_code", readLangCode));
 		Language l = Model.fetchSingle(query.getQuery(), Language.class);
 		if( l == null ){

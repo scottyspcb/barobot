@@ -1,4 +1,4 @@
-#define B2_VERSION 0x0005
+#define B2_VERSION 0x0007
 #include "barobot_carret2_main.h"
 
 #include <Adafruit_NeoPixel.h>
@@ -133,11 +133,11 @@ volatile int16_t hallx_state[HXSTATES][3] = {
 
 volatile int16_t hally_state[HYSTATES][3] = {
 	//{CODE, MIN, MAX  }
-	{'E',	1024,	1024		},		// ERROR
-	{'R',	550,	1024-1		},		// neodym +
+	{'E',	800,	1024		},		// ERROR
+	{'R',	550,	800-1		},		// neodym +
 	{'A',	450,	550-1		},		// normal
-	{'B',	1,		450-1		},		// neodym -
-	{'N',	0,		0			}		// NOT CONNECTED	
+	{'B',	300,	450-1		},		// neodym -
+	{'N',	0,		300			}		// NOT CONNECTED	
 };
 
 String serial0Buffer = "";
@@ -455,11 +455,12 @@ void parseInput( String input ){
 		sscanf(charBuf,"%hhi,%lx", &num, &color );
 		setColor(num, color);
 
-	}else if( input.startsWith(METHOD_SET_X_ACCELERATION)) {    // AX10                  // ACCELERATION
+	}else if( command == 'A' && input.startsWith(METHOD_SET_X_ACCELERATION)) {    // AX10                  // ACCELERATION
 		unsigned int val = decodeInt(input, 2);
 		val = val * 100;
 		stepperX.setAcceleration(val);
 		Serial.println("-setAcceleration: " + String(val) );
+
 	}else if( input.equals("EX") ) {    // enable motor
 		stepperX.enableOutputs();
 	}else if( input.equals("EV") ) {    // enable motor
@@ -533,6 +534,12 @@ void parseInput( String input ){
 	//	sendln(ttt,6);
 	//	ttt[2]		= RETURN_DRIVER_READY_REPEAT;
 	//	sendln(ttt,6);
+	/*
+	}else if(command == 'S') {			// stop
+		byte command2	= input.charAt(1);
+		if( command2 == 'X'){		// SX - stop X
+			stepperX.stop();		// will send RX at end, and RSX 
+		}*/
 	}else{
 		defaultResult = false;
 		if( input.equals( "AA") ){    	// android active	// no result
@@ -952,8 +959,8 @@ void send_hx_pos2( byte state_name, byte dir, int16_t value ) {
 		(value & 0xFF),
 		(value >>8),
 	};	
-	Serial.print("-A0,");
-	Serial.println(String(value));
+	//Serial.print("-A0,");
+	//Serial.println(String(value));
 	sendln(ttt,10);
 }
 

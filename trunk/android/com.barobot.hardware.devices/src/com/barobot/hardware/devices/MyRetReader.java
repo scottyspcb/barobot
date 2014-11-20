@@ -184,6 +184,7 @@ public class MyRetReader implements RetReader {
 		//	n		Rn			OLD HAS NEXT ON I2C
 		//	I		RI			OLD TEST I2C
 		//	IH		RIH				IS HOME
+		//  S		RS				stats
 
 		String command = "";
 		if(wait_for2!= null && wait_for2.command != null && wait_for2.command != "" ){
@@ -196,6 +197,9 @@ public class MyRetReader implements RetReader {
 					Initiator.logger.i("Arduino.GlobalMatch", "auto_unlock");
 					return true;
 				}
+			}
+			if( command.equals("PING") && fromArduino.equals("PONG") ){		// hack for older version, now PING returns RPONG	
+				return true;
 			}
 			if( fromArduino.startsWith( "E" + command)){		// error tez odblokowuje
 				return true;
@@ -389,15 +393,15 @@ public class MyRetReader implements RetReader {
 					// RRS,VERSION,TEMP,STARTS,ROBOT_ID_LOW, ROBOT_ID_HIGH
 					if( parts[0] > 0 ){
 						state.set( "ARDUINO_VERSION", parts[0]);
-						Initiator.logger.e("MyRetReader.decoded.version", "is " + parts[0]);
+				//		Initiator.logger.i("MyRetReader.decoded.version", "is " + parts[0]);
 					}
 					if( parts[1] > 0 ){
 						state.set("TEMPERATURE", parts[1] );
-						Initiator.logger.e("MyRetReader.decoded.TEMPERATURE", "s " + parts[1]);
+				//		Initiator.logger.i("MyRetReader.decoded.TEMPERATURE", "s " + parts[1]);
 					}
 					if( parts[2] > 0 ){
 						state.set("ARDUINO_STARTS", parts[2] );
-						Initiator.logger.e("MyRetReader.decoded.ARDUINO_STARTS", "is " + parts[2]);
+				//		Initiator.logger.i("MyRetReader.decoded.ARDUINO_STARTS", "is " + parts[2]);
 					}
 					if( parts[3] > 0 || parts[4] > 0 ){			// OR is ok
 						int id = (parts[4] << 8) + parts[3];
@@ -559,7 +563,7 @@ public class MyRetReader implements RetReader {
 		if( address == Methods.EEPROM_ROBOT_ID_LOW ){		// always check high and then low, so here set robot_id
 			int value2 = (this.robot_id_high << 8) + value;
 			if( value2 > 0 && value2 < 65535 ){			// 65535 = 1111111111111111b (empty eeprom)
-				Initiator.logger.i("MyRetReader.from_eeprom_memory", "value4: "+ value2 );
+			//	Initiator.logger.i("MyRetReader.from_eeprom_memory", "value4: "+ value2 );
 				this.barobot.changeRobotId( value2, true );
 			}
 		}
@@ -597,7 +601,7 @@ public class MyRetReader implements RetReader {
 		String decoded = "/METHOD_IMPORTANT_ANALOG";
 		int[] parts = Decoder.decodeBytes( fromArduino );
 		if( parts.length >= 10 && parts[1] == Methods.INNER_HALL_X ){
-			decoded += "/INNER_HALL_X";
+			decoded += "/HALL_X";
 		//	Initiator.logger.i("input_parser", "hardware pos: " + hpos );
 		//	Initiator.logger.i("input_parser", "software pos: " + spos );
 			int state_name	= parts[2];
@@ -611,10 +615,12 @@ public class MyRetReader implements RetReader {
 			decoded += "/@h:" + hpos;
 			decoded += "/#" + value;
 
-			barobot.state.set("HALLX", value);
 			barobot.driver_x.setHPos( hpos );
+			barobot.state.set("HALLX", value);
+			barobot.state.set("HX_STATE", state_name);
 
-			if( state.getInt("scann_bottles", 0 ) > 0 && !checkInput && dir == Methods.DRIVER_DIR_FORWARD ){
+			boolean isCalibrating	= state.getInt("scann_bottles", 0 ) > 0 && !checkInput && dir == Methods.DRIVER_DIR_FORWARD;
+			if( isCalibrating ){
 				state_num++;
 				if(state_name == Methods.HX_STATE_0 ){				// ERROR
 					decoded += "/HX_STATE_0";
@@ -687,46 +693,52 @@ public class MyRetReader implements RetReader {
 					decoded += "/HX_STATE_8";
 				}else if(state_name == Methods.HX_STATE_9 ){
 					decoded += "/HX_STATE_9";
-					last_3 = 0;
-					last_7 = 0;
-					barobot.driver_x.setMargin(hpos);
-					// new software pos (equal 0);
-					spos = barobot.driver_x.hard2soft(hpos);
-					int SERVOY_FRONT_POS = state.getInt("SERVOY_FRONT_POS", 1000 );
-					barobot.hereIsStart(spos, SERVOY_FRONT_POS );
-					Initiator.logger.i("input_parser", "jestem w: " + spos );
-					barobot.driver_x.setSPos( spos );
+					last_3	= 0;
+					last_7	= 0;
+					if (hpos != barobot.driver_x.getHardwarePos()){
+						barobot.driver_x.setMargin(hpos);						// new software pos
+						spos = barobot.driver_x.hard2soft(hpos);
+						int SERVOY_FRONT_POS = state.getInt("SERVOY_FRONT_POS", 1000 );
+						barobot.hereIsStart(spos, SERVOY_FRONT_POS );
+						Initiator.logger.i("input_parser", "jestem w: " + spos );
+						barobot.driver_x.setSPos( spos );
+					}
 
 				}else if(state_name == Methods.HX_STATE_10 ){		// ERROR not connected
 					decoded += "/HX_STATE_10";
 				}
 			}else{
 				if(state_name == Methods.HX_STATE_0 ){				// ERROR
+					barobot.state.set("HALLX_UNDER", "-2");
 				}else if(state_name == Methods.HX_STATE_1 ){
 					decoded += "/HX_STATE_1";
 					state.set( "LENGTHX", spos);
 					int SERVOY_FRONT_POS = state.getInt("SERVOY_FRONT_POS", 1000 );
-
 					Initiator.logger.i("input_parser", "koniec skali: " + spos );
-
 					barobot.hereIsBottle(11, spos+100, SERVOY_FRONT_POS );
 					state_num = 0;
+					barobot.state.set("HALLX_UNDER", "1");
 				}else if(state_name == Methods.HX_STATE_2 ){
-				}else if(state_name == Methods.HX_STATE_3 ){
-				}else if(state_name == Methods.HX_STATE_4 ){
-				}else if(state_name == Methods.HX_STATE_5 ){
-				}else if(state_name == Methods.HX_STATE_6 ){
-				}else if(state_name == Methods.HX_STATE_7 ){
-				}else if(state_name == Methods.HX_STATE_8 ){
+				}else if(state_name == Methods.HX_STATE_3 ){	// back pos
+					barobot.state.set("HALLX_UNDER", "2");
+				}else if(state_name == Methods.HX_STATE_4 ){	// before back
+				}else if(state_name == Methods.HX_STATE_5 ){	// no magnet
+					barobot.state.set("HALLX_UNDER", "0");
+				}else if(state_name == Methods.HX_STATE_6 ){	// before front pos
+				}else if(state_name == Methods.HX_STATE_7 ){	// under front pos
+					barobot.state.set("HALLX_UNDER", "1");
+				}else if(state_name == Methods.HX_STATE_8 ){	
 				}else if(state_name == Methods.HX_STATE_9 ){
 					barobot.driver_x.setMargin(hpos);
 					spos = barobot.driver_x.hard2soft(hpos);// new software pos (equal 0)
 					barobot.driver_x.setSPos( spos );
 					int SERVOY_FRONT_POS = state.getInt("SERVOY_FRONT_POS", 1000 );
 					barobot.hereIsStart(spos, SERVOY_FRONT_POS );
-					Initiator.logger.i("input_parser", "jestem2 w: " + spos );
+		//			Initiator.logger.i("input_parser", "jestem2 w: " + spos );
+					barobot.state.set("HALLX_UNDER", "0");
 
 				}else if(state_name == Methods.HX_STATE_10 ){		// ERROR not connected
+					barobot.state.set("HALLX_UNDER", "-1");
 				}
 			}
 		//	Initiator.logger.i("INNER_HALL_X", "" + state_name + " / "+ hpos+ " / "+ dir);
@@ -747,16 +759,17 @@ public class MyRetReader implements RetReader {
 				};
 				// 125,1,66,0,0,0,228,2,177,1
 			*/
+
 		//	int state_name	= parts[2];
 			short hpos		= (short) (parts[6] << 8);
 			hpos			+= (short)parts[7];
 			int value		= parts[8] + (parts[9] << 8);
 			decoded += "/@pos:" + hpos;
 			decoded += "/value:" + value;
-
-			barobot.state.set("HALLY", value);
-			Initiator.logger.i("input_parser", decoded );
-
+			if( value > 0 ){
+				barobot.state.set("HALLY", value);
+			}
+	//		Initiator.logger.i("input_parser", decoded );
 		}else{
 			decoded += "/???";
 			Initiator.logger.i("MyRetReader.decoded", decoded);
@@ -795,7 +808,7 @@ public class MyRetReader implements RetReader {
 				//int hposx	= fromPos;
 				int spos2	= barobot.driver_x.hard2soft(hposx);
 				barobot.hereIsBottle(num, spos2, ypos );
-				barobot.lightManager.setLedsByBottle(barobot.main_queue, num, "02", 200, 0, 200, 0, false);
+				barobot.lightManager.color_by_bottle_now( num, "02", 200, 0, 200, 0);
 			}
 		}else{
 			Initiator.logger.i("bottle "+ num +"", "nie zgadza sie");

@@ -95,10 +95,9 @@ public class Engine {
 		{
 			BarobotConnector barobot	= Arduino.getInstance().barobot;
 			int robotId					= barobot.getRobotId();
+			Query q						= ModelQuery.select().from(Slot.class).where(C.eq("robot_id", robotId)).getQuery();
 
-			Query q		= ModelQuery.select().from(Slot.class).where(C.eq("robot_id", robotId)).getQuery();
-
-			Initiator.logger.w("Engine.loadSlots.sql", q.toString());
+		//	Initiator.logger.w("Engine.loadSlots.sql", q.toString());
 
 			slots		= Model.fetchQuery(q, Slot.class);
 

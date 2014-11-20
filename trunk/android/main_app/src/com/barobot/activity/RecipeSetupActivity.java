@@ -9,6 +9,7 @@ import org.orman.sql.C;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -28,6 +29,8 @@ import com.barobot.gui.dataobjects.Liquid_t;
 import com.barobot.gui.dataobjects.Recipe_t;
 import com.barobot.gui.dataobjects.Type;
 import com.barobot.gui.utils.LangTool;
+import com.barobot.other.ProgressTask;
+import com.barobot.other.ProgressTask.UiTask;
 
 public class RecipeSetupActivity extends BarobotMain implements OnItemSelectedListener {
 
@@ -42,15 +45,12 @@ public class RecipeSetupActivity extends BarobotMain implements OnItemSelectedLi
 	
 	private Recipe_t currentRecipe;
 
-
 	public void onAddRecipeButtonClicked (View view)
 	{
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
-		Initiator.logger.i( this.getClass().getName(), "onAddRecipeButtonClicked");
-		
-	    LayoutInflater inflater = getLayoutInflater();
-	    final View dialogView = inflater.inflate(R.layout.dialog_add_recipe, null); 
+	    LayoutInflater inflater		= getLayoutInflater();
+	    final View dialogView 		= inflater.inflate(R.layout.dialog_add_recipe, null); 
 
 	    builder.setView(dialogView)
 			.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -108,7 +108,6 @@ public class RecipeSetupActivity extends BarobotMain implements OnItemSelectedLi
 		ListView listView = (ListView) findViewById(R.id.recipe_ingridient_list);
 		listView.setAdapter(mAdapter);
 		listView.setOnItemClickListener(new OnItemClickListener() {
-
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position,
 					long id) {
@@ -158,9 +157,7 @@ public class RecipeSetupActivity extends BarobotMain implements OnItemSelectedLi
 	public void FillTypesList()
 	{
 		Engine engine = Engine.GetInstance();
-		
 		List<Type> types = engine.getTypes();
-
 		ArrayAdapter<Type> mAdapter = new ArrayAdapter<Type>(this, android.R.layout.simple_list_item_1, types);
 		ListView listView = (ListView) findViewById(R.id.recipe_types_list);
 		listView.setAdapter(mAdapter);
@@ -205,5 +202,36 @@ public class RecipeSetupActivity extends BarobotMain implements OnItemSelectedLi
 	private void SetCurrentType(Type type){
 		mCurrentType = type;
 	}
-
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+	    //Handle the back button
+	    if(keyCode == KeyEvent.KEYCODE_BACK) {
+	    	gotoMainMenu(null);
+	        return true;
+	    }else {
+	        return super.onKeyDown(keyCode, event);
+	    }
+	}
+	public void gotoMainMenu(View view){
+		UiTask tt = new UiTask() {
+			@Override
+			public void compute() {
+				Engine engine = Engine.GetInstance();
+			//	engine.invalidateData();
+				engine.loadSlots();
+				engine.getRecipes();
+			}
+			@Override
+			public void close() {
+				runOnUiThread(new Runnable() {
+					  public void run() {
+						finish();
+						overridePendingTransition(R.anim.push_down_in,R.anim.push_down_out);
+					  }
+				});
+			}
+		};
+		ProgressTask dd = new ProgressTask( this, tt );
+		dd.execute();
+	}
 }

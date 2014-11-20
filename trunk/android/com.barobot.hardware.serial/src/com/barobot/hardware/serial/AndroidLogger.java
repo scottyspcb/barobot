@@ -110,13 +110,15 @@ public class AndroidLogger implements CanLog {
 	@Override
 	public void appendError(Throwable tr) {
 		tr.printStackTrace();
-		PrintStream ps = new PrintStream(fos);  
-		try {
-            tr.printStackTrace( ps );
-        } catch (Exception e) {
-        } finally {
-        	 ps.close();
-        }
+		if( fos!= null ){
+			PrintStream ps = new PrintStream(fos);  
+			try {
+	            tr.printStackTrace( ps );
+	        } catch (Exception e) {
+	        } finally {
+	        	 ps.close();
+	        }
+		}
 		String rendered = tr.getMessage() + "\n----\n" + tr.getStackTrace();
 		appendError(rendered);
 	}

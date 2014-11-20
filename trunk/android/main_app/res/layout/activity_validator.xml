@@ -24,8 +24,10 @@
             <Button
                 android:id="@+id/wizard0"
                 style="@style/BigValidatorMenuButton"
+                android:layout_height="60dp"
                 android:onClick="onOptionsButtonClicked"
                 android:text="@string/wizard_text_0" />
+
         </LinearLayout>
 
         <TextView
@@ -103,34 +105,30 @@
                 android:text="@string/wizard_text_8" />
         </LinearLayout>
 
-        <!--
-        LinearLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content" >
-
-          
-
-          
-
             <Button
                 android:id="@+id/wizard9"
                 style="@style/ValidatorMenuButton"
                 android:onClick="onOptionsButtonClicked"
-               
                 android:text="@string/wizard_text_9" />
 
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
-
-            <Button
+           <Button
                 android:id="@+id/wizard10"
                 style="@style/ValidatorMenuButton"
                 android:onClick="onOptionsButtonClicked"
                
-                android:text="@string/wizard_text_10" />
+                android:text="@string/wizard_text_10" />  
+            
+        </LinearLayout>
+        
+        <!--
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+           
 
             <Button
                 android:id="@+id/wizard11"

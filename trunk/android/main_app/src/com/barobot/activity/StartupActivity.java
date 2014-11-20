@@ -1,7 +1,5 @@
 package com.barobot.activity;
 
-import java.util.Locale;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,7 +11,6 @@ import android.view.WindowManager;
 import com.barobot.BarobotMain;
 import com.barobot.R;
 import com.barobot.gui.dataobjects.Engine;
-import com.barobot.gui.utils.LangTool;
 import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
 
@@ -24,11 +21,8 @@ public class StartupActivity extends BarobotMain{
 		if( BarobotMain.canStart ){
 	        requestWindowFeature(Window.FEATURE_NO_TITLE);
 	        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-	//        getWindow().addFlags(WindowManager.LayoutParams.PREVENT_POWER_KEY);
 			setContentView(R.layout.activity_startup);
 			Engine.GetInstance().getRecipes();
-			String langCode = Locale.getDefault().getLanguage();	// i.e. "pl"
-			LangTool.setLanguage(langCode);
 			setFullScreen();
 		 }
 	}
@@ -51,7 +45,6 @@ public class StartupActivity extends BarobotMain{
 		Intent serverIntent = null;
 		int animIn = R.anim.push_left_in;
 		int animOut = R.anim.push_left_out;
-		
 		switch(view.getId())
 		{
 			case R.id.wizard_list:
@@ -97,7 +90,7 @@ public class StartupActivity extends BarobotMain{
 		}
 		BarobotMain.getInstance().changeLanguage(langCode);
 		setContentView(R.layout.activity_startup);	//reload
-		Log.i("translateName2 ", LangTool.translateName(2, "type", "aa" ));
+	//	Log.i("translateName2 ", LangTool.translateName(2, "type", "aa" ));
 	}
 
 	@Override
@@ -123,3 +116,4 @@ public class StartupActivity extends BarobotMain{
 		return super.onKeyDown(keyCode, event);
 	}
 }
+//        getWindow().addFlags(WindowManager.LayoutParams.PREVENT_POWER_KEY);

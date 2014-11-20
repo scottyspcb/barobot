@@ -124,5 +124,10 @@
     <string name="update_yes">Tak</string>
     <string name="update_no">Nie</string>
     
+    <string name="startup_loading">Chwileczkę, ładuję przepisy...</string>
+    <string name="preparing_drink_title">Obliczam składniki...</string>
+    <string name="preparing_drink_message">Jeszcze chwilkę</string>
+    
+    
     
 </resources>

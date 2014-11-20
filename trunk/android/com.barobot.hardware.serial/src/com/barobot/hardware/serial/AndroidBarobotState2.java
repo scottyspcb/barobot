@@ -10,6 +10,7 @@ import android.content.SharedPreferences;
 
 import com.barobot.common.constant.Constant;
 import com.barobot.common.interfaces.HardwareState;
+import com.barobot.common.interfaces.StateListener;
 import com.barobot.parser.utils.Decoder;
 
 public class AndroidBarobotState2 implements HardwareState{
@@ -107,6 +108,18 @@ public class AndroidBarobotState2 implements HardwareState{
 
 	@Override
 	public void saveConfig(int robot_Serial) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void registerListener(StateListener sl) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void unregisterListener(StateListener sl) {
 		// TODO Auto-generated method stub
 		
 	}

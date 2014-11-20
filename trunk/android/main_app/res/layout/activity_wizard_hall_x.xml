@@ -1,0 +1,156 @@
+<RelativeLayout xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="${relativePackage}.${activityClass}" xmlns:android="http://schemas.android.com/apk/res/android">
+
+    
+    
+    <LinearLayout
+        android:id="@+id/wizard_hallx_bottom_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:dividerPadding="15dp" >
+
+        <Button
+            android:id="@+id/wizard_hallx_prev"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onOptionsButtonClicked"
+            android:text="@string/wizard_previous"
+            android:textSize="40sp" />
+        <Button
+            android:id="@+id/wizard_hallx_close"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/wizard_main_menu"
+            android:onClick="onOptionsButtonClicked"
+            android:textSize="40sp" />
+		<Button
+            android:id="@+id/wizard_hallx_unlock"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onOptionsButtonClicked"
+            android:text="@string/wizard_refresh"
+            android:textSize="40sp" />
+        <Button
+            android:id="@+id/wizard_hallx_next"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:layout_weight="0.10"
+            android:text="@string/wizard_next"
+            android:onClick="onOptionsButtonClicked"
+            android:textSize="40sp" />
+    </LinearLayout>
+
+   <LinearLayout
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:layout_above="@+id/wizard_hallx_bottom_layout"
+       android:layout_alignParentLeft="true"
+       android:layout_alignParentRight="true"
+       android:layout_alignParentTop="true"
+       android:layout_centerHorizontal="true"
+       android:orientation="vertical"
+       android:padding="20dp" >
+
+       <TextView
+           android:id="@+id/wizard_hallx_textView0"
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:text="@string/wizard_hallx_step0"
+           android:textAppearance="?android:attr/textAppearanceLarge" />
+       
+       <TextView
+           android:id="@+id/wizard_hallx_textView1"
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:text="@string/wizard_hallx_step1"
+           android:textAppearance="?android:attr/textAppearanceLarge" />
+
+       <LinearLayout
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content" >
+
+           <Button
+               android:id="@+id/wizard_hallx_left"
+               android:layout_width="300dp"
+               android:layout_height="wrap_content"
+               android:onClick="onOptionsButtonClicked"
+               android:text="@string/wizard_hallx_check_step1" />
+
+           <TextView
+               android:id="@+id/wizard_hallx_value_left"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:gravity="center"
+               android:textAppearance="?android:attr/textAppearanceLarge" />
+       </LinearLayout>
+
+       <TextView
+           android:id="@+id/wizard_hallx_results_start"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_marginTop="20dp"
+           android:text="Result (start position)" />
+
+       <TextView
+           android:id="@+id/wizard_hallx_hints_start"
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:text=""
+           android:textSize="20sp" />
+
+       <TextView
+           android:id="@+id/wizard_hallx_textView2"
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:layout_marginTop="40dp"
+           android:text="@string/wizard_hallx_step2"
+           android:textAppearance="?android:attr/textAppearanceLarge" />
+
+       <LinearLayout
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content" >
+
+           <Button
+               android:id="@+id/wizard_hallx_right"
+               android:layout_width="300dp"
+               android:layout_height="wrap_content"
+               android:onClick="onOptionsButtonClicked"
+               android:text="@string/wizard_hallx_check_step2" />
+
+           <TextView
+               android:id="@+id/wizard_hallx_value_right"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:gravity="center"
+               android:textAppearance="?android:attr/textAppearanceLarge" />
+       </LinearLayout>
+       <TextView
+           android:id="@+id/wizard_hallx_results_max"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_marginTop="20dp"
+           android:text="Result (right position)" />
+
+       <TextView
+           android:id="@+id/wizard_hallx_hints_max"
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:text=""
+           android:textSize="20sp" />
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+   </LinearLayout>
+    
+</RelativeLayout>

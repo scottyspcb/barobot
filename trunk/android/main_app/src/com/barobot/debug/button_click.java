@@ -116,15 +116,15 @@ public class button_click implements OnClickListener{
 			});
 			break;
 		case R.id.firmware_download:
-			UpdateManager.downloadAndBurnFirmware( dbw, barobot.use_beta, false );
+			UpdateManager.downloadAndBurnFirmware( dbw, Constant.use_beta, false );
 			break;
 
 		case R.id.firmware_download_manual:
-			UpdateManager.downloadAndBurnFirmware( dbw, barobot.use_beta, true );
+			UpdateManager.downloadAndBurnFirmware( dbw, Constant.use_beta, true );
 			break;
 		case R.id.new_robot_id:
 			int isOnline = Android.isOnline(dbw);
-			if(isOnline > -1 && barobot.use_beta ){					// beta only
+			if(isOnline > -1  ){					// beta only
 				int robot_id = UpdateManager.getNewRobotId();		// download new robot_id (init hardware)
 				Initiator.logger.w("button_click.new_robot_id", "robot_id" + robot_id);
 				if( robot_id > 0 ){		// save robot_id to android and arduino

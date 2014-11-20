@@ -27,66 +27,13 @@ public class BarobotMain extends Activity {
 	public static BarobotMain getInstance() {
 		return instance;
 	}
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		if(instance == null){
 			instance = this; // Set up the window layout
 		}
-		/*
-		Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler() {
-		    @Override
-		    public void uncaughtException(Thread thread, Throwable ex)
-		    {
-		        new Thread() {
-		            @Override
-		            public void run() {
-		                Looper.prepare();
-		                Toast.makeText(getApplicationContext(), "Application crashed", Toast.LENGTH_LONG).show();
-		                Looper.loop();
-		            }
-		        }.start();
-
-		        try
-		        {
-		            Thread.sleep(4000); // Let the Toast display before app will get shutdown
-		        }
-		        catch (InterruptedException e)
-		        {
-		            // Ignored.
-		        }
-		    }
-		});
-		*/
-		getWindow().addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
-		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
-		try {
-			AppInvoker.createInstance(this);
-			AppInvoker.getInstance().onCreate();
-		} catch (StartupException e) {
-			Initiator.logger.e("BarobotMain.onCreate", "StartupException", e);
-			canStart = false;	
-			lastException = e;
-		} catch (NullPointerException e) {
-			Initiator.logger.e("BarobotMain.onCreate", "NullPointerException", e);
-			canStart = false;
-			lastException = e;
-		} catch (RuntimeException e) {
-			Initiator.logger.e("RuntimeException.onCreate", "NullPointerException", e);
-			canStart = false;
-			lastException = e;
-		} catch (Exception e) {
-			Initiator.logger.e("BarobotMain.onCreate", "Exception", e);
-			canStart = false;
-			lastException = e;
-		}
-		if(canStart){
-			AppInvoker.getInstance().onResume();
-		}else{
-			showRaportError( lastException );
-		}
+		startUp();
 	}
 
 	protected void setTextViewText(String text, int id){
@@ -126,7 +73,7 @@ public class BarobotMain extends Activity {
 
 		conf.locale = new Locale(langCode);
 		res.updateConfiguration(conf, dm);
-
+		//String langCode = Locale.getDefault().getLanguage();	// system alng i.e. "pl"
 		LangTool.setLanguage(langCode);
 	}
 	private void showRaportError(final Exception lastException2) {
@@ -148,24 +95,63 @@ public class BarobotMain extends Activity {
 		});
         dialog.create().show();
 	}
-}
-/*
-case R.id.menu_favorite:
-	serverIntent = new Intent(this, BarobotMain.class);
-	serverIntent.putExtra(BarobotMain.MODE_NAME, BarobotMain.Mode.Favorite.ordinal());
-	serverIntent.putExtra("Test", "Test2");
-	break;
+
+	private void startUp(){
+		/*
+		Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler() {
+		    @Override
+		    public void uncaughtException(Thread thread, Throwable ex)
+		    {
+		        new Thread() {
+		            @Override
+		            public void run() {
+		                Looper.prepare();
+		                Toast.makeText(getApplicationContext(), "Application crashed", Toast.LENGTH_LONG).show();
+		                Looper.loop();
+		            }
+		        }.start();
+
+		        try
+		        {
+		            Thread.sleep(4000); // Let the Toast display before app will get shutdown
+		        }
+		        catch (InterruptedException e)
+		        {
+		            // Ignored.
+		        }
+		    }
+		});
+		*/
+		getWindow().addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
+		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+		try {
+			AppInvoker.createInstance(this);
+			AppInvoker.getInstance().onCreate();
+		} catch (StartupException e) {
+			Initiator.logger.e("BarobotMain.onCreate", "StartupException", e);
+			canStart = false;	
+			lastException = e;
+		} catch (NullPointerException e) {
+			Initiator.logger.e("BarobotMain.onCreate", "NullPointerException", e);
+			canStart = false;
+			lastException = e;
+		} catch (RuntimeException e) {
+			Initiator.logger.e("RuntimeException.onCreate", "NullPointerException", e);
+			canStart = false;
+			lastException = e;
+		} catch (Exception e) {
+			Initiator.logger.e("BarobotMain.onCreate", "Exception", e);
+			canStart = false;
+			lastException = e;
+		}
+		if(canStart){
+			AppInvoker.getInstance().onResume();
+		}else{
+			showRaportError( lastException );
+		}
+	}
 	
-case R.id.menu_choose:
-	serverIntent = new Intent(this, RecipeListActivity.class);
-	serverIntent.putExtra(RecipeListActivity.MODE_NAME, RecipeListActivity.Mode.Normal.ordinal());
-	break;
-
-
-if(serverIntent!=null){
-	serverIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-	startActivity(serverIntent);
-}*/
+}
 
 
 /*

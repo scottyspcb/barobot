@@ -42,29 +42,29 @@ public class Wizard {
 		for( int i =0; i<11; i++){
 
 			q.addWait(time );
-			hw.barobot.lightManager.setLedsByBottle(q, i, "ff", 0, 0, 0, 0, true);
+			hw.barobot.lightManager.setLedsByBottle(q, i, "ff", 0, 0, 0, 0);
 
 			q.addWait(time );
 
-			hw.barobot.lightManager.setLedsByBottle(q, i, "ff", 0, 0, 0, 0, true);
-			hw.barobot.lightManager.setLedsByBottle(q, i, "01", 255, 255, 0, 0, true);
+			hw.barobot.lightManager.setLedsByBottle(q, i, "ff", 0, 0, 0, 0);
+			hw.barobot.lightManager.setLedsByBottle(q, i, "01", 255, 255, 0, 0);
 			
 			q.addWait(time );
 
-			hw.barobot.lightManager.setLedsByBottle(q, i, "ff", 0, 0, 0, 0, true);
-			hw.barobot.lightManager.setLedsByBottle(q, i, "02", 255, 0, 255, 0, true);
+			hw.barobot.lightManager.setLedsByBottle(q, i, "ff", 0, 0, 0, 0);
+			hw.barobot.lightManager.setLedsByBottle(q, i, "02", 255, 0, 255, 0);
 			q.addWait(time );
 
-			hw.barobot.lightManager.setLedsByBottle(q, i, "ff", 0, 0, 0, 0, true);
-			hw.barobot.lightManager.setLedsByBottle(q, i, "04", 255, 0, 0, 255, true);
+			hw.barobot.lightManager.setLedsByBottle(q, i, "ff", 0, 0, 0, 0);
+			hw.barobot.lightManager.setLedsByBottle(q, i, "04", 255, 0, 0, 255);
 			q.addWait(time );
 			
 	
-			hw.barobot.lightManager.setLedsByBottle(q, i, "ff", 0, 0, 0, 0, true);
-			hw.barobot.lightManager.setLedsByBottle(q, i, "08", 255, 255, 255, 255, true);
+			hw.barobot.lightManager.setLedsByBottle(q, i, "ff", 0, 0, 0, 0);
+			hw.barobot.lightManager.setLedsByBottle(q, i, "08", 255, 255, 255, 255);
 			q.addWait(time );
 
-			hw.barobot.lightManager.setLedsByBottle(q, i, "ff", 0, 0, 0, 0, true);
+			hw.barobot.lightManager.setLedsByBottle(q, i, "ff", 0, 0, 0, 0);
 		}
 	}
 
@@ -143,10 +143,10 @@ public class Wizard {
 				for (int b = 0;b<count;b++){
 					int i=0;
 					for (;i<255;i+=4){
-						hw.barobot.lightManager.setLedsByBottle(q2, num, "ff", i, i, i, i, true);					
+						hw.barobot.lightManager.setLedsByBottle(q2, num, "ff", i, i, i, i);					
 					}
 					for (i=255;i>=0;i-=4){
-						hw.barobot.lightManager.setLedsByBottle(q2, num, "ff", i, i, i, i, true);
+						hw.barobot.lightManager.setLedsByBottle(q2, num, "ff", i, i, i, i);
 					}
 					hw.barobot.lightManager.turnOffLeds( q2 );
 				} 

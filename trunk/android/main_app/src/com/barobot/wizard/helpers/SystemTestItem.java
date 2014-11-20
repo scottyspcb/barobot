@@ -4,12 +4,20 @@ import android.content.Context;
 
 public abstract class SystemTestItem<T>{
 	protected T value		= null;
-	public String title		= "1";
-	boolean result			= false;
+	public String title		= "";
 	private int solutionId	= 0;
+	private int title_id	= 0;
 
 	public SystemTestItem(String msg) {
-		title = msg;
+		title		= msg;
+	}
+	public SystemTestItem(String msg, int wizardSolution) {
+		title		= msg;
+		solutionId	= wizardSolution;
+	}
+	public SystemTestItem(int title, int wizardSolution) {
+		title_id	= title;
+		solutionId	= wizardSolution;
 	}
 
 	public abstract T read();
@@ -18,11 +26,11 @@ public abstract class SystemTestItem<T>{
 		if(value == null){
 			return false;
 		}
-		String val2	= ("" + value);
-		if(value.getClass().getName().equals("Boolean")){
+		if(value.getClass().getCanonicalName().equals("java.lang.Boolean")){
 			return ((Boolean) value).booleanValue();
 		}else{
 		}
+		String val2	= ("" + value);
 		if( value == null ){
 			return false;
 		}else if( val2.equals("") ||  val2.equals("0")){
@@ -30,29 +38,28 @@ public abstract class SystemTestItem<T>{
 		}
 		return true;
 	}
-
-	public String getTitle() {
+	public String getTitle( Context ctx ) {
+		if(title_id > 0){
+			return ctx.getResources().getText( title_id ).toString();
+		}
 		return this.title;
 	}
 	public String getValue() {
 		return ("" + value);
 	}
-
 	public final boolean getResult() {
 		value	= this.read();
-		result	= check();
-		return result;
+		boolean b =  check();
+	//	Initiator.logger.i( "SystemTestItem", this.title + "/" + value.getClass().getSimpleName() +"/" +value +"/"+ b);
+		return b;
 	}
-
 	public CharSequence getSolution( Context ctx ) {
-		solutionId = getSolutionId();
 		if( solutionId > 0 ){
 			return ctx.getResources().getText( solutionId );
 		}
 		return "";
 	}
-
 	public int getSolutionId() {
-		return 0;
+		return solutionId;
 	}
 }

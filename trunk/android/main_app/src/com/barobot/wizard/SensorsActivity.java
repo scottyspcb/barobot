@@ -23,6 +23,7 @@ public class SensorsActivity extends BlankWizardActivity {
 	protected boolean finished	= false;
 	protected boolean connected	= false;
 	protected boolean refreshPossible = true;
+	private Object lock = new Object();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -38,64 +39,88 @@ public class SensorsActivity extends BlankWizardActivity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		kva.notifyDataSetChanged();
+		synchronized( this.lock ){
+			kva.notifyDataSetChanged();
+		}
 	}
 
 	private void sendCommands(BarobotConnector barobot) {
-		Queue q	= new Queue();
-		q.add( new AsyncMessage( true ) {
-			@Override
-			public String getName() {
-				return "Check robot response";
-			}
-			@Override
-			public Queue run(Mainboard dev, Queue queue) {
-				finished = false;
-				return null;
-			}
-		});
-		q.add( "PING", "RPONG" );
-		q.add( new AsyncMessage( true ) {
-			@Override
-			public String getName() {
-				return "Check robot response";
-			}
-			@Override
-			public Queue run(Mainboard dev, Queue queue) {
-				connected = true;
-				finished = false;
-				return null;
-			}
-		});
-		barobot.lightManager.setAllLeds(q, "0", 0, 0, 0, 0 );
-		barobot.readHardwareRobotId(q);
-		q.add("x", true);
-		q.add("y", true);
-		q.add("z", true);
-		q.addWithDefaultReader("S");
-		q.add("A0", true);					// hall x
-		q.add("A1", true);					// hall y
-		q.add("A2", true);					// load cell
-		barobot.lightManager.carret_color(q, 255, 255, 255 );
-		barobot.lightManager.setAllLeds(q, "ff", 255, 255, 255, 255 );
-		q.add( new AsyncMessage( true ) {
-			@Override
-			public String getName() {
-				return "All ok";
-			}
-			@Override
-			public Queue run(Mainboard dev, Queue queue) {
-				finished = true;
-				SensorsActivity.this.runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						kva.notifyDataSetChanged();
+		synchronized( this.lock ){
+			Queue q	= new Queue();
+			q.add( new AsyncMessage( true ) {
+				@Override
+				public String getName() {
+					return "Check robot response";
+				}
+				@Override
+				public Queue run(Mainboard dev, Queue queue) {
+					finished = false;
+					return null;
+				}
+			});
+			q.add( "PING", "RPONG" );
+			q.add( new AsyncMessage( true ) {
+				@Override
+				public String getName() {
+					return "Check robot response";
+				}
+				@Override
+				public Queue run(Mainboard dev, Queue queue) {
+					connected = true;
+					finished = false;
+					return null;
+				}
+			});
+			barobot.lightManager.setAllLeds(q, "0", 0, 0, 0, 0 );
+			barobot.readHardwareRobotId(q);
+			q.add("x", true);
+			q.add("y", true);
+			q.add("z", true);
+			q.addWithDefaultReader("S");
+			q.add("A0", true);					// hall x
+			q.add("A1", true);					// hall y
+			q.add("A2", true);					// load cell
+			barobot.lightManager.carret_color(q, 255, 255, 255 );
+			barobot.lightManager.setAllLeds(q, "ff", 255, 255, 255, 255 );
+			q.add( new AsyncMessage( true ) {
+				@Override
+				public String getName() {
+					return "All ok";
+				}
+				@Override
+				public Queue run(Mainboard dev, Queue queue) {
+					finished = true;
+					SensorsActivity.this.runOnUiThread(new Runnable() {
+						@Override
+						public void run() {
+							kva.notifyDataSetChanged();
+						}
+					});
+					return null;
+				}
+			});
+			barobot.main_queue.add(q);
+		}
+	}
+
+	public void onTick(){
+		// if is connected AND is not busy AND not uploading firmware
+		if( Arduino.getInstance().getConnection().isConnected() ){
+			SensorsActivity.this.runOnUiThread(new Runnable() {		// refresh if queue has been locked
+				@Override
+				public void run() {
+					synchronized( lock ){
+						if( barobot != null && !Arduino.getInstance().barobot.main_queue.isBusy() ){
+							refreshPossible	= true;
+							sendCommands(barobot);
+						}else{
+							refreshPossible	= false;
+							kva.notifyDataSetChanged();
+						}
 					}
-				});
-				return null;
-			}
-		});
-		barobot.main_queue.add(q);
+				}
+			});
+		}
 	}
 
 	public void onOptionsButtonClicked(View view)
@@ -114,28 +139,7 @@ public class SensorsActivity extends BlankWizardActivity {
 				break;
 		}
 	}
-	public void onTick(){
-		// if is connected AND is not busy AND not uploading firmware
-		if( Arduino.getInstance().getConnection().isConnected() ){
-			final BarobotConnector barobot	= getBarobot();
-			if( barobot != null && !Arduino.getInstance().barobot.main_queue.isBusy() ){
-				refreshPossible	= true;
-				SensorsActivity.this.runOnUiThread(new Runnable() {		// refresh if queue has been locked
-					@Override
-					public void run() {
-						kva.notifyDataSetChanged();
-						sendCommands(barobot);
-					}
-				});
-			}else{
-				refreshPossible	= false;
-			}
-		}
-	}
-	
-
 	private void loadTests() {
-		final BarobotConnector barobot	= getBarobot();
 		sendCommands(barobot);
 		result_list.put( new SystemTestItem<Boolean>("Barobot is connected"){
 			@Override
@@ -143,13 +147,13 @@ public class SensorsActivity extends BlankWizardActivity {
 				return connected;
             }
 		});
-		result_list.put( new SystemTestItem<Boolean>("All questions to robot were answered"){
+		result_list.put( new SystemTestItem<Boolean>("All questions to robot were answered", R.string.wizard_text_sensors_refresh ){
 			@Override
 			public Boolean read() {
 				return finished;
             }
 		});
-		result_list.put( new SystemTestItem<Boolean>("Command Queue swamped"){
+		result_list.put( new SystemTestItem<Boolean>("Command Queue swamped", R.string.wizard_text_sensors_refresh ){
 			@Override
 			public Boolean read() {
 				return barobot.main_queue.isBusy();
@@ -159,7 +163,7 @@ public class SensorsActivity extends BlankWizardActivity {
                 return !this.value.booleanValue();
             }
 		});
-		result_list.put( new SystemTestItem<Boolean>("Auto refreshing is possible"){
+		result_list.put( new SystemTestItem<Boolean>("Auto refreshing is possible", R.string.wizard_text_sensors_refresh){
 			@Override
 			public Boolean read() {
 				return refreshPossible;
@@ -195,7 +199,7 @@ public class SensorsActivity extends BlankWizardActivity {
             }
 		});			
 
-		result_list.put( new SystemTestItem<Integer>("Barobot ID"){
+		result_list.put( new SystemTestItem<Integer>("Barobot ID", R.string.wizard_text_sensors_upload_firmware){
 			@Override
 			public Integer read() {
 				return barobot.state.getInt("ROBOT_ID", 0);
@@ -208,7 +212,7 @@ public class SensorsActivity extends BlankWizardActivity {
                 return false;
             }
 		});
-		result_list.put( new SystemTestItem<Integer>("ROBOT FIRMWARE VERSION"){
+		result_list.put( new SystemTestItem<Integer>("ROBOT FIRMWARE VERSION", R.string.wizard_text_sensors_upload_firmware){
 			@Override
 			public Integer read() {
 				return  barobot.state.getInt("ARDUINO_VERSION", 0);
@@ -218,7 +222,7 @@ public class SensorsActivity extends BlankWizardActivity {
                 return (value > 0);
             }
 		});
-		result_list.put( new SystemTestItem<Integer>("MICROPROCESSOR TEMPERATURE"){
+		result_list.put( new SystemTestItem<Integer>("MICROPROCESSOR TEMPERATURE", R.string.wizard_text_sensors_refresh){
 			@Override
 			public Integer read() {
 				return  barobot.state.getInt("TEMPERATURE", 0);
@@ -238,7 +242,7 @@ public class SensorsActivity extends BlankWizardActivity {
 				return (value > 0);
             }
 		});	
-		result_list.put( new SystemTestItem<Integer>("HALL X: left-right sensor"){
+		result_list.put( new SystemTestItem<Integer>("HALL X: left-right sensor", R.string.wizard_text_sensors_hallx ){
 			@Override
 			public Integer read() {
 				return barobot.state.getInt("HALLX", 0);
@@ -251,7 +255,7 @@ public class SensorsActivity extends BlankWizardActivity {
                 return false;
             }
 		});
-		result_list.put( new SystemTestItem<Integer>("HALL Y: front-back sensor"){
+		result_list.put( new SystemTestItem<Integer>("HALL Y: front-back sensor", R.string.wizard_text_sensors_hally ){
 			@Override
 			public Integer read() {
 				return barobot.state.getInt("HALLY", 0);
@@ -265,7 +269,7 @@ public class SensorsActivity extends BlankWizardActivity {
             }
 		});
 
-		result_list.put( new SystemTestItem<Integer>("LOAD CELL - weigh sensor"){
+		result_list.put( new SystemTestItem<Integer>("LOAD CELL - weigh sensor", R.string.wizard_text_sensors_weight ){
 			@Override
 			public Integer read() {
 				return barobot.state.getInt("LAST_WEIGHT", 0);
@@ -279,5 +283,9 @@ public class SensorsActivity extends BlankWizardActivity {
             }
 		});
 	}
-
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		barobot.lightManager.turnOffLeds(barobot.main_queue);
+	}
 }

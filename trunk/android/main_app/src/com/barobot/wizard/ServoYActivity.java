@@ -8,8 +8,10 @@ import android.widget.TextView;
 
 import com.barobot.R;
 import com.barobot.common.Initiator;
-import com.barobot.hardware.Arduino;
-import com.barobot.hardware.devices.BarobotConnector;
+import com.barobot.common.interfaces.HardwareState;
+import com.barobot.parser.Queue;
+import com.barobot.parser.message.AsyncMessage;
+import com.barobot.parser.message.Mainboard;
 import com.barobot.parser.utils.Decoder;
 
 public class ServoYActivity extends BlankWizardActivity {
@@ -19,7 +21,7 @@ public class ServoYActivity extends BlankWizardActivity {
 
 	SeekBar wizard_servoy_seek_front;
 	SeekBar wizard_servoy_seek_back;
-	
+
 	private int prescaler_max	= 4;
 	private int prescaler 		= prescaler_max;
 
@@ -46,7 +48,6 @@ public class ServoYActivity extends BlankWizardActivity {
 		wizard_servoy_pos = (TextView) findViewById(R.id.wizard_servoy_pos);
 		enableTimer(500, 200);
 
-		final BarobotConnector barobot = Arduino.getInstance().barobot;
 		wizard_servoy_front_pos	= (TextView) findViewById(R.id.wizard_servoy_front_pos);
 		wizard_servoy_back_pos	= (TextView) findViewById(R.id.wizard_servoy_back_pos);
 		wizard_servoy_front_pos.setText(barobot.state.get("SERVOY_FRONT_POS", "0"));
@@ -100,16 +101,67 @@ public class ServoYActivity extends BlankWizardActivity {
 
 	public void onOptionsButtonClicked(View view)
 	{
-		final BarobotConnector barobot = Arduino.getInstance().barobot;
 		switch (view.getId()) {
 		case R.id.wizard_servoy_front:
 			int value1 = Decoder.toInt( ""+wizard_servoy_front_pos.getText(), -1);
 			barobot.moveY(barobot.main_queue, value1, true);
+			barobot.readHallY( barobot.main_queue );
+			barobot.main_queue.add( new AsyncMessage( true ) {
+				@Override	
+				public String getName() {
+					return "measure Hall Y" ;
+				}
+				@Override
+				public Queue run(Mainboard dev, Queue queue) {
+					int hally		= barobot.state.getInt("HALLY", 0);
+					if( hally > 0 ){
+						barobot.state.getInt("HALLY_BELOW_BACK", 0);
+						Initiator.logger.e("HALLY_FRONT_VALUE", "" + hally);
+					}
+					return null;
+				}
+			} );
 			break;
+	
+		case R.id.wizard_servoy_front_more_front:
+			int val1 = wizard_servoy_seek_front.getProgress();
+			wizard_servoy_seek_front.setProgress( val1  -1 );
+
+			break;
+		case R.id.wizard_servoy_front_more_back:
+			int val2 = wizard_servoy_seek_front.getProgress();
+			wizard_servoy_seek_front.setProgress( val2 + 1 );
+
+			break;
+		case R.id.wizard_servoy_back_more_front:
+			int val3 = wizard_servoy_seek_back.getProgress();
+			wizard_servoy_seek_back.setProgress( val3 - 1);
+			break;
+		case R.id.wizard_servoy_back_more_back:
+			int val4 = wizard_servoy_seek_back.getProgress();
+			wizard_servoy_seek_back.setProgress( val4 +1 );
+
+			
 		case R.id.wizard_servoy_back:
 			int value2 = Decoder.toInt( ""+wizard_servoy_back_pos.getText(), -1);
 		//	barobot.moveZ(barobot.main_queue, value2 );
 			barobot.moveY(barobot.main_queue, value2, true);
+			barobot.readHallY( barobot.main_queue );
+			barobot.main_queue.add( new AsyncMessage( true ) {
+				@Override	
+				public String getName() {
+					return "measure Hall Y" ;
+				}
+				@Override
+				public Queue run(Mainboard dev, Queue queue) {
+					int hally		= barobot.state.getInt("HALLY", 0);
+					if( hally > 0 ){
+						barobot.state.getInt("HALLY_BELOW_BACK", 0);
+						Initiator.logger.e("HALLY_BACK_VALUE", "" + hally);
+					}
+					return null;
+				}
+			} );
 			break;
 		case R.id.wizard_servoy_next:
 			int valuefront		= Decoder.toInt( ""+wizard_servoy_front_pos.getText(), -1);
@@ -134,24 +186,6 @@ public class ServoYActivity extends BlankWizardActivity {
 	}
 
 	public void onTick(){
-		this.runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				final BarobotConnector barobot = Arduino.getInstance().barobot;
-				int value = barobot.state.getInt("POSY", 0);
-				wizard_servoy_pos.setText(""+value);
-
-				int progress_front =(value- front_min) / front_step;
-				if(progress_front>=0){
-					wizard_servoy_seek_front.setSecondaryProgress(progress_front);
-				}
-				int progress_back =(value- back_min) / back_step;
-				if(progress_back>=0){
-					wizard_servoy_seek_back.setSecondaryProgress(progress_front);
-				}
-			}
-		});
-		final BarobotConnector barobot = Arduino.getInstance().barobot;
 		if( newValue !=lastValue && newValue > 700 && newValue < 2500 ){
 			if(++prescaler >= prescaler_max ){
 				if( newValue < neutral ){
@@ -165,4 +199,20 @@ public class ServoYActivity extends BlankWizardActivity {
 			}
 		}
 	}
+	
+	
+	protected void updateState(HardwareState state, String name, String value) {
+		if( "POSY".equals(name)){
+			wizard_servoy_pos.setText(value);
+			int value2			= Decoder.toInt(value, 0);
+			int progress_front 	= (value2- front_min) / front_step;
+			if(progress_front>=0){
+				wizard_servoy_seek_front.setSecondaryProgress(progress_front);
+			}
+			int progress_back =(value2- back_min) / back_step;
+			if(progress_back>=0){
+				wizard_servoy_seek_back.setSecondaryProgress(progress_front);
+			}
+		}
+	}	
 }

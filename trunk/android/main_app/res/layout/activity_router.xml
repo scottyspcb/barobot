@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <TextView
+        android:id="@+id/router_textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/router_progressBar1"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp"
+        android:text="@string/startup_loading"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <ProgressBar
+        android:id="@+id/router_progressBar1"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true" />
+    <TextView
+        android:id="@+id/router_barobot_version"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="10dp"
+
+        android:layout_marginRight="10dp"
+        android:text="@string/startup_version"
+        android:textAppearance="?android:attr/textAppearance" />
+
+    <TextView
+        android:id="@+id/router_barobot_head"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/router_barobot_version"
+        android:layout_alignBottom="@+id/router_barobot_version"
+        android:layout_toLeftOf="@+id/router_barobot_version"
+        android:text="@string/startup_head"
+        android:textAppearance="?android:attr/textAppearance" />
+
+</RelativeLayout>

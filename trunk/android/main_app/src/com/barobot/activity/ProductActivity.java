@@ -16,6 +16,7 @@ import com.barobot.gui.dataobjects.Type;
 import com.barobot.gui.utils.CapacityProductWrapper;
 import com.barobot.gui.utils.LangTool;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.AlertDialog;
 import android.content.DialogInterface;

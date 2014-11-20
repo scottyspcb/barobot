@@ -3,6 +3,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.barobot.common.interfaces.HardwareState;
+import com.barobot.common.interfaces.StateListener;
 
 public class EmptyBarobotState implements HardwareState {
 	private Map<String, String> hashmap = new HashMap<String, String>();
@@ -37,6 +38,14 @@ public class EmptyBarobotState implements HardwareState {
 	}
 	@Override
 	public void saveConfig(int robot_Serial) {		// commit into settings
+		// TODO Auto-generated method stub
+	}
+	@Override
+	public void registerListener(StateListener sl) {
+		// TODO Auto-generated method stub
+	}
+	@Override
+	public void unregisterListener(StateListener sl) {
 		// TODO Auto-generated method stub
 	}
 }
