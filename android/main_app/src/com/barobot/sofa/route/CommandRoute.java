@@ -154,7 +154,6 @@ public class CommandRoute extends EmptyRoute {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
-				// Log.i("nextpos-100", "old: "+posx + " next: "+ ( posx -100));
 				barobot.moveZDown(q, true);
 				barobot.driver_x.moveTo(q, (posx - 100));
 				return true;
@@ -164,7 +163,6 @@ public class CommandRoute extends EmptyRoute {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
-				// Log.i("nextpos+100", "old: "+posx + " next: "+ ( posx +100));
 				barobot.moveZDown(q, true);
 				barobot.driver_x.moveTo(q, (posx + 100));
 				return true;
@@ -175,8 +173,6 @@ public class CommandRoute extends EmptyRoute {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
-				// Log.i("nextpos+1000", "old: "+posx + " next: "+ ( posx
-				// +1000));
 				barobot.moveZDown(q, true);
 				barobot.driver_x.moveTo(q, (posx + 1000));
 				return true;
@@ -187,8 +183,6 @@ public class CommandRoute extends EmptyRoute {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
-				// Log.i("nextpos+10000", "old: "+posx + " next: "+ ( posx
-				// +10000));
 				barobot.moveZDown(q, true);
 				barobot.driver_x.moveTo(q, (posx + 10000));
 				return true;

@@ -19,6 +19,8 @@ import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
 import com.barobot.wizard.CalibrationActivity;
 import com.barobot.wizard.FirmwareActivity;
+import com.barobot.wizard.HallXActivity;
+import com.barobot.wizard.LedActivity;
 import com.barobot.wizard.PowerActivity;
 import com.barobot.wizard.SensorsActivity;
 import com.barobot.wizard.ServoYActivity;
@@ -28,6 +30,19 @@ import com.barobot.wizard.WeightSensorActivity;
 
 public class ValidatorActivity extends BarobotMain {
 	boolean disable_back = false;
+
+	public static Class<?>[] list = {
+		PowerActivity.class,
+		FirmwareActivity.class,
+		SensorsActivity.class,
+		LedActivity.class,
+		ServoZActivity.class,
+		ServoYActivity.class,
+		HallXActivity.class,
+		ServosActivity.class,
+		WeightSensorActivity.class,
+		CalibrationActivity.class,
+	};
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +54,6 @@ public class ValidatorActivity extends BarobotMain {
 
 		if (extras != null) {
 		    disable_back = (extras.getInt("BACK_TO_WIZARD", 0) > 0) ;		// disable_back in TRUE at first start
-		    Log.e("ValidatorActivity.disable_back", ""+disable_back);
 		}
 		Log.e("ValidatorActivity.no disable_back", "");
 
@@ -67,17 +81,6 @@ public class ValidatorActivity extends BarobotMain {
 			barobot.state.set("ROBOT_CAN_MOVE", Constant.WIZARD_VERSION );
 		}
 	}
-
-	public static Class<?>[] list = {
-		PowerActivity.class,
-		FirmwareActivity.class,
-		SensorsActivity.class,
-		ServoZActivity.class,
-		ServoYActivity.class,
-		ServosActivity.class,
-		WeightSensorActivity.class,
-		CalibrationActivity.class,
-	};
 
 	public void onOptionsButtonClicked(View view)	{
 		switch(view.getId()){
@@ -111,13 +114,14 @@ public class ValidatorActivity extends BarobotMain {
 			case R.id.wizard8:
 				gotoActivity(7);
 				break;
-/*
 			case R.id.wizard9:
 				gotoActivity(8);
 				break;
+						
 			case R.id.wizard10:
 				gotoActivity(9);
-				break;				
+				break;	
+				/*	
 			case R.id.wizard11:
 				gotoActivity(10);
 				break;	
@@ -149,7 +153,6 @@ public class ValidatorActivity extends BarobotMain {
 	//	Initiator.logger.i("ValidatorActivity.getActivityClass", " step: "+ num);
 		return list[num];
 	}
-
 
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {

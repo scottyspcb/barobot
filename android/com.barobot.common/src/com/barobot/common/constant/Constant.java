@@ -1,14 +1,14 @@
 package com.barobot.common.constant;
 
 public class Constant {
- 
-	public static final int ANDROID_APP_VERSION	= 5;
-	public static final int WIZARD_VERSION		= 5;
+	public static final int ANDROID_APP_VERSION		= 7;
+	public static final int WIZARD_VERSION			= 6;
+	public static final int MAX_FIRMWARE_VERSION	= 16;	
 
     // Debugging
     public static final String TAG = "BarobotMainApp";
     public static final String SETTINGS_TAG = "BAROBOT";
-    
+
     // Unique UUID for this application
    // public static final UUID MY_UUID_SECURE =	UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
 
@@ -71,6 +71,7 @@ public class Constant {
 
 	public static String localDbPath		= "/data/data/com.barobot/databases/" + DATABASE_NAME;
 //	public static String sourcepath			= "/storage/emulated/0/download/" + DATABASE_NAME;
+	public static String home_path			= "/Barobot";			// relative path
 	public static String copyPath			= "/Barobot/" + DATABASE_NAME;
 	public static String logFile			= "/Barobot/log.log";
 	public static String firmware			= "/Barobot/barobot.hex";
@@ -81,5 +82,6 @@ public class Constant {
 	public static String version_index		= "http://barobot.com/synchro/check_version.php";
 
 	public static int glass_try_weight		 = 121;	// glass try weight in g
+	static public boolean use_beta		= false;
 
 }

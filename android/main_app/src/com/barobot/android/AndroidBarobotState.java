@@ -1,7 +1,9 @@
 package com.barobot.android;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.orman.dbms.ResultList;
@@ -12,10 +14,10 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.barobot.activity.DebugActivity;
 import com.barobot.common.Initiator;
 import com.barobot.common.constant.Constant;
 import com.barobot.common.interfaces.HardwareState;
+import com.barobot.common.interfaces.StateListener;
 import com.barobot.gui.database.BarobotData;
 import com.barobot.gui.dataobjects.Engine;
 import com.barobot.other.Android;
@@ -36,6 +38,8 @@ public class AndroidBarobotState implements HardwareState{
 		"TEMPERATURE",
 		"ARDUINO_VERSION",
 		"MIN_WEIGHT",
+		"HX_STATE",
+		"HALLX_UNDER",
 		"ONCE_PER_APP_START",
 		"ONCE_PER_ROBOT_START",
 	};
@@ -63,13 +67,6 @@ public class AndroidBarobotState implements HardwareState{
 	@Override
 	public String get( String name, String def ){
 		return myPrefs.getString(name, def );
-	}
-
-	private void update(String name, String value) {
-		final DebugActivity dialog = DebugActivity.getInstance();
-		if(dialog!=null){
-			dialog.update(name, value );
-		}
 	}
 
 	@Override
@@ -137,5 +134,19 @@ public class AndroidBarobotState implements HardwareState{
 		}
 	}
 
-	
+	private void update( String name, String value) {
+		for(StateListener listener: listeners){
+			listener.onUpdate( this, name, value);
+		}
+	}
+
+	List<StateListener> listeners = new ArrayList<StateListener>();
+	@Override
+	public void registerListener(StateListener sl) {
+		this.listeners.add(sl);
+	}
+	@Override
+	public void unregisterListener(StateListener sl) {
+		this.listeners.remove(sl);
+	}
 }

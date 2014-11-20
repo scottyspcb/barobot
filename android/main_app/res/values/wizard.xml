@@ -7,26 +7,22 @@
     <string name="wizard_lang_pl">Polski</string>
     <string name="wizard_lang_en">English</string>
 
-    
   	<string name="wizard_text_0">Start wizard</string>    
     <string name="wizard_text_1">1. Power</string>
     <string name="wizard_text_2">2. Software</string>  
     <string name="wizard_text_3">3. Sensors</string>
-    <string name="wizard_text_4">4. Up-down movement</string>  
-    <string name="wizard_text_5">5. Front-back movement</string>
-    <string name="wizard_text_6">6. Left-right movement</string>
-    <string name="wizard_text_7">7. Weight sensor</string>  
-    <string name="wizard_text_8">8. Left-right calibration</string>  
-    
-    
-    <string name="wizard_text_9">9. Front - back movement</string>  
-    <string name="wizard_text_10">10. Front - back  magnets</string>  
-    <string name="wizard_text_11">11. Front - back calibration</string>  
-    <string name="wizard_text_12">7. Left-right magnets</string>  
-    
-    <string name="wizard_text_13">13. Top-down calibration</string>  
-    <string name="wizard_text_14">6. Left-right movement</string>  
-    <string name="wizard_text_15">15. Pouring</string>      
+    <string name="wizard_text_4">4. LED Test</string>
+    <string name="wizard_text_5">5. Up-down movement</string>  
+    <string name="wizard_text_6">6. Front-back movement</string>
+    <string name="wizard_text_7">7. Left-right sensor</string>
+    <string name="wizard_text_8">8. Left-right movement</string>  
+    <string name="wizard_text_9">9. Weight sensor</string>  
+    <string name="wizard_text_10">10. Left-right calibration</string>  
+
+    <string name="wizard_text_11">11. Front - back  magnets</string>  
+    <string name="wizard_text_12">12. Front - back calibration</string>      
+    <string name="wizard_text_14">13. Top-down calibration</string>  
+    <string name="wizard_text_16">15. Pouring</string>      
 
     
     <string name="wizard_text_servos_up">Go UP</string>
@@ -53,8 +49,8 @@
     <string name="wizard_save_and_next">Save and Next</string>
     <string name="wizard_refresh">Refresh</string>
     <string name="wizard_next">Next</string>
-    <string name="wizard_servoy_more_back">more back &gt;</string>
-    <string name="wizard_servoy_more_front">&lt; more front</string>
+    <string name="wizard_servoy_more_back">little more back &gt;</string>
+    <string name="wizard_servoy_more_front">&lt; little more front</string>
     <string name="wizard_servoy_change_front_position">Change front position</string>
     <string name="wizard_servoy_current_position">Current position</string>
     <string name="wizard_servoy_change_back_position">Change back position</string>
@@ -73,9 +69,10 @@
     <string name="wizard_weight_measure_with">Measure with Glass Tray</string>
     <string name="wizard_weight_current_value">Current value</string>
     <string name="wizard_weight_current_weight">Current weight</string>
+
     <string name="wizard_servoz_current_position">Current position</string>
-    <string name="wizard_servoz_lower">&lt; lower</string>
-    <string name="wizard_servoz_higher">higher &gt;</string>
+    <string name="wizard_servoz_lower">&lt; little lower</string>
+    <string name="wizard_servoz_higher">little higher &gt;</string>
     <string name="wizard_servoz_howto_img">Howto img</string>
     <string name="wizard_servoy_howto_img">Howto img</string>
     <string name="wizard_save_and_close">Save settings and close</string>
@@ -85,10 +82,49 @@
     <string name="wizard_firmware_check_upload_button_text">Upload firmware</string>
     <string name="wizard_firmware_check_manual_button_text">Manual Upload (emergency only)</string>
     <string name="wizard_firmware_manual_options_info">Manual options (if something went wrong)</string>
-    <string name="wizard_servos_info">Now please check Stepper X (left - right movement)</string>
+    <string name="wizard_servos_info">Now please check Stepper X (left - right movement). If robot moves properly click Next</string>
     <string name="wizard_servos_solution">If something goes wrong just turn robot OFF using power switch and remove obstacles, check stepper, wirings and motor driver on mainboard.</string>
 
     
+    <string name="wizard_text_power_arduino">Barobot driver exists</string>
+    <string name="wizard_text_power_queue">Commands module loaded</string>
+
+    <string name="wizard_power_hints">Hints</string>
+    <string name="wizard_power_test_completed">Test completed successfully without error. Click Next to continue.</string>
     
-    
+    <string name="title_activity_hall_x">Left right senor</string>
+    <string name="title_activity_finish">Calibration complete</string>
+
+    <string name="wizard_sensors_hints">Hints</string>
+    <string name="wizard_sensors_completed">Test completed successfully without error. Click Next to continue.</string>    
+  
+    <string name="wizard_hallx_step0">Look at the robot from the front and then...</string>   
+    <string name="wizard_hallx_step1">- move Carriage gently to the extreme left and click Check button</string>
+    <string name="wizard_hallx_step2">- move Carriage gently to the extreme right and click Check button</string>
+    <string name="wizard_hallx_check_step1">Check left</string>
+    <string name="wizard_hallx_check_step2">Check right</string>
+
+    <string name="wizard_led_carriage_lights">Are carriage lights white?</string>
+    <string name="wizard_led_all_lights">Now, are all lights white?</string>
+
+    <string name="wizard_led_result_ok">Test completed successfully without error. Click Next to continue.</string>
+    <string name="wizard_led_check_carret">Turn robot OFF and check leds wires. Isn\'t connector reversed or damaged?</string>
+    <string name="wizard_led_check_top">Turn robot OFF and check top leds wires. Isn\'t connector reversed or damaged?</string>
+
+    <string name="wizard_calibration_result_ok">Test completed successfully without error. Click Next to continue.</string>
+    <string name="wizard_calibration_waiting">Please wait for results...</string>
+
+    <string name="title_activity_led">LED Test</string>
+    <string name="wizard_led_start_test">Start LED test</string>
+
+    <string name="wizard_weight_sensor_error">Sensor error. Turn OFF barobot and check wires.</string>
+	<string name="wizard_diff_to_low">Difference is to small. Did you followed the wizard?</string>
+ 	<string name="wizard_weight_is_ok">Test completed successfully without error. Click Next to continue.</string>
+ 
+	<string name="wizard_text_sensors_refresh">Click Refresh. If it doesn\'t help turn OFF Barobot using main power switch and turn it ON again. Check small red light on Carriage board. Check main-bus.</string>
+ 	<string name="wizard_text_sensors_upload_firmware">Please upload firmware using "Software update" wizard. If something still wont work please use "Manual update".</string>
+ 	<string name="wizard_text_sensors_hallx">Test</string>
+ 	<string name="wizard_text_sensors_hally">Test</string>
+ 	<string name="wizard_text_sensors_weight">Test</string>
+
 </resources>

@@ -28,7 +28,7 @@ public class MotorDriver {
 	public void setMargin( int margin1 ){
 		m1 = margin1;
 		state.set( "MARGINX", margin1 );
-		Initiator.logger.w("set MARGIN X", "" + m1);
+	//	Initiator.logger.w("set MARGIN X", "" + m1);
 	}
 	public int getSPos(){
 		return software_pos;

@@ -9,7 +9,6 @@ import com.barobot.parser.message.AsyncMessage;
 import com.barobot.parser.message.Mainboard;
 
 public class LightManager {
-	String[] defaultDemo = {"","",""};
 	private BarobotConnector barobot;
 	public static int[] top_index 		= {10,23,11,22,12,21,13,20,14,19,15,18};			// numery butelek na numery ledow top
 	public static int[] bottom_index	= {-1,24,-1,25,-1,26,-1,27,-1,28,-1,29};			// numery butelek na numery ledow bottom
@@ -22,14 +21,16 @@ public class LightManager {
 	public void startDemo() {
 		Queue q = barobot.main_queue;
 		LightManager lm =barobot.lightManager;
-	//	lm.tecza( barobot, q, 10 );				// ok
-	//	lm.loading(barobot, q, 10);				// ok
-	//	lm.mrygajRGB( barobot, q, 10 , 400);	// ok
-	//	lm.linijka( barobot, q, 10, 700 );		// nudne
+	//	lm.tecza(  q, 10 );				// ok
+	//	lm.loading( q, 10);				// ok
+	//	lm.mrygajRGB(  q, 10 , 400);	// ok
+	//	lm.linijka(  q, 10, 700 );		// nudne
 		lm.flaga( q, 10, 700 );
 		lm.nazmiane( q, 10, 700 );
-	//	lm.strobo( barobot, q, 60 );			// ok
-	//	lm.zapal(barobot, q);					// ok
+		lm.strobo(  q, 60 );			// ok
+		lm.zapal( q );					// ok
+		q.addWait(1000);
+		lm.turnOffLeds(q);
 	}
 
 	public void loading(final Queue q, final int repeat) {
@@ -59,19 +60,6 @@ public class LightManager {
 					color_by_bottle(q2, 7, true, 200, 0, 0);	q2.addWait( time );color_by_bottle(q2, 7, true, 10, 0, 0);
 					color_by_bottle(q2, 5, true, 200, 0, 0);	q2.addWait( time );color_by_bottle(q2, 5, true, 10, 0, 0);
 					color_by_bottle(q2, 3, true, 200, 0, 0);	q2.addWait( time );color_by_bottle(q2, 3, true, 10, 0, 0);
-/*
-					
-					list[ 1].setColor(q2, top, 200, 0, 0, 0);	q2.addWait( time );list[ 1].setColor(q2, top, 0, 0, 0, 0);	
-					list[ 3].setColor(q2, top, 200, 0, 0, 0);	q2.addWait( time );list[ 3].setColor(q2, top, 0, 0, 0, 0);	
-					list[ 5].setColor(q2, top, 200, 0, 0, 0);	q2.addWait( time );list[ 5].setColor(q2, top, 0, 0, 0, 0);	
-					list[ 7].setColor(q2, top, 200, 0, 0, 0);	q2.addWait( time );list[ 7].setColor(q2, top, 0, 0, 0, 0);	
-					list[ 9].setColor(q2, top, 200, 0, 0, 0);	q2.addWait( time );list[ 9].setColor(q2, top, 0, 0, 0, 0);	
-					list[11].setColor(q2, top, 200, 0, 0, 0);	q2.addWait( time );list[11].setColor(q2, top, 0, 0, 0, 0);	
-					list[ 9].setColor(q2, top, 200, 0, 0, 0);	q2.addWait( time );list[ 9].setColor(q2, top, 0, 0, 0, 0);	
-					list[ 7].setColor(q2, top, 200, 0, 0, 0);	q2.addWait( time );list[ 7].setColor(q2, top, 0, 0, 0, 0);	
-					list[ 5].setColor(q2, top, 200, 0, 0, 0);	q2.addWait( time );list[ 5].setColor(q2, top, 0, 0, 0, 0);	
-					list[ 3].setColor(q2, top, 200, 0, 0, 0);	q2.addWait( time );list[ 3].setColor(q2, top, 0, 0, 0, 0);	
-*/
 				}
 				return q2;
 			}
@@ -153,20 +141,6 @@ public class LightManager {
 					color_by_bottle(q2, 9, true, 0, 0, flag( i + 270 ) );
 					color_by_bottle(q2, 10, true, 0, 0, flag( i + 300 ) );
 					color_by_bottle(q2, 11, true, 0, 0, flag( i + 310 ) );
-					
-					/*
-					list[ 0].setColor(q2, true, 0,0, flag( i + 00 ), 0);
-					list[ 1].setColor(q2, true, 0,0, flag( i + 30 ), 0);
-					list[ 2].setColor(q2, true, 0,0, flag( i + 60 ), 0);
-					list[ 3].setColor(q2, true, 0,0, flag( i + 90 ), 0);
-					list[ 4].setColor(q2, true, 0,0, flag( i + 120 ), 0);
-					list[ 5].setColor(q2, true, 0,0, flag( i + 150 ), 0);	
-					list[ 6].setColor(q2, true, 0,0, flag( i + 180 ), 0);
-					list[ 7].setColor(q2, true, 0,0, flag( i + 210 ), 0);
-					list[ 8].setColor(q2, true, 0,0, flag( i + 240 ), 0);
-					list[ 9].setColor(q2, true, 0,0, flag( i + 270 ), 0);
-					list[10].setColor(q2, true, 0,0, flag( i + 300 ), 0);
-					list[11].setColor(q2, true, 0,0, flag( i + 310 ), 0);*/
 				}
 				q2.addWait( time );
 				Initiator.logger.i( "LightsManager", "koniec fadeButelka");
@@ -341,6 +315,27 @@ public class LightManager {
 		}
 	}
 
+	public void color_by_bottle_now(int bottleNum, String string, int value, int red, int green, int blue ){
+		if( barobot.newLeds ){
+			int id = -1;
+			if( bottleNum >= 0 && bottleNum < bottom_index.length ){
+				id = top_index[bottleNum];
+				if(id != 0){				// lnn,color i.e:   l0100FFFFFF
+					String command = "l" + id + "," 
+							+ String.format("%02x", red ) 
+							+ String.format("%02x", green )
+							+ String.format("%02x", blue  );
+					barobot.mb.send(command+"\n");
+				}
+			}
+		}else{
+			Upanel up	= barobot.i2c.getUpanelByBottle(bottleNum);
+			if( up != null ){
+				barobot.mb.send("L"+ up.getAddress() + ","+string+","+value+"\n");			// i.e in calibration
+			}
+		}
+	}
+	
 	public void color_by_bottle( Queue q, int bottleNum, boolean topBottom, int red, int green, int blue ){
 		if( barobot.newLeds ){
 			int id = -1;
@@ -366,7 +361,7 @@ public class LightManager {
 		}
 	}
 
-	public void setLedsByBottle(Queue q, int bottleNum, String string, int value, int red, int green, int blue, boolean addToQueue ) {
+	public void setLedsByBottle(Queue q, int bottleNum, String string, int value, int red, int green, int blue ) {
 		if( barobot.newLeds ){
 			String color = String.format("%02x", red ) 
 					+ String.format("%02x", green )
@@ -377,29 +372,18 @@ public class LightManager {
 				int id_bt	= bottom_index[bottleNum];
 				if(id_top > -1 ){
 					String command = "l" + id_top + "," + color;
-					if(addToQueue){
-						q.add(command, true);
-					}else{
-						barobot.mb.send(command+"\n");
-					}
+					q.add(command, true);
 				}
 				if(id_bt > -1 ){
 					String command = "l" + id_bt + "," + color;
-					if(addToQueue){
-						q.add(command, true);
-					}else{
-						barobot.mb.send(command+"\n");
-					}
+					q.add(command, true);
+					
 				}
 			}
 		}else{
 			Upanel up	= barobot.i2c.getUpanelByBottle(bottleNum);
 			if(up!=null){
-				if(addToQueue){
-					up.setLed(q, string, value);
-				}else{
-					barobot.mb.send("L"+ up.getAddress() + ","+string+","+value+"\n");			// i.e in calibration
-				}	
+				up.setLed(q, string, value);
 			}
 		}
 	}
@@ -434,6 +418,5 @@ public class LightManager {
 			q.add(command, true);
 		}
 	}
-
 }
 

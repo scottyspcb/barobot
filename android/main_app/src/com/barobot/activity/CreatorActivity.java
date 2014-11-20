@@ -32,8 +32,6 @@ import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
 import com.barobot.other.InternetHelpers;
 
-//    and_oid:ba_ckground="@drawable/background"
-
 public class CreatorActivity extends BarobotMain{
 	private int[] slot_nums = {0,0,0,0,0,0,0,0,0,0,0,0,0};
 	private int[] ids;
@@ -121,7 +119,6 @@ public class CreatorActivity extends BarobotMain{
 
 	private void UpdateSlots() {
 		List<Slot> bottles = Engine.GetInstance().loadSlots();
-		Log.w("BOTTLE_SETUP length",""+bottles.size());
 		for(Slot slot : bottles)
 		{
 			if (slot.position > 0 && slot.position <= ids.length ){
@@ -252,14 +249,13 @@ public class CreatorActivity extends BarobotMain{
 	}
 
 	public void pourStart() {
-		//final Button xb2 = (Button) this.findViewById(R.id.choose_pour_button);
-		//final Button xb2 = (Button) this.findViewById(R.id.creator_pour_button);
-		//xb2.setEnabled(false);
 		final ProgressDialog progress = new ProgressDialog(this);
-		progress.setTitle("Preparing drink...");
-		progress.setMessage("Please wait");
+		String title	= getResources().getString(R.string.preparing_drink_title);
+		String msg		= getResources().getString(R.string.preparing_drink_message);
+		progress.setTitle(title);
+		progress.setMessage(msg);
 		progress.show();
-
+		
 		Thread t = new Thread(new Runnable() {  
 	         @Override
 	         public void run() {
@@ -278,15 +274,6 @@ public class CreatorActivity extends BarobotMain{
 	         }});
 		t.start();
 	}
-
-	/*
-		runOnUiThread(new Runnable() {
- 			@Override
- 			public void run() {
-//  				xb2.setEnabled(true);
- 			}
- 		});
-	*/
 
 	public void onPourRecipeButtonClicked (View view){
 		pourStart();
@@ -330,10 +317,10 @@ public class CreatorActivity extends BarobotMain{
 	public void CalculateDrops()
 	{
 		SetupDrops();
-		Initiator.logger.i("CalculateDrops size ingredients : ", ""+ingredients.size() );
+	//	Initiator.logger.i("CalculateDrops size ingredients : ", ""+ingredients.size() );
 		List<Integer> sequence = Engine.GetInstance().GenerateSequence(ingredients);
 		if(sequence == null){
-			Initiator.logger.e("CalculateDrops sequence", "size null" );
+	//		Initiator.logger.e("CalculateDrops sequence", "size null" );
 			return;
 		}
 

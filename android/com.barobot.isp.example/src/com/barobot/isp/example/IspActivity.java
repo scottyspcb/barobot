@@ -16,7 +16,6 @@ import com.barobot.common.Initiator;
 import com.barobot.common.IspOverSerial;
 import com.barobot.common.interfaces.HardwareState;
 import com.barobot.common.interfaces.serial.IspCommunicator;
-import com.barobot.common.interfaces.serial.SerialInputListener;
 import com.barobot.common.interfaces.serial.Wire;
 import com.barobot.hardware.devices.BarobotConnector;
 import com.barobot.hardware.serial.AndroidLogger;

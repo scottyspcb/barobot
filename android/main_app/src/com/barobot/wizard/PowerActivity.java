@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.view.View;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.barobot.R;
 import com.barobot.common.interfaces.serial.Wire;
@@ -21,15 +22,17 @@ import com.barobot.wizard.helpers.SystemUnitTest;
 public class PowerActivity extends BlankWizardActivity {
 	private SystemUnitTest result_list	= new SystemUnitTest();
 	private CheckboxValueAdapter kva;
+	private TextView wizard_power_hint_content;
     ListView result_box;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_wizard_power);
-		result_box		= (ListView) findViewById(R.id.power_list);
+		result_box					= (ListView) findViewById(R.id.power_list);
+		wizard_power_hint_content	= (TextView) findViewById(R.id.wizard_power_hint_content);	
 		loadTests();
-		kva				= new CheckboxValueAdapter(this, result_list);
+		kva							= new CheckboxValueAdapter(this, result_list);
 		result_box.setAdapter(kva);
 		enableTimer( 1000, 2000 );
 	}
@@ -41,17 +44,13 @@ public class PowerActivity extends BlankWizardActivity {
 	}
 
 	private void loadTests(){
-		result_list.put( new SystemTestItem<Boolean>("Arduino driver exists"){
+		result_list.put( new SystemTestItem<Boolean>("Arduino driver exists", R.string.wizard_text_power_restart ){
 			@Override
 			public Boolean read() {
                 return Arduino.getInstance() != null;
             }
-			@Override
-			public int getSolutionId() {		
-				 return R.string.wizard_text_power_restart;
-            }
 		});
-		result_list.put( new SystemTestItem<Boolean>("Barobot driver exists"){
+		result_list.put( new SystemTestItem<Boolean>( R.string.wizard_text_power_arduino, R.string.wizard_text_power_restart ){
 			@Override
 			public Boolean read() {
 				if( Arduino.getInstance() != null ){
@@ -60,21 +59,14 @@ public class PowerActivity extends BlankWizardActivity {
 					return false;
 				}
             }
-			@Override
-			public int getSolutionId() {		
-				 return R.string.wizard_text_power_restart;
-            }
 		});
-		result_list.put( new SystemTestItem<Boolean>("Commands module loaded"){
+		result_list.put( new SystemTestItem<Boolean>( R.string.wizard_text_power_queue , R.string.wizard_text_power_restart){
 			@Override
 			public Boolean read() {
-				BarobotConnector barobot	= getBarobot();
+				BarobotConnector barobot	= Arduino.getInstance().barobot;
 				return barobot!= null && barobot.main_queue != null;
             }
-			@Override
-			public int getSolutionId() {		
-				 return R.string.wizard_text_power_restart;
-            }
+
 		});
 		/*
 		result_list.put( new SystemTestItem<Boolean>("JAVA MainBoard exists"){
@@ -90,17 +82,14 @@ public class PowerActivity extends BlankWizardActivity {
 		});*/
 
 		if( Arduino.getInstance() != null && Arduino.getInstance().barobot != null ){
-			final BarobotConnector barobot	= getBarobot();
+			final BarobotConnector barobot	= Arduino.getInstance().barobot;
 			final Wire connection			= Arduino.getInstance().getConnection();
-			result_list.put( new SystemTestItem<Boolean>("Connection exists"){
+			result_list.put( new SystemTestItem<Boolean>("Connection exists", R.string.wizard_text_replug){
 				@Override
 				public Boolean read() {
 					return connection != null;
 	            }
-				@Override
-				public int getSolutionId() {		
-					 return R.string.wizard_text_replug;
-	            }
+
 			});
 
 			if( connection != null ){
@@ -129,7 +118,7 @@ public class PowerActivity extends BlankWizardActivity {
 		                return this.value;
 		            }
 				});	*/
-				result_list.put( new SystemTestItem<Boolean>("USB is connected"){
+				result_list.put( new SystemTestItem<Boolean>("USB is connected", R.string.wizard_text_replug){
 					@Override
 					public Boolean read() {
 						return connection.isConnected();
@@ -138,25 +127,17 @@ public class PowerActivity extends BlankWizardActivity {
 					public boolean check() {
 		                return this.value.booleanValue();
 		            }
-					@Override
-					public int getSolutionId() {		
-						 return R.string.wizard_text_replug;
-		            }
 				});
 			}
 
-			result_list.put( new SystemTestItem<Boolean>("DC power is plugged"){
+			result_list.put( new SystemTestItem<Boolean>("DC power is plugged", R.string.wizard_text_plug_dc){
 				@Override
 				public Boolean read() {
 					return barobot.state.getInt("DC_PLUGGED", 0) > 0;
 	            }
-				@Override
-				public int getSolutionId() {		
-					 return R.string.wizard_text_plug_dc;
-	            }
 			});
 
-			result_list.put( new SystemTestItem<Boolean>("Robot was connected"){
+			result_list.put( new SystemTestItem<Boolean>("Robot was connected", R.string.wizard_text_turn_on ){
 				@Override
 				public Boolean read() {
 					return barobot.robot_id_ready;
@@ -165,13 +146,9 @@ public class PowerActivity extends BlankWizardActivity {
 				public boolean check() {
 	                return this.value.booleanValue();
 	            }
-				@Override
-				public int getSolutionId() {		
-					 return R.string.wizard_text_turn_on;
-	            }
 			});
 
-			result_list.put( new SystemTestItem<Boolean>("Application is online (for software updates)"){
+			result_list.put( new SystemTestItem<Boolean>("Tablet is online (for software updates)", R.string.wizard_text_connect_wifi ){
 				@Override
 				public Boolean read() {
 					return Android.isOnline(PowerActivity.this) > 0;
@@ -179,10 +156,6 @@ public class PowerActivity extends BlankWizardActivity {
 				@Override
 				public boolean check() {
 	                return this.value.booleanValue();
-	            }
-				@Override
-				public int getSolutionId() {		
-					 return R.string.wizard_text_connect_wifi;
 	            }
 			});
 			result_list.put( new SystemTestItem<String>("Internet Adress"){
@@ -216,7 +189,7 @@ public class PowerActivity extends BlankWizardActivity {
 	                return this.value.booleanValue();
 	            }
 			});*/
-			result_list.put( new SystemTestItem<Boolean>("Application folder exists"){
+			result_list.put( new SystemTestItem<Boolean>("Application folder exists", R.string.wizard_text_power_restart ){
 				@Override
 				public Boolean read() {
 					File dir				= new File(Environment.getExternalStorageDirectory(), "Barobot");
@@ -245,7 +218,7 @@ public class PowerActivity extends BlankWizardActivity {
 	                return this.value.booleanValue();
 	            }
 			});	*/
-			result_list.put( new SystemTestItem<Boolean>("Drink database exists"){
+			result_list.put( new SystemTestItem<Boolean>("Drink database exists", R.string.wizard_text_power_restart ){
 				@Override
 				public Boolean read() {
 					try {
@@ -293,6 +266,12 @@ public class PowerActivity extends BlankWizardActivity {
 		PowerActivity.this.runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
+				int hint = result_list.getHintId();
+				if(hint >0 ){
+					wizard_power_hint_content.setText(hint);
+				}else{
+					wizard_power_hint_content.setText(R.string.wizard_power_test_completed);
+				}
 				kva.notifyDataSetChanged();
 			}
 		});

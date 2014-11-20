@@ -32,7 +32,7 @@ public class RecipeListActivity extends BarobotMain{
 	private Recipe_t mCurrentRecipe;
 	private int drink_size	= 0;
 
-	private Mode mode;
+	//private Mode mode;
 	public enum Mode
 	{
 		Normal,
@@ -52,15 +52,12 @@ public class RecipeListActivity extends BarobotMain{
 	@Override
 	protected void onResume() {
 		super.onResume();
-		int modeInt = getIntent().getIntExtra(MODE_NAME, 0);
-		mode = Mode.values()[modeInt];	
+	//	int modeInt = getIntent().getIntExtra(MODE_NAME, 0);
+	//	mode = Mode.values()[modeInt];	
 		FillRecipeList();
 
-		int position = 0;
 		ListView listView = (ListView) findViewById(R.id.recipe_list);
-		if (mode == Mode.Random) {
-			position = (int) (Math.random()*listView.getAdapter().getCount());
-		}
+		int position = (int) (Math.random()*listView.getAdapter().getCount());
 
 		listView.setSelection(position);
 		listView.setItemChecked(position, true);
@@ -75,20 +72,13 @@ public class RecipeListActivity extends BarobotMain{
 
 	public void FillRecipeList() {
 		mCurrentRecipe = null;
-		List<Recipe_t> recipes;
-		
-	//	if (mode == Mode.Favorite){
-	//		recipes = Engine.GetInstance().getFavoriteRecipes();
-	//	}else{
-			recipes = Engine.GetInstance().getRecipes();
-	//	}
+		List<Recipe_t> recipes = Engine.GetInstance().getRecipes();
 
 		ArrayAdapter<Recipe_t> mAdapter = new ArrayAdapter<Recipe_t>(this,
 				R.layout.recipe_list_item_layout, recipes);
 		ListView listView = (ListView) findViewById(R.id.recipe_list);
 		listView.setAdapter(mAdapter);
 		listView.setOnItemClickListener(new OnItemClickListener() {
-
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
@@ -173,8 +163,10 @@ public class RecipeListActivity extends BarobotMain{
 
 	public void pourStart() {
 		final ProgressDialog progress = new ProgressDialog(this);
-		progress.setTitle("Preparing drink...");
-		progress.setMessage("Please wait");
+		String title	= getResources().getString(R.string.preparing_drink_title);
+		String msg		= getResources().getString(R.string.preparing_drink_message);
+		progress.setTitle(title);
+		progress.setMessage(msg);
 		progress.show();
 
 		Thread t = new Thread(new Runnable() {  

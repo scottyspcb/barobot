@@ -61,4 +61,13 @@
             android:textSize="40sp" />
     </LinearLayout>
 
+    <TextView
+        android:id="@+id/wizard_calibration_result"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/wizard_calibration_start"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
 </RelativeLayout>

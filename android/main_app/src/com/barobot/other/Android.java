@@ -13,6 +13,7 @@ import java.io.RandomAccessFile;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
 import android.app.Application;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -45,6 +46,8 @@ import com.barobot.BarobotMain;
 import com.barobot.R;
 import com.barobot.activity.BarobotActivity;
 import com.barobot.common.Initiator;
+import com.barobot.common.constant.Constant;
+import com.barobot.common.interfaces.OnDownloadReadyRunnable;
 import com.barobot.gui.database.BarobotData;
 import com.barobot.gui.dataobjects.Robot;
 import com.barobot.gui.dataobjects.Slot;
@@ -474,14 +477,18 @@ public class Android {
 		return mem;
 	}
 	public static void alertMessage(final Activity activity, final String msg) {
-		BarobotMain.getInstance().runOnUiThread(new Runnable() {
+		activity.runOnUiThread(new Runnable() {
 			  public void run() {
-				  new AlertDialog.Builder(activity).setTitle("Message").setMessage(msg)
+				  Builder bb = new AlertDialog.Builder(activity).setTitle("Message").setMessage(msg)
 				    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
 				        public void onClick(DialogInterface dialog, int which) { 
 				        }
-				    })
-				    .setIcon(android.R.drawable.ic_dialog_alert).show();
+				    });
+				  
+				  bb.setIcon(android.R.drawable.ic_dialog_alert);
+				  if (!activity.isFinishing()) {
+					  bb.show();
+				  }
 			  }
 			});
 	}
@@ -522,7 +529,6 @@ public class Android {
 			return 0;
 		}
 	} 
-
 	public static void askForTurnOff( Activity act ) {
 		Intent i = new Intent("android.intent.action.ACTION_REQUEST_SHUTDOWN");
 		i.putExtra("android.intent.extra.KEY_CONFIRM", true);

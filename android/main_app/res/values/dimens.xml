@@ -48,7 +48,7 @@
     <color name="RedButtonEndColor">#950C09</color>
     <color name="RedButtonDisabledStartColor">#565051</color>
     <color name="RedButtonDisabledEndColor">#736F6E</color>
-    <color name="RedButtonBorderColor">#254117</color>
+    <color name="RedButtonBorderColor">#412517</color>
 
     <!-- Yellow Button -->
     <color name="YellowButtonStartColor">#E9EC09</color>

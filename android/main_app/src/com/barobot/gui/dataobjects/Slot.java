@@ -53,7 +53,7 @@ public class Slot extends Model<Slot>{
 	public void setLed(int r, int g, int b, boolean always ) {
 		BarobotConnector barobot = Arduino.getInstance().barobot;
 		if( always || !barobot.main_queue.isBusy() ){				// only if queue empty or isAlways
-			barobot.lightManager.setLedsByBottle( barobot.main_queue, position - 1, "00", 0, r, g, b, true );	
+			barobot.lightManager.setLedsByBottle( barobot.main_queue, position - 1, "00", 0, r, g, b );	
 		}
 	}
 }

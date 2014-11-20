@@ -25,7 +25,6 @@ public class BarobotConnector {
 	public I2C i2c				= null;
 	protected int robot_id		= 0;
 	public boolean newLeds		= true;
-	public boolean use_beta		= false;
 	public boolean robot_id_ready	= false;	
 	public long lastSeenRobotTimestamp	= 0;
 	public LightManager lightManager	= null;
@@ -61,8 +60,8 @@ public class BarobotConnector {
 		this.state.set( "LIGH_GLASS_DIFF", this.state.getInt( "LIGH_GLASS_DIFF", 3 ) );		// set default
 		this.state.set( "ALLOW_LIGHT_CUP", this.state.getInt( "ALLOW_LIGHT_CUP", 0 ) );		// set default
 
-		boolean defaultsLoaded	= this.state.getInt("DEFAULTS", 0 ) > 0;
-		if( use_beta || !defaultsLoaded ){
+		boolean defaultsLoaded	= state.getInt("DEFAULTS", 0 ) > 0;
+		if( Constant.use_beta || !defaultsLoaded ){
 			if(newLeds){
 				// changed in wizard:
 				state.set( "SERVOY_FRONT_POS", 890 );		
@@ -296,21 +295,30 @@ public class BarobotConnector {
 			}
 		});
 	}
-	public void moveZ(Queue q, int pos) {
-		int current_z		= state.getInt("POSZ", 0 );
-		int diff			= Math.abs((current_z - pos));
-	//	int DRIVER_Z_SPEED	= state.getInt("DRIVER_Z_SPEED", 0 );
-		q.addWithDefaultReader("K" + pos);
+	public void moveZ(Queue q, final int pos) {
+		q.add( new AsyncMessage( true ){
+			@Override	
+			public String getName() {
+				return "moveZDown logic" ;
+			}
+			@Override
+			public Queue run(Mainboard dev, Queue queue) {
+				Queue q				= new Queue();
+				int current_z		= state.getInt("POSZ", 0 );
+				int diff			= Math.abs((current_z - pos));
+			//	int DRIVER_Z_SPEED	= state.getInt("DRIVER_Z_SPEED", 0 );
+				q.addWithDefaultReader("K" + pos);
 
-		int SERVOZ_UP_TIME	= state.getInt("SERVOZ_UP_TIME", 10 );
-		int SERVOZ_UP_TIME_MIN	= state.getInt("SERVOZ_UP_TIME_MIN", 10 );
-		int time			= SERVOZ_UP_TIME / 1000 * diff;
-		time				= Math.max( SERVOZ_UP_TIME_MIN, time );	// no less than 100
-	//	time				= Math.min( 800, time );
-
-		Initiator.logger.i("BarobotConnector.moveZ","timer move z:"+time +" current_z:"+ current_z+ " pos: " + pos+ " diff: "+ diff);
-		// no more than 800
-		q.addWait( time );
+				int SERVOZ_UP_TIME		= state.getInt("SERVOZ_UP_TIME", 10 );
+				int SERVOZ_UP_TIME_MIN	= state.getInt("SERVOZ_UP_TIME_MIN", 10 );
+				int time				= SERVOZ_UP_TIME / 1000 * diff;
+				time					= Math.max( SERVOZ_UP_TIME_MIN, time );	// no less than 100
+			//	time					= Math.min( 800, time );
+				Initiator.logger.i("BarobotConnector.moveZ","timer move z:"+time +" current_z:"+ current_z+ " pos: " + pos+ " diff: "+ diff);
+				q.addWait( time );
+				return q;
+			}
+		});
 	}
 	public void moveZDown(Queue q, final boolean disableOnReady ) {
 		int SERVOZ_DOWN_POS = state.getInt("SERVOZ_DOWN_POS", 0 );
@@ -658,16 +666,16 @@ public class BarobotConnector {
 
 	//	moveZLight(q, bottleNum, false);
 
-		this.lightManager.setLedsByBottle(q, bottleNum, "04", 0, 0, 0, 0, true);
+		this.lightManager.setLedsByBottle(q, bottleNum, "04", 0, 0, 0, 0);
 		q.addWait( time/4 );
 
-		this.lightManager.setLedsByBottle(q, bottleNum, "04", 255, 0, 255, 0, true);
+		this.lightManager.setLedsByBottle(q, bottleNum, "04", 255, 0, 255, 0);
 		q.addWait( time/4 );
 
-		this.lightManager.setLedsByBottle(q, bottleNum, "04", 0, 0, 0, 0, true);	
+		this.lightManager.setLedsByBottle(q, bottleNum, "04", 0, 0, 0, 0);	
 		q.addWait( time/4 );
 
-		this.lightManager.setLedsByBottle(q, bottleNum, "04", 255, 255, 255, 200, true);
+		this.lightManager.setLedsByBottle(q, bottleNum, "04", 255, 255, 255, 200);
 
 		moveZDown(q,false);
 
@@ -685,7 +693,7 @@ public class BarobotConnector {
 					int time				= getPacWaitTime( bottleNum, capacity );	
 					int SERVOZ_UP_TIME		= state.getInt("SERVOZ_UP_TIME", 2000 );
 
-					lightManager.setLedsByBottle(q2, bottleNum, "11", 100, 100, 0, 0, true);
+					lightManager.setLedsByBottle(q2, bottleNum, "11", 100, 100, 0, 0);
 					q2.addWait( time );
 					//moveZ( q2, SERVOZ_PAC_POS );
 					q2.addWithDefaultReader("K" + SERVOZ_PAC_POS);
@@ -695,7 +703,7 @@ public class BarobotConnector {
 					q2.addWithDefaultReader("K" + SERVOZ_DOWN_POS);
 					q2.addWait(SERVOZ_UP_TIME/3);
 					disablez(q2);
-					lightManager.setLedsByBottle(q2, bottleNum, "11", 255, 255, 0, 0, true);
+					lightManager.setLedsByBottle(q2, bottleNum, "11", 255, 255, 0, 0);
 					return q2;
 			//	}
 			//	return null;
@@ -708,7 +716,7 @@ public class BarobotConnector {
 	    q.add(Constant.GETXPOS, true);
 	    q.add(Constant.GETYPOS, true);
 	    q.add(Constant.GETZPOS, true);
-	    lightManager.setLedsByBottle(q, bottleNum, "22", 100, 0, 100, 0, true);
+	    lightManager.setLedsByBottle(q, bottleNum, "22", 100, 0, 100, 0);
 	}
 	// todo move to slot
 	public int getPourTime( int num, int capacity ){			// 0 - 11

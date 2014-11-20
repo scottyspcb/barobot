@@ -92,11 +92,11 @@ public class InternetHelpers {
 					connection.connect();
 					// this will be useful so that you can show a typical 0-100% progress bar
 					int fileLength = connection.getContentLength();
-					
+
 					// download the file
 					File dest =  new File(path);
 					if(dest.exists()){				// rename old file NNN.EEE to NNN-date.EEE
-						Date dNow = new Date( );
+						Date dNow				= new Date( );
 						SimpleDateFormat dd		= new SimpleDateFormat ("yyyy.MM.dd.hh.mm.ss");
 						String fileName 		= dest.getName().replaceFirst("[.][^.]+$", "");
 						String extension		= "";
@@ -110,22 +110,19 @@ public class InternetHelpers {
 
 					InputStream input	= new BufferedInputStream(url.openStream());
 					OutputStream output	= new FileOutputStream( path);
-					byte data[]			= new byte[1024];
-					String strFileContents="";
+					byte data[]			= new byte[4096];
 					int total			= 0;
 					int count;
 					while ((count = input.read(data)) != -1) {
 						total += count;
 						output.write(data, 0, count);
-						strFileContents = strFileContents + (new String(data, 0, count));
-						if(fileLength!=0){	
+						if(fileLength!=0){
 							runnable.sendProgress( (int) (total * 100 / fileLength) );
 						}
 					}
 					output.flush();
 					output.close();
 					input.close();
-					runnable.sendSource(strFileContents);
 					runnable.run();
 
 				} catch (FileNotFoundException e) {
@@ -138,6 +135,7 @@ public class InternetHelpers {
 		};
 		dx.start();    
 	}
+	/*
 	public static void doDownload(final String urlLink, final String fileName) {
 		Thread dx = new Thread() {
 			public void run() {
@@ -160,7 +158,7 @@ public class InternetHelpers {
 					InputStream input = new BufferedInputStream(url.openStream());
 					OutputStream output = new FileOutputStream(dir+"/"+fileName);
 
-					byte data[] = new byte[1024];
+					byte data[] = new byte[4096];
 			//		long total = 0;
 					int count;
 					while ((count = input.read(data)) != -1) {
@@ -178,8 +176,7 @@ public class InternetHelpers {
 			}
 		};
 		dx.start();      
-	}
-
+	}*/
 
 
 	public static String response2String(HttpResponse response) {

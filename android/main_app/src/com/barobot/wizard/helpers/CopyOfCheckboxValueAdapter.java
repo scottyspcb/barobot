@@ -1,5 +1,7 @@
 package com.barobot.wizard.helpers;
 
+import java.util.LinkedHashMap;
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,14 +13,15 @@ import android.widget.TextView;
 
 import com.barobot.R;
 
-public class CheckboxValueAdapter extends BaseAdapter {
-	private SystemUnitTest mData = null;
+public class CopyOfCheckboxValueAdapter extends BaseAdapter {
+	private LinkedHashMap<String, String> mData = null;
+    private String[] mKeys;
 	private Context context;
  
-    public CheckboxValueAdapter(Context ctx, SystemUnitTest analog_list){
-        mData  			= analog_list;
-        analog_list.checkAllOk();
+    public CopyOfCheckboxValueAdapter(Context ctx, LinkedHashMap<String, String> data){
+        mData  			= data;
         this.context	= ctx;
+        mKeys 			= mData.keySet().toArray(new String[mData.size()]);
     }
 
     @Override
@@ -28,7 +31,7 @@ public class CheckboxValueAdapter extends BaseAdapter {
 
     @Override
     public Object getItem(int position) {
-        return mData.get(position);
+        return mData.get(mKeys[position]);
     }
 
     @Override
@@ -38,31 +41,26 @@ public class CheckboxValueAdapter extends BaseAdapter {
 
     @Override
     public View getView(int pos, View convertView, ViewGroup parent) {
-        SystemTestItem<?> item	= (SystemTestItem<?>) getItem(pos);
-        boolean result			= item.getResult();
-        String value			= item.getValue();
-        String title			= item.getTitle( context );
-        LinearLayout lView		= (LinearLayout) convertView;
+        String key = mKeys[pos];
+        String value = getItem(pos).toString();
+        LinearLayout lView = (LinearLayout) convertView;
         if (lView == null) {
             lView =  (LinearLayout) LayoutInflater.from(this.context).inflate(R.layout.item_list_check, parent, false);
         }
-
-      //  Initiator.logger.i("getView.reload",title); 
-        
         CheckBox lName	= (CheckBox) lView.findViewById(R.id.pair_key);
         TextView lValue	= (TextView) lView.findViewById(R.id.pair_value);
-        lName.setText(title);
-
-        if( result ){
-        	lName.setChecked(true);
-        //	lValue.setBackgroundColor( 0xff002200 );
-        //	lName.setBackgroundColor( 0xff002200 );
-        	lView.setBackgroundColor( 0xff006600 );
-        }else{
+        lName.setText(key);
+        
+        if( pos%2 == 0 ){
         	lName.setChecked(false);
         //	lValue.setBackgroundColor( 0xff220000 );
         //	lName.setBackgroundColor( 0xffff0000 );
         	lView.setBackgroundColor( 0xff660000 );
+        }else{
+        	lName.setChecked(true);
+        //	lValue.setBackgroundColor( 0xff002200 );
+        //	lName.setBackgroundColor( 0xff002200 );
+        	lView.setBackgroundColor( 0xff006600 );
         }
         lName.setClickable(false);
         lValue.setText(value);
@@ -71,11 +69,14 @@ public class CheckboxValueAdapter extends BaseAdapter {
 
 	@Override
 	public void notifyDataSetChanged() {
+	    mKeys = mData.keySet().toArray(new String[mData.size()]);
 		super.notifyDataSetChanged();
 	}
 
 	@Override
 	public void notifyDataSetInvalidated() {
+        mKeys = mData.keySet().toArray(new String[mData.size()]);
 		super.notifyDataSetInvalidated();
 	}
+
 }

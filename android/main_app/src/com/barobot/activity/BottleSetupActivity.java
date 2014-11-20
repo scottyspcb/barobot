@@ -2,16 +2,19 @@ package com.barobot.activity;
 
 import java.util.List;
 
+import android.content.Intent;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.KeyEvent;
+import android.view.View;
+import android.widget.TextView;
+
 import com.barobot.BarobotMain;
 import com.barobot.R;
 import com.barobot.gui.dataobjects.Engine;
 import com.barobot.gui.dataobjects.Slot;
-
-import android.os.Bundle;
-import android.content.Intent;
-import android.util.Log;
-import android.view.View;
-import android.widget.TextView;
+import com.barobot.other.ProgressTask;
+import com.barobot.other.ProgressTask.UiTask;
 
 public class BottleSetupActivity extends BarobotMain{
 	private int[] ids;
@@ -36,11 +39,44 @@ public class BottleSetupActivity extends BarobotMain{
 		ids[12] = R.id.bottle12;
 		UpdateSlots();
 	}
+
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+	    //Handle the back button
+	    if(keyCode == KeyEvent.KEYCODE_BACK) {
+	    	gotoMainMenu(null);
+	        return true;
+	    }
+	    else {
+	        return super.onKeyDown(keyCode, event);
+	    }
+	}
+
+	public void gotoMainMenu(View view){
+		UiTask tt = new UiTask() {
+			@Override
+			public void compute() {
+				Engine engine = Engine.GetInstance();
+			//	engine.invalidateData();
+				engine.loadSlots();
+				engine.getRecipes();
+			}
+			@Override
+			public void close() {
+				runOnUiThread(new Runnable() {
+					  public void run() {
+						finish();
+						overridePendingTransition(R.anim.push_down_in,R.anim.push_down_out);
+					  }
+				});
+			}
+		};
+		ProgressTask dd = new ProgressTask( this, tt );
+		dd.execute();
+	}
+
 	private void UpdateSlots() {
 		List<Slot> bottles = Engine.GetInstance().loadSlots();
-
-		Log.w("BOTTLE_SETUP length",""+bottles.size());
-		
 		for(Slot bottle : bottles)
 		{
 			if (bottle.position > 0 && bottle.position <= ids.length )
@@ -87,7 +123,6 @@ public class BottleSetupActivity extends BarobotMain{
 	@Override
 	protected void onResume() {
 		super.onResume();
-
 		UpdateSlots();
 	}
 }

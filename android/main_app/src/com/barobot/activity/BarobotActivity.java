@@ -8,10 +8,14 @@ import android.os.BatteryManager;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
+import android.widget.TextView;
 
 import com.barobot.AppInvoker;
 import com.barobot.BarobotMain;
+import com.barobot.R;
 import com.barobot.common.Initiator;
+import com.barobot.common.constant.Constant;
+import com.barobot.gui.dataobjects.Engine;
 import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
 import com.barobot.other.Android;
@@ -25,7 +29,13 @@ public class BarobotActivity extends BarobotMain {
 			savedInstanceState = getIntent().getExtras().getBundle("bundle");
 		}
 		super.onCreate(savedInstanceState);
+		this.setFullScreen();
+		setContentView(R.layout.activity_router);
 
+		TextView router_barobot_version			= (TextView) findViewById(R.id.router_barobot_version);
+		router_barobot_version.setText(""+Constant.ANDROID_APP_VERSION);
+		
+		
 	//	PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
 	//    wakeLock = powerManager.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, WAKE_TAG );
 
@@ -34,16 +44,11 @@ public class BarobotActivity extends BarobotMain {
 
 		BroadcastReceiver receiver = new BroadcastReceiver() {
 	        public void onReceive(Context context, Intent intent) {
-	            int plugged = intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1);
-	            if (plugged == BatteryManager.BATTERY_PLUGGED_AC) { // on AC power
-	            	setPowerState( true );
-	            } else if (plugged == BatteryManager.BATTERY_PLUGGED_USB) {  // on USB power
-	            	setPowerState( true );
-	            } else if (plugged == 0) {   // on battery power
-	            	setPowerState( false );
-	            } else { // intent didnt include extra info
-	            	Initiator.logger.i( "EXTRA_PLUGGED", "undefined");
-	            }
+	        //    int plugged = intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1);
+	            int status = intent.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
+	            boolean isCharging = status == BatteryManager.BATTERY_STATUS_CHARGING || status == BatteryManager.BATTERY_STATUS_FULL;
+	        //    Initiator.logger.i( "isCharging", ""+isCharging);
+	            setPowerState( isCharging );
 	        }
 	    };
 	    setPowerState(Android.isDcConnected(this));
@@ -62,12 +67,14 @@ public class BarobotActivity extends BarobotMain {
 	    IntentFilter filter2 = new IntentFilter(Intent.ACTION_SCREEN_ON);
 	    filter2.addAction(Intent.ACTION_SCREEN_OFF);
 	    registerReceiver(receiver2, filter2);
+	    startLoading();   
+	}
 
+	public void onStartupReady(){
 	    /*
 	    Intent serverIntent = new Intent(this, StartupActivity.class);
 		serverIntent.putExtra(RecipeListActivity.MODE_NAME, RecipeListActivity.Mode.Normal.ordinal());
 		serverIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-
         int requestCode = 0;
         startActivityForResult(serverIntent,requestCode); 
 	     */
@@ -89,6 +96,22 @@ public class BarobotActivity extends BarobotMain {
 	    }
 	}
 
+	private void startLoading() {
+		Thread t = new Thread( new Runnable() {
+			@Override
+			public void run() {
+		    	loadData();
+				onStartupReady();
+			}
+		});
+		t.start();
+	}
+
+	protected void loadData() {
+		Engine e = Engine.GetInstance();
+		e.loadSlots();
+		e.getRecipes();	
+	}
 	protected void setPowerState(boolean isPowered) {
     	Initiator.logger.i( "EXTRA_PLUGGED", isPowered? "dc": "battery");
 		BarobotConnector barobot = Arduino.getInstance().barobot;
@@ -100,6 +123,7 @@ public class BarobotActivity extends BarobotMain {
 	@Override
 	protected void onResume() {			// resume this activity
 		super.onResume();
+		this.setFullScreen();
 		wakeLock.acquire();
 	}
 
@@ -108,7 +132,7 @@ public class BarobotActivity extends BarobotMain {
         super.onPause();
         wakeLock.release();
     }
-   
+
 	@Override
 	protected void onNewIntent(Intent intent) {
 		super.onNewIntent(intent);

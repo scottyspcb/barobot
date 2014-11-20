@@ -1,5 +1,8 @@
 package com.barobot.other;
 
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -153,7 +156,7 @@ public class UpdateManager{
 						int newest_arduino_version	= Decoder.toInt(version.get("arduino").toString());
 						int newest_database_version = Decoder.toInt(version.get("database").toString());
 						BarobotConnector barobot	= Arduino.getInstance().barobot;
-						if(barobot.use_beta){
+						if(Constant.use_beta){
 							newest_android_version	= Decoder.toInt(version.get("android_beta").toString());
 							newest_arduino_version	= Decoder.toInt(version.get("arduino_beta").toString());
 							newest_database_version	= Decoder.toInt(version.get("database_beta").toString());
@@ -165,13 +168,13 @@ public class UpdateManager{
 						if( newest_android_version > Constant.ANDROID_APP_VERSION ){
 							Initiator.logger.e("update_drinks.checkNewVersion", "newest_android_version: "+ res );
 							String url = Constant.android_app;
-							if(barobot.use_beta){
+							if(Constant.use_beta){
 								url = Constant.android_app_beta;
 							}
 							openInBrowser( c, url );
 
-						}else if( newest_arduino_version > barobot.state.getInt("ARDUINO_VERSION", 0) ){
-							downloadAndBurnFirmware( c, barobot.use_beta, false );
+						}else if( newest_arduino_version > barobot.state.getInt("ARDUINO_VERSION", 0) && newest_arduino_version <= Constant.MAX_FIRMWARE_VERSION ){	// maximum version handled by this app version
+							downloadAndBurnFirmware( c, Constant.use_beta, false );
 						}else{
 							if(alertResult){
 								Android.alertMessage(c, "Your version " + newest_android_version + ".0 is up to date.");
@@ -202,8 +205,10 @@ public class UpdateManager{
 			        .setPositiveButton(R.string.update_yes, new DialogInterface.OnClickListener() {
 			            @Override
 			            public void onClick(DialogInterface dialog, int which) {
-			            	Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-			        		c.startActivity(browserIntent);
+			            	UpdateManager.downloadAndInstall( c,  Uri.parse(url));
+
+			            //	Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+			        	//	c.startActivity(browserIntent);
 			            }
 			        })
 			        .setNegativeButton(R.string.update_no, null)
@@ -272,11 +277,14 @@ public class UpdateManager{
 
 		c.runOnUiThread(new Runnable() {
 			   public void run() {
+				   	if (c.isFinishing()) {
+				   		return;
+					}
 					updateBarHandler	= new Handler();
 					barProgressDialog	= new ProgressDialog(c);
 					barProgressDialog.setTitle("Downloading firmware...");
 					barProgressDialog.setMessage("Downloading in progress.");
-					barProgressDialog.setProgressStyle(barProgressDialog.STYLE_HORIZONTAL);
+					barProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
 					barProgressDialog.setProgress(0);
 					barProgressDialog.setMax(100);
 					barProgressDialog.show();
@@ -322,7 +330,7 @@ public class UpdateManager{
 				barProgressDialog	= new ProgressDialog(c);
 				barProgressDialog.setTitle("Uploading firmware...");
 				barProgressDialog.setMessage("Uploading in progress. Don't touch Barobot. Don't unplug anything before done.");
-				barProgressDialog.setProgressStyle(barProgressDialog.STYLE_HORIZONTAL);
+				barProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
 				barProgressDialog.setProgress(0);
 				barProgressDialog.setMax(100);
 		   }
@@ -347,6 +355,9 @@ public class UpdateManager{
 			public Queue run(Mainboard dev, Queue queue) {
 	        	updateBarHandler.post(new Runnable() {
                     public void run() {
+        			   	if (c.isFinishing()) {
+        			   		return;
+        				}
                     	barProgressDialog.show();
                     }
                 });
@@ -423,7 +434,8 @@ public class UpdateManager{
 			    	}
 			    });
 				ispUploader.setBoard( Board.ARDUINO_PRO_5V_328 );
-				boolean res = ispUploader.setHex( hex_firmware_path );	// needs callback to work
+				//boolean res = 
+				ispUploader.setHex( hex_firmware_path );	// needs callback to work
 				ispUploader.setSerial(mSerial);
 		        try {
 			        ispUploader.upload();
@@ -522,10 +534,11 @@ public class UpdateManager{
 		// burn it
 		c.runOnUiThread(new Runnable() {
 		   public void run() {
+			   String msg		= c.getResources().getString(R.string.update_manual_message);
 				barProgressDialog	= new ProgressDialog(c);
-				barProgressDialog.setTitle("Uploading firmware...");
-				barProgressDialog.setMessage("Press RESET button on arduino or turn OFF an ON Barobot.");
-				barProgressDialog.setProgressStyle(barProgressDialog.STYLE_HORIZONTAL);
+				barProgressDialog.setTitle(R.string.update_manual_title);
+				barProgressDialog.setMessage(msg);
+				barProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
 				barProgressDialog.setProgress(0);
 				barProgressDialog.setMax(100);
 		   }
@@ -541,6 +554,9 @@ public class UpdateManager{
 
 		updateBarHandler.post(new Runnable() {
             public void run() {
+			   	if (c.isFinishing()) {
+			   		return;
+				}
             	barProgressDialog.show();
             }
         });
@@ -664,6 +680,11 @@ public class UpdateManager{
 			        		queue.clear();
 			     //   		dev.unlockRet( msg, "isp burnt");			// unlock this AsyncMessage
 			        		Initiator.logger.i(" fimwareBurn.upload", "Upload fail");
+				        	updateBarHandler.post(new Runnable() {
+			                    public void run() {
+			                    	Android.alertMessage( c, "No response. Have you reset device? You can try one more time.");
+			                    }
+			                });
 			        	}
 			        }
 			        @Override
@@ -688,5 +709,59 @@ public class UpdateManager{
 		am.run(null, q);
 	}
 
+	public static void downloadAndInstall(final Activity c, Uri uri) {
+		Date dNow				= new Date();
+		SimpleDateFormat dd		= new SimpleDateFormat ("yyyy.MM.dd.hh.mm.ss");
+		final String path6 		= Environment.getExternalStorageDirectory()+ Constant.home_path +"/update"+ dd.format(dNow)+".apk";
+		String sourceUrl		= Constant.android_app;
+		if(Constant.use_beta){
+			sourceUrl			= Constant.android_app_beta;
+		}
+		c.runOnUiThread(new Runnable() {
+			   public void run() {
+				   	if (c.isFinishing()) {
+				   		return;
+					}
+					updateBarHandler	= new Handler();
+					barProgressDialog	= new ProgressDialog(c);
+					barProgressDialog.setTitle("Downloading application...");
+					barProgressDialog.setMessage("Downloading in progress.");
+					barProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+					barProgressDialog.setProgress(0);
+					barProgressDialog.setMax(100);
+					barProgressDialog.show();
+			   }
+		});
+		InternetHelpers.doDownload( sourceUrl, path6, new OnDownloadReadyRunnable() {
+				public void sendSource( String source ) {	
+				}
+			    @Override
+				public void run() {
+		        	updateBarHandler.post(new Runnable() {
+	                    public void run() {
+	                    	barProgressDialog.dismiss();
+	                    }
+	                });
+			    	File apkFile	= new File( path6 );
+					Intent intent	= new Intent(Intent.ACTION_VIEW);
+					Initiator.logger.e("UpdateApp.run", path6);
+					Initiator.logger.i("UpdateApp.run3", ""+apkFile );
+					Initiator.logger.i("UpdateApp.run3", ""+Uri.parse("file:/"+apkFile) );
+					Initiator.logger.i("UpdateApp.run3", ""+Uri.fromFile(apkFile) );
+				    intent.setDataAndType(Uri.parse("file:/"+apkFile), "application/vnd.android.package-archive");	
+					intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK); // without this flag android returned a intent error!
+					c.finish();
+					c.startActivity(intent);
+				}
+			@Override
+			public void sendProgress(final int value) {
+	        	updateBarHandler.post(new Runnable() {
+                    public void run() {
+                    	 barProgressDialog.setProgress(value);
+                    }
+                });
+			}
+		});
+	}
 }
 
