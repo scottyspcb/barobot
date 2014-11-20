@@ -82,6 +82,6 @@ public class Constant {
 	public static String version_index		= "http://barobot.com/synchro/check_version.php";
 
 	public static int glass_try_weight		 = 121;	// glass try weight in g
-	static public boolean use_beta		= false;
+	static public boolean use_beta			= false;
 
 }

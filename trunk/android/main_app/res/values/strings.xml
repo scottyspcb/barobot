@@ -2,16 +2,16 @@
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
 
     <string name="app_name">Barobot</string>
-    <string name="do_update">Pobierz aktualizacje drinków</string>
+    <string name="do_update">Update drinks database</string>
 
     <!-- DeviceListActivity -->
-    <string name="scanning">Szukanie urządzeń</string>
-    <string name="select_device">select a device to connect</string>
+    <string name="scanning">Scanning for devices</string>
+    <string name="select_device">Select a device to connect</string>
     <string name="none_paired">No devices have been paired</string>
     <string name="none_found">No devices found</string>
-    <string name="button_scan">Szukanie urządzeń w pobliżu</string>
-    <string name="about_info">Autorzy</string>
-    <string name="title_activity_about">O programie</string>
+    <string name="button_scan">Scanning for nearbly devices</string>
+    <string name="about_info">Authors</string>
+    <string name="title_activity_about">About the program</string>
     <string name="title_activity_device_list">Barobot</string>
     <string name="title_section1">Options</string>
     <string name="title_section2">Settings</string>
@@ -29,7 +29,7 @@
 
     <!-- Main -->
     <string name="glass_reminder_title">Reminder</string>
-    <string name="glass_reminder_message1">Place glass into the tray</string>
+    <string name="glass_reminder_message1">Place glass onto the tray</string>
     <string name="glass_reminder_button_ok">OK</string>
     <string name="glass_reminder_button_cancel">Cancel</string>
     <!-- Bottle Setup -->
@@ -66,7 +66,7 @@
     <string name="options_demo_button">Demo mode</string>
     <string name="options_advanced_button">Advanced Setup</string>
     <string name="options_about_button">Update</string>
-    <string name="options_turn_off_button">Homeing</string>
+    <string name="options_turn_off_button">Homing</string>
 
     <!-- Create Activity -->
     <string name="create_pour_button">Start!</string>
@@ -82,7 +82,7 @@
     <string name="recipe_name">Recipe Name</string>
     <string name="recipe_description">Recipe Description</string>
     <string name="title_activity_outside_component">Outside Components</string>
-    <string name="title_activity_product">ProductActivity</string>
+    <string name="title_activity_product">Product Activity</string>
     <string name="title_activity_creator">Drink Creator</string>
 
     <!-- Product Setup -->
@@ -111,12 +111,12 @@
     <string name="options_stop">Stop</string>
     <string name="title_activity_wizard_start">Start Wizard</string>
     <string name="unlock">Unlock</string>
-    <string name="add_recipe_btn">add new recipe</string>
-    <string name="remove_recipe_btn">delete selected recipe</string>
+    <string name="add_recipe_btn">Add new recipe</string>
+    <string name="remove_recipe_btn">Delete selected recipe</string>
     <string name="goto_main_menu">Main menu</string>
     <string name="myip">Show device address</string>
     <string name="update_title">Barobot Software Update</string>
-    <string name="update_msg">New Barobot Software version was released. It is strongly recommended that you apply this update as soon as possible. Don\'t do it during a party or expo. Do you want to download it from the Internet now? </string>
+    <string name="update_msg">New Barobot Software version was released. It is strongly recommended that you apply this update as soon as possible. Do you want to download it now?</string>
     <string name="update_yes">Yes</string>
     <string name="update_no">No</string>
     <string name="title_activity_validator">ValidatorActivity</string>
@@ -128,13 +128,15 @@
     <string name="title_activity_firmware">Software update</string>
     <string name="title_activity_servo_z">Servo up-down</string>
     <string name="title_activity_servo_y">Servo front - back</string>
-    <string name="title_activity_weight_sensor">Weigh Sensor Calibration</string>
+    <string name="title_activity_weight_sensor">Weigh sensor calibration</string>
     <string name="wizard_other_tests">Other tests</string>
-    <string name="startup_head">Barobot v</string>
-    <string name="startup_version">.</string>
+    <string name="startup_head">Barobot</string>
     <string name="startup_loading">Loading...</string>
     <string name="preparing_drink_title">Preparing drink...</string>
     <string name="preparing_drink_message">Please wait</string>
+
+
+    <string name="startup_version">.</string>
     <string name="update_manual_message">Please turn OFF an ON Barobot.</string>
     <string name="update_manual_title">Uploading firmware...</string>
 

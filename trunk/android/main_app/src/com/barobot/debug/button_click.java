@@ -124,7 +124,7 @@ public class button_click implements OnClickListener{
 			break;
 		case R.id.new_robot_id:
 			int isOnline = Android.isOnline(dbw);
-			if(isOnline > -1  ){					// beta only
+			if(isOnline > -1 && Constant.use_beta ){					// beta only
 				int robot_id = UpdateManager.getNewRobotId();		// download new robot_id (init hardware)
 				Initiator.logger.w("button_click.new_robot_id", "robot_id" + robot_id);
 				if( robot_id > 0 ){		// save robot_id to android and arduino
