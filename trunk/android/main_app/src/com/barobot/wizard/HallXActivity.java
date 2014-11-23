@@ -21,11 +21,11 @@ public class HallXActivity extends BlankWizardActivity {
 	private TextView wizard_hallx_hints_max;
 	private TextView wizard_hallx_results_start;
 	private TextView wizard_hallx_hints_start;
-	
+	private TextView wizard_hallx_dispenser;
+
 	static int wrong_connection_value = 534;
 	static int wrong_connection_hysteresis = 2;
-		
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -36,6 +36,7 @@ public class HallXActivity extends BlankWizardActivity {
 		wizard_hallx_hints_max		= (TextView) findViewById(R.id.wizard_hallx_hints_max);
 		wizard_hallx_results_start	= (TextView) findViewById(R.id.wizard_hallx_results_start);
 		wizard_hallx_hints_start	= (TextView) findViewById(R.id.wizard_hallx_hints_start);
+		wizard_hallx_dispenser		= (TextView) findViewById(R.id.wizard_hallx_dispenser);
 
 		wizard_hallx_results_max.setVisibility(View.GONE);
 		wizard_hallx_results_start.setVisibility(View.GONE);
@@ -217,9 +218,38 @@ public class HallXActivity extends BlankWizardActivity {
 	protected void onDestroy() {
 		super.onDestroy();
 	}
+
 	protected void updateState(HardwareState state, String name, String value) {
-		if( "LAST_WEIGHT".equals(name)){
-			int weight	= Decoder.toInt(value, 0);
+	//	Initiator.logger.e("ServosActivity", "onUpdate "+name + "/" + value );
+		if( "HALLX_UNDER".equals(name)){
+			int hall_state = state.getInt("HX_STATE", 0 );
+			if( hall_state < 0 ){
+				wizard_hallx_dispenser.setText( ""+hall_state );
+			}else if( hall_state == Methods.HX_STATE_0 
+					|| hall_state == Methods.HX_STATE_10
+					|| hall_state == Methods.HX_STATE_9
+					|| hall_state == Methods.HX_STATE_1 ){	// nothing
+			}else{
+				if( value.equals("0")){
+					value = "-";
+				}else if( value.equals("1")){
+					value = "front position";
+				}else if( value.equals("2")){
+					value = "back position";
+				}
+				wizard_hallx_dispenser.setText( value );
+			}
+		}else if( "HX_STATE".equals(name)){
+			int hall_state = Decoder.toInt(value, -10);
+			if( hall_state == Methods.HX_STATE_0 ){		// error - to low
+				wizard_hallx_dispenser.setText( "Error - state 0 - no sensor" );
+			}else if(hall_state == Methods.HX_STATE_10 ){		// ERROR not connected
+				wizard_hallx_dispenser.setText( "Error - state 10" );
+			}else if(hall_state == Methods.HX_STATE_1 ){		// X max
+				wizard_hallx_dispenser.setText( "X max position" );
+			}else if(hall_state == Methods.HX_STATE_9 ){		// under start
+				wizard_hallx_dispenser.setText( "Start Position" );
+			}
 		}
 	}
 }

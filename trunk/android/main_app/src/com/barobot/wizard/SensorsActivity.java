@@ -3,6 +3,7 @@ package com.barobot.wizard;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.barobot.R;
 import com.barobot.hardware.Arduino;
@@ -23,6 +24,7 @@ public class SensorsActivity extends BlankWizardActivity {
 	protected boolean finished	= false;
 	protected boolean connected	= false;
 	protected boolean refreshPossible = true;
+	private TextView wizard_sensors_hint_content;
 	private Object lock = new Object();
 
 	@Override
@@ -30,6 +32,7 @@ public class SensorsActivity extends BlankWizardActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_wizard_sensors);
 		result_box		= (ListView) findViewById(R.id.sensor_list);
+		wizard_sensors_hint_content	= (TextView) findViewById(R.id.wizard_sensors_hint_content);		
 		loadTests();
 		kva				= new CheckboxValueAdapter(this, result_list);
 		result_box.setAdapter(kva);
@@ -105,12 +108,18 @@ public class SensorsActivity extends BlankWizardActivity {
 
 	public void onTick(){
 		// if is connected AND is not busy AND not uploading firmware
-		if( Arduino.getInstance().getConnection().isConnected() ){
-			SensorsActivity.this.runOnUiThread(new Runnable() {		// refresh if queue has been locked
-				@Override
-				public void run() {
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				int hint = result_list.getHintId();
+				if(hint >0 ){
+					wizard_sensors_hint_content.setText(hint);
+				}else{
+					wizard_sensors_hint_content.setText(R.string.wizard_sensors_test_completed);
+				}
+				if( Arduino.getInstance().getConnection().isConnected() ){
 					synchronized( lock ){
-						if( barobot != null && !Arduino.getInstance().barobot.main_queue.isBusy() ){
+						if( barobot != null && !barobot.main_queue.isBusy() ){
 							refreshPossible	= true;
 							sendCommands(barobot);
 						}else{
@@ -119,8 +128,8 @@ public class SensorsActivity extends BlankWizardActivity {
 						}
 					}
 				}
-			});
-		}
+			}
+		});
 	}
 
 	public void onOptionsButtonClicked(View view)
@@ -222,14 +231,14 @@ public class SensorsActivity extends BlankWizardActivity {
                 return (value > 0);
             }
 		});
-		result_list.put( new SystemTestItem<Integer>("MICROPROCESSOR TEMPERATURE", R.string.wizard_text_sensors_refresh){
+		result_list.put( new SystemTestItem<Integer>("MICROPROCESSOR TEMPERATURE", R.string.wizard_text_sensors_temperature){
 			@Override
 			public Integer read() {
 				return  barobot.state.getInt("TEMPERATURE", 0);
             }
 			@Override
 			public boolean check() {
-				return (value > 0);
+				return (value > 0 && value < 130 );
             }
 		});
 		result_list.put( new SystemTestItem<Integer>("MICROPROCESSOR STARTS"){

@@ -94,9 +94,10 @@
     <string name="title_activity_hall_x">Left right sensor</string>
     <string name="title_activity_finish">Calibration complete</string>
 
-    <string name="wizard_sensors_hints">Hints</string>
-    <string name="wizard_sensors_completed">Test completed successfully. Click Next to continue.</string>    
+    <string name="wizard_sensors_hints">Hints</string> 
+    <string name="wizard_sensors_test_completed">Test completed successfully. Click Next to continue.</string>    
   
+
     <string name="wizard_hallx_step0">Look at the robot from the front and then...</string>   
     <string name="wizard_hallx_step1">- move carriage gently to the extreme left and click Check left button</string>
     <string name="wizard_hallx_step2">- move carriage gently to the extreme right and click Check right button</string>
@@ -126,4 +127,7 @@
  	<string name="wizard_text_sensors_hally">Is sensor connected? Check against the manual if cables are attached in the right sequence.</string>
  	<string name="wizard_text_sensors_weight">Is load cell connected? Check against the manual if cables are attached in the right sequence.</string>
 
+ 	<string name="wizard_text_sensors_temperature">If temperature is to high turn OFF robot as soon is possible and check against the manual if all cables are attached in the right sequence.</string>
+
+ 	
 </resources>

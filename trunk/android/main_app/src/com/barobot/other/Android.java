@@ -46,8 +46,6 @@ import com.barobot.BarobotMain;
 import com.barobot.R;
 import com.barobot.activity.BarobotActivity;
 import com.barobot.common.Initiator;
-import com.barobot.common.constant.Constant;
-import com.barobot.common.interfaces.OnDownloadReadyRunnable;
 import com.barobot.gui.database.BarobotData;
 import com.barobot.gui.dataobjects.Robot;
 import com.barobot.gui.dataobjects.Slot;
