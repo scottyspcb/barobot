@@ -308,7 +308,6 @@ public class BarobotConnector {
 				int diff			= Math.abs((current_z - pos));
 			//	int DRIVER_Z_SPEED	= state.getInt("DRIVER_Z_SPEED", 0 );
 				q.addWithDefaultReader("K" + pos);
-
 				int SERVOZ_UP_TIME		= state.getInt("SERVOZ_UP_TIME", 10 );
 				int SERVOZ_UP_TIME_MIN	= state.getInt("SERVOZ_UP_TIME_MIN", 10 );
 				int time				= SERVOZ_UP_TIME / 1000 * diff;

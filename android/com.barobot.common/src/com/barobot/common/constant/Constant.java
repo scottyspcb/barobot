@@ -1,12 +1,12 @@
 package com.barobot.common.constant;
 
 public class Constant {
-	public static final int ANDROID_APP_VERSION		= 7;
-	public static final int WIZARD_VERSION			= 6;
+	public static final int ANDROID_APP_VERSION		= 8;
+	public static final int WIZARD_VERSION			= 7;
 	public static final int MAX_FIRMWARE_VERSION	= 16;	
 
     // Debugging
-    public static final String TAG = "BarobotMainApp";
+    public static final String TAG			= "BarobotMainApp";
     public static final String SETTINGS_TAG = "BAROBOT";
 
     // Unique UUID for this application
@@ -76,7 +76,7 @@ public class Constant {
 	public static String logFile			= "/Barobot/log.log";
 	public static String firmware			= "/Barobot/barobot.hex";
 	public static String backupPath			= "/Barobot/BarobotOrman%DATE%.db";
-	
+
 	public static String raport_manager		= "http://barobot.com/synchro/raport_error.php";
 	public static String robot_id_manager	= "http://barobot.com/synchro/init.php";
 	public static String version_index		= "http://barobot.com/synchro/check_version.php";

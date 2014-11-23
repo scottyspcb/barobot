@@ -89,7 +89,6 @@ public class PowerActivity extends BlankWizardActivity {
 				public Boolean read() {
 					return connection != null;
 	            }
-
 			});
 
 			if( connection != null ){
