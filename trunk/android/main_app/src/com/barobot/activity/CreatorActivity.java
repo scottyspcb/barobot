@@ -39,7 +39,7 @@ public class CreatorActivity extends BarobotMain{
 	private int[] dropIds;
 	private List<Ingredient_t> ingredients;
 	private int drink_size = 0;
-
+ 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);

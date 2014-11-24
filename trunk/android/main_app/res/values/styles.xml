@@ -102,19 +102,16 @@
         <item name="android:layout_marginBottom">10dp</item>
         <item name="android:layout_marginLeft">10dp</item>
         <item name="android:layout_marginRight">10dp</item>
-        <item name="android:layout_height">@dimen/OptionsMenuButtonHeight</item>
+
+    </style>
+    <style name="OptionsMenuButton" parent="@style/MenuButton">
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">90dp</item>
+        <item name="android:layout_margin">10dp</item>
+        <item name="android:layout_weight">10</item>    
+
     </style>
 
-    <style name="OptionsMenuButton" parent="@style/MenuButton">
-        <item name="android:layout_width">@dimen/OptionsMenuButtonWidth</item>
-        <item name="android:layout_height">@dimen/OptionsMenuButtonHeight</item>
-        <item name="android:layout_margin">@dimen/OptionsMenuButtonMargin</item>
-    </style>
-    
-    
-    
-    
-    
     <!-- Misc -->
     <style name="ShadowedText" parent="@android:style/TextAppearance.Medium">
         <item name="android:shadowRadius">1</item>

@@ -64,6 +64,7 @@
     <string name="options_extra_setup_button">External Ingredient Setup</string>
     <string name="options_lights_button">Lights Show</string>
     <string name="options_demo_button">Demo mode</string>
+    <string name="options_party_setup">Party setup</string> 
     <string name="options_advanced_button">Advanced Setup</string>
     <string name="options_about_button">Update</string>
     <string name="options_turn_off_button">Homing</string>
@@ -130,13 +131,14 @@
     <string name="title_activity_servo_y">Servo front - back</string>
     <string name="title_activity_weight_sensor">Weigh sensor calibration</string>
     <string name="wizard_other_tests">or  jump to the specific test</string>
-    <string name="startup_head">Barobot</string>
+    <string name="startup_head">Barobot v</string>
     <string name="startup_loading">Loading...</string>
+    <string name="startup_version">.</string>
     <string name="preparing_drink_title">Preparing drink...</string>
     <string name="preparing_drink_message">Please wait</string>
 
 
-    <string name="startup_version">.</string>
+
     <string name="update_manual_message">Please turn OFF an ON Barobot.</string>
     <string name="update_manual_title">Uploading firmware...</string>
 

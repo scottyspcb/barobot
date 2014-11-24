@@ -515,7 +515,7 @@ public class MyRetReader implements RetReader {
 		int min_weight 		= state.getInt("MIN_WEIGHT", 1000 );
 		int confirm_glass	= 3;
 		int min_diff		= 1000;
-		
+
 		/*
 		if( need_light_cup == 1 ){
 			min_diff	= state.getInt("LIGH_GLASS_DIFF", 5 );	

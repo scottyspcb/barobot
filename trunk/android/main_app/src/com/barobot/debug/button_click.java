@@ -75,7 +75,7 @@ public class button_click implements OnClickListener{
 				  public void run() {
 			    	new AlertDialog.Builder(dbw).setTitle("Are you sure?").setMessage("Are you sure?")
 				    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-				        public void onClick(DialogInterface dialog, int which) { 
+				        public void onClick(DialogInterface dialog, int which) {
 				        	boolean success = false;
 				        	String error_name = "Error";
 				        	try {
@@ -118,7 +118,6 @@ public class button_click implements OnClickListener{
 		case R.id.firmware_download:
 			UpdateManager.downloadAndBurnFirmware( dbw, Constant.use_beta, false );
 			break;
-
 		case R.id.firmware_download_manual:
 			UpdateManager.downloadAndBurnFirmware( dbw, Constant.use_beta, true );
 			break;
@@ -163,7 +162,6 @@ public class button_click implements OnClickListener{
 			  }
 			});
 	}
-
 	private void resetApplicationData(BarobotConnector barobot) {
 		barobot.state.set("ONCE_PER_APP_START", 0 );
 		barobot.state.set("ONCE_PER_ROBOT_START", 0 );

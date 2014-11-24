@@ -55,6 +55,8 @@ public class Queue {
 //	public int commandSend = 0;
 //	private int ticks = 0;
 
+	static boolean verbose = false;
+
 	public Queue(){
 	}
 
@@ -73,10 +75,12 @@ public class Queue {
 						try {
 				//			Initiator.logger.i("Queue.worker.wait", "start + " + ( output.isEmpty() ? "empty" : "not empty" ));	
 							exec_lock.wait(timeout);
-				//			Initiator.logger.i("Queue.worker.wait", "end + " + ( output.isEmpty() ? "empty" : "not empty" ));
-				//			if(!output.isEmpty()){
-				//				show("exec");
-				//			}
+							if(verbose){
+								Initiator.logger.i("Queue.worker.wait", "end + " + ( output.isEmpty() ? "empty" : "not empty" ));
+								if(!output.isEmpty()){
+									show("exec");
+								}
+							}
 						} catch (InterruptedException e) {
 							Initiator.logger.e("Queue.worker.exec_lock.wait", "InterruptedException", e);	
 						} catch (Exception e) {
@@ -134,7 +138,9 @@ public class Queue {
 					}
 				}
 			}
-		//	Initiator.logger.e("Queue.worker.finish", ""+ticks);	
+			if(verbose){
+				Initiator.logger.e("Queue.worker.finish", "finish");	
+			}
 		}
 
 		private void exec2(AsyncMessage m) {
@@ -360,19 +366,16 @@ public class Queue {
 	}*/
 
 
-
-
-
-
 	public void unlock() {
 		if(isMainQueue){
 			Mainboard.lock.unlock();
 			exec();
 		}
-	//	Initiator.logger.i("Queue", "unlock()");
 	}
 	public void addWaitThread(final Object thread) {
-	//	Initiator.logger.i("Queue", "add thread wait");
+		if(verbose){
+			Initiator.logger.i("Queue", "add thread wait");
+		}
 		int size = 0;
 		synchronized (lock_output) {
 			size = this.output.size();
@@ -400,6 +403,9 @@ public class Queue {
 			//			history.push(msg);
 					}
 				}
+				
+				
+				
 	//			Initiator.logger.i("Queue.addWaitThread length", ""+output.size() );
 				exec();
 			//	Initiator.logger.i("Queue", "START wait");
@@ -412,7 +418,9 @@ public class Queue {
 				}
 			}
 		}
-	//	Initiator.logger.i("Queue","end wait");
+		if(verbose){
+			Initiator.logger.i("Queue","end wait ");
+		}
 	}
 
 	public void addWait2(final int time) {
@@ -456,7 +464,9 @@ public class Queue {
 			}
 			@Override
 			public Queue run(final Mainboard dev, Queue queue) {
-			//	Initiator.logger.w("Queue.addWait.run", "time: " +time);
+				if(verbose){
+					Initiator.logger.w("Queue.addWait.run", "time: " +time);
+				}
 				final AsyncMessage msg	= this;
 				/*
 				final Handler handler	= new Handler();
@@ -469,7 +479,9 @@ public class Queue {
 				*/
 				new Timer().schedule(new TimerTask() {
 				    public void run() {
-	//			    	Initiator.logger.w("Queue.addWait.end", "time: " +time);
+						if(verbose){
+							Initiator.logger.w("Queue.addWait.end", "time: " +time);
+						}
 				    	dev.unlockRet( msg, "wait " + time);
 				    }
 				}, time);// odczekaj tyle czasu, odblokuj kolejk� i jedz dalej
@@ -481,7 +493,9 @@ public class Queue {
 			}
 		};
 		this.add(m2);
-//		Initiator.logger.i("Queue.addWait length", ""+output.size() );
+		//if(verbose){
+		//	Initiator.logger.i("Queue.addWait length", ""+output.size() );
+		//}
 	}
 	public boolean isBusy() {
 		synchronized (lock_output) {

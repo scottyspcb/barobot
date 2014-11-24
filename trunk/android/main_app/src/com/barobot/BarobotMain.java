@@ -68,9 +68,7 @@ public class BarobotMain extends Activity {
 	public void changeLanguage(String langCode) {
 		Resources res = this.getBaseContext().getResources();
 		DisplayMetrics dm = res.getDisplayMetrics();
-
 		android.content.res.Configuration conf = res.getConfiguration();
-
 		conf.locale = new Locale(langCode);
 		res.updateConfiguration(conf, dm);
 		//String langCode = Locale.getDefault().getLanguage();	// system alng i.e. "pl"
