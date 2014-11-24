@@ -207,7 +207,9 @@ public class InternetHelpers {
 		Thread dx = new Thread() {
 			public void run() {
 				HttpClient httpclient = new DefaultHttpClient();
+
 				HttpPost httppost = new HttpPost(Constant.version_index);
+				httppost.setHeader("User-Agent", "IE 10 Mozilla compatible");
 				try {
 					BarobotConnector barobot = Arduino.getInstance().barobot;
 
@@ -242,6 +244,7 @@ public class InternetHelpers {
 		HttpClient httpclient	= new DefaultHttpClient();
 		HttpPost httppost		= new HttpPost(Constant.robot_id_manager);
 		String ip				= Android.getLocalIpAddress();
+		httppost.setHeader("User-Agent", "IE 10 Mozilla compatible");
 		BarobotConnector barobot = Arduino.getInstance().barobot;
 		List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
 		nameValuePairs.add(new BasicNameValuePair("address", ip ));
@@ -267,6 +270,7 @@ public class InternetHelpers {
 			HttpPost httppost		= new HttpPost(Constant.raport_manager);
 			List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
 			String ip				= Android.getLocalIpAddress();
+			httppost.setHeader("User-Agent", "IE 10 Mozilla compatible");
 			if(ip!=null){
 				nameValuePairs.add(new BasicNameValuePair("address", ip ));
 			}

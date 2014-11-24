@@ -785,20 +785,23 @@ public class CommandRoute extends EmptyRoute {
 
 		index.put("command_wait_for_cup", new command_listener() {
 			@Override
-			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,int posx, int posy) {
+			public boolean onCall(Queue q, final BarobotConnector barobot, Queue mq,int posx, int posy) {
+
+				final Queue q_ready		= new Queue();	
+				barobot.lightManager.carret_color( q_ready, 0, 100, 100 );
+				barobot.driver_x.moveTo( q_ready, barobot.driver_x.getSPos() +100 );
+				
 
 				Initiator.logger.i("cupFound"," start ");
 				final Queue q2			= new Queue();
-				
-				final Queue q_ready		= new Queue();
-				barobot.lightManager.carret_color( q_ready, 0, 100, 100 );
-				
+
 				final long timestamp	= Decoder.getTimestamp();
 				barobot.lightManager.carret_color( q2, 100, 100, 0);
-				q2.addWait(100);
+		//		q2.addWait(100);
 				q2.add("A2", true );	// read load cell
 				barobot.lightManager.carret_color( q2, 0, 100, 100 );
 				q2.addWait(100);
+				barobot.lightManager.carret_color( q2, 0, 0, 0 );
 
 				AsyncMessage am = new AsyncMessage( true ) {
 					@Override
@@ -809,26 +812,35 @@ public class CommandRoute extends EmptyRoute {
 					public Queue run(Mainboard dev, Queue mainQueue) {
 						boolean cupFound = false;
 						Initiator.logger.i("cupFound"," test ");
+
+						int weight = barobot.state.getInt("LAST_WEIGHT", 0 );
+
 						long timestamp2 = Decoder.getTimestamp();
-						if (timestamp2 - timestamp > 7000 ){			// 5 sec
+						if (timestamp2 - timestamp > 7000 ){
 							cupFound = true;
 						}
 						if( cupFound ){
 							Initiator.logger.i("cupFound"," true ");
+							return q_ready;
 						}else{
 							Initiator.logger.i("cupFound"," false ");
-							return q2.copy();		// do it one more time (now with addWait())
+
+							Queue beforeOtherInMainQueue = new Queue();
+							beforeOtherInMainQueue.addWait(1000);
+							beforeOtherInMainQueue.add(q2.copy());
+
+							return beforeOtherInMainQueue;		// do it one more time (now with addWait())
 						}
-						return null;
+				//		return null;
 					}
 				};
 				q2.add(am);				// check value
+				Queue copy = q2.copy();	// do copy 
+		//		q2.addWait(2000);		// add to q2 (not to q). Wait will be used in AsyncMessage before next
 
-				q.add(q2.copy());		// this queue content will be send
 
-				q2.addWait(2000);		// add to q2 (not to q). Wait will be used in AsyncMessage before next
-				barobot.lightManager.carret_color( q2, 0, 0, 0 );
-
+				q.add(copy);			// this queue will be send, 
+										// add() is called after addWait(2000) becouse main queue is running in other thread and use q2
 				return true;
 			}
 		});

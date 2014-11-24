@@ -77,7 +77,7 @@ public class WeightSensorActivity extends BlankWizardActivity {
 					wizard_weight_result.setTextColor(Color.GREEN);
 				}
 				if( diff > 2 ){
-					float ratio = (float)diff / Constant.glass_try_weight;
+					float ratio = (float)diff / Constant.glass_tray_weight;
 					int ratioi	= (int)(ratio * 10000);
 					Initiator.logger.i("WeightSensorActivity.ratio", "" + ratioi  + "/" + diff) ;
 					barobot.state.set("WEIGHT_PRESCALER", ratioi);

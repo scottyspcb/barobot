@@ -60,8 +60,8 @@ public class StartupActivity extends BarobotMain{
 				break;	
 			case R.id.button_settings:
 				serverIntent = new Intent(this, OptionsActivity.class);
-				animIn = R.anim.push_down_in;
-				animOut = R.anim.push_down_out;
+				animIn = R.anim.push_up_in;
+				animOut = R.anim.push_up_out;
 				break;
 		}
 		if(serverIntent!=null){

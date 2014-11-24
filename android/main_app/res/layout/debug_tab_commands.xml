@@ -320,36 +320,12 @@
                 android:layout_height="wrap_content" >
 
                 <ToggleButton
-                    android:id="@+id/need_glass"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="ToggleButton"
-                    android:textOff="Don&apos;t need glass"
-                    android:textOn="Wait 4 Glass" />
-
-                <ToggleButton
-                    android:id="@+id/need_hall_up"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="ToggleButton"
-                    android:textOff="Don&apos;t use Hall"
-                    android:textOn="Need hall to UP" />
-
-                <ToggleButton
                     android:id="@+id/auto_fill_on_ready"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="ToggleButton"
                     android:textOff="Nie nalewaj od razu"
                     android:textOn="Nalewaj od razu" />
-
-                <ToggleButton
-                    android:id="@+id/allow_light_cup"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Allow light cups"
-                    android:textOff="Allow light cups"
-                    android:textOn="No light cups" />
             </LinearLayout>
         </LinearLayout>
 

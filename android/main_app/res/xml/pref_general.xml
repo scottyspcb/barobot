@@ -1,188 +1,27 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <CheckBoxPreference
-        android:defaultValue="true"
-        android:key="example_checkbox"
-        android:summary="@string/pref_description_social_recommendations"
-        android:title="@string/pref_title_social_recommendations" />
+        android:key="NEED_GLASS"
+        android:title="@string/pref_need_glass_title"
+        android:summary="@string/pref_need_glass_info" />
 
     <CheckBoxPreference
-        android:defaultValue="true"
-        android:key="do_homing"
-        android:summary="@string/do_homing_desc"
-        android:title="@string/do_homing" />
+        android:key="ALLOW_LIGHT_CUP"
+        android:title="@string/pref_light_cup_title"
+        android:summary="@string/pref_light_cup_info" />
 
+  
     <CheckBoxPreference
-        android:defaultValue="true"
-        android:key="do_pac"
-        android:summary="@string/do_pac_desc"
-        android:title="@string/do_pac" />
+        android:key="NEED_HALL_X"
+        android:title="@string/pref_need_hall_title"
+        android:summary="@string/pref_need_hall_info" />
 
-     <EditTextPreference
-        android:capitalize="words"
-        android:numeric="integer"
-        android:defaultValue=""
-        android:inputType="number"
-        android:key="DRIVER_X_SPEED"
-        android:maxLines="1"
-        android:singleLine="true"
-        android:title="DRIVER_X_SPEED" />
-    
-
-
-     <EditTextPreference
-        android:capitalize="words"
-        android:numeric="integer"
-        android:defaultValue=""
-        android:inputType="number"
-        android:key="SERVOZ_PAC_TIME_WAIT_VOL"
-        android:maxLines="1"
-        android:singleLine="true"
-        android:title="SERVOZ_PAC_TIME_WAIT_VOL" />
-
-     <EditTextPreference
-        android:capitalize="words"
-        android:numeric="integer"
-        android:defaultValue=""
-        android:inputType="number"
-        android:key="DRIVER_CALIB_X_SPEED"
-        android:maxLines="1"
-        android:singleLine="true"
-        android:title="DRIVER_CALIB_X_SPEED" />
-
-     <EditTextPreference
-        android:capitalize="words"
-        android:numeric="integer"
-        android:defaultValue=""
-        android:inputType="number"
-        android:key="SERVOY_REPEAT_TIME"
-        android:maxLines="1"
-        android:singleLine="true"
-        android:title="SERVOY_REPEAT_TIME" />
- 
-
-     <EditTextPreference
-        android:capitalize="words"
-        android:numeric="integer"
-        android:defaultValue=""
-        android:inputType="number"
-        android:key="PAC_TIME_WAIT"
-        android:maxLines="1"
-        android:singleLine="true"
-        android:title="SERVOZ_PAC_TIME_WAIT" />
- 
-     
-     
-     
-     
-     
-     
-     
-     
-
-     <EditTextPreference
-        android:capitalize="words"
-        android:numeric="integer"
-        android:defaultValue="160"
-        android:inputType="number"
-        android:key="SERVOZ_POUR_TIME"
-        android:maxLines="1"
-        android:singleLine="true"
-        android:title="SERVOZ_POUR_TIME" />
-
-     <EditTextPreference
-        android:capitalize="words"
-        android:numeric="integer"
-        android:defaultValue=""
-        android:inputType="number"
-        android:key="DRIVER_CALIB_X_SPEED"
-        android:maxLines="1"
-        android:singleLine="true"
-        android:title="DRIVER_CALIB_X_SPEED" />
     
     
-     <EditTextPreference
-        android:capitalize="words"
-        android:numeric="integer"
-        android:defaultValue=""
-        android:inputType="number"
-        android:key="SERVOY_REPEAT_TIME"
-        android:maxLines="1"
-        android:singleLine="true"
-        android:title="SERVOY_REPEAT_TIME" />
-     
-    
-     <EditTextPreference
-        android:capitalize="words"
-        android:numeric="integer"
-        android:defaultValue=""
-        android:inputType="number"
-        android:key="SERVOZ_PAC_TIME_WAIT"
-        android:maxLines="1"
-        android:singleLine="true"
-        android:title="SERVOZ_PAC_TIME_WAIT" />
-     
-    
-     <EditTextPreference
-        android:capitalize="words"
-        android:numeric="integer"
-        android:defaultValue=""
-        android:inputType="number"
-        android:key="SERVOZ_PAC_TIME_WAIT_VOL"
-        android:maxLines="1"
-        android:singleLine="true"
-        android:title="SERVOZ_PAC_TIME_WAIT_VOL" />
-     
-     
-     <EditTextPreference
-        android:capitalize="words"
-        android:numeric="integer"
-        android:defaultValue=""
-        android:inputType="number"
-        android:key="SERVOZ_UP_POS"
-        android:maxLines="1"
-        android:singleLine="true"
-        android:title="SERVOZ_UP_POS" />
-     <EditTextPreference
-        android:capitalize="words"
-        android:numeric="integer"
-        android:defaultValue=""
-        android:inputType="number"
-        android:key="SERVOZ_UP_LIGHT_POS"
-        android:maxLines="1"
-        android:singleLine="true"
-        android:title="SERVOZ_UP_LIGHT_POS" />
-     <EditTextPreference
-        android:capitalize="words"
-        android:numeric="integer"
-        android:defaultValue=""
-        android:inputType="number"
-        android:key="SERVOZ_DOWN_POS"
-        android:maxLines="1"
-        android:singleLine="true"
-        android:title="SERVOZ_DOWN_POS" />
-     <EditTextPreference
-        android:capitalize="words"
-        android:numeric="integer"
-        android:defaultValue=""
-        android:inputType="number"
-        android:key="SERVOZ_TEST_POS"
-        android:maxLines="1"
-        android:singleLine="true"
-        android:title="SERVOZ_TEST_POS" />
-
-     <EditTextPreference
-        android:capitalize="words"
-        android:numeric="integer"
-        android:defaultValue="1870"
-        android:inputType="number"
-        android:key="SERVOZ_PAC_POS"
-        android:maxLines="1"
-        android:singleLine="true"
-        android:title="SERVOZ_PAC_POS" />
-
     <!-- NOTE: EditTextPreference accepts EditText attributes. -->
     <!-- NOTE: EditTextPreference's summary should be set to its value by the activity code. -->
+    <!--
+    
     <EditTextPreference
         android:capitalize="words"
         android:defaultValue="@string/pref_default_display_name"
@@ -193,18 +32,142 @@
         android:singleLine="true"
         android:title="@string/pref_title_display_name" />
 
-    <!--
+    
          NOTE: Hide buttons to simplify the UI. Users can touch outside the dialog to
          dismiss it.
     -->
     <!-- NOTE: ListPreference's summary should be set to its value by the activity code. -->
-    <ListPreference
-        android:defaultValue="-1"
+    <!-- ListPreference
         android:entries="@array/pref_example_list_titles"
         android:entryValues="@array/pref_example_list_values"
         android:key="example_list"
         android:negativeButtonText="@null"
         android:positiveButtonText="@null"
-        android:title="@string/pref_title_add_friends_to_messages" />
+        android:title="@string/pref_title_add_friends_to_messages" /-->
 
+
+      <EditTextPreference
+        android:numeric="integer"
+        android:inputType="number"
+        android:key="DRIVER_X_SPEED"
+        android:maxLines="1"
+        android:singleLine="true"
+        android:title="DRIVER_X_SPEED" />
+    
+     <EditTextPreference
+        android:numeric="integer"
+        android:inputType="number"
+        android:key="DRIVER_Y_SPEED"
+        android:maxLines="1"
+        android:singleLine="true"
+        android:title="DRIVER_Y_SPEED" />
+
+     <EditTextPreference
+        android:numeric="integer"
+        android:inputType="number"
+        android:key="SERVOY_REPEAT_TIME"
+        android:maxLines="1"
+        android:singleLine="true"
+        android:title="SERVOY_REPEAT_TIME" />
+
+     <EditTextPreference
+        android:numeric="integer"
+        android:inputType="number"
+        android:key="SERVOZ_POUR_TIME"
+        android:maxLines="1"
+        android:singleLine="true"
+        android:title="SERVOZ_POUR_TIME" />
+
+     <EditTextPreference
+        android:numeric="integer"
+        android:inputType="number"
+        android:key="DRIVER_CALIB_X_SPEED"
+        android:maxLines="1"
+        android:singleLine="true"
+        android:title="DRIVER_CALIB_X_SPEED" />
+    
+    
+     <EditTextPreference
+        android:numeric="integer"
+        android:inputType="number"
+        android:key="SERVOY_REPEAT_TIME"
+        android:maxLines="1"
+        android:singleLine="true"
+        android:title="SERVOY_REPEAT_TIME" />
+     
+    
+     <EditTextPreference
+        android:numeric="integer"
+        android:inputType="number"
+        android:key="SERVOZ_PAC_TIME_WAIT"
+        android:maxLines="1"
+        android:singleLine="true"
+        android:title="SERVOZ_PAC_TIME_WAIT" />
+     
+    
+     <EditTextPreference
+        android:numeric="integer"
+        android:inputType="number"
+        android:key="SERVOZ_PAC_TIME_WAIT_VOL"
+        android:maxLines="1"
+        android:singleLine="true"
+        android:title="SERVOZ_PAC_TIME_WAIT_VOL" />
+     
+     
+     <EditTextPreference
+        android:numeric="integer"
+        android:inputType="number"
+        android:key="SERVOZ_UP_POS"
+        android:maxLines="1"
+        android:singleLine="true"
+        android:title="SERVOZ_UP_POS" />
+     <EditTextPreference
+        android:numeric="integer"
+        android:inputType="number"
+        android:key="SERVOZ_UP_LIGHT_POS"
+        android:maxLines="1"
+        android:singleLine="true"
+        android:title="SERVOZ_UP_LIGHT_POS" />
+     <EditTextPreference
+        android:numeric="integer"
+        android:inputType="number"
+        android:key="SERVOZ_DOWN_POS"
+        android:maxLines="1"
+        android:singleLine="true"
+        android:title="SERVOZ_DOWN_POS" />
+     <EditTextPreference
+        android:numeric="integer"
+        android:inputType="number"
+        android:key="SERVOZ_TEST_POS"
+        android:maxLines="1"
+        android:singleLine="true"
+        android:title="SERVOZ_TEST_POS" />
+
+     <EditTextPreference
+        android:numeric="integer"
+        android:inputType="number"
+        android:key="SERVOZ_PAC_POS"
+        android:maxLines="1"
+        android:singleLine="true"
+        android:title="SERVOZ_PAC_POS" />
+
+     
+     
+     <EditTextPreference
+        android:numeric="integer"
+        android:inputType="number"
+        android:key="GLASS_DIFF"
+        android:maxLines="1"
+        android:singleLine="true"
+        android:title="GLASS_DIFF" /> 
+     <EditTextPreference
+        android:numeric="integer"
+        android:inputType="number"
+        android:key="LIGH_GLASS_DIFF"
+        android:maxLines="1"
+        android:singleLine="true"
+        android:title="LIGH_GLASS_DIFF" />
+
+  
+     
 </PreferenceScreen>

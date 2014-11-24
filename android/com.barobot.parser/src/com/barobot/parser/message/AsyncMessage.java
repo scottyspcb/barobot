@@ -151,7 +151,7 @@ public class AsyncMessage extends History_item implements Cloneable{
 		return sss;
 	}
 
-	public AsyncMessage copy() {			// make copy of message to run it one more time, copy must be done borefo command is run
+	public AsyncMessage copy() {			// make copy of message to run it one more time, copy must be done bofore command is run
 	//	AsyncMessage am = new AsyncMessage( this.direction );
 		AsyncMessage am = null;
 		try {

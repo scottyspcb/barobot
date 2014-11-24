@@ -214,6 +214,7 @@ public class HallXActivity extends BlankWizardActivity {
 
 	public void onTick(){
 	}
+
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();

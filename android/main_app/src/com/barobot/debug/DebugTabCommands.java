@@ -96,26 +96,14 @@ public class DebugTabCommands extends Fragment {
 		buttonToCommand.put( R.id.index_names, "index_names" );
 		buttonToCommand.put( R.id.auto_repair, "auto_repair" );
 
-		
 		assignButtons(buttonToCommand, rootView);
 		
-
-		int need_light_cup	= state.getInt("ALLOW_LIGHT_CUP", 1 );
-		int need_glass		= state.getInt("NEED_GLASS", 1 );
 		int autofill		= state.getInt("AUTOFILL", 1 );
-		int need_hall_x		= state.getInt("NEED_HALL_X", 1 );
-
-		ToggleButton tbng1 = (ToggleButton) rootView.findViewById(R.id.need_glass);	
-		tbng1.setChecked( (need_glass == 1) ? true : false);
 
 		ToggleButton tbng2 = (ToggleButton)rootView.findViewById(R.id.auto_fill_on_ready);		
 		tbng2.setChecked( (autofill == 1) ? true : false);
 
-		ToggleButton tbng3 = (ToggleButton) rootView.findViewById(R.id.need_hall_up);	
-		tbng3.setChecked( (need_hall_x == 1) ? true : false);
-
-		ToggleButton tbng4 = (ToggleButton) rootView.findViewById(R.id.allow_light_cup);	
-		tbng4.setChecked( (need_light_cup == 1) ? true : false);
+	
 
 		button_click bc = new button_click( this.cc );
 		int[] buttons = {
@@ -144,9 +132,6 @@ public class DebugTabCommands extends Fragment {
 
 		button_toggle bt = new button_toggle();
 		int[] togglers = {
-				R.id.need_hall_up,
-				R.id.allow_light_cup,
-				R.id.need_glass,
 				R.id.auto_fill_on_ready
 		};
 		for(int i =0; i<togglers.length;i++){

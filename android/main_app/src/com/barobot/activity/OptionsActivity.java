@@ -10,10 +10,13 @@ import com.barobot.AppInvoker;
 import com.barobot.BarobotMain;
 import com.barobot.R;
 import com.barobot.common.Initiator;
+import com.barobot.gui.dataobjects.Engine;
 import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
 import com.barobot.other.Android;
 import com.barobot.other.Audio;
+import com.barobot.other.ProgressTask;
+import com.barobot.other.ProgressTask.UiTask;
 import com.barobot.parser.Queue;
 import com.barobot.sofa.route.CommandRoute;
 
@@ -25,17 +28,17 @@ public class OptionsActivity extends BarobotMain {
 		setContentView(R.layout.activity_options);
 	}
 	static boolean wasVersionChecked = false;
-	
+
 	@Override
 	protected void onResume() {
 		super.onResume();
-		this.checkVersion( false );
+		this.checkVersion( false, false );
 	}
 
-	private int checkVersion( boolean force ) {
+	private int checkVersion( boolean alertResult, boolean force ) {
 		if(!wasVersionChecked || force ){
 			wasVersionChecked = true;
-			return Android.checkNewSoftwareVersion( false, this );
+			return Android.checkNewSoftwareVersion( alertResult, this );
 		}
 		return 1;
 	}
@@ -63,9 +66,13 @@ public class OptionsActivity extends BarobotMain {
 			barobot.readHardwareRobotId(mq);
 			barobot.doHoming(mq, true);
 			break;
+
+		case R.id.options_party_setup:
+			serverIntent = new Intent(this, SettingsActivity.class);	
+			break;
 		case R.id.options_about_button:
 	//		startActivity(new Intent(this, SettingsActivity.class));
-			this.checkVersion(true);
+			this.checkVersion(true, true);
 			break;
 		case R.id.options_lights_button:
 			final Audio a = getAudio();
@@ -132,5 +139,9 @@ public class OptionsActivity extends BarobotMain {
     		AppInvoker.container.put("Audio", a );
     	}
     	return a;
+	}
+	public void gotoMainMenu(View view){		
+		finish();
+		overridePendingTransition(R.anim.push_down_in,R.anim.push_down_out);
 	}
 }

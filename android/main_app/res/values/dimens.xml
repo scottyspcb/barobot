@@ -67,11 +67,6 @@
     <color name="MenuButtonBorderColor">@color/SecondaryB</color>
     <dimen name="MenuButtonHeight">75dp</dimen>
 
-    <!-- Options -->
-    <dimen name="OptionsMenuButtonWidth">300dp</dimen>
-    <dimen name="OptionsMenuButtonHeight">100dp</dimen>
-    <dimen name="OptionsMenuButtonMargin">10dp</dimen>
-    
     <!-- Recipes -->
     <dimen name="RecipeListWidth">400dp</dimen>
     
