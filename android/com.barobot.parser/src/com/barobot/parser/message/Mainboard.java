@@ -260,19 +260,17 @@ public class Mainboard{
 
 	public boolean parse(String in) {
 		//synchronized(this){
-			Initiator.logger.saveLog("unknown command:[" + in+"]");
-			Initiator.logger.saveLog("unknown bytes:[" + Decoder.toHexStr(in.getBytes(), in.length())+"]" );
-			if(in.matches("^[-a-zA-Z0-9_.,;+]+$")){		// usual characters
-			}else{										// unusual characters
-				Initiator.logger.saveLog("unknown+unusual:[" + in+"]");
-			}
-
 			if( state.getInt("show_unknown", 0) > 0 ){
 				if( in.startsWith( "-") ){			// comment
 				//	Initiator.logger.i("Mainboard.unknown.comment", in);
 					return true;
-				}else if( in.equals("NO_CMD []" ) ){
+				}else if( in.equals("NOCMD []" ) ){
 				}else{
+					Initiator.logger.saveLog("unknown command:[" + in+"] = " + Decoder.toHexStr(in.getBytes(), in.length())+"]");
+					if(in.matches("^[-a-zA-Z0-9_.,;+]+$")){		// usual characters
+					}else{										// unusual characters
+						Initiator.logger.saveLog("unknown+unusual:[" + in+"]");
+					}
 					if(in.matches("^.*[^-a-zA-Z0-9_.,].*")){		// unusual characters
 						// log command to db
 					}

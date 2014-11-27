@@ -34,8 +34,8 @@ public class ServoZActivity extends BlankWizardActivity {
 
 	// DOWN config
 	static int down_step		= 20;
-	static int down_min			= 2500;
-	static int down_max			= 2180;
+	static int down_min			= 2600;
+	static int down_max			= 1800;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +52,6 @@ public class ServoZActivity extends BlankWizardActivity {
 
 		neutral					= barobot.state.getInt("SERVOZ_NEUTRAL", 1000);
 		newValue				= neutral;
-
 		int up_startVal			= barobot.state.getInt("SERVOZ_UP_POS", 0);
 		int down_startVal		= barobot.state.getInt("SERVOZ_DOWN_POS", 0);
 
@@ -101,13 +100,14 @@ public class ServoZActivity extends BlankWizardActivity {
 		switch (view.getId()) {
 		case R.id.wizard_servoz_up:
 			int value1 = Decoder.toInt( ""+wizard_servoz_up_pos.getText(), -1);
-			barobot.moveZ(barobot.main_queue, value1 );
-			barobot.disablez(barobot.main_queue);
+			barobot.z.move(barobot.main_queue, value1 );
+			barobot.z.disable(barobot.main_queue);
 			break;
 
 		case R.id.wizard_servoz_up_more_up:
 			int val2 = wizard_servoz_seek_up.getProgress();
 			wizard_servoz_seek_up.setProgress( val2+1 );	
+			
 			break;
 
 		case R.id.wizard_servoz_up_more_down:
@@ -120,35 +120,34 @@ public class ServoZActivity extends BlankWizardActivity {
 		case R.id.wizard_servoz_down_more_up:
 			int val3 = wizard_servoz_seek_down.getProgress();
 			wizard_servoz_seek_down.setProgress( val3+1 );
+			countNeutral();
 			break;
 
 		case R.id.wizard_servoz_down_more_down:
 			int val4 = wizard_servoz_seek_down.getProgress();
 			wizard_servoz_seek_down.setProgress( val4-1 );
+			countNeutral();
 			break;
 
 		case R.id.wizard_servoz_down:
 			int value2 = Decoder.toInt( ""+wizard_servoz_down_pos.getText(), -1);
-			barobot.moveZ(barobot.main_queue, value2 );
-			barobot.disablez(barobot.main_queue);
+			barobot.z.move(barobot.main_queue, value2 );
+			barobot.z.disable(barobot.main_queue);
 			break;
 
 		case R.id.wizard_servoz_next:
 			int valueUp		= Decoder.toInt( ""+wizard_servoz_up_pos.getText(), -1);
 			int valueDown	= Decoder.toInt( ""+wizard_servoz_down_pos.getText(), -1);
-
 			Initiator.logger.e("onOptionsButtonClicked.valueUp", "" + valueUp);
 			Initiator.logger.e("onOptionsButtonClicked.valueDown", "" + valueDown);
-			
-	//		valueUp			= up_min + (valueUp * up_step);
-		//	valueDown		= down_min + (valueDown * down_step);
+			countNeutral();
 			if( valueUp > 700 && valueDown < 2600 ){
 				barobot.state.set("SERVOZ_UP_POS", valueUp );		// save values
 			}
 			if( valueDown > 700 && valueDown < 2600 ){
 				barobot.state.set("SERVOZ_DOWN_POS", valueDown );		// save values
 			}
-			barobot.moveZDown(barobot.main_queue, true);		// move down	
+			barobot.z.moveDown(barobot.main_queue, true);		// move down	
 			super.onOptionsButtonClicked(view);
 			break;
 		default:
@@ -156,16 +155,23 @@ public class ServoZActivity extends BlankWizardActivity {
 			break;
 		}
 	}
+	private void countNeutral() {
+		int valueUp		= Decoder.toInt( ""+wizard_servoz_up_pos.getText(), -1);
+		int valueDown	= Decoder.toInt( ""+wizard_servoz_down_pos.getText(), -1);
+		neutral	= (valueUp + valueDown) / 2;
+		barobot.state.set("SERVOZ_NEUTRAL", neutral);
+	}
+
 	public void onTick() {
 		if( newValue !=lastValue && newValue > 700 && newValue < 2600 ){
 			if(++prescaler >= prescaler_max ){
 				if( newValue < neutral ){
-					barobot.moveZ(barobot.main_queue, newValue +200 );
+					barobot.z.move(barobot.main_queue, newValue +300 );
 				}else{
-					barobot.moveZ(barobot.main_queue, newValue -200 );
+					barobot.z.move(barobot.main_queue, newValue -300 );
 				}
-				barobot.moveZ(barobot.main_queue, newValue );
-				barobot.disablez(barobot.main_queue);
+				barobot.z.move(barobot.main_queue, newValue );
+				barobot.z.disable(barobot.main_queue);
 				lastValue = newValue;
 				prescaler = 0;
 			}

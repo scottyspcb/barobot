@@ -149,7 +149,7 @@ public class AndroidLogger implements CanLog {
 		try {
 			Date date = new Date();
 			BufferedWriter buf = new BufferedWriter(new FileWriter(logFile,true));
-			buf.append(dateFormat.format(date)); //2013/10/15 16:16:39
+			buf.append(dateFormat.format(date));
 			buf.append("\t");
 			buf.append(text);
 			buf.newLine();

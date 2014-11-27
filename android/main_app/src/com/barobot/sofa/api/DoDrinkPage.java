@@ -2,6 +2,9 @@ package com.barobot.sofa.api;
 
 import com.barobot.gui.dataobjects.Engine;
 import com.barobot.gui.dataobjects.Recipe_t;
+import com.barobot.hardware.Arduino;
+import com.barobot.hardware.devices.BarobotConnector;
+import com.barobot.parser.Queue;
 import com.barobot.web.server.SofaServer;
 import com.x5.template.Theme;
 
@@ -57,7 +60,10 @@ public class DoDrinkPage extends Page {
 			return new JsonResponseBuilder().status("ERROR")
 					.message("You lack appropriate ingredients").build();
 		}
-		engine.Pour(recipe, "api");
+
+		Queue q = engine.Pour(recipe, "api");
+		BarobotConnector barobot = Arduino.getInstance().barobot;
+		barobot.main_queue.add(q);
 	//	engine.SetMessage("Pouring recipe no. " + recipe.id + ": " + recipe.name);
 
 		return new JsonResponseBuilder().status("OK").build();

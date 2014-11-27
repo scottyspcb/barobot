@@ -29,7 +29,7 @@
 
     <!-- Main -->
     <string name="glass_reminder_title">Reminder</string>
-    <string name="glass_reminder_message1">Place glass onto the tray</string>
+    <string name="glass_reminder_message1">Place glass with ice onto the tray and click START</string>
     <string name="glass_reminder_button_ok">OK</string>
     <string name="glass_reminder_button_cancel">Cancel</string>
     <!-- Bottle Setup -->
@@ -117,7 +117,7 @@
     <string name="goto_main_menu">Main menu</string>
     <string name="myip">Show device address</string>
     <string name="update_title">Barobot Software Update</string>
-    <string name="update_msg">New Barobot Software version was released. It is strongly recommended that you apply this update as soon as possible. Don\'t do it during a party. Do you want to download it now?</string>
+    <string name="update_msg">New Barobot Software version was released. It is strongly recommended that you apply this update as soon as possible. Don\'t do it during a party. Do you want to download it now? \n\n(destination folder: /mnt/Barobot/update.apk)</string>
     <string name="update_yes">Yes</string>
     <string name="update_no">No</string>
     <string name="title_activity_validator">ValidatorActivity</string>
@@ -141,5 +141,7 @@
 
     <string name="update_manual_message">Please turn OFF an ON Barobot.</string>
     <string name="update_manual_title">Uploading firmware...</string>
+    <string name="preparing_drink_start">START</string>
+    <string name="preparing_drink_cancel">Anuluj</string>
 
 </resources>

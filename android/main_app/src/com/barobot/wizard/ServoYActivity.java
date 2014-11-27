@@ -38,7 +38,7 @@ public class ServoYActivity extends BlankWizardActivity {
 	// back config
 	static int back_step		= 15;
 	static int back_min			= 1600;
-	static int back_max			= 2200;
+	static int back_max			= 2300;
 	//static int back_startVal	= 2300;
 
 	@Override
@@ -126,22 +126,25 @@ public class ServoYActivity extends BlankWizardActivity {
 		case R.id.wizard_servoy_front_more_front:
 			int val1 = wizard_servoy_seek_front.getProgress();
 			wizard_servoy_seek_front.setProgress( val1  -1 );
+			countNeutral();
 
 			break;
 		case R.id.wizard_servoy_front_more_back:
 			int val2 = wizard_servoy_seek_front.getProgress();
 			wizard_servoy_seek_front.setProgress( val2 + 1 );
+			countNeutral();
 
 			break;
 		case R.id.wizard_servoy_back_more_front:
 			int val3 = wizard_servoy_seek_back.getProgress();
 			wizard_servoy_seek_back.setProgress( val3 - 1);
+			countNeutral();
 			break;
 		case R.id.wizard_servoy_back_more_back:
 			int val4 = wizard_servoy_seek_back.getProgress();
 			wizard_servoy_seek_back.setProgress( val4 +1 );
+			countNeutral();
 
-			
 		case R.id.wizard_servoy_back:
 			int value2 = Decoder.toInt( ""+wizard_servoy_back_pos.getText(), -1);
 		//	barobot.moveZ(barobot.main_queue, value2 );
@@ -164,7 +167,7 @@ public class ServoYActivity extends BlankWizardActivity {
 			} );
 			break;
 		case R.id.wizard_servoy_next:
-			int valuefront		= Decoder.toInt( ""+wizard_servoy_front_pos.getText(), -1);
+			int valuefront	= Decoder.toInt( ""+wizard_servoy_front_pos.getText(), -1);
 			int valueback	= Decoder.toInt( ""+wizard_servoy_back_pos.getText(), -1);
 
 			Initiator.logger.e("onOptionsButtonClicked.valuefront", "" + valuefront);
@@ -184,14 +187,20 @@ public class ServoYActivity extends BlankWizardActivity {
 			break;
 		}
 	}
+	private void countNeutral() {
+		int valuefront	= Decoder.toInt( ""+wizard_servoy_front_pos.getText(), -1);
+		int valueback	= Decoder.toInt( ""+wizard_servoy_back_pos.getText(), -1);
+		neutral	= (valuefront + valueback) / 2;
+		barobot.state.set("SERVOY_BACK_NEUTRAL", neutral);
+	}
 
 	public void onTick(){
 		if( newValue !=lastValue && newValue > 700 && newValue < 2500 ){
 			if(++prescaler >= prescaler_max ){
 				if( newValue < neutral ){
-					barobot.moveY(barobot.main_queue,  newValue +200, false);
+					barobot.moveY(barobot.main_queue,  newValue +300, false);
 				}else{
-					barobot.moveY(barobot.main_queue,  newValue -200, false);
+					barobot.moveY(barobot.main_queue,  newValue -300, false);
 				}
 				barobot.moveY(barobot.main_queue, newValue, true);
 				lastValue = newValue;

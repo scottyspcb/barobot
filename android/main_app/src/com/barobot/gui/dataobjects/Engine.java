@@ -194,7 +194,7 @@ public class Engine {
 		return true;
 	}
 
-	public Boolean Pour(final Recipe_t recipe, String orderSource)
+	public Queue Pour(final Recipe_t recipe, String orderSource)
 	{
 		//	List<Integer> bottleSequence = GenerateSequence(ings);
 		List<Ingredient_t> ings = recipe.getIngredients();
@@ -286,8 +286,7 @@ public class Engine {
 				return null;
 			}
 		} );
-		barobot.main_queue.add(q);
-		return true;
+		return q;
 	}
 	
 	private static void saveStats(final Liquid_t liquid, Queue q, final int count) {

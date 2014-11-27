@@ -132,7 +132,7 @@ public class CommandRoute extends EmptyRoute {
 					int posx, int posy) {
 				// Log.i("nextpos-10000", "old: "+posx + " next: "+ ( posx
 				// -10000));
-				barobot.moveZDown(q, true);
+				barobot.z.moveDown(q, true);
 				barobot.driver_x.moveTo(q, (posx - 10000));
 				return true;
 			}
@@ -144,7 +144,7 @@ public class CommandRoute extends EmptyRoute {
 					int posx, int posy) {
 				// Log.i("nextpos-1000", "old: "+posx + " next: "+ ( posx
 				// -1000));
-				barobot.moveZDown(q, true);
+				barobot.z.moveDown(q, true);
 				barobot.driver_x.moveTo(q, (posx - 1000));
 				return true;
 			}
@@ -154,7 +154,7 @@ public class CommandRoute extends EmptyRoute {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
-				barobot.moveZDown(q, true);
+				barobot.z.moveDown(q, true);
 				barobot.driver_x.moveTo(q, (posx - 100));
 				return true;
 			}
@@ -163,7 +163,7 @@ public class CommandRoute extends EmptyRoute {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
-				barobot.moveZDown(q, true);
+				barobot.z.moveDown(q, true);
 				barobot.driver_x.moveTo(q, (posx + 100));
 				return true;
 			}
@@ -173,7 +173,7 @@ public class CommandRoute extends EmptyRoute {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
-				barobot.moveZDown(q, true);
+				barobot.z.moveDown(q, true);
 				barobot.driver_x.moveTo(q, (posx + 1000));
 				return true;
 			}
@@ -183,7 +183,7 @@ public class CommandRoute extends EmptyRoute {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
-				barobot.moveZDown(q, true);
+				barobot.z.moveDown(q, true);
 				barobot.driver_x.moveTo(q, (posx + 10000));
 				return true;
 			}
@@ -193,7 +193,7 @@ public class CommandRoute extends EmptyRoute {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
-				barobot.moveZDown(q, true);
+				barobot.z.moveDown(q, true);
 				barobot.moveY(q, (posy - 1000), true);
 				return true;
 			}
@@ -203,7 +203,7 @@ public class CommandRoute extends EmptyRoute {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
-				barobot.moveZDown(q, true);
+				barobot.z.moveDown(q, true);
 				barobot.moveY(q, (posy - 100), true);
 				return true;
 			}
@@ -213,7 +213,7 @@ public class CommandRoute extends EmptyRoute {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
-				barobot.moveZDown(q, true);
+				barobot.z.moveDown(q, true);
 				barobot.moveY(q, (posy - 10), true);
 				return true;
 			}
@@ -223,7 +223,7 @@ public class CommandRoute extends EmptyRoute {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
-				barobot.moveZDown(q, true);
+				barobot.z.moveDown(q, true);
 				barobot.moveY(q, (posy + 10), true);
 				return true;
 			}
@@ -233,7 +233,7 @@ public class CommandRoute extends EmptyRoute {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
-				barobot.moveZDown(q, true);
+				barobot.z.moveDown(q, true);
 				barobot.moveY(q, (posy + 100), true);
 				return true;
 			}
@@ -243,7 +243,7 @@ public class CommandRoute extends EmptyRoute {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
-				barobot.moveZDown(q, true);
+				barobot.z.moveDown(q, true);
 				barobot.moveY(q, (posy + 1000), true);
 				return true;
 			}
@@ -262,7 +262,7 @@ public class CommandRoute extends EmptyRoute {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
-				barobot.moveZDown(q, true);
+				barobot.z.moveDown(q, true);
 				barobot.moveY(q, 900, false);
 				barobot.moveY(q, 2100, false);
 				barobot.moveY(q, 900, false);
@@ -301,7 +301,7 @@ public class CommandRoute extends EmptyRoute {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
-				barobot.moveZDown(q, true);
+				barobot.z.moveDown(q, true);
 
 				int SERVOY_FRONT_POS = barobot.state.getInt("SERVOY_FRONT_POS",
 						1000);
@@ -323,7 +323,7 @@ public class CommandRoute extends EmptyRoute {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
-				barobot.moveZDown(q, true);
+				barobot.z.moveDown(q, true);
 
 				int SERVOY_FRONT_POS2 = barobot.state.getInt(
 						"SERVOY_FRONT_POS", 0);
@@ -346,10 +346,10 @@ public class CommandRoute extends EmptyRoute {
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
 				for (int i = 0; i < 10; i++) {
-					barobot.moveZDown(q, true);
-					barobot.moveZUp(q, -1, true);
+					barobot.z.moveDown(q, true);
+					barobot.z.moveUp(q, -1, true);
 				}
-				barobot.moveZDown(q, true);
+				barobot.z.moveDown(q, true);
 				return true;
 			}
 		});
@@ -359,7 +359,7 @@ public class CommandRoute extends EmptyRoute {
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
 				Random generator2 = new Random(19580427);
-				barobot.moveZDown(q, true);
+				barobot.z.moveDown(q, true);
 				int SERVOY_FRONT_POS3 = barobot.state.getInt(
 						"SERVOY_FRONT_POS", 1000);
 				barobot.moveY(q, SERVOY_FRONT_POS3, true);
@@ -389,7 +389,7 @@ public class CommandRoute extends EmptyRoute {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
-				barobot.moveZUp(q, -1, true);
+				barobot.z.moveUp(q, -1, true);
 				return true;
 			}
 		});
@@ -399,7 +399,7 @@ public class CommandRoute extends EmptyRoute {
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
 
-				barobot.moveZDown(q, true);
+				barobot.z.moveDown(q, true);
 				return true;
 			}
 		});
@@ -408,7 +408,7 @@ public class CommandRoute extends EmptyRoute {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
-				barobot.moveZDown(q, true);
+				barobot.z.moveDown(q, true);
 				int lengthx2 = barobot.state.getInt("LENGTHX", 600);
 				barobot.driver_x.moveTo(q, posx + lengthx2);
 				return true;
@@ -419,7 +419,7 @@ public class CommandRoute extends EmptyRoute {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
-				barobot.moveZDown(q, true);
+				barobot.z.moveDown(q, true);
 				int SERVOY_BACK_POS2 = barobot.state.getInt("SERVOY_BACK_POS",1000);
 				barobot.moveY(q, SERVOY_BACK_POS2, true);
 				return true;
@@ -430,7 +430,7 @@ public class CommandRoute extends EmptyRoute {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
-				barobot.moveZDown(q, true);
+				barobot.z.moveDown(q, true);
 				int lengthx3 = barobot.state.getInt("LENGTHX", 600);
 				barobot.driver_x.moveTo(q, -lengthx3);
 				return true;
@@ -442,7 +442,7 @@ public class CommandRoute extends EmptyRoute {
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
 
-				barobot.moveZDown(q, true);
+				barobot.z.moveDown(q, true);
 				int SERVOY_FRONT_POS5 = barobot.state.getInt(
 						"SERVOY_FRONT_POS", 1000);
 				barobot.moveY(q, SERVOY_FRONT_POS5, true);
@@ -471,7 +471,7 @@ public class CommandRoute extends EmptyRoute {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
-				barobot.disablez(q);
+				barobot.z.disable(q);
 				return true;
 			}
 		});
@@ -716,7 +716,7 @@ public class CommandRoute extends EmptyRoute {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
-				barobot.startDemo();
+				barobot.lightManager.startDemo();
 				return true;
 			}
 		});
@@ -788,71 +788,30 @@ public class CommandRoute extends EmptyRoute {
 			public boolean onCall(Queue q, final BarobotConnector barobot, Queue mq,int posx, int posy) {
 
 				final Queue q_ready		= new Queue();	
-				barobot.lightManager.carret_color( q_ready, 0, 100, 100 );
+				barobot.lightManager.carret_color( q_ready, 0, 255, 0 );
+				q_ready.addWait(1000);
+				barobot.lightManager.carret_color( q_ready, 0, 100, 0 );
 				barobot.driver_x.moveTo( q_ready, barobot.driver_x.getSPos() +100 );
+
+				final Queue q_error		= new Queue();	
+				barobot.lightManager.carret_color( q_error, 255, 0, 0 );
+				barobot.driver_x.moveTo( q_error, barobot.driver_x.getSPos() -100 );
 				
+				
+				boolean igr		= barobot.weight.isGlassReady();
+				if(!igr){
+					barobot.weight.waitForGlass( q, q_ready, q_error);
+				}
 
-				Initiator.logger.i("cupFound"," start ");
-				final Queue q2			= new Queue();
-
-				final long timestamp	= Decoder.getTimestamp();
-				barobot.lightManager.carret_color( q2, 100, 100, 0);
-		//		q2.addWait(100);
-				q2.add("A2", true );	// read load cell
-				barobot.lightManager.carret_color( q2, 0, 100, 100 );
-				q2.addWait(100);
-				barobot.lightManager.carret_color( q2, 0, 0, 0 );
-
-				AsyncMessage am = new AsyncMessage( true ) {
-					@Override
-					public String getName() {
-						return "Check load cell";
-					}
-					@Override
-					public Queue run(Mainboard dev, Queue mainQueue) {
-						boolean cupFound = false;
-						Initiator.logger.i("cupFound"," test ");
-
-						int weight = barobot.state.getInt("LAST_WEIGHT", 0 );
-
-						long timestamp2 = Decoder.getTimestamp();
-						if (timestamp2 - timestamp > 7000 ){
-							cupFound = true;
-						}
-						if( cupFound ){
-							Initiator.logger.i("cupFound"," true ");
-							return q_ready;
-						}else{
-							Initiator.logger.i("cupFound"," false ");
-
-							Queue beforeOtherInMainQueue = new Queue();
-							beforeOtherInMainQueue.addWait(1000);
-							beforeOtherInMainQueue.add(q2.copy());
-
-							return beforeOtherInMainQueue;		// do it one more time (now with addWait())
-						}
-				//		return null;
-					}
-				};
-				q2.add(am);				// check value
-				Queue copy = q2.copy();	// do copy 
-		//		q2.addWait(2000);		// add to q2 (not to q). Wait will be used in AsyncMessage before next
-
-
-				q.add(copy);			// this queue will be send, 
-										// add() is called after addWait(2000) becouse main queue is running in other thread and use q2
 				return true;
 			}
 		});
-
 		index.put("command_repair_ingredients", new command_listener() {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,int posx, int posy) {
 				return true;
 			}
 		});
-
-
 		index.put("command_bottle_0", new command_listener() {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,int posx, int posy) {

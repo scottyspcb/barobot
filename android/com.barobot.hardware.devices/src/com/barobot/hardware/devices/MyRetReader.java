@@ -207,7 +207,7 @@ public class MyRetReader implements RetReader {
 		//	if( fromArduino.startsWith("RX") && wait_for2.command.startsWith("x") ){
 		//		return true;
 		//	}
-			if( fromArduino.equals( "NO_CMD ["+ command +"]")){
+			if( fromArduino.equals( "NOCMD ["+ command +"]")){
 				return true;	// no command = unlock and log
 			}
 		}
@@ -417,7 +417,7 @@ public class MyRetReader implements RetReader {
 				String fromArduino3 = fromArduino2.substring(3);		// 	RA2,598		=> A2,598		=> 598
 				int weight			= Decoder.toInt(fromArduino3, 0);
 				if( weight > 0 ){			// 0 is imposible
-					this.new_weight( weight );
+					barobot.weight.newValue(weight);
 				}
 				if( command.equals("A2") ){
 					return true;
@@ -504,58 +504,6 @@ public class MyRetReader implements RetReader {
 		return false;
 	}
 
-	//private static int weight_grow = 0;
-	//private static int weight_stay_high = 0;
-
-	private void new_weight(int weight) {
-		state.set( "LAST_WEIGHT", weight );
-		/*
-		int prev_weight		= state.getInt("LAST_WEIGHT", 1 );
-		int need_light_cup	= state.getInt("ALLOW_LIGHT_CUP", 1 );
-		int min_weight 		= state.getInt("MIN_WEIGHT", 1000 );
-		int confirm_glass	= 3;
-		int min_diff		= 1000;
-
-		/*
-		if( need_light_cup == 1 ){
-			min_diff	= state.getInt("LIGH_GLASS_DIFF", 5 );	
-		}else{
-			min_diff	= state.getInt("GLASS_DIFF", 5 );		
-		}
-		Initiator.logger.w("MyRetReader.new_weight", "add: "+ (weight - prev_weight)+ ", weight:" + weight+ ", prev_weight:" + prev_weight+ ", min_weight:" + min_weight );
-
-		if( weight < min_weight ){
-			state.set("MIN_WEIGHT", (weight + min_weight * 3) / 4 );
-			Initiator.logger.w("MyRetReader.new_weight", "new MIN_WEIGHT" );
-			weight_grow = 0;
-			weight_stay_high = 0;
-		}else if( prev_weight - weight > min_diff ){			// less than the last one - no glass?
-			Initiator.logger.w("MyRetReader.new_weight", "less than PREV" );
-			weight_grow = 0;
-			weight_stay_high = 0;
-		}else if( weight - prev_weight > min_diff ){			// more than the last one
-			Initiator.logger.w("MyRetReader.new_weight", "more than PREV" );
-			weight_grow++;
-		}else if( weight - min_weight > min_diff ){				// more than the empty try
-			Initiator.logger.w("MyRetReader.new_weight", "more than MIN" );
-			if( weight_grow > 0 ){
-				if(weight_stay_high == 0 ){
-					weight_stay_high +=weight_grow;
-				}
-				weight_stay_high++;
-				if(weight_stay_high > confirm_glass ){
-					Initiator.logger.e("MyRetReader.new_weight", "this is glass" + weight_stay_high );
-					barobot.carret_color(barobot.main_queue, 00, 33, 0);
-				}
-			}
-			if( weight_grow == 0 && weight_stay_high == 0 ){
-				Initiator.logger.e("MyRetReader.new_weight", "no glass" );
-				barobot.carret_color(barobot.main_queue, 33, 00, 0);
-			}
-		}else{		// no changes, less than glass min_diff
-		}*/
-	}
-
 	private void from_eeprom_memory(int address, int value ) {
 		if( address == Methods.EEPROM_ROBOT_ID_HIGH ){
 			this.robot_id_high  = value;
@@ -579,6 +527,7 @@ public class MyRetReader implements RetReader {
 	
 	private boolean was_empty6 = false;
 	private boolean was_empty4 = false;
+
 	public boolean importantAnalog(Mainboard asyncDevice, AsyncMessage wait_for2, String fromArduino, boolean checkInput ) {
 		String command = "";
 		if(wait_for2!= null && wait_for2.command != null && wait_for2.command != "" ){
@@ -707,6 +656,8 @@ public class MyRetReader implements RetReader {
 				}else if(state_name == Methods.HX_STATE_10 ){		// ERROR not connected
 					decoded += "/HX_STATE_10";
 				}
+				String line = value + "\t" + state_name + "\t" + hpos + "\t" + state_num + "\t" + fromstart+ "\t" + "\t" + decoded;
+				Initiator.logger.saveLog(line);
 			}else{
 				if(state_name == Methods.HX_STATE_0 ){				// ERROR
 					barobot.state.set("HALLX_UNDER", "-2");
@@ -794,9 +745,9 @@ public class MyRetReader implements RetReader {
 			Initiator.logger.e("bottle "+ num, "error" );
 		}
 		if(row == Constant.BOTTLE_IS_BACK){
-	//		Initiator.logger.i("bottle "+ num +" BACK", "frontNum: "+ frontNum+" BackNum: "+ BackNum+ "from " +fromHPos + " to " + toHPos );
+			Initiator.logger.saveLog("bottle "+ num +" BACK"+ "frontNum: "+ frontNum+" BackNum: "+ BackNum+ "from " +fromHPos + " to " + toHPos );
 		}else{
-	//		Initiator.logger.i("bottle "+ num +" FRONT", "frontNum: "+ frontNum+" BackNum: "+ BackNum+ "from " +fromHPos + " to " + toHPos );
+			Initiator.logger.saveLog("bottle "+ num +" FRONT"+ "frontNum: "+ frontNum+" BackNum: "+ BackNum+ "from " +fromHPos + " to " + toHPos );
 		}
 		if( bottleIsBack == row ){
 			int hposx = (fromHPos + toHPos) / 2;
@@ -804,7 +755,7 @@ public class MyRetReader implements RetReader {
 		//		hposx -= 20;
 			}
 			if(num <= 11){
-			//	Initiator.logger.i("dodaje do bottle "+ num +"", "bylo:"+hposx+ ", bedzie:"+(hposx+50));
+				Initiator.logger.i("dodaje do bottle "+ num +"", "bylo:"+hposx+ ", bedzie:"+(hposx+50));
 				//int hposx	= fromPos;
 				int spos2	= barobot.driver_x.hard2soft(hposx);
 				barobot.hereIsBottle(num, spos2, ypos );

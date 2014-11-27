@@ -4,7 +4,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -155,9 +157,23 @@ public class RecipeListActivity extends BarobotMain{
 		}
 	}
 
+	public void beforeStart() {
+		new AlertDialog.Builder(this)
+				.setIcon(android.R.drawable.ic_dialog_alert)
+				.setTitle("")
+				.setMessage(R.string.glass_reminder_message1)
+				.setPositiveButton(R.string.preparing_drink_start,
+						new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog,int which) {
+								pourStart();
+							}
+				}).setNegativeButton(R.string.preparing_drink_cancel, null).show();
+	}
+
 	public void onPourButtonClicked(View view) {
 		if (mCurrentRecipe != null) {
-			pourStart();
+			beforeStart();
 		}
 	}
 
@@ -172,7 +188,30 @@ public class RecipeListActivity extends BarobotMain{
 		Thread t = new Thread(new Runnable() {  
 	         @Override
 	         public void run() {
-	        	  	Engine.GetInstance().Pour(mCurrentRecipe, "list");
+	        	 	BarobotConnector barobot = Arduino.getInstance().barobot;
+
+					Queue q_ready		= new Queue();	
+					barobot.lightManager.carret_color( q_ready, 0, 255, 0 );
+					q_ready.addWait(1000);
+					barobot.lightManager.carret_color( q_ready, 0, 100, 0 );
+	        	  	Queue q_drink = Engine.GetInstance().Pour(mCurrentRecipe, "list");
+	        	  	q_ready.add(q_drink);
+
+					Queue q_error		= new Queue();	
+					barobot.lightManager.carret_color( q_error, 255, 0, 0 );
+					barobot.driver_x.moveTo( q_error, barobot.driver_x.getSPos() -100 );
+
+					boolean igrq		= barobot.weight.isGlassRequired();
+					boolean igrd		= barobot.weight.isGlassReady();
+					if(!igrq){
+						barobot.main_queue.add(q_drink);
+					}else if(igrd){
+						barobot.main_queue.add(q_drink);
+					}else{
+						Queue q = new Queue();
+						barobot.weight.waitForGlass( q, q_ready, q_error);
+						barobot.main_queue.add(q);
+					}
 	        	  	progress.dismiss();
 	        	  	gotoMainMenu(null);
 	         }});

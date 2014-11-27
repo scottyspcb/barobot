@@ -70,7 +70,7 @@ public class ServoTestPageRoute extends EmptyRoute {
 				q.add("K" + pos, true);
 				if(disableOnReady){
 					q.addWait(300);
-					barobot.disablez(q);
+					barobot.z.disable(q);
 				}
 			}
 			barobot.main_queue.add(q);
@@ -158,7 +158,7 @@ public class ServoTestPageRoute extends EmptyRoute {
 			Initiator.logger.i( this.getClass().getName(), "down" );
 
 			q.add("K" + dp, true);		// go down
-			barobot.disablez(q);
+			barobot.z.disable(q);
 			this.goFront(q, parms);
 		}
 		boolean yIsFront = true;
@@ -186,7 +186,7 @@ public class ServoTestPageRoute extends EmptyRoute {
 				q.addWait( pwut );
 				q.add("K" + dp, true);		// go down
 				q.addWait( 200 );		// wait for servo
-				barobot.disablez(q);
+				barobot.z.disable(q);
 	//			q.add("DX", true);
 		//		barobot.disabley( q );
 				if( repeatz >= 1 ){

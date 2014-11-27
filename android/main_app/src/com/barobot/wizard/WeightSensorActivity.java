@@ -53,7 +53,6 @@ public class WeightSensorActivity extends BlankWizardActivity {
 				}else{
 					wizard_weight_result.setText("");
 				}
-
 				break;
 			case R.id.wizard_weight_with:
 				int weight2		= barobot.state.getInt("LAST_WEIGHT", 0 );
