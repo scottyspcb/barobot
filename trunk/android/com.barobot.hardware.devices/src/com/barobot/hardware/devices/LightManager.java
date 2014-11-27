@@ -314,6 +314,22 @@ public class LightManager {
 			}
 		}
 	}
+	public void carret_color_left( Queue q, int red, int green, int blue ){
+		if( barobot.newLeds ){
+			String color = String.format("%02x", red ) 			// 24 bit color
+					+ String.format("%02x", green )
+					+ String.format("%02x", blue );
+			q.add("l00," + color, true);// 00 = led address left	
+		}
+	}	
+	public void carret_color_right( Queue q, int red, int green, int blue ){
+		if( barobot.newLeds ){
+			String color = String.format("%02x", red ) 			// 24 bit color
+					+ String.format("%02x", green )
+					+ String.format("%02x", blue );
+			q.add("l01," + color, true);// 01 = led address right
+		}
+	}
 
 	public void color_by_bottle_now(int bottleNum, String string, int value, int red, int green, int blue ){
 		if( barobot.newLeds ){

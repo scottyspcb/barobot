@@ -64,7 +64,6 @@
             <Button
                 android:id="@+id/options_demo_button"
                 style="@style/OptionsMenuButton"
-                  android:enabled="false"
                 android:onClick="onOptionsButtonClicked"
                 android:text="@string/options_demo_button" />
 

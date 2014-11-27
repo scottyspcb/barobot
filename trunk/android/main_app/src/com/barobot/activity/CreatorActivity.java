@@ -31,6 +31,7 @@ import com.barobot.gui.utils.LangTool;
 import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
 import com.barobot.other.InternetHelpers;
+import com.barobot.parser.Queue;
 
 public class CreatorActivity extends BarobotMain{
 	private int[] slot_nums = {0,0,0,0,0,0,0,0,0,0,0,0,0};
@@ -255,16 +256,37 @@ public class CreatorActivity extends BarobotMain{
 		progress.setTitle(title);
 		progress.setMessage(msg);
 		progress.show();
-		
+
 		Thread t = new Thread(new Runnable() {  
 	         @Override
 	         public void run() {
 		        	final Recipe_t tempRecipe = CreateDrink("Unnamed Drink", false);
-		     		//xb2.setEnabled(false);
 		     		Thread t = new Thread(new Runnable() {
 		                 @Override
-		                 public void run() {
-		                 	Engine.GetInstance().Pour(tempRecipe, "creator");
+		                 public void run() { 
+		 	        	 	BarobotConnector barobot = Arduino.getInstance().barobot;
+							Queue q_ready		= new Queue();	
+							barobot.lightManager.carret_color( q_ready, 0, 255, 0 );
+							q_ready.addWait(1000);
+							barobot.lightManager.carret_color( q_ready, 0, 100, 0 );
+			        	  	Queue q_drink = Engine.GetInstance().Pour(tempRecipe, "creator");
+			        	  	q_ready.add(q_drink);
+
+							Queue q_error		= new Queue();	
+							barobot.lightManager.carret_color( q_error, 255, 0, 0 );
+							barobot.driver_x.moveTo( q_error, barobot.driver_x.getSPos() -100 );
+
+							boolean igrq		= barobot.weight.isGlassRequired();
+							boolean igrd		= barobot.weight.isGlassReady();
+							if(!igrq){
+								barobot.main_queue.add(q_drink);
+							}else if(igrd){
+								barobot.main_queue.add(q_drink);
+							}else{
+								Queue q = new Queue();
+								barobot.weight.waitForGlass( q, q_ready, q_error);
+								barobot.main_queue.add(q);
+							}
 		                 	clear(false);
 		                 }});
 		     		t.start();

@@ -22,6 +22,7 @@ public class ServosActivity extends BlankWizardActivity {
 	static int step		= 100;
 	static int min		= 1500;
 	static int max		= 3200;
+	private int startVal;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +36,7 @@ public class ServosActivity extends BlankWizardActivity {
 
 		enableTimer( 1000, 1000 );
 
-		int startVal = barobot.state.getInt("DRIVER_X_SPEED", 0 );
+		startVal = barobot.state.getInt("DRIVER_X_SPEED", 0 );
 				
 		wizard_servos_x_pos.setText( barobot.state.get("POSX", "0") );
 		wizard_servos_x_speed.setText( barobot.state.get("DRIVER_X_SPEED", "0") );
@@ -53,7 +54,6 @@ public class ServosActivity extends BlankWizardActivity {
 						int newValue = min + (progress * step);
 						if( newValue > 0 ){
 							barobot.state.set("DRIVER_X_SPEED", newValue);
-							barobot.driver_x.defaultSpeed = newValue;
 						}
 			        }
 			    }
@@ -116,12 +116,12 @@ public class ServosActivity extends BlankWizardActivity {
 				break;
 			case R.id.wizard_servos_left:
 				tb.setChecked(false);
-				barobot.moveZDown(q, true);
+				barobot.z.moveDown(q, true);
 				barobot.driver_x.moveTo(q, (posx - 2000));
 				break;
 			case R.id.wizard_servos_right:
 				tb.setChecked(false);
-				barobot.moveZDown(q, true);
+				barobot.z.moveDown(q, true);
 				barobot.driver_x.moveTo(q, (posx + 2000));
 				break;
 			default:
@@ -138,6 +138,7 @@ public class ServosActivity extends BlankWizardActivity {
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
+		barobot.state.set("DRIVER_X_SPEED", startVal);
 		barobot.main_queue.add("DX", true );
 	}
 }

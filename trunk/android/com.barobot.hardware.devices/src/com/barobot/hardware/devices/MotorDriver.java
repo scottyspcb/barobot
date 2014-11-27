@@ -12,7 +12,6 @@ public class MotorDriver {
 	int hardware_pos		= 0;
 	int software_pos		= 0;
 	int direction			= Methods.DRIVER_DIR_STOP;
-	public int defaultSpeed = 0;
 	public String axis		= "X";
 
 	int m1 = 0;
@@ -74,7 +73,11 @@ public class MotorDriver {
 	//	Initiator.logger.w("MARGIN X2", "Margin: " + m1 + "  soft: " + pos3 + " => hard " + (pos3 -( -m1)));
 		return pos3 - (- m1);
 	}
-	public void moveTo( Queue q, final int sPos ) {
+	public void moveTo( Queue q, int sPos ) {
+		int defaultSpeed = state.getInt("DRIVER_X_SPEED", 0 );
+		moveTo(q, sPos, defaultSpeed );
+	}
+	public void moveTo(Queue q, final int sPos, final int speed ) {
 		final int newx		= soft2hard(sPos);
 		final int currentx	= getSPos();
 
@@ -114,7 +117,7 @@ public class MotorDriver {
 					if( can ){
 	//					Initiator.logger.w("MotorDriver.movoTo.AsyncMessage.onInput", "MOVE" );
 						Queue	q2	= new Queue(); 
-						q2.add("X" + newx+ ","+defaultSpeed, true);
+						q2.add("X" + newx+ ","+speed, true);
 						mainQueue.addFirst(q2);
 						dev.unlockRet(this, "A0 OK");
 						return true;

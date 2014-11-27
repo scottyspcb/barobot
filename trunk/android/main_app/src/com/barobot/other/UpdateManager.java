@@ -712,7 +712,7 @@ public class UpdateManager{
 	public static void downloadAndInstall(final Activity c, Uri uri) {
 		Date dNow				= new Date();
 		SimpleDateFormat dd		= new SimpleDateFormat ("yyyy.MM.dd.hh.mm.ss");
-		final String path6 		= Environment.getExternalStorageDirectory()+ Constant.home_path +"/update"+ dd.format(dNow)+".apk";
+		final String path6 		= Environment.getExternalStorageDirectory()+ Constant.home_path +"/update-"+ dd.format(dNow)+".apk";
 		String sourceUrl		= Constant.android_app;
 		if(Constant.use_beta){
 			sourceUrl			= Constant.android_app_beta;
@@ -725,7 +725,7 @@ public class UpdateManager{
 					updateBarHandler	= new Handler();
 					barProgressDialog	= new ProgressDialog(c);
 					barProgressDialog.setTitle("Downloading application...");
-					barProgressDialog.setMessage("Downloading in progress.");
+					barProgressDialog.setMessage("Downloading in progress. \n\nDestination: " + path6 );
 					barProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
 					barProgressDialog.setProgress(0);
 					barProgressDialog.setMax(100);
