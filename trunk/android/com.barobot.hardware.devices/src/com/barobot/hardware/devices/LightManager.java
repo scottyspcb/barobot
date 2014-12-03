@@ -21,12 +21,12 @@ public class LightManager {
 	public void startDemo() {
 		Queue q = barobot.main_queue;
 		LightManager lm =barobot.lightManager;
-	//	lm.tecza(  q, 10 );				// ok
+		lm.tecza(  q, 10 );				// ok
 	//	lm.loading( q, 10);				// ok
-	//	lm.mrygajRGB(  q, 10 , 400);	// ok
+		lm.mrygajRGB(  q, 10 , 400);	// ok
 	//	lm.linijka(  q, 10, 700 );		// nudne
 		lm.flaga( q, 10, 700 );
-		lm.nazmiane( q, 10, 700 );
+	//	lm.nazmiane( q, 10, 700 );
 		lm.strobo(  q, 60 );			// ok
 		lm.zapal( q );					// ok
 		q.addWait(1000);

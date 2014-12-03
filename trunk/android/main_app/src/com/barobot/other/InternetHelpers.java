@@ -38,10 +38,16 @@ import com.eclipsesource.json.JsonValue;
 import com.eclipsesource.json.JsonObject.Member;
 
 public class InternetHelpers {
-
 	public static void parseJson(String source) {	
-		JsonObject jsonObject = JsonObject.readFrom( source );
-		parseJsonObject(jsonObject, 0 );
+		JsonObject jsonObject = null;
+		try {
+			jsonObject = JsonObject.readFrom(source);
+		} catch (com.eclipsesource.json.ParseException e) {
+			Initiator.logger.e("InternetHelpers.parseJson", "readFrom exception", e );
+		}
+		if( jsonObject != null && source.length()> 20 && jsonObject.isObject()){
+			parseJsonObject(jsonObject, 0 );
+		}
 	}
 
 	public static void parseJsonObject(JsonObject in, int level ) {
@@ -53,7 +59,6 @@ public class InternetHelpers {
 			if(value.isObject()){
 				Initiator.logger.i("Json " + (level+1), "isObject: "+name);
 				parseJsonObject(value.asObject(), level+1);
-
 			}else if(value.isArray()){
 				JsonArray jsa =  value.asArray();
 				for( JsonValue amember : jsa ) {

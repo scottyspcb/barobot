@@ -29,7 +29,7 @@
 
     <!-- Main -->
     <string name="glass_reminder_title">Reminder</string>
-    <string name="glass_reminder_message1">Place glass with ice onto the tray and click START</string>
+    <string name="glass_reminder_message">Place glass with ice onto the tray and click START</string>
     <string name="glass_reminder_button_ok">OK</string>
     <string name="glass_reminder_button_cancel">Cancel</string>
     <!-- Bottle Setup -->

@@ -30,12 +30,14 @@ public class BarobotConnector {
 	public I2C i2c				= null;
 	protected int robot_id		= 0;
 	public boolean newLeds		= true;
-	public boolean robot_id_ready	= false;	
+	public boolean robot_id_ready		= false;	
+	public boolean robot_id_error		= false;
 	public long lastSeenRobotTimestamp	= 0;
 	public LightManager lightManager	= null;
 	public boolean init_done			= false;
 	public Weight weight				= new Weight();
 	public Z z							= new Z();
+
 	public BarobotConnector(HardwareState state ){
 		this.state		= state;
 		if( newLeds ){
@@ -667,6 +669,7 @@ public class BarobotConnector {
 		this.state.set("ROBOT_ID", new_robot_id );
 		if(readFromHardware){
 			this.robot_id_ready = true;
+			this.robot_id_error = false;
 		}
 	}
 
@@ -800,20 +803,20 @@ public class BarobotConnector {
 			if(bottleNum >= 0 ){
 				int expected = Constant.bottle_row[bottleNum];			// expect front of bottom
 				if( hallState == Methods.HX_STATE_7 && expected == Constant.BOTTLE_IS_FRONT){		// front bottle is over the carriage 
-					Initiator.logger.e("moveZUp.hallx", ""+hallState + ", expected: "+ expected );
+					Initiator.logger.e("moveZUp.hallx1", ""+hallState + ", expected: "+ expected );
 					return true;
 				}else if( hallState ==Methods.HX_STATE_3 && expected == Constant.BOTTLE_IS_BACK){	// back bottle is over the carriage 
-					Initiator.logger.e("moveZUp.hallx", ""+hallState + ", expected: "+ expected );
+					Initiator.logger.e("moveZUp.hallx2", ""+hallState + ", expected: "+ expected );
 					return true;
 				}else if( bottleNum == 11 && hallState == Methods.HX_STATE_1 && expected == Constant.BOTTLE_IS_FRONT){	// the last bottle is diffrent
-					Initiator.logger.e("moveZUp.hallx", ""+hallState + ", expected: "+ expected );
+					Initiator.logger.e("moveZUp.hallx3", ""+hallState + ", expected: "+ expected );
 					return true;
 				}else{		// error ???
-					Initiator.logger.e("moveZUp.hallx", "bottle: " + bottleNum +", no bottle over, state: "+hallState + ", expected: "+ expected );
+					Initiator.logger.e("moveZUp.hallx4", "bottle: " + bottleNum +", no bottle over, state: "+hallState + ", expected: "+ expected );
 					return false;
 				}
 			}else{
-				Initiator.logger.w("moveZUp.hallx", ""+hallState + ", allowUP:" +bottleNum );
+				Initiator.logger.w("moveZUp.hallx5", ""+hallState + ", allowUP:" +bottleNum );
 				return defaultRet;
 			}
 		}

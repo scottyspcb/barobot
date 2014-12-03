@@ -161,7 +161,7 @@ public class RecipeListActivity extends BarobotMain{
 		new AlertDialog.Builder(this)
 				.setIcon(android.R.drawable.ic_dialog_alert)
 				.setTitle("")
-				.setMessage(R.string.glass_reminder_message1)
+				.setMessage(R.string.glass_reminder_message)
 				.setPositiveButton(R.string.preparing_drink_start,
 						new DialogInterface.OnClickListener() {
 							@Override
@@ -192,7 +192,7 @@ public class RecipeListActivity extends BarobotMain{
 
 					Queue q_ready		= new Queue();	
 					barobot.lightManager.carret_color( q_ready, 0, 255, 0 );
-					q_ready.addWait(1000);
+					q_ready.addWait(200);
 					barobot.lightManager.carret_color( q_ready, 0, 100, 0 );
 	        	  	Queue q_drink = Engine.GetInstance().Pour(mCurrentRecipe, "list");
 	        	  	q_ready.add(q_drink);
@@ -204,10 +204,13 @@ public class RecipeListActivity extends BarobotMain{
 					boolean igrq		= barobot.weight.isGlassRequired();
 					boolean igrd		= barobot.weight.isGlassReady();
 					if(!igrq){
+						Initiator.logger.i( "pourStart", "dont need glass");
 						barobot.main_queue.add(q_drink);
 					}else if(igrd){
+						Initiator.logger.i( "pourStart", "is Glass Ready");
 						barobot.main_queue.add(q_drink);
 					}else{
+						Initiator.logger.i( "pourStart", "wait for Glass");
 						Queue q = new Queue();
 						barobot.weight.waitForGlass( q, q_ready, q_error);
 						barobot.main_queue.add(q);

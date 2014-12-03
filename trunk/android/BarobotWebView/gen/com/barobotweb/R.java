@@ -54,10 +54,10 @@ public final class R {
         public static final int action_panic=0x7f040044;
         public static final int action_recipe_setup=0x7f040039;
         public static final int action_settings=0x7f040014;
-        public static final int add_ingredient=0x7f040052;
+        public static final int add_ingredient=0x7f040051;
         /**  Recipe Setup 
          */
-        public static final int add_recipe=0x7f040050;
+        public static final int add_recipe=0x7f04004f;
         public static final int app_name=0x7f040000;
         public static final int back_to_main_feature=0x7f040012;
         public static final int bt_not_enabled_leaving=0x7f040005;
@@ -69,13 +69,12 @@ public final class R {
         public static final int edit_message=0x7f04003a;
         /**  Bottle Setup 
          */
-        public static final int empty_bottle_string=0x7f04004f;
+        public static final int empty_bottle_string=0x7f04004e;
         public static final int empty_slot=0x7f04003d;
-        public static final int glass_reminder_button_cancel=0x7f04004b;
-        public static final int glass_reminder_button_ok=0x7f04004a;
+        public static final int glass_reminder_button_cancel=0x7f04004a;
         /**  Main 
          */
-        public static final int glass_reminder_message=0x7f040049;
+        public static final int glass_reminder_button_ok=0x7f040049;
         public static final int hello_world=0x7f040015;
         public static final int liquid_name=0x7f04003f;
         public static final int liquid_select_title=0x7f04003e;
@@ -109,14 +108,14 @@ public final class R {
         public static final int panic_button_ok=0x7f040047;
         public static final int panic_message=0x7f040046;
         public static final int panic_title=0x7f040045;
-        public static final int pour_finished_button=0x7f04004e;
-        public static final int pour_finished_message=0x7f04004d;
-        public static final int pour_finished_title=0x7f04004c;
+        public static final int pour_finished_button=0x7f04004d;
+        public static final int pour_finished_message=0x7f04004c;
+        public static final int pour_finished_title=0x7f04004b;
         public static final int processing_window_title=0x7f040019;
-        public static final int recipe_description=0x7f040055;
-        public static final int recipe_name=0x7f040054;
-        public static final int remove_ingredients=0x7f040053;
-        public static final int remove_recipe=0x7f040051;
+        public static final int recipe_description=0x7f040054;
+        public static final int recipe_name=0x7f040053;
+        public static final int remove_ingredients=0x7f040052;
+        public static final int remove_recipe=0x7f040050;
         /**  DeviceListActivity 
          */
         public static final int scanning=0x7f040009;
@@ -128,7 +127,7 @@ public final class R {
         public static final int title_activity_barobot_main=0x7f040041;
         public static final int title_activity_bottle_setup=0x7f040042;
         public static final int title_activity_device_list=0x7f040030;
-        public static final int title_activity_outside_component=0x7f040056;
+        public static final int title_activity_outside_component=0x7f040055;
         public static final int title_activity_recipe_setup=0x7f040043;
         public static final int title_activity_web=0x7f040018;
         public static final int title_connected_to=0x7f040007;
