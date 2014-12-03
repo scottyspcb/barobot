@@ -84,7 +84,7 @@
     <string name="panic_button_cancel">No, back to drink</string>
     
     <!-- Main -->
-    <string name="glass_reminder_message">Prosze upewnic sie ze na podstawce znajduje sie szklanka</string>
+
     <string name="glass_reminder_button_ok">OK</string>
     <string name="glass_reminder_button_cancel">Cancel</string>
     

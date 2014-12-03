@@ -267,7 +267,7 @@ public class CreatorActivity extends BarobotMain{
 		 	        	 	BarobotConnector barobot = Arduino.getInstance().barobot;
 							Queue q_ready		= new Queue();	
 							barobot.lightManager.carret_color( q_ready, 0, 255, 0 );
-							q_ready.addWait(1000);
+							q_ready.addWait(300);
 							barobot.lightManager.carret_color( q_ready, 0, 100, 0 );
 			        	  	Queue q_drink = Engine.GetInstance().Pour(tempRecipe, "creator");
 			        	  	q_ready.add(q_drink);
@@ -278,11 +278,15 @@ public class CreatorActivity extends BarobotMain{
 
 							boolean igrq		= barobot.weight.isGlassRequired();
 							boolean igrd		= barobot.weight.isGlassReady();
+
 							if(!igrq){
+								Initiator.logger.i( "pourStart", "dont need glass");
 								barobot.main_queue.add(q_drink);
 							}else if(igrd){
+								Initiator.logger.i( "pourStart", "is Glass Ready");
 								barobot.main_queue.add(q_drink);
 							}else{
+								Initiator.logger.i( "pourStart", "wait for Glass");
 								Queue q = new Queue();
 								barobot.weight.waitForGlass( q, q_ready, q_error);
 								barobot.main_queue.add(q);

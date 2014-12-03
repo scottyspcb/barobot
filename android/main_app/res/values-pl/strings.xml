@@ -32,7 +32,7 @@
 
     <!-- Main -->
     <string name="glass_reminder_title">Reminder</string>
-    <string name="glass_reminder_message1">Place glass into the tray</string>
+    <string name="glass_reminder_message">Prosze wstawić szklankę z lodem do robota i wcisnąć START</string>
     <string name="glass_reminder_button_ok">OK</string>
     <string name="glass_reminder_button_cancel">Anuluj</string>
     <!-- Bottle Setup -->

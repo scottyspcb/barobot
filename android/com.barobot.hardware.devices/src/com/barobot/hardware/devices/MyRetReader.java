@@ -407,6 +407,8 @@ public class MyRetReader implements RetReader {
 						int id = (parts[4] << 8) + parts[3];
 						if( id > 0 && id < 65535 ){				// 65535 = 1111111111111111b (empty eeprom)
 							barobot.changeRobotId( id, true );
+						}else{
+							this.robot_id_error = true;
 						}
 					}
 				}
@@ -513,6 +515,8 @@ public class MyRetReader implements RetReader {
 			if( value2 > 0 && value2 < 65535 ){			// 65535 = 1111111111111111b (empty eeprom)
 			//	Initiator.logger.i("MyRetReader.from_eeprom_memory", "value4: "+ value2 );
 				this.barobot.changeRobotId( value2, true );
+			}else{
+				this.robot_id_error = true;
 			}
 		}
 	}

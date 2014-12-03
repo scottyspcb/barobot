@@ -119,7 +119,6 @@ public class BarobotActivity extends BarobotMain {
 			barobot.state.set("DC_PLUGGED", isPowered ? 1 : 0 );
 		}
 	}
-
 	@Override
 	protected void onResume() {			// resume this activity
 		super.onResume();
