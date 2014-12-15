@@ -21,6 +21,6 @@
          android:layout_height="wrap_content"
          android:layout_below="@+id/dialog_int_input"
          android:layout_centerHorizontal="true"
-         android:text=" Ok " />
+         android:text="Ok" />
  
 </RelativeLayout>
