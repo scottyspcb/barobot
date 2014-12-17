@@ -30,12 +30,12 @@ public class ServoZActivity extends BlankWizardActivity {
 	// UP config
 	static int up_step			= 20;
 	static int up_min			= 1700;
-	static int up_max			= 1200;
+	static int up_max			= 1100;
 
 	// DOWN config
 	static int down_step		= 20;
 	static int down_min			= 2600;
-	static int down_max			= 1800;
+	static int down_max			= 1700;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

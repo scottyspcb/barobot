@@ -14,13 +14,15 @@
     <string name="wizard_text_4">4. LED Test</string>
     <string name="wizard_text_5">5. Up-down movement</string>  
     <string name="wizard_text_6">6. Front-back movement</string>
-    <string name="wizard_text_7">7. Left-right sensor</string>
-    <string name="wizard_text_8">8. Left-right movement</string>  
-    <string name="wizard_text_9">9. Weight sensor</string>  
-    <string name="wizard_text_10">10. Left-right calibration</string>  
+    <string name="wizard_text_7">7. Front-back sensor</string>
+    <string name="wizard_text_8">8. Left-right sensor</string>  
+    <string name="wizard_text_9">9. Left-right movement</string>  
+    <string name="wizard_text_10">10. Weight sensor</string>  
 
-    <string name="wizard_text_11">11. Front-back  magnets</string>  
-    <string name="wizard_text_12">12. Front-back calibration</string>      
+    <string name="wizard_text_11">11. Left-right calibration</string>  
+    <string name="wizard_text_12">12. Front-back calibration</string>
+    
+    
     <string name="wizard_text_14">13. Top-down calibration</string>  
     <string name="wizard_text_16">15. Pouring test</string>      
 
@@ -88,6 +90,8 @@
     <string name="wizard_text_power_arduino">Barobot driver exists</string>
     <string name="wizard_text_power_queue">Commands module loaded</string>
 
+    <string name="wizard_text_android_version">"Barobot Application version"</string>
+    
     <string name="wizard_power_hints">Hints</string>
     <string name="wizard_power_test_completed">Test completed successfully. Click Next to continue.</string>
     
@@ -105,7 +109,7 @@
     <string name="wizard_hallx_check_step2">Check right</string>
 
     <string name="wizard_led_carriage_lights">Are glass tray lights all white?</string>
-    <string name="wizard_led_all_lights">Now, are all robot the lights white?</string>
+    <string name="wizard_led_all_lights">Now, are all robot lights white?</string>
 
     <string name="wizard_led_result_ok">Test completed successfully. Click Next to continue.</string>
     <string name="wizard_led_check_carret">Turn robot OFF and check LEDs wires. Check against the manual if cables are attached in the right sequence.</string>
@@ -117,7 +121,7 @@
     <string name="title_activity_led">LED Test</string>
     <string name="wizard_led_start_test">Start LED test</string>
 
-    <string name="wizard_weight_sensor_error">Sensor error. Turn OFF barobot and check wires.</string>
+    <string name="wizard_weight_sensor_error">Sensor error. Turn OFF barobot and check wires. Maybe they are inserted too deeply to connector. Check also wire order against the manual.</string>
 	<string name="wizard_diff_to_low">Difference is to small. Did you followed the wizard?</string>
  	<string name="wizard_weight_is_ok">Test completed successfully without error. Click Next to continue.</string>
 
@@ -128,6 +132,20 @@
  	<string name="wizard_text_sensors_weight">Is load cell connected? Check against the manual if cables are attached in the right sequence.</string>
 
  	<string name="wizard_text_sensors_temperature">If temperature is to high turn OFF robot as soon is possible and check against the manual if all cables are attached in the right sequence.</string>
+	<string name="wizard_hallx_trouble_info">Move carriage left and right and check value below. It should vary for each magnet. You should see "X max position" on extreme right, "Start Position" on extreme left and "front" or "back" below other magnets. If not - check sensor, wires and magnets.</string>
 
- 	
+    <string name="wizard_hallx_front_position">front position</string>
+    <string name="wizard_hallx_back_position">back position</string>
+    <string name="wizard_hallx_no_sensor">No sensor</string>
+
+    <string name="wizard_hally_success">Test completed successfully. Click Next to continue.</string>
+    <string name="wizard_hally_nosensor">Error 80. No Hall Y sensor. Turn robot OFF and check wires.</string>
+
+    <string name="wizard_hally_front_error">Error 81. Front magnet was not found</string>
+    <string name="wizard_hally_back_error">Error 82. Back magnet was not found.</string>
+ 	<string name="wizard_hally_neutral_error">Error 83. Neutral value error. Can Servo Y move? Sensor value in middle position is wrong. Turn robot OFF and check wires.</string>
+    <string name="wizard_hally_sensor_pernament">Error 85. Hall Y sensor connector is probably inverted or servo Y didn\'t move. Turn robot OFF and check wires.</string>
+    <string name="wizard_hally_waiting">Please wait for the results...</string>
+    <string name="wizard_hally_inverted">Error 86. Two magnets found but front manget is upside-down. Turn robot OFF and check magnet.</string>
+
 </resources>

@@ -52,6 +52,8 @@
     <string name="action_bottle_setup">Setup bottles</string>
     <string name="action_recipe_setup">Customize Recipes</string>
     <string name="action_creator">Create</string>
+    <string name="action_creator_drink_too_big">Ingredient was not added because of glass capacity.</string>
+    <string name="action_creator_drink_too_big_ok">Ok</string>
     <string name="menu_favorite">Try Favorites</string>
     <string name="menu_lucky">I feel lucky</string>
     <string name="menu_bottles">Setup bottles</string>
@@ -64,7 +66,7 @@
     <string name="options_extra_setup_button">External Ingredient Setup</string>
     <string name="options_lights_button">Lights Show</string>
     <string name="options_demo_button">Demo mode</string>
-    <string name="options_party_setup">Party setup</string> 
+    <string name="options_party_setup">Party setup</string>
     <string name="options_advanced_button">Advanced Setup</string>
     <string name="options_about_button">Update</string>
     <string name="options_turn_off_button">Homing</string>
@@ -117,7 +119,7 @@
     <string name="goto_main_menu">Main menu</string>
     <string name="myip">Show device address</string>
     <string name="update_title">Barobot Software Update</string>
-    <string name="update_msg">New Barobot Software version was released. It is strongly recommended that you apply this update as soon as possible. Don\'t do it during a party. Do you want to download it now? \n\n(destination folder: /mnt/Barobot/update.apk)</string>
+    <string name="update_msg">New Barobot Software version was released. It is strongly recommended that you apply this update as soon as possible. Don\'t do it during a party. Do you want to download it now? \n\n(destination folder: /mnt/internal_sd/Download/Barobot_update.apk)</string>
     <string name="update_yes">Yes</string>
     <string name="update_no">No</string>
     <string name="title_activity_validator">ValidatorActivity</string>
@@ -136,12 +138,13 @@
     <string name="startup_version">.</string>
     <string name="preparing_drink_title">Preparing drink...</string>
     <string name="preparing_drink_message">Please wait</string>
-
-
-
     <string name="update_manual_message">Please turn OFF an ON Barobot.</string>
     <string name="update_manual_title">Uploading firmware...</string>
     <string name="preparing_drink_start">START</string>
     <string name="preparing_drink_cancel">Anuluj</string>
+    <string name="firmware_uploading_in_progress">Uploading in progress. Don\'t touch Barobot. Don\'t unplug anything before done.</string>
+    <string name="firmware_uploading_title">Uploading firmware...</string>
+    <string name="title_activity_hall_y">HallYActivity</string>
+    <string name="wizard_hally_start_test">Start test</string>
 
 </resources>

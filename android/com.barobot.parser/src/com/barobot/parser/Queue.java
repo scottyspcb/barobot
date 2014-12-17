@@ -540,6 +540,12 @@ public class Queue {
 		}
 		return q;
 	}
+
+	public int length() {
+		synchronized (lock_output) {
+			return this.output.size();
+		}
+	}
 }
 
 /*

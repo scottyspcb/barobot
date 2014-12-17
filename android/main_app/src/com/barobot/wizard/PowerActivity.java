@@ -10,6 +10,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.barobot.R;
+import com.barobot.common.constant.Constant;
 import com.barobot.common.interfaces.serial.Wire;
 import com.barobot.gui.database.BarobotData;
 import com.barobot.hardware.Arduino;
@@ -67,6 +68,12 @@ public class PowerActivity extends BlankWizardActivity {
 				return barobot!= null && barobot.main_queue != null;
             }
 
+		});
+		result_list.put( new SystemTestItem<Integer>(R.string.wizard_text_android_version){
+			@Override
+			public Integer read() {
+				return Constant.ANDROID_APP_VERSION;
+            }
 		});
 		/*
 		result_list.put( new SystemTestItem<Boolean>("JAVA MainBoard exists"){

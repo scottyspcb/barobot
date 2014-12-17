@@ -24,6 +24,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.BatteryManager;
 import android.os.Build;
 import android.os.Debug;
@@ -32,9 +33,14 @@ import android.os.PowerManager;
 import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
+import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Enumeration;
 
 import org.orman.mapper.Model;
@@ -46,6 +52,7 @@ import com.barobot.BarobotMain;
 import com.barobot.R;
 import com.barobot.activity.BarobotActivity;
 import com.barobot.common.Initiator;
+import com.barobot.common.constant.Constant;
 import com.barobot.gui.database.BarobotData;
 import com.barobot.gui.dataobjects.Robot;
 import com.barobot.gui.dataobjects.Slot;
@@ -532,4 +539,14 @@ public class Android {
 		i.putExtra("android.intent.extra.KEY_CONFIRM", true);
 		act.startActivity(i);
 	}
+	public static String MD5Hash(String toHash) throws RuntimeException {
+		   try{
+		       return String.format("%032x", // produces lower case 32 char wide hexa left-padded with 0
+		      new BigInteger(1, // handles large POSITIVE numbers 
+		           MessageDigest.getInstance("MD5").digest(toHash.getBytes())));
+		   } catch (NoSuchAlgorithmException e) {
+		      // do whatever seems relevant
+		   }
+		   return null;
+		}
 }

@@ -45,7 +45,9 @@ public class Mainboard{
 		buffer.append(in);
 
 //		String s2 = in;
-//		System.out.println("in 1: ["+s1+"], in2: [" + s2 + "]");
+	//	System.out.println("in 1: ["+s1+"], in2: [" + s2 + "]");
+	//	System.out.println("in [" + in + "]");
+	//	System.out.println("buff [" + buffer + "]");
 
 		int end = buffer.indexOf(separator);
 		if( end!=-1){
@@ -59,7 +61,7 @@ public class Mainboard{
 		}
 	}
 
-	private void analyseInput(String command) {	
+	private synchronized void analyseInput(String command) {	
 		command = command.replaceAll("[^-A-Za-z0-9,.!\\[\\] !]","");			// all other chars are unallowed
 		if("".equals(command)){
 			return;

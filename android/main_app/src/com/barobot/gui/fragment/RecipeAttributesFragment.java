@@ -20,6 +20,21 @@ public class RecipeAttributesFragment extends Fragment {
 		// TODO: Add onClickListener to all buttons on this fragment
 	}
 
+
+	public void SetTaste(int[] taste){
+		TextProgressBar sweetPB = (TextProgressBar) getView().findViewById(R.id.progress_bar_sweet);
+		TextProgressBar sourPB = (TextProgressBar) getView().findViewById(R.id.progress_bar_sour);
+		TextProgressBar bitterPB = (TextProgressBar) getView().findViewById(R.id.progress_bar_bitter);
+		TextProgressBar strengthPB = (TextProgressBar) getView().findViewById(R.id.progress_bar_strength);
+
+		sweetPB.setProgress(Normalize(taste[0], 100) );
+		sourPB.setProgress(Normalize(taste[1], 100 ));
+		bitterPB.setProgress(Normalize(taste[2], 100 ));
+		strengthPB.setProgress(Normalize(taste[3], 40 ));
+		getView().setVisibility(View.VISIBLE);
+
+	}
+	/*
 	public void SetAttributes(int sweet, int sour, int bitter, int strength)
 	{
 		TextProgressBar sweetPB = (TextProgressBar) getView().findViewById(R.id.progress_bar_sweet);
@@ -33,7 +48,7 @@ public class RecipeAttributesFragment extends Fragment {
 		strengthPB.setProgress(Normalize(strength, 40 ));
 		getView().setVisibility(View.VISIBLE);
 	}
-
+*/
 	public void ClearAttributes()
 	{
 		TextProgressBar sweetPB = (TextProgressBar) getView().findViewById(R.id.progress_bar_sweet);
@@ -49,9 +64,8 @@ public class RecipeAttributesFragment extends Fragment {
 	
 	private int Normalize(int value, int max)
 	{
-		if (value > max) return 100;
-		if (value < 0) return 0;
-
+		if (value > max){ return 100;}
+		if (value < 0){ return 0;}
 		return (int) ((float)((float)value / (float)max)  * 100);
 	}
 

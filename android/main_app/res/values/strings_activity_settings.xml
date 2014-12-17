@@ -5,16 +5,27 @@
 
     <!-- Example General settings -->
     <string name="pref_header_general">General</string>
-    <string name="pref_need_glass_title">Need glass to start pouring</string>
+    <string name="pref_need_glass_title">Need glass to start pouring (default ON)</string>
     <string name="pref_need_glass_info">Prevent spillage</string> 
+
+    <string name="pref_watch_glass_title">Watch glass during the pouring (default ON)</string>
+    <string name="pref_watch_glass_info">Stop pouring when glass disappear</string> 
 
     <string name="pref_light_cup_title">Allow very light cups</string>
     <string name="pref_light_cup_info">i.e disposable cups</string>
 
-    <string name="pref_need_hall_title">Need sensor X to pour</string>
+    <string name="pref_need_hall_title">Need sensor X to pour (default ON)</string>
     <string name="pref_need_hall_info">Need sensor X to pour</string>
+
+    <string name="pref_sserver_allow_config_title">Allow settings via Sofa Server (default ON)</string>
+    <string name="pref_sserver_allow_config_info">Allow changing configuration using remote control</string>
+
+    <string name="pref_glass_capacity_title">Max glass capacity</string>
+    <string name="pref_glass_capacity_info">Max glass capacity</string>
+   
+    <string name="pref_DRIVER_X_SPEED_title">Left - right speed (default 3000)</string>
+    <string name="pref_DRIVER_Y_SPEED_title">Front - back speed (default 25)</string>
  
-    
     
     <string name="pref_manual_cup_title">Allow manual cup confirmation</string>
     <string name="pref_manual_cup_info">Show "Cup is ready" button if cup was not founded</string>

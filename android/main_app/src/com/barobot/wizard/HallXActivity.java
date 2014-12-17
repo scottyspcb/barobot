@@ -102,9 +102,9 @@ public class HallXActivity extends BlankWizardActivity {
 			if(hall_state == Methods.HX_STATE_9 ){		// under start
 				setText( wizard_hallx_value_left, "OK" );
 			}else if( hall_state == Methods.HX_STATE_0 ){
-				setText( wizard_hallx_value_left, "No sensor" );
+				setText( wizard_hallx_value_left, getString(R.string.wizard_hallx_no_sensor) );
 			}else if( hall_state == Methods.HX_STATE_10 ){
-				setText( wizard_hallx_value_left, "No sensor" );		
+				setText( wizard_hallx_value_left, getString(R.string.wizard_hallx_no_sensor) );		
 			}else{
 				setText( wizard_hallx_value_left, "Error. State: " + hall_state );
 			}
@@ -115,7 +115,7 @@ public class HallXActivity extends BlankWizardActivity {
 			if(hall_state == Methods.HX_STATE_1 ){		// under start
 				setText( wizard_hallx_value_right, "OK" );
 			}else if( hall_state == Methods.HX_STATE_0 ){
-				setText( wizard_hallx_value_right, "No sensor" );
+				setText( wizard_hallx_value_right, getString(R.string.wizard_hallx_no_sensor) );
 			}else{
 				setText( wizard_hallx_value_right, "Error. State: " + hall_state );
 			}
@@ -234,9 +234,9 @@ public class HallXActivity extends BlankWizardActivity {
 				if( value.equals("0")){
 					value = "-";
 				}else if( value.equals("1")){
-					value = "front position";
+					value = getString(R.string.wizard_hallx_front_position);
 				}else if( value.equals("2")){
-					value = "back position";
+					value = getString(R.string.wizard_hallx_back_position);
 				}
 				wizard_hallx_dispenser.setText( value );
 			}

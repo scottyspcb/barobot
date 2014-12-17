@@ -55,6 +55,7 @@
     <string name="action_bottle_setup">Ustawienia butelek</string>
     <string name="action_recipe_setup">Customize Recipes</string>
     <string name="action_creator">Stwórz</string>
+    <string name="action_creator_drink_too_big">Nie dodano składnika ponieważ drink nie zmieścił by się do szklanki.</string>
     <string name="menu_favorite">Try Favorites</string>
 
     <string name="menu_lucky">I feel lucky</string>

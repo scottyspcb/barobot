@@ -33,8 +33,6 @@ public class AndroidBarobotState implements HardwareState{
 		"POSY",
 		"POSZ",
 		"POS_START_X",
-		"NEUTRAL_POS_Y",
-		"NEUTRAL_POS_Z",
 		"TEMPERATURE",
 		"ARDUINO_VERSION",
 		"WEIGHT_MIN",
@@ -135,7 +133,7 @@ public class AndroidBarobotState implements HardwareState{
 		}
 	}
 
-	private void update( String name, String value) {
+	private synchronized void update( String name, String value) {
 		for(StateListener listener: listeners){
 			listener.onUpdate( this, name, value);
 		}

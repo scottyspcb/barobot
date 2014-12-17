@@ -27,7 +27,7 @@ public class DrinkImageFragment extends Fragment {
 	{
 		int id = pGallery.getImageID(photoId);
 		ImageView iView = (ImageView) getView().findViewById(R.id.drink_image);
-		Log.w("photoId SetImage",""+id + "/" + photoId);
+//		Log.w("photoId SetImage",""+id + "/" + photoId);
 		iView.setImageResource(id);
 	}
 	

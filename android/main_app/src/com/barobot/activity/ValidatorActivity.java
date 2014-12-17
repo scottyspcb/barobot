@@ -20,6 +20,7 @@ import com.barobot.hardware.devices.BarobotConnector;
 import com.barobot.wizard.CalibrationActivity;
 import com.barobot.wizard.FirmwareActivity;
 import com.barobot.wizard.HallXActivity;
+import com.barobot.wizard.HallYActivity;
 import com.barobot.wizard.LedActivity;
 import com.barobot.wizard.PowerActivity;
 import com.barobot.wizard.SensorsActivity;
@@ -38,6 +39,7 @@ public class ValidatorActivity extends BarobotMain {
 		LedActivity.class,
 		ServoZActivity.class,
 		ServoYActivity.class,
+		HallYActivity.class,
 		HallXActivity.class,
 		ServosActivity.class,
 		WeightSensorActivity.class,
@@ -117,15 +119,14 @@ public class ValidatorActivity extends BarobotMain {
 			case R.id.wizard9:
 				gotoActivity(8);
 				break;
-						
 			case R.id.wizard10:
 				gotoActivity(9);
 				break;	
-				/*	
 			case R.id.wizard11:
 				gotoActivity(10);
-				break;	
-			case R.id.wizard12:
+				break;
+
+				/*	case R.id.wizard12:
 				gotoActivity(11);
 				break;	
 			case R.id.wizard13:

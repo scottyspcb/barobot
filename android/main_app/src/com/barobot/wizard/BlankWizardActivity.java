@@ -105,6 +105,7 @@ public abstract class BlankWizardActivity extends Activity {
 			case R.id.wizard_servos_close:
 			case R.id.wizard_calibration_close:
 			case R.id.wizard_hallx_close:	
+			case R.id.wizard_hally_close:
 			case R.id.wizard_led_close:
 				this.close();
 				break;
@@ -117,6 +118,7 @@ public abstract class BlankWizardActivity extends Activity {
 			case R.id.wizard_firmware_prev:
 			case R.id.wizard_calibration_prev:
 			case R.id.wizard_hallx_prev:
+			case R.id.wizard_hally_prev:
 			case R.id.wizard_led_prev:
 				goPrev();
 				break;	
@@ -133,6 +135,7 @@ public abstract class BlankWizardActivity extends Activity {
 			case R.id.wizard_servos_next:
 			case R.id.wizard_calibration_next:
 			case R.id.wizard_hallx_next:
+			case R.id.wizard_hally_next:
 			case R.id.wizard_led_next:
 				goNext();
 				break;

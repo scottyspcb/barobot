@@ -38,7 +38,6 @@ import com.barobot.hardware.devices.BarobotConnector;
 public class SettingsActivity extends PreferenceActivity {
 
 	private BarobotConnector barobot;
-
 	@Override
 	protected void onPostCreate(Bundle savedInstanceState) {
 		super.onPostCreate(savedInstanceState);
@@ -62,7 +61,12 @@ public class SettingsActivity extends PreferenceActivity {
 		addPreferencesFromResource(R.xml.pref_general);
 		
 		bindPreferenceSummaryToValue(findPreference("NEED_GLASS"));
+		bindPreferenceSummaryToValue(findPreference("WATCH_GLASS"));
+
 		bindPreferenceSummaryToValue(findPreference("ALLOW_LIGHT_CUP"));
+		
+		bindPreferenceSummaryToValue(findPreference("MAX_GLASS_CAPACITY"));
+		bindPreferenceSummaryToValue(findPreference("SSERVER_ALLOW_CONFIG"));
 
 		bindPreferenceSummaryToValue(findPreference("DRIVER_X_SPEED"));
 		bindPreferenceSummaryToValue(findPreference("DRIVER_Y_SPEED"));	
@@ -117,7 +121,7 @@ public class SettingsActivity extends PreferenceActivity {
 		@Override
 		public boolean onPreferenceChange(Preference preference, Object value) {
 			String stringValue = value.toString();
-			Initiator.logger.i( this.getClass().getName(), preference.getKey()+"/"+ stringValue);
+			Initiator.logger.i( this.getClass().getName()+"OnPreferenceChangeListener1", preference.getKey()+"/"+ stringValue);
 
 			if (preference instanceof ListPreference) {
 				// For list preferences, look up the correct display value in
@@ -129,8 +133,13 @@ public class SettingsActivity extends PreferenceActivity {
 				preference.setSummary(index >= 0 ? listPreference.getEntries()[index]: null);
 				
 			} else if (preference instanceof CheckBoxPreference) {
-				boolean val = "true".equals(stringValue);
-				stringValue = val ? "1" : "0";
+				if("true".equals(stringValue) || "1".equals(stringValue)){
+					stringValue = "1";
+				}else{
+					stringValue = "0";
+				}
+				Initiator.logger.i( this.getClass().getName()+"OnPreferenceChangeListener2", preference.getKey()+"/"+ stringValue);
+				
 			} else if (preference instanceof RingtonePreference) {
 				// For ringtone preferences, look up the correct display value
 				// using RingtoneManager.
@@ -175,12 +184,16 @@ public class SettingsActivity extends PreferenceActivity {
 	private static void bindPreferenceSummaryToValue(Preference preference) {
 		String value = Arduino.getInstance().barobot.state.get(preference.getKey(), "");
 		preference.setOnPreferenceChangeListener(sBindPreferenceSummaryToValueListener);
+
 		if(preference instanceof CheckBoxPreference){
 			CheckBoxPreference i = (CheckBoxPreference)preference;
+
+			Initiator.logger.i( SettingsActivity.class.getSimpleName()+"bindPreferenceSummaryToValue", value );
+
 			if( !value.isEmpty() && "1".equals(value)){
 				i.setChecked( true );
 			}else{
-				i.setChecked( true );
+				i.setChecked( false );
 			}
 			i.setDefaultValue(value);
 		}else{

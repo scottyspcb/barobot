@@ -6,18 +6,36 @@
         android:summary="@string/pref_need_glass_info" />
 
     <CheckBoxPreference
+        android:key="WATCH_GLASS"
+        android:title="@string/pref_watch_glass_title"
+        android:summary="@string/pref_watch_glass_info" />
+    
+    
+    <CheckBoxPreference
         android:key="ALLOW_LIGHT_CUP"
         android:title="@string/pref_light_cup_title"
         android:summary="@string/pref_light_cup_info" />
 
-  
     <CheckBoxPreference
         android:key="NEED_HALL_X"
         android:title="@string/pref_need_hall_title"
         android:summary="@string/pref_need_hall_info" />
 
-    
-    
+     <EditTextPreference
+        android:numeric="integer"
+        android:inputType="number"
+        android:key="MAX_GLASS_CAPACITY"
+        android:maxLines="1"
+        android:singleLine="true"
+        android:title="@string/pref_glass_capacity_title"
+        android:summary="@string/pref_glass_capacity_info"
+         />
+
+    <CheckBoxPreference
+        android:key="SSERVER_ALLOW_CONFIG"
+        android:title="@string/pref_sserver_allow_config_title"
+        android:summary="@string/pref_sserver_allow_config_info" />
+
     <!-- NOTE: EditTextPreference accepts EditText attributes. -->
     <!-- NOTE: EditTextPreference's summary should be set to its value by the activity code. -->
     <!--
@@ -52,7 +70,7 @@
         android:key="DRIVER_X_SPEED"
         android:maxLines="1"
         android:singleLine="true"
-        android:title="DRIVER_X_SPEED" />
+        android:title="@string/pref_DRIVER_X_SPEED_title"/>
     
      <EditTextPreference
         android:numeric="integer"
@@ -60,7 +78,7 @@
         android:key="DRIVER_Y_SPEED"
         android:maxLines="1"
         android:singleLine="true"
-        android:title="DRIVER_Y_SPEED" />
+        android:title="@string/pref_DRIVER_Y_SPEED_title"/>
 
      <EditTextPreference
         android:numeric="integer"

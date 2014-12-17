@@ -149,8 +149,13 @@ public class UpdateManager{
 						Android.alertMessage(c, "Server Response error");
 					}
 				}else{
-					JsonObject jsonObject = JsonObject.readFrom( res );
-					if( res.length()> 20 && jsonObject.isObject()){
+					JsonObject jsonObject = null;
+					try {
+						jsonObject = JsonObject.readFrom(res);
+					} catch (com.eclipsesource.json.ParseException e) {
+						Initiator.logger.e("UpdateManager.checkNewVersion", "readFrom exception", e );
+					}
+					if( jsonObject != null && res.length()> 20 && jsonObject.isObject()){
 						JsonObject version = jsonObject.get("version").asObject();
 						int newest_android_version	= Decoder.toInt(version.get("android").toString());
 						int newest_arduino_version	= Decoder.toInt(version.get("arduino").toString());
@@ -165,19 +170,21 @@ public class UpdateManager{
 						Initiator.logger.e("update_drinks.arduino", ""+newest_arduino_version );
 						Initiator.logger.e("update_drinks.database", ""+newest_database_version );
 
+						int arduino_ver = barobot.state.getInt("ARDUINO_VERSION", 0);
+						
 						if( newest_android_version > Constant.ANDROID_APP_VERSION ){
-							Initiator.logger.e("update_drinks.checkNewVersion", "newest_android_version: "+ res );
+					//		Initiator.logger.e("update_drinks.checkNewVersion", "newest_android_version: "+ res );
 							String url = Constant.android_app;
 							if(Constant.use_beta){
 								url = Constant.android_app_beta;
 							}
 							openInBrowser( c, url );
 
-						}else if( newest_arduino_version > barobot.state.getInt("ARDUINO_VERSION", 0) && newest_arduino_version <= Constant.MAX_FIRMWARE_VERSION ){	// maximum version handled by this app version
+						}else if( arduino_ver > 0 && newest_arduino_version > arduino_ver && newest_arduino_version <= Constant.MAX_FIRMWARE_VERSION ){	// maximum version handled by this app version
 							downloadAndBurnFirmware( c, Constant.use_beta, false );
 						}else{
 							if(alertResult){
-								Android.alertMessage(c, "Your version " + newest_android_version + ".0 is up to date.");
+								Android.alertMessage(c, "Your firmware version " + newest_android_version + ".0 is up to date.");
 							}
 						}
 						if( newest_database_version > barobot.state.getInt("ARDUINO_VERSION", 0 ) ){
@@ -327,9 +334,10 @@ public class UpdateManager{
 		// burn it
 		c.runOnUiThread(new Runnable() {
 		   public void run() {
+				String msg			= c.getResources().getString(R.string.firmware_uploading_in_progress);
 				barProgressDialog	= new ProgressDialog(c);
-				barProgressDialog.setTitle("Uploading firmware...");
-				barProgressDialog.setMessage("Uploading in progress. Don't touch Barobot. Don't unplug anything before done.");
+				barProgressDialog.setTitle(R.string.firmware_uploading_title);
+				barProgressDialog.setMessage(msg);
 				barProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
 				barProgressDialog.setProgress(0);
 				barProgressDialog.setMax(100);
@@ -367,7 +375,7 @@ public class UpdateManager{
         q.addWait( 100 );
 		q.add( "RESET", true );													// ret command will come 1 sec before reset
 		q.addWait( barobot.state.getInt( "RESET_TIME", 200) );					// synchronize android and arduino
-		q.add( new AsyncMessage( true, true ) {		// when version readed
+		q.add( new AsyncMessage( true, true ) {									// arduino was reseted but we keep going
 			public void setProgress( final int value ) {
 	        	updateBarHandler.post(new Runnable() {
                     public void run() {
@@ -485,11 +493,22 @@ public class UpdateManager{
                     	barProgressDialog.setProgress(90);
                     }
                 });
+	        	Initiator.logger.w("update_firmware_step3_burn.new_robot_id?", "robot_id: "+ barobot.getRobotId() +"ready: "+ barobot.robot_id_ready +" error:" + barobot.robot_id_error);
+
+				if( barobot.robot_id_error ){
+					int robot_id = UpdateManager.getNewRobotId();		// download new robot_id (init hardware)
+					Initiator.logger.w("update_firmware_step3_burn.new_robot_id?", "robot_id" + robot_id);
+					if( robot_id > 0 ){		// save robot_id to android and arduino
+						Queue q = new Queue();
+						barobot.setRobotId( q, robot_id);
+						return q;
+					}
+				}
 				return null;
 			}
 		});
 		q.add( "Q00119911", true );				// set green
-		barobot.setRobotId(q, barobot.getRobotId() );		// eeprom ic blank after burning
+	//	barobot.setRobotId(q, barobot.getRobotId() );		// eeprom ic blank after burning
 		barobot.readHardwareRobotId(q);
 		q.add( "Q0000ff00", true );				// set green
 		q.add( new AsyncMessage( true ) {		// when version readed
@@ -712,7 +731,8 @@ public class UpdateManager{
 	public static void downloadAndInstall(final Activity c, Uri uri) {
 		Date dNow				= new Date();
 		SimpleDateFormat dd		= new SimpleDateFormat ("yyyy.MM.dd.hh.mm.ss");
-		final String path6 		= Environment.getExternalStorageDirectory()+ Constant.home_path +"/update-"+ dd.format(dNow)+".apk";
+		final String path6 		= Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath() +"/Barobot_update-"+ dd.format(dNow)+".apk";
+		//final String path6 		= Environment.getExternalStorageDirectory()+ Constant.home_path +"/update-"+ dd.format(dNow)+".apk";
 		String sourceUrl		= Constant.android_app;
 		if(Constant.use_beta){
 			sourceUrl			= Constant.android_app_beta;
@@ -745,13 +765,14 @@ public class UpdateManager{
 			    	File apkFile	= new File( path6 );
 					Intent intent	= new Intent(Intent.ACTION_VIEW);
 					Initiator.logger.e("UpdateApp.run", path6);
-					Initiator.logger.i("UpdateApp.run3", ""+apkFile );
-					Initiator.logger.i("UpdateApp.run3", ""+Uri.parse("file:/"+apkFile) );
+					Initiator.logger.i("UpdateApp.run1", ""+apkFile );
+					Initiator.logger.i("UpdateApp.run2", ""+Uri.parse("file:/"+apkFile) );
 					Initiator.logger.i("UpdateApp.run3", ""+Uri.fromFile(apkFile) );
-				    intent.setDataAndType(Uri.parse("file:/"+apkFile), "application/vnd.android.package-archive");	
+					Initiator.logger.i("UpdateApp.run4", ""+Uri.parse("file:/"+apkFile.getAbsolutePath()) );
+				    intent.setDataAndType(Uri.fromFile(new File(path6)), "application/vnd.android.package-archive");
 					intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK); // without this flag android returned a intent error!
-					c.finish();
 					c.startActivity(intent);
+					c.finish();
 				}
 			@Override
 			public void sendProgress(final int value) {

@@ -37,13 +37,19 @@ public class HallYActivity extends BlankWizardActivity {
 	int hally_front = 0;
 	int hally_back = 0;
 	String error = "";
+	int sensor_max = 1000;
 	
-	int minDiff1 = 0;
-	int minDiff2 = 0;
-	int minDiff3 = 0;
-	
-	
+	// hally_neutral in <495;520>
+	int neutral_min = 495;
+	int neutral_max = 520;
+
+	int minDiff1 = 150;		// front - back
+	int minDiff2 = 65;		// front - neutral
+	int minDiff3 = 65;		// back - neutral
+
 	private void checkHallY(Queue q) {	
+		showResult(R.string.wizard_hally_waiting, true );
+
 		int back = barobot.state.getInt("SERVOY_BACK_POS", 1000);
 		int front = barobot.state.getInt("SERVOY_FRONT_POS", 1000);
 		int neutral	= barobot.state.getInt("SERVOY_BACK_NEUTRAL", 1000);
@@ -118,39 +124,51 @@ public class HallYActivity extends BlankWizardActivity {
 			@Override
 			public Queue run(Mainboard dev, Queue queue) {
 
+				boolean ok = false;
 				int diff1 = Math.abs(hally_front - hally_back);
 				int diff2 = Math.abs(hally_neutral - hally_front);
 				int diff3 = Math.abs(hally_neutral - hally_back);			
+
+				Initiator.logger.w("moveZUp.hally_front", ""+hally_front);
+				Initiator.logger.w("moveZUp.hally_neutral", ""+hally_neutral);
+				Initiator.logger.w("moveZUp.hally_back", ""+hally_back);
 
 				Initiator.logger.w("moveZUp.diff1", ""+diff1);
 				Initiator.logger.w("moveZUp.diff2", ""+diff2);
 				Initiator.logger.w("moveZUp.diff3", ""+diff3);
 
-				/*
-				hally_neutral
-				hally_front = 0;
-				hally_back = 0;
-				*/
+				if( hally_front > sensor_max || hally_neutral > sensor_max || hally_back > sensor_max ){
+					showResult(R.string.wizard_hally_nosensor, false );
 
-				if( diff1< minDiff1 ){
-					
-					
-					
+				}else if(diff1 < 10 && diff2 < 10  && diff3 < 10 ){		// no sensor or servo can't move
+					showResult(R.string.wizard_hally_sensor_pernament, false );
+				}else if( hally_neutral < neutral_min || hally_neutral > neutral_max ){	// neutral error
+					showResult(R.string.wizard_hally_neutral_error, false );
+
+				}else if(  diff1 < minDiff2 && diff2 > minDiff2 && diff3 > minDiff3 ){		// magnets exist but on the same side
+					showResult(R.string.wizard_hally_inverted, true );
+
+				}else if( diff1 > minDiff2 && diff2 > minDiff2 && diff3 > minDiff3 ){
+					showResult(R.string.wizard_hally_success, true );
+					ok = true;
+
+				}else{
+					if( diff2 < minDiff2 ){		// front error
+						showResult(R.string.wizard_hally_front_error, false );
+					}
+					if( diff3 < minDiff3 ){		// baack error
+						showResult(R.string.wizard_hally_back_error, false );
+					}
+				}
+				if(ok){
+					barobot.state.set("HALLY_FRONT", hally_front );
+					barobot.state.set("HALLY_BACK", hally_back );
+					barobot.state.set("HALLY_NEUTRAL", hally_neutral );
 				}
 				return null;
 			}
 		});
-		
-		
-
 		barobot.lightManager.setAllLeds(barobot.main_queue, "22", 255, 0, 255, 0);
-		q.add( new AsyncMessage( true ){
-			@Override
-			public Queue run(Mainboard dev, Queue queue) {
-				showResult(R.string.wizard_led_check_carret, false );
-				return null;
-			}
-		});
 	}
 
 	private void showResult(final int text, final boolean success ) {
