@@ -17,6 +17,8 @@ import android.widget.TextView;
 import com.barobot.common.Initiator;
 import com.barobot.gui.dataobjects.StartupException;
 import com.barobot.gui.utils.LangTool;
+import com.barobot.hardware.Arduino;
+import com.barobot.hardware.devices.BarobotConnector;
 import com.barobot.other.Android;
 import com.barobot.other.InternetHelpers;
 
@@ -30,6 +32,9 @@ public class BarobotMain extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		if( Arduino.getInstance() != null ){
+		// 	barobot = Arduino.getInstance().barobot;
+		}
 		if(instance == null){
 			instance = this; // Set up the window layout
 		}

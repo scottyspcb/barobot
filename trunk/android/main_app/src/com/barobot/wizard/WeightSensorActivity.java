@@ -54,6 +54,7 @@ public class WeightSensorActivity extends BlankWizardActivity {
 					wizard_weight_result.setText("");
 				}
 				break;
+
 			case R.id.wizard_weight_with:
 				int weight2		= barobot.state.getInt("LAST_WEIGHT", 0 );
 				int weight3		= barobot.state.getInt("WEIGHT_WITHOUT_TRAY", 0);
@@ -88,24 +89,29 @@ public class WeightSensorActivity extends BlankWizardActivity {
 				break;
 		}
 	}
+
 	public void onTick(){
 		if(!barobot.main_queue.isBusy()){
 			barobot.main_queue.add("A2", true);					// load cell
 		}
 	}
+
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
 		barobot.main_queue.add("DX", true );
 	}
+
+	float agv_weight = 0;
 	protected void updateState(HardwareState state, String name, String value) {
 		if( "LAST_WEIGHT".equals(name)){
-			int weight	= Decoder.toInt(value, 0);
+			int weight		= Decoder.toInt(value, 0);
 			int prescaler	= barobot.state.getInt("WEIGHT_PRESCALER", 0);
 			wizard_weight_value.setText( ""+weight );
 			if( prescaler > 0 ){
 				float prescalerf	= (float) prescaler / 10000;
-				int value2			= Math.round((float)weight / prescalerf);
+				agv_weight			= ( agv_weight * 2 + weight )/ 3;
+				int value2			= Math.round(agv_weight / prescalerf);
 				wizard_weight_weight.setText( "" + value2 );	
 	//			Initiator.logger.i("WeightSensorActivity.WEIGHT_PRESCALER", ""+prescaler+ "/" + value);
 			}

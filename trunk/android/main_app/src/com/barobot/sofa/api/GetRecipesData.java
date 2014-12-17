@@ -28,7 +28,19 @@ public class GetRecipesData implements IData {
 		{
 			writer.beginObject();
 			writer.name("Id").value(recipe.id);
-			writer.name("Name").value(recipe.name);
+			writer.name("Name").value(recipe.getName());
+			writer.name("photoId").value(recipe.photoId);
+			writer.name("photoId").value(recipe.counter);
+
+			int[] taste = recipe.getTaste();
+			writer.name("taste");
+			writer.beginObject();
+			writer.name("sweet").value(taste[0]);
+			writer.name("sour").value(taste[1]);
+			writer.name("bitter").value(taste[2]);
+			writer.name("strenght").value(taste[3]);
+			writer.endObject();
+
 			WriteIngredients(writer, recipe.ingredients);
 			writer.endObject();
 		}
@@ -44,6 +56,8 @@ public class GetRecipesData implements IData {
 			writer.beginObject();
 			writer.name("Name").value(ing.liquid.getName());
 			writer.name("Quantity").value(ing.quantity);
+			writer.name("Liquid_id").value(ing.liquid.id);
+			writer.name("Id").value(ing.id);
 			writer.endObject();
 		}
 		writer.endArray();

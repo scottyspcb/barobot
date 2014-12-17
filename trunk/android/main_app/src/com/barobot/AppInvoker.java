@@ -37,9 +37,9 @@ public class AppInvoker {
 	public CameraManager cm;
     public ArrayList<Interval> inters = new ArrayList<Interval>();
 	private static Arduino arduino;
-	SofaRouter sr = null;
+	private SofaRouter sr = null;
 	public static Map<String, Object> container =  new HashMap<String, Object>();
-	SofaServer ss =null;
+	private SofaServer ss =null;
 	static boolean isCreated = false;
 
 	public static AppInvoker getInstance() {
@@ -69,15 +69,15 @@ public class AppInvoker {
 					}
 			    }
 			};
-
-			handler.postDelayed(r, 1000);
 			arduino			= new Arduino( main );
 			arduino.onStart(main);
 
-			doOnlyOnce(arduino.barobot.state, main);
-			Engine.createInstance(main);
-
 			BarobotConnector barobot = arduino.barobot;
+			if(barobot.state.getInt("SSERVER", 0) > 0 ){
+				handler.postDelayed(r, 1000);
+			}
+			doOnlyOnce(barobot.state, main);
+			Engine.createInstance(main);
 			if(barobot.getRobotId() > 0 ){
 				Android.createRobot( -1, barobot.getRobotId() );
 			}
@@ -122,7 +122,9 @@ public class AppInvoker {
 	//	Initiator.logger.i("MAINWINDOW", "onDestroy: " + activities);
 	//	if(activities == 0){
 			Initiator.logger.i("MAINWINDOW", "onDestroy");
-	    	ss.stop();
+			if( ss != null){
+				ss.stop();
+			}
 			arduino.destroy();
 	    	Iterator<Interval> it = this.inters.iterator();
 	    	while(it.hasNext()){
@@ -133,15 +135,11 @@ public class AppInvoker {
 	//	}
 	}
 	private void doOnlyOnce(HardwareState state, Activity main2) throws StartupException {
-		Initiator.logger.i("AppInvoker.doOnlyOnce", "value:" +state.getInt("INIT", 0 ));
-
-		Locale locale = new Locale("de");
+		Locale locale = new Locale("en");
 		Locale.setDefault(locale);
 		Configuration config = new Configuration();
 		config.locale = locale;
 		main.getApplicationContext().getResources().updateConfiguration(config, null);
-
-		Initiator.logger.i( "doOnlyOnce", "doOnlyOnce" );
 
 		if(state.getInt("INIT", 0 ) < Constant.ANDROID_APP_VERSION ){
 			File dir = new File(Environment.getExternalStorageDirectory(), "Barobot");

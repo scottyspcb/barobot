@@ -106,21 +106,6 @@ public class ServoYActivity extends BlankWizardActivity {
 			int value1 = Decoder.toInt( ""+wizard_servoy_front_pos.getText(), -1);
 			barobot.moveY(barobot.main_queue, value1, true);
 			barobot.readHallY( barobot.main_queue );
-			barobot.main_queue.add( new AsyncMessage( true ) {
-				@Override	
-				public String getName() {
-					return "measure Hall Y" ;
-				}
-				@Override
-				public Queue run(Mainboard dev, Queue queue) {
-					int hally		= barobot.state.getInt("HALLY", 0);
-					if( hally > 0 ){
-						barobot.state.getInt("HALLY_BELOW_BACK", 0);
-						Initiator.logger.e("HALLY_FRONT_VALUE", "" + hally);
-					}
-					return null;
-				}
-			} );
 			break;
 	
 		case R.id.wizard_servoy_front_more_front:
@@ -150,21 +135,6 @@ public class ServoYActivity extends BlankWizardActivity {
 		//	barobot.moveZ(barobot.main_queue, value2 );
 			barobot.moveY(barobot.main_queue, value2, true);
 			barobot.readHallY( barobot.main_queue );
-			barobot.main_queue.add( new AsyncMessage( true ) {
-				@Override	
-				public String getName() {
-					return "measure Hall Y" ;
-				}
-				@Override
-				public Queue run(Mainboard dev, Queue queue) {
-					int hally		= barobot.state.getInt("HALLY", 0);
-					if( hally > 0 ){
-						barobot.state.getInt("HALLY_BELOW_BACK", 0);
-						Initiator.logger.e("HALLY_BACK_VALUE", "" + hally);
-					}
-					return null;
-				}
-			} );
 			break;
 		case R.id.wizard_servoy_next:
 			int valuefront	= Decoder.toInt( ""+wizard_servoy_front_pos.getText(), -1);
@@ -179,6 +149,7 @@ public class ServoYActivity extends BlankWizardActivity {
 			if( valueback > 700 && valueback < 2500 ){
 				barobot.state.set("SERVOY_BACK_POS", valueback );		// save values
 			}
+			countNeutral();
 			barobot.moveToFront(barobot.main_queue);
 			super.onOptionsButtonClicked(view);
 			break;
@@ -190,7 +161,7 @@ public class ServoYActivity extends BlankWizardActivity {
 	private void countNeutral() {
 		int valuefront	= Decoder.toInt( ""+wizard_servoy_front_pos.getText(), -1);
 		int valueback	= Decoder.toInt( ""+wizard_servoy_back_pos.getText(), -1);
-		neutral	= (valuefront + valueback) / 2;
+		neutral	= (valuefront + valueback*7) / 8;
 		barobot.state.set("SERVOY_BACK_NEUTRAL", neutral);
 	}
 

@@ -45,12 +45,13 @@ public class Arduino{
 				// if is connected AND is not busy AND not uploading firmware
 				if( Arduino.getInstance().getConnection().isConnected() && !barobot.main_queue.isBusy() && !firmwareUpload ){
 					barobot.mb.send("AA\n");
-				//	barobot.main_queue.sendNow("A2");
+				//	Arduino.getInstance().low_send("A2\n");
 				//	barobot.main_queue.add("A2", true);
 				}
 			}});
 		AppInvoker.getInstance().inters.add(ii1);
 		ii1.run( 3000, 3000 );
+	//	ii1.run( 3000, 500 );
 	}
 
 	public Wire getConnection(){
@@ -203,12 +204,16 @@ public class Arduino{
 			}
 		}
 	}
-    public synchronized void low_send( String command ) throws IOException {		// wyslij bez interpretacji
+    public synchronized void low_send( String command ){		// wyslij bez interpretacji
 		if(connection == null){
 			return;		// jestem w trakcie oczekiwania
 		}
-		Initiator.logger.i("Arduino.low_send", command );
-    	connection.send(command);
+    	try {
+			connection.send(command);
+		} catch (IOException e) {
+			Initiator.logger.e("Arduino.low_send", command, e );
+			e.printStackTrace();
+		}
     }
     public synchronized void debug( String command ){		// wyslij bez interpretacji
 		if(debugConnection!=null ){
@@ -229,16 +234,5 @@ public class Arduino{
 		if( connection != null ){
 			connection.reset();
 		}
-	}
-	public static String MD5Hash(String toHash) throws RuntimeException {
-	   try{
-	       return String.format("%032x", // produces lower case 32 char wide hexa left-padded with 0
-	      new BigInteger(1, // handles large POSITIVE numbers 
-	           MessageDigest.getInstance("MD5").digest(toHash.getBytes())));
-	   }
-	   catch (NoSuchAlgorithmException e) {
-	      // do whatever seems relevant
-	   }
-	   return null;
 	}
 }

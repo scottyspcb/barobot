@@ -20,6 +20,9 @@ public abstract class SystemTestItem<T>{
 		solutionId	= wizardSolution;
 	}
 
+	public SystemTestItem(int title) {
+		title_id	= title;
+	}
 	public abstract T read();
 
 	public boolean check() {

@@ -1,6 +1,7 @@
 package com.barobot.sofa.route;
 
 import com.barobot.sofa.api.DoDrinkPage;
+import com.barobot.sofa.api.GetSlotsPage;
 import com.barobot.sofa.api.GetRecipesPage;
 import com.barobot.web.route.EmptyRoute;
 import com.barobot.web.server.SimpleRouter;
@@ -13,6 +14,7 @@ public class SofaRouter implements SimpleRouter{
 
 	@Override
 	public void init(SofaServer ss) {
+		/*
 		ss.addRoute( new EmptyRoute() {
 			@Override
 			public String run(String url, SofaServer sofaServer,
@@ -24,8 +26,9 @@ public class SofaRouter implements SimpleRouter{
 				// TODO Auto-generated method stub
 				return false;
 			}
-		} );
+		} );*/
 		ss.addRoute( new RPCPage() );
+		ss.addRoute( new SetupPage() );
 		ss.addRoute( new SavePage() );
 		ss.addRoute( new MainPage() );
 		ss.addRoute( new SettingsPage() );
@@ -36,6 +39,7 @@ public class SofaRouter implements SimpleRouter{
 		ss.addRoute( new CommandsPageRoute() );	
 		ss.addRoute( new TranslatePage() );
 		ss.addRoute( new GetRecipesPage() );
+		ss.addRoute( new GetSlotsPage() );
 		ss.addRoute( new DoDrinkPage());
 		ss.addRoute( new ServoTestPageRoute());
 		ss.addRoute( new HardwareQueuePage());

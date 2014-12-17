@@ -93,7 +93,6 @@ public class BarobotData {
 	{
 		BarobotConnector barobot	= Arduino.getInstance().barobot;
 		int robotId					= barobot.getRobotId();
-
 		return Model.fetchSingle(ModelQuery.select().from(Slot.class).where(
 				C.and(
 						C.eq("robot_id", robotId),

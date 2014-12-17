@@ -7,7 +7,6 @@ import org.orman.mapper.Model;
 import org.orman.mapper.annotation.Entity;
 import org.orman.mapper.annotation.OneToMany;
 import org.orman.mapper.annotation.PrimaryKey;
-import com.barobot.gui.utils.Distillery;
 import com.barobot.gui.utils.LangTool;
 
 @Entity
@@ -67,24 +66,35 @@ public class Recipe_t extends Model<Recipe_t>{
 		}
 		return null;
 	}
-	
-	public int GetSweet()
-	{
-		return Distillery.getSweet(getIngredients());
+
+	public static int[] getTaste(List<Ingredient_t> ingredients) {
+		int res[]	= {0,0,0,0};
+		int value0	= 0;// Sweet
+		int value1	= 0;// Sour
+		int value2	= 0;// Bitter
+		int value3	= 0;// Strength
+		int weights	= 0;
+
+		for(Ingredient_t ing : ingredients)
+		{
+			value0+= (ing.liquid.sweet * ing.quantity);
+			value1+= (ing.liquid.sour * ing.quantity);
+			value2+= (ing.liquid.bitter * ing.quantity);
+			value3+= (ing.liquid.strenght * ing.quantity);
+			weights+= ing.quantity;
+		}
+		if (weights > 0){
+			res[0]= value0 / weights;
+			res[1]= value1 / weights;
+			res[2]= value2 / weights;
+			res[3]= value3 / weights;
+		}
+		return res;	
 	}
 	
-	public int GetSour()
+	public int[] getTaste() 
 	{
-		return Distillery.getSour(getIngredients());
-	}
-	
-	public int GetBitter()
-	{
-		return Distillery.getBitter(getIngredients());
-	}
-	
-	public int GetStrength()
-	{
-		return Distillery.getStrength(getIngredients());
+		List<Ingredient_t> ingredients = getIngredients();
+		return getTaste(ingredients);
 	}
 }
