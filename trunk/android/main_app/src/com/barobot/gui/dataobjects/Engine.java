@@ -17,12 +17,12 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Environment;
 
 import com.barobot.BarobotMain;
+import com.barobot.android.Android;
 import com.barobot.common.Initiator;
 import com.barobot.common.constant.Constant;
 import com.barobot.gui.database.BarobotData;
 import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
-import com.barobot.other.Android;
 import com.barobot.parser.Queue;
 import com.barobot.parser.message.AsyncMessage;
 import com.barobot.parser.message.Mainboard;
@@ -246,7 +246,7 @@ public class Engine {
 						q.addWait( repeat_time  );			// wait for refill
 					}
 		//			Log.i("Prepare", "pour" );
-					barobot.pour(q, slot.dispenser_type, position-1, false);
+					barobot.pour(q, slot.dispenser_type, position-1, false, true );
 				}
 				saveStats( slot, q, count );
 				saveStats( ing.liquid, q, count);

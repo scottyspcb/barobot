@@ -9,7 +9,7 @@ import org.orman.mapper.annotation.ManyToOne;
 import org.orman.mapper.annotation.OneToMany;
 import org.orman.mapper.annotation.PrimaryKey;
 
-import com.barobot.gui.utils.LangTool;
+import com.barobot.other.LangTool;
 
 @Entity
 public class Liquid_t extends Model<Liquid_t> {

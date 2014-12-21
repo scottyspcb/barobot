@@ -14,13 +14,13 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.barobot.android.Android;
+import com.barobot.android.InternetHelpers;
 import com.barobot.common.Initiator;
 import com.barobot.gui.dataobjects.StartupException;
-import com.barobot.gui.utils.LangTool;
 import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
-import com.barobot.other.Android;
-import com.barobot.other.InternetHelpers;
+import com.barobot.other.LangTool;
 
 public class BarobotMain extends Activity {
 	private static BarobotMain instance;

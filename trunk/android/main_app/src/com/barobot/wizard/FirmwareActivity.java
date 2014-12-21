@@ -4,10 +4,10 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.barobot.R;
+import com.barobot.android.Android;
 import com.barobot.common.constant.Constant;
 import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
-import com.barobot.other.Android;
 import com.barobot.other.UpdateManager;
 
 public class FirmwareActivity extends BlankWizardActivity {

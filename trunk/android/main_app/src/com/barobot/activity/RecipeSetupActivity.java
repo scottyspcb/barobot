@@ -28,7 +28,7 @@ import com.barobot.gui.dataobjects.Ingredient_t;
 import com.barobot.gui.dataobjects.Liquid_t;
 import com.barobot.gui.dataobjects.Recipe_t;
 import com.barobot.gui.dataobjects.Type;
-import com.barobot.gui.utils.LangTool;
+import com.barobot.other.LangTool;
 import com.barobot.other.ProgressTask;
 import com.barobot.other.ProgressTask.UiTask;
 

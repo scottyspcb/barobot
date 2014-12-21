@@ -39,98 +39,117 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:orientation="vertical" >
 
-            <Button
-                android:id="@+id/wizard1"
-                style="@style/ValidatorMenuButton"
-                android:onClick="onOptionsButtonClicked"
-                android:text="@string/wizard_text_1" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
 
-            <Button
-                android:id="@+id/wizard2"
-                style="@style/ValidatorMenuButton"
-                android:onClick="onOptionsButtonClicked"
-                android:text="@string/wizard_text_2" />
-        </LinearLayout>
+                <Button
+                    android:id="@+id/wizard1"
+                    style="@style/ValidatorMenuButton"
+                    android:onClick="onOptionsButtonClicked"
+                    android:text="@string/wizard_text_1" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
+                <Button
+                    android:id="@+id/wizard2"
+                    style="@style/ValidatorMenuButton"
+                    android:onClick="onOptionsButtonClicked"
+                    android:text="@string/wizard_text_2" />
+            </LinearLayout>
 
-            <Button
-                android:id="@+id/wizard3"
-                style="@style/ValidatorMenuButton"
-                android:onClick="onOptionsButtonClicked"
-                android:text="@string/wizard_text_3" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
 
-            <Button
-                android:id="@+id/wizard4"
-                style="@style/ValidatorMenuButton"
-                android:onClick="onOptionsButtonClicked"
-                android:text="@string/wizard_text_4" />
-        </LinearLayout>
+                <Button
+                    android:id="@+id/wizard3"
+                    style="@style/ValidatorMenuButton"
+                    android:onClick="onOptionsButtonClicked"
+                    android:text="@string/wizard_text_3" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
+                <Button
+                    android:id="@+id/wizard4"
+                    style="@style/ValidatorMenuButton"
+                    android:onClick="onOptionsButtonClicked"
+                    android:text="@string/wizard_text_4" />
+            </LinearLayout>
 
-            <Button
-                android:id="@+id/wizard5"
-                style="@style/ValidatorMenuButton"
-                android:onClick="onOptionsButtonClicked"
-                android:text="@string/wizard_text_5" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
 
-            <Button
-                android:id="@+id/wizard6"
-                style="@style/ValidatorMenuButton"
-                android:onClick="onOptionsButtonClicked"
-                android:text="@string/wizard_text_6" />
-        </LinearLayout>
+                <Button
+                    android:id="@+id/wizard5"
+                    style="@style/ValidatorMenuButton"
+                    android:onClick="onOptionsButtonClicked"
+                    android:text="@string/wizard_text_5" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
+                <Button
+                    android:id="@+id/wizard6"
+                    style="@style/ValidatorMenuButton"
+                    android:onClick="onOptionsButtonClicked"
+                    android:text="@string/wizard_text_6" />
+            </LinearLayout>
 
-            <Button
-                android:id="@+id/wizard7"
-                style="@style/ValidatorMenuButton"
-                android:onClick="onOptionsButtonClicked"
-                android:text="@string/wizard_text_7" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
 
-            <Button
-                android:id="@+id/wizard8"
-                style="@style/ValidatorMenuButton"
-                android:onClick="onOptionsButtonClicked"
-                android:text="@string/wizard_text_8" />
-        </LinearLayout>
+                <Button
+                    android:id="@+id/wizard9"
+                    style="@style/ValidatorMenuButton"
+                    android:onClick="onOptionsButtonClicked"
+                    android:text="@string/wizard_text_9" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
-            <Button
-                android:id="@+id/wizard9"
-                style="@style/ValidatorMenuButton"
-                android:onClick="onOptionsButtonClicked"
-                android:text="@string/wizard_text_9" />
+                <Button
+                    android:id="@+id/wizard10"
+                    style="@style/ValidatorMenuButton"
+                    android:onClick="onOptionsButtonClicked"
+                    android:text="@string/wizard_text_10" />
+            </LinearLayout>
 
-           <Button
-                android:id="@+id/wizard10"
-                style="@style/ValidatorMenuButton"
-                android:onClick="onOptionsButtonClicked"
-               
-                android:text="@string/wizard_text_10" />  
-            
-        </LinearLayout>
-        
-         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
-            <Button
-                android:id="@+id/wizard11"
-                style="@style/ValidatorMenuButton"
-                android:onClick="onOptionsButtonClicked"
-                android:text="@string/wizard_text_11" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+
+                <Button
+                    android:id="@+id/wizard7"
+                    style="@style/ValidatorMenuButton"
+                    android:onClick="onOptionsButtonClicked"
+                    android:text="@string/wizard_text_7" />
+
+                <Button
+                    android:id="@+id/wizard8"
+                    style="@style/ValidatorMenuButton"
+                    android:onClick="onOptionsButtonClicked"
+                    android:text="@string/wizard_text_8" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+
+                <Button
+                    android:id="@+id/wizard11"
+                    style="@style/ValidatorMenuButton"
+                    android:onClick="onOptionsButtonClicked"
+                    android:text="@string/wizard_text_11" />
+                
+                
+                 <Button
+        style="@style/ValidatorMenuButton"
+        android:id="@+id/wizard_close"
+        android:onClick="onOptionsButtonClicked"
+        android:text="@string/wizard_save_and_close" />
+                
+                
+                
+                
+            </LinearLayout>
 
         </LinearLayout>
         
@@ -217,15 +236,7 @@
                     android:onClick="onLangButtonClicked"
                     android:text="@string/wizard_lang_en" />
                 
-                <Button
-        android:id="@+id/wizard_close"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/linearLayout1"
-        android:layout_centerHorizontal="true"
-        android:onClick="onOptionsButtonClicked"
-        android:text="Save settings and close" />
-                
+               
                 
             </LinearLayout>
         </GridLayout>

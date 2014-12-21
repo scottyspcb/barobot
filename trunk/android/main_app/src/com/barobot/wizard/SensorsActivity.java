@@ -6,9 +6,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.barobot.R;
+import com.barobot.android.Android;
 import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
-import com.barobot.other.Android;
 import com.barobot.parser.Queue;
 import com.barobot.parser.message.AsyncMessage;
 import com.barobot.parser.message.Mainboard;

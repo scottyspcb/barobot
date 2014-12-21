@@ -17,6 +17,7 @@ import android.widget.TextView;
 
 import com.barobot.BarobotMain;
 import com.barobot.R;
+import com.barobot.android.InternetHelpers;
 import com.barobot.common.Initiator;
 import com.barobot.gui.database.BarobotData;
 import com.barobot.gui.dataobjects.Engine;
@@ -26,11 +27,9 @@ import com.barobot.gui.dataobjects.Recipe_t;
 import com.barobot.gui.dataobjects.Slot;
 import com.barobot.gui.fragment.IngredientListFragment;
 import com.barobot.gui.fragment.RecipeAttributesFragment;
-import com.barobot.gui.utils.Distillery;
-import com.barobot.gui.utils.LangTool;
 import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
-import com.barobot.other.InternetHelpers;
+import com.barobot.other.LangTool;
 import com.barobot.parser.Queue;
 
 public class CreatorActivity extends BarobotMain{
@@ -40,7 +39,7 @@ public class CreatorActivity extends BarobotMain{
 	private int[] dropIds;
 	private List<Ingredient_t> ingredients;
 	private int drink_size = 0;
- 
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -138,13 +137,12 @@ public class CreatorActivity extends BarobotMain{
 		if(frag!=null){
 			frag.hide();
 		}
-		BarobotConnector barobot = Arduino.getInstance().barobot;
+		final BarobotConnector barobot = Arduino.getInstance().barobot;
 		barobot.lightManager.turnOffLeds(barobot.main_queue);
 	}
 
 	public void ShowIngredients(boolean setLeds )
 	{
-		BarobotConnector barobot	= Arduino.getInstance().barobot;
 		IngredientListFragment frag = (IngredientListFragment) getFragmentManager().findFragmentById(R.id.fragment_ingredient_list);
 		if(frag!=null){
 			if(ingredients.size() > 0 ){
@@ -155,9 +153,13 @@ public class CreatorActivity extends BarobotMain{
 		}
 		RecipeAttributesFragment attrFrag = (RecipeAttributesFragment) getFragmentManager().findFragmentById(R.id.fragment_attributes);
 		if(attrFrag!=null){
-			attrFrag.SetAttributes(Distillery.getSweet(ingredients), Distillery.getSour(ingredients)
-				, Distillery.getBitter(ingredients), Distillery.getStrength(ingredients));
+			int[] taste = Recipe_t.getTaste(ingredients);
+			attrFrag.SetTaste(taste);
+
+		//	attrFrag.SetAttributes(Distillery.getSweet(ingredients), Distillery.getSour(ingredients)
+		//		, Distillery.getBitter(ingredients), Distillery.getStrength(ingredients));
 		}
+		final BarobotConnector barobot = Arduino.getInstance().barobot;
 		for (int i = 1; i<=12 ; i++){							// 1 - 12
 			barobot.bottleBacklight( barobot.main_queue, i-1, slot_nums[i] );		// 0 -11
 		}
@@ -165,7 +167,9 @@ public class CreatorActivity extends BarobotMain{
 
 	public void onBottleClicked(View view)
 	{
-		int viewID = view.getId();
+		final BarobotConnector barobot = Arduino.getInstance().barobot;
+		int max_capacity			= barobot.state.getInt("MAX_GLASS_CAPACITY", 190);
+		int viewID					= view.getId();
 		int position = 0;
 		for (int i = 1; i<=12 ; i++)
 		{
@@ -179,27 +183,47 @@ public class CreatorActivity extends BarobotMain{
 		{
 			Slot slot =  BarobotData.GetSlot(position);
 			try {
-				if (slot.product != null){
-					Ingredient_t ingredient = new Ingredient_t();
-					ingredient.liquid = slot.product.liquid;
-					ingredient.quantity = slot.dispenser_type;
-					addIngredient(position, ingredient);
-					drink_size += slot.dispenser_type;
-
+				if( drink_size+ slot.dispenser_type > max_capacity ){			// to big drink
+					drinkIsToBig( max_capacity );
+				}else{
+					if (slot.product != null){
+						Ingredient_t ingredient = new Ingredient_t();
+						drink_size += slot.dispenser_type;
+						ingredient.liquid = slot.product.liquid;
+						ingredient.quantity = slot.dispenser_type;
+						addIngredient(position, ingredient);
+						ShowIngredients(true);
+						CalculateDrops();
+						UpdateButtons();
+					}
 				}
 			} catch (NullPointerException e) {
 				InternetHelpers.raportError(lastException, "NullPointerException");
 				e.printStackTrace();
 			}
-			
-			ShowIngredients(true);
-			CalculateDrops();
-			UpdateButtons();
 		}else{
 			Log.w("BOTTLE_SETUP", "onBottleClicked called by an unknown view");
 		}
 	}
 	
+
+	AlertDialog currentDialog;
+	private void drinkIsToBig(int max_capacity) {
+		if( currentDialog != null){
+			currentDialog.dismiss();
+		}
+		currentDialog = new AlertDialog.Builder(this)
+		.setIcon(android.R.drawable.ic_dialog_alert)
+		.setTitle("")
+		.setMessage(R.string.action_creator_drink_too_big)
+		.setPositiveButton(R.string.action_creator_drink_too_big_ok,
+				new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog,int which) {
+						
+					}
+				}).show();
+	}
 	public void onClearButtonClicked(View view)
 	{
 		clear(true);
@@ -274,7 +298,6 @@ public class CreatorActivity extends BarobotMain{
 
 							Queue q_error		= new Queue();	
 							barobot.lightManager.carret_color( q_error, 255, 0, 0 );
-							barobot.driver_x.moveTo( q_error, barobot.driver_x.getSPos() -100 );
 
 							boolean igrq		= barobot.weight.isGlassRequired();
 							boolean igrd		= barobot.weight.isGlassReady();

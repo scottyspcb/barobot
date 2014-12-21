@@ -1,4 +1,4 @@
-package com.barobot.other;
+package com.barobot.android;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -24,7 +24,6 @@ import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.Uri;
 import android.os.BatteryManager;
 import android.os.Build;
 import android.os.Debug;
@@ -39,8 +38,6 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Enumeration;
 
 import org.orman.mapper.Model;
@@ -52,15 +49,16 @@ import com.barobot.BarobotMain;
 import com.barobot.R;
 import com.barobot.activity.BarobotActivity;
 import com.barobot.common.Initiator;
-import com.barobot.common.constant.Constant;
 import com.barobot.gui.database.BarobotData;
 import com.barobot.gui.dataobjects.Robot;
 import com.barobot.gui.dataobjects.Slot;
 import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
+import com.barobot.other.UpdateManager;
 import com.barobot.parser.Queue;
 import com.barobot.parser.message.AsyncMessage;
 import com.barobot.parser.message.Mainboard;
+
 public class Android {
 	public void powerOff( Context c ){
 		PowerManager powerManager = (PowerManager)c.getSystemService(Context.POWER_SERVICE);
@@ -315,7 +313,7 @@ public class Android {
 			}
 		}
 	}
-	public static void pourFromBottle(int position, Queue q) {
+	public static void pourFromBottle(int position, Queue q, boolean needGlass ) {
 		BarobotConnector barobot = Arduino.getInstance().barobot;
 
 		int robot_id = barobot.getRobotId();
@@ -327,7 +325,7 @@ public class Android {
 			).limit(1).getQuery(), Slot.class);
 		if( slot != null ){
 			barobot.moveToBottle(q, position, true);
-			barobot.pour(q, slot.dispenser_type, position, true);
+			barobot.pour(q, slot.dispenser_type, position, true, needGlass );
 		}
 	}
 

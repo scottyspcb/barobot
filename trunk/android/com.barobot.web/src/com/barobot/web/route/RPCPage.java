@@ -8,12 +8,10 @@ import com.x5.template.Theme;
 import fi.iki.elonen.NanoHTTPD.IHTTPSession;
 
 public class RPCPage extends EmptyRoute {
-
 	public RPCPage() {
 		use_raw_output = true;
 		this.regex = "^\\/rpc$";
 	}
-
 	@Override
 	public String run(String url, SofaServer sofaServer, Theme theme, IHTTPSession session){
 		if(session.getParms().containsKey("command")){

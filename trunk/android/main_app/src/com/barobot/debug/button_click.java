@@ -7,6 +7,7 @@ import java.util.Date;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.net.Uri;
 import android.os.Environment;
 import android.util.Log;
 import android.view.View;
@@ -14,14 +15,14 @@ import android.view.View.OnClickListener;
 
 import com.barobot.BarobotMain;
 import com.barobot.R;
+import com.barobot.android.Android;
+import com.barobot.android.InternetHelpers;
 import com.barobot.common.Initiator;
 import com.barobot.common.constant.Constant;
 import com.barobot.common.interfaces.OnDownloadReadyRunnable;
 import com.barobot.gui.dataobjects.Engine;
 import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
-import com.barobot.other.Android;
-import com.barobot.other.InternetHelpers;
 import com.barobot.other.UpdateManager;
 import com.barobot.parser.Queue;
 public class button_click implements OnClickListener{
@@ -121,6 +122,13 @@ public class button_click implements OnClickListener{
 		case R.id.firmware_download_manual:
 			UpdateManager.downloadAndBurnFirmware( dbw, Constant.use_beta, true );
 			break;
+		case R.id.force_app_update:
+			String url = Constant.android_app;
+			if(Constant.use_beta){
+				url = Constant.android_app_beta;
+			}
+			UpdateManager.openInBrowser( dbw, url );
+
 		case R.id.new_robot_id:
 			int isOnline = Android.isOnline(dbw);
 			if(isOnline > -1 && Constant.use_beta ){					// beta only

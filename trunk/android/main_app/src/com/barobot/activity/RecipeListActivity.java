@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -125,8 +126,8 @@ public class RecipeListActivity extends BarobotMain{
 			drink_size	= Ingredient_t.getSize( a );
 
 			// Set drink attributes
-			attributesFragment.SetAttributes(mCurrentRecipe.GetSweet(), mCurrentRecipe.GetSour(), 
-					mCurrentRecipe.GetBitter(), mCurrentRecipe.GetStrength());
+			
+			attributesFragment.SetTaste(mCurrentRecipe.getTaste());
 
 			// Set ingredients
 			ingredientFragment.ShowIngredients(mCurrentRecipe.getIngredients());
@@ -146,10 +147,12 @@ public class RecipeListActivity extends BarobotMain{
 					BarobotConnector barobot = Arduino.getInstance().barobot;
 					barobot.lightManager.turnOffLeds(barobot.main_queue);
 					Queue q = barobot.main_queue;
-					for(Entry<Integer, Integer> entry : usage.entrySet()) {
-						    Integer key = entry.getKey();
-						    Integer value = entry.getValue();
-						    barobot.bottleBacklight(q, key-1, value);
+					if(!q.isBusy() && q.length() > 2 ){
+						for(Entry<Integer, Integer> entry : usage.entrySet()) {
+							    Integer key = entry.getKey();
+							    Integer value = entry.getValue();
+							    barobot.bottleBacklight(q, key-1, value);
+						}
 					}
 				 }
 			}); 
@@ -157,23 +160,9 @@ public class RecipeListActivity extends BarobotMain{
 		}
 	}
 
-	public void beforeStart() {
-		new AlertDialog.Builder(this)
-				.setIcon(android.R.drawable.ic_dialog_alert)
-				.setTitle("")
-				.setMessage(R.string.glass_reminder_message)
-				.setPositiveButton(R.string.preparing_drink_start,
-						new DialogInterface.OnClickListener() {
-							@Override
-							public void onClick(DialogInterface dialog,int which) {
-								pourStart();
-							}
-				}).setNegativeButton(R.string.preparing_drink_cancel, null).show();
-	}
-
 	public void onPourButtonClicked(View view) {
 		if (mCurrentRecipe != null) {
-			beforeStart();
+			pourStart();
 		}
 	}
 
@@ -185,42 +174,63 @@ public class RecipeListActivity extends BarobotMain{
 		progress.setMessage(msg);
 		progress.show();
 
+		final Queue q_ready		= new Queue();	
+	 	final BarobotConnector barobot = Arduino.getInstance().barobot;
+
+		barobot.lightManager.carret_color( q_ready, 0, 255, 0 );
+		q_ready.addWait(200);
+		barobot.lightManager.carret_color( q_ready, 0, 100, 0 );
+	  	
+		final Queue q_error		= new Queue();	
+		barobot.lightManager.carret_color( q_error, 255, 0, 0 );
+
 		Thread t = new Thread(new Runnable() {  
 	         @Override
 	         public void run() {
-	        	 	BarobotConnector barobot = Arduino.getInstance().barobot;
-
-					Queue q_ready		= new Queue();	
-					barobot.lightManager.carret_color( q_ready, 0, 255, 0 );
-					q_ready.addWait(200);
-					barobot.lightManager.carret_color( q_ready, 0, 100, 0 );
-	        	  	Queue q_drink = Engine.GetInstance().Pour(mCurrentRecipe, "list");
-	        	  	q_ready.add(q_drink);
-
-					Queue q_error		= new Queue();	
-					barobot.lightManager.carret_color( q_error, 255, 0, 0 );
-					barobot.driver_x.moveTo( q_error, barobot.driver_x.getSPos() -100 );
-
+	     			final Queue q_drink = Engine.GetInstance().Pour(mCurrentRecipe, "list");
+	     			q_ready.add(q_drink);
 					boolean igrq		= barobot.weight.isGlassRequired();
 					boolean igrd		= barobot.weight.isGlassReady();
 					if(!igrq){
 						Initiator.logger.i( "pourStart", "dont need glass");
 						barobot.main_queue.add(q_drink);
+						gotoMainMenu(null);
 					}else if(igrd){
 						Initiator.logger.i( "pourStart", "is Glass Ready");
 						barobot.main_queue.add(q_drink);
+						gotoMainMenu(null);
 					}else{
-						Initiator.logger.i( "pourStart", "wait for Glass");
 						Queue q = new Queue();
 						barobot.weight.waitForGlass( q, q_ready, q_error);
-						barobot.main_queue.add(q);
+						remainderAndDo(q);
 					}
 	        	  	progress.dismiss();
-	        	  	gotoMainMenu(null);
 	         }});
 		t.start();
 	}
-	public void gotoMainMenu(View view){
+	protected void remainderAndDo(final Queue q) {
+		final BarobotConnector barobot = Arduino.getInstance().barobot;
+
+		runOnUiThread(new Runnable() {
+			  public void run() {
+				  new AlertDialog.Builder(RecipeListActivity.this)
+					.setIcon(android.R.drawable.ic_dialog_alert)
+					.setTitle("")
+					.setMessage(R.string.glass_reminder_message)
+					.setPositiveButton(R.string.preparing_drink_start,
+							new DialogInterface.OnClickListener() {
+								@Override
+								public void onClick(DialogInterface dialog,int which) {
+									Initiator.logger.i( "pourStart", "wait for Glass");
+									barobot.main_queue.add(q);
+									gotoMainMenu(null);
+								}
+					}).setNegativeButton(R.string.preparing_drink_cancel, null).show();	
+			  }
+		});
+	}
+
+	public void gotoMainMenu(View v){
 		this.finish();
 		overridePendingTransition(R.anim.push_right_in,R.anim.push_right_out);
 	}

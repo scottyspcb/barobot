@@ -1,4 +1,4 @@
-package com.barobot.gui.utils;
+package com.barobot.other;
 
 import java.util.HashMap;
 import java.util.List;
