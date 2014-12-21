@@ -10,12 +10,12 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.barobot.R;
+import com.barobot.android.Android;
 import com.barobot.common.constant.Constant;
 import com.barobot.common.interfaces.serial.Wire;
 import com.barobot.gui.database.BarobotData;
 import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
-import com.barobot.other.Android;
 import com.barobot.wizard.helpers.CheckboxValueAdapter;
 import com.barobot.wizard.helpers.SystemTestItem;
 import com.barobot.wizard.helpers.SystemUnitTest;

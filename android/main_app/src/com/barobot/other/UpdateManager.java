@@ -17,6 +17,8 @@ import android.os.Handler;
 
 import com.barobot.BarobotMain;
 import com.barobot.R;
+import com.barobot.android.Android;
+import com.barobot.android.InternetHelpers;
 import com.barobot.common.Initiator;
 import com.barobot.common.IspOverSerial;
 import com.barobot.common.constant.Constant;
@@ -203,7 +205,7 @@ public class UpdateManager{
 			}
 		});
 	}
-	protected static void openInBrowser(final Activity c, final String url) {
+	public static void openInBrowser(final Activity c, final String url) {
 		c.runOnUiThread(new Runnable() {
 			  public void run() {
 				  new AlertDialog.Builder(c).setIcon(android.R.drawable.ic_dialog_alert)
@@ -213,7 +215,6 @@ public class UpdateManager{
 			            @Override
 			            public void onClick(DialogInterface dialog, int which) {
 			            	UpdateManager.downloadAndInstall( c,  Uri.parse(url));
-
 			            //	Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
 			        	//	c.startActivity(browserIntent);
 			            }
@@ -762,13 +763,13 @@ public class UpdateManager{
 	                    	barProgressDialog.dismiss();
 	                    }
 	                });
-			    	File apkFile	= new File( path6 );
+			   // 	File apkFile	= new File( path6 );
 					Intent intent	= new Intent(Intent.ACTION_VIEW);
-					Initiator.logger.e("UpdateApp.run", path6);
-					Initiator.logger.i("UpdateApp.run1", ""+apkFile );
-					Initiator.logger.i("UpdateApp.run2", ""+Uri.parse("file:/"+apkFile) );
-					Initiator.logger.i("UpdateApp.run3", ""+Uri.fromFile(apkFile) );
-					Initiator.logger.i("UpdateApp.run4", ""+Uri.parse("file:/"+apkFile.getAbsolutePath()) );
+				//	Initiator.logger.e("UpdateApp.run", path6);
+				//	Initiator.logger.i("UpdateApp.run1", ""+apkFile );
+				//	Initiator.logger.i("UpdateApp.run2", ""+Uri.parse("file:/"+apkFile) );
+				//	Initiator.logger.i("UpdateApp.run3", ""+Uri.fromFile(apkFile) );
+				//	Initiator.logger.i("UpdateApp.run4", ""+Uri.parse("file:/"+apkFile.getAbsolutePath()) );
 				    intent.setDataAndType(Uri.fromFile(new File(path6)), "application/vnd.android.package-archive");
 					intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK); // without this flag android returned a intent error!
 					c.startActivity(intent);

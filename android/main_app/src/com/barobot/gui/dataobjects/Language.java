@@ -4,7 +4,7 @@ import org.orman.mapper.Model;
 import org.orman.mapper.annotation.Entity;
 import org.orman.mapper.annotation.PrimaryKey;
 
-import com.barobot.gui.utils.LangTool;
+import com.barobot.other.LangTool;
 import com.eclipsesource.json.JsonObject;
 
 @Entity

@@ -6,7 +6,7 @@ import org.orman.mapper.annotation.Entity;
 import org.orman.mapper.annotation.OneToMany;
 import org.orman.mapper.annotation.PrimaryKey;
 
-import com.barobot.gui.utils.LangTool;
+import com.barobot.other.LangTool;
 
 @Entity
 public class Category extends Model<Category>{

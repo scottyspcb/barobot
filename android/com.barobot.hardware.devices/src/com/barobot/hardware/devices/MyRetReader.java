@@ -438,6 +438,14 @@ public class MyRetReader implements RetReader {
 					Initiator.logger.e("MyRetReader.decoded.wrong76", command + ", expected output:" + "Z..." + " because of " + decoded + " fromArduino:'"+ fromArduino+"'" );
 				}
 
+				
+			}else if(fromArduino2.startsWith("F")){			// power was down
+				if(command.equals("F0")){					// robot is now shuting down.
+					
+				}
+				if(command.startsWith("F")){
+					return true;
+				}
 			}else if(fromArduino2.startsWith( "m" ) && command.startsWith("m")){	// eeprom memory
 				decoded += "/EEPROM";
 				String fromArduino3 = fromArduino2.substring(1);
@@ -566,7 +574,7 @@ public class MyRetReader implements RetReader {
 			barobot.state.set("HALLX", value);
 			barobot.state.set("HX_STATE", state_name);
 
-			boolean isCalibrating	= state.getInt("scann_bottles", 0 ) > 0 && !checkInput && dir == Methods.DRIVER_DIR_FORWARD;
+			boolean isCalibrating	= state.getInt("scann_bottles", 0 ) > 0 && !checkInput && (dir == Methods.DRIVER_DIR_FORWARD || dir == Methods.DRIVER_DIR_STOP);
 			if( isCalibrating ){
 				state_num++;
 				if(state_name == Methods.HX_STATE_0 ){				// ERROR
@@ -577,10 +585,15 @@ public class MyRetReader implements RetReader {
 				//	spos += 300;				// hall stops 400 points before magnet
 					state.set( "LENGTHX", spos);
 					Initiator.logger.i("input_parser.11", decoded );
-				//	barobot.hereIsBottle(11, spos, SERVOY_FRONT_POS );
+
+					int SERVOY_FRONT_POS = state.getInt("SERVOY_FRONT_POS", 1000 );
+					Initiator.logger.i("input_parser", "koniec skali: " + spos );// @todo sprawdzic co z tym
+			//		barobot.hereIsBottle(11, spos, SERVOY_FRONT_POS );
+
 					state_num = 0;
 				}else if(state_name == Methods.HX_STATE_2 ){
 					decoded += "/HX_STATE_2";
+					Initiator.logger.i("input_parser", "koniec skali: " + spos );// @todo sprawdzic co z tym
 					hereIsMagnet( 11, hpos, hpos, Constant.BOTTLE_IS_FRONT );
 					frontNum = 0;
 					BackNum = 0;
@@ -662,9 +675,9 @@ public class MyRetReader implements RetReader {
 				}else if(state_name == Methods.HX_STATE_1 ){
 					decoded += "/HX_STATE_1";
 					state.set( "LENGTHX", spos);
-					int SERVOY_FRONT_POS = state.getInt("SERVOY_FRONT_POS", 1000 );
-					Initiator.logger.i("input_parser", "koniec skali: " + spos );
-					barobot.hereIsBottle(11, spos+100, SERVOY_FRONT_POS );
+		//			int SERVOY_FRONT_POS = state.getInt("SERVOY_FRONT_POS", 1000 );
+		//			Initiator.logger.i("input_parser", "koniec skali: " + spos );// @todo sprawdzic co z tym
+		//			barobot.hereIsBottle(11, spos+100, SERVOY_FRONT_POS );
 					state_num = 0;
 					barobot.state.set("HALLX_UNDER", "1");
 				}else if(state_name == Methods.HX_STATE_2 ){

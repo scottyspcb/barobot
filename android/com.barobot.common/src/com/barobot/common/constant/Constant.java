@@ -1,8 +1,8 @@
 package com.barobot.common.constant;
 
 public class Constant {
-	public static final int ANDROID_APP_VERSION		= 9;
-	public static final int WIZARD_VERSION			= 7;
+	public static final int ANDROID_APP_VERSION		= 10;
+	public static final int WIZARD_VERSION			= 8;
 	public static final int MAX_FIRMWARE_VERSION	= 16;	
 
     // Debugging

@@ -13,12 +13,12 @@ import android.widget.TextView;
 import com.barobot.AppInvoker;
 import com.barobot.BarobotMain;
 import com.barobot.R;
+import com.barobot.android.Android;
 import com.barobot.common.Initiator;
 import com.barobot.common.constant.Constant;
 import com.barobot.gui.dataobjects.Engine;
 import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
-import com.barobot.other.Android;
 
 public class BarobotActivity extends BarobotMain {
 	private WakeLock wakeLock;

@@ -54,6 +54,7 @@ public class DebugTabCommands extends Fragment {
 
 		Map<Integer, String> buttonToCommand = new HashMap<Integer, String>();
 
+
 		buttonToCommand.put( R.id.max_z, "max_z" );
 		buttonToCommand.put( R.id.min_z, "min_z" );
 		buttonToCommand.put( R.id.max_x, "max_x" );
@@ -111,7 +112,8 @@ public class DebugTabCommands extends Fragment {
 				R.id.reset_database,
 				R.id.firmware_download,
 				R.id.firmware_download_manual,
-				R.id.new_robot_id
+				R.id.new_robot_id,
+				R.id.force_app_update
 		};
 		for(int i =0; i<buttons.length;i++){
 			View w = rootView.findViewById(buttons[i]);

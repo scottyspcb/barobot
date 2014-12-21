@@ -15,6 +15,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.util.Log;
 
+import com.barobot.android.Android;
 import com.barobot.common.Initiator;
 import com.barobot.common.constant.Constant;
 import com.barobot.common.interfaces.HardwareState;
@@ -24,7 +25,6 @@ import com.barobot.gui.dataobjects.StartupException;
 import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
 import com.barobot.hardware.serial.AndroidLogger;
-import com.barobot.other.Android;
 import com.barobot.other.CameraManager;
 import com.barobot.parser.utils.Decoder;
 import com.barobot.parser.utils.Interval;

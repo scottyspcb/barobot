@@ -20,7 +20,6 @@ import com.barobot.common.interfaces.HardwareState;
 import com.barobot.common.interfaces.StateListener;
 import com.barobot.gui.database.BarobotData;
 import com.barobot.gui.dataobjects.Engine;
-import com.barobot.other.Android;
 import com.barobot.parser.utils.Decoder;
 
 public class AndroidBarobotState implements HardwareState{

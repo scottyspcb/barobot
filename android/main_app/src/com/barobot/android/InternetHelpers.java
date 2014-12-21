@@ -1,4 +1,4 @@
-package com.barobot.other;
+package com.barobot.android;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -245,7 +245,7 @@ public class InternetHelpers {
 		dx.start();    
 	}
 
-	static String downloadRobotId() {
+	public static String downloadRobotId() {
 		HttpClient httpclient	= new DefaultHttpClient();
 		HttpPost httppost		= new HttpPost(Constant.robot_id_manager);
 		String ip				= Android.getLocalIpAddress();

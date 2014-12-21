@@ -11,16 +11,16 @@ import org.orman.mapper.ModelQuery;
 import org.orman.sql.C;
 
 import com.barobot.AppInvoker;
+import com.barobot.android.Android;
 import com.barobot.common.Initiator;
 import com.barobot.common.constant.Constant;
 import com.barobot.gui.dataobjects.Liquid_t;
 import com.barobot.gui.dataobjects.Recipe_t;
 import com.barobot.gui.dataobjects.Type;
-import com.barobot.gui.utils.LangTool;
 import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
-import com.barobot.other.Android;
 import com.barobot.other.Audio;
+import com.barobot.other.LangTool;
 import com.barobot.parser.Queue;
 import com.barobot.parser.message.AsyncMessage;
 import com.barobot.parser.message.Mainboard;
@@ -40,7 +40,6 @@ public class CommandRoute extends EmptyRoute {
 		use_raw_output = true;
 		this.init();
 	}
-
 	private class command_listener {
 		public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 				int posx, int posy) {
@@ -48,7 +47,6 @@ public class CommandRoute extends EmptyRoute {
 			return false;
 		}
 	}
-
 	private static Map<String, command_listener> index = new HashMap<String, command_listener>();
 
 	private static Audio getAudio() {
@@ -380,7 +378,7 @@ public class CommandRoute extends EmptyRoute {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
-				barobot.pour(q, 20, -1, true);
+				barobot.pour(q, 20, -1, true, false);
 				return true;
 			}
 		});
@@ -815,84 +813,84 @@ public class CommandRoute extends EmptyRoute {
 		index.put("command_bottle_0", new command_listener() {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,int posx, int posy) {
-				Android.pourFromBottle( 0, q );
+				Android.pourFromBottle( 0, q, false );
 				return true;
 			}
 		});
 		index.put("command_bottle_1", new command_listener() {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,int posx, int posy) {
-				Android.pourFromBottle( 1, q );
+				Android.pourFromBottle( 1, q, false );
 				return true;
 			}
 		});	
 		index.put("command_bottle_2", new command_listener() {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,int posx, int posy) {
-				Android.pourFromBottle( 2, q );
+				Android.pourFromBottle( 2, q, false );
 				return true;
 			}
 		});		
 		index.put("command_bottle_3", new command_listener() {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,int posx, int posy) {
-				Android.pourFromBottle( 3, q );
+				Android.pourFromBottle( 3, q, false );
 				return true;
 			}
 		});	
 		index.put("command_bottle_4", new command_listener() {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,int posx, int posy) {
-				Android.pourFromBottle( 4, q );
+				Android.pourFromBottle( 4, q, false );
 				return true;
 			}
 		});	
 		index.put("command_bottle_5", new command_listener() {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,int posx, int posy) {
-				Android.pourFromBottle( 5, q );
+				Android.pourFromBottle( 5, q, false );
 				return true;
 			}
 		});	
 		index.put("command_bottle_6", new command_listener() {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,int posx, int posy) {
-				Android.pourFromBottle( 6, q );
+				Android.pourFromBottle( 6, q, false );
 				return true;
 			}
 		});		
 		index.put("command_bottle_7", new command_listener() {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,int posx, int posy) {
-				Android.pourFromBottle( 7, q );
+				Android.pourFromBottle( 7, q, false );
 				return true;
 			}
 		});		
 		index.put("command_bottle_8", new command_listener() {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,int posx, int posy) {
-				Android.pourFromBottle( 8, q );
+				Android.pourFromBottle( 8, q, false );
 				return true;
 			}
 		});	
 		index.put("command_bottle_8", new command_listener() {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,int posx, int posy) {
-				Android.pourFromBottle( 8, q );
+				Android.pourFromBottle( 8, q, false );
 				return true;
 			}
 		});		
 		index.put("command_bottle_10", new command_listener() {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,int posx, int posy) {
-				Android.pourFromBottle( 10, q );
+				Android.pourFromBottle( 10, q, false );
 				return true;
 			}
 		});	
 		index.put("command_bottle_11", new command_listener() {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,int posx, int posy) {
-				Android.pourFromBottle( 11, q );
+				Android.pourFromBottle( 11, q, false );
 				return true;
 			}
 		});	

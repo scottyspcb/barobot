@@ -161,7 +161,7 @@ public class ServoYActivity extends BlankWizardActivity {
 	private void countNeutral() {
 		int valuefront	= Decoder.toInt( ""+wizard_servoy_front_pos.getText(), -1);
 		int valueback	= Decoder.toInt( ""+wizard_servoy_back_pos.getText(), -1);
-		neutral	= (valuefront + valueback*7) / 8;
+		neutral	= (valuefront + valueback*5) / 6;
 		barobot.state.set("SERVOY_BACK_NEUTRAL", neutral);
 	}
 

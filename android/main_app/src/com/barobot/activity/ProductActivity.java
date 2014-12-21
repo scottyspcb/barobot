@@ -14,7 +14,7 @@ import com.barobot.gui.dataobjects.Product;
 import com.barobot.gui.dataobjects.Slot;
 import com.barobot.gui.dataobjects.Type;
 import com.barobot.gui.utils.CapacityProductWrapper;
-import com.barobot.gui.utils.LangTool;
+import com.barobot.other.LangTool;
 
 import android.os.AsyncTask;
 import android.os.Bundle;

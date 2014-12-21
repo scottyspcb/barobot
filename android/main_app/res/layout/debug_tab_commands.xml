@@ -242,8 +242,15 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="RESETBUS2" />
-            </LinearLayout>
+                
+                 <Button
+                    android:id="@+id/force_app_update"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Force APP update" />
 
+            </LinearLayout>
+ 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" >

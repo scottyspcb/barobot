@@ -5,9 +5,9 @@ import org.orman.mapper.ModelQuery;
 import org.orman.sql.C;
 
 import com.barobot.gui.dataobjects.Translated_name;
-import com.barobot.gui.utils.LangTool;
 import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
+import com.barobot.other.LangTool;
 import com.barobot.web.route.EmptyRoute;
 import com.barobot.web.server.SofaServer;
 import com.x5.template.Theme;
