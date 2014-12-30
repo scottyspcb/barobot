@@ -192,7 +192,7 @@ public class CommandRoute extends EmptyRoute {
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
 				barobot.z.moveDown(q, true);
-				barobot.moveY(q, (posy - 1000), true);
+				barobot.y.move(q, (posy - 1000), true);
 				return true;
 			}
 		});
@@ -202,7 +202,7 @@ public class CommandRoute extends EmptyRoute {
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
 				barobot.z.moveDown(q, true);
-				barobot.moveY(q, (posy - 100), true);
+				barobot.y.move(q, (posy - 100), true);
 				return true;
 			}
 		});
@@ -212,7 +212,7 @@ public class CommandRoute extends EmptyRoute {
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
 				barobot.z.moveDown(q, true);
-				barobot.moveY(q, (posy - 10), true);
+				barobot.y.move(q, (posy - 10), true);
 				return true;
 			}
 		});
@@ -222,7 +222,7 @@ public class CommandRoute extends EmptyRoute {
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
 				barobot.z.moveDown(q, true);
-				barobot.moveY(q, (posy + 10), true);
+				barobot.y.move(q, (posy + 10), true);
 				return true;
 			}
 		});
@@ -232,7 +232,7 @@ public class CommandRoute extends EmptyRoute {
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
 				barobot.z.moveDown(q, true);
-				barobot.moveY(q, (posy + 100), true);
+				barobot.y.move(q, (posy + 100), true);
 				return true;
 			}
 		});
@@ -242,7 +242,7 @@ public class CommandRoute extends EmptyRoute {
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
 				barobot.z.moveDown(q, true);
-				barobot.moveY(q, (posy + 1000), true);
+				barobot.y.move(q, (posy + 1000), true);
 				return true;
 			}
 		});
@@ -250,8 +250,8 @@ public class CommandRoute extends EmptyRoute {
 		index.put("command_go_to_neutral_y", new command_listener() {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,int posx, int posy) {
-				barobot.moveY(q, barobot.state.get("SERVOY_BACK_NEUTRAL", "0"));
-				barobot.disabley( q );
+				barobot.y.move(q, barobot.state.get("SERVOY_BACK_NEUTRAL", "0"));
+				barobot.y.disable( q );
 				return true;
 			}
 		});
@@ -261,9 +261,9 @@ public class CommandRoute extends EmptyRoute {
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
 				barobot.z.moveDown(q, true);
-				barobot.moveY(q, 900, false);
-				barobot.moveY(q, 2100, false);
-				barobot.moveY(q, 900, false);
+				barobot.y.move(q, 900, false);
+				barobot.y.move(q, 2100, false);
+				barobot.y.move(q, 900, false);
 				return true;
 			}
 		});
@@ -304,7 +304,7 @@ public class CommandRoute extends EmptyRoute {
 				int SERVOY_FRONT_POS = barobot.state.getInt("SERVOY_FRONT_POS",
 						1000);
 
-				barobot.moveY(q, SERVOY_FRONT_POS, true);
+				barobot.y.move(q, SERVOY_FRONT_POS, true);
 				int lengthx4 = barobot.state.getInt("LENGTHX", 600);
 				for (int i = 0; i < 10; i++) {
 					// virtualComponents.moveX( q, (lengthx4/4) );
@@ -329,12 +329,12 @@ public class CommandRoute extends EmptyRoute {
 						0);
 
 				for (int i = 0; i < 10; i++) {
-					barobot.moveY(q, SERVOY_FRONT_POS2, false);
-					barobot.moveY(q, SERVOY_BACK_POS, false);
+					barobot.y.move(q, SERVOY_FRONT_POS2, false);
+					barobot.y.move(q, SERVOY_BACK_POS, false);
 				}
 
-				barobot.moveY(q, SERVOY_FRONT_POS2, false);
-				barobot.disabley( q );
+				barobot.y.move(q, SERVOY_FRONT_POS2, false);
+				barobot.y.disable( q );
 				return true;
 			}
 		});
@@ -360,7 +360,7 @@ public class CommandRoute extends EmptyRoute {
 				barobot.z.moveDown(q, true);
 				int SERVOY_FRONT_POS3 = barobot.state.getInt(
 						"SERVOY_FRONT_POS", 1000);
-				barobot.moveY(q, SERVOY_FRONT_POS3, true);
+				barobot.y.move(q, SERVOY_FRONT_POS3, true);
 				int lengthx5 = barobot.state.getInt("LENGTHX", 600);
 				for (int f = 0; f < 20;) {
 					int left = generator2.nextInt((int) (lengthx5 / 100 / 2));
@@ -419,7 +419,7 @@ public class CommandRoute extends EmptyRoute {
 					int posx, int posy) {
 				barobot.z.moveDown(q, true);
 				int SERVOY_BACK_POS2 = barobot.state.getInt("SERVOY_BACK_POS",1000);
-				barobot.moveY(q, SERVOY_BACK_POS2, true);
+				barobot.y.move(q, SERVOY_BACK_POS2, true);
 				return true;
 			}
 		});
@@ -443,7 +443,7 @@ public class CommandRoute extends EmptyRoute {
 				barobot.z.moveDown(q, true);
 				int SERVOY_FRONT_POS5 = barobot.state.getInt(
 						"SERVOY_FRONT_POS", 1000);
-				barobot.moveY(q, SERVOY_FRONT_POS5, true);
+				barobot.y.move(q, SERVOY_FRONT_POS5, true);
 				return true;
 			}
 		});
@@ -478,7 +478,7 @@ public class CommandRoute extends EmptyRoute {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
-				barobot.disabley( q );
+				barobot.y.disable( q );
 				return true;
 			}
 		});
@@ -705,7 +705,7 @@ public class CommandRoute extends EmptyRoute {
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
 
-				barobot.kalibrcja( q );
+				barobot.calibration( q );
 				return true;
 			}
 		});

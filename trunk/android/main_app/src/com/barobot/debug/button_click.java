@@ -7,7 +7,6 @@ import java.util.Date;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.net.Uri;
 import android.os.Environment;
 import android.util.Log;
 import android.view.View;
@@ -25,6 +24,7 @@ import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
 import com.barobot.other.UpdateManager;
 import com.barobot.parser.Queue;
+
 public class button_click implements OnClickListener{
 	private Activity dbw;
 	public button_click(Activity debugWindow){
