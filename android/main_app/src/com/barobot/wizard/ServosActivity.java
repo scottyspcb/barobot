@@ -117,12 +117,12 @@ public class ServosActivity extends BlankWizardActivity {
 			case R.id.wizard_servos_left:
 				tb.setChecked(false);
 				barobot.z.moveDown(q, true);
-				barobot.driver_x.moveTo(q, (posx - 2000));
+				barobot.x.moveTo(q, (posx - 2000));
 				break;
 			case R.id.wizard_servos_right:
 				tb.setChecked(false);
 				barobot.z.moveDown(q, true);
-				barobot.driver_x.moveTo(q, (posx + 2000));
+				barobot.x.moveTo(q, (posx + 2000));
 				break;
 			default:
 				tb.setChecked(false);

@@ -145,7 +145,7 @@ public class DebugTabCommands extends Fragment {
 			}	
 		}
 
-		analog_list.put("POSX", ""+barobot.driver_x.getSPos());
+		analog_list.put("POSX", ""+barobot.x.getSPos());
 		analog_list.put("POSY", ""+state.get( "POSY","0"));
 		analog_list.put("POSZ", ""+state.getInt( "POSZ",0));		
 	
