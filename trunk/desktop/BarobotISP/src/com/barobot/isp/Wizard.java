@@ -27,8 +27,8 @@ public class Wizard {
 	public void findStops(Hardware hw) {
 		Queue q = hw.getQueue();
 		hw.connectIfDisconnected();
-		hw.barobot.driver_x.moveTo( q, 100 );
-		hw.barobot.driver_x.moveTo( q, 1000 );	
+		hw.barobot.x.moveTo( q, 100 );
+		hw.barobot.x.moveTo( q, 1000 );	
 		q.addWait(5000 );
 	}
 

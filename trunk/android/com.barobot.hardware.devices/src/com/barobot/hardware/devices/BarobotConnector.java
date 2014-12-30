@@ -21,7 +21,7 @@ import com.barobot.parser.utils.Decoder;
 public class BarobotConnector {
 	public boolean ledsReady	= false;
 	public static boolean pureCrystal = false;
-	public MotorDriver driver_x	= null;
+
 	public Mainboard mb			= null;
 	public Queue main_queue		= null;
 //	public Servo driver_y		= null;
@@ -38,6 +38,7 @@ public class BarobotConnector {
 	public Weight weight				= new Weight();
 	public Z z							= new Z();
 	public Y y							= new Y();
+	public MotorDriver x				= null;
 
 	public BarobotConnector(HardwareState state ){
 		this.state		= state;
@@ -48,7 +49,7 @@ public class BarobotConnector {
 		}
 		this.loadDefaults();
 		this.mb			= new Mainboard( state );
-		this.driver_x	= new MotorDriver( state );
+		this.x	= new MotorDriver( state );
 	//	this.driver_y	= new Servo( state, "Y" );
 	//	this.driver_z	= new Servo( state, "Z" );
 		this.main_queue = new Queue( mb );
@@ -159,7 +160,7 @@ public class BarobotConnector {
 		main_queue.destroy();
 		mb.destroy();
 		mb				= null;
-		driver_x		= null;
+		x		= null;
 	//	driver_y		= null;
 	//	driver_z		= null;
 		state			= null;
@@ -256,7 +257,7 @@ public class BarobotConnector {
 			}
 		});
 		q.addWait( 100 );
-		driver_x.moveTo( q, 20000, state.getInt("DRIVER_CALIB_X_SPEED", 0 ) );		// go down
+		x.moveTo( q, 20000, state.getInt("DRIVER_CALIB_X_SPEED", 0 ) );		// go down
 		q.addWait( 200 );
 		q.add( new AsyncMessage( true ) {
 			@Override
@@ -267,7 +268,7 @@ public class BarobotConnector {
 				return null;
 			}
 		} );
-		driver_x.moveTo( q, -20000);
+		x.moveTo( q, -20000);
 		q.add( new AsyncMessage( true ) {
 			@Override
 			public Queue run(Mainboard dev, Queue queue) {
@@ -303,7 +304,7 @@ public class BarobotConnector {
 			@Override
 			public Queue run(Mainboard dev, Queue queue) {
 				this.name		= "check position";
-				int posx		= driver_x.getSPos();		// czy ja juz jestem na tej pozycji?	
+				int posx		= x.getSPos();		// czy ja juz jestem na tej pozycji?	
 			//	int posz		= state.getInt("POSZ", 0 );
 				int sposx		= state.getInt("POS_START_X", 0 );		// tu mam byc
 
@@ -315,7 +316,7 @@ public class BarobotConnector {
 				}*/
 				y.moveToFront( q2 );
 				if(posx != sposx ){
-					driver_x.moveTo( q2, sposx);
+					x.moveTo( q2, sposx);
 					doHoming( q2, false );
 				}
 				z.disable(q2);
@@ -367,8 +368,8 @@ public class BarobotConnector {
 					z.moveDown( q2, true );
 					if( always || need_homing ){
 						if(!thisIsMax){
-							int newSpos = driver_x.getSPos() + 100;
-							driver_x.moveTo(q2, newSpos);
+							int newSpos = x.getSPos() + 100;
+							x.moveTo(q2, newSpos);
 							//int poshx = driver_x.getHardwarePos();
 						//	q2.add("X"+ (poshx+100) +","+ BarobotConnector.this.driver_x.defaultSpeed, true);	// +100
 						//	q2.addWait(10);
@@ -443,7 +444,7 @@ public class BarobotConnector {
 			@Override
 			public Queue run(Mainboard dev, Queue queue) {
 				this.name	= "check position";
-				int cx		= driver_x.getSPos();		// czy ja juz jestem na tej pozycji?	
+				int cx		= x.getSPos();		// czy ja juz jestem na tej pozycji?	
 				int cy		= state.getInt("POSY", 0 );
 				int tx 		= getBottlePosX( num );
 				int ty  	= getBottlePosY( num );
@@ -461,14 +462,14 @@ public class BarobotConnector {
 			//		q2.addWait( Constant.SERVOY_REPEAT_TIME );
 					type = 1;
 				}else if(cx != tx && cy == ty && ty <= SERVOY_HFRONT_POS ){	// change X, Y = front
-					driver_x.moveTo( q2, tx);
+					x.moveTo( q2, tx);
 					type = 2;
 				}else if(cx != tx && cy != ty && ty <= SERVOY_HFRONT_POS  ){	// change X and Y and target = front
 					y.move( q2, ty, disableOnReady );
-					driver_x.moveTo( q2, tx );
+					x.moveTo( q2, tx );
 					type = 3;
 				}else if(cx != tx && cy < ty && cy <= SERVOY_HFRONT_POS  ){	// change X and Y and current = front, target = back
-					driver_x.moveTo( q2, tx );
+					x.moveTo( q2, tx );
 					y.move( q2, ty, disableOnReady );
 					type = 4;
 				}else if(cx == tx && cy != ty ){		// change Y
@@ -477,7 +478,7 @@ public class BarobotConnector {
 				}else{									// (change X and Y ) or (change X and Y is back)
 					int SERVOY_BACK_NEUTRAL = state.getInt("SERVOY_BACK_NEUTRAL", 0 );
 					y.move( q2, SERVOY_BACK_NEUTRAL, true);
-					driver_x.moveTo( q2, tx );
+					x.moveTo( q2, tx );
 					y.move( q2, ty, disableOnReady );
 				}
 				Initiator.logger.i("moveToBottle","type"+ type);
@@ -670,7 +671,7 @@ public class BarobotConnector {
 		if( lastSeenRobotTimestamp == 0 ){
 			return false;
 		}
-		if( driver_x == null ){
+		if( x == null ){
 			return false;
 		}
 		if( !robot_id_ready ){
@@ -982,7 +983,7 @@ public class BarobotConnector {
 		public static final int MAYBE_GLASS =2;
 		public static final int NEW_GLASS = 32;
 		public static final int GLASS = 64;
-		
+
 		int down_limit = 1000;
 		int maybe_counter = 0;
 		int min_diff_down = 0;

@@ -79,7 +79,7 @@ public class CommandRoute extends EmptyRoute {
 		Queue q			= new Queue();
 		BarobotConnector barobot = Arduino.getInstance().barobot;
 		Queue mq		= barobot.main_queue;
-		int posx		= barobot.driver_x.getSPos();
+		int posx		= barobot.x.getSPos();
 		int posy		= barobot.state.getInt("POSY", 0 );
 		command_listener listener = index.get(command);
 		if(listener!=null){
@@ -131,7 +131,7 @@ public class CommandRoute extends EmptyRoute {
 				// Log.i("nextpos-10000", "old: "+posx + " next: "+ ( posx
 				// -10000));
 				barobot.z.moveDown(q, true);
-				barobot.driver_x.moveTo(q, (posx - 10000));
+				barobot.x.moveTo(q, (posx - 10000));
 				return true;
 			}
 		});
@@ -143,7 +143,7 @@ public class CommandRoute extends EmptyRoute {
 				// Log.i("nextpos-1000", "old: "+posx + " next: "+ ( posx
 				// -1000));
 				barobot.z.moveDown(q, true);
-				barobot.driver_x.moveTo(q, (posx - 1000));
+				barobot.x.moveTo(q, (posx - 1000));
 				return true;
 			}
 		});
@@ -153,7 +153,7 @@ public class CommandRoute extends EmptyRoute {
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
 				barobot.z.moveDown(q, true);
-				barobot.driver_x.moveTo(q, (posx - 100));
+				barobot.x.moveTo(q, (posx - 100));
 				return true;
 			}
 		});
@@ -162,7 +162,7 @@ public class CommandRoute extends EmptyRoute {
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
 				barobot.z.moveDown(q, true);
-				barobot.driver_x.moveTo(q, (posx + 100));
+				barobot.x.moveTo(q, (posx + 100));
 				return true;
 			}
 		});
@@ -172,7 +172,7 @@ public class CommandRoute extends EmptyRoute {
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
 				barobot.z.moveDown(q, true);
-				barobot.driver_x.moveTo(q, (posx + 1000));
+				barobot.x.moveTo(q, (posx + 1000));
 				return true;
 			}
 		});
@@ -182,7 +182,7 @@ public class CommandRoute extends EmptyRoute {
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
 				barobot.z.moveDown(q, true);
-				barobot.driver_x.moveTo(q, (posx + 10000));
+				barobot.x.moveTo(q, (posx + 10000));
 				return true;
 			}
 		});
@@ -309,9 +309,9 @@ public class CommandRoute extends EmptyRoute {
 				for (int i = 0; i < 10; i++) {
 					// virtualComponents.moveX( q, (lengthx4/4) );
 					// virtualComponents.moveX( q, (lengthx4/4 * 3) );
-					barobot.driver_x.moveTo(q, 0);
+					barobot.x.moveTo(q, 0);
 					q.addWait(50);
-					barobot.driver_x.moveTo(q, lengthx4);
+					barobot.x.moveTo(q, lengthx4);
 				}
 				q.add("DX", true);
 				return true;
@@ -366,8 +366,8 @@ public class CommandRoute extends EmptyRoute {
 					int left = generator2.nextInt((int) (lengthx5 / 100 / 2));
 					int right = generator2.nextInt((int) (lengthx5 / 100 / 2));
 					right += lengthx5 / 100 / 2;
-					barobot.driver_x.moveTo(q, (left * 100));
-					barobot.driver_x.moveTo(q, (right * 100));
+					barobot.x.moveTo(q, (left * 100));
+					barobot.x.moveTo(q, (right * 100));
 					f = f + 2;
 				}
 				return true;
@@ -408,7 +408,7 @@ public class CommandRoute extends EmptyRoute {
 					int posx, int posy) {
 				barobot.z.moveDown(q, true);
 				int lengthx2 = barobot.state.getInt("LENGTHX", 600);
-				barobot.driver_x.moveTo(q, posx + lengthx2);
+				barobot.x.moveTo(q, posx + lengthx2);
 				return true;
 			}
 		});
@@ -430,7 +430,7 @@ public class CommandRoute extends EmptyRoute {
 					int posx, int posy) {
 				barobot.z.moveDown(q, true);
 				int lengthx3 = barobot.state.getInt("LENGTHX", 600);
-				barobot.driver_x.moveTo(q, -lengthx3);
+				barobot.x.moveTo(q, -lengthx3);
 				return true;
 			}
 		});
@@ -627,8 +627,8 @@ public class CommandRoute extends EmptyRoute {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
-				barobot.driver_x.setMargin(0);
-				barobot.driver_x.setHPos(0);
+				barobot.x.setMargin(0);
+				barobot.x.setHPos(0);
 				return true;
 			}
 		});
@@ -789,11 +789,11 @@ public class CommandRoute extends EmptyRoute {
 				barobot.lightManager.carret_color( q_ready, 0, 255, 0 );
 				q_ready.addWait(1000);
 				barobot.lightManager.carret_color( q_ready, 0, 100, 0 );
-				barobot.driver_x.moveTo( q_ready, barobot.driver_x.getSPos() +100 );
+				barobot.x.moveTo( q_ready, barobot.x.getSPos() +100 );
 
 				final Queue q_error		= new Queue();	
 				barobot.lightManager.carret_color( q_error, 255, 0, 0 );
-				barobot.driver_x.moveTo( q_error, barobot.driver_x.getSPos() -100 );
+				barobot.x.moveTo( q_error, barobot.x.getSPos() -100 );
 				
 				
 				boolean igr		= barobot.weight.isGlassReady();
@@ -902,13 +902,13 @@ public class CommandRoute extends EmptyRoute {
 				for(int i=0;i<5;i++){
 					barobot.doHoming(q, true);
 				}
-				barobot.driver_x.moveTo(q, 1000);
+				barobot.x.moveTo(q, 1000);
 				for(int i=0;i<90;i++){
 					q.add("X"+pos, true);
 					pos +=100;
 				}
-				barobot.driver_x.moveTo(q, 1000);
-				barobot.driver_x.moveTo(q, 10000);
+				barobot.x.moveTo(q, 1000);
+				barobot.x.moveTo(q, 10000);
 
 				for(int i=0;i<90;i++){
 					q.add("RESET2", true);

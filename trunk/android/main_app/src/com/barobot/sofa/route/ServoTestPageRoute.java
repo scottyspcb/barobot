@@ -224,7 +224,7 @@ public class ServoTestPageRoute extends EmptyRoute {
 		int dxs		= Decoder.toInt(parms.get("DRIVER_X_SPEED") );
 
 		BarobotConnector barobot	= Arduino.getInstance().barobot;
-		int poshx = barobot.driver_x.getHardwarePos();
+		int poshx = barobot.x.getHardwarePos();
 		int newpos = add ? poshx+ xpos1 : poshx - xpos1;
 
 		q.add("X"+ (newpos) +","+ dxs, true);
