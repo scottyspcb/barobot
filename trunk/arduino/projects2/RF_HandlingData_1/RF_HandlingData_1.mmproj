@@ -1,0 +1,14 @@
+<mm_project serial_port="COM1" board="!Barobot MB 16 MHz ATmega328+xtal [Optiboot]" programmer="" includePaths="" libPaths="" libs="" default="no" useCodeAutomation="yes" linkPrintfVersion="1" serialPortSpeed="" >
+  <files>
+    <file name="RF_HandlingData_1_main.h" open="no" />
+    <file name="RF_HandlingData_1.cpp" open="no" />
+  </files>
+  <extras>
+  </extras>
+  <externals>
+    <external name="C:\PROG\arduino\libraries\SPI\SPI.cpp" />
+    <external name="C:\PROG\arduino\libraries\SPI\SPI.h" />
+    <external name="C:\PROG\arduino\libraries\RF24\RF24.h" />
+    <external name="C:\PROG\arduino\libraries\RF24\RF24.cpp" />
+  </externals>
+</mm_project>
