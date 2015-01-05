@@ -194,12 +194,7 @@ public class Queue {
 		}
 	}
 	public void addWithDefaultReader( String command) {
-		AsyncMessage msg = new AsyncMessage( command, true ){
-			@Override
-			public boolean isRet(String result, Queue q) {
-				return false;
-			}
-		};
+		AsyncMessage msg = new AsyncMessage( command, true );
 		this.add(msg);
 	}
 	public void add( String command, boolean blocking) {

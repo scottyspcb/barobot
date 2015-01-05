@@ -65,18 +65,6 @@ public class MainPage extends EmptyRoute{
 
           } );
         action_chunk.set("devices", new String[]{
-        		"Carret",
-        		"Mainboard",
-        		"Upanel",
-        		"Load Cell",
-        		"Stepper X",
-        		"Servo Y",
-        		"Servo Z",
-        		"Hall X",
-        		"Hall Y",
-        		"Main Temp sensor",
-        		"Carret Temp sensor",
-        		"Temp sensor",
         		"Current Sensor X",
         		"Current Sensor Y",
         		"Current Sensor Z",	

@@ -53,7 +53,7 @@ public class OptionsActivity extends BarobotMain {
 			serverIntent = new Intent(this, RecipeSetupActivity.class);
 			break;
 		case R.id.options_stop:
-			CommandRoute.runCommand("command_clear_queue");
+			CommandRoute.runCommand("command_stop_now");
 			break;
 		case R.id.options_advanced_button:
 			serverIntent  = new Intent(this, DebugActivity.class);
@@ -89,7 +89,6 @@ public class OptionsActivity extends BarobotMain {
 	                	a.stop();
 	                    dialog.cancel();
 	                    barobot.main_queue.clear();
-	                    barobot.main_queue.unlock();
 	                }
 	            });
 	            AlertDialog alert11 = builder1.create();

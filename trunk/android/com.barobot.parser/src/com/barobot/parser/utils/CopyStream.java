@@ -11,7 +11,6 @@ public class CopyStream extends Thread {
 	  CopyStream(InputStream in) {
 	    this(in, System.out);
 	  }
-
 	  CopyStream(OutputStream out) {
 	    this(System.in, out);
 	  }

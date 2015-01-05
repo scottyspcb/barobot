@@ -77,12 +77,10 @@ public class DebugTabCommands extends Fragment {
 		buttonToCommand.put( R.id.reset_margin, "reset_margin" );
 		buttonToCommand.put( R.id.analog_temp, "analogs" );
 		buttonToCommand.put( R.id.clear_queue, "clear_queue" );
-		buttonToCommand.put( R.id.reset_serial, "reset_serial" );
+	//	buttonToCommand.put( R.id.reset_serial, "reset_serial" );
+		buttonToCommand.put( R.id.reset_serial, "command_renew_serial" );
+
 		buttonToCommand.put( R.id.wait_for_cup, "wait_for_cup" );
-		
-		buttonToCommand.put( R.id.rb2, "rb2" );
-
-
 		buttonToCommand.put( R.id.set_x_1000, "set_x_1000" );
 		buttonToCommand.put( R.id.set_x_100, "set_x_100" );
 		buttonToCommand.put( R.id.set_x_10, "set_x_10" );

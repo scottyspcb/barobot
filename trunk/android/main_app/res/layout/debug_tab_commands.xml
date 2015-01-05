@@ -237,12 +237,6 @@
                     android:layout_height="wrap_content"
                     android:text="RESET4" />
 
-                <Button
-                    android:id="@+id/rb2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="RESETBUS2" />
-                
                  <Button
                     android:id="@+id/force_app_update"
                     android:layout_width="wrap_content"

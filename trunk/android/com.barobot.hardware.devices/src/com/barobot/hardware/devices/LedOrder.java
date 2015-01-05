@@ -1,6 +1,7 @@
 package com.barobot.hardware.devices;
 
 import com.barobot.common.constant.Methods;
+import com.barobot.hardware.devices.i2c.I2C;
 import com.barobot.hardware.devices.i2c.Upanel;
 import com.barobot.parser.Queue;
 import com.barobot.parser.message.AsyncMessage;
@@ -11,20 +12,22 @@ public class LedOrder {
 	private Queue mq;
 	private int num = 0;
 	private BarobotConnector barobot;
+	public I2C i2c;
 
 	public LedOrder() {
+		i2c  		= new I2C();
 	}
-	// row		- rz¹d Back(3) lub Front(4)
-	// rowIndex	- kod rzêdu 0 - Back, 1 Front
+	// row		- rzï¿½d Back(3) lub Front(4)
+	// rowIndex	- kod rzï¿½du 0 - Back, 1 Front
 	// index	- numer upanelu kolejno liczony po butelkach od 0 czyli 0-11
-	// num		- numer upanelu liczony od pocz¹tku do konca rzedu i nastepnie przez drugi rzad
-	// inrow	- numer butelki kolejno w rzêdzie 0-5
+	// num		- numer upanelu liczony od poczï¿½tku do konca rzedu i nastepnie przez drugi rzad
+	// inrow	- numer butelki kolejno w rzï¿½dzie 0-5
 	// address	- adres i2c
 
 	public void asyncStart(BarobotConnector barobot, Queue q) {
 		this.mq		= q;
 		this.barobot = barobot;
-		barobot.i2c.clear();
+		i2c.clear();
 		LedOrder.this.findOrder( Upanel.BACK  );	
 		LedOrder.this.findOrder( Upanel.FRONT  );
 		//LedOrder.this.mq.show("LedOrder");
@@ -54,7 +57,7 @@ public class LedOrder {
 					u.setRow( row );	// first in row
 					u.setIndex( row );
 					u.setNumInRow( num );
-					barobot.i2c.add(u);
+					i2c.add(u);
 					System.out.println("UPANEL dla butelki "+ u.getBottleNum() 
 							+" o numerze: " + u.getNumInRow() 
 							+" w rzedzie: " + u.getRow()
@@ -116,7 +119,7 @@ public class LedOrder {
 					u2.setRow( u.getRow() );
 					u2.setNumInRow( num );
 					u2.isResetedBy(u);
-					barobot.i2c.add(u2);
+					i2c.add(u2);
 
 					System.out.println("UPANEL dla butelki "+ u2.getBottleNum() 
 							+" o numerze: " + u2.getNumInRow() 

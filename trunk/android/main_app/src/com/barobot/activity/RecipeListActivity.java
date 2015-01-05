@@ -145,13 +145,13 @@ public class RecipeListActivity extends BarobotMain{
 			Thread rr = new Thread(  new Runnable() {
 				 public void run() {
 					BarobotConnector barobot = Arduino.getInstance().barobot;
-					barobot.lightManager.turnOffLeds(barobot.main_queue);
 					Queue q = barobot.main_queue;
+					barobot.lightManager.turnOffLeds(q);
 					if(!q.isBusy() && q.length() > 2 ){
 						for(Entry<Integer, Integer> entry : usage.entrySet()) {
 							    Integer key = entry.getKey();
 							    Integer value = entry.getValue();
-							    barobot.bottleBacklight(q, key-1, value);
+							    barobot.lightManager.bottleBacklight(q, key-1, value);
 						}
 					}
 				 }

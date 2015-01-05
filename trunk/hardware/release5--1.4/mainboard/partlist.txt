@@ -1,0 +1,37 @@
+Partlist
+
+Exported from mainboard.sch at 2014-12-31 13:57:07
+
+EAGLE Version 5.11.0 Copyright (c) 1988-2010 CadSoft
+
+Part     Value          Device          Package      Library    Sheet
+
+ARK101                  AK300/4         AK300/4      con-ptr500 1
+C1       100uF          C-US050-030X075 C050-030X075 resistor   1
+C2       100uF          CPOL-EUE5-10.5  E5-10,5      rcl        1
+C102     1000uF         CPOL-EUE5-10.5  E5-10,5      rcl        1
+C107     1000uF         CPOL-EUE5-10.5  E5-10,5      rcl        1
+D1       1N5822         DIODE-DO27-15   DO27-15      diode      1
+D2       1N5822         DIODE-DO27-15   DO27-15      diode      1
+D103     SS34           BYS10           SOD106A      telefunken 1
+J101                    AK300/2         AK300/2      con-ptr500 1
+J102                    AK300/2         AK300/2      con-ptr500 1
+J103                    ML14            ML14         con-ml     1
+J104                    MA04-1          MA04-1       con-lstb   1
+J106                    MA04-1          MA04-1       con-lstb   1
+J107                    FE08-1          FE08         con-lsta   1
+J108                    FE08-1          FE08         con-lsta   1
+J112     22-27-2031-03  22-27-2031-03   6410-03      con-molex  1
+PAD1                    3,17/1,1        3,17/1,1     wirepad    1
+PAD3                    3,17/1,1        3,17/1,1     wirepad    1
+PAD4                    3,17/1,1        3,17/1,1     wirepad    1
+PAD101                  3,17/1,1        3,17/1,1     wirepad    1
+PAD102                  3,17/1,1        3,17/1,1     wirepad    1
+PAD103                  3,17/1,1        3,17/1,1     wirepad    1
+PAD104                  3,17/1,1        3,17/1,1     wirepad    1
+R1       240            R-EU_0207/12    0207/12      rcl        1
+R2       10k            R-EU_0207/12    0207/12      rcl        1
+R3       5,2k           R-EU_0207/12    0207/12      rcl        1
+R4       5,2k           R-EU_0207/12    0207/12      rcl        1
+R5       5,2k           R-EU_0207/12    0207/12      rcl        1
+X1                      AK300/3         AK300/3      con-ptr500 1

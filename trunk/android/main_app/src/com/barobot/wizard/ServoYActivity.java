@@ -158,6 +158,7 @@ public class ServoYActivity extends BlankWizardActivity {
 			break;
 		}
 	}
+
 	private void countNeutral() {
 		int valuefront	= Decoder.toInt( ""+wizard_servoy_front_pos.getText(), -1);
 		int valueback	= Decoder.toInt( ""+wizard_servoy_back_pos.getText(), -1);

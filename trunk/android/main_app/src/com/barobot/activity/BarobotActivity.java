@@ -80,7 +80,7 @@ public class BarobotActivity extends BarobotMain {
 	     */
 
 		BarobotConnector barobot = Arduino.getInstance().barobot;
-		if(barobot==null || barobot.state.getInt("ROBOT_CAN_MOVE", 0) == 0 ){
+		if(barobot==null || barobot.state.getInt("ROBOT_CAN_MOVE", 0) < Constant.WIZARD_VERSION ){
 			Intent serverIntent = new Intent(this, ValidatorActivity.class);
 			serverIntent.putExtra(RecipeListActivity.MODE_NAME, RecipeListActivity.Mode.Normal.ordinal());
 			serverIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);

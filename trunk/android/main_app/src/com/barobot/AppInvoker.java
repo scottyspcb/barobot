@@ -70,7 +70,7 @@ public class AppInvoker {
 			    }
 			};
 			arduino			= new Arduino( main );
-			arduino.onStart(main);
+			arduino.connect();
 
 			BarobotConnector barobot = arduino.barobot;
 			if(barobot.state.getInt("SSERVER", 0) > 0 ){

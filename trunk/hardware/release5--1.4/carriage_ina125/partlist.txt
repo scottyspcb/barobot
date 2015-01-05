@@ -1,0 +1,47 @@
+Partlist
+
+Exported from carret.sch at 2014-12-31 13:58:21
+
+EAGLE Version 5.11.0 Copyright (c) 1988-2010 CadSoft
+
+Part     Value          Device          Package      Library       Sheet
+
+C1       100n           C-US050-030X075 C050-030X075 resistor      1
+C2       1000uF         CPOL-EUE5-10.5  E5-10,5      rcl           1
+C3       100uF          CPOL-EUE3.5-8   E3,5-8       rcl           1
+C4       1000uF         CPOL-EUE5-10.5  E5-10,5      rcl           1
+C5       100n           C-US050-030X075 C050-030X075 resistor      1
+C6       100n           C-US050-030X075 C050-030X075 resistor      1
+C7       100n           C-US050-030X075 C050-030X075 resistor      1
+D1       1N5822         DIODE-DO27-15   DO27-15      diode         1
+D2       1N5822         DIODE-DO201-15  DO201-15     diode         1
+IC2      INA125P        INA125P         DIL16        burr-brown    1
+J1       WF03S-LF       22-27-2031-03   6410-03      con-molex     1
+J202                    AK300/4         AK300/4      con-ptr500    1
+J204     WF03S-LF       22-27-2031-03   6410-03      con-molex     1
+J205     WF03S-LF       22-27-2031-03   6410-03      con-molex     1
+J206     WF03S-LF       22-27-2031-03   6410-03      con-molex     1
+J207     WF03S-LF       22-27-2031-03   6410-03      con-molex     1
+J208     BH14S          ML14            ML14         con-ml        1
+JP0                     PINHD-1X1       1X01         pinhead       1
+JP2                     PINHD-1X2       1X02         pinhead       1
+JP6                     PINHD-1X1       1X01         pinhead       1
+JP7                     PINHD-1X1       1X01         pinhead       1
+JP12V                   PINHD-1X1       1X01         pinhead       1
+JPA1                    PINHD-1X1       1X01         pinhead       1
+JPA4                    PINHD-1X1       1X01         pinhead       1
+JPA5                    PINHD-1X1       1X01         pinhead       1
+JPD4                    PINHD-1X1       1X01         pinhead       1
+JPD6                    PINHD-1X1       1X01         pinhead       1
+JPD7                    PINHD-1X1       1X01         pinhead       1
+PAD201                  3,81/1,1        3,81/1,1     wirepad       1
+PAD202                  3,81/1,1        3,81/1,1     wirepad       1
+PAD203                  3,81/1,1        3,81/1,1     wirepad       1
+PAD204                  3,81/1,1        3,81/1,1     wirepad       1
+R1       150k           R-EU_0207/10    0207/10      rcl           1
+R2       220k           R-EU_0207/10    0207/10      rcl           1
+R8       1k             R-EU_0207/10    0207/10      rcl           1
+R132     240            R-EU_0207/10    0207/10      rcl           1
+R221     10k            R-EU_0207/10    0207/10      rcl           1
+SL2                     M12             12P          con-amp-quick 1
+SL4                     M12             12P          con-amp-quick 1

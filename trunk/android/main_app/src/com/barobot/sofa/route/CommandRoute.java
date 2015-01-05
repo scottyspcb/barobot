@@ -11,6 +11,7 @@ import org.orman.mapper.ModelQuery;
 import org.orman.sql.C;
 
 import com.barobot.AppInvoker;
+import com.barobot.BarobotMain;
 import com.barobot.android.Android;
 import com.barobot.common.Initiator;
 import com.barobot.common.constant.Constant;
@@ -113,6 +114,23 @@ public class CommandRoute extends EmptyRoute {
 				return true;
 			}
 		});
+		index.put("command_stop_now", new command_listener() {
+			@Override
+			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq, int posx, int posy) {
+
+				mq.clear();
+				barobot.x.stop( mq );
+				barobot.y.disable(mq);
+				barobot.z.disable( mq );
+
+				String command = "Q00"
+						+ String.format("%02x", 255 ) 
+						+ String.format("%02x", 0 )
+						+ String.format("%02x", 0  );
+				barobot.mb.send(command+"\n");
+				return true;
+			}
+		});
 
 		index.put("command_reset_serial", new command_listener() {
 			@Override
@@ -120,6 +138,15 @@ public class CommandRoute extends EmptyRoute {
 					int posx, int posy) {
 				mq.clear();
 				Arduino.getInstance().resetSerial();
+				return true;
+			}
+		});
+		index.put("command_renew_serial", new command_listener() {
+			@Override
+			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
+					int posx, int posy) {
+				mq.clear();
+				Arduino.getInstance().renewSerial();
 				return true;
 			}
 		});
@@ -938,5 +965,57 @@ public class CommandRoute extends EmptyRoute {
 				return true;
 			}
 		});
+
+		/*
+		index.put("command_power_off1", new command_listener() {
+			@Override
+			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,int posx, int posy) {
+				Android.powerOff(BarobotMain.getInstance());
+				return true;
+			}
+		});	
+		index.put("command_power_off2", new command_listener() {
+			@Override
+			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,int posx, int posy) {
+				Android.askForTurnOff2(BarobotMain.getInstance());
+				return true;
+			}
+		});	
+		
+
+		index.put("command_power_off3", new command_listener() {
+			@Override
+			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,int posx, int posy) {
+				Android.shutdown_sys();
+				return true;
+			}
+		});	
+		
+		index.put("command_power_off4", new command_listener() {
+			@Override
+			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,int posx, int posy) {				
+				Android.askForTurnOff(BarobotMain.getInstance());
+				return true;
+			}
+		});	
+		
+		index.put("command_power_off5", new command_listener() {
+			@Override
+			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,int posx, int posy) {
+				Android.prepareSleep(BarobotMain.getInstance());
+				return true;
+			}
+		});	
+		
+		index.put("command_read_other", new command_listener() {
+			@Override
+			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,int posx, int posy) {
+				Android.readCpuUsage();
+				Android.readMemUsage();
+				Android.readTabletTemp(q);
+				return true;
+			}
+		});	*/
+
 	}
 }

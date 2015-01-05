@@ -1,10 +1,6 @@
 package com.barobot.hardware;
 
 import java.io.IOException;
-import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-
 import android.app.Activity;
 
 import com.barobot.AppInvoker;
@@ -27,15 +23,14 @@ public class Arduino{
 	public boolean stop_autoconnect			= false;
 	public SerialInputListener listener;
 	public static boolean firmwareUpload	= false;
-	//private AndroidHardwareContext ahc;
-	//private Activity mainView;
 	public BarobotConnector barobot;
-	//public static BarobotConnector barobot;
 	private HardwareState state;
+	private Activity activity;
 	public static Arduino getInstance(){
 		return instance;
 	}
 	public Arduino(Activity main) {
+		this.activity	= main;
 		this.state		= new AndroidBarobotState(main);
 		this.barobot	= new BarobotConnector( state );
 		instance		= this;
@@ -58,13 +53,12 @@ public class Arduino{
 		return connection;
 	}
 
-	public void onStart(Activity mainView) {
-	//	this.mainView = mainView;
+	public void connect() {
 		if( connection != null ){
 			connection.close();
 			connection = null;
 		}
-		connection		= new Serial_wire2( mainView );
+		connection		= new Serial_wire2( this.activity );
 		connection.init();
 		connection.setSerialEventListener( new SerialEventListener() {
 			@Override
@@ -82,7 +76,6 @@ public class Arduino{
 		});
 		listener				= barobot.willReadFrom( connection );
 		barobot.willWriteThrough( connection );
-	//		prepareDebugConnection();
 		MyRetReader mrr			= new MyRetReader( barobot );
 		barobot.mb.setRetReader( mrr );
 	}
@@ -162,23 +155,23 @@ public class Arduino{
 
 	public boolean allowAutoconnect() {
 		if( debugConnection == null ){
-			//	Initiator.logger.i(Constant.TAG, "nie autoconnect bo juz połączony");
+			//	Initiator.logger.i(Constant.no, "nie autoconnect bo juz połączony");
 				return false;
 		}
 		if( debugConnection.isConnected() ){
-		//	Initiator.logger.i(Constant.TAG, "nie autoconnect bo juz połączony");
+		//	Initiator.logger.i(Constant.TAG, "no autoconnect bo juz połączony");
 			return false;
 		}
 		if( !debugConnection.implementAutoConnect() ){
-			Initiator.logger.i(Constant.TAG, "nie autoconnect bo !canAutoConnect");
+			Initiator.logger.i(Constant.TAG, "no autoconnect bo !canAutoConnect");
 			return false;
 		}
 		if( !debugConnection.canConnect() ){
-			Initiator.logger.i(Constant.TAG, "nie autoconnect bo !canConnect");
+			Initiator.logger.i(Constant.TAG, "no autoconnect bo !canConnect");
 			return false;
 		}
 		if (stop_autoconnect == true ) {
-			Initiator.logger.i(Constant.TAG, "nie autoconnect bo STOP");
+			Initiator.logger.i(Constant.TAG, "no autoconnect bo STOP");
 			return false;
 		}
 		return true;
@@ -206,7 +199,7 @@ public class Arduino{
 	}
     public synchronized void low_send( String command ){		// wyslij bez interpretacji
 		if(connection == null){
-			return;		// jestem w trakcie oczekiwania
+			return;
 		}
     	try {
 			connection.send(command);
@@ -225,7 +218,7 @@ public class Arduino{
 		}
     }
 	public void connectId(String address) {
-		Initiator.logger.i("Arduino.connectId", "autoconnect z: " +address);
+		Initiator.logger.i("Arduino.connectId", "autoconnect with: " +address);
 		if(debugConnection!=null){
 			debugConnection.connectToId(address);
 		}
@@ -234,5 +227,12 @@ public class Arduino{
 		if( connection != null ){
 			connection.reset();
 		}
+	}
+	public void renewSerial() {
+		if( connection != null ){
+			connection.destroy();
+			connection = null;
+		}
+		this.connect();
 	}
 }
