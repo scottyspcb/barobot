@@ -161,7 +161,7 @@ public class CreatorActivity extends BarobotMain{
 		}
 		final BarobotConnector barobot = Arduino.getInstance().barobot;
 		for (int i = 1; i<=12 ; i++){							// 1 - 12
-			barobot.bottleBacklight( barobot.main_queue, i-1, slot_nums[i] );		// 0 -11
+			barobot.lightManager.bottleBacklight( barobot.main_queue, i-1, slot_nums[i] );		// 0 -11
 		}
 	}
 
@@ -220,7 +220,7 @@ public class CreatorActivity extends BarobotMain{
 				new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog,int which) {
-						
+						setFullScreen();
 					}
 				}).show();
 	}

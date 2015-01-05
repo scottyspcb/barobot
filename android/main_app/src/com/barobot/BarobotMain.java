@@ -19,7 +19,6 @@ import com.barobot.android.InternetHelpers;
 import com.barobot.common.Initiator;
 import com.barobot.gui.dataobjects.StartupException;
 import com.barobot.hardware.Arduino;
-import com.barobot.hardware.devices.BarobotConnector;
 import com.barobot.other.LangTool;
 
 public class BarobotMain extends Activity {

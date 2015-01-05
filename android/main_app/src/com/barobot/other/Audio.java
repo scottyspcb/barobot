@@ -24,8 +24,7 @@ public class Audio implements OnSignalsDetectedListener{
 	public boolean sync		= false;
 	BarobotConnector barobot = null;
 	private boolean disabled	= false;
-//	Upanel[] up				= null;
-
+	
 	public void start( final BarobotConnector barobot2 ) {
 		this.barobot = barobot2;
 		Queue q = barobot.main_queue;
@@ -33,7 +32,6 @@ public class Audio implements OnSignalsDetectedListener{
 			@Override
 			public Queue run(Mainboard dev, Queue queue) {
 				this.name		= "turnoff";
-		//		up				= barobot.i2c.getUpanels();
 				Queue q = new Queue();
 				barobot.lightManager.turnOffLeds(q);
 				return q;
@@ -91,7 +89,6 @@ public class Audio implements OnSignalsDetectedListener{
 		if(disabled){
 			return;
 		}
-		
 		//final int current = (int) averageAbsValue;
 		final long current = (long) (averageAbsValue * (averageAbsValue));
 		if( current > max ){
@@ -113,31 +110,6 @@ public class Audio implements OnSignalsDetectedListener{
 			int val2	= Pwm.linear2log((int) b, 1 );
 			Queue q		= barobot.main_queue;
 			barobot.lightManager.setAllLeds(q, "44", val2, 0, 0, val2);
-
-			/*
-			final String command1f = ",11," + val2;
-			final String command2f = ",22," + val2;
-			final String command3f = ",44," + val2;
-			final String command4f = ",80," + val2;
-			final String command1b = ",11," + val1;
-			final String command2b = ",22," + val1;
-			final String command3b = ",44," + val1;
-			
-			q.add( "B"+ "10" +command4f, sync);
-			q.add( "B"+ up[1].getAddress() +command3f, sync);
-			q.add( "B"+ up[3].getAddress() +command2f, sync);
-			q.add( "B"+ up[5].getAddress() +command1f, sync);
-			q.add( "B"+ up[7].getAddress() +command1f, sync);
-			q.add( "B"+ up[9].getAddress() +command2f, sync);
-			q.add( "B"+ up[11].getAddress() +command3f, sync);
-
-			q.add( "B"+ up[0].getAddress() +command1b, sync);
-			q.add( "B"+ up[2].getAddress() +command1b, sync);
-			q.add( "B"+ up[4].getAddress() +command1b, sync);
-			q.add( "B"+ up[6].getAddress() +command1b, sync);
-			q.add( "B"+ up[8].getAddress() +command1b, sync);
-			q.add( "B"+ up[10].getAddress() +command1b, sync);
-			*/
 			min+=1;		// auto ajdist
 			max = (long) (max * 0.95);		// auto ajdist
 			last= norm;

@@ -13,9 +13,13 @@ public class LightManager {
 	public static int[] top_index 		= {10,23,11,22,12,21,13,20,14,19,15,18};			// numery butelek na numery ledow top
 	public static int[] bottom_index	= {-1,24,-1,25,-1,26,-1,27,-1,28,-1,29};			// numery butelek na numery ledow bottom
 	public static int[] bottom_leds		= {24,25,26,27,28,29};
+	public LedOrder lo;
 
 	public LightManager(BarobotConnector barobot2) {
 		this.barobot	= barobot2;
+		if(!barobot.newLeds){
+			lo = new LedOrder();
+		}
 	}
 
 	public void startDemo() {
@@ -261,11 +265,7 @@ public class LightManager {
 	}
 
 	public void scann_leds( Queue q ){
-		boolean isNewVersion = true;
-		if(isNewVersion){
-	
-		}else{
-			LedOrder lo = new LedOrder();
+		if(!barobot.newLeds){
 			lo.asyncStart(barobot, q);
 			q.add( new AsyncMessage( true ){
 				@Override	
@@ -275,7 +275,7 @@ public class LightManager {
 				@Override
 				public Queue run(Mainboard dev, Queue queue) {
 					System.out.println(" run scann_leds");
-					Upanel[] up		= barobot.i2c.getUpanels();
+					Upanel[] up		= lo.i2c.getUpanels();
 					for(int i =0; i<up.length;i++){
 						Upanel uu = up[i];
 						System.out.println("+Upanel "
@@ -285,7 +285,7 @@ public class LightManager {
 								//+ " o indeksie " + uu.getRow()
 								+ " ma adres " + uu.getAddress() );
 					}
-					barobot.i2c.reloadIndex();
+					lo.i2c.reloadIndex();
 					barobot.ledsReady	= true;
 					Queue q3	= new Queue();
 					setAllLeds( q3, "ff", 255, 255, 255, 255);
@@ -345,7 +345,7 @@ public class LightManager {
 				}
 			}
 		}else{
-			Upanel up	= barobot.i2c.getUpanelByBottle(bottleNum);
+			Upanel up	= lo.i2c.getUpanelByBottle(bottleNum);
 			if( up != null ){
 				barobot.mb.send("L"+ up.getAddress() + ","+string+","+value+"\n");			// i.e in calibration
 			}
@@ -370,7 +370,7 @@ public class LightManager {
 				}
 			}
 		}else{
-			Upanel up	= barobot.i2c.getUpanelByBottle(bottleNum);
+			Upanel up	= lo.i2c.getUpanelByBottle(bottleNum);
 			if( up != null ){
 				up.setColor(q, topBottom, red, green, blue, 0);
 			}
@@ -397,7 +397,7 @@ public class LightManager {
 				}
 			}
 		}else{
-			Upanel up	= barobot.i2c.getUpanelByBottle(bottleNum);
+			Upanel up	= lo.i2c.getUpanelByBottle(bottleNum);
 			if(up!=null){
 				up.setLed(q, string, value);
 			}
@@ -413,7 +413,7 @@ public class LightManager {
 			q.add(command, true);
 		}else{
 			Queue q1		= new Queue();	
-			Upanel[] up		= barobot.i2c.getUpanels();
+			Upanel[] up		= lo.i2c.getUpanels();
 			for(int i =0; i<up.length;i++){
 				up[i].setLed(q1, string, value);
 			}
@@ -432,6 +432,24 @@ public class LightManager {
 					+ String.format("%02x", green )
 					+ String.format("%02x", blue  );
 			q.add(command, true);
+		}
+	}
+
+	public void bottleBacklight(  Queue q, final int bottleNum, final int count ) {
+		if(count == 0 ){
+			color_by_bottle( q, bottleNum, true, 0, 0, 0 );
+		}else if(count == 1 ){
+			color_by_bottle( q, bottleNum, true, 0, 0, 255 );		// blue
+		}else if( count == 2 ){
+			color_by_bottle( q, bottleNum, true, 0, 255, 0 );		// green
+		}else if( count == 3 ){
+			color_by_bottle( q, bottleNum, true, 255, 255, 0 );		// red + green
+		}else if( count == 4 ){
+			color_by_bottle( q, bottleNum, true, 255, 0, 255 );		// blue + red
+		}else if( count == 5 ){
+			color_by_bottle( q, bottleNum, true, 100, 100,  100 );	// white
+		}else{
+			color_by_bottle( q, bottleNum, true, 255, 255, 255 );	// all
 		}
 	}
 }

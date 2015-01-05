@@ -5,7 +5,7 @@ import com.barobot.common.constant.Constant;
 import com.barobot.common.constant.Methods;
 import com.barobot.hardware.devices.BarobotConnector;
 import com.barobot.hardware.devices.i2c.Carret;
-import com.barobot.hardware.devices.i2c.I2C_Device;
+import com.barobot.hardware.devices.i2c.I2C_Device_Imp;
 import com.barobot.hardware.devices.i2c.MainboardI2c;
 import com.barobot.hardware.devices.i2c.Upanel;
 import com.barobot.parser.Queue;
@@ -20,8 +20,9 @@ public class UploadCode {
 	//	prepareUpanel2( Upanel.BACK, q, hw.barobot, hw, false );
 		prepareUpanel2( Upanel.FRONT, q, hw.barobot, hw, false );
 	}
+
 	private void prepareUpanel2(final int row, Queue q, final BarobotConnector barobot, final Hardware hw, final boolean firstOnly ) {
-		hw.barobot.i2c.clear();
+	//	hw.barobot.i2c.clear();
 
 		final int current_index		= 0;
 		final Upanel firstInRow	= new Upanel();
@@ -39,7 +40,7 @@ public class UploadCode {
 						if(bytes[3] == 1 ){							// has next
 							System.out.println("has next ROW "+row+"- OK");
 				//			q.show("run");
-							hw.barobot.i2c.add( firstInRow );
+		//					hw.barobot.i2c.add( firstInRow );
 							q.addWait(100);
 							Queue qq2	= UploadFirst( firstInRow, barobot, hw, firstOnly );
 							q.addFirst(qq2);
@@ -164,7 +165,7 @@ public class UploadCode {
 							if( current_dev.getBottleNum() != -1 ){
 								next_device.setNumInRow( current_dev.getBottleNum()+1 );
 							}
-							hw.barobot.i2c.add( next_device );
+		//					hw.barobot.i2c.add( next_device );
 							Queue qq2	= UploadFirst( next_device, barobot, hw, false );
 							q.addFirst(qq2);
 						}else if( current_dev.getNumInRow() >= 5 ){	// all found
@@ -281,7 +282,7 @@ public class UploadCode {
 		Queue q = hw.getQueue();
 		hw.connectIfDisconnected();
 		hw.synchro();
-		final I2C_Device current_dev	= new MainboardI2c();
+		final MainboardI2c current_dev	= new MainboardI2c();
 		final String upanel_code = current_dev.getHexFile();
 		q.add("", false);		
 		q.add("PING", "RPONG");
@@ -309,8 +310,7 @@ public class UploadCode {
 		String command = "";
 		Queue q = hw.getQueue();
 		hw.connectIfDisconnected();
-		//I2C_Device current_dev	= new Upanel( 3, 0 );
-		I2C_Device current_dev	=  new Carret(Constant.cdefault_index, Constant.cdefault_address);	
+		I2C_Device_Imp current_dev	=  new Carret(Constant.cdefault_index, Constant.cdefault_address);	
 		current_dev.isp( q );
 		command = current_dev.checkFuseBits( hw.comPort );
 		Main.main.runCommand(command, hw);
@@ -318,7 +318,7 @@ public class UploadCode {
 
 	public void prepareMBManualReset(final Hardware hw) {
 		String command					= "";
-		final I2C_Device current_dev	= new MainboardI2c();
+		final MainboardI2c current_dev	= new MainboardI2c();
 		final String upanel_code		= current_dev.getHexFile();
 		if(IspSettings.setHex){	
 			command = current_dev.uploadCode(upanel_code, hw.comPort);
@@ -326,52 +326,6 @@ public class UploadCode {
 		}
 	}
 
-	public void prepareSlaveMB(final Hardware hw) {
-		/*
-		final I2C_Device current_dev	= new BarobotTester();
-		Queue q = hw.getQueue();
-
-		if(IspSettings.setFuseBits){
-			hw.connectIfDisconnected();
-			hw.synchro();
-			q.addWaitThread(Main.mt);
-			q.addWait(100);
-			current_dev.isp( q );
-			q.add( new AsyncMessage( true ){		// na koncu zamknij
-				@Override
-				public String getName() {
-					return "prepareSlaveMB2";
-				}
-				@Override
-				public Queue run(Mainboard dev, Queue queue) {
-					String command = current_dev.setFuseBits( hw.comPort );
-					Main.main.runCommand(command, hw);
-					return null;
-				}
-			});
-			hw.closeOnReady();
-			q.addWaitThread(Main.main);
-		}
-		if(IspSettings.setHex){	
-			hw.connectIfDisconnected();
-			hw.synchro();
-			current_dev.isp( q );	// mam 2 sek na wystartwanie
-			q.add( new AsyncMessage( true ){		// na koncu zamknij
-				@Override
-				public String getName() {
-					return "prepareSlaveMB";
-				}
-				@Override
-				public Queue run(Mainboard dev, Queue queue) {
-					command = current_dev.uploadCode( current_dev.getHexFile(), hw.comPort);
-					Main.main.runCommand(command, hw);
-					return null;
-				}
-			});
-			hw.closeOnReady();
-			q.addWaitThread(Main.main);
-		}*/
-	}
 	public void prepare1Upanel(final Hardware hw, final BarobotConnector barobot, final int row ) {
 		hw.connectIfDisconnected();
 		Queue q = hw.getQueue();

@@ -21,7 +21,6 @@ import com.barobot.common.interfaces.OnSignalsDetectedListener;
 import com.barobot.common.interfaces.serial.SerialEventListener;
 import com.barobot.common.interfaces.serial.Wire;
 import com.barobot.hardware.devices.BarobotConnector;
-import com.barobot.hardware.devices.i2c.Upanel;
 import com.barobot.hardware.serial.AndroidBarobotState2;
 import com.barobot.hardware.serial.Serial_wire2;
 import com.barobot.parser.Queue;
@@ -83,8 +82,8 @@ public class MainActivity extends Activity implements OnSignalsDetectedListener{
 			boolean firstTime = true;
 			@Override
 			public void onConnect() {
+				Queue mq = barobot.main_queue;
 				if(firstTime){
-					Queue mq = barobot.main_queue;
 					mq.add( "\n", false );	// clean up input
 					mq.add( "\n", false );
 					mq.unlock();
@@ -92,7 +91,6 @@ public class MainActivity extends Activity implements OnSignalsDetectedListener{
 					startQueue();
 					firstTime = false;
 				}else{
-					Queue mq = barobot.main_queue;
 					mq.add( "\n", false );	// clean up input
 					mq.add( "\n", false );
 					mq.unlock();
@@ -147,44 +145,30 @@ public class MainActivity extends Activity implements OnSignalsDetectedListener{
 	}
 
 	public void init() {
-		final Upanel[] up		= barobot.i2c.getUpanels();
 		ii1 = new Interval(new Runnable(){
 			public void run() {
 				toggled1 = !toggled1;
-				if(toggled1){
-				//	up[0].setLed(barobot.main_queue, "04", 0);	
-					barobot.main_queue.add( "L"+ up[0].getAddress() +",04,0", sync);
-				}else{
-					barobot.main_queue.add( "L"+ up[0].getAddress() +",04,255", sync);
-				}
+				int color = toggled1 ? 255: 0;
+				barobot.lightManager.color_by_bottle_now(0, "44", color, 0, 0, color);
 			}});
 		ii2 = new Interval(new Runnable(){
 			public void run() {
 				toggled2 = !toggled2;
-				if(toggled2){
-					barobot.main_queue.add( "L"+ up[2].getAddress() +",01,0", sync);
-				}else{
-					barobot.main_queue.add( "L"+ up[2].getAddress() +",01,255", sync);
-				}
+				int color = toggled2 ? 255: 0;
+				barobot.lightManager.color_by_bottle_now(2, "44", color, 0, 0, color);
 			}});
 		ii3 = new Interval(new Runnable(){
 			public void run() {
 				toggled3 = !toggled3;
-				if(toggled3){
-					barobot.main_queue.add( "L"+ up[4].getAddress() +",02,0", sync);
-				}else{
-					barobot.main_queue.add( "L"+ up[4] +",02,255", sync);
-				}
+				int color = toggled3 ? 255: 0;
+				barobot.lightManager.color_by_bottle_now(4, "44", color, 0, 0, color);
 			}});
 
 		ii0 = new Interval(new Runnable(){
 			public void run() {
 				toggled0 = !toggled0;
-				if(toggled0){
-					barobot.main_queue.add( "L"+ up[6].getAddress() +",01,0", sync);
-				}else{
-					barobot.main_queue.add( "L"+ up[6].getAddress() +",01,255", sync);
-				}
+				int color = toggled0 ? 255: 0;
+				barobot.lightManager.color_by_bottle_now(6, "44", color, 0, 0, color);
 			}});
 	}
 	protected void onDestroy() {
@@ -229,7 +213,6 @@ public class MainActivity extends Activity implements OnSignalsDetectedListener{
 		if( current < min ){
 			min = current;
 		}
-		Upanel[] up				= barobot.i2c.getUpanels();
 		float overmin			=  current - min;
 		float scope				=  max - min;
 		final float div 		= ( overmin / scope);
@@ -241,32 +224,9 @@ public class MainActivity extends Activity implements OnSignalsDetectedListener{
 			b = Math.min(b, 255);
 			int val1 = (int) b;
 			int val2 = Pwm.linear2log((int) b, 1 );
-	//		
-			final String command1f = ",11," + val2;
-			final String command2f = ",22," + val2;
-			final String command3f = ",44," + val2;
-			final String command4f = ",88," + val2;
-			
-			final String command1b = ",11," + val1;
-/*
-			
-			final String command2b = ",22," + val1;
-			final String command3b = ",44," + val1;
-*/
-			barobot.main_queue.add( "B"+ "10" +command4f, sync);
-			barobot.main_queue.add( "B"+ up[1].getAddress() +command3f, sync);
-			barobot.main_queue.add( "B"+ up[3].getAddress() +command2f, sync);
-			barobot.main_queue.add( "B"+ up[5].getAddress() +command1f, sync);
-			barobot.main_queue.add( "B"+ up[7].getAddress() +command1f, sync);
-			barobot.main_queue.add( "B"+ up[9].getAddress() +command2f, sync);
-			barobot.main_queue.add( "B"+ up[11].getAddress() +command3f, sync);
 
-			barobot.main_queue.add( "B"+ up[0].getAddress() +command1b, sync);
-			barobot.main_queue.add( "B"+ up[2].getAddress() +command1b, sync);
-			barobot.main_queue.add( "B"+ up[4].getAddress() +command1b, sync);
-			barobot.main_queue.add( "B"+ up[6].getAddress() +command1b, sync);
-			barobot.main_queue.add( "B"+ up[8].getAddress() +command1b, sync);
-			barobot.main_queue.add( "B"+ up[10].getAddress() +command1b, sync);
+			barobot.lightManager.setAllLeds(barobot.main_queue, "44", val2, 0, 0, val2);
+
 			min+=1;		// auto ajdist
 			max = (long) (max * 0.95);		// auto ajdist
 			last= norm;
@@ -282,10 +242,8 @@ public class MainActivity extends Activity implements OnSignalsDetectedListener{
 					normnorm.setText(""+ norm);	
 					TextView textView2 = (TextView) mainView.findViewById(R.id.curcur);
 					textView2.setText(""+ current);
-	
 					TextView maxxxmaxxx = (TextView) mainView.findViewById(R.id.maxxx);
 					maxxxmaxxx.setText(""+ max);
-	
 				}
 			});
 		}

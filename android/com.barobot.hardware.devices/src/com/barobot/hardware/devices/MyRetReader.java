@@ -675,9 +675,6 @@ public class MyRetReader implements RetReader {
 				}else if(state_name == Methods.HX_STATE_1 ){
 					decoded += "/HX_STATE_1";
 					state.set( "LENGTHX", spos);
-		//			int SERVOY_FRONT_POS = state.getInt("SERVOY_FRONT_POS", 1000 );
-		//			Initiator.logger.i("input_parser", "koniec skali: " + spos );// @todo sprawdzic co z tym
-		//			barobot.hereIsBottle(11, spos+100, SERVOY_FRONT_POS );
 					state_num = 0;
 					barobot.state.set("HALLX_UNDER", "1");
 				}else if(state_name == Methods.HX_STATE_2 ){
@@ -771,7 +768,6 @@ public class MyRetReader implements RetReader {
 			}
 			if(num <= 11){
 				Initiator.logger.i("dodaje do bottle "+ num +"", "bylo:"+hposx+ ", bedzie:"+(hposx+50));
-				//int hposx	= fromPos;
 				int spos2	= barobot.x.hard2soft(hposx);
 				barobot.hereIsBottle(num, spos2, ypos );
 				barobot.lightManager.color_by_bottle_now( num, "02", 200, 0, 200, 0);

@@ -1,6 +1,7 @@
 package com.barobot.android;
 
 import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -30,6 +31,8 @@ import android.os.Debug;
 import android.os.Environment;
 import android.os.PowerManager;
 import android.util.Log;
+import android.view.Window;
+import android.view.WindowManager;
 
 import java.io.ByteArrayOutputStream;
 import java.math.BigInteger;
@@ -60,10 +63,13 @@ import com.barobot.parser.message.AsyncMessage;
 import com.barobot.parser.message.Mainboard;
 
 public class Android {
-	public void powerOff( Context c ){
-		PowerManager powerManager = (PowerManager)c.getSystemService(Context.POWER_SERVICE);
-		powerManager.reboot(null);
-		// if doesn't work
+	public static void powerOff( Context c ){
+		try {
+			PowerManager powerManager = (PowerManager)c.getSystemService(Context.POWER_SERVICE);
+			powerManager.reboot(null);
+		} catch (Exception e) {
+			Initiator.logger.appendError(e);
+		}
 		try {
 		    Process proc = Runtime.getRuntime().exec(new String[]{ "su", "-c", "reboot -p" });
 		    proc.waitFor();
@@ -457,6 +463,10 @@ public class Android {
 	        long cpu2 = Long.parseLong(toks[2]) + Long.parseLong(toks[3]) + Long.parseLong(toks[5])
 	            + Long.parseLong(toks[6]) + Long.parseLong(toks[7]) + Long.parseLong(toks[8]);
 
+	        
+	        
+	        Log.i("log_tag", ""+ cpu1 +"/"+cpu2 + " - " + idle1 + "/" + idle2 );
+	        
 	        return (float)(cpu2 - cpu1) / ((cpu2 + idle2) - (cpu1 + idle1));
 
 	    } catch (IOException ex) {
@@ -532,10 +542,14 @@ public class Android {
 			return 0;
 		}
 	} 
-	public static void askForTurnOff( Activity act ) {
-		Intent i = new Intent("android.intent.action.ACTION_REQUEST_SHUTDOWN");
-		i.putExtra("android.intent.extra.KEY_CONFIRM", true);
-		act.startActivity(i);
+	public static void askForTurnOff( final Activity activity ) {
+		activity.runOnUiThread(new Runnable() {
+			  public void run() {
+				  Intent i = new Intent("android.intent.action.ACTION_REQUEST_SHUTDOWN");
+					i.putExtra("android.intent.extra.KEY_CONFIRM", true);
+					activity.startActivity(i);
+			  }
+			});
 	}
 	public static String MD5Hash(String toHash) throws RuntimeException {
 		   try{
@@ -547,4 +561,40 @@ public class Android {
 		   }
 		   return null;
 		}
+	
+	public static void askForTurnOff2( final Activity activity ) {
+		activity.runOnUiThread(new Runnable() {
+			  public void run() {
+				  Window w = activity.getWindow();
+					WindowManager.LayoutParams lp = w.getAttributes();
+					lp.screenBrightness =.005f;
+					w.setAttributes (lp);
+			  }
+			});
+
+	}
+
+	public static void shutdown_sys( )	{
+	    Process chperm;
+	    try {
+	        chperm=Runtime.getRuntime().exec("su");
+	          DataOutputStream os = 
+	              new DataOutputStream(chperm.getOutputStream());
+	              os.writeBytes("shutdown\n");
+	              os.flush();
+	              chperm.waitFor();
+
+	    } catch (IOException e) {
+	        // TODO Auto-generated catch block
+	        e.printStackTrace();
+	    } catch (InterruptedException e) {
+	        // TODO Auto-generated catch block
+	        e.printStackTrace();
+	    }
+	}
+	
+	
+	
+	
+	
 }

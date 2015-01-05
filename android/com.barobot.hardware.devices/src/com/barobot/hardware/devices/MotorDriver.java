@@ -128,4 +128,7 @@ public class MotorDriver {
 			}
 		});
 	}
+	public void stop(Queue q) {
+		q.addWithDefaultReader( "DX" );
+	}
 }

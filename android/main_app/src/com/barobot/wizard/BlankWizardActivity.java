@@ -160,7 +160,7 @@ public abstract class BlankWizardActivity extends Activity {
 	}
 
 	protected void onDestroy() {
-		super.onResume();
+		super.onDestroy();
 		if( ii1 != null && ii1.isRunning()){
 			ii1.cancel();
 		//	AppInvoker.getInstance().inters.remove(ii1);

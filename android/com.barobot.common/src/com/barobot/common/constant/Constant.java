@@ -6,8 +6,8 @@ public class Constant {
 	public static final int MAX_FIRMWARE_VERSION	= 16;	
 
     // Debugging
-    public static final String TAG			= "BarobotMainApp";
-    public static final String SETTINGS_TAG = "BAROBOT";
+    public static final String TAG					= "BarobotMainApp";
+    public static final String SETTINGS_TAG 		= "BAROBOT";
 
     // Unique UUID for this application
    // public static final UUID MY_UUID_SECURE =	UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
@@ -81,7 +81,7 @@ public class Constant {
 	public static String robot_id_manager	= "http://barobot.com/synchro/init.php";
 	public static String version_index		= "http://barobot.com/synchro/check_version.php";
 
-	public static int glass_tray_weight		 = 121;	// glass try weight in g
+	public static int glass_tray_weight		 = 121;	// glass tray weight in g
 	static public boolean use_beta			= false;
 
 }

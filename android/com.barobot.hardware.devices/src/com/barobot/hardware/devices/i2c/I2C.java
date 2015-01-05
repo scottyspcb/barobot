@@ -34,7 +34,7 @@ public class I2C{
 
 	public void reloadIndex() {
 		bybottle.clear();
-		for (I2C_Device u2 : list){
+		for (I2C_Device_Imp u2 : list){
 			if(  u2 instanceof Upanel ){
 				Upanel uu = (Upanel)u2;
 				bybottle.put( uu.getBottleNum(), uu );	// index by BUTTLE NUM
