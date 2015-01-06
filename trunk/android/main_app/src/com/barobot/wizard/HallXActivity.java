@@ -217,6 +217,7 @@ public class HallXActivity extends BlankWizardActivity {
 
 	@Override
 	protected void onDestroy() {
+		barobot.lightManager.turnOffLeds(barobot.main_queue);
 		super.onDestroy();
 	}
 

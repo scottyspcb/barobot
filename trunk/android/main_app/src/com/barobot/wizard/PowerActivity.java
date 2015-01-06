@@ -35,7 +35,7 @@ public class PowerActivity extends BlankWizardActivity {
 		loadTests();
 		kva							= new CheckboxValueAdapter(this, result_list);
 		result_box.setAdapter(kva);
-		enableTimer( 1000, 2000 );
+		enableTimer( 1000, 500 );
 	}
 
 	@Override
@@ -254,6 +254,9 @@ public class PowerActivity extends BlankWizardActivity {
 	public void onOptionsButtonClicked(View view)
 	{
 		switch(view.getId()){
+			case R.id.wizard_power_restart:
+				Android.restartApp(this, 1 );
+			break;
 			case R.id.wizard_power_next:
 				boolean allOk = result_list.checkAllOk();
 				if(allOk){

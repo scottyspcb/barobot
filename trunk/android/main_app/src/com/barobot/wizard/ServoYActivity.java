@@ -27,7 +27,7 @@ public class ServoYActivity extends BlankWizardActivity {
 
 	private int neutral = 1000;
 	private int lastValue = 1000;
-	private int newValue = 1000;
+	private int newValue = 0;			// start with 0 = no move
 
 	// front config
 	static int front_step		= 15;
@@ -54,7 +54,6 @@ public class ServoYActivity extends BlankWizardActivity {
 		wizard_servoy_back_pos.setText(barobot.state.get("SERVOY_BACK_POS", "0"));
 
 		neutral					= barobot.state.getInt("SERVOY_BACK_NEUTRAL", 1000);
-		newValue				= neutral;
 
 		int front_startVal		= barobot.state.getInt("SERVOY_FRONT_POS", 0);
 		int back_startVal		= barobot.state.getInt("SERVOY_BACK_POS", 0);
@@ -162,12 +161,12 @@ public class ServoYActivity extends BlankWizardActivity {
 	private void countNeutral() {
 		int valuefront	= Decoder.toInt( ""+wizard_servoy_front_pos.getText(), -1);
 		int valueback	= Decoder.toInt( ""+wizard_servoy_back_pos.getText(), -1);
-		neutral	= (valuefront + valueback*5) / 6;
+		neutral	= (valuefront + valueback*4) / 5;
 		barobot.state.set("SERVOY_BACK_NEUTRAL", neutral);
 	}
 
 	public void onTick(){
-		if( newValue !=lastValue && newValue > 700 && newValue < 2500 ){
+		if( newValue !=lastValue && newValue > 700 && newValue < 2500 ){			// 0 on start won't move anything
 			if(++prescaler >= prescaler_max ){
 				if( newValue < neutral ){
 					barobot.y.move(barobot.main_queue, newValue +300,  false);
@@ -195,5 +194,12 @@ public class ServoYActivity extends BlankWizardActivity {
 				wizard_servoy_seek_back.setSecondaryProgress(progress_front);
 			}
 		}
-	}	
+	}
+	
+	@Override
+	protected void onDestroy() {
+		barobot.lightManager.turnOffLeds(barobot.main_queue);
+		super.onDestroy();
+	}
+
 }

@@ -145,7 +145,5 @@
     <string name="firmware_uploading_in_progress">Uploading in progress. Don\'t touch Barobot. Don\'t unplug anything before done.</string>
     <string name="firmware_uploading_title">Uploading firmware...</string>
     <string name="title_activity_hall_y">HallYActivity</string>
-    <string name="wizard_hally_start_test">Start test</string>
-    <string name="wizard_save_and_close">Save settings and close wizard</string>
 
 </resources>

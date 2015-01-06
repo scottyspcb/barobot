@@ -154,7 +154,7 @@
                 android:id="@+id/wizard_hallx_handle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Something doesn&apos;t work?" />
+                android:text="@string/wizard_hallx_something_doesnt_work" />
 
             <LinearLayout
                 android:id="@+id/wizard_hallx_content"
@@ -194,24 +194,7 @@
             </LinearLayout>
         </SlidingDrawer>
        
-       
-       
-       
-       
-       
-       
-       
-       
-       
-       
-       
-       
-       
-       
-       
-       
-       
-       
+
    </LinearLayout>
     
 </RelativeLayout>

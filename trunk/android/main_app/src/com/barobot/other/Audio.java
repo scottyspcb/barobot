@@ -27,6 +27,7 @@ public class Audio implements OnSignalsDetectedListener{
 	
 	public void start( final BarobotConnector barobot2 ) {
 		this.barobot = barobot2;
+		disabled = false;
 		Queue q = barobot.main_queue;
 		q.add( new AsyncMessage( true ) {
 			@Override
@@ -65,22 +66,23 @@ public class Audio implements OnSignalsDetectedListener{
 
 	public void stop() {
 		disabled = true;
+		/*
 		barobot.main_queue.add( new AsyncMessage( true ) {
 			@Override
 			public Queue run(Mainboard dev, Queue queue) {
 				this.name		= "Audio.stop";
-				if (recorderThread != null) {
-					recorderThread.stopRecording();
-					recorderThread = null;
-				}
-				if (detectorThread != null) {
-					detectorThread.stopDetection();
-					detectorThread = null;
-				}
-				max = 10;
 				return null;
 			}
-		} );
+		} );*/
+		if (recorderThread != null) {
+			recorderThread.stopRecording();
+			recorderThread = null;
+		}
+		if (detectorThread != null) {
+			detectorThread.stopDetection();
+			detectorThread = null;
+		}
+		max = 10;
 		barobot.lightManager.turnOffLeds(barobot.main_queue);
 	}
 
