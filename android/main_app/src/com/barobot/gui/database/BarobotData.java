@@ -98,7 +98,7 @@ public class BarobotData {
 						C.eq("robot_id", robotId),
 						C.eq("position", position)
 				)
-				).getQuery(), Slot.class);
+				).limit(1).getQuery(), Slot.class);
 	}
 
 	public static List<Type> GetTypes ()

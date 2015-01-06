@@ -16,7 +16,7 @@ import com.barobot.parser.utils.Decoder;
 public class ServosActivity extends BlankWizardActivity {
 	TextView wizard_servos_x_pos;
 	TextView wizard_servos_x_speed;
-//	TextView wizard_servos_hall_value;
+	TextView wizard_servos_hall_value;
 	TextView wizard_servos_dispenser;
 	SeekBar wizard_servos_speed;
 	static int step		= 100;
@@ -30,7 +30,7 @@ public class ServosActivity extends BlankWizardActivity {
 		setContentView(R.layout.activity_wizard_servos);
 		wizard_servos_x_pos			= (TextView) findViewById(R.id.wizard_servos_x_pos);
 		wizard_servos_x_speed		= (TextView) findViewById(R.id.wizard_servos_x_speed);
-//		wizard_servos_hall_value	= (TextView) findViewById(R.id.wizard_servos_hall_value);
+		wizard_servos_hall_value	= (TextView) findViewById(R.id.wizard_servos_hall_value);
 		wizard_servos_dispenser		= (TextView) findViewById(R.id.wizard_servos_dispenser);
 		wizard_servos_speed			= (SeekBar) findViewById(R.id.wizard_servos_speed);
 
@@ -40,7 +40,7 @@ public class ServosActivity extends BlankWizardActivity {
 				
 		wizard_servos_x_pos.setText( barobot.state.get("POSX", "0") );
 		wizard_servos_x_speed.setText( barobot.state.get("DRIVER_X_SPEED", "0") );
-//		wizard_servos_hall_value.setText( barobot.state.get("HALLX", "0") );		
+		wizard_servos_hall_value.setText( barobot.state.get("HALLX", "0") );		
 		wizard_servos_speed.setMax( (max - min) / step);
 		wizard_servos_speed.setProgress(( startVal - min )/ step );
 		wizard_servos_speed.setOnSeekBarChangeListener(
@@ -66,8 +66,8 @@ public class ServosActivity extends BlankWizardActivity {
 			wizard_servos_x_pos.setText( value );
 		}else if( "DRIVER_X_SPEED".equals(name)){
 			wizard_servos_x_speed.setText( value );
-	//	}else if( "HALLX".equals(name)){
-	//		wizard_servos_hall_value.setText( value );
+		}else if( "HALLX".equals(name)){
+			wizard_servos_hall_value.setText( value );
 		}else if( "HALLX_UNDER".equals(name)){
 			int hall_state = state.getInt("HX_STATE", 0 );
 			if( hall_state < 0 ){

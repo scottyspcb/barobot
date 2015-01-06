@@ -223,6 +223,7 @@ public class Engine {
 			@Override
 			public Queue run(Mainboard dev, Queue queue) {
 				ld.temp_before	= barobot.getLastTemp();
+				barobot.state.set( "DOING_DRINK", recipe.id );
 				return null;
 			}
 		} );
@@ -236,8 +237,6 @@ public class Engine {
 				quantity		+=ing.quantity;
 				real_quantity	+=slot.dispenser_type * count;
 				pours 			+=count;
-		//		Log.i("Prepare", ""+position+"/"+count );
-
 				barobot.moveToBottle(q, position-1, true );
 				for (int iter = 1; iter <= count ; iter++){
 					if( iter > 1){
@@ -280,6 +279,7 @@ public class Engine {
 			public Queue run(Mainboard dev, Queue queue) {
 				recipe.counter++;
 				recipe.update();
+				barobot.state.set( "DOING_DRINK", 0 );
 				ld.temp_after	= barobot.getLastTemp();
 				ld.time			= Decoder.getTimestamp() - ld.datetime;		// time diff in sec
 				ld.insert();

@@ -54,6 +54,10 @@ public class HallYActivity extends BlankWizardActivity {
 		int front = barobot.state.getInt("SERVOY_FRONT_POS", 1000);
 		int neutral	= barobot.state.getInt("SERVOY_BACK_NEUTRAL", 1000);
 
+		//Initiator.logger.w("checkHallY.front", ""+front );
+		//Initiator.logger.w("checkHallY.back", ""+back );	
+		//Initiator.logger.w("checkHallY.neutral", ""+neutral );
+
 		barobot.y.move(q, neutral, true);
 		barobot.lightManager.setAllLeds(barobot.main_queue, "22", 255, 100, 100, 100);
 		q.addWait( 500 );
@@ -188,5 +192,6 @@ public class HallYActivity extends BlankWizardActivity {
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
+		barobot.lightManager.turnOffLeds(barobot.main_queue);
 	}
 }

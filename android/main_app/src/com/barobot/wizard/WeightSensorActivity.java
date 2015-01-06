@@ -99,7 +99,7 @@ public class WeightSensorActivity extends BlankWizardActivity {
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		barobot.main_queue.add("DX", true );
+		barobot.lightManager.turnOffLeds(barobot.main_queue);
 	}
 
 	float agv_weight = 0;

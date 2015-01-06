@@ -40,7 +40,7 @@
     
 
     <string name="wizard_text_power_restart">Please restart the Barobot Application. If that doesn\'t work please restart tablet.</string>
-    <string name="wizard_text_replug">Unplug microUSB cable from tablet and plug it back.</string>
+    <string name="wizard_text_replug">Unplug MicroUSB cable from tablet and plug it back. If it doesn\'t work try restart the appliaction using button below.</string>
     
     <string name="wizard_text_plug_dc">Connect Barobot to the power supply and switch it ON. Connect DC wire to tablet.</string>
     <string name="wizard_text_turn_on">Connect USB-mini USB adapter (host adapter) to tablet and to Barobot</string>
@@ -76,7 +76,6 @@
     <string name="wizard_servoz_higher">a little higher &gt;</string>
     <string name="wizard_servoz_howto_img">Howto img</string>
     <string name="wizard_servoy_howto_img">Howto img</string>
-    <string name="wizard_save_and_close">Save settings and close</string>
     <string name="wizard_calibration_info">"Left-right calibration: Barobot will move carriage from left to right and collect data from magnetic field sensor. Green color under the bottles indicates that dispenser position was found."</string>
     <string name="wizard_firmware_info">If new version is available please download it and install. WiFi connection is required.</string>
     <string name="wizard_firmware_check_button_text">Check for software updates</string>
@@ -93,6 +92,8 @@
     <string name="wizard_text_android_version">"Barobot Application version"</string>
     
     <string name="wizard_power_hints">Hints</string>
+    <string name="wizard_power_restart">Restart Application</string>
+
     <string name="wizard_power_test_completed">Test completed successfully. Click Next to continue.</string>
     
     <string name="title_activity_hall_x">Left right sensor</string>
@@ -108,12 +109,16 @@
     <string name="wizard_hallx_check_step1">Check left</string>
     <string name="wizard_hallx_check_step2">Check right</string>
 
-    <string name="wizard_led_carriage_lights">Are glass tray lights all white?</string>
-    <string name="wizard_led_all_lights">Now, are all robot lights white?</string>
+    <string name="wizard_led_carriage_left_lights">Do left glass tray lights blink white?</string>
+    <string name="wizard_led_carriage_right_lights">Do right glass tray lights blink white?</string>
+    <string name="wizard_led_all_lights">Now, do all robot lights blink white?</string>
 
     <string name="wizard_led_result_ok">Test completed successfully. Click Next to continue.</string>
-    <string name="wizard_led_check_carret">Turn robot OFF and check LEDs wires. Check against the manual if cables are attached in the right sequence.</string>
+    <string name="wizard_led_check_carret_left">Turn robot OFF and check LEDs wires. Check against the manual if cables are attached in the right sequence.</string>
+    <string name="wizard_led_check_carret_right">Turn robot OFF and check the wire that connect left and right panel. Isn\'t it flooded with liquid?</string>
+ 
     <string name="wizard_led_check_top">Turn robot OFF and check LEDs wires. Check against the manual if cables are attached in the right sequence.</string>
+
 
     <string name="wizard_calibration_result_ok">Test completed successfully. Click Next to continue.</string>
     <string name="wizard_calibration_waiting">Please wait for the results...</string>
@@ -127,8 +132,8 @@
 
 	<string name="wizard_text_sensors_refresh">Click Refresh. If it doesn\'t help turn OFF Barobot using main power switch and turn it ON again. Check small red light on Carriage board. Check main-bus.</string>
  	<string name="wizard_text_sensors_upload_firmware">Please upload firmware using "Software update" wizard. If something still wont work please use "Manual update".</string>
- 	<string name="wizard_text_sensors_hallx">Is sensor connected? Check against the manual if cables are attached in the right sequence.</string>
- 	<string name="wizard_text_sensors_hally">Is sensor connected? Check against the manual if cables are attached in the right sequence.</string>
+ 	<string name="wizard_text_sensors_hallx">Is sensor connected? Check against the manual if cables are attached in the right sequence. Isn\'t it flooded with liquid?</string>
+ 	<string name="wizard_text_sensors_hally">Is sensor connected? Check against the manual if cables are attached in the right sequence. Isn\'t it flooded with liquid?</string>
  	<string name="wizard_text_sensors_weight">Is load cell connected? Check against the manual if cables are attached in the right sequence.</string>
 
  	<string name="wizard_text_sensors_temperature">If temperature is to high turn OFF robot as soon is possible and check against the manual if all cables are attached in the right sequence.</string>
@@ -139,7 +144,7 @@
     <string name="wizard_hallx_no_sensor">No sensor</string>
 
     <string name="wizard_hally_success">Test completed successfully. Click Next to continue.</string>
-    <string name="wizard_hally_nosensor">Error 80. No Hall Y sensor. Turn robot OFF and check wires.</string>
+    <string name="wizard_hally_nosensor">Error 80. No Hall Y sensor. Turn robot OFF and check wires. Isn\'t it flooded with liquid?</string>
 
     <string name="wizard_hally_front_error">Error 81. Front magnet was not found</string>
     <string name="wizard_hally_back_error">Error 82. Back magnet was not found.</string>
@@ -148,4 +153,9 @@
     <string name="wizard_hally_waiting">Please wait for the results...</string>
     <string name="wizard_hally_inverted">Error 86. Two magnets found but front manget is upside-down. Turn robot OFF and check magnet.</string>
 
+    <string name="wizard_hally_start_test">Start test</string>
+    <string name="wizard_save_and_close">Save settings and close wizard</string>
+    <string name="wizard_hallx_something_doesnt_work">Something doesn\'t work?</string>
+    <string name="wizard_text_servos_something_doesnt_work">Something doesn\'t work?</string>
+    
 </resources>

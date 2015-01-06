@@ -148,7 +148,6 @@ public abstract class BlankWizardActivity extends Activity {
 	protected void updateState(HardwareState state, String name,String value) {
 
 	}
-	
 	protected void enableTimer( long zaile, long coile ) {
 		ii1 = new Interval(new Runnable(){
 			public void run() {
@@ -163,7 +162,7 @@ public abstract class BlankWizardActivity extends Activity {
 		super.onDestroy();
 		if( ii1 != null && ii1.isRunning()){
 			ii1.cancel();
-		//	AppInvoker.getInstance().inters.remove(ii1);
+			AppInvoker.getInstance().inters.remove(ii1);
 		}
 		if( sl != null ){
 			barobot.state.unregisterListener( sl );

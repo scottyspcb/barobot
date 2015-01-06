@@ -401,15 +401,6 @@ public class CommandRoute extends EmptyRoute {
 			}
 		});
 
-		index.put("command_fill5000", new command_listener() {
-			@Override
-			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
-					int posx, int posy) {
-				barobot.pour(q, 20, -1, true, false);
-				return true;
-			}
-		});
-
 		index.put("command_max_z", new command_listener() {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
@@ -958,14 +949,23 @@ public class CommandRoute extends EmptyRoute {
 			}
 		});
 
-		// TODO
 		index.put("command_pour_now", new command_listener() {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,int posx, int posy) {
+				barobot.pour(q, 20, -1, true, false);
 				return true;
 			}
 		});
 
+		index.put("command_hue", new command_listener() {
+			@Override
+			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,int posx, int posy) {
+				barobot.lightManager.hue(  q, 1, 50 );
+				return true;
+			}
+		});
+
+		
 		/*
 		index.put("command_power_off1", new command_listener() {
 			@Override

@@ -254,11 +254,11 @@ public class CreatorActivity extends BarobotMain{
 
 	    LayoutInflater inflater = getLayoutInflater();
 	    final View dialogView = inflater.inflate(R.layout.dialog_add_recipe, null);
-	    
 	    builder.setView(dialogView)
 		.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
+				setFullScreen();
 			}
 		})
 		.setPositiveButton("Add", new DialogInterface.OnClickListener() {
@@ -266,7 +266,8 @@ public class CreatorActivity extends BarobotMain{
 			public void onClick(DialogInterface dialog, int which) {
 				TextView nameView = (TextView) dialogView.findViewById(R.id.recipe_name);
 				String name = nameView.getText().toString();
-				CreateDrink(name, true);	
+				CreateDrink(name, true);
+				setFullScreen();
 			}
 		});
 	    AlertDialog ad = builder.create();

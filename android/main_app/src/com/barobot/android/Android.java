@@ -13,9 +13,11 @@ import java.io.OutputStream;
 import java.io.RandomAccessFile;
 
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.app.Application;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -321,15 +323,11 @@ public class Android {
 	}
 	public static void pourFromBottle(int position, Queue q, boolean needGlass ) {
 		BarobotConnector barobot = Arduino.getInstance().barobot;
-
 		int robot_id = barobot.getRobotId();
-		Slot slot = Model.fetchSingle(ModelQuery.select().from(Slot.class).where(
-				C.and(
-						C.eq("robot_id", robot_id ),
-						C.eq("position", position )
-				)
-			).limit(1).getQuery(), Slot.class);
-		if( slot != null ){
+		Slot slot = BarobotData.GetSlot(position+1);		// in db slots have numbers 1-12, 
+		if( slot == null ){
+			Initiator.logger.w("pourFromBottle", "no slot: " + position + " robot_id: " + robot_id);
+		}else{
 			barobot.moveToBottle(q, position, true);
 			barobot.pour(q, slot.dispenser_type, position, true, needGlass );
 		}
@@ -583,7 +581,6 @@ public class Android {
 	              os.writeBytes("shutdown\n");
 	              os.flush();
 	              chperm.waitFor();
-
 	    } catch (IOException e) {
 	        // TODO Auto-generated catch block
 	        e.printStackTrace();
@@ -592,9 +589,19 @@ public class Android {
 	        e.printStackTrace();
 	    }
 	}
-	
-	
-	
-	
-	
+
+	public static void restartApp(Context context, int delay) {
+	    if (delay == 0) {
+	        delay = 1;
+	    }
+	    Log.e("", "restarting app");
+	    Intent restartIntent = context.getPackageManager()
+	            .getLaunchIntentForPackage(context.getPackageName() );
+	    PendingIntent intent = PendingIntent.getActivity(
+	            context, 0,
+	            restartIntent, Intent.FLAG_ACTIVITY_CLEAR_TOP);
+	    AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+	    manager.set(AlarmManager.RTC, System.currentTimeMillis() + delay, intent);
+	    System.exit(2);
+	}
 }

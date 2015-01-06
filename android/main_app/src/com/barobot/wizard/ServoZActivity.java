@@ -25,7 +25,7 @@ public class ServoZActivity extends BlankWizardActivity {
 
 	private int neutral = 1000;
 	private int lastValue = 1000;
-	private int newValue = 1000;
+	private int newValue = 0;
 
 	// UP config
 	static int up_step			= 20;
@@ -51,7 +51,6 @@ public class ServoZActivity extends BlankWizardActivity {
 		wizard_servoz_down_pos.setText(barobot.state.get("SERVOZ_DOWN_POS", "0"));
 
 		neutral					= barobot.state.getInt("SERVOZ_NEUTRAL", 1000);
-		newValue				= neutral;
 		int up_startVal			= barobot.state.getInt("SERVOZ_UP_POS", 0);
 		int down_startVal		= barobot.state.getInt("SERVOZ_DOWN_POS", 0);
 
@@ -163,7 +162,7 @@ public class ServoZActivity extends BlankWizardActivity {
 	}
 
 	public void onTick() {
-		if( newValue !=lastValue && newValue > 700 && newValue < 2600 ){
+		if( newValue !=lastValue && newValue > 700 && newValue < 2600 ){			// 0 on start won't move anything
 			if(++prescaler >= prescaler_max ){
 				if( newValue < neutral ){
 					barobot.z.move(barobot.main_queue, newValue +300 );
@@ -193,8 +192,6 @@ public class ServoZActivity extends BlankWizardActivity {
 			if(progress_down>=0){
 				wizard_servoz_seek_down.setSecondaryProgress(progress_up);
 			}
-
 		}
 	}
-	
 }
