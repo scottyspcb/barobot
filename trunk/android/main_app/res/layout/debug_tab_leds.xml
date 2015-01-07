@@ -115,13 +115,6 @@
                     android:layout_height="wrap_content"
                     android:text="Turn ON TOP white"
                     android:textSize="16dp" />
-
-                <Switch
-                    android:id="@+id/light_show"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Light show for your music"
-                    android:textSize="16dp" />
             </LinearLayout>
 
         </LinearLayout>

@@ -159,6 +159,11 @@ public class ServoZActivity extends BlankWizardActivity {
 		int valueDown	= Decoder.toInt( ""+wizard_servoz_down_pos.getText(), -1);
 		neutral	= (valueUp + valueDown) / 2;
 		barobot.state.set("SERVOZ_NEUTRAL", neutral);
+		
+		int min			= Math.min(valueUp, valueDown);
+		int range		= Math.abs(valueUp - valueDown);
+		int pac_pos		= 150/range + min;
+		Initiator.logger.e("countNeutral.pac_pos should be", "" + pac_pos );
 	}
 
 	public void onTick() {
