@@ -119,7 +119,21 @@ public class OptionsActivity extends BarobotMain {
 			break;
 
 		case R.id.options_demo_button:
+
 			CommandRoute.runCommand("command_demo");
+			AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
+            builder1.setMessage("Demo started");
+            builder1.setCancelable(true);
+            builder1.setPositiveButton("Close", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    dialog.cancel();
+                    barobot.lightManager.stopDemo();
+                    barobot.main_queue.clear();
+                }
+            });
+            AlertDialog alert11 = builder1.create();
+            alert11.show();
+
 			break;
 		}
 		if(serverIntent!=null){

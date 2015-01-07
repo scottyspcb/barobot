@@ -235,6 +235,8 @@ public class Engine {
 				int position	= slot.position;
 				int count		= slot.getSequence( ing.quantity );
 				quantity		+=ing.quantity;
+				// ing.liquid.strenght >=40 		// TODO. alcohol don't do pacpac
+
 				real_quantity	+=slot.dispenser_type * count;
 				pours 			+=count;
 				barobot.moveToBottle(q, position-1, true );
@@ -352,10 +354,6 @@ public class Engine {
 		}
 		return nMap;
 	}
-	
-	
-	
-	
 
 	public Slot getIngredientSlot(Ingredient_t ing){
 		loadSlots();

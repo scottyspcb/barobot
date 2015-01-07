@@ -1,5 +1,7 @@
 package com.barobot.hardware.devices;
 
+import java.util.Random;
+
 import com.barobot.common.Initiator;
 import com.barobot.common.constant.Constant;
 import com.barobot.hardware.devices.i2c.Carret;
@@ -14,6 +16,7 @@ public class LightManager {
 	public static int[] bottom_index	= {-1,24,-1,25,-1,26,-1,27,-1,28,-1,29};			// numery butelek na numery ledow bottom
 	public static int[] bottom_leds		= {24,25,26,27,28,29};
 	public LedOrder lo;
+	private boolean started = false;;
 
 	public LightManager(BarobotConnector barobot2) {
 		this.barobot	= barobot2;
@@ -23,22 +26,60 @@ public class LightManager {
 	}
 
 	public void startDemo() {
+		this.started  = true;
 		Queue q = barobot.main_queue;
-		LightManager lm =barobot.lightManager;
-		lm.tecza(  q, 10 );				// ok
-	//	lm.loading( q, 10);				// ok
-		lm.mrygajRGB(  q, 10 , 400);	// ok
-	//	lm.linijka(  q, 10, 700 );		// nudne
-		lm.flaga( q, 10, 700 );
-	//	lm.nazmiane( q, 10, 700 );
-		lm.strobo(  q, 60 );			// ok
-		lm.zapal( q );					// ok
-		q.addWait(1000);
-		lm.turnOffLeds(q);
+		inifinityDemo(q);
+		turnOffLeds(q);
+	}
+	public void stopDemo() {
+		this.started  = false;		// block next schema, clear queue also required
 	}
 
-	public void loading(final Queue q, final int repeat) {
-		final int time =200;
+	public void startRandomDemo(final Queue q) {
+		Random rn = new Random();
+		int answer = rn.nextInt(9);
+		
+		Initiator.logger.i( "LightsManager", "answer"+ answer);
+		
+		if( answer == 0 ){
+			nazmiane( q, 10, 700 );
+		}else if( answer == 1 ){
+			tecza(  q, 10 );			// ok
+		}else if( answer == 2 ){
+			loading( q, 10, 200 );			// ok
+		}else if( answer == 3 ){
+			mrygajRGB(  q, 10 , 400);	// ok
+		}else if( answer == 4 ){
+			flaga( q, 10, 700 );
+		}else if( answer == 5 ){
+			strobo(  q, 60 );			// ok
+		}else if( answer == 7 ){
+			linijka(  q, 10, 700 );		// nudne
+		}else if( answer == 8 ){
+			hue(  q, 10, 50 );
+		}
+		q.addWait(1000);
+	}
+
+	public void inifinityDemo(final Queue q) {
+		q.add( new AsyncMessage( true ){		// na koncu zamknij
+			@Override
+			public String getName() {
+				return "tecza";
+			}
+			@Override
+			public Queue run(Mainboard dev, Queue queue) {
+				Queue q2 = new Queue();
+				if(started){
+					startRandomDemo(q2);
+					inifinityDemo(q2);
+				}
+				return q2;
+			}
+		});
+	}
+
+	public void loading(final Queue q, final int repeat, final int time) {
 		q.add( new AsyncMessage( true ){		// na koncu zamknij
 			@Override
 			public String getName() {
@@ -49,7 +90,7 @@ public class LightManager {
 				Queue q2 = new Queue();
 				turnOffLeds( q2 );
 				Initiator.logger.i( "LightsManager", "start2 loading");
-				
+
 				for (int i=0;i<repeat;i+=1){
 					//barobot.driver_x.d.moveTo( q, 1000);
 					//barobot.setLedsByBottle(q, 1, "01", 255, 255, 0, 0, true);
@@ -69,6 +110,116 @@ public class LightManager {
 			}
 		});
 	}
+	
+	
+	
+	
+	public void hue(final Queue q, final int repeat, final int time) {
+		q.add( new AsyncMessage( true ){		// na koncu zamknij
+			@Override
+			public String getName() {
+				return "tecza";
+			}
+			@Override
+			public Queue run(Mainboard dev, Queue queue) {
+				Queue q2 = new Queue();
+				turnOffLeds( q2 );
+				Initiator.logger.i( "LightsManager", "start2 loading");
+				int steps = 512;
+				for (int i=0;i<repeat;i+=1){
+					for (int j=0;j<steps;j+=1){
+						float val		= (float) j / (steps);
+						String color	= hsvToRgb(val*360, 100,100);
+						
+				//		Initiator.logger.i( "LightsManager", "color " + color);
+
+						String command = "Q00"+ color;
+						q2.add(command, true);
+						q2.addWait(50);
+					}
+					for (int j=steps;j>=0;j--){
+						float val		= (float) j / (steps);
+						String color	= hsvToRgb(val*360, 100,100);
+						String command = "Q00"+ color;
+						q2.add(command, true);
+						q2.addWait(50);
+					}
+				}
+				return q2;
+			}
+		});
+	}
+
+	
+	public static String hsvToRgb(float h, float s, float v) {
+	    float r, g, b;
+	    int i;
+	    float f, p, q, t;
+	     
+	    // Make sure our arguments stay in-range
+	    h = Math.max(0, Math.min(360, h));
+	    s = Math.max(0, Math.min(100, s));
+	    v = Math.max(0, Math.min(100, v));
+
+	    s /= 100;
+	    v /= 100;
+	     
+	    if(s == 0) { // Achromatic (grey)
+	        r = g = b = v;
+	        return   String.format("%02x", (int)(r * 256) ) 
+					+ String.format("%02x", (int)(g * 256) )
+					+ String.format("%02x", (int)(b * 256) );
+	    }
+
+	    h /= 60; // sector 0 to 5
+	    i = (int) Math.floor(h);
+	    f = h - i; // factorial part of h
+	    p = v * (1 - s);
+	    q = v * (1 - s * f);
+	    t = v * (1 - s * (1 - f));
+	     
+	    switch(i) {
+	        case 0:
+	            r = v;
+	            g = t;
+	            b = p;
+	            break;
+	     
+	        case 1:
+	            r = q;
+	            g = v;
+	            b = p;
+	            break;
+	     
+	        case 2:
+	            r = p;
+	            g = v;
+	            b = t;
+	            break;
+	     
+	        case 3:
+	            r = p;
+	            g = q;
+	            b = v;
+	            break;
+	     
+	        case 4:
+	            r = t;
+	            g = p;
+	            b = v;
+	            break;
+	     
+	        default: // case 5:
+	            r = v;
+	            g = p;
+	            b = q;
+	    }
+
+	    return   String.format("%02x", (int)(r * 256) ) 
+				+ String.format("%02x", (int)(g * 256) )
+				+ String.format("%02x", (int)(b * 256) );
+	}
+	
 	public void strobo(final Queue q, int repeat) {
 		int time =5000;
 		while (repeat-- > 0){
@@ -82,8 +233,6 @@ public class LightManager {
 	}
 	public void nazmiane(final Queue q, final int repeat, final int time ) {
 		final int colile = 40;
-
-		Initiator.logger.i( "LightsManager", "start nazmiane");
 		q.add( new AsyncMessage( true ){
 			@Override
 			public String getName() {
@@ -236,11 +385,6 @@ public class LightManager {
 	public static int flag(int degree ){
 		int a	= (int) (Math.sin( Math.toRadians(degree) ) * 127 + 127);
 		return a;
-	}
-
-	public void zapal(Queue q) {		
-		setAllLeds( q, "ff", 255, 255, 255, 255);
-		Initiator.logger.i( "LightsManager", "koniec zapal");
 	}
 
 	public void mrygajRGB(Queue q, int repeat, int time  ) {
