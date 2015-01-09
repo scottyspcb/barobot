@@ -84,9 +84,9 @@ public class BarobotConnector {
 				state.set( "SERVOZ_UP_POS", 1400 );
 				state.set( "SERVOZ_DOWN_POS", 2300 );	
 				state.set( "SERVOY_BACK_POS", 1820 );
+				state.set( "SERVOZ_PAC_POS", 1550 );
 
 				// rest
-				state.set( "SERVOZ_PAC_POS", 1550 );
 				state.set( "SERVOZ_UP_LIGHT_POS", 1400 );
 				state.set( "SERVOZ_UP_LIGHT_TIME", 800 );
 				state.set( "SERVOZ_TEST_POS", 2200 );
@@ -721,9 +721,17 @@ public class BarobotConnector {
 					int SERVOY_HYSTERESIS	= BarobotConnector.this.state.getInt("SERVOY_HYSTERESIS", 30 );
 					int posy				= BarobotConnector.this.state.getInt("POSY", 0 );
 					int DRIVER_Y_SPEED		= BarobotConnector.this.state.getInt("DRIVER_Y_SPEED", 0 );
+					int distance			= Math.abs(newpos - posy);
+					int DRIVER_Y_TIME		= BarobotConnector.this.state.getInt("DRIVER_Y_TIME", 100 );		// percent
+					int time				= (DRIVER_Y_SPEED * distance * DRIVER_Y_TIME/100) / 300 + 100;
+
+					//Initiator.logger.w("Y.distance", ""+distance );
+					//Initiator.logger.w("time1", ""+time );
+					//Initiator.logger.w("time2", ""+(DRIVER_Y_SPEED * distance * DRIVER_Y_TIME/100) );
+
 				//	if( posy != newpos && posy != newpos -margin && posy != newpos +margin){
 						q4.add("Y" + newpos+ ","+DRIVER_Y_SPEED, true);
-						q4.addWait(120);
+						q4.addWait(time);
 						if( newpos > posy ){	// forward
 							q4.add("Y" + (newpos - SERVOY_HYSTERESIS)+ ","+DRIVER_Y_SPEED, true);	
 						}else{	// backwad
@@ -731,7 +739,7 @@ public class BarobotConnector {
 						}
 						if(disableOnReady){
 							q4.addWait(100);
-							BarobotConnector.this.y.readHallY(q4);
+							readHallY(q4);
 							q4.add("DY", true );
 						}
 				//	}

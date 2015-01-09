@@ -957,13 +957,20 @@ public class CommandRoute extends EmptyRoute {
 			}
 		});
 
-		index.put("command_hue", new command_listener() {
+		index.put("command_light_hue", new command_listener() {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,int posx, int posy) {
-				barobot.lightManager.hue(  q, 1, 50 );
+				barobot.lightManager.hue(  q, 2, 10 );
 				return true;
 			}
 		});
+		index.put("command_light_random", new command_listener() {
+			@Override
+			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,int posx, int posy) {
+				barobot.lightManager.totalRandom(  q, 1000, 0 );
+				return true;
+			}
+		});	
 
 		
 		/*

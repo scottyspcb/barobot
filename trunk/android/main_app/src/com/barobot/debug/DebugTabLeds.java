@@ -18,15 +18,14 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.SeekBar;
 import android.widget.Switch;
-import com.barobot.AppInvoker;
+
 import com.barobot.R;
 import com.barobot.activity.DebugActivity;
 import com.barobot.common.Initiator;
 import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
 import com.barobot.hardware.devices.i2c.I2C_Device_Imp;
-import com.barobot.other.Audio;
-import com.barobot.parser.Queue;
+
 
 public class DebugTabLeds extends Fragment {
 	public int tab_id	= -1 ;
@@ -46,36 +45,11 @@ public class DebugTabLeds extends Fragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
-	//	Initiator.logger.i("DebugTabLeds", "onCreateView");
+		Initiator.logger.i("DebugTabLeds", "onCreateView");
 
 		int lay = DebugActivity.layouts[tab_id];
 		//View rootView = inflater.inflate( R.layout.fragment_device_list_dummy, container, false);
 		this.rootView = inflater.inflate( lay, container, false);
-
-
-		Switch xb5 = (Switch) rootView.findViewById(R.id.light_show);	
-		xb5.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-		    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-		    	Audio a = getAudio();
-		    	if(a.isRunning()){
-		    		Initiator.logger.i( this.getClass().getName(), "getAudio stop1");
-		        	a.stop();
-		    	}else if (isChecked ) {
-		    		Initiator.logger.i( this.getClass().getName(), "getAudio start");
-		    		final BarobotConnector barobot = Arduino.getInstance().barobot;
-		        	a.start(barobot);
-		        } else {
-		        	Initiator.logger.i( this.getClass().getName(), "getAudio stop2");
-		        	a.stop();
-		        }
-		    }
-		});
-		Audio a= getAudio();
-		if(a.isRunning()){
-			xb5.setChecked(true);
-		}else{
-			xb5.setChecked(false);
-		}
 
 		Switch xb6 = (Switch) rootView.findViewById(R.id.all_lights_on);	
 		final BarobotConnector barobot = Arduino.getInstance().barobot;
@@ -93,21 +67,23 @@ public class DebugTabLeds extends Fragment {
 		xb1.setOnClickListener( new OnClickListener(){
 			@Override
 			public void onClick(View v) {
-				changeColorOf("ff");
+				Initiator.logger.i("DebugTabLeds","setOnClickListener main_color" );
+				changeColorOf("ff", 0);
 			}
 		});
 		Button xb2 = (Button) rootView.findViewById(R.id.top_color);
 		xb2.setOnClickListener( new OnClickListener(){
 			@Override
 			public void onClick(View v) {
-				changeColorOf("0f");
+				Initiator.logger.i("DebugTabLeds","setOnClickListener top_color" );
+				changeColorOf("0f", 3);
 			}
 		});
 		Button xb3 = (Button) rootView.findViewById(R.id.bottom_color);
 		xb3.setOnClickListener( new OnClickListener(){
 			@Override
 			public void onClick(View v) {
-				changeColorOf("f0");
+				changeColorOf("f0", 4);
 			}
 		});
 
@@ -115,7 +91,7 @@ public class DebugTabLeds extends Fragment {
 		cc.setOnClickListener( new OnClickListener(){
 			@Override
 			public void onClick(View v) {
-				changeCarretColor();
+				changeColorOf("f0", 1);
 			}
 		});
 
@@ -123,7 +99,6 @@ public class DebugTabLeds extends Fragment {
 		if(light_scale!=null){
 			light_scale.setProgress(I2C_Device_Imp.level);	
 		}
-		
 		Map<Integer, String> buttonToCommand = new HashMap<Integer, String>();
 		buttonToCommand.put( R.id.led_off, "led_off" );
 		buttonToCommand.put( R.id.scann_leds, "scann_leds" );
@@ -133,41 +108,10 @@ public class DebugTabLeds extends Fragment {
 
 		View rootView = inflater.inflate( lay, container, false);
 		DebugTabCommands.assignButtons(buttonToCommand, rootView );
-		
 		return rootView;
 	}
 
-	private Audio getAudio() {
-		Audio a = (Audio) AppInvoker.container.get("Audio");
-    	if(a == null ){
-    		a = new Audio();
-    		AppInvoker.container.put("Audio", a );
-    	}
-    	return a;
-	}
-
-	private void changeCarretColor() {
-		AmbilWarnaDialog dialog = new AmbilWarnaDialog(rootView.getContext(), lastcolor, 
-				new OnAmbilWarnaListener() {
-		        @Override
-		        public void onOk(AmbilWarnaDialog dialog, int color) {
-		    		int blue	= Color.blue(color);
-		        	int red		= Color.red(color);
-		        	int green	= Color.green(color);
-		    		Queue q1	= new Queue();
-		    		BarobotConnector barobot = Arduino.getInstance().barobot;	
-		  		  	barobot.lightManager.carret_color(q1, red, green,blue);
-		  		  	barobot.main_queue.add(q1);
-					lastcolor = color;
-		        }
-		        @Override
-		        public void onCancel(AmbilWarnaDialog dialog) {
-		        	Log.i("OnAmbilWarnaListener", "onCancel");
-		        }
-		});
-		dialog.show();
-	};	
-	private void changeColorOf(final String string) {
+	private void changeColorOf(final String string, final int device) {
 		AmbilWarnaDialog dialog = new AmbilWarnaDialog(rootView.getContext(), lastcolor, 
 				new OnAmbilWarnaListener() {
 		        @Override
@@ -176,7 +120,11 @@ public class DebugTabLeds extends Fragment {
 		        	int green	= Color.green(color);
 		    		int blue	= Color.blue(color);
 		    		BarobotConnector barobot = Arduino.getInstance().barobot;
-		        	barobot.lightManager.setAllLeds(barobot.main_queue, "ff", 100, red, green, blue);
+		    		if(device == 0 || device == 3 || device == 4 ){
+		    			barobot.lightManager.setAllLeds(barobot.main_queue, string, 100, red, green, blue);
+		    		}else if(device == 1 ){
+		    			barobot.lightManager.carret_color(barobot.main_queue, red, green, blue);
+		    		}
 					lastcolor = color;
 		        }
 		        @Override
@@ -186,12 +134,4 @@ public class DebugTabLeds extends Fragment {
 		});
 		dialog.show();
 	};
-	
-/*
-    public int getDipsFromPixel(float pixels) {
-        // Get the screen's density scale
-        final float scale = getResources().getDisplayMetrics().density;
-        // Convert the dps to pixels, based on density scale
-        return (int) (pixels * scale + 0.5f);
-    } */
 }
