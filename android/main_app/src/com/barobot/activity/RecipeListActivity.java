@@ -147,7 +147,8 @@ public class RecipeListActivity extends BarobotMain{
 					BarobotConnector barobot = Arduino.getInstance().barobot;
 					Queue q = barobot.main_queue;
 					barobot.lightManager.turnOffLeds(q);
-					if(!q.isBusy() && q.length() > 2 ){
+					int dd = barobot.state.getInt( "DOING_DRINK", 0 );
+					if( dd == 0 ){
 						for(Entry<Integer, Integer> entry : usage.entrySet()) {
 							    Integer key = entry.getKey();
 							    Integer value = entry.getValue();

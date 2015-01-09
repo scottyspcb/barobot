@@ -37,7 +37,7 @@ public class LightManager {
 
 	public void startRandomDemo(final Queue q) {
 		Random rn = new Random();
-		int answer = rn.nextInt(9);
+		int answer = rn.nextInt(10);
 		
 		Initiator.logger.i( "LightsManager", "answer"+ answer);
 		
@@ -56,7 +56,9 @@ public class LightManager {
 		}else if( answer == 7 ){
 			linijka(  q, 10, 700 );		// nudne
 		}else if( answer == 8 ){
-			hue(  q, 10, 50 );
+			hue(  q, 10, 10 );
+		}else if( answer == 9 ){
+			totalRandom(  q, 1000, 0 );
 		}
 		q.addWait(1000);
 	}
@@ -110,39 +112,30 @@ public class LightManager {
 			}
 		});
 	}
-	
-	
-	
-	
+
 	public void hue(final Queue q, final int repeat, final int time) {
 		q.add( new AsyncMessage( true ){		// na koncu zamknij
 			@Override
 			public String getName() {
-				return "tecza";
+				return "ranibow";
 			}
 			@Override
 			public Queue run(Mainboard dev, Queue queue) {
 				Queue q2 = new Queue();
-				turnOffLeds( q2 );
 				Initiator.logger.i( "LightsManager", "start2 loading");
-				int steps = 512;
+				int steps = 128;
 				for (int i=0;i<repeat;i+=1){
 					for (int j=0;j<steps;j+=1){
 						float val		= (float) j / (steps);
-						String color	= hsvToRgb(val*360, 100,100);
-						
-				//		Initiator.logger.i( "LightsManager", "color " + color);
-
-						String command = "Q00"+ color;
+						String command = "Q00"+ hsvToRgb(val*360, 100,100);
 						q2.add(command, true);
-						q2.addWait(50);
+						q2.addWait(time);
 					}
-					for (int j=steps;j>=0;j--){
+					for (int j=steps-1;j>=0;j--){
 						float val		= (float) j / (steps);
-						String color	= hsvToRgb(val*360, 100,100);
-						String command = "Q00"+ color;
+						String command = "Q00"+ hsvToRgb(val*360, 100,100);
 						q2.add(command, true);
-						q2.addWait(50);
+						q2.addWait(time);
 					}
 				}
 				return q2;
@@ -150,7 +143,6 @@ public class LightManager {
 		});
 	}
 
-	
 	public static String hsvToRgb(float h, float s, float v) {
 	    float r, g, b;
 	    int i;
@@ -166,11 +158,10 @@ public class LightManager {
 	     
 	    if(s == 0) { // Achromatic (grey)
 	        r = g = b = v;
-	        return   String.format("%02x", (int)(r * 256) ) 
-					+ String.format("%02x", (int)(g * 256) )
-					+ String.format("%02x", (int)(b * 256) );
+	        return    String.format("%02x", (r * 255) ) 
+					+ String.format("%02x", (g * 255) )
+					+ String.format("%02x", (b * 255) );
 	    }
-
 	    h /= 60; // sector 0 to 5
 	    i = (int) Math.floor(h);
 	    f = h - i; // factorial part of h
@@ -214,11 +205,39 @@ public class LightManager {
 	            g = p;
 	            b = q;
 	    }
-
-	    return   String.format("%02x", (int)(r * 256) ) 
-				+ String.format("%02x", (int)(g * 256) )
-				+ String.format("%02x", (int)(b * 256) );
+  /*
+		Initiator.logger.i( "LightsManager", "color " +  String.format("%02x",  (int)(r * 256) ) 
+				+"/"+ String.format("%02x", (int)(g * 256) )
+				+"/"+ String.format("%02x", (int)(b * 256) ));
+*/
+	    return   String.format("%02x",  (int)(r * 255) ) 
+				+ String.format("%02x", (int)(g * 255) )
+				+ String.format("%02x", (int)(b * 255) );
 	}
+	
+
+	public void totalRandom(final Queue q, final int repeat, final int time ) {
+		q.add( new AsyncMessage( true ){		// na koncu zamknij
+			@Override
+			public String getName() {
+				return "total random";
+			}
+			@Override
+			public Queue run(Mainboard dev, Queue queue) {
+				Random rn = new Random();
+				Queue q2 = new Queue();
+				for (int i=0;i<repeat;i+=1){
+					int color = rn.nextInt(16777216);			// 2^24
+					String command = "Q"+ String.format("%08x", color );
+					q2.add(command, true);
+					q2.addWait(time);
+				}
+				turnOffLeds( q2 );
+				return q2;
+			}
+		});	
+	}
+
 	
 	public void strobo(final Queue q, int repeat) {
 		int time =5000;
@@ -381,7 +400,6 @@ public class LightManager {
 			}
 		});
 	}
-
 	public static int flag(int degree ){
 		int a	= (int) (Math.sin( Math.toRadians(degree) ) * 127 + 127);
 		return a;
