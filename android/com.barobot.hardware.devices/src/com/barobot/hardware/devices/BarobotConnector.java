@@ -307,7 +307,7 @@ public class BarobotConnector {
 	    q.add(Constant.GETZPOS, true);
 	}
 	public void doHoming(Queue q, final boolean always) {
-		final int minpos = -1000;
+		final int minpos = -10000;
 
 		q.add(Constant.GETXPOS, true);	
 		q.add( new AsyncMessage( "A0", true ) {// check i'm over endstop (neodymium magnet)
@@ -638,11 +638,8 @@ public class BarobotConnector {
 
 	public void onConnected(Queue mq, boolean robotExistsForSure ) {
 		Initiator.logger.w("barobot.onConnected", "start" );
-
 		boolean oncePerAppStart		= state.getInt("ONCE_PER_APP_START", 0) < Constant.ANDROID_APP_VERSION ;
-		boolean oncePerRobotStart	= state.getInt("ONCE_PER_ROBOT_START", 0) == 0;
 		boolean oncePerRobotLife	= state.getInt("ONCE_PER_ROBOT_LIFE", 0) == 0;
-		boolean can_move			= state.getInt("ROBOT_CAN_MOVE", 0) < Constant.WIZARD_VERSION;
 
 		mq.add( new AsyncMessage( true ) {
 			@Override
@@ -676,26 +673,33 @@ public class BarobotConnector {
 			}
 			@Override
 			public Queue run(Mainboard dev, Queue queue) {
+				int starts2					= state.getInt("ARDUINO_STARTS", 0);
+				int starts					= state.getInt("LAST_ROBOT_STARTS", 0);
+				boolean can_move			= state.getInt("ROBOT_CAN_MOVE", 0) <= Constant.WIZARD_VERSION;
+				boolean oncePerRobotStart	= state.getInt("ONCE_PER_ROBOT_START", 0) == 0;
+				if( starts != starts2){
+					state.set("LAST_ROBOT_STARTS", starts);
+					oncePerRobotStart = true;
+				}
 				BarobotConnector.this.setInitDone( true );
-				return null;
+				Queue q = new Queue();
+				if( oncePerRobotStart ){
+					if(can_move){
+						lightManager.setAllLeds(q, "22", 0, 100, 0, 0);
+						doHoming( q, false );
+					}
+					lightManager.setAllLeds(q, "44", 255, 0, 255, 0 );
+					state.set("ONCE_PER_ROBOT_START", Constant.ANDROID_APP_VERSION );	
+				}
+				return q;
 			}
 		});
-		if( oncePerRobotStart ){
-			if(can_move){
-				lightManager.setAllLeds(mq, "22", 0, 100, 0, 0);
-				doHoming( mq, false );
-			}
-			lightManager.setAllLeds(mq, "44", 255, 0, 255, 0 );
-		}
 		if( oncePerRobotLife ){
 			state.set("ONCE_PER_ROBOT_LIFE", Constant.ANDROID_APP_VERSION );
 		}else{
 		}
 		if( oncePerAppStart ){
 			state.set("ONCE_PER_APP_START", Constant.ANDROID_APP_VERSION );
-		}
-		if( oncePerRobotStart ){
-			state.set("ONCE_PER_ROBOT_START", Constant.ANDROID_APP_VERSION );	
 		}
 		lightManager.setAllLeds(mq, "44", 255, 0, 100, 0 );
 		Initiator.logger.w("barobot.onConnected", "end" );
@@ -780,7 +784,7 @@ public class BarobotConnector {
 				}else if( hallState ==Methods.HX_STATE_3 && expected == Constant.BOTTLE_IS_BACK){	// back bottle is over the carriage 
 					Initiator.logger.e("moveZUp.hallx2", ""+hallState + ", expected: "+ expected );
 					return true;
-				}else if( bottleNum == 11 && hallState == Methods.HX_STATE_1 && expected == Constant.BOTTLE_IS_FRONT){	// the last bottle is diffrent
+				}else if( bottleNum == 11 && expected == Constant.BOTTLE_IS_FRONT && (hallState == Methods.HX_STATE_1 || hallState == Methods.HX_STATE_2)){	// the last bottle is diffrent
 					Initiator.logger.e("moveZUp.hallx3", ""+hallState + ", expected: "+ expected );
 					return true;
 				}else{		// error ???

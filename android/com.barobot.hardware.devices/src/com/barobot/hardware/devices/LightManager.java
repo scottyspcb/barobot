@@ -58,7 +58,7 @@ public class LightManager {
 		}else if( answer == 8 ){
 			hue(  q, 10, 10 );
 		}else if( answer == 9 ){
-			totalRandom(  q, 1000, 0 );
+			totalRandom(  q, 1000, 20 );
 		}
 		q.addWait(1000);
 	}
