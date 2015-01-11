@@ -1,4 +1,4 @@
-<mm_project serial_port="COM7" board="Arduino Pro or Pro Mini (3.3V, 8 MHz) w/ ATmega328" programmer="" includePaths="" libPaths="" libs="" default="yes" useCodeAutomation="yes" linkPrintfVersion="1" serialPortSpeed="" >
+<mm_project serial_port="COM12" board="Arduino Pro or Pro Mini (3.3V, 8 MHz) w/ ATmega328" programmer="" includePaths="" libPaths="" libs="" default="no" useCodeAutomation="yes" linkPrintfVersion="1" serialPortSpeed="" >
   <files>
     <file name="RF_HandlingData_2_main.h" open="no" />
     <file name="rf_handlingdata_2_main.cpp" open="yes" />
@@ -8,7 +8,12 @@
   <externals>
     <external name="C:\PROG\arduino\libraries\SPI\SPI.cpp" />
     <external name="C:\PROG\arduino\libraries\SPI\SPI.h" />
-    <external name="C:\PROG\arduino\libraries\RF24\RF24.h" />
-    <external name="C:\PROG\arduino\libraries\RF24\RF24.cpp" />
+    <external name="C:\PROG\arduino\libraries\Adafruit_WS2801\Adafruit_WS2801.cpp" />
+    <external name="C:\PROG\arduino\libraries\Adafruit_WS2801\Adafruit_WS2801.h" />
+    <external name="C:\PROG\arduino\libraries\Mirf\Mirf.h" />
+    <external name="C:\PROG\arduino\libraries\Mirf\Mirf.cpp" />
+    <external name="C:\PROG\arduino\libraries\Mirf\nRF24L01.h" />
+    <external name="C:\PROG\arduino\libraries\Mirf\MirfHardwareSpiDriver.h" />
+    <external name="C:\PROG\arduino\libraries\Mirf\MirfHardwareSpiDriver.cpp" />
   </externals>
 </mm_project>
