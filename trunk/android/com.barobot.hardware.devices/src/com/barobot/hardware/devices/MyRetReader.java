@@ -129,6 +129,7 @@ public class MyRetReader implements RetReader {
 				barobot.x.setMargin(-cx);	// ostatnia znana pozycja jest marginesem
 				Queue mq		= barobot.main_queue;
 				mq.clear();
+				state.set( "ONCE_PER_ROBOT_START","0");
 				Initiator.logger.i("MyRetReader.decoded", decoded);
 				barobot.onConnected(barobot.main_queue, true );
 				return true;
@@ -718,7 +719,6 @@ public class MyRetReader implements RetReader {
 				};
 				// 125,1,66,0,0,0,228,2,177,1
 			*/
-
 		//	int state_name	= parts[2];
 			short hpos		= (short) (parts[6] << 8);
 			hpos			+= (short)parts[7];
@@ -762,7 +762,12 @@ public class MyRetReader implements RetReader {
 			Initiator.logger.saveLog("bottle "+ num +" FRONT"+ "frontNum: "+ frontNum+" BackNum: "+ BackNum+ "from " +fromHPos + " to " + toHPos );
 		}
 		if( bottleIsBack == row ){
-			int hposx = (fromHPos + toHPos) / 2;
+			int hposx = (fromHPos + toHPos) / 2 + 5;
+			if( num < 11 ){
+				hposx+=5;									// +5 to move from dangerous border between 2 states
+			}else{		// for 11 (the last one)
+				hposx+=5;									// -5 to move from dangerous border between 2 states
+			}
 			if( bottleIsBack == Constant.BOTTLE_IS_BACK){
 		//		hposx -= 20;
 			}
@@ -774,7 +779,7 @@ public class MyRetReader implements RetReader {
 			}
 		}else{
 			Initiator.logger.i("bottle "+ num +"", "nie zgadza sie");
-			if(row ==  Constant.BOTTLE_IS_BACK ){
+			if(row == Constant.BOTTLE_IS_BACK ){
 				Initiator.logger.i("bottle "+ num +"", "nie zgadza sie. spodziewano sie back a jest front");	
 			}else if(row ==  Constant.BOTTLE_IS_FRONT ){
 				Initiator.logger.i("bottle "+ num +"", "nie zgadza sie. spodziewano sie front a jest back");
