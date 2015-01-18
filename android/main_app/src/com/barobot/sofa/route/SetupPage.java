@@ -1,5 +1,8 @@
 package com.barobot.sofa.route;
 
+import com.barobot.common.constant.Constant;
+import com.barobot.hardware.Arduino;
+import com.barobot.hardware.devices.BarobotConnector;
 import com.barobot.web.route.EmptyRoute;
 import com.barobot.web.server.SofaServer;
 import com.x5.template.Chunk;
@@ -25,6 +28,12 @@ public class SetupPage extends EmptyRoute{
               append(toString(session.getParms())).append("</blockquote></p>");
 
         action_chunk.set("body2", sb.toString() );*/
+
+		BarobotConnector barobot = Arduino.getInstance().barobot;
+		action_chunk.set("version1", ""+Constant.ANDROID_APP_VERSION );
+		action_chunk.set("version2", barobot.state.get("ARDUINO_VERSION", "0") );  
+		action_chunk.set("version3",""+Constant.WIZARD_VERSION );  
+
     	return action_chunk.toString();
 	}
 }

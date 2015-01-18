@@ -16,7 +16,8 @@ public class LightManager {
 	public static int[] bottom_index	= {-1,24,-1,25,-1,26,-1,27,-1,28,-1,29};			// numery butelek na numery ledow bottom
 	public static int[] bottom_leds		= {24,25,26,27,28,29};
 	public LedOrder lo;
-	private boolean started = false;;
+	public boolean demoStarted			= false;
+	private AsyncMessage label			= null;
 
 	public LightManager(BarobotConnector barobot2) {
 		this.barobot	= barobot2;
@@ -24,46 +25,13 @@ public class LightManager {
 			lo = new LedOrder();
 		}
 	}
-
-	public void startDemo() {
-		this.started  = true;
-		Queue q = barobot.main_queue;
+	public void startDemo(Queue q) {
+		this.demoStarted  = true;
 		inifinityDemo(q);
+		label = q.addLabel( "demo" );
 		turnOffLeds(q);
 	}
-	public void stopDemo() {
-		this.started  = false;		// block next schema, clear queue also required
-	}
-
-	public void startRandomDemo(final Queue q) {
-		Random rn = new Random();
-		int answer = rn.nextInt(10);
-		
-		Initiator.logger.i( "LightsManager", "answer"+ answer);
-		
-		if( answer == 0 ){
-			nazmiane( q, 10, 700 );
-		}else if( answer == 1 ){
-			tecza(  q, 10 );			// ok
-		}else if( answer == 2 ){
-			loading( q, 10, 200 );			// ok
-		}else if( answer == 3 ){
-			mrygajRGB(  q, 10 , 400);	// ok
-		}else if( answer == 4 ){
-			flaga( q, 10, 700 );
-		}else if( answer == 5 ){
-			strobo(  q, 60 );			// ok
-		}else if( answer == 7 ){
-			linijka(  q, 10, 700 );		// nudne
-		}else if( answer == 8 ){
-			hue(  q, 10, 10 );
-		}else if( answer == 9 ){
-			totalRandom(  q, 1000, 20 );
-		}
-		q.addWait(1000);
-	}
-
-	public void inifinityDemo(final Queue q) {
+	private void inifinityDemo(final Queue q) {
 		q.add( new AsyncMessage( true ){		// na koncu zamknij
 			@Override
 			public String getName() {
@@ -72,13 +40,48 @@ public class LightManager {
 			@Override
 			public Queue run(Mainboard dev, Queue queue) {
 				Queue q2 = new Queue();
-				if(started){
+				if(demoStarted){
 					startRandomDemo(q2);
 					inifinityDemo(q2);
 				}
 				return q2;
 			}
 		});
+	}
+
+	public void stopDemo(Queue q) {
+		if(this.demoStarted ){
+			this.demoStarted  = false;
+			q.gotoLabel( label );
+			barobot.main_queue.clear();
+		}
+	}
+
+	private void startRandomDemo(final Queue q) {
+		Random rn = new Random();
+		int answer = rn.nextInt(11);
+		Initiator.logger.i( "LightsManager", "answer"+ answer);
+		if( answer == 0 ){
+			nazmiane( q, 10, 700 );
+		}else if( answer == 1 ){
+			tecza(  q, 10 );			// ok
+		}else if( answer == 2 ){
+			loading( q, 5, 150 );		// ok
+		}else if( answer == 3 ){
+			mrygajRGB(  q, 10 , 400);	// ok
+		}else if( answer == 4 ){
+			flaga( q, 10, 700 );
+		}else if( answer == 5 ){
+			strobo(  q, 60 );			// ok
+		}else if( answer == 7 ){
+			linijka(  q, 10, 700 );		// boring but ok
+		}else if( answer == 8 ){	
+			hue(  q, 10, 20 );
+		}else if( answer == 9 ){		// fast hue
+			hue(  q, 10, 5 );		
+		}else if( answer == 10 ){
+			totalRandom(  q, 200, 30, 160 );
+		}
 	}
 
 	public void loading(final Queue q, final int repeat, final int time) {
@@ -92,11 +95,7 @@ public class LightManager {
 				Queue q2 = new Queue();
 				turnOffLeds( q2 );
 				Initiator.logger.i( "LightsManager", "start2 loading");
-
 				for (int i=0;i<repeat;i+=1){
-					//barobot.driver_x.d.moveTo( q, 1000);
-					//barobot.setLedsByBottle(q, 1, "01", 255, 255, 0, 0, true);
-					//barobot.color_by_bottle(q2, 1, true, 255, 255, 0);
 					color_by_bottle(q2, 1, true, 200, 0, 0);	q2.addWait( time );color_by_bottle(q2, 1, true, 10, 0, 0);
 					color_by_bottle(q2, 3, true, 200, 0, 0);	q2.addWait( time );color_by_bottle(q2, 3, true, 10, 0, 0);
 					color_by_bottle(q2, 5, true, 200, 0, 0);	q2.addWait( time );color_by_bottle(q2, 5, true, 10, 0, 0);
@@ -107,6 +106,18 @@ public class LightManager {
 					color_by_bottle(q2, 7, true, 200, 0, 0);	q2.addWait( time );color_by_bottle(q2, 7, true, 10, 0, 0);
 					color_by_bottle(q2, 5, true, 200, 0, 0);	q2.addWait( time );color_by_bottle(q2, 5, true, 10, 0, 0);
 					color_by_bottle(q2, 3, true, 200, 0, 0);	q2.addWait( time );color_by_bottle(q2, 3, true, 10, 0, 0);
+				}
+				for (int i=0;i<repeat;i+=1){
+					color_by_bottle(q2, 0, true, 200, 0, 0);	color_by_bottle(q2, 1, true, 200, 0, 0);	q2.addWait( time/2 );	color_by_bottle(q2, 0, true, 10, 0, 0);	color_by_bottle(q2, 1, true, 10, 0, 0);
+					color_by_bottle(q2, 2, true, 200, 0, 0);	color_by_bottle(q2, 3, true, 200, 0, 0);	q2.addWait( time/2 );	color_by_bottle(q2, 2, true, 10, 0, 0);	color_by_bottle(q2, 3, true, 10, 0, 0);
+					color_by_bottle(q2, 4, true, 200, 0, 0);	color_by_bottle(q2, 5, true, 200, 0, 0);	q2.addWait( time/2 );	color_by_bottle(q2, 4, true, 10, 0, 0);	color_by_bottle(q2, 5, true, 10, 0, 0);
+					color_by_bottle(q2, 6, true, 200, 0, 0);	color_by_bottle(q2, 7, true, 200, 0, 0);	q2.addWait( time/2 );	color_by_bottle(q2, 6, true, 10, 0, 0);	color_by_bottle(q2, 7, true, 10, 0, 0);
+					color_by_bottle(q2, 8, true, 200, 0, 0);	color_by_bottle(q2, 9, true, 200, 0, 0);	q2.addWait( time/2 );	color_by_bottle(q2, 8, true, 10, 0, 0);	color_by_bottle(q2, 9, true, 10, 0, 0);
+					color_by_bottle(q2, 10, true, 200, 0, 0);	color_by_bottle(q2, 11, true, 200, 0, 0);	q2.addWait( time/2 );	color_by_bottle(q2, 10, true, 10, 0, 0);	color_by_bottle(q2, 11, true, 10, 0, 0);
+					color_by_bottle(q2, 8, true, 200, 0, 0);	color_by_bottle(q2, 9, true, 200, 0, 0);	q2.addWait( time/2 );	color_by_bottle(q2, 8, true, 10, 0, 0);	color_by_bottle(q2, 9, true, 10, 0, 0);
+					color_by_bottle(q2, 6, true, 200, 0, 0);	color_by_bottle(q2, 7, true, 200, 0, 0);	q2.addWait( time/2 );	color_by_bottle(q2, 6, true, 10, 0, 0);	color_by_bottle(q2, 7, true, 10, 0, 0);
+					color_by_bottle(q2, 4, true, 200, 0, 0);	color_by_bottle(q2, 5, true, 200, 0, 0);	q2.addWait( time/2 );	color_by_bottle(q2, 4, true, 10, 0, 0);	color_by_bottle(q2, 5, true, 10, 0, 0);
+					color_by_bottle(q2, 2, true, 200, 0, 0);	color_by_bottle(q2, 3, true, 200, 0, 0);	q2.addWait( time/2 );	color_by_bottle(q2, 2, true, 10, 0, 0);	color_by_bottle(q2, 3, true, 10, 0, 0);
 				}
 				return q2;
 			}
@@ -143,19 +154,17 @@ public class LightManager {
 		});
 	}
 
-	public static String hsvToRgb(float h, float s, float v) {
+	private static String hsvToRgb(float h, float s, float v) {
 	    float r, g, b;
 	    int i;
 	    float f, p, q, t;
-	     
-	    // Make sure our arguments stay in-range
+
 	    h = Math.max(0, Math.min(360, h));
 	    s = Math.max(0, Math.min(100, s));
 	    v = Math.max(0, Math.min(100, v));
 
 	    s /= 100;
 	    v /= 100;
-	     
 	    if(s == 0) { // Achromatic (grey)
 	        r = g = b = v;
 	        return    String.format("%02x", (r * 255) ) 
@@ -210,13 +219,12 @@ public class LightManager {
 				+"/"+ String.format("%02x", (int)(g * 256) )
 				+"/"+ String.format("%02x", (int)(b * 256) ));
 */
-	    return   String.format("%02x",  (int)(r * 255) ) 
+	    return  String.format("%02x",  (int)(r * 255) ) 
 				+ String.format("%02x", (int)(g * 255) )
 				+ String.format("%02x", (int)(b * 255) );
 	}
-	
 
-	public void totalRandom(final Queue q, final int repeat, final int time ) {
+	public void totalRandom(final Queue q, final int repeat, final int min_time, final int max_time ) {
 		q.add( new AsyncMessage( true ){		// na koncu zamknij
 			@Override
 			public String getName() {
@@ -230,6 +238,7 @@ public class LightManager {
 					int color = rn.nextInt(16777216);			// 2^24
 					String command = "Q"+ String.format("%08x", color );
 					q2.add(command, true);
+					int time = rn.nextInt(max_time - min_time) + min_time;
 					q2.addWait(time);
 				}
 				turnOffLeds( q2 );
@@ -237,9 +246,8 @@ public class LightManager {
 			}
 		});	
 	}
-
 	
-	public void strobo(final Queue q, int repeat) {
+	private void strobo(final Queue q, int repeat) {
 		int time =5000;
 		while (repeat-- > 0){
 			turnOffLeds(q);
@@ -250,7 +258,7 @@ public class LightManager {
 			time=time-10;
 		}
 	}
-	public void nazmiane(final Queue q, final int repeat, final int time ) {
+	private void nazmiane(final Queue q, final int repeat, final int time ) {
 		final int colile = 40;
 		q.add( new AsyncMessage( true ){
 			@Override
@@ -289,7 +297,7 @@ public class LightManager {
 		});
 	}
 
-	public void linijka(final Queue q, final int repeat, final int time) {
+	private void linijka(final Queue q, final int repeat, final int time) {
 		q.add( new AsyncMessage( true ){
 			@Override
 			public String getName() {
@@ -321,7 +329,7 @@ public class LightManager {
 		});
 	}
 
-	public void flaga(final Queue q, final int repeat, final int time) {
+	private void flaga(final Queue q, final int repeat, final int time) {
 		q.add( new AsyncMessage( true ){
 			@Override
 			public String getName() {
@@ -400,7 +408,7 @@ public class LightManager {
 			}
 		});
 	}
-	public static int flag(int degree ){
+	private static int flag(int degree ){
 		int a	= (int) (Math.sin( Math.toRadians(degree) ) * 127 + 127);
 		return a;
 	}
@@ -613,6 +621,10 @@ public class LightManager {
 		}else{
 			color_by_bottle( q, bottleNum, true, 255, 255, 255 );	// all
 		}
+	}
+	public void floatToHSV(Queue q, float val) {
+		String command = "Q00"+ hsvToRgb((1-val)*360, 100,100);
+		q.add(command, true);
 	}
 }
 

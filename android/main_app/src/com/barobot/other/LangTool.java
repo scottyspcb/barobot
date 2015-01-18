@@ -106,10 +106,8 @@ public class LangTool {
 		trn.language_id = langId;
 		trn.translated = translatedName;
 		trn.insert();
-
 	//	Initiator.logger.i(Constant.TAG,"InsertTranslation table_name" + trn.table_name +", translatedName" +translatedName+", id" +id+", langId" +langId );
 	}
-	
 
 	private static Map<Integer, String> languages = null;
 	public static String getlangCode(int language_id2) {

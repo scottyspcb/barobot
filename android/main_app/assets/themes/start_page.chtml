@@ -54,7 +54,7 @@ function showList(){
 	drink_list.empty();
 	for(var i =0;i<drinkList.length;i++){
 		var size = getSize(drinkList[i]);
-		var tpl = '<div class="drink_item" id="drink_'+drinkList[i].Id+'" drink_id="'+drinkList[i].Id+'" onclick="selectDrink( this )">'+drinkList[i].Name+'<span class="label label-default  pull-right">'+size+'ml</span></div>';
+		var tpl = '<div class="drink_item" id="drink_'+drinkList[i].id+'" drink_id="'+drinkList[i].id+'" onclick="selectDrink( this )">'+drinkList[i].name+'<span class="label label-default  pull-right">'+size+'ml</span></div>';
 		drink_list.append(tpl);
 	}
 	$("#window_main_question").hide(1000);
@@ -82,12 +82,12 @@ function selectDrink( btn ){
 			drink_details.show(500);
 		}
 
-		$("#drink_name").text(drink.Name);
-		var ings = drink.Ingredients;
+		$("#drink_name").text(drink.name);
+		var ings = drink.ingredients;
 		drink_ingredients.empty();
 		for( k=0; k<ings.length;k++){
 			ing = ings[k];
-			var tpl = '<div class="ing_item" id="ing_'+ing.Id+'" liquid_id="'+ing.Liquid_id+'">'+ing.Name+'<span class="badge pull-right">'+ing.Quantity+'ml</span></div>';
+			var tpl = '<div class="ing_item" id="ing_'+ing.id+'" liquid_id="'+ing.liquid_id+'">'+ing.name+'<span class="badge pull-right">'+ing.quantity+'ml</span></div>';
 			drink_ingredients.append(tpl);
 		}
 		$("#doDrinkButton").attr("drink_id", drink_id );
@@ -125,7 +125,7 @@ function goBack(){
 
 function getDrinkById( drink_id ){
 	for(var i =0;i<drinkList.length;i++){
-		if(drinkList[i].Id == drink_id ){
+		if(drinkList[i].id == drink_id ){
 			return drinkList[i];
 		}
 	}
@@ -133,8 +133,8 @@ function getDrinkById( drink_id ){
 }
 function getSize( drink ){
 	var qty = 0;
-	for(var j =0;j<drink.Ingredients.length;j++){
-		qty+=drink.Ingredients[j].Quantity;
+	for(var j =0;j<drink.ingredients.length;j++){
+		qty+=drink.ingredients[j].quantity;
 	}
 	return qty;
 }

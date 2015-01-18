@@ -541,6 +541,18 @@ public class Queue {
 			return this.output.size();
 		}
 	}
+
+	public AsyncMessage addLabel(String string) {
+		AsyncMessage am = new AsyncMessage(true){
+			
+	
+		};
+		return am;
+	}
+
+	public void gotoLabel(AsyncMessage label) {
+		
+	}
 }
 
 /*
