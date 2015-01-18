@@ -17,7 +17,5 @@ public class Important_position extends Model<Important_position>{
 	public boolean is_end_max;
 	public boolean is_start;
 	public boolean is_end;
-
-	@ManyToOne
-	public Robot robot_id;
+	public int robot_id;
 }

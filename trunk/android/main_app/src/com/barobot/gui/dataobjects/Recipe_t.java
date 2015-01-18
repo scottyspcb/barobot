@@ -8,6 +8,8 @@ import org.orman.mapper.annotation.Entity;
 import org.orman.mapper.annotation.OneToMany;
 import org.orman.mapper.annotation.PrimaryKey;
 
+import com.barobot.common.Initiator;
+import com.barobot.gui.database.BarobotData;
 import com.barobot.other.LangTool;
 
 @Entity
@@ -19,10 +21,10 @@ public class Recipe_t extends Model<Recipe_t>{
 	public boolean unlisted;
 	public int photoId;
 	public int counter;
-
 	public String getName() {
 		return LangTool.translateName(id, "recipe", name );
 	}
+
 	@Override
 	public String toString() {
 		return getName();
@@ -30,7 +32,6 @@ public class Recipe_t extends Model<Recipe_t>{
 
 	@OneToMany (toType = Ingredient_t.class, onField = "recipe" )
 	public EntityList<Recipe_t, Ingredient_t> ingredients = new EntityList<Recipe_t, Ingredient_t>(Recipe_t.class, Ingredient_t.class, this);
-
 	public List<Ingredient_t> getIngredients()
 	{
 		if(ingredients.size() == 0 ){
@@ -38,30 +39,22 @@ public class Recipe_t extends Model<Recipe_t>{
 		}
 		return ingredients;
 	}
-	
+
 	public void addIngredient(Ingredient_t ing)
 	{
 		Ingredient_t existing = findIngredient(ing.liquid);
-		if (existing == null)
-		{
+		if (existing == null){
+			ing.recipe = this.id;
 			ing.insert();
-			this.ingredients.add(ing);
-			this.ingredients.refreshList();
-			this.update();
-		}
-		else
-		{
+		}else{
 			existing.quantity += ing.quantity;
 			existing.update();
 		}
 	}
-	
-	Ingredient_t findIngredient(Liquid_t liquid)
-	{
-		for(Ingredient_t ing : ingredients)
-		{
-			if (ing.liquid.id == liquid.id)
-			{
+
+	private Ingredient_t findIngredient(int liquid_id){
+		for(Ingredient_t ing : ingredients){
+			if (ing.liquid == liquid_id){
 				return ing;
 			}
 		}
@@ -76,12 +69,12 @@ public class Recipe_t extends Model<Recipe_t>{
 		int value3	= 0;// Strength
 		int weights	= 0;
 
-		for(Ingredient_t ing : ingredients)
-		{
-			value0+= (ing.liquid.sweet * ing.quantity);
-			value1+= (ing.liquid.sour * ing.quantity);
-			value2+= (ing.liquid.bitter * ing.quantity);
-			value3+= (ing.liquid.strenght * ing.quantity);
+		for(Ingredient_t ing : ingredients){
+			Liquid_t liquid = ing.getLiquid();
+			value0+= (liquid.sweet * ing.quantity);
+			value1+= (liquid.sour * ing.quantity);
+			value2+= (liquid.bitter * ing.quantity);
+			value3+= (liquid.strenght * ing.quantity);
 			weights+= ing.quantity;
 		}
 		if (weights > 0){
@@ -93,9 +86,23 @@ public class Recipe_t extends Model<Recipe_t>{
 		return res;	
 	}
 	
-	public int[] getTaste() 
-	{
+	public int[] getTaste() {
 		List<Ingredient_t> ingredients = getIngredients();
 		return getTaste(ingredients);
+	}
+
+	@Override
+	public void insert() {
+		super.insert();
+		BarobotData.reportChange( this.getClass(), this.id );
+	}
+	@Override
+	public void update() {
+		super.update();
+		BarobotData.reportChange( this.getClass(), this.id );
+	}
+
+	public void refreshList() {
+		this.ingredients.refreshList();
 	}
 }

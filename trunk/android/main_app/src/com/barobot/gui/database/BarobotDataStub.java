@@ -27,25 +27,25 @@ public class BarobotDataStub {
 
 		Liquid_t liq = new Liquid_t();
 		liq.name = "Wyborowa";
-		liq.type = type;
+		liq.type = type.id;
 		liq.sweet = 10;
 		liq.insert();
 		
 		liq = new Liquid_t();
 		liq.name = "Rum";
-		liq.type = type;
+		liq.type = type.id;
 		liq.sweet = 25;
 		liq.insert();
 		
 		Liquid_t liq2 = new Liquid_t();
 		liq2.name = "Samo Dobro";
-		liq2.type = type;
+		liq2.type = type.id;
 		liq2.sweet = 75;
 		liq2.insert();
 		
 		Liquid_t liq3 = new Liquid_t();
 		liq3.name = "Finlandia";
-		liq3.type = type;
+		liq3.type = type.id;
 		liq3.insert();
 		
 		Product prod = new Product();
@@ -64,39 +64,40 @@ public class BarobotDataStub {
 		prod3.insert();
 		
 		Ingredient_t ing = new Ingredient_t();
-		ing.liquid = liq;
+		ing.liquid = liq.id;
+		ing.recipe = 
 		ing.quantity = 40;
 		ing.insert();
 		
 		Ingredient_t ing2 = new Ingredient_t();
-		ing2.liquid = liq2;
+		ing2.liquid = liq2.id;
 		ing2.quantity = 60;
 		ing2.insert();
 		
 		Ingredient_t ing3 = new Ingredient_t();
-		ing3.liquid = liq3;
+		ing3.liquid = liq3.id;
 		ing3.quantity = 20;//BarobotConnector.getCapacity();
 		ing3.insert();
 
 		Recipe_t rec = new Recipe_t();
 		rec.name = "A long drink name to see how it fits";
 		rec.insert();
-		rec.ingredients.add(ing);
-		rec.ingredients.add(ing2);
-		rec.ingredients.add(ing3);
+		rec.addIngredient(ing);
+		rec.addIngredient(ing2);
+		rec.addIngredient(ing3);
 		
 		rec = new Recipe_t();
 		rec.name = "My favorite drink";
 		rec.favorite = true;
 		rec.photoId = 2;
 		rec.insert();
-		rec.ingredients.add(ing2);
+		rec.addIngredient(ing2);
 		
 		rec = new Recipe_t();
 		rec.name = "You should not see me!";
 		rec.unlisted = true;
 		rec.insert();
-		rec.ingredients.add(ing3);
+		rec.addIngredient(ing3);
 		
 		Slot slot = BarobotData.GetSlot(1);
 		slot.product = prod;

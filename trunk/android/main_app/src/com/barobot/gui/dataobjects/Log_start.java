@@ -4,6 +4,7 @@ import org.orman.mapper.Model;
 import org.orman.mapper.annotation.Entity;
 import org.orman.mapper.annotation.PrimaryKey;
 
+import com.barobot.other.JsonSerializable;
 import com.eclipsesource.json.JsonObject;
 
 @Entity

@@ -31,7 +31,6 @@ public class OptionsActivity extends BarobotMain {
 		super.onResume();
 		this.checkVersion( false, false );
 	}
-
 	private int checkVersion( boolean alertResult, boolean force ) {
 		if(!wasVersionChecked || force ){
 			wasVersionChecked = true;
@@ -39,7 +38,6 @@ public class OptionsActivity extends BarobotMain {
 		}
 		return 1;
 	}
-
 	public void onOptionsButtonClicked(View view)
 	{
 		Intent serverIntent = null;
@@ -80,7 +78,7 @@ public class OptionsActivity extends BarobotMain {
 	        	Initiator.logger.i( this.getClass().getName(), "getAudio start");
 	        	a.start(barobot);
 
-	        	AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
+	        	AlertDialog.Builder builder1 = new AlertDialog.Builder(BarobotMain.getInstance());
 	            builder1.setMessage("Light show started");
 	            builder1.setCancelable(true);
 	            builder1.setPositiveButton("Close",
@@ -97,7 +95,6 @@ public class OptionsActivity extends BarobotMain {
 			break;
 		case R.id.options_calibrate_button:
 			serverIntent = new Intent(this, ValidatorActivity.class);
-		//	CommandRoute.runCommand("command_find_bottles");
 			break;
 
 		case R.id.option345:
@@ -119,21 +116,22 @@ public class OptionsActivity extends BarobotMain {
 			break;
 
 		case R.id.options_demo_button:
-
 			CommandRoute.runCommand("command_demo");
-			AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
+            this.finish();
+            /*
+    		AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
             builder1.setMessage("Demo started");
             builder1.setCancelable(true);
             builder1.setPositiveButton("Close", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
                     dialog.cancel();
+                    BarobotConnector barobot = Arduino.getInstance().barobot;
                     barobot.lightManager.stopDemo();
                     barobot.main_queue.clear();
                 }
             });
             AlertDialog alert11 = builder1.create();
-            alert11.show();
-
+            alert11.show();*/
 			break;
 		}
 		if(serverIntent!=null){
