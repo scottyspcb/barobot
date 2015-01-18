@@ -436,21 +436,21 @@ public class BarobotConnector {
 					x.moveTo( q2, tx);
 					type = 2;
 				}else if(cx != tx && cy != ty && ty <= SERVOY_HFRONT_POS  ){	// change X and Y and target = front
-					y.move( q2, ty, disableOnReady );
+					y.move( q2, ty, true );
 					x.moveTo( q2, tx );
 					type = 3;
 				}else if(cx != tx && cy < ty && cy <= SERVOY_HFRONT_POS  ){	// change X and Y and current = front, target = back
 					x.moveTo( q2, tx );
-					y.move( q2, ty, disableOnReady );
+					y.move( q2, ty, true );
 					type = 4;
 				}else if(cx == tx && cy != ty ){		// change Y
-					y.move( q2, ty, disableOnReady );	
+					y.move( q2, ty, true );	
 					type = 5;
 				}else{									// (change X and Y ) or (change X and Y is back)
 					int SERVOY_BACK_NEUTRAL = state.getInt("SERVOY_BACK_NEUTRAL", 0 );
 					y.move( q2, SERVOY_BACK_NEUTRAL, true);
 					x.moveTo( q2, tx );
-					y.move( q2, ty, disableOnReady );
+					y.move( q2, ty, true );
 				}
 				Initiator.logger.i("moveToBottle","type"+ type);
 				lightManager.color_by_bottle(q2, num, true, 0, 255, 0);
@@ -952,7 +952,7 @@ public class BarobotConnector {
 		int maybe_counter = 0;
 		int min_diff_down = 0;
 		int start_level = 1000;
-		
+
 		public int tray = EMPTY;
 
 		Map<Long, List<Integer>> aMap = new HashMap<Long, List<Integer>>();
