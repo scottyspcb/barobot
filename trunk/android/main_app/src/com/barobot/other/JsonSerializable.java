@@ -1,4 +1,4 @@
-package com.barobot.gui.dataobjects;
+package com.barobot.other;
 
 import com.eclipsesource.json.JsonObject;
 

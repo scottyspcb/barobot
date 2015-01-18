@@ -4,6 +4,8 @@ package com.barobot.parser.message;
 public class History_item{
 	public static final boolean OUTOUT = true;
 	public static final boolean INPUT = false;
+	public String mark				= "";
+	public boolean isMark			= false;
 
 	public String command			= "";
 	protected boolean direction		= History_item.OUTOUT;
@@ -23,10 +25,14 @@ public class History_item{
 
 	public String toString(){
 		String prefix = "";
+
 		if(this.direction){
 			prefix = "<-- ";
 		}else{
 			prefix = "--> ";
+		}
+		if(isMark){
+			return prefix + mark;
 		}
 		return prefix + command;
 	}

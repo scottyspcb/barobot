@@ -6,15 +6,19 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
 
+import org.orman.dbms.ResultList;
+import org.orman.dbms.ResultList.ResultRow;
 import org.orman.mapper.Model;
 import org.orman.mapper.ModelQuery;
 import org.orman.sql.C;
+import org.orman.sql.Query;
 
 import com.barobot.AppInvoker;
 import com.barobot.BarobotMain;
 import com.barobot.android.Android;
 import com.barobot.common.Initiator;
 import com.barobot.common.constant.Constant;
+import com.barobot.gui.database.BarobotData;
 import com.barobot.gui.dataobjects.Liquid_t;
 import com.barobot.gui.dataobjects.Recipe_t;
 import com.barobot.gui.dataobjects.Type;
@@ -687,7 +691,7 @@ public class CommandRoute extends EmptyRoute {
 			}
 		});
 
-		index.put("command_options_lights_off", new command_listener() {
+		index.put("command_options_light_show_on", new command_listener() {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
@@ -705,7 +709,7 @@ public class CommandRoute extends EmptyRoute {
 			}
 		});
 
-		index.put("command_options_lights_on", new command_listener() {
+		index.put("command_options_light_show_off", new command_listener() {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
@@ -732,7 +736,7 @@ public class CommandRoute extends EmptyRoute {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
-				barobot.lightManager.startDemo();
+				barobot.lightManager.startDemo( mq );
 				return true;
 			}
 		});
@@ -967,12 +971,36 @@ public class CommandRoute extends EmptyRoute {
 		index.put("command_light_random", new command_listener() {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,int posx, int posy) {
-				barobot.lightManager.totalRandom(  q, 1000, 0 );
+				barobot.lightManager.totalRandom(  q, 200, 30, 160 );
+				return true;
+			}
+		});
+		index.put("command_light_loading", new command_listener() {
+			@Override
+			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,int posx, int posy) {
+				barobot.lightManager.loading( q, 5, 150 );	
+				return true;
+			}
+		});
+
+		index.put("command_test_selection", new command_listener() {
+			@Override
+			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,int posx, int posy) {
+				Initiator.logger.i("command_test_selection","test1"); 
+				int[] b = BarobotData.getReciepeIds( false, true );
+				Initiator.logger.i("command_test_selection","test2"); 
+				List<Recipe_t> recipes = BarobotData.getReciepesById( b );
+				Initiator.logger.i("command_test_selection","test2"); 
+				for(int i =0; i<b.length;i++){
+					Initiator.logger.i("command_test_selection",""+i+" = " + b[i]); 
+				}
+				for(int i =0; i<recipes.size();i++){
+					Initiator.logger.i("command_test_selection",""+i+" = " +" " +recipes.get(i).getName()); 
+				}
 				return true;
 			}
 		});	
 
-		
 		/*
 		index.put("command_power_off1", new command_listener() {
 			@Override

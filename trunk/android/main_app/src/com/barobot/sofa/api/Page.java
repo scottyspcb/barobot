@@ -43,6 +43,7 @@ public abstract class Page extends EmptyRoute {
 			//Initiator.logger.i("res4 : ", res );
 			return res;
 		} catch (Exception e){
+			Initiator.logger.e("Page.run.Exceptionres: ", e.getMessage(), e );
 			return "{ \"status\" : \"FATAL_ERROR\", \"message\": \""+e.getMessage()+"\"}";
 		}
 	}

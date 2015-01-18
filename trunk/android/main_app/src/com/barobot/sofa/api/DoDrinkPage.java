@@ -1,6 +1,7 @@
 package com.barobot.sofa.api;
 
 import com.barobot.common.Initiator;
+import com.barobot.gui.database.BarobotData;
 import com.barobot.gui.dataobjects.Engine;
 import com.barobot.gui.dataobjects.Recipe_t;
 import com.barobot.hardware.Arduino;
@@ -57,8 +58,7 @@ public class DoDrinkPage extends Page {
 			return new JsonResponseBuilder().status("ERROR")
 					.message("Cannot connect to barobot engine").build();
 		}
-
-		Recipe_t recipe = engine.getRecipe(id);
+		Recipe_t recipe = BarobotData.getOneObject(Recipe_t.class, id);
 		if (recipe == null) {
 			return new JsonResponseBuilder().status("ERROR")
 					.message("recipe_id=" + id + " does not exist").build();
@@ -70,6 +70,9 @@ public class DoDrinkPage extends Page {
 					.message("You lack appropriate ingredients").build();
 		}
 
+		if(barobot.lightManager.demoStarted){
+			barobot.lightManager.stopDemo(barobot.main_queue);
+		}
 
 		Queue q_ready		= new Queue();	
 		barobot.lightManager.carret_color( q_ready, 0, 255, 0 );

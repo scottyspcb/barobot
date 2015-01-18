@@ -17,9 +17,10 @@ import android.widget.TextView;
 import com.barobot.android.Android;
 import com.barobot.android.InternetHelpers;
 import com.barobot.common.Initiator;
-import com.barobot.gui.dataobjects.StartupException;
 import com.barobot.hardware.Arduino;
+import com.barobot.hardware.devices.BarobotConnector;
 import com.barobot.other.LangTool;
+import com.barobot.other.StartupException;
 
 public class BarobotMain extends Activity {
 	private static BarobotMain instance;
@@ -152,9 +153,7 @@ public class BarobotMain extends Activity {
 			showRaportError( lastException );
 		}
 	}
-	
 }
-
 
 /*
 List<Translated_name> l = Model.fetchQuery(ModelQuery.select().from(Translated_name.class).where(

@@ -9,18 +9,27 @@
 	<br />
 
 	<h2>Tests and calibration</h2>
-	<a class="btn btn-success" style="margin:10px;font-size:30px" href="/setup/drinks">Manage drinks</a>
-	<a class="btn btn-success" style="margin:10px;font-size:30px" href="/setup/edit_db">Edit DB</a>
+	<a class="btn btn-warning" style="margin:10px;font-size:30px" href="/setup/drinks">Manage drinks TODO</a>
+	<a class="btn btn-warning" style="margin:10px;font-size:30px" href="/setup/edit_db">Edit DB TODO</a>
 	<a class="btn btn-success" style="margin:10px;font-size:30px" href="/servo">Servo test</a>
 
 	<br /><!--a class="btn btn-success" style="margin:10px;font-size:30px" href="/hardware_queue">Queue</a-->
 
+	<h2>Statistics</h2>
+	<a class="btn btn-warning" style="margin:10px;font-size:30px" href="/stats/main">Statistics TODO</a>
+	<a class="btn btn-warning" style="margin:10px;font-size:30px" href="/stats/raport">Raport TODO</a>
+
 	<h2>API</h2>
 	<a class="btn btn-success" style="margin:10px;font-size:30px" href="/api/get_recipes">API get_recipes</a>
 	<a class="btn btn-success" style="margin:10px;font-size:30px" href="/api/do_drink">API do_drink</a>
-
+	<a class="btn btn-success" style="margin:10px;font-size:30px" href="/api/get_products">API get_products</a>
+	<a class="btn btn-success" style="margin:10px;font-size:30px" href="/api/get_liquids">API get_liquids</a>
+	<a class="btn btn-success" style="margin:10px;font-size:30px" href="/api/get_ingredients">API get_ingredients</a>
+	<a class="btn btn-success" style="margin:10px;font-size:30px" href="/api/get_liquid_types">API get_liquid_types</a>
+	<a class="btn btn-success" style="margin:10px;font-size:30px" href="/api/get_slots">API get_slots</a>
+	
+	
+	<br /><br /><br /><br />
+	<br />Android software version: {$version1}, Firmware version: {$version2}
 </div>
 {#}
-
-
-
