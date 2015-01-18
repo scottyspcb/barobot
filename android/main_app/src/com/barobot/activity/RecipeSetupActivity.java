@@ -23,6 +23,7 @@ import android.widget.TextView;
 import com.barobot.BarobotMain;
 import com.barobot.R;
 import com.barobot.common.Initiator;
+import com.barobot.gui.database.BarobotData;
 import com.barobot.gui.dataobjects.Engine;
 import com.barobot.gui.dataobjects.Ingredient_t;
 import com.barobot.gui.dataobjects.Liquid_t;
@@ -66,11 +67,8 @@ public class RecipeSetupActivity extends BarobotMain implements OnItemSelectedLi
 					Recipe_t recipe = new Recipe_t();
 					recipe.name = name;
 					recipe.unlisted = false;
-					Initiator.logger.i( this.getClass().getName(), "onAddRecipeButtonClicked: insert" );
 					recipe.insert();
-					
 					LangTool.InsertTranslation(recipe.id, "recipe", name);
-					
 					UpdateRecipes(recipe.id);
 				}
 			});
@@ -80,7 +78,7 @@ public class RecipeSetupActivity extends BarobotMain implements OnItemSelectedLi
 
 	// usun przepis
 	public void removeRecipe(View view) {
-		Recipe_t recipe = Model.fetchSingle(ModelQuery.select().from(Recipe_t.class).where(C.eq("id", currentRecipe.id)).limit(1).getQuery(),Recipe_t.class);
+		Recipe_t recipe = BarobotData.getOneObject(Recipe_t.class, currentRecipe.id );
 		if(recipe!=null){
 			Spinner spinner = (Spinner) findViewById(R.id.recipe_spinner);
 			int pos = spinner.getSelectedItemPosition();
@@ -109,17 +107,14 @@ public class RecipeSetupActivity extends BarobotMain implements OnItemSelectedLi
 		listView.setAdapter(mAdapter);
 		listView.setOnItemClickListener(new OnItemClickListener() {
 			@Override
-			public void onItemClick(AdapterView<?> parent, View view, int position,
-					long id) {
-	
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				Ingredient_t ing = (Ingredient_t) parent.getItemAtPosition(position);
-				Engine.GetInstance().removeIngredient(ing);
-				currentRecipe.ingredients.refreshList();
+				ing.delete();
+				currentRecipe.refreshList();
 				UpdateRecipeDetails();
 			}	
 		});
 	}
-	
 	public void UpdateRecipes() {
 		UpdateRecipes(0);
 	}
@@ -128,7 +123,7 @@ public class RecipeSetupActivity extends BarobotMain implements OnItemSelectedLi
 	{
 		Spinner spinner = (Spinner) findViewById(R.id.recipe_spinner);
 		ArrayAdapter<Recipe_t> recipeAdapter = new ArrayAdapter<Recipe_t>(this, R.layout.spinner_layout);
-		List<Recipe_t> recipes =  Engine.GetInstance().getAllRecipes();
+		List<Recipe_t> recipes =  BarobotData.GetRecipes();
 		recipeAdapter.addAll(recipes);
 		spinner.setAdapter(recipeAdapter);
 		spinner.setOnItemSelectedListener(this);
@@ -156,8 +151,7 @@ public class RecipeSetupActivity extends BarobotMain implements OnItemSelectedLi
 	// TODO: Wyodrębnić do oddzielnego fragmentu
 	public void FillTypesList()
 	{
-		Engine engine = Engine.GetInstance();
-		List<Type> types = engine.getTypes();
+		List<Type> types = BarobotData.GetTypes();
 		ArrayAdapter<Type> mAdapter = new ArrayAdapter<Type>(this, android.R.layout.simple_list_item_1, types);
 		ListView listView = (ListView) findViewById(R.id.recipe_types_list);
 		listView.setAdapter(mAdapter);
@@ -188,12 +182,13 @@ public class RecipeSetupActivity extends BarobotMain implements OnItemSelectedLi
 
 				Liquid_t liquid = (Liquid_t) parent.getItemAtPosition(position);
 				Ingredient_t ing = new Ingredient_t();
-				ing.liquid = liquid;
+				ing.liquid = liquid.id;
 				ing.quantity = 20;
 
 		//		BarobotConnector barobot = Arduino.getInstance().barobot;
 		//		int a = barobot.getCapacity(8);
 				currentRecipe.addIngredient(ing);
+				currentRecipe.refreshList();
 				UpdateRecipeDetails();
 			}
 		});

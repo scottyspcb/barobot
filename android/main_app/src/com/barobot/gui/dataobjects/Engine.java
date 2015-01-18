@@ -23,6 +23,7 @@ import com.barobot.common.constant.Constant;
 import com.barobot.gui.database.BarobotData;
 import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
+import com.barobot.other.StartupException;
 import com.barobot.parser.Queue;
 import com.barobot.parser.message.AsyncMessage;
 import com.barobot.parser.message.Mainboard;
@@ -31,7 +32,6 @@ import com.barobot.parser.utils.Decoder;
 public class Engine {
 	private List<Slot> slots;
 	private List<Recipe_t> recipes;
-	private List<Recipe_t> favoriteRecipes;
 	private static Map<Integer, Slot> liquid2slot = null;
 	private static Engine instance;
 
@@ -96,15 +96,10 @@ public class Engine {
 			BarobotConnector barobot	= Arduino.getInstance().barobot;
 			int robotId					= barobot.getRobotId();
 			Query q						= ModelQuery.select().from(Slot.class).where(C.eq("robot_id", robotId)).getQuery();
-
 		//	Initiator.logger.w("Engine.loadSlots.sql", q.toString());
-
-			slots		= Model.fetchQuery(q, Slot.class);
-
-			// slots in robot with robotId
-			liquid2slot = new HashMap<Integer, Slot>();
-			for(Slot sl : slots)
-			{
+			slots						= Model.fetchQuery(q, Slot.class);
+			liquid2slot					= new HashMap<Integer, Slot>();		// slots in robot with robotId
+			for(Slot sl : slots){
 				if(sl.product!= null && sl.product.liquid != null ){
 					liquid2slot.put(sl.product.liquid.id, sl);
 				}
@@ -118,7 +113,6 @@ public class Engine {
 		slots			= null;
 		liquid2slot		= null;
 		recipes			= null;
-		favoriteRecipes = null;
 	}
 	public void invalidateSlots()
 	{
@@ -126,69 +120,27 @@ public class Engine {
 		liquid2slot = null;
 	}
 
-	public List<Type> getTypes() {
-		return BarobotData.GetTypes();
-	}
-
-	public List<Recipe_t> getRecipes()
-	{
-		if (recipes == null)
-		{
+	public List<Recipe_t> getRecipes(){
+		if (recipes == null){
 			recipes = Filter(BarobotData.GetListedRecipes());
 		}
 		return recipes;
 	}
-	
-	public Recipe_t getRecipe(int id)
-	{
-		return BarobotData.GetRecipe(id);
-	}
 
-	public List<Recipe_t> getFavoriteRecipes()
-	{
-		if (favoriteRecipes == null)
-		{
-			favoriteRecipes =Filter(BarobotData.GetFavoriteRecipes()); 
-		}
-		return favoriteRecipes;
-	}
-
-	private List<Recipe_t> Filter(List<Recipe_t> recipes)
-	{
+	private List<Recipe_t> Filter(List<Recipe_t> recipes){
 		List<Recipe_t> result = new ArrayList<Recipe_t>();
 		
-		for(Recipe_t recipe : recipes)
-		{
-			if (CheckRecipe(recipe))
-			{
+		for(Recipe_t recipe : recipes){
+			if (CheckRecipe(recipe)){
 				result.add(recipe);
 			}
 		}
 		return result;
 	}
 
-	public List<Recipe_t> getAllRecipes()
-	{
-		return BarobotData.GetRecipes();
-	}
-
-	public void addRecipe(Recipe_t recipe, List<Ingredient_t> ingredients)
-	{
-		for(Ingredient_t ing : ingredients)
-		{
-			ing.insert();
-			recipe.ingredients.add(ing);
-		}
-	}
-	public void removeIngredient(Ingredient_t ingredient){
-		ingredient.delete();
-	}
-	
-	public Boolean CheckRecipe(Recipe_t recipe)
-	{
-		List<Integer> bottleSequence = GenerateSequence(recipe.getIngredients());
-		if (bottleSequence == null)
-		{
+	public Boolean CheckRecipe(Recipe_t recipe){
+		Map<Integer, Integer> bottleSequence = GenerateBottleUsage(recipe.getIngredients());
+		if (bottleSequence == null){
 			return false; // We could not find some of the ingredients
 		}
 		return true;
@@ -196,7 +148,6 @@ public class Engine {
 
 	public Queue Pour(final Recipe_t recipe, String orderSource)
 	{
-		//	List<Integer> bottleSequence = GenerateSequence(ings);
 		List<Ingredient_t> ings = recipe.getIngredients();
 		final BarobotConnector barobot = Arduino.getInstance().barobot;
 		final Log_drink ld	= new Log_drink();
@@ -213,8 +164,7 @@ public class Engine {
 		ld.size_ml			= quantity;
 		ld.size_real_ml		= real_quantity;
 		ld.error_code		= 0;
-
-		Queue q = new Queue();
+		Queue q				= new Queue();
 		q.add( new AsyncMessage( true ) {
 			@Override	
 			public String getName() {
@@ -250,7 +200,7 @@ public class Engine {
 					barobot.pour(q, slot.dispenser_type, position-1, false, true );
 				}
 				saveStats( slot, q, count );
-				saveStats( ing.liquid, q, count);
+				saveStats( ing.getLiquid(), q, count);
 
 			}else{// We could not find some of the ingredients
 			}
@@ -341,9 +291,13 @@ public class Engine {
 	public Map<Integer, Integer> GenerateBottleUsage(List<Ingredient_t> ingredients)
 	{
 		Map<Integer, Integer> nMap 	= new HashMap<Integer, Integer>();
+		loadSlots();
 		for(Ingredient_t ing : ingredients)
 		{
-			Slot slot = getIngredientSlot(ing);
+			if(ing.liquid == 0){
+				return null;	
+			}
+			Slot slot = liquid2slot.get(ing.liquid);
 			if (slot == null){
 				return null;
 			}else{
@@ -357,9 +311,9 @@ public class Engine {
 
 	public Slot getIngredientSlot(Ingredient_t ing){
 		loadSlots();
-		if(ing.liquid == null){
+		if(ing.liquid == 0){
 			return null;	
 		}
-		return liquid2slot.get(ing.liquid.id);	// id to be more universal
+		return liquid2slot.get(ing.liquid);	// id to be more universal
 	}
 }

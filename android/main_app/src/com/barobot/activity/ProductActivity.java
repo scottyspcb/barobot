@@ -16,7 +16,6 @@ import com.barobot.gui.dataobjects.Type;
 import com.barobot.gui.utils.CapacityProductWrapper;
 import com.barobot.other.LangTool;
 
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -114,7 +113,7 @@ public class ProductActivity extends BarobotMain {
 				setTextViewText(new CapacityProductWrapper(mCurrentProduct).toString(), 
 						R.id.product_capacity_text );
 				setTextViewText(mCurrentProduct.liquid.getName(), R.id.product_liquid_text);
-				setTextViewText(mCurrentProduct.liquid.type.getName(), R.id.product_type_text);
+				setTextViewText(mCurrentProduct.liquid.getLiquidType().getName(), R.id.product_type_text);
 			}else{
 				ClearCurrentProduct();
 			}
@@ -123,8 +122,7 @@ public class ProductActivity extends BarobotMain {
 
 	public void FillTypesList()
 	{
-		Engine engine = Engine.GetInstance();
-		List<Type> types = engine.getTypes();
+		List<Type> types = BarobotData.GetTypes();
 		ArrayAdapter<Type> mAdapter = new ArrayAdapter<Type>(this, R.layout.item_layout, types);
 		ListView listView = (ListView) findViewById(R.id.product_type_list);
 		listView.setAdapter(mAdapter);
@@ -272,7 +270,7 @@ public class ProductActivity extends BarobotMain {
 					Liquid_t liquid = new Liquid_t();
 					TextView tView = (TextView) dialogView.findViewById(R.id.dialog_liquid_name);
 					liquid.name = tView.getText().toString();
-					liquid.type = mCurrentType;
+					liquid.type = mCurrentType.id;
 					liquid.insert();
 
 					LangTool.InsertTranslation(liquid.id, "liquid", tView.getText().toString());

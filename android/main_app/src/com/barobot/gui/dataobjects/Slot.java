@@ -5,6 +5,7 @@ import org.orman.mapper.annotation.Entity;
 import org.orman.mapper.annotation.ManyToOne;
 import org.orman.mapper.annotation.PrimaryKey;
 
+import com.barobot.gui.database.BarobotData;
 import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
 
@@ -26,6 +27,7 @@ public class Slot extends Model<Slot>{
 	public int position_id;
 	public int counter;
 	public int robot_id;
+
 	@ManyToOne
 	public Product product;
 
@@ -56,5 +58,16 @@ public class Slot extends Model<Slot>{
 		if( always || dd == 0 ){				// only if queue empty or isAlways
 			barobot.lightManager.setLedsByBottle( barobot.main_queue, position - 1, "00", 0, r, g, b );	
 		}
+	}
+	
+	@Override
+	public void insert() {
+		super.insert();
+		BarobotData.reportChange( this.getClass(), this.id );
+	}
+	@Override
+	public void update() {
+		super.update();
+		BarobotData.reportChange( this.getClass(), this.id );
 	}
 }

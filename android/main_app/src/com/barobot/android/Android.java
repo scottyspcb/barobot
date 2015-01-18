@@ -55,6 +55,7 @@ import com.barobot.R;
 import com.barobot.activity.BarobotActivity;
 import com.barobot.common.Initiator;
 import com.barobot.gui.database.BarobotData;
+import com.barobot.gui.dataobjects.Recipe_t;
 import com.barobot.gui.dataobjects.Robot;
 import com.barobot.gui.dataobjects.Slot;
 import com.barobot.hardware.Arduino;
@@ -274,9 +275,10 @@ public class Android {
 	}
 
 	public static void createRobot( int old_robot_id, int new_robot_id){
-		Query sql = ModelQuery.select().from(Robot.class).where(C.eq("id", new_robot_id)).limit(1).getQuery();
-		Robot robot = Model.fetchSingle(sql,Robot.class);
-		Initiator.logger.i("Android.createRobot",sql.getExecutableSql()); 
+		//Query sql = ModelQuery.select().from(Robot.class).where(C.eq("id", new_robot_id)).limit(1).getQuery();
+		//Robot robot = Model.fetchSingle(sql,Robot.class);
+		Robot robot =  BarobotData.getOneObject(Robot.class, new_robot_id );
+		//Initiator.logger.i("Android.createRobot",sql.getExecutableSql());
 		if(robot==null){
 			// FUCK YOU ORMAN ORM. I WANT TO SET ID WITHOUT AUTOINC!!!!
 			Query query4 = new Query("INSERT OR REPLACE INTO `robot` (`id`,`serial`,`sversion`,`is_current`) VALUES ('"+new_robot_id+"','"+new_robot_id+"','"+new_robot_id+"','1')");
@@ -289,7 +291,7 @@ public class Android {
 			robot.is_current= true;
 			robot.insert();
 			*/
-			robot = Model.fetchSingle(ModelQuery.select().from(Robot.class).where(C.eq("id", new_robot_id)).limit(1).getQuery(),Robot.class);
+			robot =  BarobotData.getOneObject(Robot.class, new_robot_id );
 		}
 
 		for (int i= 1 ; i <= 12; i++)

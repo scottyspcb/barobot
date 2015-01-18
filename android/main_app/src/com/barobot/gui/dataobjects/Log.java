@@ -2,9 +2,9 @@ package com.barobot.gui.dataobjects;
 
 import org.orman.mapper.Model;
 import org.orman.mapper.annotation.Entity;
-import org.orman.mapper.annotation.ManyToOne;
 import org.orman.mapper.annotation.PrimaryKey;
 
+import com.barobot.other.JsonSerializable;
 import com.eclipsesource.json.JsonObject;
 
 @Entity
@@ -16,9 +16,7 @@ public class Log extends Model<Log> implements JsonSerializable{
 	public String content;
 	public int time;
 	public int send_time;
-
-	@ManyToOne
-	public Robot robot_id;
+	public int robot_id;
 
 	@Override
 	public JsonObject getJson() {

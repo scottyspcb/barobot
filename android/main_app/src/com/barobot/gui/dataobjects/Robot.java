@@ -4,6 +4,8 @@ import org.orman.mapper.Model;
 import org.orman.mapper.annotation.Entity;
 import org.orman.mapper.annotation.PrimaryKey;
 
+import com.barobot.gui.database.BarobotData;
+import com.barobot.other.JsonSerializable;
 import com.eclipsesource.json.JsonObject;
 
 @Entity
@@ -24,4 +26,15 @@ public class Robot extends Model<Robot> implements JsonSerializable{
 			.add( "is_current", this.is_current );
 		return jsonObject;
 	}	
+
+	@Override
+	public void insert() {
+		super.insert();
+		BarobotData.reportChange( this.getClass(), this.id );
+	}
+	@Override
+	public void update() {
+		super.update();
+		BarobotData.reportChange( this.getClass(), this.id );
+	}
 }

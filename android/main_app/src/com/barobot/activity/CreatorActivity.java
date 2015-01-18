@@ -30,9 +30,12 @@ import com.barobot.gui.fragment.RecipeAttributesFragment;
 import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
 import com.barobot.other.LangTool;
+import com.barobot.other.ProgressTask;
+import com.barobot.other.ProgressTask.UiTask;
 import com.barobot.parser.Queue;
 
 public class CreatorActivity extends BarobotMain{
+	private String unnamedName	= "Unnamed Drink";
 	private int[] slot_nums = {0,0,0,0,0,0,0,0,0,0,0,0,0};
 	private int[] ids;
 	private int[] drops;
@@ -189,7 +192,7 @@ public class CreatorActivity extends BarobotMain{
 					if (slot.product != null){
 						Ingredient_t ingredient = new Ingredient_t();
 						drink_size += slot.dispenser_type;
-						ingredient.liquid = slot.product.liquid;
+						ingredient.liquid = slot.product.liquid.id;
 						ingredient.quantity = slot.dispenser_type;
 						addIngredient(position, ingredient);
 						ShowIngredients(true);
@@ -282,13 +285,13 @@ public class CreatorActivity extends BarobotMain{
 		progress.setMessage(msg);
 		progress.show();
 
-		Thread t = new Thread(new Runnable() {  
+		Thread t = new Thread(new Runnable() {
 	         @Override
 	         public void run() {
-		        	final Recipe_t tempRecipe = CreateDrink("Unnamed Drink", false);
+		        	final Recipe_t tempRecipe = CreateDrink(unnamedName, false);
 		     		Thread t = new Thread(new Runnable() {
 		                 @Override
-		                 public void run() { 
+		                 public void run() {
 		 	        	 	BarobotConnector barobot = Arduino.getInstance().barobot;
 							Queue q_ready		= new Queue();	
 							barobot.lightManager.carret_color( q_ready, 0, 255, 0 );
@@ -352,12 +355,9 @@ public class CreatorActivity extends BarobotMain{
 		}
 	}
 	
-	Ingredient_t findIngredient(Liquid_t liquid)
-	{
-		for(Ingredient_t ing : ingredients)
-		{
-			if (ing.liquid.id == liquid.id)
-			{
+	Ingredient_t findIngredient(int liquid_id){
+		for(Ingredient_t ing : ingredients){
+			if (ing.liquid == liquid_id){
 				return ing;
 			}
 		}
@@ -382,8 +382,9 @@ public class CreatorActivity extends BarobotMain{
 		{
 			TextView tview = (TextView) findViewById(ids[idx]);
 			int counter = drops[idx];
-			if (counter > 5) counter = 5;
-			
+			if (counter > 5){ 
+				counter = 5;
+			}
 			for(Drawable myOldDrawable : tview.getCompoundDrawables())
 			{
 				if (myOldDrawable != null) {
@@ -397,30 +398,51 @@ public class CreatorActivity extends BarobotMain{
 	private Recipe_t CreateDrink(String name, Boolean showOnList)
 	{
 		Recipe_t recipe = new Recipe_t();
-		recipe.name = name;
+		recipe.name		= name;
 		recipe.unlisted = !showOnList;
-		//if(showOnList){
-			recipe.insert();
-			Engine ee = Engine.GetInstance();
-			ee.addRecipe(recipe, ingredients);
-			if(showOnList){
-				ee.invalidateData();
-				LangTool.InsertTranslation(recipe.id, "recipe", name);
-			}
-		//}
+		recipe.insert();
+		for(Ingredient_t ing : ingredients){
+			recipe.addIngredient(ing);
+		}
+		recipe.refreshList();
+
+		if(showOnList){
+			Engine.GetInstance().invalidateData();
+			LangTool.InsertTranslation(recipe.id, "recipe", name);
+			UiTask tt = new UiTask() {
+				@Override
+				public void compute() {
+					Engine engine = Engine.GetInstance();
+					engine.loadSlots();
+					engine.getRecipes();
+				}
+				@Override
+				public void close() {
+					setFullScreen();
+					Initiator.logger.i("showOnList.close","setFullScreen2"); 
+					runOnUiThread(new Runnable() {
+						  public void run() {
+							  setFullScreen();
+							  Initiator.logger.i("showOnList.close","setFullScreen3"); 
+						  }
+					});
+				}
+			};
+			ProgressTask dd = new ProgressTask( this, tt );
+			dd.execute();
+			setFullScreen();
+			Initiator.logger.i("showOnList.close","setFullScreen1"); 
+		}
 		return recipe;
 	}
-
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		return true;
 	}
-
 	public void gotoMainMenu(View view){
 		this.finish();
 		overridePendingTransition(R.anim.push_left_in,R.anim.push_left_out);
 	}
-	
 /*
 	public void onQueueFinished() {
 		clear();

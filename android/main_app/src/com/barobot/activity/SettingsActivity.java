@@ -81,11 +81,8 @@ public class SettingsActivity extends PreferenceActivity {
 		bindPreferenceSummaryToValue(findPreference("SERVOZ_PAC_TIME_WAIT"));
 		bindPreferenceSummaryToValue(findPreference("SERVOZ_PAC_TIME_WAIT_VOL"));
 		bindPreferenceSummaryToValue(findPreference("SERVOY_REPEAT_TIME"));
-		
 		bindPreferenceSummaryToValue(findPreference("GLASS_DIFF"));
 		bindPreferenceSummaryToValue(findPreference("LIGH_GLASS_DIFF"));
-	     
-
 		bindPreferenceSummaryToValue(findPreference("NEED_HALL_X"));	
 
 /*

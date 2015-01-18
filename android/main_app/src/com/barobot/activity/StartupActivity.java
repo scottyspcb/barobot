@@ -45,6 +45,7 @@ public class StartupActivity extends BarobotMain{
 		Intent serverIntent = null;
 		int animIn = R.anim.push_left_in;
 		int animOut = R.anim.push_left_out;
+		BarobotConnector barobot = Arduino.getInstance().barobot;
 		switch(view.getId())
 		{
 			case R.id.wizard_list:
@@ -52,11 +53,17 @@ public class StartupActivity extends BarobotMain{
 				serverIntent.putExtra(RecipeListActivity.MODE_NAME, RecipeListActivity.Mode.Normal.ordinal());
 				animIn = R.anim.push_left_in;
 				animOut = R.anim.push_left_out;
+				if(barobot.lightManager.demoStarted){ 
+					barobot.lightManager.stopDemo(barobot.main_queue);
+				}
 				break;
 			case R.id.wizard_own:
 				serverIntent = new Intent(this, CreatorActivity.class);
 				animIn = R.anim.push_right_in;
 				animOut = R.anim.push_right_out;
+				if(barobot.lightManager.demoStarted){
+					barobot.lightManager.stopDemo(barobot.main_queue);
+				}
 				break;	
 			case R.id.button_settings:
 				serverIntent = new Intent(this, OptionsActivity.class);
