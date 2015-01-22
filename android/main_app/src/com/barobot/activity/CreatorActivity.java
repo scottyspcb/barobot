@@ -9,6 +9,7 @@ import android.content.DialogInterface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
@@ -158,9 +159,6 @@ public class CreatorActivity extends BarobotMain{
 		if(attrFrag!=null){
 			int[] taste = Recipe_t.getTaste(ingredients);
 			attrFrag.SetTaste(taste);
-
-		//	attrFrag.SetAttributes(Distillery.getSweet(ingredients), Distillery.getSour(ingredients)
-		//		, Distillery.getBitter(ingredients), Distillery.getStrength(ingredients));
 		}
 		final BarobotConnector barobot = Arduino.getInstance().barobot;
 		for (int i = 1; i<=12 ; i++){							// 1 - 12
@@ -443,23 +441,24 @@ public class CreatorActivity extends BarobotMain{
 		this.finish();
 		overridePendingTransition(R.anim.push_left_in,R.anim.push_left_out);
 	}
-/*
-	public void onQueueFinished() {
-		clear();
-		new AlertDialog.Builder(this)
-	    .setTitle("Success!")
-	    .setMessage("Finished pouring")
-	    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-	        public void onClick(DialogInterface dialog, int which) { 
-	            // continue with delete
-	        }
-	     })
-	    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-	        public void onClick(DialogInterface dialog, int which) { 
-	            // do nothing
-	        }
-	     })
-	     .show();
+
+	
+	int configKey = KeyEvent.KEYCODE_VOLUME_DOWN;
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if ( keyCode == configKey) {
+	//		Initiator.logger.i("onKeyDown","KEYCODE_VOLUME"); 
+	//        return true;
+	    }
+	    return super.onKeyDown(keyCode, event);
 	}
-*/
+	/*
+	@Override
+	public boolean onKeyUp(int keyCode, KeyEvent event) {
+		if ( keyCode == configKey) {
+			Initiator.logger.i("onKeyUp","KEYCODE_VOLUME"); 
+	  //      return true;
+	    }
+	    return super.onKeyUp(keyCode, event);
+	}*/
 }

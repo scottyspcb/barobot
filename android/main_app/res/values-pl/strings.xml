@@ -115,8 +115,8 @@
     <string name="options_stop">Stop</string>
     <string name="title_activity_wizard_start">Kreator</string>
     <string name="unlock">Odblokuj</string>
-    <string name="add_recipe_btn">+ przepis</string>
-    <string name="remove_recipe_btn">- przepis</string>
+    <string name="add_recipe_btn">Dodaj nowy przepis</string>
+    <string name="remove_recipe_btn">Usuń przepis</string>
     <string name="goto_main_menu">Główne menu</string>
     <string name="myip">Pokaż adres urządzenia</string>
 
@@ -129,6 +129,12 @@
     <string name="preparing_drink_title">Obliczam składniki...</string>
     <string name="preparing_drink_message">Jeszcze chwilkę</string>
     
+	<array name="recipe_option">  
+		<item>Edytuj przepis...</item>
+		<item>Schowaj przepis</item>
+		<item>Usuń przepis...</item>
+		<item>Anuluj</item>
+	</array>
     
     
 </resources>

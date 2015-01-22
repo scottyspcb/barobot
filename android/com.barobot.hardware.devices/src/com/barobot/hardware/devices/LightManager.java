@@ -138,13 +138,19 @@ public class LightManager {
 				for (int i=0;i<repeat;i+=1){
 					for (int j=0;j<steps;j+=1){
 						float val		= (float) j / (steps);
-						String command = "Q00"+ hsvToRgb(val*360, 100,100);
+						int[] arr		= hsvToRgb(val*360, 100,100);
+						String command = "Q00"+  String.format("%02x",  arr[0] ) 
+								+ String.format("%02x", arr[1]  )
+								+ String.format("%02x", arr[2]  );
 						q2.add(command, true);
 						q2.addWait(time);
 					}
 					for (int j=steps-1;j>=0;j--){
 						float val		= (float) j / (steps);
-						String command = "Q00"+ hsvToRgb(val*360, 100,100);
+						int[] arr		= hsvToRgb(val*360, 100,100);
+						String command = "Q00"+  String.format("%02x",  arr[0] ) 
+								+ String.format("%02x", arr[1]  )
+								+ String.format("%02x", arr[2]  );
 						q2.add(command, true);
 						q2.addWait(time);
 					}
@@ -154,7 +160,7 @@ public class LightManager {
 		});
 	}
 
-	private static String hsvToRgb(float h, float s, float v) {
+	private static int[] hsvToRgb(float h, float s, float v) {
 	    float r, g, b;
 	    int i;
 	    float f, p, q, t;
@@ -167,9 +173,8 @@ public class LightManager {
 	    v /= 100;
 	    if(s == 0) { // Achromatic (grey)
 	        r = g = b = v;
-	        return    String.format("%02x", (r * 255) ) 
-					+ String.format("%02x", (g * 255) )
-					+ String.format("%02x", (b * 255) );
+		    int[] a = {(int)(r * 255),(int)(g * 255),(int)(b * 255)};
+		    return a;
 	    }
 	    h /= 60; // sector 0 to 5
 	    i = (int) Math.floor(h);
@@ -219,9 +224,9 @@ public class LightManager {
 				+"/"+ String.format("%02x", (int)(g * 256) )
 				+"/"+ String.format("%02x", (int)(b * 256) ));
 */
-	    return  String.format("%02x",  (int)(r * 255) ) 
-				+ String.format("%02x", (int)(g * 255) )
-				+ String.format("%02x", (int)(b * 255) );
+	    
+	    int[] a = {(int)(r * 255),(int)(g * 255),(int)(b * 255)};
+	    return a;
 	}
 
 	public void totalRandom(final Queue q, final int repeat, final int min_time, final int max_time ) {
@@ -622,9 +627,15 @@ public class LightManager {
 			color_by_bottle( q, bottleNum, true, 255, 255, 255 );	// all
 		}
 	}
-	public void floatToHSV(Queue q, float val) {
-		String command = "Q00"+ hsvToRgb((1-val)*360, 100,100);
+
+	public int[] floatToHSV(Queue q, float val) {
+		float val2		= (val*310 +80) %360;
+		int[] arr 		= hsvToRgb(val2, 100,100);
+		String command	= "Q00"+  String.format("%02x",  arr[0] ) 
+						+ String.format("%02x", arr[1]  )
+						+ String.format("%02x", arr[2]  );
 		q.add(command, true);
+		return arr;
 	}
 }
 

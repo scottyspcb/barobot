@@ -1,4 +1,4 @@
-<mm_project serial_port="COM12" board="Arduino Pro or Pro Mini (3.3V, 8 MHz) w/ ATmega328" programmer="" includePaths="" libPaths="" libs="" default="no" useCodeAutomation="yes" linkPrintfVersion="1" serialPortSpeed="" >
+<mm_project serial_port="COM7" board="!Arduino Pro or Pro Mini (5V, 16 MHz) w/ ATmega328" programmer="" includePaths="" libPaths="" libs="" default="no" useCodeAutomation="yes" linkPrintfVersion="1" serialPortSpeed="" >
   <files>
     <file name="RF_HandlingData_2_main.h" open="no" />
     <file name="rf_handlingdata_2_main.cpp" open="yes" />

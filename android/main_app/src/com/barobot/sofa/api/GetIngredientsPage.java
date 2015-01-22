@@ -91,7 +91,8 @@ public class GetIngredientsPage extends Page {
 				writer.name("quantity").value(ing.quantity);
 				writer.name("recipe_id").value( ing.recipe );
 				writer.name("liquid_id").value(ing.liquid);
-
+/*
+ * 				// to slow
 				Recipe_t r = ing.getRecipe();
 				if(r == null ){
 					writer.name("recipe_name").value("");		
@@ -103,7 +104,7 @@ public class GetIngredientsPage extends Page {
 					writer.name("liquid_name").value("");	
 				}else{
 					writer.name("liquid_name").value(liquid.getName());
-				}
+				}*/
 				writer.endObject();
 			}
 			writer.endArray();

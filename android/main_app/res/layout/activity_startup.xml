@@ -76,10 +76,10 @@
                 android:textStyle="bold" />
 
             <FrameLayout
+                android:id="@+id/startup_border"
                 android:layout_width="1dp"
                 android:layout_height="match_parent"
                 android:background="#ffffff" >
-
             </FrameLayout>
 
         </FrameLayout>

@@ -3,10 +3,13 @@ package com.barobot.other;
 import java.util.HashMap;
 import java.util.Map;
 
+import android.graphics.Color;
 import android.media.AudioFormat;
 import android.media.MediaRecorder;
 
+import com.barobot.activity.StartupActivity;
 import com.barobot.audio.DetectorThread;
+import com.barobot.common.Initiator;
 import com.barobot.common.constant.Pwm;
 import com.barobot.common.interfaces.OnSignalsDetectedListener;
 import com.barobot.hardware.devices.BarobotConnector;
@@ -15,6 +18,7 @@ import com.barobot.parser.message.AsyncMessage;
 import com.barobot.parser.message.Mainboard;
 
 public class Audio implements OnSignalsDetectedListener{
+	private static Audio instance = null;
 	private DetectorThread detectorThread;
 	private AndroidRecorderThread recorderThread;
 
@@ -24,9 +28,10 @@ public class Audio implements OnSignalsDetectedListener{
 	public boolean sync		= false;
 	BarobotConnector barobot = null;
 	private boolean disabled	= false;
-	
+
 	public void start( final BarobotConnector barobot2 ) {
-		this.barobot = barobot2;
+		barobot = barobot2;	
+		barobot.lightManager.demoStarted	= true;
 		disabled = false;
 		Queue q = barobot.main_queue;
 		q.add( new AsyncMessage( true ) {
@@ -66,14 +71,7 @@ public class Audio implements OnSignalsDetectedListener{
 
 	public void stop() {
 		disabled = true;
-		/*
-		barobot.main_queue.add( new AsyncMessage( true ) {
-			@Override
-			public Queue run(Mainboard dev, Queue queue) {
-				this.name		= "Audio.stop";
-				return null;
-			}
-		} );*/
+
 		if (recorderThread != null) {
 			recorderThread.stopRecording();
 			recorderThread = null;
@@ -83,15 +81,15 @@ public class Audio implements OnSignalsDetectedListener{
 			detectorThread = null;
 		}
 		max = 10;
-		barobot.lightManager.turnOffLeds(barobot.main_queue);
+		barobot.lightManager.demoStarted	= false;
+		StartupActivity.changeStartupColor(Color.WHITE);
 	}
 
+	float div2 = 0;
+	
+	
 	@Override
 	public void peek(final float averageAbsValue) {
-		if(disabled){
-			return;
-		}
-		//final int current = (int) averageAbsValue;
 		final long current = (long) (averageAbsValue * (averageAbsValue));
 		if( current > max ){
 			max = current;
@@ -99,21 +97,31 @@ public class Audio implements OnSignalsDetectedListener{
 		if( current < min ){
 			min = current;
 		}
-		float overmin			= current - min;
-		float scope				= max - min;
-		final float div 		= ( overmin / scope);
-		final int norm			= (int) (div * 1024);
+		float overmin		= Math.max(1, current - min);
+		float scope			= Math.max(1, max - min);
+		float div 			= ( overmin / scope );
+		int norm			= (int) (div * 1024);
+		div2				= (div2*3 + div) / 4;
 	//	Initiator.logger.i( this.getClass().getName(), "\t>>>add: " + current);
-		if( Math.abs(norm - last) > 6 ){
-	//		Initiator.logger.i( this.getClass().getName(), "\t>>>add: " + Math.abs(norm - last)+ "/ "+ norm );
-			float b		= div * 255;
-			b			= Math.min(b, 255);
-	//		int val1	= (int) b;
-			int val2	= Pwm.linear2log((int) b, 1 );
+		if( Math.abs(norm - last) >  3) {
 			Queue q		= barobot.main_queue;
-			barobot.lightManager.setAllLeds(q, "44", val2, 0, 0, val2);
-			min+=1;		// auto ajdist
-			max = (long) (max * 0.95);		// auto ajdist
+	//		Initiator.logger.i( this.getClass().getName(), "\t>>>add: " + Math.abs(norm - last)+ "/ "+ norm );
+		//	float b		= div * 255;
+		//	b			= Math.min(b, 255);
+			//		int val1	= (int) b;
+		//	int val2	= Pwm.linear2log((int) b, 1 );
+			int[] arr 		= barobot.lightManager.floatToHSV( q, div2 );
+
+			int rgb = (255 << 8) + arr[0];			// non trasparent
+			rgb = (rgb << 8) + arr[1];
+			rgb = (rgb << 8) + arr[2];
+
+			StartupActivity.changeStartupColor(rgb);
+	
+	//		Initiator.logger.i( this.getClass().getName(), "" + (div * 100) );
+		//	barobot.lightManager.setAllLeds(q, "44", val2, 0, 0, val2);
+			min		+=1;		// auto ajdist
+			max		= (long) (max * 0.95);		// auto ajdist
 			last= norm;
 		}
 	}
@@ -127,6 +135,22 @@ public class Audio implements OnSignalsDetectedListener{
 	}
 
 	public boolean isRunning() {
-		return detectorThread == null ? false : (detectorThread.isRunning && detectorThread.isAlive());
+		Initiator.logger.i("Audio.isRunning1", ""+(detectorThread == null) );
+		if(detectorThread != null){
+			Initiator.logger.i("Audio.isRunning2", ""+(detectorThread.isRunning) );
+			Initiator.logger.i("Audio.isRunning2", ""+(detectorThread.isAlive()) );
+		}
+		if(detectorThread == null){
+			return false;
+		}
+		return (detectorThread.isRunning || detectorThread.isAlive());
+	}
+
+	public static Audio getInstance() {
+		if( instance == null ){
+			Initiator.logger.i("Audio.getInstance", "new instance");
+			instance = new Audio();
+		}
+		return instance;
 	}
 }

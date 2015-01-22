@@ -17,12 +17,17 @@ import org.orman.sql.Query;
 import org.orman.util.logging.LoggingLevel;
 import org.orman.util.logging.StandardLogger;
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 
+import com.barobot.R;
 import com.barobot.common.Initiator;
 import com.barobot.common.constant.Constant;
 import com.barobot.gui.dataobjects.Category;
 import com.barobot.gui.dataobjects.Dispenser_type;
+import com.barobot.gui.dataobjects.Engine;
 import com.barobot.gui.dataobjects.Important_position;
 import com.barobot.gui.dataobjects.Ingredient_t;
 import com.barobot.gui.dataobjects.Language;
@@ -187,4 +192,24 @@ public class BarobotData {
 		String key = class1.getSimpleName()+id;
 		obj_cache.remove(key);
 	}
+	
+
+	public static void deleteRecipe( Activity act, final Recipe_t mCurrentRecipe, final boolean reload ) {
+    	new AlertDialog.Builder(act).setTitle(R.string.are_you_sure_delete_drink).setMessage(mCurrentRecipe.getName())
+	    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+	        public void onClick(DialogInterface dialog, int which) {
+	        	mCurrentRecipe.delete();
+				Engine.GetInstance().invalidateRecipes();
+				if(reload){
+					Engine.GetInstance().getRecipes();
+				}
+	        }
+	    })
+	    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+	        public void onClick(DialogInterface dialog, int which) {}
+	    }).setIcon(android.R.drawable.ic_dialog_alert).show();
+	}
+
+	
+	
 }

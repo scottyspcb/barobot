@@ -114,6 +114,12 @@ public class Engine {
 		liquid2slot		= null;
 		recipes			= null;
 	}
+	public Engine invalidateRecipes()
+	{
+		recipes			= null;
+		return this;
+	}
+
 	public void invalidateSlots()
 	{
 		slots		= null;

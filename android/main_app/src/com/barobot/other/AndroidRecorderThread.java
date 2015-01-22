@@ -38,6 +38,7 @@ public class AndroidRecorderThread extends Thread implements SampleAudioRecorder
 	public void stopRecording(){
 		try{
 			audioRecord.stop();
+			audioRecord = null;
 		//	isRecording = false;
 		} catch (Exception e) {
 			Initiator.logger.appendError(e);

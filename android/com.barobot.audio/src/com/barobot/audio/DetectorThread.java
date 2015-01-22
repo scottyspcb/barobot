@@ -16,14 +16,14 @@ public class DetectorThread extends Thread{
 	private int frameByteSize = -1;
 //	private int averageLength = -1;
 	int channels = 0;
-	public boolean isRunning;
+	public boolean isRunning= false;
 
 	public DetectorThread(Map<String, Integer> config, SampleAudioRecorder recorder){
-		processor = new BpmProcessor( config );
+		processor			= new BpmProcessor( config );
         this.frameByteSize	= config.get("frameByteSize");
  //       this.averageLength	= config.get("averageLength");
         this.channels		= config.get("channels");
-		this.recorder = recorder;
+		this.recorder		= recorder;
 	}
 
 	public void setOnSignalsDetectedListener(OnSignalsDetectedListener listener) {
@@ -39,24 +39,34 @@ public class DetectorThread extends Thread{
 	public void stopDetection(){
 		this.isRunning = false;
 		_thread = null;
+		if( processor != null){
+			processor.stop();
+			processor = null;
+		}
+		this.recorder = null;
+	//	this.onSignalsDetectedListener = null;
 	}
 	public void run() {
 		try {
 			short[] buffer;			
 			Thread thisThread = Thread.currentThread();
-			while (_thread == thisThread) {
+			while ( this.isRunning && _thread == thisThread) {
 				buffer = recorder.getFrameBytes();
 				this.detect( buffer );
 			}
 		} catch (Exception e) {
 			Initiator.logger.appendError(e);
 		}
+		Initiator.logger.i( this.getClass().getName()+".run.isRunning", "false");
 		this.isRunning = false;
 	}
 
 	float lastbpm = 0;
 
 	private void detect(short[] buffer) {
+		if(!isRunning){
+			return;
+		}
 //		log.log(Level.INFO, "outputImpl: " +offs);
 //	    System.out.println("size99: " +buffer.length );
 		int totalAbsValue = 0;
@@ -66,7 +76,7 @@ public class DetectorThread extends Thread{
             sample = (short)((buffer[i]) | buffer[i + 1] << 8);
             totalAbsValue += Math.abs(sample);
         }
-       
+
         averageAbsValue = totalAbsValue / frameByteSize / 2;
  //       System.out.println("size99: " +buffer.length );
         onSignalsDetectedListener.peek(averageAbsValue);

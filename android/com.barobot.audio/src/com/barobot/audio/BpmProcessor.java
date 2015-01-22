@@ -33,8 +33,12 @@ public class BpmProcessor implements SampleAudioProcessor {
 
     int maxBufferSize1 = 10;
     int maxBufferSize2 = 4;
-	
+	private boolean stop = false;
+
     public void process(long sample ) {
+    	if(this.stop ){
+    		return;
+    	} 	
     //	   log.log(Level.INFO, "process: " +sample);
         energyBuffer.offer(sample);
       //  System.out.println("sample: " +sample);
@@ -104,8 +108,11 @@ public class BpmProcessor implements SampleAudioProcessor {
     	}
         return res;
     }
-
 	public void setOnSignalsDetectedListener(OnSignalsDetectedListener onSignalsDetectedListener2) {
 		onSignalsDetectedListener = onSignalsDetectedListener2;
+	}
+	public void stop() {
+		this.stop = true;
+		onSignalsDetectedListener = null;
 	}
 }

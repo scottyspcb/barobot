@@ -116,7 +116,11 @@
     <string name="unlock">Unlock</string>
     <string name="add_recipe_btn">Add new recipe</string>
     <string name="remove_recipe_btn">Delete selected recipe</string>
+    <string name="change_photo_btn">Change photo TODO</string>  
+
+    <string name="change_name_btn">Change name</string>
     <string name="goto_main_menu">Main menu</string>
+    <string name="goto_back">Back</string>
     <string name="myip">Show device address</string>
     <string name="update_title">Barobot Software Update</string>
     <string name="update_msg">New Barobot Software version was released. It is strongly recommended that you apply this update as soon as possible. Don\'t do it during a party. Do you want to download it now? \n\n(destination folder: /mnt/internal_sd/Download/Barobot_update.apk)</string>
@@ -145,5 +149,12 @@
     <string name="firmware_uploading_in_progress">Uploading in progress. Don\'t touch Barobot. Don\'t unplug anything before done.</string>
     <string name="firmware_uploading_title">Uploading firmware...</string>
     <string name="title_activity_hall_y">HallYActivity</string>
-
+    <string name="dialog_recipe_options_title">Recipe options</string>
+    <string name="are_you_sure_delete_drink">Are you sure you want to delete this drink?</string>
+	<array name="recipe_option">  
+		<item>Edit recipe...</item>
+		<item>Hide recipe</item>
+		<item>Delete recipe...</item>
+		<item>Cancel</item>
+	</array>
 </resources>

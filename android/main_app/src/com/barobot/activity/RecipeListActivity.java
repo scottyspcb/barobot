@@ -4,11 +4,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Environment;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -18,7 +22,11 @@ import android.widget.TextView;
 
 import com.barobot.BarobotMain;
 import com.barobot.R;
+import com.barobot.android.InternetHelpers;
 import com.barobot.common.Initiator;
+import com.barobot.common.constant.Constant;
+import com.barobot.common.interfaces.OnDownloadReadyRunnable;
+import com.barobot.gui.database.BarobotData;
 import com.barobot.gui.dataobjects.Engine;
 import com.barobot.gui.dataobjects.Ingredient_t;
 import com.barobot.gui.dataobjects.Recipe_t;
@@ -31,6 +39,7 @@ import com.barobot.parser.Queue;
 
 public class RecipeListActivity extends BarobotMain{
 
+	public static final String RECIPE_ID_PARAM = "RECIPE_ID_PARAM";
 	public static String MODE_NAME = "ActivityMode";
 	private Recipe_t mCurrentRecipe;
 	private int drink_size	= 0;
@@ -235,4 +244,55 @@ public class RecipeListActivity extends BarobotMain{
 		this.finish();
 		overridePendingTransition(R.anim.push_right_in,R.anim.push_right_out);
 	}
+
+	int configKey = KeyEvent.KEYCODE_VOLUME_DOWN;
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if ( keyCode == configKey) {
+			Initiator.logger.i("onKeyDown","KEYCODE_VOLUME"); 
+			showOptions();
+	        return true;
+	    }
+	    return super.onKeyDown(keyCode, event);
+	}
+	/*
+	@Override
+	public boolean onKeyUp(int keyCode, KeyEvent event) {
+		if ( keyCode == configKey) {
+			Initiator.logger.i("onKeyUp","KEYCODE_VOLUME"); 
+	  //      return true;
+	    }
+	    return super.onKeyUp(keyCode, event);
+	}*/
+
+	private void showOptions() {
+		if(mCurrentRecipe == null){
+			return;
+		}
+		AlertDialog.Builder ab = new AlertDialog.Builder(this);
+		ab.setTitle(R.string.dialog_recipe_options_title);
+		ab.setItems(R.array.recipe_option, new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface d, int choice) {
+				int length =getResources().getStringArray(R.array.recipe_option).length;
+				if( choice == length - 1){
+					d.dismiss();
+				}else{
+					if (choice == 0) {				// Edit recipe
+						Intent intent = new Intent(RecipeListActivity.this, RecipeSetupActivity.class);
+			    		intent.putExtra(RecipeListActivity.RECIPE_ID_PARAM, mCurrentRecipe.id);
+			    		startActivity(intent);
+					} else if (choice == 1) {		// Hide recipe
+						mCurrentRecipe.unlisted = true;
+						mCurrentRecipe.update();
+						RecipeListActivity.this.finish();
+						Engine.GetInstance().invalidateRecipes().getRecipes();
+					} else if (choice == 2) {		// Delete recipe
+						BarobotData.deleteRecipe( RecipeListActivity.this, mCurrentRecipe, true );
+					}
+				}
+			}
+		});
+		ab.show();
+	}
+
 }

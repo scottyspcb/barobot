@@ -38,7 +38,7 @@ public class AppInvoker {
     public ArrayList<Interval> inters = new ArrayList<Interval>();
 	private static Arduino arduino;
 	private SofaRouter sr = null;
-	public static Map<String, Object> container =  new HashMap<String, Object>();
+//	public static Map<String, Object> container =  new HashMap<String, Object>();
 	private SofaServer ss =null;
 	static boolean isCreated = false;
 

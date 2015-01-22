@@ -13,6 +13,9 @@ import org.orman.mapper.ModelQuery;
 import org.orman.sql.C;
 import org.orman.sql.Query;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+
 import com.barobot.AppInvoker;
 import com.barobot.BarobotMain;
 import com.barobot.android.Android;
@@ -53,15 +56,6 @@ public class CommandRoute extends EmptyRoute {
 		}
 	}
 	private static Map<String, command_listener> index = new HashMap<String, command_listener>();
-
-	private static Audio getAudio() {
-		Audio a = (Audio) AppInvoker.container.get("Audio");
-		if (a == null) {
-			a = new Audio();
-			AppInvoker.container.put("Audio", a);
-		}
-		return a;
-	}
 
 	public static Map<String, String> geCommands() {
 		Map<String, String> index2 = new HashMap<String, String>();
@@ -695,28 +689,26 @@ public class CommandRoute extends EmptyRoute {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
-				final Audio a = getAudio();
+
+				Audio a = Audio.getInstance();
 				if (a.isRunning()) {
-					Initiator.logger.i( this.getClass().getName(), "getAudio stop1");
+					Initiator.logger.i( this.getClass().getName(), "getAudio stop");
 					a.stop();
+					barobot.lightManager.turnOffLeds(barobot.main_queue);
 				} else {
 					Initiator.logger.i( this.getClass().getName(), "getAudio start");
 					a.start(barobot);
-					barobot.main_queue.clear();
-					barobot.main_queue.unlock();
 				}
 				return true;
 			}
 		});
-
 		index.put("command_options_light_show_off", new command_listener() {
 			@Override
-			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
-					int posx, int posy) {
-				final Audio a4 = getAudio();
-				if (!a4.isRunning()) {
-					Initiator.logger.i( this.getClass().getName(), "getAudio start");
-					a4.start(barobot);
+			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,	int posx, int posy) {
+				final Audio a = Audio.getInstance();
+				if (!a.isRunning()) {
+					Initiator.logger.i( this.getClass().getName(), "getAudio stop");
+					a.stop();
 				}
 				return true;
 			}
@@ -781,24 +773,6 @@ public class CommandRoute extends EmptyRoute {
 						LangTool.InsertTranslation( entry.getKey().hashCode(), "command", entry.getKey() );
 					}
 				}
-				return true;
-			}
-		});
-
-		// TODO
-		index.put("command_auto_repair", new command_listener() {
-			@Override
-			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,int posx, int posy) {
-				mq.unlock();
-				// send new line
-				// recieve response
-				// if not = error 1
-				// if wrong error 2
-				// send get analog
-				// if no response = error 3
-				// if wrong = error 4
-
-				// if error = reset MB & CARRET
 				return true;
 			}
 		});

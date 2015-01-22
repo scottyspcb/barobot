@@ -70,28 +70,8 @@ public class OptionsActivity extends BarobotMain {
 			this.checkVersion(true, true);
 			break;
 		case R.id.options_lights_button:
-			final Audio a = getAudio();
-	    	if(a.isRunning()){
-	    		Initiator.logger.i( this.getClass().getName(), "getAudio stop1");
-	        	a.stop();
-	        } else {
-	        	Initiator.logger.i( this.getClass().getName(), "getAudio start");
-	        	a.start(barobot);
-
-	        	AlertDialog.Builder builder1 = new AlertDialog.Builder(BarobotMain.getInstance());
-	            builder1.setMessage("Light show started");
-	            builder1.setCancelable(true);
-	            builder1.setPositiveButton("Close",
-	                    new DialogInterface.OnClickListener() {
-	                public void onClick(DialogInterface dialog, int id) {
-	                	a.stop();
-	                    dialog.cancel();
-	                    barobot.main_queue.clear();
-	                }
-	            });
-	            AlertDialog alert11 = builder1.create();
-	            alert11.show();
-	        }
+			final Audio a = Audio.getInstance();
+			CommandRoute.runCommand("command_options_light_show_on");	    	
 			break;
 		case R.id.options_calibrate_button:
 			serverIntent = new Intent(this, ValidatorActivity.class);
@@ -140,14 +120,6 @@ public class OptionsActivity extends BarobotMain {
     	}
 	}
 
-	private Audio getAudio() {
-		Audio a = (Audio) AppInvoker.container.get("Audio");
-    	if(a == null ){
-    		a = new Audio();
-    		AppInvoker.container.put("Audio", a );
-    	}
-    	return a;
-	}
 	public void gotoMainMenu(View view){		
 		finish();
 		overridePendingTransition(R.anim.push_down_in,R.anim.push_down_out);
