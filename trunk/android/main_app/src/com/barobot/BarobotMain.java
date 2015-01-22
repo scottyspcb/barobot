@@ -13,12 +13,12 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import com.barobot.android.Android;
 import com.barobot.android.InternetHelpers;
 import com.barobot.common.Initiator;
 import com.barobot.hardware.Arduino;
-import com.barobot.hardware.devices.BarobotConnector;
 import com.barobot.other.LangTool;
 import com.barobot.other.StartupException;
 

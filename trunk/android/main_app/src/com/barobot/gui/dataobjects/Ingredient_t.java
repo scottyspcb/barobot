@@ -43,8 +43,6 @@ public class Ingredient_t extends Model<Ingredient_t>{
 	public Liquid_t getLiquid() {
 		return BarobotData.getOneObject(Liquid_t.class, this.liquid );
 	}
-
-
 	@Override
 	public void update() {
 		BarobotData.reportChange( this.getClass(), this.id );

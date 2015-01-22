@@ -28,7 +28,11 @@
 //		simply delete the lines below, with "&MM_DECLA" text
 //===================================================================
 //---- DO NOT DELETE THIS LINE -- @MM_DECLA_BEG@---------------------
+void serialEvent();
+void parseInput( String input );
 void loop();
+void sentWithRet(byte address, command out );
+void sentTo(byte address, command out );
 void setup();
 //---- DO NOT DELETE THIS LINE -- @MM_DECLA_END@---------------------
 // -> ...AND HERE. This space is reserved for automated code generation!
