@@ -1,0 +1,123 @@
+<script src="jquery-1.11.2.min.js"></script>
+
+<div id="outt">
+</div>
+
+<script>
+
+var steps = 700;
+var height = 700;
+
+function toHex( num ){
+	if( num < 16 ){
+		return "0" + num.toString(16);
+	}
+	return num.toString(16);
+}
+
+function hsvToRgb2(hue, saturation, value) {
+	var val2= (val*310 +80) %360;				// for audio light show
+	return hsvToRgb( val2, 100, 100 );
+}
+
+var res = "<table><tr><td>";
+
+for (var j=0;j<steps;j+=1){
+	var val		= j / (steps);
+	var color	= hsvToRgb(val*360, 100, 100);
+	var color1	= toHex(color[0]);
+	var color2	= toHex(color[1]);
+	var color3	= toHex(color[2]);
+	var height2 = Math.round(height/steps);
+	res+=("<div source='"+(val*360)+"' style='background-color:#"+color1+color2+color3+";width:100px;height:"+height2+"px'></div>");
+	//console.log(color2);
+}
+res+="</td><td>";
+
+for (var j=0;j<steps;j+=1){
+	var val		= j / (steps);
+	var color	= hsvToRgb2(val*360, 100, 100);
+	var color1	= toHex(color[0]);
+	var color2	= toHex(color[1]);
+	var color3	= toHex(color[2]);
+	var height2 = Math.round(height/steps);
+	res+=("<div source='"+(val*360)+"' style='background-color:#"+color1+color2+color3+";width:100px;height:"+height2+"px'></div>");
+	//console.log(color2);
+}
+
+res+="</td></table>";
+$("#outt").append(res);
+
+
+function hsvToRgb(h, s, v) {
+    var r, g, b;
+    var i;
+    var f, p, q, t;
+ 
+    h = Math.max(0, Math.min(360, h));
+    s = Math.max(0, Math.min(100, s));
+    v = Math.max(0, Math.min(100, v));
+     
+    s /= 100;
+    v /= 100;
+     
+    if(s == 0) {
+        r = g = b = v;
+        return [
+            Math.round(r * 255), 
+            Math.round(g * 255), 
+            Math.round(b * 255)
+        ];
+    }
+     
+    h /= 60;
+    i = Math.floor(h);
+    f = h - i;
+    p = v * (1 - s);
+    q = v * (1 - s * f);
+    t = v * (1 - s * (1 - f));
+     
+    switch(i) {
+        case 0:
+            r = v;
+            g = t;
+            b = p;
+            break;
+     
+        case 1:
+            r = q;
+            g = v;
+            b = p;
+            break;
+     
+        case 2:
+            r = p;
+            g = v;
+            b = t;
+            break;
+     
+        case 3:
+            r = p;
+            g = q;
+            b = v;
+            break;
+     
+        case 4:
+            r = t;
+            g = p;
+            b = v;
+            break;
+     
+        default: // case 5:
+            r = v;
+            g = p;
+            b = q;
+    }
+    return [
+        Math.round(r * 255), 
+        Math.round(g * 255), 
+        Math.round(b * 255)
+    ];
+}
+
+</script>
