@@ -44,20 +44,13 @@
 #define METHOD_GET_X_POS 	157
 
 
-#define METHOD_SET_X_ACCELERATION 	"AX"
 #define METHOD_MASTER_CAN_FILL 	'F'
 #define METHOD_SET_X_DISABLE 	"DX"
 #define METHOD_ERROR 	'E'
 #define METHOD_SET_X_ENABLE 	"EX"
-#define METHOD_POING 	"POING"
-#define METHOD_PONG 	"PONG"
 #define METHOD_PROG 	"PROG"
-#define METHOD_PROGN 	"PROGN"
-#define METHOD_RESET_BUS 	"RB"
 #define METHOD_RESET 	"RESET"
-#define METHOD_RWIRE 	"RWIRE"
 #define METHOD_SEND2SLAVE 	'S'
-#define METHOD_TRIGGER 		'T'
 
 #define METHOD_WAIT_READY 	"WR"
 #define METHOD_SET_X_POS 	'X'
@@ -68,7 +61,6 @@
 // set bottom color
 #define METHOD_MSET_BOTTOM_COLOR 	'c'
 #define METHOD_M_ONECOLOR 	'B'
-#define METHOD_HAS_NEXT 	'N'
 #define METHOD_SLAVE_HAS_NEXT 	'n'
 #define METHOD_EEPROM_READ 	'M'
 #define METHOD_EEPROM_WRITE 'S'
