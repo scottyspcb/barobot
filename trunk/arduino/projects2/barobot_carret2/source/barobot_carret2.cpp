@@ -35,7 +35,7 @@
 // Config
 #define ANALOGS  6
 #define ANALOG_TRIES  4
-#define B2_ACCELERX 9000
+#define B2_ACCELERX 10000
 #define B2_SPEEDX 2500
 #define B2_SERIAL0_BOUND 57600
 
@@ -92,7 +92,7 @@ int16_t down_level = 0;
 // neodym	max  654
 #define HX_NEODYM_UP_START  640
 
-#define HX_FERRITE_UP_IS_BELOW  590
+#define HX_FERRITE_UP_IS_BELOW  610
 // 			max  548	561		574
 #define HX_LOCAL_UP_MAX_OVER  540
 
@@ -455,7 +455,7 @@ void parseInput( String input ){
 		sscanf(charBuf,"%hhi,%lx", &num, &color );
 		setColor(num, color);
 
-	}else if( command == 'A' && input.startsWith(METHOD_SET_X_ACCELERATION)) {    // AX10                  // ACCELERATION
+	}else if( command == 'T' ) {    // T90                  // ACCELERATION * 100 = 9000
 		unsigned int val = decodeInt(input, 2);
 		val = val * 100;
 		stepperX.setAcceleration(val);

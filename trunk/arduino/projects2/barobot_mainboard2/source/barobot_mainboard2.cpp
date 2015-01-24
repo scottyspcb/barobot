@@ -140,7 +140,7 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 		Serial.println();
 		Serial.flush();
 		defaultResult = false;
-	}else if( input.startsWith(METHOD_SET_X_ACCELERATION)) {    // AX10                  // ACCELERATION
+	}else if( input.startsWith("T")) {    // T10                  // ACCELERATION
 		String ss 	  = input.substring( 2 );		// 10
 		unsigned int val =ss.toInt();
 		val = val * 100;

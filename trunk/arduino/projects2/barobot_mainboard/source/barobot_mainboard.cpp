@@ -336,7 +336,7 @@ void parseInput( String input ){   // zrozum co przyszlo po serialu
 		Serial.flush();
 		defaultResult = false;
 		//METHOD_GET_X_POS
-	}else if( input.startsWith(METHOD_SET_X_ACCELERATION)) {    // AX10                  // ACCELERATION
+	}else if( input.startsWith("T")) {    // AX10                  // ACCELERATION
 		String ss 	  = input.substring( 2 );		// 10
 		long unsigned val = decodeInt( ss, 0 );
 		val = val * 100;
