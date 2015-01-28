@@ -1,0 +1,8 @@
+{#body}
+<a class="btn btn-danger" style="margin:10px;font-size:30px;float:right" href="/">Back to Main menu</a>
+<a class="btn btn-danger" href="/log?clear=true">Clear log</a>
+<div style="blear:both"></div>
+<h3>Logs</h3>
+<pre>{$data}</pre>
+
+{#}

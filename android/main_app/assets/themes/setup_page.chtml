@@ -12,6 +12,7 @@
 	<a class="btn btn-warning" style="margin:10px;font-size:30px" href="/setup/drinks">Manage drinks TODO</a>
 	<a class="btn btn-warning" style="margin:10px;font-size:30px" href="/setup/edit_db">Edit DB TODO</a>
 	<a class="btn btn-success" style="margin:10px;font-size:30px" href="/servo">Servo test</a>
+	<a class="btn btn-success" style="margin:10px;font-size:30px" href="/log">Show logs</a>
 
 	<br /><!--a class="btn btn-success" style="margin:10px;font-size:30px" href="/hardware_queue">Queue</a-->
 

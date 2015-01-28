@@ -33,6 +33,7 @@ public class BarobotConnector {
 	public Z z							= new Z();
 	public Y y							= new Y();
 	public MotorDriver x				= null;
+	public static int received			= 0;
 
 	public BarobotConnector(HardwareState state ){
 		this.state		= state;
@@ -133,6 +134,7 @@ public class BarobotConnector {
 			public void onRunError(Exception e) {
 			}
 			public synchronized void onNewData(byte[] data, int length) {
+				received++;
 				String in = new String(data, 0, length);	
 			//	Initiator.logger.i(Constant.TAG,"Serial addOnReceive: "+ in );
 				mb.read( in );
@@ -148,6 +150,12 @@ public class BarobotConnector {
 	}
 
 	public void destroy() {
+		// save stats
+		int a = Mainboard.sent + state.getInt("COMMANDS_SENT", 0 );
+		int b = received + state.getInt("COMMANDS_RECEIVED", 0 );
+		state.set("COMMANDS_SENT", a );
+		state.set("COMMANDS_RECEIVED", b );
+
 		main_queue.destroy();
 		mb.destroy();
 		mb			= null;
@@ -213,7 +221,6 @@ public class BarobotConnector {
 		q.addWait(5);
 		int SERVOZ_TEST_POS = state.getInt("SERVOZ_TEST_POS", 0 );
 		z.move( q, SERVOZ_TEST_POS );
-
 		q.addWait(10);
 		z.moveDown( q, true );
 		q.addWait(10);
@@ -233,7 +240,7 @@ public class BarobotConnector {
 			}
 		});
 		q.addWait( 100 );
-		x.moveTo( q, 20000, state.getInt("DRIVER_CALIB_X_SPEED", 0 ) );		// go down
+		x.moveTo( q, 20000, state.getInt("DRIVER_CALIB_X_SPEED", 0 ) );		// go up
 		q.addWait( 200 );
 		q.add( new AsyncMessage( true ) {
 			@Override
@@ -243,7 +250,7 @@ public class BarobotConnector {
 				return null;
 			}
 		} );
-		x.moveTo( q, -20000);
+		x.moveTo( q, -20000);		// go down
 		q.add( new AsyncMessage( true ) {
 			@Override
 			public Queue run(Mainboard dev, Queue queue) {
@@ -709,7 +716,6 @@ public class BarobotConnector {
 		Initiator.logger.w("barobot.setInitDone", ""+ready );
 		this.init_done = ready;
 	}
-
 	
 	public class Y{
 		public void move( Queue q, final int newpos, final boolean disableOnReady ) {

@@ -29,7 +29,8 @@ public class Mainboard{
 	private RetReader retReader;
 	private Queue mainQueue = null;
 	private HardwareState state;
-	public long last_response = 0l;
+	public long last_response		= 0l;
+	public static int sent			= 0;
 
 	public Mainboard( HardwareState state ) {
 		this.state			= state;
@@ -211,6 +212,7 @@ public class Mainboard{
 				if( state.getInt("show_sending", 0) > 0 ){
 					Initiator.logger.e(">>>Mainboard.Send", command.trim());
 				}
+				sent++;
 		//		synchronized(outputStream){
 				try {
 		//			Initiator.logger.i("Mainboard.Send" , command.trim() );
@@ -268,7 +270,7 @@ public class Mainboard{
 					return true;
 				}else if( in.equals("NOCMD []" ) ){
 				}else{
-					Initiator.logger.saveLog("unknown command:[" + in+"] = " + Decoder.toHexStr(in.getBytes(), in.length())+"]");
+					Initiator.logger.saveLog("unknown return:[" + in+"] = " + Decoder.toHexStr(in.getBytes(), in.length())+"]");
 					if(in.matches("^[-a-zA-Z0-9_.,;+]+$")){		// usual characters
 					}else{										// unusual characters
 						Initiator.logger.saveLog("unknown+unusual:[" + in+"]");

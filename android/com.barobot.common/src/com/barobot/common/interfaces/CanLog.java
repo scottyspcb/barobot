@@ -15,4 +15,5 @@ public interface CanLog{
 	void 	w(String tag, String msg);
 	void	appendError(Throwable tr);
 	void	saveLog(String text);
+	String getSavedLog();
 }

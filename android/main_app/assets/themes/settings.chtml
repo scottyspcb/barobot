@@ -1,4 +1,5 @@
 {#translations}
+<a class="btn btn-danger" style="margin:10px;font-size:30px;float:right" href="/">Back to Main menu</a>
 <table>
 {.loop in $names as $item}
 	<tr>
@@ -40,6 +41,7 @@
 
 
 {#settings}
+<a class="btn btn-danger" style="margin:10px;font-size:30px;float:right" href="/">Back to Main menu</a>
 <table>	
 	{.loop in $options as $name:$value}
 		<tr>

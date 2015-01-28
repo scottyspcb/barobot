@@ -42,6 +42,7 @@ public class Constant {
 	public static final int BOTTLE_IS_BACK = 2;
 	public static final int BOTTLE_IS_FRONT = 4;
 	public static final String DATABASE_NAME = "BarobotOrman.db";
+	public static final int ACCELERATION_X = 90;
 
 	public static int[] magnet_order = {0,2,1,4,3,6,5,8,7,10,9,11 };	// numer butelki, odjac 1 aby numer ID
 	public static int[] bottle_row = {

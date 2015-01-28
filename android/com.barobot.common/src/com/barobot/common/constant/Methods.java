@@ -75,8 +75,6 @@ public class Methods {
 	public static final String METHOD_HAS_NEXT	= "N";
 	public static final String METHOD_SLAVE_HAS_NEXT	= "n";
 
-
-
 //24 * 2^0  + 252* 2^1 + 255* 2^2 + 255* 2^3
 
 // typy b��d�w:
@@ -84,8 +82,6 @@ public class Methods {
 	public static final int T_ENGINE_E		= 0x06;
 	public static final int T_WRITE_I2C_E	= 0x07;
 	public static final int T_READ_I2C_E	= 0x08;
-
-
 
 // inne
 	public static final int DRIVER_DIR_FORWARD 	= 32;
@@ -152,5 +148,4 @@ public class Methods {
 	public static final int EEPROM_STARTS_HIGH	= 51;
 	public static final int EEPROM_RESETS_LOW	= 52;
 	public static final int EEPROM_RESETS_HIGH	= 53;
-
 }
