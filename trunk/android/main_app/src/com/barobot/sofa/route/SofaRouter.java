@@ -46,13 +46,14 @@ public class SofaRouter implements SimpleRouter{
 		ss.addRoute( new ServoTestPageRoute());
 		ss.addRoute( new HardwareQueuePage());
 		ss.addRoute( new MessageRoute());
-		
-		
+		ss.addRoute( new LogPage());
+
 		ss.addRoute( new GetIngredientsPage());
 		ss.addRoute( new GetRecipesPage() );
 		ss.addRoute( new GetSlotsPage() );
 		ss.addRoute( new GetProductsPage());
 		ss.addRoute( new GetLiquidsPage());
 		ss.addRoute( new GetLiquidTypesPage());
+		
 	}
 }

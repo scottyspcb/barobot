@@ -44,11 +44,11 @@ public class MyRetReader implements RetReader {
 		barobot.mb.addGlobalRegex( new GlobalMatch(){
 			@Override
 			public String getMatchRet() {
-				return "^POKE \\d+$";		// i.e. "POKE 820166"
+				return "^P?POKE \\d+$";		// i.e. "POKE 820166" or "PPOKE 820166"
 			}
 			@Override
 			public boolean run(Mainboard asyncDevice, String fromArduino, String wait4Command, AsyncMessage wait_for) {
-				fromArduino = fromArduino.replace("POKE ", "");
+				fromArduino = fromArduino.replace("P?POKE ", "");
 				int millis = Decoder.toInt(fromArduino, 0);
 				barobot.setLastSeen(millis);
 				return true;
@@ -392,6 +392,10 @@ public class MyRetReader implements RetReader {
 				if( command.equals("IH")){
 					return true;
 				}
+			}else if(fromArduino2.startsWith( "AX" ) ){				// acceleration
+				if( command.equals("AX")){
+					return true;
+				}
 			}else if(fromArduino2.startsWith( "S" ) ){				// stats
 				String fromArduino3 = fromArduino2.substring(2);
 				int[] parts = Decoder.decodeBytes( fromArduino3 );
@@ -556,7 +560,7 @@ public class MyRetReader implements RetReader {
 		*/
 		String decoded = "/METHOD_IMPORTANT_ANALOG";
 		int[] parts = Decoder.decodeBytes( fromArduino );
-		if( parts.length >= 10 && parts[1] == Methods.INNER_HALL_X ){
+		if( parts.length == 10 && parts[1] == Methods.INNER_HALL_X ){		// 125,0,22,0,0,0,37,219,130,2
 			decoded += "/HALL_X";
 		//	Initiator.logger.i("input_parser", "hardware pos: " + hpos );
 		//	Initiator.logger.i("input_parser", "software pos: " + spos );
@@ -575,7 +579,9 @@ public class MyRetReader implements RetReader {
 			barobot.state.set("HALLX", value);
 			barobot.state.set("HX_STATE", state_name);
 
-			boolean isCalibrating	= state.getInt("scann_bottles", 0 ) > 0 && !checkInput && (dir == Methods.DRIVER_DIR_FORWARD || dir == Methods.DRIVER_DIR_STOP);
+			boolean isCalibrating	= state.getInt("scann_bottles", 0 ) > 0 
+					&& !checkInput
+					&& (dir == Methods.DRIVER_DIR_FORWARD || dir == Methods.DRIVER_DIR_STOP);
 			if( isCalibrating ){
 				state_num++;
 				if(state_name == Methods.HX_STATE_0 ){				// ERROR
@@ -589,12 +595,12 @@ public class MyRetReader implements RetReader {
 
 					int SERVOY_FRONT_POS = state.getInt("SERVOY_FRONT_POS", 1000 );
 					Initiator.logger.i("input_parser", "koniec skali: " + spos );// @todo sprawdzic co z tym
-			//		barobot.hereIsBottle(11, spos, SERVOY_FRONT_POS );
+			//		barobot.hereIsBottle(11, spos, SERVOY_FRONT_POS ); old code, dont do it here
 
 					state_num = 0;
 				}else if(state_name == Methods.HX_STATE_2 ){
 					decoded += "/HX_STATE_2";
-					Initiator.logger.i("input_parser", "koniec skali: " + spos );// @todo sprawdzic co z tym
+					Initiator.logger.i("input_parser", "koniec skali: " + spos );		// @todo sprawdzic co z tym
 					hereIsMagnet( 11, hpos, hpos, Constant.BOTTLE_IS_FRONT );
 					frontNum = 0;
 					BackNum = 0;
@@ -606,14 +612,14 @@ public class MyRetReader implements RetReader {
 					if(was_empty4){
 						last_3  = hpos;
 						was_empty4 = false;
-						decoded += "/3 BOTTLE START";
+						decoded += "/HX_STATE_3 BOTTLE START";
 					}else{
 						decoded += "/HX_STATE_3";
 						last_3 = 0;
 					}
 				}else if(state_name == Methods.HX_STATE_4 ){
 					if(last_3 != 0 ){
-						decoded += "/4 BOTTLE END";
+						decoded += "/HX_STATE_4 BOTTLE END";
 						hereIsMagnet(fromstart, last_3, hpos, Constant.BOTTLE_IS_BACK );
 						BackNum++;
 						fromstart++;
@@ -627,7 +633,7 @@ public class MyRetReader implements RetReader {
 
 				}else if(state_name == Methods.HX_STATE_6 ){
 					if(last_7 != 0 ){
-						decoded += "/6 BOTTLE END";
+						decoded += "/HX_STATE_6 BOTTLE END";
 						hereIsMagnet(fromstart, last_7, hpos, Constant.BOTTLE_IS_FRONT );
 						frontNum++;
 						last_7 = 0;
@@ -640,7 +646,7 @@ public class MyRetReader implements RetReader {
 					if(was_empty6){
 						last_7  = hpos;
 						was_empty6 = false;
-						decoded += "/7 BOTTLE START";
+						decoded += "/HX_STATE_7 BOTTLE START";
 					}else{
 						decoded += "/HX_STATE_7";
 						last_7 = 0;
@@ -664,7 +670,6 @@ public class MyRetReader implements RetReader {
 						Initiator.logger.i("input_parser", "jestem w: " + spos );
 						barobot.x.setSPos( spos );
 					}
-
 				}else if(state_name == Methods.HX_STATE_10 ){		// ERROR not connected
 					decoded += "/HX_STATE_10";
 				}
@@ -696,7 +701,6 @@ public class MyRetReader implements RetReader {
 					barobot.hereIsStart(spos, SERVOY_FRONT_POS );
 		//			Initiator.logger.i("input_parser", "jestem2 w: " + spos );
 					barobot.state.set("HALLX_UNDER", "0");
-
 				}else if(state_name == Methods.HX_STATE_10 ){		// ERROR not connected
 					barobot.state.set("HALLX_UNDER", "-1");
 				}

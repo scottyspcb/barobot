@@ -79,4 +79,9 @@ public class DesktopLogger implements CanLog {
 	public void saveLog(String text) {
 		System.out.println( text );
 	}
+
+	@Override
+	public String getSavedLog() {
+		return "";
+	}
 }
