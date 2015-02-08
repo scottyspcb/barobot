@@ -173,7 +173,6 @@ public class UpdateManager{
 						Initiator.logger.e("update_drinks.database", ""+newest_database_version );
 
 						int arduino_ver = barobot.state.getInt("ARDUINO_VERSION", 0);
-						
 						if( newest_android_version > Constant.ANDROID_APP_VERSION ){
 					//		Initiator.logger.e("update_drinks.checkNewVersion", "newest_android_version: "+ res );
 							String url = Constant.android_app;
@@ -265,9 +264,8 @@ public class UpdateManager{
 	}
 	public static void update_firmware_step2_download(final Activity c, final boolean use_beta, final boolean manual_reset) {
 		// download new version
-		final String url	= (use_beta) ? Constant.firmwareWeb_beta : Constant.firmwareWeb;
-		final String path9	= Environment.getExternalStorageDirectory() + Constant.firmware;
-
+		final String url				= (use_beta) ? Constant.firmwareWeb_beta : Constant.firmwareWeb;
+		final String path9				= Environment.getExternalStorageDirectory() + Constant.firmware;
 		final BarobotConnector barobot	= Arduino.getInstance().barobot;
 		Log_start ls 			= new Log_start();
 		ls.datetime				= Decoder.getTimestamp() ;

@@ -36,6 +36,13 @@
         android:title="@string/pref_sserver_allow_config_title"
         android:summary="@string/pref_sserver_allow_config_info" />
 
+
+    <CheckBoxPreference
+        android:key="ALLOW_LANGBAR"
+        android:title="@string/pref_show_langbar_title"
+        android:summary="@string/pref_show_langbar_info" />
+
+		
     <!-- NOTE: EditTextPreference accepts EditText attributes. -->
     <!-- NOTE: EditTextPreference's summary should be set to its value by the activity code. -->
     <!--

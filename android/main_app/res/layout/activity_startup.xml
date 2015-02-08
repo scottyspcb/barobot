@@ -98,6 +98,7 @@
 
             <LinearLayout
                 android:layout_width="wrap_content"
+                android:id="@+id/startup_langbar"
                 android:layout_height="77dp"
                 android:layout_column="0"
                 android:layout_gravity="center_horizontal|top"

@@ -239,12 +239,10 @@ public class RecipeListActivity extends BarobotMain{
 			  }
 		});
 	}
-
 	public void gotoMainMenu(View v){
 		this.finish();
 		overridePendingTransition(R.anim.push_right_in,R.anim.push_right_out);
 	}
-
 	int configKey = KeyEvent.KEYCODE_VOLUME_DOWN;
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -255,15 +253,6 @@ public class RecipeListActivity extends BarobotMain{
 	    }
 	    return super.onKeyDown(keyCode, event);
 	}
-	/*
-	@Override
-	public boolean onKeyUp(int keyCode, KeyEvent event) {
-		if ( keyCode == configKey) {
-			Initiator.logger.i("onKeyUp","KEYCODE_VOLUME"); 
-	  //      return true;
-	    }
-	    return super.onKeyUp(keyCode, event);
-	}*/
 
 	private void showOptions() {
 		if(mCurrentRecipe == null){
