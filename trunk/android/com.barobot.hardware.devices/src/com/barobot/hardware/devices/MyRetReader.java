@@ -392,7 +392,11 @@ public class MyRetReader implements RetReader {
 				if( command.equals("IH")){
 					return true;
 				}
-			}else if(fromArduino2.startsWith( "AX" ) ){				// acceleration
+			}else if(fromArduino2.startsWith( "AX" ) ){				// old acceleration
+				if( command.equals("AX")){
+					return true;
+				}
+			}else if(fromArduino2.startsWith( "T" ) ){				// acceleration
 				if( command.equals("AX")){
 					return true;
 				}
@@ -442,13 +446,11 @@ public class MyRetReader implements RetReader {
 				}else{
 					Initiator.logger.e("MyRetReader.decoded.wrong76", command + ", expected output:" + "Z..." + " because of " + decoded + " fromArduino:'"+ fromArduino+"'" );
 				}
-
-				
 			}else if(fromArduino2.startsWith("F")){			// power was down
 				if(command.equals("F0")){					// robot is now shuting down.
 					
 				}
-				if(command.startsWith("F")){
+				if(command.startsWith("F")){				// F0 or F1 (F1 = robot is working, not interesting response :) )
 					return true;
 				}
 			}else if(fromArduino2.startsWith( "m" ) && command.startsWith("m")){	// eeprom memory

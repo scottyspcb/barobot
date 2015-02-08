@@ -68,6 +68,8 @@ public class SettingsActivity extends PreferenceActivity {
 		bindPreferenceSummaryToValue(findPreference("MAX_GLASS_CAPACITY"));
 		bindPreferenceSummaryToValue(findPreference("SSERVER_ALLOW_CONFIG"));
 
+		bindPreferenceSummaryToValue(findPreference("ALLOW_LANGBAR"));
+
 		bindPreferenceSummaryToValue(findPreference("DRIVER_X_SPEED"));
 		bindPreferenceSummaryToValue(findPreference("DRIVER_Y_SPEED"));	
 		bindPreferenceSummaryToValue(findPreference("DRIVER_CALIB_X_SPEED"));
@@ -118,7 +120,7 @@ public class SettingsActivity extends PreferenceActivity {
 		@Override
 		public boolean onPreferenceChange(Preference preference, Object value) {
 			String stringValue = value.toString();
-			Initiator.logger.i( this.getClass().getName()+"OnPreferenceChangeListener1", preference.getKey()+"/"+ stringValue);
+	//		Initiator.logger.i( this.getClass().getName()+"OnPreferenceChangeListener1", preference.getKey()+"/"+ stringValue);
 
 			if (preference instanceof ListPreference) {
 				// For list preferences, look up the correct display value in
@@ -135,7 +137,7 @@ public class SettingsActivity extends PreferenceActivity {
 				}else{
 					stringValue = "0";
 				}
-				Initiator.logger.i( this.getClass().getName()+"OnPreferenceChangeListener2", preference.getKey()+"/"+ stringValue);
+		//		Initiator.logger.i( this.getClass().getName()+"OnPreferenceChangeListener2", preference.getKey()+"/"+ stringValue);
 				
 			} else if (preference instanceof RingtonePreference) {
 				// For ringtone preferences, look up the correct display value
@@ -181,12 +183,9 @@ public class SettingsActivity extends PreferenceActivity {
 	private static void bindPreferenceSummaryToValue(Preference preference) {
 		String value = Arduino.getInstance().barobot.state.get(preference.getKey(), "");
 		preference.setOnPreferenceChangeListener(sBindPreferenceSummaryToValueListener);
-
 		if(preference instanceof CheckBoxPreference){
 			CheckBoxPreference i = (CheckBoxPreference)preference;
-
-			Initiator.logger.i( SettingsActivity.class.getSimpleName()+"bindPreferenceSummaryToValue", value );
-
+		//	Initiator.logger.i( SettingsActivity.class.getSimpleName()+"bindPreferenceSummaryToValue", value );
 			if( !value.isEmpty() && "1".equals(value)){
 				i.setChecked( true );
 			}else{

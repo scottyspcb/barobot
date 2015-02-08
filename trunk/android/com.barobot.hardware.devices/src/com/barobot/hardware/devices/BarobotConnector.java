@@ -18,12 +18,15 @@ import com.barobot.parser.message.Mainboard;
 import com.barobot.parser.utils.Decoder;
 
 public class BarobotConnector {
+	protected boolean newLeds			= true;
+	public boolean actuators			= false;		// with figrelli actuators only
+
 	public boolean ledsReady			= false;
 	public Mainboard mb					= null;
 	public Queue main_queue				= null;
 	public HardwareState state			= null;
 	protected int robot_id				= 0;
-	protected boolean newLeds			= true;
+
 	public boolean robot_id_ready		= false;	
 	public boolean robot_id_error		= false;
 	public long lastSeenRobotTimestamp	= 0;
@@ -57,7 +60,8 @@ public class BarobotConnector {
 		this.state.set( "RESET_TIME", this.state.getInt( "RESET_TIME", 200 ) );				// set default
 		this.state.set( "NEED_HALL_X", this.state.getInt( "NEED_HALL_X", 1 ) );				// set default
 		this.state.set( "NEED_HALL_Y", this.state.getInt( "NEED_HALL_Y", 1 ) );				// set default
-
+		this.state.set( "ALLOW_LANGBAR", this.state.getInt( "ALLOW_LANGBAR", 1 ) );			// set default
+		
 		this.state.set( "NEED_GLASS", this.state.getInt( "NEED_GLASS", 0 ) );				// set default
 		this.state.set( "WATCH_GLASS", this.state.getInt( "WATCH_GLASS", 0 ) );				// set default	
 

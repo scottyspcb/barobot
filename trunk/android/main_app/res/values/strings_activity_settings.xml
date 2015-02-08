@@ -26,9 +26,12 @@
     <string name="pref_DRIVER_X_SPEED_title">Left - right speed (default 3000)</string>
     <string name="pref_DRIVER_Y_SPEED_title">Front - back speed (default 25)</string>
  
-    
+ 
     <string name="pref_manual_cup_title">Allow manual cup confirmation</string>
     <string name="pref_manual_cup_info">Show "Cup is ready" button if cup was not founded</string>
+
+	<string name="pref_show_langbar_title">Show language bar on main screen</string>
+    <string name="pref_show_langbar_info">Show language bar on main screen</string>
 
 
     <string name="pref_title_display_name">Display name</string>

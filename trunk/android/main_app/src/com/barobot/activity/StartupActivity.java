@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.barobot.BarobotMain;
@@ -20,7 +21,7 @@ import com.barobot.hardware.devices.BarobotConnector;
 import com.barobot.other.Audio;
 
 public class StartupActivity extends BarobotMain{
-	static FrameLayout fl				=	 null;
+	static FrameLayout fl				= null;
 	static StartupActivity lastInstance	= null;
 
 	@Override
@@ -34,8 +35,9 @@ public class StartupActivity extends BarobotMain{
 			Engine.GetInstance().getRecipes();
 			setFullScreen();
 			fl			= (FrameLayout) findViewById(R.id.startup_border);
+	
+
 		 }
-		
 	}
 
 	@Override
@@ -43,9 +45,13 @@ public class StartupActivity extends BarobotMain{
 		super.onResume();
 		if( BarobotMain.canStart ){
 			setFullScreen();
+
+			BarobotConnector barobot = Arduino.getInstance().barobot;
+			int visibility = barobot.state.getInt("ALLOW_LANGBAR", 1) == 1 ? View.VISIBLE : View.INVISIBLE;	
+			LinearLayout langbar = (LinearLayout) findViewById(R.id.startup_langbar);
+			langbar.setVisibility(visibility);
 		}
 	}
-
 	@Override
 	protected void onPause() {
 		super.onPause();
@@ -129,25 +135,31 @@ public class StartupActivity extends BarobotMain{
 		if (keyCode == KeyEvent.KEYCODE_HOME) {
 			Log.i("onKeyDown", "KEYCODE_HOME");
 			return true;
-		}
-		if (keyCode == KeyEvent.KEYCODE_BACK) {
+			
+		}else if ( keyCode == KeyEvent.KEYCODE_VOLUME_DOWN ) {
+/*
+			int animIn = R.anim.push_left_in;
+			int animOut = R.anim.push_left_out;
+			Intent serverIntent = null;
+			serverIntent = new Intent(this, OptionsActivity.class);
+    		serverIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+    		startActivity(serverIntent);
+    		overridePendingTransition(animIn,animOut);
+*/
+		}else if (keyCode == KeyEvent.KEYCODE_BACK) {
 			Log.i("onKeyDown", "KEYCODE_BACK");
 			BarobotConnector barobot = Arduino.getInstance().barobot;
 			barobot.main_queue.unlock();
 			return true;
-		}
-		if (event.getKeyCode() == KeyEvent.KEYCODE_POWER) {
+		}else if (event.getKeyCode() == KeyEvent.KEYCODE_POWER) {
 			Log.i("onKeyDown", "KEYCODE_POWER");
 	        return true;
-	    }
-		if (keyCode == KeyEvent.KEYCODE_POWER) {
+		}else if (keyCode == KeyEvent.KEYCODE_POWER) {
 			Log.i("onKeyDown", "KEYCODE_POWER");
 	        return true;
 	    }		
 		return super.onKeyDown(keyCode, event);
 	}
-	
-
 
 	static int nextColor = 0;
 	public static void changeStartupColor(final int color) {
