@@ -58,11 +58,11 @@ public class HallYActivity extends BlankWizardActivity {
 		//Initiator.logger.w("checkHallY.back", ""+back );	
 		//Initiator.logger.w("checkHallY.neutral", ""+neutral );
 
-		barobot.y.move(q, neutral, true);
+		barobot.y.move(q, neutral, 100, true, true);
 		barobot.lightManager.setAllLeds(barobot.main_queue, "22", 255, 100, 100, 100);
 		q.addWait( 500 );
 
-		barobot.y.move(q, back, true);
+		barobot.y.move(q, back, 100, true, true);
 		q.add( new AsyncMessage( true ){
 			@Override
 			public Queue run(Mainboard dev, Queue queue) {
@@ -73,7 +73,7 @@ public class HallYActivity extends BlankWizardActivity {
 		barobot.lightManager.setAllLeds(barobot.main_queue, "22", 255, 0, 100, 100);
 		q.addWait( 500 );
 
-		barobot.y.move(q, neutral, true);
+		barobot.y.move(q, neutral, 100, true, true);
 		q.add( new AsyncMessage( true ){
 			@Override
 			public Queue run(Mainboard dev, Queue queue) {
@@ -84,7 +84,7 @@ public class HallYActivity extends BlankWizardActivity {
 		barobot.lightManager.setAllLeds(barobot.main_queue, "22", 255, 0, 100, 0);
 		q.addWait( 500 );
 
-		barobot.y.move(q, front, true);
+		barobot.y.move(q, front, 100, true, true);
 		q.add( new AsyncMessage( true ){
 			@Override
 			public Queue run(Mainboard dev, Queue queue) {
@@ -95,7 +95,7 @@ public class HallYActivity extends BlankWizardActivity {
 		barobot.lightManager.setAllLeds(barobot.main_queue, "22", 255, 0, 100, 100);
 		q.addWait( 500 );
 
-		barobot.y.move(q, back, true);
+		barobot.y.move(q, back, 100, true, true);
 		q.add( new AsyncMessage( true ){
 			@Override
 			public Queue run(Mainboard dev, Queue queue) {
@@ -110,7 +110,7 @@ public class HallYActivity extends BlankWizardActivity {
 		barobot.lightManager.setAllLeds(barobot.main_queue, "22", 255, 0, 100, 200);	
 		q.addWait( 500 );
 		
-		barobot.y.move(q, front, true);
+		barobot.y.move(q, front, 100, true, true);
 		q.add( new AsyncMessage( true ){
 			@Override
 			public Queue run(Mainboard dev, Queue queue) {

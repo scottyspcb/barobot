@@ -55,12 +55,12 @@ public class DebugTabCommands extends Fragment {
 		Map<Integer, String> buttonToCommand = new HashMap<Integer, String>();
 
 
-		buttonToCommand.put( R.id.max_z, "max_z" );
-		buttonToCommand.put( R.id.min_z, "min_z" );
+		buttonToCommand.put( R.id.max_z, "z_up" );
+		buttonToCommand.put( R.id.min_z, "z_down" );
 		buttonToCommand.put( R.id.max_x, "max_x" );
-		buttonToCommand.put( R.id.max_y, "max_y" );
+		buttonToCommand.put( R.id.max_y, "y_back" );
 		buttonToCommand.put( R.id.min_x, "min_x" );
-		buttonToCommand.put( R.id.min_y, "min_y" );
+		buttonToCommand.put( R.id.min_y, "y_front" );
 		buttonToCommand.put( R.id.unlock, "unlock" );
 		buttonToCommand.put( R.id.kalibrujx, "kalibrujx" );
 		buttonToCommand.put( R.id.disablez, "disablez" );

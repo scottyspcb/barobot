@@ -65,7 +65,7 @@ public class ServoTestPageRoute extends EmptyRoute {
 			Initiator.logger.i( this.getClass().getName(), "run servo " + servo + " position:" +position+ " speed" + speed + " disableOnReady" + session.getParms().get("disableOnReady") );
 			Queue q = new Queue();
 			if(servo.equals("y")){
-				barobot.y.move(q, pos, disableOnReady);
+				barobot.y.move(q, pos, 100, disableOnReady, true);
 			}else if(servo.equals("z")){
 				q.add("K" + pos, true);
 				if(disableOnReady){

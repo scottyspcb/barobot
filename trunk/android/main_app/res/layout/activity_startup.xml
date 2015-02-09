@@ -117,7 +117,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:onClick="onLangButtonClicked"
-                     android:padding="20dp"
+                    android:padding="20dp"
                     android:text="@string/wizard_lang_pl" />
 
                 <Button
@@ -125,8 +125,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:onClick="onLangButtonClicked"
-                     android:padding="20dp"
+                    android:padding="20dp"
                     android:text="@string/wizard_lang_en" />
+
             </LinearLayout>
 
             <ImageButton

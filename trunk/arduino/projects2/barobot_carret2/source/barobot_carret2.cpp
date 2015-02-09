@@ -10,7 +10,6 @@
 #include <AsyncDriver.h>
 #include <FlexiTimer2.h>
 
-//3, 5, 6, 9, 10, 11
 // PINS
 #define PIN_B2_STEPPER_ENABLE 3		// 
 #define PIN_B2_STEPPER_STEP 12		// 
@@ -23,8 +22,6 @@
 
 #define PIN_B2_SERVY_ENABLE_PIN 6	// 
 #define PIN_B2_SERVZ_ENABLE_PIN 5	// 
-
-#define PIN_B2_FREE_PIN 4			// 
 #define PIN_B2_SELF_RESET 2			// 
 
 #define PIN_B2_HALL_Y A0			// 
@@ -33,14 +30,12 @@
 #define PIN_B2_WEIGHT A3			// 
 
 // Config
-#define ANALOGS  6
 #define ANALOG_TRIES  4
 #define B2_ACCELERX 10000
 #define B2_SPEEDX 2500
 #define B2_SERIAL0_BOUND 57600
 
 #define MAGIC_LEDS 20
-
 #define SERVO_MAX_TIME 10000				// in milis = 10s
 #define MAX_TIME_WITHOUT_ANDROID 10000		// in milis = 20s
 #define POKE_ANDROID_TIME 5000				// in milis = 20s
@@ -73,8 +68,6 @@ volatile ServoChannel servos[2]= {
 	{PIN_B2_SERVO_Y,0, 770, 770,0,false,false,DRIVER_DIR_STOP },
 	{PIN_B2_SERVO_Z,0,2400,2400,0,false,false,DRIVER_DIR_STOP },
 };
-
-//unsigned long mil = 0;
 
 byte state_id = 0xff;
 int16_t up_level = 0;
@@ -154,32 +147,37 @@ Adafruit_NeoPixel bottom_panels = Adafruit_NeoPixel(2, PIN_B2_LED_BOTTOM,  NEO_R
 // NEO_RBG added in Adafruit_NeoPixel: rOffset = 1;gOffset = 2;bOffset = 0;
 
 static EEMEM uint16_t eeprom_starts = 0x02; 
+boolean enabled6 = true;		// before setup();
 
 void setup(){
 	disable6v();
 	//pinMode(PIN_B2_SERVO_Y, INPUT+INPUT_PULLUP );      // nie pozwalaj na przypadkowe machanie na starcie
 	//pinMode(PIN_B2_SERVO_Z, INPUT+INPUT_PULLUP );      // nie pozwalaj na przypadkowe machanie na starcie
 
-	pinMode(PIN_B2_SELF_RESET, INPUT );	
-	pinMode(PIN_B2_HALL_X, INPUT + INPUT_PULLUP );
-	pinMode(PIN_B2_HALL_Y, INPUT + INPUT_PULLUP );
-	pinMode(PIN_B2_WEIGHT, INPUT);
-	Serial.begin(B2_SERIAL0_BOUND);
+	// read eeprom
+	boolean actuators = false;
+	if(actuators){
 
-	// blind led	
-	pinMode(PIN_B2_STEPPER_DIR, OUTPUT );
-	digitalWrite( PIN_B2_STEPPER_DIR, HIGH );
-	delay(100);
-	digitalWrite( PIN_B2_STEPPER_DIR, LOW );
-	delay(200);
-	digitalWrite( PIN_B2_STEPPER_DIR, HIGH );
-	delay(100);
-	digitalWrite( PIN_B2_STEPPER_DIR, LOW );
+	}else{
+		pinMode(PIN_B2_SELF_RESET, INPUT );	
+		pinMode(PIN_B2_HALL_X, INPUT + INPUT_PULLUP );
+		pinMode(PIN_B2_HALL_Y, INPUT + INPUT_PULLUP );
+		pinMode(PIN_B2_WEIGHT, INPUT);
+		Serial.begin(B2_SERIAL0_BOUND);
 
+		// blink led	
+		pinMode(PIN_B2_STEPPER_DIR, OUTPUT );
+		digitalWrite( PIN_B2_STEPPER_DIR, HIGH );
+		delay(100);
+		digitalWrite( PIN_B2_STEPPER_DIR, LOW );
+		delay(200);
+		digitalWrite( PIN_B2_STEPPER_DIR, HIGH );
+		delay(100);
+		digitalWrite( PIN_B2_STEPPER_DIR, LOW );
+
+	}
 	init_leds();
 	serial0Buffer = "";
-
-
 	setupStepper();
 
 	unsigned long int color = bottom_panels.Color(0,  0,  20 );	
@@ -276,7 +274,6 @@ void loop() {
 	}*/
 	readHall();
 	update_servo( INNER_SERVOY );
-//	update_servo( INNER_SERVOZ );
 	if(stepperIsReady){
 		sendStepperReady();
 		stepperIsReady = false;
@@ -300,7 +297,6 @@ void loop() {
 	if( mil - last_android > MAX_TIME_WITHOUT_ANDROID ){			// no android
 		last_android	= mil;
 		disableServeNow( INNER_SERVOY );
-	//	disableServeNow( INNER_SERVOZ );
 		disable6v();
 		stepperX.disableOutputs();
 	//	unsigned long int color = bottom_panels.Color(20,  0,  0 );	
@@ -310,11 +306,12 @@ void loop() {
 		unsigned long period = millis() - servo_start_time;
 		if( period > SERVO_MAX_TIME ){		// emergency stop
 			disableServeNow( INNER_SERVOY );
-		//	disableServeNow( INNER_SERVOZ );
 			disable6v();
 			servo_start_time = 0;
-			unsigned long int color = bottom_panels.Color(255,  0,  0 );	
+			unsigned long int color = bottom_panels.Color(255,  0,  0 );
 			set_all_leds(color);
+			Serial.println("RRSERVO_OFF");
+			Serial.flush();
 		}
 	}
 	if( mil - last_poke > POKE_ANDROID_TIME ){			// no android
@@ -398,7 +395,6 @@ void init_hallx() {           // synchroniczne
 uint16_t cc = 0;
 void readHall() {           // synchroniczne
 	if( 
-		//stepperX.distanceToGo() != 0 && 
 		servos[INNER_SERVOY].moving == DRIVER_DIR_STOP && 
 		servos[INNER_SERVOZ].moving == DRIVER_DIR_STOP ){
 		if( cc>HX_SPEED){
@@ -415,15 +411,10 @@ void readHall() {           // synchroniczne
 
 void update_servo( byte index ) {           // synchroniczne
 	if( servos[index].pos_changed == true ){  // mam byc gdzie indziej
-	//	Serial.println("teraz");
-	//	Serial.flush();
 	//	Serial.print("-pos= " + String(servos[index].last_pos ));
-	//	Serial.print("\t targetpos= " + String(servos[index].target_pos) );
-	//	Serial.println("\t delta= " + String(delta) );  
-
+	//	Serial.print("\t tar= " + String(servos[index].target_pos) );
+	//	Serial.println("\t d= " + String(delta) );
 		servo_lib[index].writeMicroseconds(servos[index].last_pos);
-	//	Serial.println("po");
-	//	Serial.flush();
 		servos[index].pos_changed = false;
 		if( servos[index].last_pos == servos[index].target_pos){
 			send_servo(false, localToGlobal(index), servos[index].target_pos );
@@ -455,11 +446,10 @@ void parseInput( String input ){
 		sscanf(charBuf,"%hhi,%lx", &num, &color );
 		setColor(num, color);
 
-	}else if( command == 'T' ) {    // T90                  // ACCELERATION * 100 = 9000
+	}else if( command == 'T' ) {    // T90                  // ACCELERATION * 100 (90 * 100= 9000)
 		unsigned int val = decodeInt(input, 2);
 		val = val * 100;
 		stepperX.setAcceleration(val);
-		Serial.println("-setAcceleration: " + String(val) );
 
 	}else if( input.equals("EX") ) {    // enable motor
 		stepperX.enableOutputs();
@@ -469,7 +459,6 @@ void parseInput( String input ){
 		digitalWrite( PIN_B2_SERVO_Y, LOW );
 		digitalWrite( PIN_B2_SERVO_Z, LOW );
 		enable6v();
-
 		/*
 	}else if( input.equals("EY") ) {    // enable motor
 		byte index = INNER_SERVOY;
@@ -496,7 +485,6 @@ void parseInput( String input ){
 				 send_servo(false, localToGlobal(index), servos[index].target_pos );
 			}
 			servos[index].pos_changed = false;
-			
 		}
 		
 	}else if(command == 'G' ) {    // G
@@ -589,12 +577,6 @@ void parseInput( String input ){
 			paserDeriver(DRIVER_Z,input);
 		}else if( input.equals( "PING") ){
 			Serial.println("RRPONG");
-			/*
-		}else if( command == 'T' ){  
-			uint8_t tt = GetTemp();
-			Serial.print("RRT");
-			Serial.println(tt, DEC);
-*/
 		}else if( command == 'x') {	//METHOD_GET_X_POS
 			long int pos = stepperX.currentPosition();
 			Serial.print("RRx"); 
@@ -686,22 +668,32 @@ void send_error( String input){
 	Serial.println( input );
 	Serial.flush();
 }
+
 void enable6v(){
-//	pinMode(PIN_B2_SERVOS_ENABLE_PIN, INPUT );		// make pin low (with pull-down)
-	pinMode(PIN_B2_SERVOS_ENABLE_PIN, OUTPUT );		// make pin low (with pull-down)
-	digitalWrite(PIN_B2_SERVOS_ENABLE_PIN, LOW );	// enable power
+	if(!enabled6){
+	//	pinMode(PIN_B2_SERVOS_ENABLE_PIN, INPUT );		// make pin low (with pull-down)
+		pinMode(PIN_B2_SERVOS_ENABLE_PIN, OUTPUT );		// make pin low (with pull-down)
+		digitalWrite(PIN_B2_SERVOS_ENABLE_PIN, LOW );	// enable power
+		enabled6 = true;
+	}
 	servo_start_time	= millis();
+	
 }
 void disable6v(){
-	pinMode(PIN_B2_SERVOS_ENABLE_PIN, OUTPUT );
-	digitalWrite(PIN_B2_SERVOS_ENABLE_PIN, HIGH );	// disable power
+	if(enabled6){
+		pinMode(PIN_B2_SERVOS_ENABLE_PIN, OUTPUT );
+		digitalWrite(PIN_B2_SERVOS_ENABLE_PIN, HIGH );	// disable power
+
+		servo_lib[INNER_SERVOY].detach();
+		pinMode(PIN_B2_SERVO_Y, OUTPUT );
+		digitalWrite( PIN_B2_SERVO_Y, HIGH );
+
+		servo_lib[INNER_SERVOZ].detach();
+		pinMode(PIN_B2_SERVO_Z, OUTPUT );
+		digitalWrite( PIN_B2_SERVO_Z, HIGH );
+		enabled6 = false;
+	}
 	servo_start_time	= 0;
-	servo_lib[INNER_SERVOY].detach();
-	servo_lib[INNER_SERVOZ].detach();
-	pinMode(PIN_B2_SERVO_Y, OUTPUT );
-	pinMode(PIN_B2_SERVO_Z, OUTPUT );
-	digitalWrite( PIN_B2_SERVO_Y, HIGH );
-	digitalWrite( PIN_B2_SERVO_Z, HIGH );
 }
 
 void paserDeriver( byte driver, String input2 ){   // odczytaj komende silnika
@@ -759,9 +751,7 @@ void paserDeriver( byte driver, String input2 ){   // odczytaj komende silnika
 	}else if( maxspeed > 0 && driver == DRIVER_Y ){            // stepper Y
 		// on wire: low_byte, high_byte, speed
 		// in memory: 1=low_byte, 2=high_byte, 3=speed
-		run_to(INNER_SERVOY,maxspeed,target);
-	}else if( maxspeed > 0 && driver == DRIVER_Z ){            // stepper Z
-		//run_to(INNER_SERVOZ,maxspeed,target);
+		run_to(maxspeed,target);
 	}
 }
 /*
@@ -864,38 +854,44 @@ void timer(){
 //	ticks++;
 	if((--prescaler) == 0 ){
 		reload_servo(INNER_SERVOY);
-		reload_servo(INNER_SERVOZ);
+	//	reload_servo(INNER_SERVOZ);
 		prescaler = SERVO_PRESCALER;
 	}
 }
-
-void run_to(byte index, byte sspeed, uint16_t target){
+void run_to(byte sspeed, uint16_t target){
+	byte index = INNER_SERVOY;
 	//Serial.print("-SERVO speed ");
 	//Serial.print(String(sspeed));
 	//Serial.print(" target:");
 	//Serial.println(String(target));
-	if( servos[index].target_pos  == target &&
-			servos[index].last_pos == target ){      // the same pos
-		servo_lib[index].attach(servos[index].pin);
-		servo_lib[index].writeMicroseconds(servos[index].last_pos);
-		send_servo(false, localToGlobal(index), target );
-	}else{
-		servos[index].target_pos     = target;
-		if( servos[index].target_pos < servos[index].last_pos ){    // jedz w dol
-			servos[index].delta_pos = -sspeed;
-			servos[index].last_distance = servos[index].last_pos - servos[index].target_pos;
-			servos[index].moving	= DRIVER_DIR_FORWARD;
-		}else if( servos[index].target_pos > servos[index].last_pos ){    // jedz w gore
-			servos[index].delta_pos = sspeed;
-			servos[index].last_distance = servos[index].target_pos - servos[index].last_pos;
-			servos[index].moving	= DRIVER_DIR_BACKWARD;
-		}
-	}
 	if(!servo_lib[index].attached()){            //  turn on even if the same target pos
 		servo_lib[index].attach(servos[index].pin);
 		servos[index].enabled = true;
 	}
-	enable6v();
+	if( servos[index].target_pos  == target && servos[index].last_pos == target ){      // the same pos
+		servo_lib[index].attach(servos[index].pin);
+		servo_lib[index].writeMicroseconds(servos[index].last_pos);
+		send_servo(false, localToGlobal(index), target );
+		enable6v();
+	}else{
+		if( target < servos[index].last_pos ){    // jedz w dol
+			servos[index].delta_pos = -sspeed;
+			servos[index].last_distance = servos[index].last_pos - target;
+			servos[index].moving	= DRIVER_DIR_FORWARD;
+		}else if( target > servos[index].last_pos ){    // jedz w gore
+			servos[index].delta_pos = sspeed;
+			servos[index].last_distance = target - servos[index].last_pos;
+			servos[index].moving	= DRIVER_DIR_BACKWARD;
+		}
+		if(!enabled6){
+			enable6v();
+			delay(150);		// wait for stabilization of servo
+			servo_lib[index].writeMicroseconds(servos[index].last_pos);
+	//		delay(500);
+		}
+		servos[index].target_pos    = target;
+		prescaler					= SERVO_PRESCALER;
+	}
 }
 
 void send_servo( boolean error, byte servo, uint16_t pos ){

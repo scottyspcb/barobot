@@ -96,7 +96,7 @@ public class BarobotConnector {
 				state.set( "SERVOZ_UP_LIGHT_TIME", 800 );
 				state.set( "SERVOZ_TEST_POS", 2200 );
 				state.set( "SERVOZ_NEUTRAL", 2400 );
-				state.set( "SERVOY_HYSTERESIS", 30 );
+				state.set( "SERVOY_HYSTERESIS", 20 );
 				state.set( "SERVOY_TEST_POS", 1000 );
 				state.set( "SERVOY_BACK_NEUTRAL", 1200 );
 				state.set( "DRIVER_X_SPEED", 3000 );
@@ -131,8 +131,8 @@ public class BarobotConnector {
 			state.set( "DEFAULTS", Constant.ANDROID_APP_VERSION );
 		}else{
 		}
+		state.set( "SERVOY_HYSTERESIS", 20 );
 	}
-
 	public SerialInputListener willReadFrom(Wire connection) {
 		SerialInputListener listener = new SerialInputListener() {
 			public void onRunError(Exception e) {
@@ -347,9 +347,9 @@ public class BarobotConnector {
 					int SERVOY_HFRONT_POS	= SERVOY_FRONT_POS + state.getInt("SERVOY_HFRONT_POS", 0 );
 					int posy				= state.getInt("POSY", 0 );
 					if(posy >= SERVOY_HFRONT_POS ){
-						y.move( q2, SERVOY_TEST_POS, true);
+						y.move( q2, SERVOY_TEST_POS, 100, true, true);
 						q2.addWait(100);
-						y.move( q2, SERVOY_FRONT_POS, true);
+						y.move( q2, SERVOY_FRONT_POS, 100, true, true);
 						q2.addWait(100);
 					}
 					//disabley( q2 );
@@ -447,21 +447,21 @@ public class BarobotConnector {
 					x.moveTo( q2, tx);
 					type = 2;
 				}else if(cx != tx && cy != ty && ty <= SERVOY_HFRONT_POS  ){	// change X and Y and target = front
-					y.move( q2, ty, true );
+					y.move( q2, ty, 100, true, true );
 					x.moveTo( q2, tx );
 					type = 3;
 				}else if(cx != tx && cy < ty && cy <= SERVOY_HFRONT_POS  ){	// change X and Y and current = front, target = back
 					x.moveTo( q2, tx );
-					y.move( q2, ty, true );
+					y.move( q2, ty, 100, true, true );
 					type = 4;
 				}else if(cx == tx && cy != ty ){		// change Y
-					y.move( q2, ty, true );	
+					y.move( q2, ty, 100, true, true );	
 					type = 5;
 				}else{									// (change X and Y ) or (change X and Y is back)
 					int SERVOY_BACK_NEUTRAL = state.getInt("SERVOY_BACK_NEUTRAL", 0 );
-					y.move( q2, SERVOY_BACK_NEUTRAL, true);
+					y.move( q2, SERVOY_BACK_NEUTRAL, 50, true, true);
 					x.moveTo( q2, tx );
-					y.move( q2, ty, true );
+					y.move( q2, ty, 50, true, true );
 				}
 				Initiator.logger.i("moveToBottle","type"+ type);
 				lightManager.color_by_bottle(q2, num, true, 0, 255, 0);
@@ -722,8 +722,8 @@ public class BarobotConnector {
 	}
 	
 	public class Y{
-		public void move( Queue q, final int newpos, final boolean disableOnReady ) {
-			BarobotConnector.this.y.readHallY(q);
+		public void move( Queue q, final int newpos, final int speed_ratio, final boolean disableOnReady, final boolean hysteresis ) {
+			readHallY(q);
 			q.add( new AsyncMessage( true ){
 				@Override	
 				public String getName() {
@@ -734,25 +734,25 @@ public class BarobotConnector {
 					Queue q4				= new Queue();
 					int SERVOY_HYSTERESIS	= BarobotConnector.this.state.getInt("SERVOY_HYSTERESIS", 30 );
 					int posy				= BarobotConnector.this.state.getInt("POSY", 0 );
-					int DRIVER_Y_SPEED		= BarobotConnector.this.state.getInt("DRIVER_Y_SPEED", 0 );
+					int speed				= BarobotConnector.this.state.getInt("DRIVER_Y_SPEED", 20 ) * speed_ratio / 100;
 					int distance			= Math.abs(newpos - posy);
 					int DRIVER_Y_TIME		= BarobotConnector.this.state.getInt("DRIVER_Y_TIME", 100 );		// percent
-					int time				= (DRIVER_Y_SPEED * distance * DRIVER_Y_TIME/100) / 300 + 100;
-
+					int time				= (speed * distance * DRIVER_Y_TIME/100) / 300 + 100;
 					//Initiator.logger.w("Y.distance", ""+distance );
 					//Initiator.logger.w("time1", ""+time );
 					//Initiator.logger.w("time2", ""+(DRIVER_Y_SPEED * distance * DRIVER_Y_TIME/100) );
-
 				//	if( posy != newpos && posy != newpos -margin && posy != newpos +margin){
-						q4.add("Y" + newpos+ ","+DRIVER_Y_SPEED, true);
+						q4.add("Y" + newpos+ ","+speed, true);
 						q4.addWait(time);
-						if( newpos > posy ){	// forward
-							q4.add("Y" + (newpos - SERVOY_HYSTERESIS)+ ","+DRIVER_Y_SPEED, true);	
-						}else{	// backwad
-							q4.add("Y" + (newpos + SERVOY_HYSTERESIS)+ ","+DRIVER_Y_SPEED, true);	
+						if(hysteresis){
+							if( newpos > posy ){	// forward
+								q4.add("Y" + (newpos - SERVOY_HYSTERESIS)+ ","+speed, true);	
+							}else{	// backwad
+								q4.add("Y" + (newpos + SERVOY_HYSTERESIS)+ ","+speed, true);	
+							}
 						}
 						if(disableOnReady){
-							q4.addWait(100);
+					//		q4.addWait(100);
 							readHallY(q4);
 							q4.add("DY", true );
 						}
@@ -760,19 +760,19 @@ public class BarobotConnector {
 					return q4;
 				}
 			});
-			BarobotConnector.this.y.readHallY(q);
+			readHallY(q);
 		}
 
 		public void move( Queue q, String newpos ) {
 			int newpos9 = Integer.parseInt(newpos);
-			move(q, newpos9, false);
+			move(q, newpos9, 100, false, true);
 		}
 		public void moveToFront(Queue q2) {
 			int posy				= BarobotConnector.this.state.getInt("POSY", 0 );			// current pos
 			int SERVOY_FRONT_POS	= BarobotConnector.this.state.getInt("SERVOY_FRONT_POS", 0 );
 			int SERVOY_HYSTERESIS	= BarobotConnector.this.state.getInt("SERVOY_HYSTERESIS", 30 );
 			if( Math.abs(posy - SERVOY_FRONT_POS) > SERVOY_HYSTERESIS ){
-				move( q2, SERVOY_FRONT_POS, true );
+				move( q2, SERVOY_FRONT_POS, 100, true, true );
 			}
 		}
 		public void disable(Queue q) {
