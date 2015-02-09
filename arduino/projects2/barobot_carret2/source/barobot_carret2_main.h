@@ -32,7 +32,7 @@ void send_y_pos( byte stateId, int16_t value);
 void send_hx_pos2( byte state_name, byte dir, int16_t value );
 void send_hx_pos( byte stateId, int16_t value );
 void send_servo( boolean error, byte servo, uint16_t pos );
-void run_to(byte index, byte sspeed, uint16_t target);
+void run_to(byte sspeed, uint16_t target);
 void timer();
 void reload_servo( byte index );
 void serialEvent();

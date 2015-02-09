@@ -317,7 +317,7 @@ public class UpdateManager{
 				        	updateBarHandler.post(new Runnable() {
 			                    public void run() {
 			                    	barProgressDialog.setProgress(value);
-			                    	 Initiator.logger.i("fimwareBurn.download","setProgress"+value );
+			            //        	 Initiator.logger.i("fimwareBurn.download","setProgress"+value );
 			                    }
 			                });
 						}

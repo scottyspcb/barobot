@@ -179,6 +179,5 @@ public class StartupActivity extends BarobotMain{
 			nextColor = color;
 		}
 	}
-
 }
 //        getWindow().addFlags(WindowManager.LayoutParams.PREVENT_POWER_KEY);

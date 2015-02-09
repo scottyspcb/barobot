@@ -103,7 +103,7 @@ public class ServoYActivity extends BlankWizardActivity {
 		switch (view.getId()) {
 		case R.id.wizard_servoy_front:
 			int value1 = Decoder.toInt( ""+wizard_servoy_front_pos.getText(), -1);
-			barobot.y.move(barobot.main_queue, value1, true);
+			barobot.y.move(barobot.main_queue, value1, 100, true, true);
 			barobot.y.readHallY( barobot.main_queue );
 			break;
 	
@@ -132,7 +132,7 @@ public class ServoYActivity extends BlankWizardActivity {
 		case R.id.wizard_servoy_back:
 			int value2 = Decoder.toInt( ""+wizard_servoy_back_pos.getText(), -1);
 		//	barobot.moveZ(barobot.main_queue, value2 );
-			barobot.y.move(barobot.main_queue, value2, true);
+			barobot.y.move(barobot.main_queue, value2, 100, true, true);
 			barobot.y.readHallY( barobot.main_queue );
 			break;
 		case R.id.wizard_servoy_next:
@@ -169,11 +169,11 @@ public class ServoYActivity extends BlankWizardActivity {
 		if( newValue !=lastValue && newValue > 700 && newValue < 2500 ){			// 0 on start won't move anything
 			if(++prescaler >= prescaler_max ){
 				if( newValue < neutral ){
-					barobot.y.move(barobot.main_queue, newValue +300,  false);
+					barobot.y.move(barobot.main_queue, newValue +300,  100, false, true);
 				}else{
-					barobot.y.move(barobot.main_queue, newValue -300,  false);
+					barobot.y.move(barobot.main_queue, newValue -300,  100, false, true);
 				}
-				barobot.y.move(barobot.main_queue, newValue, true);
+				barobot.y.move(barobot.main_queue, newValue, 100, true, true);
 				lastValue = newValue;
 				prescaler = 0;
 			}
