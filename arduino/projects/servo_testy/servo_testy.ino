@@ -21,7 +21,7 @@ volatile long unsigned target_pos = 0;
 volatile boolean pos_changed = false;
 
 void setup(){
-  Serial.begin(115200); 
+  Serial.begin(57600); 
   Serial.println("HELLO");
   Serial.println("przyklad: 10,1900");
   pinMode(STEPPER_Z_PWM, OUTPUT );
@@ -38,16 +38,18 @@ void setup(){
   Serial.flush();
 }
 
+volatile long int delta = 0;
 byte sp = 1;
 void flash(){
   if(last_pos != target_pos ){
+    delta = 0;
     long int this_distance =0;
     if( last_pos > target_pos ){
       this_distance  = last_pos - target_pos;    
     }else if( last_pos < target_pos ){
       this_distance  = target_pos - last_pos;
     }
-    long int delta = 0;
+    
     int quoter = (last_distance >> 2);                // this_distance zawsze sie zmiejsza
     if( this_distance < quoter){                                // ostatnia cwiatrka = zwalniaj
       delta = (delta_pos * this_distance);
@@ -85,10 +87,13 @@ void loop(){
   if(USETIMER && pos_changed){  // mam byc gdzie indziej
     Serial.print("\tpos= " + String(last_pos) );
     Serial.print("\ttarget_pos= " + String(target_pos) );
+    Serial.print("\tdelta= " + String(delta) );   
+
     Serial.println();
     if( last_pos == target_pos){
       Serial.println( "gotowe" ); 
     }else{
+   //   Serial.println( "delta:" + String(delta) ); 
       servoZ.writeMicroseconds(last_pos);
     }
     pos_changed = false;
@@ -101,7 +106,7 @@ void loop(){
 }
 
 //  format:  MAXSPEED,POS
-// np 111,222,333,444
+// np 111,222
 
 void parseInput( String input ){   // zrozum co sie dzieje
   input.trim();
