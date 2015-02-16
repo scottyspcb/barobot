@@ -70,7 +70,7 @@ public class ServoTestPageRoute extends EmptyRoute {
 				q.add("K" + pos, true);
 				if(disableOnReady){
 					q.addWait(300);
-					barobot.z.disable(q);
+					barobot.z.disable(q, true);
 				}
 			}
 			barobot.main_queue.add(q);
@@ -158,7 +158,7 @@ public class ServoTestPageRoute extends EmptyRoute {
 			Initiator.logger.i( this.getClass().getName(), "down" );
 
 			q.add("K" + dp, true);		// go down
-			barobot.z.disable(q);
+			barobot.z.disable(q, true);
 			this.goFront(q, parms);
 		}
 		boolean yIsFront = true;
@@ -179,14 +179,14 @@ public class ServoTestPageRoute extends EmptyRoute {
 				q.add("K" + lp, true);		// go up
 				q.addWait( utime );	
 
-				barobot.y.disable( q );
+				barobot.y.disable( q, true );
 				q.add("K" + dp, true);		// go down
 				q.addWait( pwdt );
 				q.add("K" + pp , true);		// do up
 				q.addWait( pwut );
 				q.add("K" + dp, true);		// go down
 				q.addWait( 200 );		// wait for servo
-				barobot.z.disable(q);
+				barobot.z.disable(q, true);
 	//			q.add("DX", true);
 		//		barobot.disabley( q );
 				if( repeatz >= 1 ){
@@ -233,8 +233,7 @@ public class ServoTestPageRoute extends EmptyRoute {
 	private void goBack(Queue q, Map<String, String> parms) {
 		int sfp		= Decoder.toInt(parms.get("SERVOY_BACK_POS") );
 		int dys		= Decoder.toInt(parms.get("DRIVER_Y_SPEED") );
-		q.add("Y" + sfp +","+dys, true);	// go back
-		q.add("DY", true);
+		q.add("Y" + sfp +","+dys, true);	// go back		q.add("DY", true);
 		q.addWait(100);
 	}
 

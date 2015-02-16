@@ -45,7 +45,6 @@ public class StartupActivity extends BarobotMain{
 		super.onResume();
 		if( BarobotMain.canStart ){
 			setFullScreen();
-
 			BarobotConnector barobot = Arduino.getInstance().barobot;
 			int visibility = barobot.state.getInt("ALLOW_LANGBAR", 1) == 1 ? View.VISIBLE : View.INVISIBLE;	
 			LinearLayout langbar = (LinearLayout) findViewById(R.id.startup_langbar);

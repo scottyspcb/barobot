@@ -18,6 +18,7 @@ import android.os.Environment;
 
 import com.barobot.BarobotMain;
 import com.barobot.android.Android;
+import com.barobot.android.AndroidWithBarobot;
 import com.barobot.common.Initiator;
 import com.barobot.common.constant.Constant;
 import com.barobot.gui.database.BarobotData;
@@ -157,18 +158,15 @@ public class Engine {
 		List<Ingredient_t> ings = recipe.getIngredients();
 		final BarobotConnector barobot = Arduino.getInstance().barobot;
 		final Log_drink ld	= new Log_drink();
-		int pours			= 0;
-		int quantity		= 0;
-		int real_quantity	= 0;
+
+
 
 		ld.robot_id			= barobot.getRobotId();
 		ld.order_source		= orderSource;
 		ld.datetime			= Decoder.getTimestamp();
 		ld.id_drink			= recipe.id;
 		ld.ingredients		= ings.size(); 
-		ld.size				= pours;
-		ld.size_ml			= quantity;
-		ld.size_real_ml		= real_quantity;
+
 		ld.error_code		= 0;
 		Queue q				= new Queue();
 		q.add( new AsyncMessage( true ) {
@@ -185,6 +183,9 @@ public class Engine {
 		} );
 		barobot.startDoingDrink(q);
 
+		int real_quantity	= 0;
+		int pours			= 0;
+		int quantity		= 0;
 		for(Ingredient_t ing : ings){
 			Slot slot = getIngredientSlot(ing);
 			if (slot != null){
@@ -205,6 +206,9 @@ public class Engine {
 		//			Log.i("Prepare", "pour" );
 					barobot.pour(q, slot.dispenser_type, position-1, false, true );
 				}
+				ld.size_real_ml		= real_quantity;
+				ld.size				= pours;
+				ld.size_ml			= quantity;
 				saveStats( slot, q, count );
 				saveStats( ing.getLiquid(), q, count);
 
@@ -226,7 +230,7 @@ public class Engine {
 				return q2;
 			}
 		} );
-		Android.readTabletTemp( q );
+		AndroidWithBarobot.readTabletTemp( q );
 		q.addWithDefaultReader("S" );		// read temp after
 		q.add( new AsyncMessage( true ) {
 			@Override	

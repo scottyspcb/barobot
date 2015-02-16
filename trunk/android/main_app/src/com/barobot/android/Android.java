@@ -12,19 +12,19 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
 
+import android.R.drawable;
+import android.R.string;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
-import android.app.Application;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.AssetManager;
-import android.hardware.Sensor;
-import android.hardware.SensorManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.BatteryManager;
@@ -55,15 +55,8 @@ import com.barobot.R;
 import com.barobot.activity.BarobotActivity;
 import com.barobot.common.Initiator;
 import com.barobot.gui.database.BarobotData;
-import com.barobot.gui.dataobjects.Recipe_t;
 import com.barobot.gui.dataobjects.Robot;
 import com.barobot.gui.dataobjects.Slot;
-import com.barobot.hardware.Arduino;
-import com.barobot.hardware.devices.BarobotConnector;
-import com.barobot.other.UpdateManager;
-import com.barobot.parser.Queue;
-import com.barobot.parser.message.AsyncMessage;
-import com.barobot.parser.message.Mainboard;
 
 public class Android {
 	public static void powerOff( Context c ){
@@ -323,18 +316,6 @@ public class Android {
 			}
 		}
 	}
-	public static void pourFromBottle(int position, Queue q, boolean needGlass ) {
-		BarobotConnector barobot = Arduino.getInstance().barobot;
-		int robot_id = barobot.getRobotId();
-		Slot slot = BarobotData.GetSlot(position+1);		// in db slots have numbers 1-12, 
-		if( slot == null ){
-			Initiator.logger.w("pourFromBottle", "no slot: " + position + " robot_id: " + robot_id);
-		}else{
-			barobot.moveToBottle(q, position, true);
-			barobot.pour(q, slot.dispenser_type, position, true, needGlass );
-		}
-	}
-
 	public static void createShortcutOnDesktop( Activity act) {	   
 	    Intent shortcutIntent4 = new Intent(act.getApplicationContext(),BarobotActivity.class);
 	    Intent shortcutIntent2 = new Intent();
@@ -419,25 +400,6 @@ public class Android {
 	    }
 	    return -1;
 	}
-	public static void readTabletTemp(Queue q) {
-		q.add( new AsyncMessage( true ) {
-			@Override	
-			public String getName() {
-				return "check  tablet temp" ;
-			}
-			@Override
-			public Queue run(Mainboard dev, Queue queue) {
-				Application ba = BarobotMain.getInstance().getApplication();
-			    SensorManager mSensorManager = (SensorManager)ba.getSystemService(Context.SENSOR_SERVICE);
-			    Sensor mTemperature = mSensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE );
-			    int power = Math.round(mTemperature.getPower() * 10000);
-				BarobotConnector barobot = Arduino.getInstance().barobot;
-				barobot.state.set("TABLET_TEMPERATURE", power );
-				return null;
-			}
-		} );
-	}
-
 	public static float readCpuUsage() {
 	    try {
 	        RandomAccessFile reader = new RandomAccessFile("/proc/stat", "r");
@@ -505,43 +467,6 @@ public class Android {
 			  }
 			});
 	}
-	public static int checkNewSoftwareVersion(boolean alertResult, Activity act ) {
-		int isOnline = Android.isOnline(act);
-		if(isOnline > -1 ){	// check ne version of firmware and APK
-			final BarobotConnector barobot = Arduino.getInstance().barobot;
-			if( barobot.getRobotId() == 0 ){
-				Queue q = new Queue();
-				barobot.readHardwareRobotId(q);			// check hardware version
-				q.add( new AsyncMessage( true ) {		// when version readed
-					@Override
-					public String getName() {
-						return "Check robot_id";
-					}
-					@Override
-					public Queue run(Mainboard dev, Queue queue) {
-						if( barobot.getRobotId() == 0 && barobot.robot_id_ready ){						// once again
-							int robot_id = UpdateManager.getNewRobotId();		// download new robot_id (init hardware)
-							Initiator.logger.w("onResume", "robot_id" + robot_id);
-							if( robot_id > 0 ){		// save robot_id to android and arduino
-								Queue q = new Queue();
-								barobot.setRobotId( q, robot_id);
-								return q;	// before all other commands currently in queue
-							}
-						}
-						return null;
-					}
-				});
-				barobot.main_queue.add(q);
-			}
-			UpdateManager.checkNewVersion( act, alertResult );
-			return 1;
-		}else{
-			if(alertResult){
-				alertMessage(act, "No connection");
-			}
-			return 0;
-		}
-	} 
 	public static void askForTurnOff( final Activity activity ) {
 		activity.runOnUiThread(new Runnable() {
 			  public void run() {
@@ -605,5 +530,30 @@ public class Android {
 	    AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 	    manager.set(AlarmManager.RTC, System.currentTimeMillis() + delay, intent);
 	    System.exit(2);
+	}
+	public static void pleaseResetApp( final Activity dbw ) {
+		dbw.runOnUiThread(new Runnable() {
+			  public void run() {
+				  new AlertDialog.Builder(dbw)
+				  .setTitle("Message").setMessage("Please restart application")
+				    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+				        public void onClick(DialogInterface dialog, int which) { 
+				        }
+				    })
+				    .setIcon(android.R.drawable.ic_dialog_alert).show();
+			  }
+			});
+	}
+	public static void alertOk(final Activity dbw) {
+		dbw.runOnUiThread(new Runnable() {
+			  public void run() {
+				  new AlertDialog.Builder(dbw).setTitle("Message").setMessage("It is pleasure to inform that operation was completed successfully.")
+				    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+				        public void onClick(DialogInterface dialog, int which) { 
+				        }
+				    })
+				    .setIcon(android.R.drawable.ic_dialog_alert).show();
+			  }
+			});
 	}
 }

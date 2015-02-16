@@ -18,7 +18,7 @@ import com.barobot.parser.message.Mainboard;
 import com.barobot.parser.utils.Decoder;
 
 public class BarobotConnector {
-	protected boolean newLeds			= true;
+	protected boolean newLeds			= true;			// with magic led (false = upanels)
 	public boolean actuators			= false;		// with figrelli actuators only
 
 	public boolean ledsReady			= false;
@@ -41,7 +41,7 @@ public class BarobotConnector {
 	public BarobotConnector(HardwareState state ){
 		this.state		= state;
 		if( newLeds ){
-			ledsReady = true;
+			ledsReady = true;		// magic leds are always ready
 		}else{
 	//		use_beta	= true;	// old robot is always beta
 		}
@@ -56,30 +56,34 @@ public class BarobotConnector {
 	}
 
 	private void loadDefaults() {
-		this.state.set( "STAT1", this.state.getInt( "STAT1", 0 ) + 1 );						// app starts
-		this.state.set( "RESET_TIME", this.state.getInt( "RESET_TIME", 200 ) );				// set default
-		this.state.set( "NEED_HALL_X", this.state.getInt( "NEED_HALL_X", 1 ) );				// set default
-		this.state.set( "NEED_HALL_Y", this.state.getInt( "NEED_HALL_Y", 1 ) );				// set default
-		this.state.set( "ALLOW_LANGBAR", this.state.getInt( "ALLOW_LANGBAR", 1 ) );			// set default
+		state.set( "STAT1", state.getInt( "STAT1", 0 ) + 1 );						// app starts
+		state.set( "RESET_TIME", state.getInt( "RESET_TIME", 200 ) );				// set default
+		state.set( "NEED_HALL_X", state.getInt( "NEED_HALL_X", 1 ) );				// set default
+		state.set( "NEED_HALL_Y", state.getInt( "NEED_HALL_Y", 1 ) );				// set default
+		state.set( "ALLOW_LANGBAR", state.getInt( "ALLOW_LANGBAR", 1 ) );			// set default
 		
-		this.state.set( "NEED_GLASS", this.state.getInt( "NEED_GLASS", 0 ) );				// set default
-		this.state.set( "WATCH_GLASS", this.state.getInt( "WATCH_GLASS", 0 ) );				// set default	
+		state.set( "NEED_GLASS", state.getInt( "NEED_GLASS", 0 ) );				// set default
+		state.set( "WATCH_GLASS", state.getInt( "WATCH_GLASS", 0 ) );				// set default	
 
-		this.state.set( "MAX_GLASS_CAPACITY", this.state.getInt( "MAX_GLASS_CAPACITY", 190 ) );		// set default (in ml)
-		this.state.set( "GLASS_DIFF", this.state.getInt( "GLASS_DIFF", 50 ) );				// set default
-		this.state.set( "LIGH_GLASS_DIFF", this.state.getInt( "LIGH_GLASS_DIFF", 5 ) );		// set default
-		this.state.set( "ALLOW_LIGHT_CUP", this.state.getInt( "ALLOW_LIGHT_CUP", 0 ) );		// set default
+		state.set( "MAX_GLASS_CAPACITY", state.getInt( "MAX_GLASS_CAPACITY", 190 ) );		// set default (in ml)
+		state.set( "GLASS_DIFF", state.getInt( "GLASS_DIFF", 50 ) );				// set default
+		state.set( "LIGH_GLASS_DIFF", state.getInt( "LIGH_GLASS_DIFF", 5 ) );		// set default
+		state.set( "ALLOW_LIGHT_CUP", state.getInt( "ALLOW_LIGHT_CUP", 0 ) );		// set default
 
-		this.state.set( "SSERVER", this.state.getInt( "SSERVER", 1 ) );								// set default
-		this.state.set( "SSERVER_API", this.state.getInt( "SSERVER_API", 1 ) );						// set default
-		this.state.set( "SSERVER_PASS", this.state.get( "SSERVER_PASS", "BAROBOT" ) );				// set default
-		this.state.set( "SSERVER_CONFIG_PASS", this.state.getInt( "SSERVER_CONFIG_PASS", 1 ) );		// set default
+		state.set( "SSERVER", state.getInt( "SSERVER", 1 ) );								// set default
+		state.set( "SSERVER_API", state.getInt( "SSERVER_API", 1 ) );						// set default
+		state.set( "SSERVER_PASS", state.get( "SSERVER_PASS", "BAROBOT" ) );				// set default
+		state.set( "SSERVER_CONFIG_PASS", state.getInt( "SSERVER_CONFIG_PASS", 1 ) );		// set default
 
-		this.state.set( "SSERVER_ALLOW_CONFIG", this.state.getInt( "SSERVER_ALLOW_CONFIG", 0 ) );		// set default
-		this.state.set( "SSERVER_ALLOW_CREATOR", this.state.getInt( "SSERVER_ALLOW_CREATOR", 1 ) );		// set default
-		this.state.set( "SSERVER_ALLOW_LIST", this.state.getInt( "SSERVER_ALLOW_LIST", 1 ) );			// set default
+		state.set( "SSERVER_ALLOW_CONFIG", state.getInt( "SSERVER_ALLOW_CONFIG", 0 ) );		// set default
+		state.set( "SSERVER_ALLOW_CREATOR", state.getInt( "SSERVER_ALLOW_CREATOR", 1 ) );	// set default
+		state.set( "SSERVER_ALLOW_LIST", state.getInt( "SSERVER_ALLOW_LIST", 1 ) );			// set default
 
-		this.state.set( "SERVOY_HFRONT_POS", 60 );	// add histeresis
+		state.set( "SERVOZ_UP_TIME_MIN", state.getInt( "SERVOZ_UP_TIME_MIN", 250 ) );			// set default
+		state.set( "SERVOY_REPEAT_TIME", state.getInt( "SERVOY_REPEAT_TIME", 600 ) );			// set default
+
+		state.set( "SERVOY_HFRONT_POS", 60 );	// add histeresis
+		state.set( "SERVOY_HYSTERESIS", 20 );
 
 		boolean defaultsLoaded	= state.getInt("DEFAULTS", 0 ) > 0;
 		if( Constant.use_beta || !defaultsLoaded ){
@@ -120,10 +124,9 @@ public class BarobotConnector {
 			state.set( "DRIVER_CALIB_X_SPEED", 1100 );
 			state.set( "SERVOZ_PAC_TIME_WAIT", 1300 );
 			state.set( "SERVOZ_PAC_TIME_WAIT_VOL", 300 );
-			state.set( "SERVOY_REPEAT_TIME", 600 );
+	
 			state.set( "SERVOZ_POUR_TIME", 2500 / 20 );			// predkosc nalewania 20ml, dac 3200
 			state.set( "SERVOZ_UP_TIME", 1900 );				// czas potrzebny na zajechanie w gore
-			state.set( "SERVOZ_UP_TIME_MIN", 250 );
 
 			state.set("show_unknown", 1 );
 			state.set("show_sending", 1 );
@@ -131,7 +134,7 @@ public class BarobotConnector {
 			state.set( "DEFAULTS", Constant.ANDROID_APP_VERSION );
 		}else{
 		}
-		state.set( "SERVOY_HYSTERESIS", 20 );
+
 	}
 	public SerialInputListener willReadFrom(Wire connection) {
 		SerialInputListener listener = new SerialInputListener() {
@@ -176,8 +179,7 @@ public class BarobotConnector {
 		int poszdown	=  state.getInt("SERVOZ_DOWN_POS", 9 );
 		mq.add("K" + poszdown, false );
 		mq.add("DX", false );
-		mq.add("DY", false );
-		mq.add("DZ", false );
+		y.disable( mq, false );
 		mq.add(Constant.GETXPOS, false );
 	}
 
@@ -192,9 +194,9 @@ public class BarobotConnector {
 
 	public int getBottlePosY( int i ) {
 		if ( i > Constant.bottle_row.length || Constant.bottle_row[ i ] == Constant.BOTTLE_IS_BACK ){
-			return this.state.getInt( "SERVOY_BACK_POS", 1910 );
+			return state.getInt( "SERVOY_BACK_POS", 1910 );
 		}else{										// Constant.bottle_row[ i ] == Constant.BOTTLE_IS_BACK
-			return this.state.getInt( "SERVOY_FRONT_POS", 810 );
+			return state.getInt( "SERVOY_FRONT_POS", 810 );
 		}
 	}
 
@@ -258,7 +260,6 @@ public class BarobotConnector {
 		q.add( new AsyncMessage( true ) {
 			@Override
 			public Queue run(Mainboard dev, Queue queue) {
-
 				this.name		= "end scanning";
 				Initiator.logger.i("+find_bottles", "koniec kalibrcja");
 				state.set("scann_bottles", 0 );
@@ -280,8 +281,7 @@ public class BarobotConnector {
 			}
 		});
 		q.add("DX", true);
-		q.add("DZ", true);
-		y.disable( q );
+		y.disable( q, true );
 	}
 
 	public void moveToStart(Queue q) {
@@ -309,7 +309,7 @@ public class BarobotConnector {
 					x.moveTo( q2, sposx);
 					doHoming( q2, false );
 				}
-				z.disable(q2);
+				z.disable(q2, true);
 				return q2;
 			}
 		} );
@@ -396,8 +396,7 @@ public class BarobotConnector {
 		z.moveLight(q, -1, false );					// move up to help
 	//	q.addWait(400);
 		q.add("DX", true);
-		y.disable( q );
-	//	disablez(q);
+		y.disable( q, false );
 		lightManager.carret_color(q, 0, 255,0);
 	    lightManager.turnOffLeds(q);
     	lightManager.setAllLeds(q, "22", 50, 0, 50, 0);
@@ -528,7 +527,7 @@ public class BarobotConnector {
 					//moveZDown( q2, true );
 					q2.addWithDefaultReader("K" + SERVOZ_DOWN_POS);
 					q2.addWait(SERVOZ_UP_TIME/3);
-					z.disable(q2);
+					z.disable(q2, true);
 					lightManager.setLedsByBottle(q2, bottleNum, "11", 255, 255, 0, 0);
 					return q2;
 			//	}
@@ -568,7 +567,7 @@ public class BarobotConnector {
 	}
 
 	public void setSlotMarginX( int num, int newx ) {
-		this.state.set("BOTTLE_OFFSETX_" + num, newx );	
+		state.set("BOTTLE_OFFSETX_" + num, newx );	
 	}
 
 	public int getSlotMarginX(int num) {
@@ -587,11 +586,11 @@ public class BarobotConnector {
 			if(robot_id != new_robot_id){
 				robot_id = new_robot_id;
 				if(robot_id!=0 && robot_id!=65535){					// 65535 = 1111111111111111b (empty eeprom)
-					this.state.saveConfig(robot_id);
+					state.saveConfig(robot_id);
 				}
-				this.state.reloadConfig(robot_id);
+				state.reloadConfig(robot_id);
 			}
-			this.state.set("ROBOT_ID", new_robot_id );
+			state.set("ROBOT_ID", new_robot_id );
 			if(readFromHardware){
 				this.robot_id_ready = true;
 				this.robot_id_error = false;
@@ -599,7 +598,7 @@ public class BarobotConnector {
 		}else{
 			robot_id_error = true;
 			this.robot_id_ready = false;
-			this.state.set("ROBOT_ID", 0 );
+			state.set("ROBOT_ID", 0 );
 			robot_id = 0;
 		}
 	}
@@ -625,7 +624,7 @@ public class BarobotConnector {
 	}
 
 	public int getLastTemp() {
-		return this.state.getInt("TEMPERATURE", 0);
+		return state.getInt("TEMPERATURE", 0);
 	}
 	public void systemTest() {
 		// TODO Auto-generated method stub
@@ -665,8 +664,7 @@ public class BarobotConnector {
 		});
 		mq.add( "\n", false );	// clean up input
 		mq.add( "\n", false );
-		y.disable( mq );			// disable everything is moving
-		z.disable( mq );
+		y.disable( mq, true );			// disable everything is moving
 		mq.add("DX", true);
 		if( ledsReady || newLeds ){
 			lightManager.setAllLeds(mq, "22", 0, 100, 100, 0);
@@ -763,10 +761,6 @@ public class BarobotConnector {
 			readHallY(q);
 		}
 
-		public void move( Queue q, String newpos ) {
-			int newpos9 = Integer.parseInt(newpos);
-			move(q, newpos9, 100, false, true);
-		}
 		public void moveToFront(Queue q2) {
 			int posy				= BarobotConnector.this.state.getInt("POSY", 0 );			// current pos
 			int SERVOY_FRONT_POS	= BarobotConnector.this.state.getInt("SERVOY_FRONT_POS", 0 );
@@ -775,9 +769,11 @@ public class BarobotConnector {
 				move( q2, SERVOY_FRONT_POS, 100, true, true );
 			}
 		}
-		public void disable(Queue q) {
+		public void disable(Queue q, boolean wait_after) {
 			q.add("DY", true);
-			q.addWait(300);
+			if(wait_after){
+				q.addWait(300);		// wait for power off - to be sure
+			}
 		}
 		public void readHallY(Queue q) {
 			q.add("A1", true);
@@ -843,7 +839,7 @@ public class BarobotConnector {
 						z.move(q2, poszup);
 					}
 					if(disableOnReady){
-						z.disable(q2);
+						z.disable(q2, true);
 					}
 					mainQueue.addFirst(q2);
 					return false;
@@ -861,9 +857,9 @@ public class BarobotConnector {
 
 		public void moveDown(Queue q, final boolean disableOnReady ) {
 			int SERVOZ_DOWN_POS = state.getInt("SERVOZ_DOWN_POS", 0 );
-			z.move( q, SERVOZ_DOWN_POS );
+			move( q, SERVOZ_DOWN_POS );
 			if(disableOnReady){
-				z.disable(q);
+				disable(q, true);
 			}
 			/*
 			q.add( new AsyncMessage( true ){
@@ -900,8 +896,8 @@ public class BarobotConnector {
 					int diff			= Math.abs((current_z - pos));
 				//	int DRIVER_Z_SPEED	= state.getInt("DRIVER_Z_SPEED", 0 );
 					q.addWithDefaultReader("K" + pos);
-					int SERVOZ_UP_TIME		= BarobotConnector.this.state.getInt("SERVOZ_UP_TIME", 10 );
-					int SERVOZ_UP_TIME_MIN	= BarobotConnector.this.state.getInt("SERVOZ_UP_TIME_MIN", 10 );
+					int SERVOZ_UP_TIME		= BarobotConnector.this.state.getInt("SERVOZ_UP_TIME", 1900 );
+					int SERVOZ_UP_TIME_MIN	= BarobotConnector.this.state.getInt("SERVOZ_UP_TIME_MIN", 250 );
 					int time				= SERVOZ_UP_TIME / 1000 * diff;
 					time					= Math.max( SERVOZ_UP_TIME_MIN, time );	// no less than 100
 				//	time					= Math.min( 800, time );
@@ -927,7 +923,7 @@ public class BarobotConnector {
 						move(q2, SERVOZ_UP_POS);
 					}
 					if(disableOnReady){
-						BarobotConnector.this.z.disable(q2);
+						disable(q2, true);
 					}
 					mainQueue.addFirst(q2);
 					return false;
@@ -942,9 +938,11 @@ public class BarobotConnector {
 				}
 			});
 		}
-		public void disable(Queue q) {
+		public void disable(Queue q, boolean wait_after) {
 			q.add("DZ", true);
-			q.addWait(300);		// wait for power off - to be sure
+			if(wait_after){
+				q.addWait(300);		// wait for power off - to be sure
+			}
 		}
 	}
 	public class Weight{	
