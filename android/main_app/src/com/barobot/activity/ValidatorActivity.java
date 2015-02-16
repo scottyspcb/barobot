@@ -198,7 +198,6 @@ public class ValidatorActivity extends BarobotMain {
 	public static void saveSettings( Activity act ){
 		BarobotConnector barobot = Arduino.getInstance().barobot;
 		barobot.state.set("ROBOT_CAN_MOVE", Constant.WIZARD_VERSION );
-
 		Intent serverIntent = new Intent(act, StartupActivity.class);
 		serverIntent.putExtra(RecipeListActivity.MODE_NAME, RecipeListActivity.Mode.Normal.ordinal());
 		serverIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);

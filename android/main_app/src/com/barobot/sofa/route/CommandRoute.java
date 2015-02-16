@@ -18,7 +18,7 @@ import android.content.DialogInterface;
 
 import com.barobot.AppInvoker;
 import com.barobot.BarobotMain;
-import com.barobot.android.Android;
+import com.barobot.android.AndroidWithBarobot;
 import com.barobot.common.Initiator;
 import com.barobot.common.constant.Constant;
 import com.barobot.common.constant.Methods;
@@ -44,8 +44,6 @@ import fi.iki.elonen.NanoHTTPD.IHTTPSession;
 
 public class CommandRoute extends EmptyRoute {
 	private String prefix;
-	private boolean allowUnsafe = true;
-
 	CommandRoute(){
 		this.regex = "^\\/command\\/.*";
 		this.prefix = "/command/";
@@ -53,8 +51,7 @@ public class CommandRoute extends EmptyRoute {
 		this.init();
 	}
 	private class command_listener {
-		public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
-				int posx, int posy) {
+		public boolean onCall(Queue q, BarobotConnector barobot, Queue mq, int posx, int posy) {
 			Initiator.logger.i("CommandRoute", " no listener: command_listener");
 			return false;
 		}
@@ -122,9 +119,7 @@ public class CommandRoute extends EmptyRoute {
 
 				mq.clear();
 				barobot.x.stop( mq );
-				barobot.y.disable(mq);
-				barobot.z.disable( mq );
-
+				barobot.y.disable( mq, false);
 				String command = "Q00"
 						+ String.format("%02x", 255 ) 
 						+ String.format("%02x", 0 )
@@ -279,8 +274,8 @@ public class CommandRoute extends EmptyRoute {
 		index.put("command_go_to_neutral_y", new command_listener() {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,int posx, int posy) {
-				barobot.y.move(q, barobot.state.get("SERVOY_BACK_NEUTRAL", "0"));
-				barobot.y.disable( q );
+				barobot.y.move(q, barobot.state.getInt("SERVOY_BACK_NEUTRAL", 1000), 100, false, true);
+				barobot.y.disable( q, true );
 				return true;
 			}
 		});
@@ -361,7 +356,7 @@ public class CommandRoute extends EmptyRoute {
 				}
 
 				barobot.y.move(q, SERVOY_FRONT_POS2, 100, false, true);
-				barobot.y.disable( q );
+				barobot.y.disable( q, true );
 				return true;
 			}
 		});
@@ -488,7 +483,7 @@ public class CommandRoute extends EmptyRoute {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
-				barobot.z.disable(q);
+				barobot.z.disable(q, true);
 				return true;
 			}
 		});
@@ -497,7 +492,7 @@ public class CommandRoute extends EmptyRoute {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
-				barobot.y.disable( q );
+				barobot.y.disable( q, true );
 				return true;
 			}
 		});
@@ -515,7 +510,7 @@ public class CommandRoute extends EmptyRoute {
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
 
-				if(!allowUnsafe){
+				if(!Constant.allowUnsafe){
 					return false;
 				}
 				/*
@@ -658,7 +653,7 @@ public class CommandRoute extends EmptyRoute {
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,
 					int posx, int posy) {
 
-				Android.readTabletTemp( mq );
+				AndroidWithBarobot.readTabletTemp( mq );
 				mq.add("x", true);
 				mq.add("y", true);
 				mq.add("z", true);
@@ -813,84 +808,84 @@ public class CommandRoute extends EmptyRoute {
 		index.put("command_bottle_0", new command_listener() {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,int posx, int posy) {
-				Android.pourFromBottle( 0, q, false );
+				AndroidWithBarobot.pourFromBottle( 0, q, false );
 				return true;
 			}
 		});
 		index.put("command_bottle_1", new command_listener() {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,int posx, int posy) {
-				Android.pourFromBottle( 1, q, false );
+				AndroidWithBarobot.pourFromBottle( 1, q, false );
 				return true;
 			}
 		});	
 		index.put("command_bottle_2", new command_listener() {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,int posx, int posy) {
-				Android.pourFromBottle( 2, q, false );
+				AndroidWithBarobot.pourFromBottle( 2, q, false );
 				return true;
 			}
 		});		
 		index.put("command_bottle_3", new command_listener() {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,int posx, int posy) {
-				Android.pourFromBottle( 3, q, false );
+				AndroidWithBarobot.pourFromBottle( 3, q, false );
 				return true;
 			}
 		});	
 		index.put("command_bottle_4", new command_listener() {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,int posx, int posy) {
-				Android.pourFromBottle( 4, q, false );
+				AndroidWithBarobot.pourFromBottle( 4, q, false );
 				return true;
 			}
 		});	
 		index.put("command_bottle_5", new command_listener() {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,int posx, int posy) {
-				Android.pourFromBottle( 5, q, false );
+				AndroidWithBarobot.pourFromBottle( 5, q, false );
 				return true;
 			}
 		});	
 		index.put("command_bottle_6", new command_listener() {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,int posx, int posy) {
-				Android.pourFromBottle( 6, q, false );
+				AndroidWithBarobot.pourFromBottle( 6, q, false );
 				return true;
 			}
 		});		
 		index.put("command_bottle_7", new command_listener() {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,int posx, int posy) {
-				Android.pourFromBottle( 7, q, false );
+				AndroidWithBarobot.pourFromBottle( 7, q, false );
 				return true;
 			}
 		});		
 		index.put("command_bottle_8", new command_listener() {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,int posx, int posy) {
-				Android.pourFromBottle( 8, q, false );
+				AndroidWithBarobot.pourFromBottle( 8, q, false );
 				return true;
 			}
 		});	
 		index.put("command_bottle_8", new command_listener() {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,int posx, int posy) {
-				Android.pourFromBottle( 8, q, false );
+				AndroidWithBarobot.pourFromBottle( 8, q, false );
 				return true;
 			}
 		});		
 		index.put("command_bottle_10", new command_listener() {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,int posx, int posy) {
-				Android.pourFromBottle( 10, q, false );
+				AndroidWithBarobot.pourFromBottle( 10, q, false );
 				return true;
 			}
 		});	
 		index.put("command_bottle_11", new command_listener() {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,int posx, int posy) {
-				Android.pourFromBottle( 11, q, false );
+				AndroidWithBarobot.pourFromBottle( 11, q, false );
 				return true;
 			}
 		});	
@@ -1062,14 +1057,23 @@ public class CommandRoute extends EmptyRoute {
 		index.put("command_upload_beta", new command_listener() {
 			@Override
 			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,int posx, int posy) {
-				if(!allowUnsafe){
+				if(!Constant.allowUnsafe){
 					return false;
 				}
 				UpdateManager.update_firmware_step2_download(BarobotMain.getInstance(), true, false );
 				return true;
 			}
 		});
-		
+		index.put("command_upload_beta_manual", new command_listener() {
+			@Override
+			public boolean onCall(Queue q, BarobotConnector barobot, Queue mq,int posx, int posy) {
+				if(!Constant.allowUnsafe){
+					return false;
+				}
+				UpdateManager.update_firmware_step2_download(BarobotMain.getInstance(), true, true );
+				return true;
+			}
+		});	
 
 		index.put("command_test_servo_y", new command_listener() {
 			@Override
@@ -1128,7 +1132,7 @@ public class CommandRoute extends EmptyRoute {
 					q.addWait(wait);
 				}	
 				barobot.y.move(q, SERVOY_FRONT_POS, 100, false, true);
-				barobot.y.disable( q );
+				barobot.y.disable( q, true );
 				return true;
 			}
 		});

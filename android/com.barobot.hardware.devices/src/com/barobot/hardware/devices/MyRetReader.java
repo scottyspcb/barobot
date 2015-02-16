@@ -186,13 +186,26 @@ public class MyRetReader implements RetReader {
 		//	I		RI			OLD TEST I2C
 		//	IH		RIH				IS HOME
 		//  S		RS				stats
-
+		//			RRNO_MASTER
+		//			RRSERVO_OFF
+		
 		String command = "";
 		if(wait_for2!= null && wait_for2.command != null && wait_for2.command != "" ){
 			command = wait_for2.command;
 	//		Initiator.logger.w("MyRetReader.isRetOf", fromArduino+ " for "+ command );
 			if( fromArduino.startsWith( "R" + command )){
-				if( fromArduino.startsWith( "Rm" ) || command.equals( "S" ) || command.equals("IH") || command.startsWith("K") || command.equals("A2") ){
+				if( fromArduino.startsWith( "Rm" ) || 
+						command.equals( "S" ) ||
+						command.equals("IH") || 
+						command.equals("y") || 
+						command.equals("z") || 
+						command.equals("x") || 
+						command.startsWith("K") || 
+						command.equals("A2")	||
+						command.equals("A3")	||
+						command.equals("A4")	||
+						command.equals("A5")
+						){
 					// analyse below
 				}else{
 					Initiator.logger.i("Arduino.GlobalMatch", "auto_unlock");
@@ -205,9 +218,6 @@ public class MyRetReader implements RetReader {
 			if( fromArduino.startsWith( "E" + command)){		// error tez odblokowuje
 				return true;
 			}
-		//	if( fromArduino.startsWith("RX") && wait_for2.command.startsWith("x") ){
-		//		return true;
-		//	}
 			if( fromArduino.equals( "NOCMD ["+ command +"]")){
 				return true;	// no command = unlock and log
 			}
@@ -370,18 +380,31 @@ public class MyRetReader implements RetReader {
 			}else if(fromArduino2.startsWith(Constant.GETYPOS)){
 				decoded += "/GETYPOS";
 				String fromArduino3 = fromArduino2.replace(Constant.GETYPOS, "");
-				state.set( "POSY",fromArduino3);
+				String[] parts		= fromArduino3.split(",");
+				state.set( "POSY",parts[0]);
+				if(parts.length > 1){
+					state.set( "POSY_STATE", parts[1]);
+				}
 				if( command.startsWith(Constant.GETYPOS)){
 					return true;
+				}else if( command.startsWith("Y") && parts.length > 1 && parts[1].equals("0") ){		// 0 == stop
+					return true;	
 				}else{
 					Initiator.logger.e("MyRetReader.decoded.wrong13", "command:" +command+ ", decoded: " + decoded + " fromArduino:'"+ fromArduino+"'" );
 				}
 			}else if(fromArduino2.startsWith(Constant.GETZPOS)){
 				decoded += "/GETZPOS";
 				String fromArduino3 = fromArduino2.replace(Constant.GETZPOS, "");
-				state.set( "POSZ",fromArduino3);
+				String[] parts		= fromArduino3.split(",");
+
+				state.set( "POSZ",parts[0]);
+				if(parts.length > 1){
+					state.set( "POSZ_STATE", parts[1]);
+				}
 				if( command.startsWith(Constant.GETZPOS)){
 					return true;
+				}else if( command.startsWith("Z") && parts.length > 1 && parts[1].equals("0") ){		// 0 == stop
+					return true;	
 				}else{
 					Initiator.logger.e("MyRetReader.decoded.wrong13", "command:" +command+ ", decoded: " + decoded + " fromArduino:'"+ fromArduino+"'" );
 				}
@@ -401,7 +424,7 @@ public class MyRetReader implements RetReader {
 					return true;
 				}
 			}else if(fromArduino2.startsWith( "S" ) ){				// stats
-				String fromArduino3 = fromArduino2.substring(2);
+				String fromArduino3 = fromArduino2.substring(2);	// remove "S,"
 				int[] parts = Decoder.decodeBytes( fromArduino3 );
 				if(parts.length >= 5 ){
 					// RRS,VERSION,TEMP,STARTS,ROBOT_ID_LOW, ROBOT_ID_HIGH
@@ -419,8 +442,20 @@ public class MyRetReader implements RetReader {
 					}
 					int id = (parts[4] << 8) + parts[3];
 					barobot.changeRobotId( id, true );
+					if(parts.length >= 6 ){
+						state.set("PCB_TYPE", parts[5] );
+					}
 				}
 				if( command.equals("S")){
+					return true;
+				}
+			}else if(fromArduino2.startsWith( "A1" )){					// y position
+				String fromArduino3 = fromArduino2.substring(3);		// 	RA1,598		=> A1,598		=> 598
+				int value			= Decoder.toInt(fromArduino3, 0);
+				if( value > 0 ){			// 0 is imposible
+					barobot.state.set("HALLY", value);
+				}
+				if( command.equals("A1") ){
 					return true;
 				}
 			}else if(fromArduino2.startsWith( "A2" )){			// load cell (weigh sensor)
@@ -479,6 +514,8 @@ public class MyRetReader implements RetReader {
 				}else{
 					Initiator.logger.e("MyRetReader.decoded.wrong8", "[" + command + "], decoded: " + decoded + " fromArduino:"+ fromArduino );
 				}
+			}else if(fromArduino2.equals( "RSERVO_OFF" ) ){		// RRSERVO_OFF when servo is ON more than safe timeout
+				// todo, logger
 			}else{
 				decoded += "/????" + "fromArduino2: [" + fromArduino2+"], command: [" + command + "]";
 			}
@@ -708,24 +745,8 @@ public class MyRetReader implements RetReader {
 				}
 			}
 		//	Initiator.logger.i("INNER_HALL_X", "" + state_name + " / "+ hpos+ " / "+ dir);
-		}else if( parts[1] == Methods.INNER_HALL_Y ){
+		}else if( parts[1] == Methods.INNER_HALL_Y ){	// todo remove
 			decoded += "/INNER_HALL_Y";
-			/*
-			byte ttt[10] = {
-					METHOD_IMPORTANT_ANALOG, 
-					INNER_HALL_Y, 
-					state_name, 
-					0,						// last dir
-					0,						// pos
-					0,						// pos
-					(pos & 0xFF),			// position
-					(pos >>8),				// position
-					(value & 0xFF),
-					(value >>8),
-				};
-				// 125,1,66,0,0,0,228,2,177,1
-			*/
-		//	int state_name	= parts[2];
 			short hpos		= (short) (parts[6] << 8);
 			hpos			+= (short)parts[7];
 			int value		= parts[8] + (parts[9] << 8);

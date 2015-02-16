@@ -4,7 +4,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.barobot.R;
-import com.barobot.android.Android;
+import com.barobot.android.AndroidWithBarobot;
 import com.barobot.common.constant.Constant;
 import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
@@ -37,7 +37,7 @@ public class FirmwareActivity extends BlankWizardActivity {
 		}
 	}
 	private void check_version() {
-		Android.checkNewSoftwareVersion( true, this );
+		AndroidWithBarobot.checkNewSoftwareVersion( true, this );
 	}
 	private void upload(boolean isManual) {
 		barobot.main_queue.clear();

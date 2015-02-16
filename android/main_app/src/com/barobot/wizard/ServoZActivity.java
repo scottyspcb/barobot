@@ -100,7 +100,7 @@ public class ServoZActivity extends BlankWizardActivity {
 		case R.id.wizard_servoz_up:
 			int value1 = Decoder.toInt( ""+wizard_servoz_up_pos.getText(), -1);
 			barobot.z.move(barobot.main_queue, value1 );
-			barobot.z.disable(barobot.main_queue);
+			barobot.z.disable(barobot.main_queue, true);
 			break;
 
 		case R.id.wizard_servoz_up_more_up:
@@ -131,7 +131,7 @@ public class ServoZActivity extends BlankWizardActivity {
 		case R.id.wizard_servoz_down:
 			int value2 = Decoder.toInt( ""+wizard_servoz_down_pos.getText(), -1);
 			barobot.z.move(barobot.main_queue, value2 );
-			barobot.z.disable(barobot.main_queue);
+			barobot.z.disable(barobot.main_queue, true);
 			break;
 
 		case R.id.wizard_servoz_next:
@@ -175,7 +175,7 @@ public class ServoZActivity extends BlankWizardActivity {
 					barobot.z.move(barobot.main_queue, newValue -300 );
 				}
 				barobot.z.move(barobot.main_queue, newValue );
-				barobot.z.disable(barobot.main_queue);
+				barobot.z.disable(barobot.main_queue, true);
 				lastValue = newValue;
 				prescaler = 0;
 			}

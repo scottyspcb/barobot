@@ -95,7 +95,6 @@ public class Queue {
 				}else{
 				}
 				ticks++;
-				
 				if(!lock.wait_for_device){
 					Initiator.logger.i("Queue.run.wait_for1 stop", ""+ lock.wait_for_device);
 					show("exec");

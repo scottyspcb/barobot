@@ -82,7 +82,7 @@ public class Constant {
 	public static String robot_id_manager	= "http://barobot.com/synchro/init.php";
 	public static String version_index		= "http://barobot.com/synchro/check_version.php";
 
-	public static int glass_tray_weight		 = 121;	// glass tray weight in g
+	public static int glass_tray_weight		= 121;	// glass tray weight in g
 	static public boolean use_beta			= false;
-
+	public static boolean allowUnsafe 		= use_beta || false;
 }

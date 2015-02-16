@@ -37,12 +37,9 @@ import com.barobot.hardware.devices.BarobotConnector;
 
 public class SettingsActivity extends PreferenceActivity {
 
-	private BarobotConnector barobot;
 	@Override
 	protected void onPostCreate(Bundle savedInstanceState) {
 		super.onPostCreate(savedInstanceState);
-
-		barobot = Arduino.getInstance().barobot;
 
 	//	setFullScreen();
 		setupSimplePreferencesScreen();

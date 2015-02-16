@@ -238,7 +238,7 @@ public class CreatorActivity extends BarobotMain{
 		}
 		if(setLeds){
 			BarobotConnector barobot = Arduino.getInstance().barobot;
-			barobot.lightManager.setAllLeds(barobot.main_queue, "ff", 5, 5, 5, 5);	// disable all leds
+			barobot.lightManager.turnOffLeds(barobot.main_queue);
 			ShowIngredients(setLeds);
 		}
 		runOnUiThread(new Runnable() {  

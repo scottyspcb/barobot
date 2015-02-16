@@ -10,6 +10,7 @@ import com.barobot.AppInvoker;
 import com.barobot.BarobotMain;
 import com.barobot.R;
 import com.barobot.android.Android;
+import com.barobot.android.AndroidWithBarobot;
 import com.barobot.common.Initiator;
 import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
@@ -34,7 +35,7 @@ public class OptionsActivity extends BarobotMain {
 	private int checkVersion( boolean alertResult, boolean force ) {
 		if(!wasVersionChecked || force ){
 			wasVersionChecked = true;
-			return Android.checkNewSoftwareVersion( alertResult, this );
+			return AndroidWithBarobot.checkNewSoftwareVersion( alertResult, this );
 		}
 		return 1;
 	}

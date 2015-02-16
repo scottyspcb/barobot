@@ -15,6 +15,7 @@ import android.view.View.OnClickListener;
 import com.barobot.BarobotMain;
 import com.barobot.R;
 import com.barobot.android.Android;
+import com.barobot.android.AndroidWithBarobot;
 import com.barobot.android.InternetHelpers;
 import com.barobot.common.Initiator;
 import com.barobot.common.constant.Constant;
@@ -58,7 +59,7 @@ public class button_click implements OnClickListener{
 				  				}
 				  			    @Override
 				  				public void run() {
-				  			    	alertOk();
+				  			    	Android.alertOk(dbw);
 				  				}
 								@Override
 								public void sendProgress(int value) {
@@ -92,7 +93,7 @@ public class button_click implements OnClickListener{
 				        		if(success){
 				        			success = Android.copy( resetPath, Constant.localDbPath );
 				        			Engine.GetInstance().invalidateData();
-				        			resetApplicationData(barobot);
+				        			AndroidWithBarobot.resetApplicationData(barobot);
 				        		}
 							} catch (IOException e) {
 								e.printStackTrace();
@@ -101,12 +102,12 @@ public class button_click implements OnClickListener{
 								Initiator.logger.i(Constant.TAG,"download_database", e);
 							}
 				        	final String message = success ? "OK": error_name;
-							BarobotMain.getInstance().runOnUiThread(new Runnable() {
+				        	dbw.runOnUiThread(new Runnable() {
 								  public void run() {
 							    	new AlertDialog.Builder(dbw).setTitle("Message").setMessage( message )
 								    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
 								        public void onClick(DialogInterface dialog, int which) { 
-								        	pleaseResetApp();
+								        	Android.pleaseResetApp(dbw);
 								        }
 								    }).setIcon(android.R.drawable.ic_dialog_alert).show();
 							    }
@@ -145,37 +146,5 @@ public class button_click implements OnClickListener{
 			}
 			break;
 		}
-	}
-	private void pleaseResetApp() {
-	    	BarobotMain.getInstance().runOnUiThread(new Runnable() {
-			  public void run() {
-				  new AlertDialog.Builder(dbw).setTitle("Message").setMessage("Please restart application")
-				    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-				        public void onClick(DialogInterface dialog, int which) { 
-				        }
-				    })
-				    .setIcon(android.R.drawable.ic_dialog_alert).show();
-			  }
-			});
-	}
-	private void alertOk() {
-		BarobotMain.getInstance().runOnUiThread(new Runnable() {
-			  public void run() {
-				  new AlertDialog.Builder(dbw).setTitle("Message").setMessage("It is pleasure to inform that operation was completed successfully.")
-				    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-				        public void onClick(DialogInterface dialog, int which) { 
-				        }
-				    })
-				    .setIcon(android.R.drawable.ic_dialog_alert).show();
-			  }
-			});
-	}
-	private void resetApplicationData(BarobotConnector barobot) {
-		barobot.state.set("ONCE_PER_APP_START", 0 );
-		barobot.state.set("ONCE_PER_ROBOT_START", 0 );
-		barobot.state.set("ONCE_PER_ROBOT_LIFE", 0 );
-		barobot.state.set("ROBOT_CAN_MOVE", 0 );
-		barobot.state.set("ROBOT_ID", 0 );
-		barobot.state.set("INIT", 0 );
 	}
 }
