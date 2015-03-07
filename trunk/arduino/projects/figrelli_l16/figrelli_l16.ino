@@ -13,7 +13,6 @@ const int sensor = A0;
 const int pwmsensor = A1;
 
 uint8_t counter = 200;
-
 uint8_t frequency = POS_FREQ;
 
 int dest = 0;
@@ -50,10 +49,12 @@ long unsigned int now = 0;
 
 void goDown(){
   //    digitalWrite(PIN_B2_OUT_Y1, LOW);
-      digitalWrite(PIN_B2_OUT_Y2, HIGH);
+  
       analogWrite(PIN_B2_OUT_Y1, pwm);
-      
+      digitalWrite(PIN_B2_OUT_Y2, HIGH);
 
+      
+   
       time_start_moving = millis();
       dest = 2;
       Serial.println("now go down");
@@ -63,11 +64,11 @@ void goDown(){
 
 void goUp(){
       digitalWrite(PIN_B2_OUT_Y1, HIGH);
+      analogWrite(PIN_B2_OUT_Y2, pwm);  
+      
     //  digitalWrite(PIN_B2_OUT_Y2, LOW);
       
-      analogWrite(PIN_B2_OUT_Y2, pwm);
-   //   analogWrite(PIN_B2_OUT_Y2, pwm);
-      
+
       
       time_start_moving = millis();
       Serial.println("now go up");
