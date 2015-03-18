@@ -5,6 +5,10 @@
  
 #include <arduino.h>
 uint8_t GetTemp();
+
+int16_t readValue(byte pin) ;
+
+
 //-------------------------------------------------------------------
  
 //-------------------------------------------------------------------
@@ -26,32 +30,36 @@ inline void  setupStepper();
 //===================================================================
 //---- DO NOT DELETE THIS LINE -- @MM_DECLA_BEG@---------------------
 void stepperReady( long int pos );
-byte localToGlobal( byte ind );
 void sendln( volatile byte buffer[], byte length );
-void send_y_pos( byte stateId, int16_t value);
 void send_hx_pos2( byte state_name, byte dir, int16_t value );
 void send_hx_pos( byte stateId, int16_t value );
-void send_servo( boolean error, byte servo, uint16_t pos );
-void run_to(byte sspeed, uint16_t target);
-void timer();
-void reload_servo( byte index );
+void timer3();
+void timer2();
+void reload_servo();
 void serialEvent();
-void paserDeriver( byte driver, String input2 );
-void disable6v();
-void enable6v();
+void paserDriver( byte driver, String input2 );
 void send_error( String input);
 void setColor(byte num, unsigned long int color);
+byte sensor2analogPin(byte sensorNum);
 void parseInput( String input );
-void update_servo( byte index );
+void send_servoYisReady();
+void sendZpos();
+void sendYpos();
+void enableYZ();
+void disableYZ();
+void disableServosNow();
+void stopY( boolean addDelay );
+void stopZ( boolean addDelay );
+void moveZto( unsigned int target );
+void moveYto(byte sspeed, uint16_t target);
+void step_servoZ();
+void step_servoY();
 void readHall();
-void init_hallx();
-byte get_hy_state_id( int16_t value);
 byte get_hx_state_id( int16_t value);
 void sendStepperReady();
 void set_all_leds(unsigned long int color);
-void disableServeNow(byte index);
 void loop();
-void sendVal( byte n );
+void init_hallx(byte pin);
 void sendStats( boolean isStart );
 void setup();
 //---- DO NOT DELETE THIS LINE -- @MM_DECLA_END@---------------------
