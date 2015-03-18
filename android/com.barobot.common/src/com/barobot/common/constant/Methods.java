@@ -143,7 +143,8 @@ public class Methods {
 
 	public static final int EEPROM_ROBOT_ID_LOW 	= 40;
 	public static final int EEPROM_ROBOT_ID_HIGH 	= 41;
-
+	public static final int EEPROM_PCB_TYPE_LOW 	= 42;
+	public static final int EEPROM_PCB_TYPE_HIGH 	= 43;	
 	public static final int EEPROM_STARTS_LOW	= 50;
 	public static final int EEPROM_STARTS_HIGH	= 51;
 	public static final int EEPROM_RESETS_LOW	= 52;

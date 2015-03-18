@@ -11,7 +11,7 @@
 			<b>{$item.language_code}</b>
 		</td><td>
 			<input id="text_translated_{$item.id}" data_type="Translated_name" name="text_translated" value="{$item.translated}" style="width:250px">
-			<input type="button"  class="save_it" id="save_{$item.id}" name="text_translated" value="Zapisz" onclick="save_it( this, '{$item.id}' )">
+			<input type="button"  class="save_it" id="save_{$item.id}" name="text_translated" value="Save" onclick="save_it( this, '{$item.id}' )">
 		</td>
 	</tr>
 {/loop}
@@ -55,17 +55,29 @@
 	{/loop}
 	</table>
 	
-	Dodaj nową wartość:
+	ADD config
 	<table>
 	<tr class="newrow">
 		<td style="width:150px">
 			<input class="new_id" data_type="options" value="" style="width:250px">
 		</td><td>
 			<input class="new_value" data_type="options" value="" style="width:250px">
-			<input type="button"  class="save_it" name="text_translated" value="Zapisz" onclick="save_new( this )">
+			<input type="button"  class="save_it" name="text_translated" value="Save" onclick="save_new( this )">
 		</td>
 	</tr>
 </table>
+	REMOVE config
+	<table>
+	<tr class="newrow">
+		<td style="width:150px">
+			<input class="new_id" data_type="remove" value="" style="width:250px">
+		</td><td>
+			<input type="button"  class="save_it" name="text_translated" value="Save" onclick="remove_config( this )">
+		</td>
+	</tr>
+</table>
+
+
 
 <script>
 function save_it( btn, id ){
@@ -84,12 +96,13 @@ function save_it( btn, id ){
 		  }
 		);
 	}
+
 function save_new( btn ){
 	$(btn).hide();
 
+	var type = $(btn).parents(".newrow").find(".new_id").attr("data_type");		// options
 	var id = $(btn).parents(".newrow").find(".new_id").val();
 	var value = $(btn).parents(".newrow").find(".new_value").val();
-	var type = $(btn).parents(".newrow").find(".new_value").attr("data_type");
 
 	$.get("/save",{
 		  id: id,
@@ -103,9 +116,25 @@ function save_new( btn ){
 	  }
 	);
 }
+
+function remove_config( btn ){
+	$(btn).hide();
+	var type = $(btn).parents(".newrow").find(".new_id").attr("data_type");		// "remove"
+	var id = $(btn).parents(".newrow").find(".new_id").val();
+	$.get("/save",{
+		  id: id,
+		  type: type,
+		  name: "empty"
+	  }, function(dane){
+		$(btn).show();
+		if(dane != "OK"){
+			alert("Błąd zapisu");
+		}
+	  }
+	);
+}
+
 </script>
-
-
 
 {#}
 

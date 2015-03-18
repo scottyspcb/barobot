@@ -28,130 +28,36 @@ html,body{
 	padding:5px;
 	font-size:22px;
 	margin:5px;
+	cursor: pointer;
+}
+
+.progress-bar{
+	color:black;
+}
+.progress {
+    margin-bottom: 10px;
+}
+.custom_ing_item{
+    border: 1px solid #444444;
+    cursor: pointer;
+    font-size: 22px;
+    margin: 5px;
+    padding: 5px;
+	cursor: pointer;
+}
+.custom_ing_item .add_ing{
+	float:right;
 }
 
 </style>
-<script type="text/javascript">	
 
-var loading = false;
-var drinkList = null;
-var slots = null;
-
-function loadDrinks(){
-	$.getJSON( "/api/get_recipes", function( data ){
-			if( data.result && data.result.length > 0 ){
-				drinkList = data.result;
-				showList();
-		  }else{
-		  	alert("Drink list is empty. Add new ingrediengs or set up new drinks using creator.");
-		  }
-		});
-}
-
-function showList(){
-	var window_drink_list	= $("#window_drink_list");
-	var drink_list			= $("#drink_list");
-	drink_list.empty();
-	for(var i =0;i<drinkList.length;i++){
-		var size = getSize(drinkList[i]);
-		var tpl = '<div class="drink_item" id="drink_'+drinkList[i].id+'" drink_id="'+drinkList[i].id+'" onclick="selectDrink( this )">'+drinkList[i].name+'<span class="label label-default  pull-right">'+size+'ml</span></div>';
-		drink_list.append(tpl);
-	}
-	$("#window_main_question").hide(1000);
-	window_drink_list.show(1000);
-}
-
-function drink_list(){
-	$.getJSON( "/api/get_slots", function( data ){
-		if( data.result && data.result.length > 0 ){
-			slots = data.result;
-		}
-		loadDrinks();
-	});
-}
-function selectDrink( btn ){
-	if(loading){
-		return;
-	}
-	var drink_id			= $(btn).attr( "drink_id" );
-	var drink_ingredients	= $("#drink_ingredients");
-	var drink				= getDrinkById(drink_id);
-	var drink_details		= $("#drink_details");
-	if(drink){
-		if(drink_details.is(":hidden")){
-			drink_details.show(500);
-		}
-
-		$("#drink_name").text(drink.name);
-		var ings = drink.ingredients;
-		drink_ingredients.empty();
-		for( k=0; k<ings.length;k++){
-			ing = ings[k];
-			var tpl = '<div class="ing_item" id="ing_'+ing.id+'" liquid_id="'+ing.liquid_id+'">'+ing.name+'<span class="badge pull-right">'+ing.quantity+'ml</span></div>';
-			drink_ingredients.append(tpl);
-		}
-		$("#doDrinkButton").attr("drink_id", drink_id );
-		
-		var taste_sweet = drink.taste.sweet;
-		var taste_sour = drink.taste.sour;	
-		var taste_bitter = drink.taste.bitter;
-		var taste_strenght = drink.taste.strenght;
-		taste_strenght = (taste_strenght / 40) * 100;		// 40% alc. = 100% width
-		$('#taste_sweet').css('width', taste_sweet+'%').attr('aria-valuenow', taste_sweet);
-		$('#taste_sour').css('width', taste_sour+'%').attr('aria-valuenow', taste_sour);  	  
-		$('#taste_bitter').css('width', taste_bitter+'%').attr('aria-valuenow', taste_bitter); 
-		$('#taste_strenght').css('width', taste_strenght+'%').attr('aria-valuenow', taste_strenght);  
-	}else{
-		drink_details.hide();
-	}
-}
-
-function doDrink( btn ){
-	var drink_id		= $(btn).attr( "drink_id" );
-	if(drink_id){
-		loading = true;
-		$.getJSON( "api/do_drink?recipe_id="+ drink_id, function( data ){
-			loading = false;
-			goBack();
-		});
-	}
-}
-function goBack(){
-	var window_drink_list	= $("#window_drink_list");
-	$("#drink_details").hide(500);
-	$("#window_main_question").show(1000);
-	window_drink_list.hide(1000);
-}
-
-function getDrinkById( drink_id ){
-	for(var i =0;i<drinkList.length;i++){
-		if(drinkList[i].id == drink_id ){
-			return drinkList[i];
-		}
-	}
-	return null;
-}
-function getSize( drink ){
-	var qty = 0;
-	for(var j =0;j<drink.ingredients.length;j++){
-		qty+=drink.ingredients[j].quantity;
-	}
-	return qty;
-}
-
-function drink_creator(){
-	// get ingrediends
-	alert("Not available using the remote control");
-}
-
-</script>
 <div id="window_main_question">
 	<table border="0" style="width:100%;height:100%">
 		<tr valign="middle" style="height:100%">
-			<td class="allcenter" style="width:50%" onclick="drink_list();">
+			<td class="allcenter header_option" style="width:50%" onclick="drink_lists();">
 				{$msg_list}
 			</td>
-			<td class="allcenter" style="width:50%" onclick="drink_creator();">
+			<td class="allcenter header_option" style="width:50%" onclick="drink_creator();">
 				{$msg_crator}
 			</td>
 		</tr>
@@ -169,46 +75,75 @@ function drink_creator(){
 <div id="window_drink_list" style="display:none">
 	<table border="0" style="width:100%;height:100%">
 			<tr valign="top" style="height:100%">
-				<td style="width:50%;display:none;padding: 5px;" id="drink_details">
-					<h1 id="drink_name"></h1>
-					<div id="progress_taste">
-						<div class="progress">
-							<div id="taste_sweet" class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 40%">
-								<span class="sr-only"></span>
-								sweet
+				<td style="width:50%;display:none;" id="drink_details">
+					<div style="height:100%;overflow:auto;padding: 5px;">
+						<h1 id="drink_name"></h1>
+						<div id="progress_taste">
+							<div class="progress">
+								<div id="taste_sweet" class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 40%">
+									<span class="sr-only"></span>
+									sweet
+								</div>
+							</div>
+							<div class="progress">
+								<div id="taste_sour" class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100" style="width: 20%">
+									<span class="sr-only"></span>
+									sour
+								</div>
+							</div>
+							<div class="progress">
+								<div id="taste_bitter" class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%">
+									<span class="sr-only"></span>
+									bitter
+								</div>
+							</div>
+							<div class="progress">
+								<div id="taste_strenght" class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100" style="width: 80%">
+									<span class="sr-only"></span>
+									strenght
+								</div>
 							</div>
 						</div>
-						<div class="progress">
-							<div id="taste_sour" class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100" style="width: 20%">
-								<span class="sr-only"></span>
-								sour
-							</div>
+						<div id="drink_ingredients">
 						</div>
-						<div class="progress">
-							<div id="taste_bitter" class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%">
-								<span class="sr-only"></span>
-								bitter
-							</div>
+						<div style="width:100%;text-align:center">
+							<a class="do_bottons btn btn-primary btn-lg" id="doDrinkButton" href="javascript:void(0)" onclick="doDrink(this)" style="margin:5px 10px">START</a>
+							<a class="do_bottons btn btn-danger btn-lg" href="javascript:void(0)" onclick="goBack()" style="margin:5px 10px">Main Menu</a>
 						</div>
-						<div class="progress">
-							<div id="taste_strenght" class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100" style="width: 80%">
-								<span class="sr-only"></span>
-								strenght
-							</div>
-						</div>
-					</div>
-					<div id="drink_ingredients">
-					</div>
-					<div style="width:100%;text-align:center">
-						<a class="btn btn-primary btn-lg" id="doDrinkButton" href="javascript:void(0)" onclick="doDrink(this)" style="margin:5px 10px">START</a>
-						<a class="btn btn-danger btn-lg" href="javascript:void(0)" onclick="goBack()" style="margin:5px 10px">Main Menu</a>
 					</div>
 				</td>
-				<td style="width:50%">
+				<td id="drink_list_td" style="width:50%;height:100%">
 					<div id="drink_list" style="height:100%;overflow:auto;">
 					</div>
 				</td>
 			</tr>
 	</table>
+</div>
+
+
+<div id="window_drink_creator" style="display:none">
+	<table border="0" style="width:100%;height:100%">
+			<tr valign="top" style="height:100%">
+				<td style="width:50%" id="custom_drink_details">
+					<div style="height:100%;overflow:auto;padding: 5px;">
+						<h1>Custom drink</h1>
+						<h5>Select ingredients from right menu</h5>
+						<div id="custom_drink_ingredients">
+						</div>
+						<div style="width:100%;text-align:center">
+							<a class="do_bottons btn btn-primary btn-lg" id="doCustomDrinkButton" href="javascript:void(0)" onclick="doCustomDrink(this)" style="margin:5px 10px">START</a>
+							<a class="do_bottons btn btn-warning btn-lg" href="javascript:void(0)" onclick="goClear()" style="margin:5px 10px">Clear</a>
+							<a class="do_bottons btn btn-danger btn-lg" href="javascript:void(0)" onclick="goCustomBack()" style="margin:5px 10px">Main Menu</a>
+						</div>
+					</div>
+				</td>
+				<td id="ing_list_td" style="width:50%;height:100%">
+					<div id="ing_list" style="height:100%;overflow:auto;">
+					</div>
+				</td>
+			</tr>
+	</table>
 </div>	
+<div class="fakeloader"></div>
 {#}
+
