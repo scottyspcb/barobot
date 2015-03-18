@@ -17,14 +17,18 @@
     <string name="pref_need_hall_title">Need sensor X to pour (default ON)</string>
     <string name="pref_need_hall_info">Need sensor X to pour</string>
 
+    <string name="pref_need_hally_title">Need sensor Y to pour (default ON)</string>
+    <string name="pref_need_hally_info">Need sensor Y to pour</string>
+    
+    
     <string name="pref_sserver_allow_config_title">Allow settings via Sofa Server (default ON)</string>
     <string name="pref_sserver_allow_config_info">Allow changing configuration using remote control</string>
 
-    <string name="pref_glass_capacity_title">Max glass capacity</string>
+    <string name="pref_glass_capacity_title">Max glass capacity in ml</string>
     <string name="pref_glass_capacity_info">Max glass capacity</string>
    
     <string name="pref_DRIVER_X_SPEED_title">Left - right speed (default 3000)</string>
-    <string name="pref_DRIVER_Y_SPEED_title">Front - back speed (default 25)</string>
+    <string name="pref_DRIVER_Y_SPEED_title">Front - back speed</string>
  
  
     <string name="pref_manual_cup_title">Allow manual cup confirmation</string>
@@ -33,11 +37,28 @@
 	<string name="pref_show_langbar_title">Show language bar on main screen</string>
     <string name="pref_show_langbar_info">Show language bar on main screen</string>
 
-
+	<string name="pref_FINISH_UP_title">Go UP after finish</string>
+    <string name="pref_FINISH_UP_info">Move Z up to help bringing glass</string>
+        
     <string name="pref_title_display_name">Display name</string>
     <string name="pref_default_display_name">John Smith</string>
     <string name="pref_title_add_friends_to_messages">Add friends to messages</string>
 
+    
+	<string name="pref_SERVOY_REPEAT_TIME_title">Odczekaj milisekund pomiędzy nalaniami 20ml z tej samej butelki (składowa zależna od pojemności)</string>
+	<string name="pref_SERVOZ_POUR_TIME_title">Czas nalewania 20ml</string>
+	<string name="pref_DRIVER_CALIB_X_SPEED_title">Prędkość kalibracji X</string>
+	<string name="pref_SERVOZ_PAC_TIME_WAIT_title">Odczekaj milisekund przed PAC (składowa stała)</string>
+	<string name="pref_SERVOZ_PAC_TIME_WAIT_VOL_title">Odczekaj milisekund przed PAC dla 20ml (składowa zależna od pojemności)</string>
+	<string name="pref_SERVOZ_UP_POS_title">Pozycja górna</string>
+	<string name="pref_SERVOZ_UP_LIGHT_POS_title">Pozycja górna końcowa</string>
+	<string name="pref_SERVOZ_DOWN_POS_title">Pozycja dolna</string>
+	<string name="pref_SERVOZ_NEUTRAL_title">Pozycja bezpieczna</string>
+	<string name="pref_SERVOZ_PAC_POS_title">Pozycja górna PAC</string>
+	<string name="pref_SERVOZ_PAC_BACK_DIFF_title">Różnica PAC z tyłu</string>
+	<string name="pref_GLASS_DIFF_title">Ciężar szklanki</string>
+	<string name="pref_LIGHT_GLASS_DIFF_title">Ciężar lekkiej szklanki</string>
+	
     <string-array name="pref_example_list_titles">
         <item>Always</item>
         <item>When possible</item>

@@ -157,4 +157,6 @@
 		<item>Delete recipe...</item>
 		<item>Cancel</item>
 	</array>
+		<string name="do_you_want_enable_wifi">Do you want to enable WIFI and chack again?</string>
+		<string name="upload_firmware_success">It is pleasure to inform that operation was completed successfully.</string>
 </resources>

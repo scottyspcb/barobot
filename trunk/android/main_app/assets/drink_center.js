@@ -1,3 +1,339 @@
+
+var loading = false;
+var drinkList = null;
+var slots = null;
+var loader;
+loader = loader || (function () {
+	var stop = false;
+    return {
+        showPleaseWait: function() {
+			stop = false;
+			setTimeout( function(){
+				if(!stop){
+					$(".fakeloader").fadeIn(1).fakeLoader({
+							// Time in milliseconds for fakeLoader disappear
+						timeToHide:10000,
+						// 'spinner1', 'spinner2', 'spinner3', 'spinner4', 'spinner5', 'spinner6', 'spinner7'
+						spinner:"spinner7",//Options:
+						// Background color. Hex, RGB or RGBA colors
+						bgColor:"#222222",	 
+					});
+				}
+			}, 500 );
+			//var pleaseWaitDiv = $('#pleaseWaitDialog');
+            //pleaseWaitDiv.modal();
+			//pleaseWaitDiv.modal('show');
+        },
+        hidePleaseWait: function () {
+			stop = true;
+			$(".fakeloader").fadeOut(1);
+			//var pleaseWaitDiv = $('#pleaseWaitDialog');
+            //pleaseWaitDiv.modal('hide');
+        },
+    };
+})();
+
+function loadDrinks(){
+	loader.showPleaseWait();
+	$.getJSON( "/api/get_recipes", function( data ){
+		if( data.result && data.result.length > 0 ){
+			drinkList = data.result;
+			loader.hidePleaseWait();
+			showList();
+		}else{
+			loader.hidePleaseWait();
+			alert("Drink list is empty. Add new ingrediengs or set up new drinks using creator.");
+		}
+	});
+}
+
+function showList(){
+	var window_drink_list	= $("#window_drink_list");
+	var drink_list			= $("#drink_list");
+	drink_list.empty();
+	for(var i =0;i<drinkList.length;i++){
+		var size = getSize(drinkList[i]);
+		var tpl = '<div class="drink_item" id="drink_'+drinkList[i].id+'" drink_id="'+drinkList[i].id+'" onclick="selectDrink( this )">'+drinkList[i].name+'<span class="label label-default  pull-right">'+size+'ml</span></div>';
+		drink_list.append(tpl);
+	}
+	drink_list.trigger("appened");
+	$("#window_main_question").hide(500);
+	window_drink_list.show(500);
+}
+
+function drink_lists(){
+	loadDrinks();
+}
+function selectDrink( btn ){
+	if(loading){
+		return;
+	}
+	var drink_id			= $(btn).attr( "drink_id" );
+	var drink_ingredients	= $("#drink_ingredients");
+	var drink				= getDrinkById(drink_id);
+	var drink_details		= $("#drink_details");
+	if(drink){
+		if(drink_details.is(":hidden")){
+			drink_details.show(500);
+		}
+		$("#drink_name").text(drink.name);
+		var ings = drink.ingredients;
+		drink_ingredients.empty();
+		for( k=0; k<ings.length;k++){
+			var ing = ings[k];
+			var tpl = '<div class="ing_item" id="ing_'+ing.id+'" liquid_id="'+ing.liquid_id+'">'+ing.name+'<span class="badge pull-right">'+ing.quantity+'ml</span></div>';
+			drink_ingredients.append(tpl);
+		}
+		$("#doDrinkButton").attr("drink_id", drink_id );
+		drink_ingredients.trigger("appened");
+		
+		var taste_sweet = drink.taste.sweet;
+		var taste_sour = drink.taste.sour;	
+		var taste_bitter = drink.taste.bitter;
+		var taste_strenght = drink.taste.strenght;
+		taste_strenght = (taste_strenght / 40) * 100;		// 40% alc. = 100% width
+		$('#taste_sweet').css('width', taste_sweet+'%').attr('aria-valuenow', taste_sweet);
+		$('#taste_sour').css('width', taste_sour+'%').attr('aria-valuenow', taste_sour);  	  
+		$('#taste_bitter').css('width', taste_bitter+'%').attr('aria-valuenow', taste_bitter); 
+		$('#taste_strenght').css('width', taste_strenght+'%').attr('aria-valuenow', taste_strenght);  
+	}else{
+		drink_details.hide();
+	}
+}
+
+function doDrink( btn ){
+	var r = confirm("Do you want me to pour this drink?");
+	if (r == true) {
+		var drink_id		= $(btn).attr( "drink_id" );
+		if(drink_id){
+			loading = true;
+			$.getJSON( "api/do_drink?recipe_id="+ drink_id, function( data ){
+				loading = false;
+			});
+			goBack();
+		}
+	}
+}
+
+var custom_drink_ings	 = [];
+
+function goBack(){
+	clearCustom();
+	var window_drink_creator	= $("#window_drink_creator");
+	var window_drink_list		= $("#window_drink_list");
+	$("#drink_details").hide(500);
+	$("#window_main_question").show(500);
+	if(window_drink_list.is(":visible")){
+		window_drink_list.hide(500);
+	}
+	if(window_drink_creator.is(":visible")){
+		window_drink_creator.hide(500);
+	}
+}
+function goCustomBack(){
+	clearCustom();
+	var window_drink_creator	= $("#window_drink_creator");
+	var window_drink_list		= $("#window_drink_list");
+	
+	$("#window_main_question").show(500);
+	if(window_drink_list.is(":visible")){
+		window_drink_list.hide(500);
+	}
+	if(window_drink_creator.is(":visible")){
+		window_drink_creator.hide(500);
+	}
+}
+
+function getDrinkById( drink_id ){
+	for(var i =0;i<drinkList.length;i++){
+		if(drinkList[i].id == drink_id ){
+			return drinkList[i];
+		}
+	}
+	return null;
+}
+function getSize( drink ){
+	var qty = 0;
+	for(var j =0;j<drink.ingredients.length;j++){
+		qty+=drink.ingredients[j].quantity;
+	}
+	return qty;
+}
+
+function drink_creator(){
+	// get ingrediends
+
+	loader.showPleaseWait();
+	$.getJSON( "/api/get_slots", function( data ){
+		if( data.result && data.result.length > 0 ){
+			slots = data.result;
+			loader.hidePleaseWait();
+			showIngsList();
+		}else{
+			loader.hidePleaseWait();
+			alert("Ingrediengs list is empty.");
+		}
+	});
+}
+function showIngsList(){
+	var window_drink_creator	= $("#window_drink_creator");
+	var ing_list				= $("#ing_list");
+	ing_list.empty();
+	for(var i =0;i<slots.length;i++){
+		if( slots[i].liquid_id > 0 ){
+			var tpl = '<div class="custom_ing_item" id="ing_'+slots[i].id+'" position_id="'+slots[i].position+'" onclick="selectIng( this )">'+slots[i].name+'<a href="javascript:" class="add_ing btn btn-success">Add '+slots[i].dispenser_type+'ml</a></div>';
+			ing_list.append(tpl);
+		}
+	}
+	ing_list.trigger("appened");
+	clearCustom();
+	$("#window_main_question").hide(500);
+	window_drink_creator.show(500);
+	//alert("Not available using the remote control");
+}
+
+function selectIng( btn ){
+	var custom_drink_ingredients	= $("#custom_drink_ingredients");	
+	var position					= $(btn).attr("position_id");
+	var slot						= slots[position-1];
+	if(slot){
+		addCustom(slot);	
+	}
+}
+
+function clearCustom(){
+	custom_drink_ings	 = [];	
+	var custom_drink_ingredients	= $("#custom_drink_ingredients");
+	custom_drink_ingredients.children().fadeOut(200, function() {
+		custom_drink_ingredients.empty();
+	});
+	$("#doCustomDrinkButton").toggle( false );
+}
+	
+function addCustom( ing ){
+	var custom_drink_ingredients	= $("#custom_drink_ingredients");
+	custom_drink_ings.push(ing);
+
+	var id			= 'ing_'+ing.id;
+	var quantity	= ing.dispenser_type;
+	var tpl			= $('<div class="ing_item" style="display:none" id="'+ id +'" liquid_id="'+ing.liquid_id+'">'+ing.name+'<span class="badge pull-right">'+quantity+'ml</span></div>');
+	
+	tpl.appendTo( custom_drink_ingredients ).show(200);
+	$("#doCustomDrinkButton").toggle( true );
+
+	/*
+	custom_drink_ingredients.empty();
+	//console.log(custom_drink_ings);
+	for( k=0; k<custom_drink_ings.length;k++){
+		var ing			= custom_drink_ings[k];
+		var id			= 'ing_'+ing.id;
+		var quantity	= ing.dispenser_type;
+		var tpl		= '<div class="ing_item" id="'+ id +'" liquid_id="'+ing.liquid_id+'">'+ing.name+'<span class="badge pull-right">'+quantity+'ml</span></div>';
+		custom_drink_ingredients.append(tpl);
+	}
+	custom_drink_ingredients.trigger("appened");
+	$("#doCustomDrinkButton").toggle( custom_drink_ings.length > 0 );
+	*/
+}	
+
+
+function doCustomDrink(){
+	var list	= {};
+	for( k=0; k<custom_drink_ings.length;k++){
+		var ing			= custom_drink_ings[k];
+		if( !list[ ing.liquid_id ] ){
+			list[ ing.liquid_id ] = 0;
+		}
+		list[ ing.liquid_id ]	+=  ing.dispenser_type;
+	}
+	var liquids_list = [];
+	var size_list = [];
+	for( var ind in list){
+		liquids_list.push(ind);
+		size_list.push(list[ind]);
+	}
+	var url = "api/do_custom_drink?liquids="+ liquids_list.join(",") + "&volume="+ size_list.join(",");
+	var r = confirm("Do you want me to pour this drink?");
+	if (r == true) {
+		loading = true;
+		$.getJSON( url, function( data ){
+			loading = false;
+		});
+		goBack();
+	}
+}	
+
+/*
+"id": 1,
+"name": "Vodka",
+"position": 1,
+"currentVolume": 1000,
+"dispenser_type": 50,
+"counter": 0,
+"product_id": 1,
+"taste":{
+    "sweet": 0,
+    "sour": 0,
+    "bitter": 0,
+    "strenght": 40
+}
+*/
+
+// When document has finished loading
+$(document).ready(function() {
+	var sizes		= [
+		{
+			selector	: ".header_option",
+			size		: 350
+		},{
+			selector	: ".drink_item",
+			size		: 180
+		},{
+			selector	: ".ing_item",
+			size		: 180
+		},{
+			selector	: ".do_bottons",
+			size		: 180
+		},{
+			selector	: ".custom_ing_item",
+			size		: 180
+		},{
+			selector	: ".add_ing",
+			size		: 40
+		},{
+			selector	: "#drink_name",
+			size		: 300
+		}
+	];
+
+    var resizeText = function () {
+        var preferredSize = 1024 * 768;
+        var currentSize = $(window).width() * $(window).height();
+        var scalePercentage = Math.sqrt(currentSize) / Math.sqrt(preferredSize);
+		for(var i=0;i<sizes.length;i++){
+			 $(sizes[i].selector).css("font-size", (sizes[i].size * scalePercentage) + '%');
+		}
+		$("#drink_list_td").height( $(window).height() );
+		$("#drink_details").height( $(window).height() );
+
+		$("#ing_list_td").height( $(window).height() );
+		$("#custom_drink_details").height( $(window).height() );	
+    };
+    $(window).bind('resize', function() {
+        resizeText();
+    }).trigger('resize');
+
+	$("body").on("appened", "div", function(event){
+		 resizeText();
+	});	
+});
+
+function goClear(){	
+	clearCustom();
+}
+// old window, todo - delete
+
+
 function run_command( command, btn ){
 	$(btn).addClass("btn-danger");
 	$.get("/command/" + command,{
@@ -32,6 +368,10 @@ function pre(){
 		return console.log( arguments[0],arguments[1],arguments[2] );
 	}
 }
+
+
+
+
 if(typeof console === "undefined"){ console = {}; }
 
 var tab_def_list = {
