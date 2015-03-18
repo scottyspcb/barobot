@@ -190,14 +190,10 @@ void parseInput( String input ){
 	if( command == 'C' ) {    // command: C,100,100,100,100,100
 		char charBuf[30];
 		input.toCharArray(charBuf,30);
-		
 		// C,1,2,1,red,green,blue
 		// C,1,2,1,255,0,0
-
 		sscanf(charBuf,"C,%2hhx,%2hhx,%2hhx,%2hhx,%2hhx,%2hhx", &din.dest, &din.module , &din.command , &din.red , &din.green , &din.blue );
 		sentWithRet( din.dest, din );
-		
-		
 	}else if( input.equals( "RESET") ){
 	}else{
 		Serial.println("NO_CMD [" + input +"]");
