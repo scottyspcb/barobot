@@ -6,6 +6,7 @@
     <string name="wizard_lang_ru">русский</string>
     <string name="wizard_lang_pl">Polski</string>
     <string name="wizard_lang_en">English</string>
+    <string name="wizard_close_app">Close Application</string>
 
   	<string name="wizard_text_0">Start wizard</string>    
     <string name="wizard_text_1">1. Power</string>
@@ -88,6 +89,8 @@
     
     <string name="wizard_text_power_arduino">Barobot driver exists</string>
     <string name="wizard_text_power_queue">Commands module loaded</string>
+    <string name="wizard_text_pcb_type">Motor type</string>
+    <string name="wizard_text_pcb_type_last">Connected Motor type</string>     
 
     <string name="wizard_text_android_version">"Barobot Application version"</string>
     
