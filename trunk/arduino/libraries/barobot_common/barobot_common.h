@@ -66,6 +66,26 @@
 
 	/*------------------ MAINBOARD -------------------*/
 	#if IS_MAINBOARD
+
+		// HALL X VALUES 
+		#define HX_NEODYM_UP_BELOW  750
+		//#define HX_NEODYM_UP_BELOW  880
+
+		#define HX_NEODYM_UP_START  600
+		#define HX_FERRITE_UP_IS_BELOW  560
+		#define HX_LOCAL_UP_MAX_OVER  540
+
+		#define HX_NOISE_BELOW 531
+		#define HX_NOISE_OVER  518
+
+		#define HX_LOCAL_DOWN_IS_BELOW  513
+		#define HX_FERRITE_DOWN_IS_BELOW  495
+		#define HX_NEODYM_DOWN_START  450
+		//#define HX_NEODYM_DOWN_OVER  20
+		#define HX_NEODYM_DOWN_OVER  300
+		// end HALL X VALUES 
+
+	
 		#define CPU_F MAINBOARD_F_CPU
 		#define MAINBOARD_USE_BT false
 		#define MAINBOARD_USE_SERIAL0 true
@@ -223,12 +243,6 @@
 		#define LED_BOTTOM_BLUE				PIN_PANEL_LED5_NUM
 		#define LED_BOTTOM_WHITE			PIN_PANEL_LED6_NUM
 
-		// EEPROM content:
-		/*
-		0x00	- NEUTRAL_VALUE kopia 0
-		0x01	- NEUTRAL_VALUE kopia 1
-		*/
-
 	#endif
 
 
@@ -293,22 +307,6 @@
 		#define LED_BOTTOM_BLUE				PIN_PANEL_LED6_NUM
 		#define LED_BOTTOM_WHITE			PIN_PANEL_LED7_NUM
 
-		// EEPROM content:
-		/*
-		0x00	- i2c adres kopia 0
-		0x01	- i2c adres kopia 1
-		0x02	- i2c adres kopia 2
-
-		0xF0	- starts m³odsze
-		0xF1	- starts starsze
-
-		0xF2	- i2c errors m³odsze
-		0xF3	- i2c errors starsze
-
-		0xFA	- watchdog m³odsze
-		0xFB	- watchdog starsze
-		*/
-		
 	#endif
 
 	#if 1
@@ -462,72 +460,7 @@ TQFP32
 /*
 
 
-boolean i2c_getValue(  byte slave_address, byte pin ){      // zwraca 2 bajty. typ na m³odszych bitach, versja na starszych
-  out_buffer[0]  = METHOD_GETVALUE;
-  out_buffer[1]  = pin;
-  byte error = writeRegisters(slave_address, 2, true );
-  if(!error){
-    readRegisters( slave_address, 1 );
-    byte res = in_buffer[0];    // = wersja
-    if( res == 0 ){
-      return false;
-    }
-    if( res == 0xFF ){
-       return true;
-    }
-    // todo. zwróc true ale raportuj warning
-    return true;
-  }
-  return false;
-}
 
-void i2c_reloadAddress( byte slave_address, byte new_addr ){			// Zmieñ adres I2c, musi byæ podane co najmniej 4 razy zeby zadzia³a³o. (2 bajty)
-  out_buffer[0]  = METHOD_RESETSLAVEADDRESS;
-  out_buffer[1]  = new_addr;
-  writeRegisters(slave_address, 2, true );    // powtarzaj
-  writeRegisters(slave_address, 2, true );
-  writeRegisters(slave_address, 2, true );
-  writeRegisters(slave_address, 2, true );
-  writeRegisters(slave_address, 2, true );
-}
-
-
-void i2c_resetCycles( byte slave_address ){
-  out_buffer[0]  = METHOD_RESETCYCLES;
-  writeRegisters(slave_address, 1, true );
-}
-void i2c_setPWM( byte slave_address, byte pin, byte level ){		                              // Wpisz wype³nienie PWM do LEDa ( 3 bajty )
-  out_buffer[0]  = METHOD_SETPWM;
-  out_buffer[1]  = pin;
-  out_buffer[2]  = level;
-  writeRegisters(slave_address, 3, true );
-}
-void i2c_setTime( byte slave_address, byte pin, byte on_time, byte off_time ){			            // Czas pomiêdzy kolejnym zapaleniem i Czas od zapalenia do zgaszenia ( 4 bajty )
-  out_buffer[0]  = METHOD_SETTIME;
-  out_buffer[1]  = pin;
-  out_buffer[2]  = on_time;
-  out_buffer[3]  = off_time;
-  writeRegisters(slave_address, 3, true );
-}
-void i2c_setFading( byte slave_address,  byte pin, byte level_in, byte level_out ){			       // Czas i kierunek zanikania PWMa	( 4 bajty )
-  out_buffer[0]  = METHOD_SETFADING;
-  out_buffer[1]  = pin;
-  out_buffer[2]  = level_in;
-  out_buffer[2]  = level_out;
-  writeRegisters(slave_address, 2, true );
-}
-
-
-
-
-
-
-
-
-
-
-X5,40,200
-X55,60,-1250
 
 D:\PROG\arduino-1.0.5\hardware/tools/avr/bin/avrdude -CD:\PROG\arduino-1.0.5\hardware/tools/avr/etc/avrdude.conf -v -v -v -v -D -patmega8 -cstk500v1 -P\\.\COM40 -b19200 -Uflash:w:c:\temp\build7005077114599572471.tmp\atmega8_i2c_slave.cpp.hex:i -Ulock:w:0x3F:m -Uhfuse:w:0xc4:m -Ulfuse:w:0xe4:m
 D:\PROG\arduino-1.0.5\hardware/tools/avr/bin/avrdude -CD:\PROG\arduino-1.0.5\hardware/tools/avr/etc/avrdude.conf -v -v -v -v -D -patmega8 -cstk500v1 -P\\.\COM43 -b19200 -Ulock:w:0x3F:m -Uhfuse:w:0xc4:m -Ulfuse:w:0xe4:m
@@ -599,28 +532,4 @@ D:\PROG\arduino-1.0.5\hardware\tools\avr\bin\avrdude -C"D:\PROG\arduino-1.0.5\ha
 
 
 
-
-
-
------------------------------
-
-
-*/
-
-
-/*
-void disable_pin( byte pin ){
-    #if UPANEL_COMMON_ANODE
-     *_pwm_channels[pin].outport &= ~(_pwm_channels[pin].pinmask);          // turn off the channel (set GND)
-    #else
-     *_pwm_channels[pin].outport |= _pwm_channels[pin].pinmask;              // turn off the channel (set VCC)
-    #endif
-}
-void enable_pin( byte pin ){
-   #if UPANEL_COMMON_ANODE
-	  *_pwm_channels[pin].outport |= _pwm_channels[pin].pinmask;              // turn off the channel (set VCC)
-   #else
-	 *_pwm_channels[pin].outport &= ~(_pwm_channels[pin].pinmask);          // turn off the channel (set GND)
-   #endif  
-}
 */

@@ -30,7 +30,7 @@
 #define RETURN_PIN_VALUE 	111
 #define METHOD_STEPPER_MOVING 	123
 #define METHOD_IMPORTANT_ANALOG 	125
-#define METHOD_IMPORTANT_ANALOG_ERROR 	124
+#define METHOD_ANALOG_VALUE 	124
 #define RETURN_I2C_ERROR 	153
 #define METHOD_EXEC_ERROR 	133
 #define METHOD_DEVICE_FOUND 	112
@@ -42,8 +42,7 @@
 #define METHOD_EEPROM_READ_I2C 	190
 #define METHOD_EEPROM_WRITE_I2C 192
 #define METHOD_GET_X_POS 	157
-
-
+#define METHOD_SET_X_ACCELERATION 	"AX"
 #define METHOD_MASTER_CAN_FILL 	'F'
 #define METHOD_SET_X_DISABLE 	"DX"
 #define METHOD_ERROR 	'E'
@@ -62,9 +61,6 @@
 #define METHOD_MSET_BOTTOM_COLOR 	'c'
 #define METHOD_M_ONECOLOR 	'B'
 #define METHOD_SLAVE_HAS_NEXT 	'n'
-#define METHOD_EEPROM_READ 	'M'
-#define METHOD_EEPROM_WRITE 'S'
-
 
 //24 * 2^0  + 252* 2^1 + 255* 2^2 + 255* 2^3
 
@@ -91,11 +87,13 @@
 #define INNER_HALL_X 0
 #define INNER_HALL_Y 1
 #define INNER_WEIGHT 2
-#define INNER_CURRENTY 3
-#define INNER_CURRENTZ 4
-#define INNER_TABLET 5
-#define INNER_MB_TEMP 6
-#define INNER_CARRET_TEMP 7
+#define INNER_POS_Z 3
+#define INNER_LIGHT 4
+
+#define INNER_MB_TEMP 10
+#define INNER_CARRET_TEMP 11
+#define INNER_TABLET 12
+
 
 #define HYSTATES  5
 #define HXSTATES  11
@@ -103,36 +101,34 @@
 #define HX_STATE_0		11
 #define HX_STATE_1		22
 #define HX_STATE_2		33
-#define HX_STATE_3		44
+#define HX_STATE_3		44		// below back bottle
 #define HX_STATE_4		55
 
 #define HX_STATE_5		66
 
 #define HX_STATE_6		77
-#define HX_STATE_7		88
+#define HX_STATE_7		88		// below front bottle
 #define HX_STATE_8		99
 #define HX_STATE_9		100
 #define HX_STATE_10		111
 
-#define HX_SPEED  35
-
-// HALL X VALUES 
-#define HX_NEODYM_UP_BELOW  750
-//#define HX_NEODYM_UP_BELOW  880
-
-#define HX_NEODYM_UP_START  600
-#define HX_FERRITE_UP_IS_BELOW  560
-#define HX_LOCAL_UP_MAX_OVER  540
-
-#define HX_NOISE_BELOW 531
-#define HX_NOISE_OVER  518
-
-#define HX_LOCAL_DOWN_IS_BELOW  513
-#define HX_FERRITE_DOWN_IS_BELOW  495
-#define HX_NEODYM_DOWN_START  450
-//#define HX_NEODYM_DOWN_OVER  20
-#define HX_NEODYM_DOWN_OVER  300
-// end HALL X VALUES 
+#define HX_SPEED  25
 
 
+// address in dec, send in hex
+#define EEPROM_ROBOT_ID_LOW	40
+#define EEPROM_ROBOT_ID_HIGH	41
+#define EEPROM_PCB_TYPE_LOW	42;
+#define EEPROM_PCB_TYPE_HIGH	43;
+#define EEPROM_STARTS_LOW	50
+#define EEPROM_STARTS_HIGH	51
+#define EEPROM_RESETS_LOW	52
+#define EEPROM_RESETS_HIGH	53
+
+#define EEPROM_HALLX_RIGHT_LOW	10
+#define EEPROM_HALLX_RIGHT_HIGH	11
+#define EEPROM_HALLX_LEFT_LOW	12
+#define EEPROM_HALLX_LEFT_HIGH	13
+#define EEPROM_HALLX_ZERO_LOW	14
+#define EEPROM_HALLX_ZERO_HIGH	15
 
