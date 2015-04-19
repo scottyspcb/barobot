@@ -20,6 +20,7 @@ import com.barobot.BarobotMain;
 import com.barobot.R;
 import com.barobot.android.InternetHelpers;
 import com.barobot.common.Initiator;
+import com.barobot.common.constant.Constant;
 import com.barobot.gui.database.BarobotData;
 import com.barobot.gui.dataobjects.Engine;
 import com.barobot.gui.dataobjects.Ingredient_t;
@@ -36,7 +37,7 @@ import com.barobot.other.ProgressTask.UiTask;
 import com.barobot.parser.Queue;
 
 public class CreatorActivity extends BarobotMain{
-	private String unnamedName	= "Unnamed Drink";
+	private String unnamedName	= Constant.UNNAMED_DRINK;
 	private int[] slot_nums = {0,0,0,0,0,0,0,0,0,0,0,0,0};
 	private int[] ids;
 	private int[] drops;
@@ -113,11 +114,15 @@ public class CreatorActivity extends BarobotMain{
 			drinkSizeBox.setVisibility(View.INVISIBLE);
 			save_as_drink.setVisibility(View.INVISIBLE);
 			clear_list.setVisibility(View.INVISIBLE);
-			start_btn.setVisibility(View.INVISIBLE);
+			if(start_btn!= null){
+				start_btn.setVisibility(View.INVISIBLE);
+			}
 			if(frag!=null){
 				frag.hide();
 			}
-			attrFrag.hide();
+			if(attrFrag != null){
+				attrFrag.hide();
+			}
 		}
 	}
 

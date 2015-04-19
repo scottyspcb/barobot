@@ -11,6 +11,7 @@ import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
 import com.barobot.other.LangTool;
 import com.barobot.parser.utils.Decoder;
+import com.barobot.sofa.api.JsonResponseBuilder;
 import com.barobot.web.route.EmptyRoute;
 import com.barobot.web.server.SofaServer;
 import com.x5.template.Theme;
@@ -27,6 +28,12 @@ public class SavePage extends EmptyRoute {
 	@Override
 	public String run(String url, SofaServer sofaServer, Theme theme, IHTTPSession session){
 		//Log.i("RPCPage command", url);
+		
+		BarobotConnector barobot = Arduino.getInstance().barobot;
+		if( barobot.state.getInt("SSERVER_API", 0) > 1 ){
+			return "ERROR0";
+		}
+
 		if(session.getParms().containsKey("id") && session.getParms().containsKey("name")&& session.getParms().containsKey("type")){
 			String type		= session.getParms().get("type");
 			String value	= session.getParms().get("name");
@@ -49,8 +56,11 @@ public class SavePage extends EmptyRoute {
 				}
 			}else if( type.equals( "options")){
 				String key		= session.getParms().get("id");
-				BarobotConnector barobot = Arduino.getInstance().barobot;
 				barobot.state.set(key, value);
+				return "OK";
+			}else if( type.equals( "remove")){
+				String key		= session.getParms().get("id");
+				barobot.state.resetToDefault(key);
 				return "OK";
 			}
 			return "ERROR2";	

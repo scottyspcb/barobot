@@ -19,6 +19,11 @@ public class SetupPage extends EmptyRoute{
 		if(theme == null){
 			return null;
 		}
+		BarobotConnector barobot = Arduino.getInstance().barobot;
+		if( barobot.state.getInt("SSERVER_API", 0) > 1 ){
+			return "ERROR0";
+		}
+		
 		Chunk action_chunk			= theme.makeChunk("setup_page#mainpage");
 		/*		Map<String, List<String>> decodedQueryParameters =sofaServer.decodeParameters(session.getQueryParameterString());
 
@@ -28,8 +33,6 @@ public class SetupPage extends EmptyRoute{
               append(toString(session.getParms())).append("</blockquote></p>");
 
         action_chunk.set("body2", sb.toString() );*/
-
-		BarobotConnector barobot = Arduino.getInstance().barobot;
 		action_chunk.set("version1", ""+Constant.ANDROID_APP_VERSION );
 		action_chunk.set("version2", barobot.state.get("ARDUINO_VERSION", "0") );  
 		action_chunk.set("version3",""+Constant.WIZARD_VERSION );  

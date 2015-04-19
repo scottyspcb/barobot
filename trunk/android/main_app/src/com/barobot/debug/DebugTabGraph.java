@@ -381,7 +381,6 @@ public class DebugTabGraph extends Fragment {
 	        	dm.getDevices( devices.DEVICE_ULTRA );
 	           	live_analog_num		= 20;
 	        	.getDevices( devices.DEVICE_ANALOG );
-	        	virtualComponents.getDevices( ANALOG );
 	        	device.liveEnable();
 	*/
 				break;

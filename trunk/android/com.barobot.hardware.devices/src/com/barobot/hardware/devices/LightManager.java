@@ -12,8 +12,8 @@ import com.barobot.parser.message.Mainboard;
 
 public class LightManager {
 	private BarobotConnector barobot;
-	public static int[] top_index 		= {10,23,11,22,12,21,13,20,14,19,15,18};			// numery butelek na numery ledow top
-	public static int[] bottom_index	= {-1,24,-1,25,-1,26,-1,27,-1,28,-1,29};			// numery butelek na numery ledow bottom
+	public static int[] top_index 		= {10,23,11,22,12,21,13,20,14,19,15,18};			// bottles numbes to leds numbers (top)
+	public static int[] bottom_index	= {-1,24,-1,25,-1,26,-1,27,-1,28,-1,29};			// bottles numbes to leds numbers (bottom)
 	public static int[] bottom_leds		= {24,25,26,27,28,29};
 	public LedOrder lo;
 	public boolean demoStarted			= false;
@@ -21,7 +21,7 @@ public class LightManager {
 
 	public LightManager(BarobotConnector barobot2) {
 		this.barobot	= barobot2;
-		if(!barobot.newLeds){
+		if(barobot.pcb_type == 1){
 			lo = new LedOrder();
 		}
 	}
@@ -440,7 +440,7 @@ public class LightManager {
 	}
 
 	public void scann_leds( Queue q ){
-		if(!barobot.newLeds){
+		if( barobot.pcb_type == 1 && !barobot.ledsReady){
 			lo.asyncStart(barobot, q);
 			q.add( new AsyncMessage( true ){
 				@Override	
@@ -469,18 +469,20 @@ public class LightManager {
 					return q3;
 				}
 			});
+		}else{
+			setAllLeds(q, "22", 0, 100, 100, 0);
 		}
 	}
 
 	public void carret_color( Queue q, int red, int green, int blue ){
-		if( barobot.newLeds ){
+		if( barobot.pcb_type > 1 ){
 			String color = String.format("%02x", red ) 			// 24 bit color
 					+ String.format("%02x", green )
 					+ String.format("%02x", blue );
 	
 			q.add("l00," + color, true);// 00 = led address left		
 			q.add("l01," + color, true);// 01 = led address right
-		}else{
+		}else if(barobot.pcb_type == 1 ){
 			Carret cc =  new Carret(Constant.cdefault_index, Constant.cdefault_address);	
 			if(red == 0 && green == 0 && blue == 0 ){
 				cc.addLed(q, "ff", 0 );
@@ -490,7 +492,7 @@ public class LightManager {
 		}
 	}
 	public void carret_color_left( Queue q, int red, int green, int blue ){
-		if( barobot.newLeds ){
+		if( barobot.pcb_type > 1 ){
 			String color = String.format("%02x", red ) 			// 24 bit color
 					+ String.format("%02x", green )
 					+ String.format("%02x", blue );
@@ -498,7 +500,7 @@ public class LightManager {
 		}
 	}	
 	public void carret_color_right( Queue q, int red, int green, int blue ){
-		if( barobot.newLeds ){
+		if( barobot.pcb_type > 1 ){
 			String color = String.format("%02x", red ) 			// 24 bit color
 					+ String.format("%02x", green )
 					+ String.format("%02x", blue );
@@ -507,7 +509,7 @@ public class LightManager {
 	}
 
 	public void color_by_bottle_now(int bottleNum, String string, int value, int red, int green, int blue ){
-		if( barobot.newLeds ){
+		if( barobot.pcb_type > 1 ){
 			int id = -1;
 			if( bottleNum >= 0 && bottleNum < bottom_index.length ){
 				id = top_index[bottleNum];
@@ -519,7 +521,7 @@ public class LightManager {
 					barobot.mb.send(command+"\n");
 				}
 			}
-		}else{
+		}else if(barobot.pcb_type == 1 ){
 			Upanel up	= lo.i2c.getUpanelByBottle(bottleNum);
 			if( up != null ){
 				barobot.mb.send("L"+ up.getAddress() + ","+string+","+value+"\n");			// i.e in calibration
@@ -528,7 +530,7 @@ public class LightManager {
 	}
 	
 	public void color_by_bottle( Queue q, int bottleNum, boolean topBottom, int red, int green, int blue ){
-		if( barobot.newLeds ){
+		if( barobot.pcb_type > 1 ){
 			int id = -1;
 			if( bottleNum >= 0 && bottleNum < bottom_index.length ){
 				if( topBottom == true ){		// top
@@ -544,7 +546,7 @@ public class LightManager {
 					q.add(command, true);
 				}
 			}
-		}else{
+		}else if(barobot.pcb_type == 1 ){
 			Upanel up	= lo.i2c.getUpanelByBottle(bottleNum);
 			if( up != null ){
 				up.setColor(q, topBottom, red, green, blue, 0);
@@ -553,7 +555,7 @@ public class LightManager {
 	}
 
 	public void setLedsByBottle(Queue q, int bottleNum, String string, int value, int red, int green, int blue ) {
-		if( barobot.newLeds ){
+		if( barobot.pcb_type > 1 ){
 			String color = String.format("%02x", red ) 
 					+ String.format("%02x", green )
 					+ String.format("%02x", blue );
@@ -571,7 +573,7 @@ public class LightManager {
 					
 				}
 			}
-		}else{
+		}else if(barobot.pcb_type == 1 ){
 			Upanel up	= lo.i2c.getUpanelByBottle(bottleNum);
 			if(up!=null){
 				up.setLed(q, string, value);
@@ -580,13 +582,13 @@ public class LightManager {
 	}
 
 	public void setAllLeds( Queue q, String string, int value, int red, int green, int blue ) {
-		if( barobot.newLeds ){
+		if( barobot.pcb_type > 1 ){
 			String command = "Q00"
 					+ String.format("%02x", red ) 
 					+ String.format("%02x", green )
 					+ String.format("%02x", blue  );
 			q.add(command, true);
-		}else{
+		}else if(barobot.pcb_type == 1 ){
 			Queue q1		= new Queue();	
 			Upanel[] up		= lo.i2c.getUpanels();
 			for(int i =0; i<up.length;i++){

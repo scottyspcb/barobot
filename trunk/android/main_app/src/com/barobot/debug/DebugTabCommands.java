@@ -91,7 +91,7 @@ public class DebugTabCommands extends Fragment {
 		buttonToCommand.put( R.id.machajx, "machajx" );
 		buttonToCommand.put( R.id.machajy, "machajy" );
 		buttonToCommand.put( R.id.machajz, "machajz" );
-		buttonToCommand.put( R.id.fill5000, "fill5000" );
+		buttonToCommand.put( R.id.fill5000, "pour_now" );
 		buttonToCommand.put( R.id.index_names, "index_names" );
 		buttonToCommand.put( R.id.auto_repair, "auto_repair" );
 

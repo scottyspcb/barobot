@@ -20,6 +20,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.barobot.AppInvoker;
 import com.barobot.BarobotMain;
 import com.barobot.R;
 import com.barobot.android.InternetHelpers;
@@ -217,6 +218,8 @@ public class RecipeListActivity extends BarobotMain{
 	        	  	progress.dismiss();
 	         }});
 		t.start();
+	//	AppInvoker.getInstance().cm.doPhoto();
+		
 	}
 	protected void remainderAndDo(final Queue q) {
 		final BarobotConnector barobot = Arduino.getInstance().barobot;

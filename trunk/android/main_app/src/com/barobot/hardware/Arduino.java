@@ -1,10 +1,12 @@
 package com.barobot.hardware;
 
 import java.io.IOException;
+
 import android.app.Activity;
 
 import com.barobot.AppInvoker;
 import com.barobot.android.AndroidBarobotState;
+import com.barobot.android.BarobotAndroidConnector;
 import com.barobot.common.Initiator;
 import com.barobot.common.constant.Constant;
 import com.barobot.common.interfaces.HardwareState;
@@ -32,7 +34,7 @@ public class Arduino{
 	public Arduino(Activity main) {
 		this.activity	= main;
 		this.state		= new AndroidBarobotState(main);
-		this.barobot	= new BarobotConnector( state );
+		this.barobot	= new BarobotAndroidConnector( state );
 		instance		= this;
 
 		Interval ii1 = new Interval(new Runnable(){

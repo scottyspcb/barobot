@@ -17,51 +17,85 @@ import com.barobot.parser.utils.Decoder;
 import com.barobot.parser.utils.GlobalMatch;
 
 public class Mainboard{
-	private static StringBuilder buffer = new StringBuilder();
+	private static StringBuffer buffer = new StringBuffer();
 	private static Map<String, GlobalMatch> globalRegex = new HashMap<String, GlobalMatch>();
 	private static Map<String, String> modifiers = new HashMap<String, String>();
 
-//	private LimitedBuffer<String> in_buffer		= new LimitedBuffer<String>(100);	// input
-//	private LimitedBuffer<String> out_buffer	= new LimitedBuffer<String>(100);	// output
+	private LimitedBuffer<String> in_buffer		= new LimitedBuffer<String>(100);	// input
+	private LimitedBuffer<String> out_buffer	= new LimitedBuffer<String>(100);	// output
 	public static QueueLock lock				= null;
 	private static String separator = "\n";
 	private CanSend sender;
 	private RetReader retReader;
-	private Queue mainQueue = null;
+	private Queue mainQueue			= null;
 	private HardwareState state;
 	public long last_response		= 0l;
 	public static int sent			= 0;
+	private InnerReader b			= null;
 
 	public Mainboard( HardwareState state ) {
 		this.state			= state;
 		lock				= new QueueLock();
 		this.addGlobalModifier( "^([0-9][0-9]),", "1$1," );	// add 1 if command num < 100
 		this.addGlobalModifier( "^RR", "R" );			// RR => R
+
+		b = new InnerReader();
+		b.start();
+		in_buffer.setEnabled(false);
+		out_buffer.setEnabled(false);
 	}
-
-	public synchronized void read(String in) {
+	private class InnerReader extends Thread{
+	    @Override
+	    public void run(){
+	    	while( state!=null ){
+		//    	synchronized(buffer){
+					int end = buffer.indexOf(separator);
+					if( end!=-1){
+						while( end != -1 ){		// podziel to na kawalki
+							String command	= buffer.substring(0, end);
+							buffer.delete(0, end+1);
+							command			= command.trim();
+							analyseInput(command);
+							end				= buffer.indexOf(separator);
+						}
+					}
+		//    	}
+		    	synchronized(this){
+		            try{
+		                b.wait();
+		            }catch(InterruptedException e){
+		                e.printStackTrace();
+		            }	        
+		        }
+	    	}
+	    }
+	}
+	
+	public void read(String in) {
 	//	String s1 = in;
-
 		in = in.replace((char)0,(char)13); 		// null => new line
-		buffer.append(in);
-
-//		String s2 = in;
-	//	System.out.println("in 1: ["+s1+"], in2: [" + s2 + "]");
-	//	System.out.println("in [" + in + "]");
-	//	System.out.println("buff [" + buffer + "]");
-
-		int end = buffer.indexOf(separator);
-		if( end!=-1){
-			while( end != -1 ){		// podziel to na kawalki
-				String command	= buffer.substring(0, end);
-				buffer			= buffer.delete(0, end+1);
-				command			= command.trim();
-				analyseInput(command);
-				end				= buffer.indexOf(separator);
+		synchronized (buffer) {
+			buffer.append(in);
+			synchronized (b) {
+				b.notify();
 			}
+	//		String s2 = in;
+		//	System.out.println("in 1: ["+s1+"], in2: [" + s2 + "]");
+		//	System.out.println("in [" + in + "]");
+		//	System.out.println("buff [" + buffer + "]");
+			/*
+			int end = buffer.indexOf(separator);
+			if( end!=-1){
+				while( end != -1 ){		// podziel to na kawalki
+					String command	= buffer.substring(0, end);
+					buffer.delete(0, end+1);
+					command			= command.trim();
+					analyseInput(command);
+					end				= buffer.indexOf(separator);
+				}
+			}*/
 		}
 	}
-
 	private synchronized void analyseInput(String command) {	
 		command = command.replaceAll("[^-A-Za-z0-9,.!\\[\\] !]","");			// all other chars are unallowed
 		if("".equals(command)){
@@ -103,7 +137,7 @@ public class Mainboard{
 		if( !state.get("show_reading", "0").equals("0") ){
 			Initiator.logger.w("Mainboard.useInput", command );
 		}
-	//	in_buffer.push(command);
+		in_buffer.push(command);
 
 		synchronized (QueueLock.lock_wait_for) {
 			local_wait_for = lock.wait_for;
@@ -183,7 +217,7 @@ public class Mainboard{
 	}
 	public void clear() {
 		synchronized (buffer) {
-			buffer =  new StringBuilder();
+			buffer =  new StringBuffer();
 		}
 	}
 	public void addGlobalModifier(String string, String string2) {
@@ -216,7 +250,7 @@ public class Mainboard{
 		//		synchronized(outputStream){
 				try {
 		//			Initiator.logger.i("Mainboard.Send" , command.trim() );
-		//			out_buffer.push(command);
+					out_buffer.push(command);
 					return this.sender.send(command);
 				} catch (IOException e) {
 				  Initiator.logger.appendError(e);

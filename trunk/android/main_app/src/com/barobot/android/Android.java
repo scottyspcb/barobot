@@ -27,6 +27,7 @@ import android.content.IntentFilter;
 import android.content.res.AssetManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.wifi.WifiManager;
 import android.os.BatteryManager;
 import android.os.Build;
 import android.os.Debug;
@@ -53,10 +54,19 @@ import org.orman.sql.Query;
 import com.barobot.BarobotMain;
 import com.barobot.R;
 import com.barobot.activity.BarobotActivity;
+import com.barobot.activity.OptionsActivity;
 import com.barobot.common.Initiator;
+import com.barobot.common.constant.Constant;
 import com.barobot.gui.database.BarobotData;
 import com.barobot.gui.dataobjects.Robot;
 import com.barobot.gui.dataobjects.Slot;
+import com.barobot.hardware.Arduino;
+import com.barobot.hardware.devices.BarobotConnector;
+import com.barobot.hardware.devices.PcbType;
+import com.barobot.other.UpdateManager;
+import com.barobot.parser.Queue;
+import com.barobot.parser.message.AsyncMessage;
+import com.barobot.parser.message.Mainboard;
 
 public class Android {
 	public static void powerOff( Context c ){
@@ -547,7 +557,7 @@ public class Android {
 	public static void alertOk(final Activity dbw) {
 		dbw.runOnUiThread(new Runnable() {
 			  public void run() {
-				  new AlertDialog.Builder(dbw).setTitle("Message").setMessage("It is pleasure to inform that operation was completed successfully.")
+				  new AlertDialog.Builder(dbw).setTitle("Success").setMessage(R.string.upload_firmware_success)
 				    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
 				        public void onClick(DialogInterface dialog, int which) { 
 				        }
@@ -555,5 +565,111 @@ public class Android {
 				    .setIcon(android.R.drawable.ic_dialog_alert).show();
 			  }
 			});
+	}
+	public static void askForWifiEnabled(final Activity activity) {
+		final WifiManager wifiManager = (WifiManager) activity.getSystemService(Context.WIFI_SERVICE); 
+		final boolean wifiEnabled = wifiManager.isWifiEnabled();
+		if(!wifiEnabled){
+			activity.runOnUiThread(new Runnable() {
+				  public void run() {
+					  new AlertDialog.Builder(activity).setTitle("WIFI").setMessage(R.string.do_you_want_enable_wifi)
+					    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+					        public void onClick(DialogInterface dialog, int which) { 
+					    		if(wifiEnabled){
+					    			wifiManager.setWifiEnabled(true);
+					    			//wifiManager.setWifiEnabled(false);
+					    		}
+					        }
+					    })
+					    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+					        public void onClick(DialogInterface dialog, int which) { 
+					        }
+					    })
+					    .setIcon(android.R.drawable.ic_dialog_alert).show();
+				  }
+				});
+		}
+	}
+	
+	
+
+	static Integer selectedOption = 0;
+	
+	public static void burnFirmware( final Activity dbw, final boolean manual ) {
+		final BarobotConnector barobot	= Arduino.getInstance().barobot;
+		barobot.state.getInt("BURN_PCB_TYPE", 0);
+
+		final String[] options = new String[]{
+        	"Servos ",
+        	"Actuators L1650 (with 2 little holes on front panel)",
+        	"Set new Robot ID only"
+        };
+		int default_option = Math.max(0, barobot.pcb_type - 2);			// 2 = 0, 3 = 1, 0 = 0 
+		selectedOption = default_option;
+		final Builder a = new AlertDialog.Builder(dbw)
+        .setIconAttribute(android.R.attr.alertDialogIcon)
+        .setTitle("Which Barobot version do you have? If you are not sure click Cancel.")
+        .setSingleChoiceItems(options, default_option, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                /* User clicked on a radio button do some stuff */
+	            selectedOption = whichButton;
+	            Initiator.logger.w("button_click.firmware_download", "whichButton: " + whichButton);
+            }
+        })
+        .setPositiveButton("I know what I'm doing. Burn firmware now", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+             	if( selectedOption == options.length - 1){
+             		Android.setNewRobotId(dbw, barobot);
+            	}else{
+	            	int pcb_type1 = selectedOption + 2;		// 0 = 2, 1 = 3
+	           //	int pcb_type1 = barobot.state.getInt("BURN_PCB_TYPE", 3);
+		       //     barobot.state.getInt("BURN_PCB_TYPE", whichButton + 2);
+	            	if( pcb_type1 == 2 || pcb_type1 == 3 ){
+	            		UpdateManager.downloadAndBurnFirmware( dbw, pcb_type1, manual );
+	            	}
+            	}
+            }
+        })
+        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                /* User clicked No so do some stuff */
+            }
+        });
+		BarobotMain.getInstance().runOnUiThread(new Runnable() {
+			  public void run() {
+				  a.create().show();
+			  }
+			});
+	}
+	public static void setNewRobotId(final Activity dbw, final BarobotConnector barobot) {
+		int isOnline = Android.isOnline(dbw);
+		if(isOnline > -1 ){
+			Queue q = new Queue();
+			barobot.readHardwareRobotId(q);			// check hardware version
+			q.add( new AsyncMessage( true ) {		// when version readed
+				@Override
+				public String getName() {
+					return "Check robot_id";
+				}
+				@Override
+				public Queue run(Mainboard dev, Queue queue) {
+					if( barobot.pcb_type == 0 && barobot.robot_id_ready){
+						throw new RuntimeException("Brak pcb_type");
+					}
+					int robot_id = UpdateManager.getNewRobotId();		// download new robot_id (init hardware)
+					Initiator.logger.w("Android.new_robot_id", "robot_id: " + robot_id);
+					if( robot_id > 0 ){		// save robot_id to android and arduino
+						Queue q = new Queue();
+						barobot.setRobotId( q, robot_id, barobot.pcb_type );
+						Android.alertMessage(dbw, "New ID= "+ robot_id + ", PCB type = " + barobot.pcb_type );
+						return q;	// before all other commands currently in queue
+					}
+					return null;
+				}
+			});
+			barobot.main_queue.add(q);
+		}else{
+			Android.alertMessage(dbw, "No internet connection");
+		}
 	}
 }

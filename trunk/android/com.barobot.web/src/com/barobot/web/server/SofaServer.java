@@ -87,7 +87,7 @@ public class SofaServer extends NanoHTTPD {
 	    		//	return r;
 	        	}
 			}else{
-				Log.i("SofaServer nie istnieje:", uri );
+				Log.i("Route doens; match:", uri );
 			}
 			return new NanoHTTPD.Response(Status.NOT_FOUND, "", "");
 		}else{

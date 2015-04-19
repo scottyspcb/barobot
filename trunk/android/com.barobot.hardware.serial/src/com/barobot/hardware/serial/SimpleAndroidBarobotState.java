@@ -9,14 +9,16 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.barobot.common.constant.Constant;
+import com.barobot.common.interfaces.DefaultState;
 import com.barobot.common.interfaces.HardwareState;
 import com.barobot.common.interfaces.StateListener;
 import com.barobot.parser.utils.Decoder;
 
-public class AndroidBarobotState2 implements HardwareState{
+public class SimpleAndroidBarobotState implements HardwareState{
 	private SharedPreferences.Editor config_editor;			// config systemu android
 	private Map<String, String> hashmap = new HashMap<String, String>();
 	private SharedPreferences myPrefs;
+	private DefaultState defaults = null;;
 
 	private static String[] persistant = {
 		"STAT1",
@@ -55,7 +57,7 @@ public class AndroidBarobotState2 implements HardwareState{
 		"BOTTLE_X_11",
 	};
 	
-	public AndroidBarobotState2( Activity application ){
+	public SimpleAndroidBarobotState( Activity application ){
 		myPrefs			= application.getSharedPreferences(Constant.SETTINGS_TAG, Context.MODE_PRIVATE);
 		config_editor	= myPrefs.edit();
 	}
@@ -66,6 +68,8 @@ public class AndroidBarobotState2 implements HardwareState{
 		if( ret == null ){ 
 			if((Arrays.asList(persistant).indexOf(name) > -1 )){
 				ret = myPrefs.getString(name, def );
+			}else if(defaults != null){
+				ret = defaults.getDefault( name, def );
 			}else{
 				ret = def;
 			}
@@ -102,7 +106,7 @@ public class AndroidBarobotState2 implements HardwareState{
 	}
 
 	@Override
-	public void reloadConfig(int robot_Serial) {
+	public void reloadConfig(int robot_Serial, boolean useOld ) {
 		// TODO Auto-generated method stub
 	}
 
@@ -122,5 +126,22 @@ public class AndroidBarobotState2 implements HardwareState{
 	public void unregisterListener(StateListener sl) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public void setDefaults(DefaultState pcb) {
+		this.defaults = pcb;
+	}
+
+	@Override
+	public void resetToDefault(String name) {
+		if(myPrefs.contains(name)){
+			myPrefs.edit().remove(name).commit();
+		}
+	}
+
+	@Override
+	public void resetAll() {
+		// TODO Auto-generated method stub
 	}
 }

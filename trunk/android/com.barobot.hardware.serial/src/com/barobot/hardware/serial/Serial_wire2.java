@@ -57,7 +57,7 @@ public class Serial_wire2 implements CanSend, Wire{
 		        stopIoManager();
 		    }
 		    @Override
-		    public synchronized void onNewData( byte[] data) {
+		    public void onNewData( byte[] data) {
 	//	    	Log.e("Serial_wire.onNewData", new String(data, 0, data.length) );
 		       	listener.onNewData( data, data.length );
 		    }

@@ -44,6 +44,11 @@ public class SettingsActivity extends PreferenceActivity {
 	//	setFullScreen();
 		setupSimplePreferencesScreen();
 	}
+
+	protected boolean isValidFragment(String fragmentName) {
+		  return true;
+	}
+	
 	/**
 	 * Shows the simplified settings UI if the device configuration if the
 	 * device configuration dictates that a simplified, single-pane UI should be
@@ -66,24 +71,27 @@ public class SettingsActivity extends PreferenceActivity {
 		bindPreferenceSummaryToValue(findPreference("SSERVER_ALLOW_CONFIG"));
 
 		bindPreferenceSummaryToValue(findPreference("ALLOW_LANGBAR"));
+		bindPreferenceSummaryToValue(findPreference("FINISH_UP"));
 
 		bindPreferenceSummaryToValue(findPreference("DRIVER_X_SPEED"));
 		bindPreferenceSummaryToValue(findPreference("DRIVER_Y_SPEED"));	
 		bindPreferenceSummaryToValue(findPreference("DRIVER_CALIB_X_SPEED"));
 		
 		bindPreferenceSummaryToValue(findPreference("SERVOZ_POUR_TIME"));
-		bindPreferenceSummaryToValue(findPreference("SERVOZ_UP_POS"));
-		bindPreferenceSummaryToValue(findPreference("SERVOZ_UP_LIGHT_POS"));
-		bindPreferenceSummaryToValue(findPreference("SERVOZ_DOWN_POS"));
-		bindPreferenceSummaryToValue(findPreference("SERVOZ_TEST_POS"));
+	//	bindPreferenceSummaryToValue(findPreference("SERVOZ_UP_POS"));
+	//	bindPreferenceSummaryToValue(findPreference("SERVOZ_UP_LIGHT_POS"));
+	//	bindPreferenceSummaryToValue(findPreference("SERVOZ_DOWN_POS"));
+	//	bindPreferenceSummaryToValue(findPreference("SERVOZ_NEUTRAL"));
 		bindPreferenceSummaryToValue(findPreference("SERVOZ_PAC_POS"));
+		bindPreferenceSummaryToValue(findPreference("SERVOZ_PAC_BACK_DIFF"));
 		bindPreferenceSummaryToValue(findPreference("SERVOZ_PAC_TIME_WAIT"));
 		bindPreferenceSummaryToValue(findPreference("SERVOZ_PAC_TIME_WAIT_VOL"));
 		bindPreferenceSummaryToValue(findPreference("SERVOY_REPEAT_TIME"));
 		bindPreferenceSummaryToValue(findPreference("GLASS_DIFF"));
-		bindPreferenceSummaryToValue(findPreference("LIGH_GLASS_DIFF"));
+		bindPreferenceSummaryToValue(findPreference("LIGHT_GLASS_DIFF"));
 		bindPreferenceSummaryToValue(findPreference("NEED_HALL_X"));	
-
+		bindPreferenceSummaryToValue(findPreference("NEED_HALL_Y"));
+		
 /*
 		// Add 'notifications' preferences, and a corresponding header.
 		PreferenceCategory fakeHeader = new PreferenceCategory(this);
@@ -117,57 +125,67 @@ public class SettingsActivity extends PreferenceActivity {
 		@Override
 		public boolean onPreferenceChange(Preference preference, Object value) {
 			String stringValue = value.toString();
-	//		Initiator.logger.i( this.getClass().getName()+"OnPreferenceChangeListener1", preference.getKey()+"/"+ stringValue);
+			Initiator.logger.i( this.getClass().getName()+"OnPreferenceChangeListener1", preference.getKey()+"/"+ stringValue);
 
-			if (preference instanceof ListPreference) {
-				// For list preferences, look up the correct display value in
-				// the preference's 'entries' list.
-				ListPreference listPreference = (ListPreference) preference;
-				int index = listPreference.findIndexOfValue(stringValue);
+			stringValue = showValue( preference, stringValue );
 
-				// Set the summary to reflect the new value.
-				preference.setSummary(index >= 0 ? listPreference.getEntries()[index]: null);
-				
-			} else if (preference instanceof CheckBoxPreference) {
-				if("true".equals(stringValue) || "1".equals(stringValue)){
-					stringValue = "1";
-				}else{
-					stringValue = "0";
-				}
-		//		Initiator.logger.i( this.getClass().getName()+"OnPreferenceChangeListener2", preference.getKey()+"/"+ stringValue);
-				
-			} else if (preference instanceof RingtonePreference) {
-				// For ringtone preferences, look up the correct display value
-				// using RingtoneManager.
-				if (TextUtils.isEmpty(stringValue)) {
-					// Empty values correspond to 'silent' (no ringtone).
-					preference.setSummary(R.string.pref_ringtone_silent);
-				} else {
-					Ringtone ringtone = RingtoneManager.getRingtone(
-							preference.getContext(), Uri.parse(stringValue));
-
-					if (ringtone == null) {
-						// Clear the summary if there was a lookup error.
-						preference.setSummary(null);
-					} else {
-						// Set the summary to reflect the new ringtone display
-						// name.
-						String name = ringtone
-								.getTitle(preference.getContext());
-						preference.setSummary(name);
-					}
-				}
-
-			} else {
-				// For all other preferences, set the summary to the value's
-				// simple string representation.
-				preference.setSummary(stringValue);
-			}
 			Arduino.getInstance().barobot.state.set(preference.getKey(), stringValue);
 			return true;
 		}
 	};
 
+
+	private static String showValue(Preference preference, String stringValue) {
+		if (preference instanceof ListPreference) {
+			// For list preferences, look up the correct display value in
+			// the preference's 'entries' list.
+			ListPreference listPreference = (ListPreference) preference;
+			int index = listPreference.findIndexOfValue(stringValue);
+
+			// Set the summary to reflect the new value.
+			preference.setSummary(index >= 0 ? listPreference.getEntries()[index]: null);
+			
+			return stringValue;
+		} else if (preference instanceof CheckBoxPreference) {
+			if("true".equals(stringValue) || "1".equals(stringValue)){
+				stringValue = "1";
+			}else{
+				stringValue = "0";
+			}
+			return stringValue;
+	//		Initiator.logger.i( this.getClass().getName()+"OnPreferenceChangeListener2", preference.getKey()+"/"+ stringValue);
+			
+		} else if (preference instanceof RingtonePreference) {
+			// For ringtone preferences, look up the correct display value
+			// using RingtoneManager.
+			if (TextUtils.isEmpty(stringValue)) {
+				// Empty values correspond to 'silent' (no ringtone).
+				preference.setSummary(R.string.pref_ringtone_silent);
+			} else {
+				Ringtone ringtone = RingtoneManager.getRingtone(
+						preference.getContext(), Uri.parse(stringValue));
+
+				if (ringtone == null) {
+					// Clear the summary if there was a lookup error.
+					preference.setSummary(null);
+				} else {
+					// Set the summary to reflect the new ringtone display
+					// name.
+					String name = ringtone
+							.getTitle(preference.getContext());
+					preference.setSummary(name);
+				}
+			}
+			return stringValue;
+		} else {
+			// For all other preferences, set the summary to the value's
+			// simple string representation.
+			preference.setSummary(stringValue);
+			return stringValue;
+		}
+	}
+	
+	
 	/**
 	 * Binds a preference's summary to its value. More specifically, when the
 	 * preference's value is changed, its summary (line of text below the
@@ -178,21 +196,35 @@ public class SettingsActivity extends PreferenceActivity {
 	 * @see #sBindPreferenceSummaryToValueListener
 	 */
 	private static void bindPreferenceSummaryToValue(Preference preference) {
-		String value = Arduino.getInstance().barobot.state.get(preference.getKey(), "");
+		BarobotConnector barobot = Arduino.getInstance().barobot;
+		
+		if( preference == null ){
+			Initiator.logger.i( SettingsActivity.class.getSimpleName(), "no preference" );
+		}
+		
+		String value = barobot.state.get(preference.getKey(), "");
 		preference.setOnPreferenceChangeListener(sBindPreferenceSummaryToValueListener);
 		if(preference instanceof CheckBoxPreference){
 			CheckBoxPreference i = (CheckBoxPreference)preference;
-		//	Initiator.logger.i( SettingsActivity.class.getSimpleName()+"bindPreferenceSummaryToValue", value );
-			if( !value.isEmpty() && "1".equals(value)){
+			Initiator.logger.i( SettingsActivity.class.getSimpleName()+"bindPreferenceSummaryToValue", value );
+			if( !value.isEmpty() && "1".equals(value) || "true".equals(value)){
 				i.setChecked( true );
+				value = "1";
 			}else{
 				i.setChecked( false );
+				value = "0";
 			}
 			i.setDefaultValue(value);
 		}else{
+			Initiator.logger.i( SettingsActivity.class.getSimpleName()+"bindPreferenceSummaryToValue", value );
 			preference.setDefaultValue(value);
 		}
-		sBindPreferenceSummaryToValueListener.onPreferenceChange(preference,value);
+		//sBindPreferenceSummaryToValueListener.onPreferenceChange(preference,value);
+		
+		String stringValue = value.toString();
+		showValue( preference, stringValue );
+
+		
 	}
 
 	/**
@@ -201,17 +233,41 @@ public class SettingsActivity extends PreferenceActivity {
 	 */
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	public static class GeneralPreferenceFragment extends PreferenceFragment {
+
 		@Override
 		public void onCreate(Bundle savedInstanceState) {
 			super.onCreate(savedInstanceState);
 			addPreferencesFromResource(R.xml.pref_general);
 
-			// Bind the summaries of EditText/List/Dialog/Ringtone preferences
-			// to their values. When their values change, their summaries are
-			// updated to reflect the new value, per the Android Design
-			// guidelines.
-			bindPreferenceSummaryToValue(findPreference("example_text"));
-			bindPreferenceSummaryToValue(findPreference("example_list"));
+			bindPreferenceSummaryToValue(findPreference("NEED_GLASS"));
+			bindPreferenceSummaryToValue(findPreference("WATCH_GLASS"));
+
+			bindPreferenceSummaryToValue(findPreference("ALLOW_LIGHT_CUP"));
+			
+			bindPreferenceSummaryToValue(findPreference("MAX_GLASS_CAPACITY"));
+			bindPreferenceSummaryToValue(findPreference("SSERVER_ALLOW_CONFIG"));
+
+			bindPreferenceSummaryToValue(findPreference("ALLOW_LANGBAR"));
+			bindPreferenceSummaryToValue(findPreference("FINISH_UP"));
+
+			bindPreferenceSummaryToValue(findPreference("DRIVER_X_SPEED"));
+			bindPreferenceSummaryToValue(findPreference("DRIVER_Y_SPEED"));	
+			bindPreferenceSummaryToValue(findPreference("DRIVER_CALIB_X_SPEED"));
+			
+			bindPreferenceSummaryToValue(findPreference("SERVOZ_POUR_TIME"));
+		//	bindPreferenceSummaryToValue(findPreference("SERVOZ_UP_POS"));
+		//	bindPreferenceSummaryToValue(findPreference("SERVOZ_UP_LIGHT_POS"));
+		//	bindPreferenceSummaryToValue(findPreference("SERVOZ_DOWN_POS"));
+		//	bindPreferenceSummaryToValue(findPreference("SERVOZ_NEUTRAL"));
+			bindPreferenceSummaryToValue(findPreference("SERVOZ_PAC_POS"));
+			bindPreferenceSummaryToValue(findPreference("SERVOZ_PAC_BACK_DIFF"));
+			bindPreferenceSummaryToValue(findPreference("SERVOZ_PAC_TIME_WAIT"));
+			bindPreferenceSummaryToValue(findPreference("SERVOZ_PAC_TIME_WAIT_VOL"));
+			bindPreferenceSummaryToValue(findPreference("SERVOY_REPEAT_TIME"));
+			bindPreferenceSummaryToValue(findPreference("GLASS_DIFF"));
+			bindPreferenceSummaryToValue(findPreference("LIGHT_GLASS_DIFF"));
+			bindPreferenceSummaryToValue(findPreference("NEED_HALL_X"));
+			bindPreferenceSummaryToValue(findPreference("NEED_HALL_Y"));
 		}
 	}
 
@@ -231,7 +287,7 @@ public class SettingsActivity extends PreferenceActivity {
 			// to their values. When their values change, their summaries are
 			// updated to reflect the new value, per the Android Design
 			// guidelines.
-			bindPreferenceSummaryToValue(findPreference("notifications_new_message_ringtone"));
+	//		bindPreferenceSummaryToValue(findPreference("notifications_new_message_ringtone"));
 		}
 	}
 
@@ -250,7 +306,7 @@ public class SettingsActivity extends PreferenceActivity {
 			// to their values. When their values change, their summaries are
 			// updated to reflect the new value, per the Android Design
 			// guidelines.
-			bindPreferenceSummaryToValue(findPreference("sync_frequency"));
+	//		bindPreferenceSummaryToValue(findPreference("sync_frequency"));
 		}
 	}
 
@@ -272,7 +328,6 @@ public class SettingsActivity extends PreferenceActivity {
 	private static boolean isSimplePreferences(Context context) {
 		return !isXLargeTablet(context);
 	}
-
 	/** {@inheritDoc} */
 	@Override
 	public boolean onIsMultiPane() {

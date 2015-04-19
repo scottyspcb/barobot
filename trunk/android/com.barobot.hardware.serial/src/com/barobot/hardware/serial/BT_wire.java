@@ -184,7 +184,6 @@ public class BT_wire implements Wire {
 	@Override
 	public boolean setAutoConnect(boolean active) {
 		if(active){
-	    	//String bt_id = virtualComponents.get( "LAST_BT_DEVICE", "");
 	    	String bt_id	= "00:12:09:29:51:76";
 	    	//String bt_id	= "00:12:09:29:52:22";
 	    	//String bt_id	= "00:12:09:29:51:76";

@@ -38,7 +38,6 @@ import com.barobot.parser.message.Mainboard;
 import com.barobot.parser.utils.Decoder;
 import com.eclipsesource.json.JsonObject;
 
-
 public class UpdateManager{
 /*
 	public void load(){
@@ -136,7 +135,7 @@ public class UpdateManager{
 	}
 */
 
-	public static void checkNewVersion( final Activity c, final boolean alertResult) {
+	public static void checkNewVersion( final Activity c, final BarobotConnector barobot, final boolean alertResult) {
 		InternetHelpers.downloadNewestVersionNumber( new OnDownloadReadyRunnable() {
 			private String res;
 			public void sendSource(String source) {
@@ -158,38 +157,42 @@ public class UpdateManager{
 						Initiator.logger.e("UpdateManager.checkNewVersion", "readFrom exception", e );
 					}
 					if( jsonObject != null && res.length()> 20 && jsonObject.isObject()){
-						JsonObject version = jsonObject.get("version").asObject();
+						String key = "version" + barobot.pcb_type + ( Constant.use_beta ? "_beta" : "" );	// version2 or version3 or version2_beta or version3_beta
+						Initiator.logger.d("update_drinks.checkNewVersion", "key: "+key );
+						if( jsonObject.get(key) == null){
+							if(alertResult){
+								Android.alertMessage(c, "Error parsing document (532)");
+							}
+							return;
+						}
+						JsonObject version = jsonObject.get(key).asObject();
+						
 						int newest_android_version	= Decoder.toInt(version.get("android").toString());
 						int newest_arduino_version	= Decoder.toInt(version.get("arduino").toString());
 						int newest_database_version = Decoder.toInt(version.get("database").toString());
-						BarobotConnector barobot	= Arduino.getInstance().barobot;
-						if(Constant.use_beta){
-							newest_android_version	= Decoder.toInt(version.get("android_beta").toString());
-							newest_arduino_version	= Decoder.toInt(version.get("arduino_beta").toString());
-							newest_database_version	= Decoder.toInt(version.get("database_beta").toString());
-						}
-						Initiator.logger.e("update_drinks.android", ""+newest_android_version );
-						Initiator.logger.e("update_drinks.arduino", ""+newest_arduino_version );
-						Initiator.logger.e("update_drinks.database", ""+newest_database_version );
 
+						Initiator.logger.d("update_drinks.android", ""+newest_android_version );
+						Initiator.logger.d("update_drinks.arduino", ""+newest_arduino_version );
+						Initiator.logger.d("update_drinks.database", ""+newest_database_version );
+
+						JsonObject paths = version.get("files").asObject();
 						int arduino_ver = barobot.state.getInt("ARDUINO_VERSION", 0);
 						if( newest_android_version > Constant.ANDROID_APP_VERSION ){
 					//		Initiator.logger.e("update_drinks.checkNewVersion", "newest_android_version: "+ res );
-							String url = Constant.android_app;
-							if(Constant.use_beta){
-								url = Constant.android_app_beta;
-							}
-							openInBrowser( c, url );
+							String androidUrl	= paths.get("android").toString();
+							androidUrl = androidUrl.replace("\"", "");
+							openInBrowser( c, androidUrl );
 
 						}else if( arduino_ver > 0 && newest_arduino_version > arduino_ver && newest_arduino_version <= Constant.MAX_FIRMWARE_VERSION ){	// maximum version handled by this app version
-							downloadAndBurnFirmware( c, Constant.use_beta, false );
+							String arduinoUrl	= paths.get("arduino").toString();
+							downloadAndBurnFirmware( c, barobot.pcb_type, false );
 						}else{
 							if(alertResult){
 								Android.alertMessage(c, "Your firmware version " + newest_android_version + ".0 is up to date.");
 							}
 						}
 						if( newest_database_version > barobot.state.getInt("ARDUINO_VERSION", 0 ) ){
-				//			downloadAndUseDatabase( c, barobot.use_beta );
+			//				downloadAndUseDatabase( c, Constant.use_beta );
 						}
 					}else{
 						Initiator.logger.e("update_drinks.checkNewVersion", "error: "+ res );
@@ -213,7 +216,7 @@ public class UpdateManager{
 			        .setPositiveButton(R.string.update_yes, new DialogInterface.OnClickListener() {
 			            @Override
 			            public void onClick(DialogInterface dialog, int which) {
-			            	UpdateManager.downloadAndInstall( c,  Uri.parse(url));
+			            	UpdateManager.downloadAndInstall( c, url );
 			            //	Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
 			        	//	c.startActivity(browserIntent);
 			            }
@@ -245,28 +248,29 @@ public class UpdateManager{
 	}
 
 	
-	public static void downloadAndBurnFirmware(final Activity c, final boolean use_beta, final boolean manual_reset ) {
+	public static void downloadAndBurnFirmware(final Activity c, final int pcb_type, final boolean manual_reset ) {
 		// ask before
-		if(BarobotMain.getInstance().isDestroyed() ||BarobotMain.getInstance().isFinishing()){
+		if(BarobotMain.getInstance().isDestroyed() || BarobotMain.getInstance().isFinishing()){
 			return;
 		}
 		BarobotMain.getInstance().runOnUiThread(new Runnable() {
 			  public void run() {
-				  new AlertDialog.Builder(c).setTitle("Are you sure?").setMessage("Do you want to update your firmware now?")
+				  new AlertDialog.Builder(c).setTitle("Are you sure?").setMessage("Do you want to update your firmware now? ("+pcb_type+")")
 				    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
 				        public void onClick(DialogInterface dialog, int which) { 
-				        	update_firmware_step2_download(c, use_beta, manual_reset);
+				        	update_firmware_step2_download(c, pcb_type, manual_reset);
 				        }
 				    })
 				    .setIcon(android.R.drawable.ic_dialog_alert).show();
 			  }
 			});
 	}
-	public static void update_firmware_step2_download(final Activity c, final boolean use_beta, final boolean manual_reset) {
+	public static void update_firmware_step2_download(final Activity c, final int pcb_type, final boolean manual_reset) {
 		// download new version
-		final String url				= (use_beta) ? Constant.firmwareWeb_beta : Constant.firmwareWeb;
-		final String path9				= Environment.getExternalStorageDirectory() + Constant.firmware;
 		final BarobotConnector barobot	= Arduino.getInstance().barobot;
+		final String url				= getFirmwareFileUrl( Constant.use_beta, pcb_type );
+		final String path9				= getFirmwareFilePath( Constant.use_beta, pcb_type );
+
 		Log_start ls 			= new Log_start();
 		ls.datetime				= Decoder.getTimestamp() ;
 		ls.start_type			= "fu";
@@ -276,7 +280,7 @@ public class UpdateManager{
 		ls.arduino_starts		= barobot.state.getInt("ARDUINO_STARTS", 0);
 		ls.serial_starts		= barobot.state.getInt("STAT2", 0);
 		ls.app_version			= Constant.ANDROID_APP_VERSION;
-//		ls.arduino_version		= Constant.ANDROID_APP_VERSION;
+		ls.arduino_version		= barobot.state.getInt("ARDUINO_VERSION", 0);
 //		ls.database_version		= Constant.ANDROID_APP_VERSION;
 		ls.temp_start			= barobot.getLastTemp();
 		ls.insert();
@@ -305,11 +309,10 @@ public class UpdateManager{
 			                    	barProgressDialog.dismiss();
 			                    }
 			                });
-				        	Initiator.logger.i("fimwareBurn.update_firmware_step3_burn",url);
 				        	if(manual_reset){
-				        		update_firmware_manual_reset( c, use_beta, url );
+				        		update_firmware_manual_reset( c, Constant.use_beta, url, pcb_type );
 				        	}else{
-				        		update_firmware_step3_burn( c, use_beta, url );
+				        		update_firmware_step3_burn( c, Constant.use_beta, url, pcb_type );
 				        	}
 						}
 						@Override
@@ -326,10 +329,30 @@ public class UpdateManager{
 			});
 	}
 
+	private static String getFirmwareFilePath(boolean use_beta, int pcb_type) {
+		File base = Environment.getExternalStorageDirectory();
+		String res = "";
+
+		if( pcb_type == 2 ){
+			res =  base.getAbsolutePath() + ((use_beta) ? Constant.firmware2_beta : Constant.firmware2);
+		}else{
+			res =  base.getAbsolutePath() + ((use_beta) ? Constant.firmware3_beta : Constant.firmware3);
+		}
+	   	Initiator.logger.i("UpdateManager.getFirmwareFilePath",res);
+		return res;
+		
+	}
+	private static String getFirmwareFileUrl(boolean use_beta, int pcb_type) {
+		if( pcb_type == 2 ){
+			return (use_beta) ? Constant.firmware2Web_beta : Constant.firmware2Web;
+		}else{
+			return (use_beta) ? Constant.firmware3Web_beta : Constant.firmware3Web;
+		}
+	}
+
 	static Handler updateBarHandler;
 	static ProgressDialog barProgressDialog;
-
-	public static void update_firmware_step3_burn(final Activity c, boolean use_beta, String url) {
+	public static void update_firmware_step3_burn(final Activity c, boolean use_beta, String url, final int pcb_type) {
 		// burn it
 		c.runOnUiThread(new Runnable() {
 		   public void run() {
@@ -346,7 +369,7 @@ public class UpdateManager{
 		final BarobotConnector barobot	= ar.barobot;
 		final Queue q					= barobot.main_queue;
 		final Wire connection			= ar.getConnection();
-		final String hex_firmware_path	= Environment.getExternalStorageDirectory()+Constant.firmware;
+		final String hex_firmware_path	= getFirmwareFilePath( use_beta, pcb_type );
 		final IspOverSerial mSerial		= new IspOverSerial(connection);
 		final Uploader  ispUploader		= new Uploader();
 
@@ -388,7 +411,7 @@ public class UpdateManager{
 			}
 			private void afterReady(Mainboard dev, Queue queue) {		
 		    	setProgress(80);
-		    	Initiator.logger.w("onPostUpload.schedule", "now!!!");
+		    	Initiator.logger.d("onPostUpload.schedule", "now!!!");
 		    	mSerial.free();
 				dev.unlockRet( this, "isp burnt");			// unlock this AsyncMessage
 			}
@@ -429,12 +452,12 @@ public class UpdateManager{
 			        		Arduino.firmwareUpload	= false;
 			        		mSerial.free();
 			        		queue.clear();
-			        		Initiator.logger.i(" fimwareBurn.upload", "Upload fail");
+			        		Initiator.logger.i(" fimwareBurn.upload1", "Upload fail");
 			        	}
 			        }
 			        @Override
 			        public void onError(UploadErrors err) {
-						Initiator.logger.e("fimwareBurn.upload","Error  : "+err.getDescription());
+						Initiator.logger.e("fimwareBurn.upload2","Error  : "+err.getDescription());
 			        }
 			        @Override
 			        public void resetDevice(boolean reset, IspCommunicator mComm ){
@@ -499,7 +522,7 @@ public class UpdateManager{
 					Initiator.logger.w("update_firmware_step3_burn.new_robot_id?", "robot_id" + robot_id);
 					if( robot_id > 0 ){		// save robot_id to android and arduino
 						Queue q = new Queue();
-						barobot.setRobotId( q, robot_id);
+						barobot.setRobotId( q, robot_id, barobot.pcb_type);
 						return q;
 					}
 				}
@@ -548,7 +571,7 @@ public class UpdateManager{
 	
 
 	
-	public static void update_firmware_manual_reset(final Activity c, boolean use_beta, String url) {
+	public static void update_firmware_manual_reset(final Activity c, boolean use_beta, String url, final int pcb_type) {
 		// burn it
 		c.runOnUiThread(new Runnable() {
 		   public void run() {
@@ -565,11 +588,10 @@ public class UpdateManager{
 		final BarobotConnector barobot	= ar.barobot;
 		final Queue q					= barobot.main_queue;
 		final Wire connection			= ar.getConnection();
-		final String hex_firmware_path	= Environment.getExternalStorageDirectory()+Constant.firmware;
+		final String hex_firmware_path	= getFirmwareFilePath( use_beta, pcb_type );
 		Arduino.firmwareUpload			= true;
 
 		q.clear();
-
 		updateBarHandler.post(new Runnable() {
             public void run() {
 			   	if (c.isFinishing()) {
@@ -632,7 +654,7 @@ public class UpdateManager{
 					}
 				});
 				q.add( "Q00119911", true );				// set green
-				barobot.setRobotId(q, barobot.getRobotId() );		// eeprom ic blank after burning
+				barobot.setRobotId(q, barobot.getRobotId(), barobot.pcb_type );		// eeprom is blank after burning
 				barobot.readHardwareRobotId(q);
 				q.add( "Q0000ff00", true );				// set green
 				q.add( new AsyncMessage( true ) {		// when version readed
@@ -727,15 +749,16 @@ public class UpdateManager{
 		am.run(null, q);
 	}
 
-	public static void downloadAndInstall(final Activity c, Uri uri) {
+	public static void downloadAndInstall(final Activity c, String url) {
 		Date dNow				= new Date();
 		SimpleDateFormat dd		= new SimpleDateFormat ("yyyy.MM.dd.hh.mm.ss");
 		final String path6 		= Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath() +"/Barobot_update-"+ dd.format(dNow)+".apk";
 		//final String path6 		= Environment.getExternalStorageDirectory()+ Constant.home_path +"/update-"+ dd.format(dNow)+".apk";
-		String sourceUrl		= Constant.android_app;
-		if(Constant.use_beta){
-			sourceUrl			= Constant.android_app_beta;
-		}
+		url = url.trim();
+		final String sourceUrl = url;//"http://barobot.com/synchro/Barobot3.apk";//url.trim();
+
+		Initiator.logger.i("downloadAndInstall1", ""+ url.length()+" /Path is "+url);
+		//final String sourceUrl = Uri.parse(url).toString();
 		c.runOnUiThread(new Runnable() {
 			   public void run() {
 				   	if (c.isFinishing()) {
@@ -743,7 +766,7 @@ public class UpdateManager{
 					}
 					updateBarHandler	= new Handler();
 					barProgressDialog	= new ProgressDialog(c);
-					barProgressDialog.setTitle("Downloading application...");
+					barProgressDialog.setTitle("Downloading application from  "+ sourceUrl );
 					barProgressDialog.setMessage("Downloading in progress. \n\nDestination: " + path6 );
 					barProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
 					barProgressDialog.setProgress(0);

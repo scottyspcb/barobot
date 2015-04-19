@@ -14,11 +14,17 @@ public interface HardwareState {
 	
 	public abstract Map<String, String> getAll();
 	
-	public abstract void reloadConfig( int robot_id );
+	public abstract void reloadConfig( int robot_id, boolean useOld);
 
 	void saveConfig(int robot_Serial);
 
 	public abstract void registerListener(StateListener sl);
 
 	public abstract void unregisterListener( StateListener sl);
+
+	public abstract void setDefaults(DefaultState pcb);
+
+	public abstract void resetToDefault(String string);
+
+	public abstract void resetAll();
 }

@@ -53,7 +53,7 @@ public class ServosActivity extends BlankWizardActivity {
 			        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser)  {
 						int newValue = min + (progress * step);
 						if( newValue > 0 ){
-							barobot.state.set("DRIVER_X_SPEED", newValue);
+			//				barobot.state.set("DRIVER_X_SPEED", newValue);
 						}
 			        }
 			    }

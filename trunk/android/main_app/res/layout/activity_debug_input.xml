@@ -1,0 +1,59 @@
+    <LinearLayout
+       xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    tools:context="${relativePackage}.${activityClass}"
+    
+   
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true" >
+
+        <ListView
+            android:id="@+id/debug_input_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:stackFromBottom="true"
+            android:transcriptMode="alwaysScroll" >
+
+        </ListView>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="5"
+            android:orientation="vertical" >
+
+            <Button
+                android:id="@+id/debug_input_clear_history"
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Clear" />
+
+            <Button
+                android:id="@+id/debug_input_unlock_log"
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Unlock" />
+            
+            <ToggleButton
+                android:id="@+id/debug_input_enable"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="ToggleButton"/>
+
+			<Button
+                android:id="@+id/debug_input_close"
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Close" />
+
+        </LinearLayout>
+    </LinearLayout>

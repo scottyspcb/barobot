@@ -131,6 +131,9 @@ public class LedActivity extends BlankWizardActivity {
 	}
 
 	private void showResult(final int text, final boolean success ) {
+		if(!success){
+			barobot.main_queue.unlock();
+		}
 		runOnUiThread(new Runnable() {
 			  public void run() {
 				  setFullScreen();

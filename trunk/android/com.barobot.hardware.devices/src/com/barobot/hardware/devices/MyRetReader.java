@@ -17,6 +17,7 @@ public class MyRetReader implements RetReader {
 //	private BarobotEventListener bel;
 	private int robot_id_high = 0;
 	boolean checkInput	= false;		// pokazuj logi z analoga
+	private boolean saveOnNextStats = false;
 
 	public MyRetReader(  BarobotConnector brb ){
 		this.barobot	= brb;
@@ -41,6 +42,7 @@ public class MyRetReader implements RetReader {
 				return null;		// all
 			}
 		} );
+
 		barobot.mb.addGlobalRegex( new GlobalMatch(){
 			@Override
 			public String getMatchRet() {
@@ -57,7 +59,64 @@ public class MyRetReader implements RetReader {
 			public String getMatchCommand() {
 				return null;		// all
 			}
+		} );
+		barobot.mb.addGlobalRegex( new GlobalMatch(){
+			@Override
+			public String getMatchRet() {
+				return "^R*NOMASTER \\d+$";		// i.e. RRNOMASTER
+			}
+			@Override
+			public boolean run(Mainboard asyncDevice, String fromArduino, String wait4Command, AsyncMessage wait_for) {
+				Queue mq				= barobot.main_queue;
+				String queueSnapshot	= mq.show("NOMASTER");
+				String w8ing4			= mq.getWaitingFor();
+				String msg				= "decoded.RNOMASTER but waiting for: "+ w8ing4;
+				Initiator.logger.e("MyRetReader", msg );
+				Initiator.logger.saveLog(msg + "\n" + queueSnapshot);
+				return true;
+			}
+			@Override
+			public String getMatchCommand() {
+				return null;		// all
+			}
+		} );
+
+		barobot.mb.addGlobalRegex( new GlobalMatch(){
+			@Override
+			public String getMatchRet() {
+				return "^R*SERVOOFF$";		// i.e. RRNOMASTER
+			}
+			@Override
+			public boolean run(Mainboard asyncDevice, String fromArduino, String wait4Command, AsyncMessage wait_for) {
+				Queue mq				= barobot.main_queue;
+				String queueSnapshot	= mq.show("RSERVOOFF");
+				String w8ing4			= mq.getWaitingFor();
+				String msg				= "decoded.RSERVOOFF but waiting for: "+ w8ing4;
+				Initiator.logger.e("MyRetReader", msg );
+				Initiator.logger.saveLog(msg + "\n" + queueSnapshot);
+				return true;		// unlock whatever it was
+			}
+			@Override
+			public String getMatchCommand() {
+				return null;		// all
+			}
+		} );
+		barobot.mb.addGlobalRegex( new GlobalMatch(){
+			@Override
+			public String getMatchRet() {
+				return "F0";
+			}
+			@Override
+			public boolean run(Mainboard asyncDevice, String fromArduino, String wait4Command, AsyncMessage wait_for) {
+				Initiator.logger.e("MyRetReader.decoded", "no power out there. stop everything" );
+				return true;
+			}
+			@Override
+			public String getMatchCommand() {
+				return null;		// all
+			}
 		} );	
+
 		barobot.mb.addGlobalRegex( new GlobalMatch(){
 			@Override
 			public boolean run(Mainboard asyncDevice, String fromArduino, String wait4Command, AsyncMessage wait_for) {
@@ -131,6 +190,7 @@ public class MyRetReader implements RetReader {
 				mq.clear();
 				state.set( "ONCE_PER_ROBOT_START","0");
 				Initiator.logger.i("MyRetReader.decoded", decoded);
+				saveOnNextStats = true;
 				barobot.onConnected(barobot.main_queue, true );
 				return true;
 			}
@@ -186,9 +246,11 @@ public class MyRetReader implements RetReader {
 		//	I		RI			OLD TEST I2C
 		//	IH		RIH				IS HOME
 		//  S		RS				stats
-		//			RRNO_MASTER
+		//			RRNOMASTER
 		//			RRSERVO_OFF
-		
+		//			ZSTOPS			ZSTOPS,528 
+		//			YSTOPS			YSTOPS,528 		
+
 		String command = "";
 		if(wait_for2!= null && wait_for2.command != null && wait_for2.command != "" ){
 			command = wait_for2.command;
@@ -233,7 +295,7 @@ public class MyRetReader implements RetReader {
 				decoded += "/METHOD_GET_X_POS";
 				int hpos = parts[3] + (parts[4] << 8);
 				//BarobotCommandResult
-				barobot.x.setHPos( hpos );	
+				barobot.x.setHPos( hpos );
 				if(command.equals("x")){
 					return true;
 				}else{
@@ -244,6 +306,9 @@ public class MyRetReader implements RetReader {
 				int pos = parts[3] + (parts[4] << 8); 
 		//		Initiator.logger.i("new pos y:", ""+pos );
 				state.set( "POSY",""+pos);
+				if( barobot.pcb_type == 3 ){
+					barobot.state.set("HALLY", pos);
+				}
 				if(command.equals("y")){
 					return true;
 				}else{
@@ -328,6 +393,9 @@ public class MyRetReader implements RetReader {
 						int pos = parts[4] + (parts[5] << 8);
 						decoded += "/DRIVER_Y";
 						state.set( "POSY", pos );
+						if( barobot.pcb_type == 3 ){
+							barobot.state.set("HALLY", pos);
+						}
 					}
 					if(command.startsWith("Y")){
 	//					Initiator.logger.i("MyRetReader.decoded OK", decoded);
@@ -367,43 +435,74 @@ public class MyRetReader implements RetReader {
 		}else if(fromArduino.startsWith(""+Constant.RET) ){		// na końcu bo to może odblokować wysyłanie i spowodować zapętlenie
 			decoded += "/RET";
 			String fromArduino2 = fromArduino.substring(1);		// without R
-			if(fromArduino2.startsWith(Constant.GETXPOS)  ){
-				decoded += "/GETXPOS";
-				String fromArduino3 = fromArduino2.replace(Constant.GETXPOS, "");	
-				int hpos = Decoder.toInt(fromArduino3, 0);	// hardware pos
+			if(fromArduino2.startsWith(Constant.GETXPOS) ){
+				decoded += "/GETXPOS";	
+				String fromArduino3 = fromArduino2.replace(Constant.GETXPOS, "");
+				String[] parts		= fromArduino3.split(",");
+				int hpos = Decoder.toInt(parts[0], 0);	// hardware pos
 				barobot.x.setHPos( hpos );
+				if(parts.length > 1){
+					state.set( "POSX_STATE", parts[1]);
+				}
 				if( command.startsWith(Constant.GETXPOS)){
 					return true;
 				}else{
 					Initiator.logger.e("MyRetReader.decoded.wrong12", "command:" +command+ ", decoded: " + decoded + " fromArduino:'"+ fromArduino+"'" );
 				}
+				
+			}else if(fromArduino2.startsWith("YSTOPS,")){			// motor cant move				
+				String[] parts		= fromArduino2.split(",");
+				state.set( "POSY",parts[1] );
+				state.set( "POSY_STATE", 0 );		// 0 == DRIVER_DIR_STOP
+				if( barobot.pcb_type == 3 ){
+					barobot.state.set("HALLY", parts[1] );
+				}
+				if( command.startsWith("Y") ){		// 0 == DRIVER_DIR_STOP
+					return true;	
+				}else{
+					Initiator.logger.e("MyRetReader.decoded.wrong15", "command:" +command+ ", decoded: " + decoded + " fromArduino:'"+ fromArduino+"'" );
+				}
+				
 			}else if(fromArduino2.startsWith(Constant.GETYPOS)){
 				decoded += "/GETYPOS";
 				String fromArduino3 = fromArduino2.replace(Constant.GETYPOS, "");
 				String[] parts		= fromArduino3.split(",");
 				state.set( "POSY",parts[0]);
+				if( barobot.pcb_type == 3 ){
+					barobot.state.set("HALLY",parts[0] );
+				}
 				if(parts.length > 1){
 					state.set( "POSY_STATE", parts[1]);
 				}
 				if( command.startsWith(Constant.GETYPOS)){
 					return true;
-				}else if( command.startsWith("Y") && parts.length > 1 && parts[1].equals("0") ){		// 0 == stop
+				}else if( command.startsWith("Y") && parts.length > 1 && parts[1].equals("0") ){		// 0 == DRIVER_DIR_STOP
 					return true;	
 				}else{
 					Initiator.logger.e("MyRetReader.decoded.wrong13", "command:" +command+ ", decoded: " + decoded + " fromArduino:'"+ fromArduino+"'" );
+				}
+
+			}else if(fromArduino2.startsWith("ZSTOPS,")){			// motor cant move
+				String[] parts		= fromArduino2.split(",");
+				state.set( "POSZ",parts[1] );
+				state.set( "POSZ_STATE", 0 );		// 0 == DRIVER_DIR_STOP
+				if( command.startsWith("Z") ){
+					return true;	
+				}else{
+					Initiator.logger.e("MyRetReader.decoded.wrong15", "command:" +command+ ", decoded: " + decoded + " fromArduino:'"+ fromArduino+"'" );
 				}
 			}else if(fromArduino2.startsWith(Constant.GETZPOS)){
 				decoded += "/GETZPOS";
 				String fromArduino3 = fromArduino2.replace(Constant.GETZPOS, "");
 				String[] parts		= fromArduino3.split(",");
 
-				state.set( "POSZ",parts[0]);
+				state.set( "POSZ",parts[0] );
 				if(parts.length > 1){
 					state.set( "POSZ_STATE", parts[1]);
 				}
 				if( command.startsWith(Constant.GETZPOS)){
 					return true;
-				}else if( command.startsWith("Z") && parts.length > 1 && parts[1].equals("0") ){		// 0 == stop
+				}else if( command.startsWith("Z") && parts.length > 1 && parts[1].equals("0") ){		// 0 == DRIVER_DIR_STOP
 					return true;	
 				}else{
 					Initiator.logger.e("MyRetReader.decoded.wrong13", "command:" +command+ ", decoded: " + decoded + " fromArduino:'"+ fromArduino+"'" );
@@ -427,6 +526,13 @@ public class MyRetReader implements RetReader {
 				String fromArduino3 = fromArduino2.substring(2);	// remove "S,"
 				int[] parts = Decoder.decodeBytes( fromArduino3 );
 				if(parts.length >= 5 ){
+					int id			= (parts[4] << 8) + parts[3];
+					int pcb_type	= 2;
+					if(parts.length >= 6 ){
+						pcb_type = parts[5];
+					}
+					barobot.changeRobotId( id, true, pcb_type );
+
 					// RRS,VERSION,TEMP,STARTS,ROBOT_ID_LOW, ROBOT_ID_HIGH
 					if( parts[0] > 0 ){
 						state.set( "ARDUINO_VERSION", parts[0]);
@@ -440,38 +546,49 @@ public class MyRetReader implements RetReader {
 						state.set("ARDUINO_STARTS", parts[2] );
 				//		Initiator.logger.i("MyRetReader.decoded.ARDUINO_STARTS", "is " + parts[2]);
 					}
-					int id = (parts[4] << 8) + parts[3];
-					barobot.changeRobotId( id, true );
-					if(parts.length >= 6 ){
-						state.set("PCB_TYPE", parts[5] );
-					}
+				}
+				if( this.saveOnNextStats ){
+					this.saveOnNextStats = false;
+					barobot.onFirstStatReady( mainQueue );
 				}
 				if( command.equals("S")){
 					return true;
 				}
-			}else if(fromArduino2.startsWith( "A1" )){					// y position
+			}else if(fromArduino2.startsWith( "A1," )){					// y position
 				String fromArduino3 = fromArduino2.substring(3);		// 	RA1,598		=> A1,598		=> 598
 				int value			= Decoder.toInt(fromArduino3, 0);
-				if( value > 0 ){			// 0 is imposible
-					barobot.state.set("HALLY", value);
-				}
+				barobot.state.set("HALLY", value);
 				if( command.equals("A1") ){
 					return true;
 				}
-			}else if(fromArduino2.startsWith( "A2" )){			// load cell (weigh sensor)
+			}else if(fromArduino2.startsWith( "A2," )){			// load cell (weigh sensor)
 				String fromArduino3 = fromArduino2.substring(3);		// 	RA2,598		=> A2,598		=> 598
 				int weight			= Decoder.toInt(fromArduino3, 0);
-				if( weight > 0 ){			// 0 is imposible
-					barobot.weight.newValue(weight);
-				}
+				barobot.weight.newValue(weight);
 				if( command.equals("A2") ){
 					return true;
 				}
+
+			}else if(fromArduino2.startsWith( "A3," )){			// 
+				String fromArduino3 = fromArduino2.substring(3);		// 	RA3,598		=> A3,598		=> 598
+				//int value			= Decoder.toInt(fromArduino3, 0);
+				if( command.equals("A3") ){
+					return true;
+				}
+			}else if(fromArduino2.startsWith( "A4," )){			// light sensor
+				String fromArduino3 = fromArduino2.substring(3);		// 	RA4,598		=> A4,598		=> 598
+				int value			= Decoder.toInt(fromArduino3, 0);
+				barobot.state.set("LIGHT_SENSOR", value);
+				if( command.equals("A4") ){
+					return true;
+				}
+
 		//	}else if(fromArduino2.startsWith( "M" ) && command.startsWith("M") ){	// save in eeprom memory
 
-			}else if(fromArduino2.startsWith( "K" ) ){								// move Z
-				String fromArduino3 = fromArduino2.substring(1);		// 	RK1500		=> K1500		=> 1500
-				int pos				= Decoder.toInt(fromArduino3, 0);
+			}else if(fromArduino2.startsWith( "K" ) ){					// move Z
+				String fromArduino3 = fromArduino2.substring(1);		// RK1500		=> K1500		=> 1500
+				String[] parts		= fromArduino3.split(",");
+				int pos				= Decoder.toInt(parts[0], 0);
 				decoded				+= "/DRIVER_Z";
 				if( pos > 0 ){
 					state.set( "POSZ",pos );
@@ -483,7 +600,7 @@ public class MyRetReader implements RetReader {
 				}
 			}else if(fromArduino2.startsWith("F")){			// power was down
 				if(command.equals("F0")){					// robot is now shuting down.
-					
+					Initiator.logger.e("MyRetReader.decoded", "no power out there" );
 				}
 				if(command.startsWith("F")){				// F0 or F1 (F1 = robot is working, not interesting response :) )
 					return true;
@@ -514,8 +631,30 @@ public class MyRetReader implements RetReader {
 				}else{
 					Initiator.logger.e("MyRetReader.decoded.wrong8", "[" + command + "], decoded: " + decoded + " fromArduino:"+ fromArduino );
 				}
-			}else if(fromArduino2.equals( "RSERVO_OFF" ) ){		// RRSERVO_OFF when servo is ON more than safe timeout
-				// todo, logger
+			
+			}else if(fromArduino2.equals( "NOMASTER" ) ){		// RRNOMASTER when last msg from android was more than timeout
+				Queue mq				= barobot.main_queue;
+				String queueSnapshot	= mq.show("NOMASTER");
+				String w8ing4			= mq.getWaitingFor();
+				String msg				= "decoded.RNOMASTER but: "+ w8ing4;
+				Initiator.logger.e("MyRetReader", msg );
+				Initiator.logger.saveLog(msg + "\n" + queueSnapshot);
+				if( msg.startsWith("l") ||  msg.startsWith("DX")
+						||  msg.startsWith("EX") 
+						||  msg.startsWith("DY") 
+						||  msg.startsWith("DZ") ){		// if command was not important just unlock it
+					return true;
+				}
+
+			}else if(fromArduino2.equals( "SERVOOFF" ) ){		// RRSERVOOFF when servo is ON more than safe timeout
+				Queue mq				= barobot.main_queue;
+				String queueSnapshot	= mq.show("RSERVOOFF");
+				String w8ing4			= mq.getWaitingFor();
+				String msg				= "decoded.RSERVOOFF but "+ w8ing4;
+				Initiator.logger.e("MyRetReader", msg );
+				Initiator.logger.saveLog(msg + "\n" + queueSnapshot);
+
+				return true;		// unlock whatever it was
 			}else{
 				decoded += "/????" + "fromArduino2: [" + fromArduino2+"], command: [" + command + "]";
 			}
@@ -530,7 +669,7 @@ public class MyRetReader implements RetReader {
 			decoded += "/RETURN_I2C_ERROR";
 			// short ttt[4] = {RETURN_I2C_ERROR,my_address, deviceAddress,length, command }
 			// Urządzenie 'my_address' wysyłało do 'deviceAddress' bajtów length
-			//barobot.main_queue.unlock();
+			// barobot.main_queue.unlock();
 			// todo, obsłużyc to lepiej
 
 		}else if( fromArduino.startsWith( "" + Methods.METHOD_EXEC_ERROR) ){		// msg od slave		
@@ -563,7 +702,7 @@ public class MyRetReader implements RetReader {
 		}
 		if( address == Methods.EEPROM_ROBOT_ID_LOW ){		// always check high and then low, so here set robot_id
 			int value2 = (this.robot_id_high << 8) + value;
-			this.barobot.changeRobotId( value2, true );
+			this.barobot.changeRobotId( value2, true, barobot.pcb_type );
 		}
 	}
 
@@ -752,9 +891,9 @@ public class MyRetReader implements RetReader {
 			int value		= parts[8] + (parts[9] << 8);
 			decoded += "/@pos:" + hpos;
 			decoded += "/value:" + value;
-			if( value > 0 ){
-				barobot.state.set("HALLY", value);
-			}
+			//if( value > 0 ){
+			barobot.state.set("HALLY", value);
+			//}
 	//		Initiator.logger.i("input_parser", decoded );
 		}else{
 			decoded += "/???";
@@ -765,11 +904,12 @@ public class MyRetReader implements RetReader {
 			Initiator.logger.i("MyRetReader.decoded checkInput", decoded);
 			return true;
 		}
-		Initiator.logger.i("MyRetReader.decoded", decoded);
+		//Initiator.logger.i("MyRetReader.decoded", decoded);
 		return true;
 	}
 	private void hereIsMagnet(int magnetnum, int fromHPos, int toHPos, int bottleIsBack ) {
-		if( magnetnum > 12 || magnetnum < 0 ){
+		if( magnetnum > 11 || magnetnum < 0 ){
+			Initiator.logger.e("hereIsMagnet.error", "magnetnum: "+ magnetnum+" fromHPos: "+ fromHPos+" BackNum: "+ BackNum+ "from " +fromHPos + " to " + toHPos );
 			// todo log error
 			return;
 		}
