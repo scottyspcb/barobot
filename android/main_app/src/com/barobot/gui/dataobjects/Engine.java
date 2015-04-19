@@ -18,7 +18,7 @@ import android.os.Environment;
 
 import com.barobot.BarobotMain;
 import com.barobot.android.Android;
-import com.barobot.android.AndroidWithBarobot;
+import com.barobot.android.AndroidHelpers;
 import com.barobot.common.Initiator;
 import com.barobot.common.constant.Constant;
 import com.barobot.gui.database.BarobotData;
@@ -230,7 +230,7 @@ public class Engine {
 				return q2;
 			}
 		} );
-		AndroidWithBarobot.readTabletTemp( q );
+	//	AndroidHelpers.readTabletTemp( q );
 		q.addWithDefaultReader("S" );		// read temp after
 		q.add( new AsyncMessage( true ) {
 			@Override	
@@ -250,7 +250,6 @@ public class Engine {
 		} );
 		return q;
 	}
-	
 	private static void saveStats(final Liquid_t liquid, Queue q, final int count) {
 		q.add( new AsyncMessage( true ) {
 			@Override	

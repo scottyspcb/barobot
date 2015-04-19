@@ -40,6 +40,7 @@ public class GetSlotsData implements IData {
 			writer.name("counter").value(slot.counter);
 
 			if( slot.product == null ){
+				writer.name("liquid_id").value(0);
 				writer.name("product_id").value(0);
 				writer.name("product_capacity").value(0);
 				writer.name("product_init_needed").value(false);
@@ -50,14 +51,17 @@ public class GetSlotsData implements IData {
 				writer.name("bitter").value(0);
 				writer.name("strenght").value(0);
 				writer.endObject();	
-			}else{	
+			}else{
+				Liquid_t liquid = slot.product.liquid;
+
+				writer.name("liquid_id").value(liquid.id);
 				writer.name("product_id").value(slot.product.id);
 				writer.name("product_capacity").value(slot.product.capacity);
 				writer.name("product_init_needed").value(slot.product.initNeeded);
+
 				writer.name("taste");
 				writer.beginObject();
-				
-				Liquid_t liquid = slot.product.liquid;
+
 				writer.name("sweet").value(liquid.sweet);
 				writer.name("sour").value(liquid.sour);
 				writer.name("bitter").value(liquid.bitter);

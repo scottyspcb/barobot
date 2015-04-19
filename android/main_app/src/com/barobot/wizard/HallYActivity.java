@@ -38,7 +38,7 @@ public class HallYActivity extends BlankWizardActivity {
 	int hally_back = 0;
 	String error = "";
 	int sensor_max = 1000;
-	
+
 	// hally_neutral in <495;520>
 	int neutral_min = 495;
 	int neutral_max = 520;
@@ -63,6 +63,7 @@ public class HallYActivity extends BlankWizardActivity {
 		q.addWait( 500 );
 
 		barobot.y.move(q, back, 100, true, true);
+		barobot.y.readHallY(q);
 		q.add( new AsyncMessage( true ){
 			@Override
 			public Queue run(Mainboard dev, Queue queue) {
@@ -74,6 +75,7 @@ public class HallYActivity extends BlankWizardActivity {
 		q.addWait( 500 );
 
 		barobot.y.move(q, neutral, 100, true, true);
+		barobot.y.readHallY(q);
 		q.add( new AsyncMessage( true ){
 			@Override
 			public Queue run(Mainboard dev, Queue queue) {
@@ -85,6 +87,7 @@ public class HallYActivity extends BlankWizardActivity {
 		q.addWait( 500 );
 
 		barobot.y.move(q, front, 100, true, true);
+		barobot.y.readHallY(q);
 		q.add( new AsyncMessage( true ){
 			@Override
 			public Queue run(Mainboard dev, Queue queue) {
@@ -96,6 +99,7 @@ public class HallYActivity extends BlankWizardActivity {
 		q.addWait( 500 );
 
 		barobot.y.move(q, back, 100, true, true);
+		barobot.y.readHallY(q);
 		q.add( new AsyncMessage( true ){
 			@Override
 			public Queue run(Mainboard dev, Queue queue) {
@@ -111,6 +115,7 @@ public class HallYActivity extends BlankWizardActivity {
 		q.addWait( 500 );
 		
 		barobot.y.move(q, front, 100, true, true);
+		barobot.y.readHallY(q);
 		q.add( new AsyncMessage( true ){
 			@Override
 			public Queue run(Mainboard dev, Queue queue) {
@@ -127,7 +132,6 @@ public class HallYActivity extends BlankWizardActivity {
 		q.add( new AsyncMessage( true ){
 			@Override
 			public Queue run(Mainboard dev, Queue queue) {
-
 				boolean ok = false;
 				int diff1 = Math.abs(hally_front - hally_back);
 				int diff2 = Math.abs(hally_neutral - hally_front);
@@ -141,27 +145,37 @@ public class HallYActivity extends BlankWizardActivity {
 				Initiator.logger.w("moveZUp.diff2", ""+diff2);
 				Initiator.logger.w("moveZUp.diff3", ""+diff3);
 
-				if( hally_front > sensor_max || hally_neutral > sensor_max || hally_back > sensor_max ){
-					showResult(R.string.wizard_hally_nosensor, false );
+				Initiator.logger.w("moveZUp.minDiff1", ""+minDiff1);
+				Initiator.logger.w("moveZUp.minDiff2", ""+minDiff2);
+				Initiator.logger.w("moveZUp.minDiff3", ""+minDiff3);
 
-				}else if(diff1 < 10 && diff2 < 10  && diff3 < 10 ){		// no sensor or servo can't move
-					showResult(R.string.wizard_hally_sensor_pernament, false );
-				}else if( hally_neutral < neutral_min || hally_neutral > neutral_max ){	// neutral error
-					showResult(R.string.wizard_hally_neutral_error, false );
-
-				}else if(  diff1 < minDiff2 && diff2 > minDiff2 && diff3 > minDiff3 ){		// magnets exist but on the same side
-					showResult(R.string.wizard_hally_inverted, true );
-
-				}else if( diff1 > minDiff2 && diff2 > minDiff2 && diff3 > minDiff3 ){
+				int y_pos_known			= barobot.state.getInt("y_pos_known", 0 );
+				if(y_pos_known == 1 ){
 					showResult(R.string.wizard_hally_success, true );
 					ok = true;
-
 				}else{
-					if( diff2 < minDiff2 ){		// front error
-						showResult(R.string.wizard_hally_front_error, false );
-					}
-					if( diff3 < minDiff3 ){		// baack error
-						showResult(R.string.wizard_hally_back_error, false );
+					if( hally_front > sensor_max || hally_neutral > sensor_max || hally_back > sensor_max ){
+						showResult(R.string.wizard_hally_nosensor, false );
+	
+					}else if(diff1 < 10 && diff2 < 10  && diff3 < 10 ){		// no sensor or servo can't move
+						showResult(R.string.wizard_hally_sensor_pernament, false );
+					}else if( hally_neutral < neutral_min || hally_neutral > neutral_max ){	// neutral error
+						showResult(R.string.wizard_hally_neutral_error, false );
+	
+					}else if(  diff1 < minDiff2 && diff2 > minDiff2 && diff3 > minDiff3 ){		// magnets exist but on the same side
+						showResult(R.string.wizard_hally_inverted, true );
+	
+					}else if( diff1 > minDiff2 && diff2 > minDiff2 && diff3 > minDiff3 ){
+						showResult(R.string.wizard_hally_success, true );
+						ok = true;
+	
+					}else{
+						if( diff2 < minDiff2 ){		// front error
+							showResult(R.string.wizard_hally_front_error, false );
+						}
+						if( diff3 < minDiff3 ){		// baack error
+							showResult(R.string.wizard_hally_back_error, false );
+						}
 					}
 				}
 				if(ok){

@@ -45,19 +45,16 @@ public class ValidatorActivity extends BarobotMain {
 		WeightSensorActivity.class,
 		CalibrationActivity.class,
 	};
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		Bundle extras = getIntent().getExtras();
-
 		BarobotConnector barobot = Arduino.getInstance().barobot;
 		barobot.state.set("ROBOT_CAN_MOVE", 0 );		// disable homeing
-
 		if (extras != null) {
 		    disable_back = (extras.getInt("BACK_TO_WIZARD", 0) > 0) ;		// disable_back in TRUE at first start
 		}
-		Log.e("ValidatorActivity.no disable_back", "");
+	//	Log.e("ValidatorActivity.no disable_back", "");
 
 		if( BarobotMain.canStart ){
 	        requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -78,7 +75,7 @@ public class ValidatorActivity extends BarobotMain {
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		if(!disable_back){				// to it in saveSettings()
+		if(!disable_back){				// do it in saveSettings()
 			BarobotConnector barobot = Arduino.getInstance().barobot;
 			barobot.state.set("ROBOT_CAN_MOVE", Constant.WIZARD_VERSION );
 		}
@@ -170,6 +167,16 @@ public class ValidatorActivity extends BarobotMain {
 			}
 		}
 		return super.onKeyDown(keyCode, event);
+	}
+	public void onCloseAppClicked(View view)
+	{
+		disable_back = true;
+		BarobotConnector barobot = Arduino.getInstance().barobot;
+		barobot.state.set("ROBOT_CAN_MOVE", 0 );
+		setResult(0);
+		finish();
+		BarobotMain.getInstance().finish();
+		System.exit(0);
 	}
 
 	public void onLangButtonClicked(View view)

@@ -5,27 +5,28 @@ import java.util.LinkedList;
 public class LimitedBuffer<T> {
 	LinkedList<T> stack;
     private int size;
+	private boolean enabled = false;
 
     public LimitedBuffer( int limit ) {
           this.stack	= new LinkedList<T>();
           this.size		= limit;
     }
     public void push(T obj) {
-    	return;
-    	/*
-    	
-		Initiator.logger.w("LimitedBuffer.push", obj.toString());	
+    	if(!enabled){
+    		return;
+    	}
+	//	Initiator.logger.w("LimitedBuffer.push", obj.toString());
     	this.stack.add(obj);
     	if(this.stack.size() > this.size ){
-    		
+    		this.stack.removeFirst();
     	}
-    	//	this.stack.removeFirst();
-    		
+    	/*
+    	//	
     		0
     		50
     		200
     		0...(200-50)
-*/
+    	 */
     	//	this.stack.subList(0, (this.size() - this.size)).clear();
     	//}
     }
@@ -47,6 +48,9 @@ public class LimitedBuffer<T> {
     }
 
 	public void addBefore(T before, LinkedList<T> addList) {
+    	if(!enabled){
+    		return;
+    	}
 		int pos = this.stack.indexOf(before);
 		if(pos==-1){
 	//		Initiator.logger.w("LimitedBuffer.addBefore", " -1 before "+ before.toString());	
@@ -56,6 +60,12 @@ public class LimitedBuffer<T> {
 		}
 	}
 	public void addAll(LinkedList<T> output) {
+    	if(!enabled){
+    		return;
+    	}
 		this.stack.addAll(output);
+	}
+	public void setEnabled(boolean b) {
+		this.enabled = b;
 	}
 }

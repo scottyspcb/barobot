@@ -7,18 +7,16 @@ import android.app.Activity;
 import android.widget.ArrayAdapter;
 import com.barobot.parser.message.History_item;
 
-public class CoversationHistory {
-	public List<History_item> mConversationHistory = new ArrayList<History_item>();
+public class CoversationHistory<T> {
+	public List<T> mConversationHistory = new ArrayList<T>();
     public boolean log_active	= true;
-	private ArrayAdapter<History_item> mConversation;
+	private ArrayAdapter<T> mConversation;
 	private Activity mainView;
 
     CoversationHistory(Activity mainView){
 		this.mainView = mainView;
-    	mConversationHistory.clear();
     }
-
-	public void addToList(final History_item m) {
+	public void addToList(final T m) {
 		if(log_active){
 			synchronized (mConversationHistory) {
 				mConversationHistory.add( m );
@@ -36,13 +34,13 @@ public class CoversationHistory {
 			}
 		}
 	}
-
+/*
 	public void addToList(final String string, final boolean direction ) {
 		if(log_active){
 			this.mainView.runOnUiThread(new Runnable() {
 			     public void run() {
 			//    	Log.i(Constant.TAG, "addtohist:[" + string +"]"); 
-			    	History_item hi = new History_item( string.trim(), direction);
+			    	T hi = new T( string.trim(), direction);
 			    	
 					synchronized (mConversationHistory) {
 						mConversationHistory.add( hi );
@@ -54,7 +52,7 @@ public class CoversationHistory {
 			    }
 			});
 		}
-	}
+	}*/
 	public void clearHistory() {
 		if(log_active){
 			synchronized (mConversationHistory) {
@@ -65,10 +63,10 @@ public class CoversationHistory {
 			}
 		}
 	}
-	public List<History_item> getHistory(){
-		return mConversationHistory;
-	}
-	public void getHistory(ArrayAdapter<History_item> mConversation) {
+	//public List<History_item> getHistory(){
+	//	return mConversationHistory;
+	//}
+	public void getHistory(ArrayAdapter<T> mConversation) {
 		this.mConversation = mConversation;
 		this.mConversation.addAll(mConversationHistory);
 	}

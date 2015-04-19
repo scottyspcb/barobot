@@ -2,6 +2,7 @@ package com.barobot.common;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.barobot.common.interfaces.DefaultState;
 import com.barobot.common.interfaces.HardwareState;
 import com.barobot.common.interfaces.StateListener;
 
@@ -33,7 +34,7 @@ public class EmptyBarobotState implements HardwareState {
 		return nMap;
 	}
 	@Override
-	public void reloadConfig(int robot_Serial) {
+	public void reloadConfig(int robot_Serial, boolean useOld ) {
 		// TODO Auto-generated method stub
 	}
 	@Override
@@ -46,6 +47,18 @@ public class EmptyBarobotState implements HardwareState {
 	}
 	@Override
 	public void unregisterListener(StateListener sl) {
+		// TODO Auto-generated method stub
+	}
+	@Override
+	public void setDefaults(DefaultState pcb) {
+		// TODO Auto-generated method stub
+	}
+	@Override
+	public void resetToDefault(String string) {
+		// TODO Auto-generated method stub
+	}
+	@Override
+	public void resetAll() {
 		// TODO Auto-generated method stub
 	}
 }

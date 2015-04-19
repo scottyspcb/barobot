@@ -184,10 +184,9 @@ public class SensorsActivity extends BlankWizardActivity {
 		});
 
 		result_list.put( new SystemTestItem<Long>("Last Barobot-Android handshake (miliseconds ago)"){
-			long now = 0;
 			@Override
 			public Long read() {
-				now = Decoder.getTimestamp();
+				long now = Decoder.getTimestamp();
 				return now- barobot.lastSeenRobotTimestamp;
             }
 			@Override

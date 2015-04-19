@@ -67,7 +67,6 @@ public class PowerActivity extends BlankWizardActivity {
 				BarobotConnector barobot	= Arduino.getInstance().barobot;
 				return barobot!= null && barobot.main_queue != null;
             }
-
 		});
 		result_list.put( new SystemTestItem<Integer>(R.string.wizard_text_android_version){
 			@Override
@@ -241,7 +240,38 @@ public class PowerActivity extends BlankWizardActivity {
 				public boolean check() {
 	                return this.value.booleanValue();
 	            }
+			});
+			result_list.put( new SystemTestItem<Integer>( R.string.wizard_text_pcb_type_last, R.string.wizard_text_power_restart){
+				@Override
+				public Integer read() {
+					BarobotConnector barobot	= Arduino.getInstance().barobot;
+					if( barobot == null){
+						return 0;
+					}
+					return barobot.pcb_type;
+	            }
+				public boolean check() {
+	                return this.value > 0;
+	            }
+			});
+			result_list.put( new SystemTestItem<Integer>( R.string.wizard_text_pcb_type, R.string.wizard_text_power_restart){
+				@Override
+				public Integer read() {
+					BarobotConnector barobot	= Arduino.getInstance().barobot;
+					if( barobot == null || barobot.state == null){
+						return 0;
+					}
+					return barobot.state.getInt("PCB_TYPE", 0);
+	            }
+				public boolean check() {
+	                return this.value > 0;
+	            }
 			});	
+			
+			
+			
+			
+			
 	/*
 			int TABLET_TEMPERATURE		= barobot.state.getInt("TABLET_TEMPERATURE", 0);
 			float cpuUsage				= Android.readCpuUsage();

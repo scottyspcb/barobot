@@ -90,8 +90,10 @@ public class InternetHelpers {
 				//  File root = android.os.Environment.getExternalStorageDirectory();    
 				//  Initiator.logger.i("FILE_NAME", "root getAbsolutePath is "+root.getAbsolutePath());
 				try {
-					URL url = new URL(urlLink);
 					Initiator.logger.i("FILE_NAME", "Path is "+path);
+					Initiator.logger.i("FILE_NAME", "urlLink is "+urlLink);
+
+					URL url = new URL(urlLink);
 					Initiator.logger.i("FILE_URLLINK", "File URL is "+url);
 					URLConnection connection = url.openConnection();
 					connection.connect();
@@ -130,6 +132,8 @@ public class InternetHelpers {
 					input.close();
 					runnable.run();
 
+				} catch (RuntimeException e) {
+					Initiator.logger.appendError(e);
 				} catch (FileNotFoundException e) {
 					Initiator.logger.appendError(e);
 				} catch (Exception e) {
@@ -221,6 +225,7 @@ public class InternetHelpers {
 					List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
 					nameValuePairs.add(new BasicNameValuePair("app_version", ""+Constant.ANDROID_APP_VERSION ));
 					nameValuePairs.add(new BasicNameValuePair("firmware_version", barobot.state.get("ARDUINO_VERSION", "0") ));
+					nameValuePairs.add(new BasicNameValuePair("pcb_type", ""+barobot.pcb_type));
 					nameValuePairs.add(new BasicNameValuePair("robot_id", ""+barobot.getRobotId() ));
 					nameValuePairs.add(new BasicNameValuePair("stat1", barobot.state.get("STAT1", "0") ));
 					nameValuePairs.add(new BasicNameValuePair("stat2", barobot.state.get("STAT2", "0") ));
@@ -252,6 +257,7 @@ public class InternetHelpers {
 		httppost.setHeader("User-Agent", "IE 10 Mozilla compatible");
 		BarobotConnector barobot = Arduino.getInstance().barobot;
 		List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
+		nameValuePairs.add(new BasicNameValuePair("pcb_type", ""+barobot.pcb_type));
 		nameValuePairs.add(new BasicNameValuePair("address", ip ));
 		nameValuePairs.add(new BasicNameValuePair("stat1", barobot.state.get("STAT1", "0") ));
 		nameValuePairs.add(new BasicNameValuePair("stat2", barobot.state.get("STAT2", "0") ));
@@ -283,6 +289,7 @@ public class InternetHelpers {
 				BarobotConnector barobot = Arduino.getInstance().barobot;
 				if(barobot != null){
 					nameValuePairs.add(new BasicNameValuePair("app_version", ""+Constant.ANDROID_APP_VERSION ));
+					nameValuePairs.add(new BasicNameValuePair("pcb_type", ""+barobot.pcb_type));
 					nameValuePairs.add(new BasicNameValuePair("firmware_version", barobot.state.get("ARDUINO_VERSION", "0") ));
 					nameValuePairs.add(new BasicNameValuePair("robot_id", ""+barobot.getRobotId() ));
 					if( barobot.state != null){

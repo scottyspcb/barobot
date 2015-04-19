@@ -6,6 +6,7 @@ import java.util.Date;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
 import android.os.Environment;
 import android.util.Log;
@@ -15,7 +16,7 @@ import android.view.View.OnClickListener;
 import com.barobot.BarobotMain;
 import com.barobot.R;
 import com.barobot.android.Android;
-import com.barobot.android.AndroidWithBarobot;
+import com.barobot.android.AndroidHelpers;
 import com.barobot.android.InternetHelpers;
 import com.barobot.common.Initiator;
 import com.barobot.common.constant.Constant;
@@ -44,7 +45,6 @@ public class button_click implements OnClickListener{
 	}
 	public void exec(View v) {
 		final BarobotConnector barobot	= Arduino.getInstance().barobot;
-
 		switch (v.getId()) {
 		case R.id.download_database:
 			BarobotMain.getInstance().runOnUiThread(new Runnable() {
@@ -93,7 +93,7 @@ public class button_click implements OnClickListener{
 				        		if(success){
 				        			success = Android.copy( resetPath, Constant.localDbPath );
 				        			Engine.GetInstance().invalidateData();
-				        			AndroidWithBarobot.resetApplicationData(barobot);
+				        			AndroidHelpers.resetApplicationData(barobot);
 				        		}
 							} catch (IOException e) {
 								e.printStackTrace();
@@ -117,33 +117,29 @@ public class button_click implements OnClickListener{
 			    }
 			});
 			break;
-		case R.id.firmware_download:
-			UpdateManager.downloadAndBurnFirmware( dbw, Constant.use_beta, false );
+		case R.id.firmware_download:	
+			Android.burnFirmware( dbw, false );
+			
 			break;
 		case R.id.firmware_download_manual:
-			UpdateManager.downloadAndBurnFirmware( dbw, Constant.use_beta, true );
+			Android.burnFirmware( dbw,true );
 			break;
 		case R.id.force_app_update:
 			String url = Constant.android_app;
-			if(Constant.use_beta){
-				url = Constant.android_app_beta;
+			if(barobot.pcb_type == 3){
+				if(Constant.use_beta){
+					url = Constant.android3_app_beta;
+				}else{
+					url = Constant.android3_app;
+				}
+			}else if(barobot.pcb_type == 2){
+				url = Constant.android_app;
 			}
 			UpdateManager.openInBrowser( dbw, url );
+			break;
 
 		case R.id.new_robot_id:
-			int isOnline = Android.isOnline(dbw);
-			if(isOnline > -1 && Constant.use_beta ){					// beta only
-				int robot_id = UpdateManager.getNewRobotId();		// download new robot_id (init hardware)
-				Initiator.logger.w("button_click.new_robot_id", "robot_id" + robot_id);
-				if( robot_id > 0 ){		// save robot_id to android and arduino
-					Queue q = new Queue();
-					barobot.setRobotId( q, robot_id);
-					barobot.main_queue.add(q);
-				}
-				Android.alertMessage(dbw, "New ID= "+ robot_id);
-			}else{
-				Android.alertMessage(dbw,"No internet connection");
-			}
+			Android.setNewRobotId(dbw, barobot);
 			break;
 		}
 	}

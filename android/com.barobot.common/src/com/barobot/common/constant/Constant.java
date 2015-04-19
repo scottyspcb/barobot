@@ -1,7 +1,7 @@
 package com.barobot.common.constant;
 
 public class Constant {
-	public static final int ANDROID_APP_VERSION		= 10;
+	public static final int ANDROID_APP_VERSION		= 14;
 	public static final int WIZARD_VERSION			= 8;
 	public static final int MAX_FIRMWARE_VERSION	= 16;	
 
@@ -43,6 +43,10 @@ public class Constant {
 	public static final int BOTTLE_IS_FRONT = 4;
 	public static final String DATABASE_NAME = "BarobotOrman.db";
 	public static final int ACCELERATION_X = 90;
+	public static final String UNNAMED_DRINK = "Unnamed Drink";
+
+	public static final int AUTO_CLOSE_TIME_WITHOUT_BAROBOT = 5000;
+	public static final int TIMEOUT_WITHOUT_ROBOT	= 10000;			// in ms 10000 = 10 sec.
 
 	public static int[] magnet_order = {0,2,1,4,3,6,5,8,7,10,9,11 };	// numer butelki, odjac 1 aby numer ID
 	public static int[] bottle_row = {
@@ -64,9 +68,15 @@ public class Constant {
 	//	private static String errorlog		= "http://barobot.com/android_data/error.php";
 	public static String upload				= "http://barobot.com/synchro/store.php";
 	public static String databaseWeb		= "http://barobot.com/synchro/" + DATABASE_NAME;
-	public static String firmwareWeb		= "http://barobot.com/synchro/barobot.hex";
+	public static String firmware2Web		= "http://barobot.com/synchro/barobot2.hex";
+	public static String firmware3Web		= "http://barobot.com/synchro/barobot3.hex";
 	public static String android_app		= "http://barobot.com/synchro/Barobot.apk";
-	public static String firmwareWeb_beta	= "http://barobot.com/synchro/barobot_beta.hex";
+	public static String android3_app		= "http://barobot.com/synchro/Barobot3.apk";
+	public static String android3_app_beta	= "http://barobot.com/synchro/Barobot3_beta.apk";
+
+	public static String firmware2Web_beta	= "http://barobot.com/synchro/barobot2_beta.hex";
+	public static String firmware3Web_beta	= "http://barobot.com/synchro/barobot3_beta.hex";
+
 	public static String android_app_beta	= "http://barobot.com/synchro/Barobot_beta.apk";
 	public static String databaseWeb_beta	= "http://barobot.com/synchro/"+ "BarobotOrman_beta.db";
 
@@ -75,7 +85,10 @@ public class Constant {
 	public static String home_path			= "/Barobot";			// relative path
 	public static String copyPath			= "/Barobot/" + DATABASE_NAME;
 	public static String logFile			= "/Barobot/log.log";
-	public static String firmware			= "/Barobot/barobot.hex";
+	public static String firmware2			= "/Barobot/barobot2.hex";
+	public static String firmware3			= "/Barobot/barobot3.hex";
+	public static String firmware2_beta		= "/Barobot/barobot2_beta.hex";
+	public static String firmware3_beta		= "/Barobot/barobot3_beta.hex";	
 	public static String backupPath			= "/Barobot/BarobotOrman%DATE%.db";
 
 	public static String raport_manager		= "http://barobot.com/synchro/raport_error.php";

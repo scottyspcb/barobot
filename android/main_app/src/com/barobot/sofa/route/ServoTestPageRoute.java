@@ -89,7 +89,7 @@ public class ServoTestPageRoute extends EmptyRoute {
 			positions.put("SERVOZ_DOWN_POS", barobot .state.get("SERVOZ_DOWN_POS", "1000"));
 			positions.put("SERVOZ_PAC_POS", barobot .state.get("SERVOZ_PAC_POS", "1000"));
 	
-			positions.put("SERVOZ_TEST_POS", barobot .state.get("SERVOZ_TEST_POS", "1000"));	
+			positions.put("SERVOZ_NEUTRAL", barobot .state.get("SERVOZ_NEUTRAL", "1000"));	
 			positions.put("SERVOY_FRONT_POS", barobot .state.get("SERVOY_FRONT_POS", "1000"));		
 			positions.put("SERVOY_BACK_POS", barobot .state.get("SERVOY_BACK_POS", "1000"));
 			positions.put("SERVOY_BACK_NEUTRAL", barobot .state.get("SERVOY_BACK_NEUTRAL", "1000"));

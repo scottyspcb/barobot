@@ -3,13 +3,13 @@
     <!-- These settings headers are only used on tablets. -->
 
     <header
-        android:fragment="com.barobot.SettingsActivity$GeneralPreferenceFragment"
+        android:fragment="com.barobot.activity.SettingsActivity$GeneralPreferenceFragment"
         android:title="@string/pref_header_general" />
     <header
-        android:fragment="com.barobot.SettingsActivity$NotificationPreferenceFragment"
+        android:fragment="com.barobot.activity.SettingsActivity$NotificationPreferenceFragment"
         android:title="@string/pref_header_notifications" />
     <header
-        android:fragment="com.barobot.SettingsActivity$DataSyncPreferenceFragment"
+        android:fragment="com.barobot.activity.SettingsActivity$DataSyncPreferenceFragment"
         android:title="@string/pref_header_data_sync" />
 
 </preference-headers>

@@ -4,7 +4,8 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.barobot.R;
-import com.barobot.android.AndroidWithBarobot;
+import com.barobot.android.Android;
+import com.barobot.android.AndroidHelpers;
 import com.barobot.common.constant.Constant;
 import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
@@ -37,11 +38,13 @@ public class FirmwareActivity extends BlankWizardActivity {
 		}
 	}
 	private void check_version() {
-		AndroidWithBarobot.checkNewSoftwareVersion( true, this );
+		AndroidHelpers.checkNewSoftwareVersion( true, this );
 	}
 	private void upload(boolean isManual) {
 		barobot.main_queue.clear();
-		UpdateManager.downloadAndBurnFirmware( this, Constant.use_beta, isManual );
+	//	UpdateManager.downloadAndBurnFirmware( this, barobot.pcb_type, isManual );
+		Android.burnFirmware(this, isManual);
+
 	}
 	public void onTick(){
 		

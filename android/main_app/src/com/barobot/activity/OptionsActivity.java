@@ -1,8 +1,10 @@
 package com.barobot.activity;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.view.View;
 
@@ -10,7 +12,7 @@ import com.barobot.AppInvoker;
 import com.barobot.BarobotMain;
 import com.barobot.R;
 import com.barobot.android.Android;
-import com.barobot.android.AndroidWithBarobot;
+import com.barobot.android.AndroidHelpers;
 import com.barobot.common.Initiator;
 import com.barobot.hardware.Arduino;
 import com.barobot.hardware.devices.BarobotConnector;
@@ -35,7 +37,7 @@ public class OptionsActivity extends BarobotMain {
 	private int checkVersion( boolean alertResult, boolean force ) {
 		if(!wasVersionChecked || force ){
 			wasVersionChecked = true;
-			return AndroidWithBarobot.checkNewSoftwareVersion( alertResult, this );
+			return AndroidHelpers.checkNewSoftwareVersion( alertResult, this );
 		}
 		return 1;
 	}
@@ -79,7 +81,7 @@ public class OptionsActivity extends BarobotMain {
 			break;
 
 		case R.id.option345:
-			String ip = Android.getLocalIpAddress();
+			final String ip = Android.getLocalIpAddress();
 			String msg = "http://" + ip + ":8000";
 			if(ip.equals("")){
 				msg = "no connection";
@@ -89,6 +91,9 @@ public class OptionsActivity extends BarobotMain {
 		    .setMessage(msg)
 		    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
 		        public void onClick(DialogInterface dialog, int which) { 
+		        	if(ip.equals("")){	// ip empty and no connection
+		        		Android.askForWifiEnabled( OptionsActivity.this );
+		        	}
 		        }
 		     }) .setIcon(android.R.drawable.ic_dialog_alert).show();
 			break;

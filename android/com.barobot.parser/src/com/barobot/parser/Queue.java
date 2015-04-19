@@ -17,7 +17,6 @@ import com.barobot.parser.message.Mainboard;
     remove(int index) is O(n)
     Iterator.remove() is O(1) <--- main benefit of LinkedList<E>
     ListIterator.add(E element) is O(1) <--- main benefit of LinkedList<E>
-
 ArrayList<E>
     get(int index) is O(1) <--- main benefit of ArrayList<E>
     add(E element) is O(1) amortized, but O(n) worst-case since the array must be resized and copied
@@ -502,8 +501,23 @@ public class Queue {
 		}
 		return false;
 	}
-	public void show( String prefix ) {
+	public String show( String prefix ) {
 		String res = "Queue (" + prefix + "):\n";
+		if(isMainQueue){
+			res+= getWaitingFor();
+		//synchronized (lock_output) {
+			for (AsyncMessage msg : this.output){
+				res += "\t" + msg.toString() + "\n";
+			}
+		//}	
+			Initiator.logger.w("Queue.show.main", res);
+		}else{
+			Initiator.logger.e("Queue.show.nomain", "");
+		}
+		return res;
+	}
+	public String getWaitingFor() {
+		String res = "";
 	//	synchronized (QueueLock.lock_wait_for) {
 			if(isMainQueue){
 				AsyncMessage w = Mainboard.lock.wait_for;
@@ -513,14 +527,9 @@ public class Queue {
 				}
 			}
 	//	}
-		//synchronized (lock_output) {
-			for (AsyncMessage msg : this.output){
-				res += "\t" + msg.toString() + "\n";
-			}
-		//}
-		Initiator.logger.w("Queue.show", res);
+		return res;
 	}
-
+	
 	public LimitedBuffer<AsyncMessage> getHistory(){
 		return this.history;
 	}
